@@ -1,4 +1,4 @@
-<%@ page import="de.laser.titles.JournalInstance; de.laser.titles.BookInstance; de.laser.remote.ApiSource; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Package; de.laser.RefdataCategory; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.IssueEntitlementCoverage; de.laser.titles.JournalInstance; de.laser.titles.BookInstance; de.laser.remote.ApiSource; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Package; de.laser.RefdataCategory; de.laser.storage.RDConstants" %>
 <laser:htmlStart message="subscription.details.current_ent" serviceInjection="true"/>
 
 <laser:render template="breadcrumb" model="${[params: params]}"/>
@@ -235,6 +235,47 @@
                 <g:set var="selected_label" value="${message(code: 'default.selected.label')}"/>
 
                 <div class="ui segment la-filter la-js-show-hide" style="display: none">
+                    <g:if test="${IssueEntitlementCoverage.executeQuery('select count(ic) from IssueEntitlementCoverage ic join ic.issueEntitlement ie where ie.subscription = :sub and ie.status != :removed', [sub: subscription, removed: RDStore.TIPP_STATUS_REMOVED])[0] > 0}">
+                        <div class="six fields">
+                            <%-- continue here with backend connection and better layout of fields --%>
+                            <div class="two fields"></div>
+                            <div class="field">
+                                <label><g:message code="tipp.startDate.tooltip"/></label>
+                                <ui:datepicker hideLabel="true"
+                                               placeholder="${message(code: 'default.from')}"
+                                               inputCssClass="la-input-small" id="bulk_start_date"
+                                               name="bulk_start_date"/>
+                            </div>
+                            <div class="field">
+                                <label><g:message code="tipp.startVolume.tooltip"/></label>
+                                <input class="ui input" type="text" name="bulk_start_volume"/>
+                            </div>
+                            <div class="field">
+                                <label><g:message code="tipp.startIssue.tooltip"/></label>
+                                <input class="ui input" type="text" name="bulk_start_issue"/>
+                            </div>
+                            <div class="field"></div>
+                        </div>
+                        <div class="six fields">
+                            <div class="two fields"></div>
+                            <div class="field">
+                                <label><g:message code="tipp.endDate.tooltip"/></label>
+                                <ui:datepicker hideLabel="true"
+                                               placeholder="${message(code: 'default.to')}"
+                                               inputCssClass="la-input-small" id="bulk_end_date"
+                                               name="bulk_end_date"/>
+                            </div>
+                            <div class="field">
+                                <label><g:message code="tipp.endVolume.tooltip"/></label>
+                                <input class="ui input" type="text" name="bulk_end_volume"/>
+                            </div>
+                            <div class="field">
+                                <label><g:message code="tipp.endIssue.tooltip"/></label>
+                                <input class="ui input" type="text" name="bulk_end_issue"/>
+                            </div>
+                            <div class="field"></div>
+                        </div>
+                    </g:if>
                     <div class="six fields  left floated">
 
                         <div class="field la-field-noLabel">
@@ -263,8 +304,6 @@
                             </div>
                         </div>
 
-
-
                         <div class="field">
                             <label><g:message code="subscription.details.access_dates"/></label>
                             <ui:datepicker hideLabel="true"
@@ -279,6 +318,10 @@
                                            inputCssClass="la-input-small" id="bulk_access_end_date"
                                            name="bulk_access_end_date"/>
 
+                        </div>
+
+                        <div class="field">
+                            <label>Meine Anmerkungen</label>
                         </div>
                         <g:if test="${subscription.ieGroups.size() > 0}">
                             <div class="field">

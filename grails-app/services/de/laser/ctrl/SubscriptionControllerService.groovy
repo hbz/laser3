@@ -2921,33 +2921,65 @@ class SubscriptionControllerService {
                 params.ieAcceptStatusFixed = true
                 Map<String, Object> query = filterService.getIssueEntitlementQuery(params, result.subscription)
                 if(params.bulkOperation == "edit") {
-                    if (params.bulk_access_start_date && (params.bulk_access_start_date.trim().length() > 0)) {
-                        Date accessStartDate = formatter.parse(params.bulk_access_start_date)
-                        String updateQuery = "update IssueEntitlement e set e.accessStartDate = :accessStartDate where e.id in (select ie.id ${query.query})"
-                        IssueEntitlement.executeUpdate(updateQuery, query.queryParams+[accessStartDate: accessStartDate])
-                    }
-                    if (params.bulk_access_end_date && (params.bulk_access_end_date.trim().length() > 0)) {
-                        Date accessEndDate = formatter.parse(params.bulk_access_end_date)
-                        String updateQuery = "update IssueEntitlement e set e.accessEndDate = :accessEndDate where e.id in (select ie.id ${query.query})"
-                        IssueEntitlement.executeUpdate(updateQuery, query.queryParams+[accessEndDate: accessEndDate])
-                    }
-                    if (params.titleGroupInsert && (params.titleGroupInsert.trim().length() > 0)) {
-                        Sql sql = GlobalService.obtainSqlConnection()
-                        params.select = 'bulkInsertTitleGroup'
-                        if(!params.pkgIds && !params.pkgfilter)
-                            params.pkgIds = result.subscription.packages.pkg.id
-                        Map<String, Object> sqlQuery = filterService.prepareTitleSQLQuery(params, IssueEntitlement.class.name, sql)
-                        //log.debug("insert into issue_entitlement_group_item (igi_version, igi_date_created, igi_ie_fk, igi_ie_group_fk, igi_last_updated) "+sqlQuery.query+" where "+sqlQuery.where+" and not exists(select igi_id from issue_entitlement_group_item where igi_ie_fk = ie_id)")
-                        //log.debug(sqlQuery.params.toMapString())
-                        sql.execute("insert into issue_entitlement_group_item (igi_version, igi_date_created, igi_ie_fk, igi_ie_group_fk, igi_last_updated, igi_date_created) "+sqlQuery.query+" where "+sqlQuery.where+" and not exists(select igi_id from issue_entitlement_group_item where igi_ie_fk = ie_id)", sqlQuery.params)
-                        /*if(entitlementGroup && !IssueEntitlementGroupItem.findByIeGroupAndIe(entitlementGroup, ie) && !IssueEntitlementGroupItem.findByIe(ie)){
-                            IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
-                                    ie: ie,
-                                    ieGroup: entitlementGroup)
-                            if (!issueEntitlementGroupItem.save()) {
-                                log.error("Problem saving IssueEntitlementGroupItem ${issueEntitlementGroupItem.errors}")
+                    params.keySet().each { String bulkEditParam ->
+                        if(params.get(bulkEditParam)?.trim()?.length() > 0) {
+                            switch(bulkEditParam) {
+                                case 'bulk_access_start_date':
+                                    Date accessStartDate = formatter.parse(params.bulk_access_start_date)
+                                    String updateQuery = "update IssueEntitlement e set e.accessStartDate = :accessStartDate where e.id in (select ie.id ${query.query})"
+                                    IssueEntitlement.executeUpdate(updateQuery, query.queryParams+[accessStartDate: accessStartDate])
+                                    break
+                                case 'bulk_access_end_date':
+                                    Date accessEndDate = formatter.parse(params.bulk_access_end_date)
+                                    String updateQuery = "update IssueEntitlement e set e.accessEndDate = :accessEndDate where e.id in (select ie.id ${query.query})"
+                                    IssueEntitlement.executeUpdate(updateQuery, query.queryParams+[accessEndDate: accessEndDate])
+                                    break
+                                case 'titleGroupInsert':
+                                    Sql sql = GlobalService.obtainSqlConnection()
+                                    params.select = 'bulkInsertTitleGroup'
+                                    if(!params.pkgIds && !params.pkgfilter)
+                                        params.pkgIds = result.subscription.packages.pkg.id
+                                    Map<String, Object> sqlQuery = filterService.prepareTitleSQLQuery(params, IssueEntitlement.class.name, sql)
+                                    //log.debug("insert into issue_entitlement_group_item (igi_version, igi_date_created, igi_ie_fk, igi_ie_group_fk, igi_last_updated) "+sqlQuery.query+" where "+sqlQuery.where+" and not exists(select igi_id from issue_entitlement_group_item where igi_ie_fk = ie_id)")
+                                    //log.debug(sqlQuery.params.toMapString())
+                                    sql.execute("insert into issue_entitlement_group_item (igi_version, igi_date_created, igi_ie_fk, igi_ie_group_fk, igi_last_updated, igi_date_created) "+sqlQuery.query+" where "+sqlQuery.where+" and not exists(select igi_id from issue_entitlement_group_item where igi_ie_fk = ie_id)", sqlQuery.params)
+                                    /*if(entitlementGroup && !IssueEntitlementGroupItem.findByIeGroupAndIe(entitlementGroup, ie) && !IssueEntitlementGroupItem.findByIe(ie)){
+                                        IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
+                                                ie: ie,
+                                                ieGroup: entitlementGroup)
+                                        if (!issueEntitlementGroupItem.save()) {
+                                            log.error("Problem saving IssueEntitlementGroupItem ${issueEntitlementGroupItem.errors}")
+                                        }
+                                    }*/
+                                    break
+                                default:
+                                    String updateClause
+                                    Map<String, Object> updateParams
+                                    switch(bulkEditParam) {
+                                        case 'bulk_start_date': updateClause = "ic.startDate = :newStartDate"
+                                            updateParams = [newStartDate: formatter.parse(params.bulk_start_date)]
+                                            break
+                                        case 'bulk_start_volume': updateClause = "ic.startVolume = :newStartVolume"
+                                            updateParams = [newStartVolume: formatter.parse(params.bulk_start_volume)]
+                                            break
+                                        case 'bulk_start_issue': updateClause = "ic.startIssue = :newStartIssue"
+                                            updateParams = [newStartIssue: formatter.parse(params.bulk_start_issue)]
+                                            break
+                                        case 'bulk_end_date': updateClause = "ic.endDate = :newEndDate"
+                                            updateParams = [newEndDate: formatter.parse(params.bulk_end_date)]
+                                            break
+                                        case 'bulk_end_volume': updateClause = "ic.endVolume = :newEndVolume"
+                                            updateParams = [newEndVolume: formatter.parse(params.bulk_end_volume)]
+                                            break
+                                        case 'bulk_end_issue': updateClause = "ic.endIssue = :newEndIssue"
+                                            updateParams = [newEndIssue: formatter.parse(params.bulk_end_issue)]
+                                            break
+                                    }
+                                    String updateQuery = "update IssueEntitlementCoverage ic set ${updateClause} where ic.ie.id in (select ie.id ${query.query})"
+                                    IssueEntitlement.executeUpdate(updateQuery, query.queryParams+updateParams)
+                                    break
                             }
-                        }*/
+                        }
                     }
                 }
                 else if(params.bulkOperation in ["remove", "removeWithChildren"]) {
