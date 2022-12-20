@@ -2747,6 +2747,7 @@ class SubscriptionControllerService {
                             }
                         }
                     }
+                    cache.put('checked',[:])
                 }
                 else {
                     log.error('cache error or no titles selected')
