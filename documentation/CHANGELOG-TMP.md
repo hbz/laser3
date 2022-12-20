@@ -7,6 +7,24 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4714    19.12.2022  rc-3.0  3.0         Andreas Feature     URL-Präfixes nachgereicht
+
+--      19.12.2022  rc-3.0  3.0         Andreas Bug         Aussieben gelöschter Plattformen in der Anbietersicht
+
+4713    19.12.2022  rc-3.0  3.0         David   Bug         Umfrage-Dokumente - falscher Besitzer
+
+4710    16.12.2022  rc-3.0  3.0         Andreas Bug         Umbenennung bei Löschung einer Teilnehmerlizenz
+
+4707    16.12.2022  rc-3.0  3.0         Andreas Bug         Formular löste nicht aus
+
+4706    16.12.2022  rc-3.0  3.0         David   Feature     Elasticsearch in Laser upgraden
+
+4705    16.12.2022  rc-3.0  3.0         Andreas Bug         Absturz bei Plattformdetails behoben
+
+4704    16.12.2022  rc-3.0  3.0         Andreas Bug         Kontaktausgabe bei Anbietern differenziert
+
+4703    16.12.2022  rc-3.0  3.0         Andreas Bug         500er bei verschiedenen Reports behoben
+
 4698    15.12.2022  rc-3.0  3.0         Andreas Feature     Neuer Identifikator "Leibniz-ID" aufgenommen
 
 4695    15.12.2022  rc-3.0  3.0         Moe     Bug         Umfrage-Erinnerungsmail: Tabelleninhalt verrutscht

@@ -7,7 +7,7 @@
         <ui:crumb text="Datenbereinigung" class="active"/>
     </ui:breadcrumbs>
 
-    <ui:h1HeaderWithIcon text="Datenbereinigung" />
+    <ui:h1HeaderWithIcon text="Datenbereinigung" type="yoda" />
 
         <ui:messages data="${flash}"/>
         <table>

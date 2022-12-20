@@ -5,7 +5,7 @@
     <ui:crumb message="menu.yoda.userRoleMatrix" class="active"/>
 </ui:breadcrumbs>
 
-<ui:h1HeaderWithIcon message="menu.yoda.userRoleMatrix" />
+<ui:h1HeaderWithIcon message="menu.yoda.userRoleMatrix" type="yoda" />
 
 <div class="ui accordion">
     <g:each in="${matrix}" var="role">

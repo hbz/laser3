@@ -5,7 +5,7 @@
         <ui:crumb text="User Merge" class="active"/>
     </ui:breadcrumbs>
 
-    <ui:h1HeaderWithIcon text="User Merge" />
+    <ui:h1HeaderWithIcon text="User Merge" type="admin"/>
 
     <ui:messages data="${flash}" />
 

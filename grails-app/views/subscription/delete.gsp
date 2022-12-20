@@ -17,7 +17,7 @@
             </g:if>
         </g:if>
         <g:else>
-            <ui:msg class="info" message="subscription.delete.info" />
+            <%--<ui:msg class="info" message="subscription.delete.info" /> deleted as of ERMS-4710 and December 16th, '22--%>
 
             <g:if test="${delResult.status == deletionService.RESULT_BLOCKED}">
                 <ui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="deletion.blocked.msg.subscription" />
@@ -33,11 +33,12 @@
             <g:link controller="subscription" action="show" params="${[id: subscription.id]}" class="ui button"><g:message code="default.button.cancel.label"/></g:link>
 
             <g:if test="${editable}">
+                <g:set var="delLabel" value="${parentId ? message(code:'deletion.subscription.member') : message(code:'deletion.subscription')}"/>
                 <g:if test="${delResult.deletable}">
-                    <g:link controller="subscription" action="delete" params="${[id: subscription.id, process: true]}" class="ui button red">${message(code:'deletion.subscription')}</g:link>
+                    <g:link controller="subscription" action="delete" params="${[id: subscription.id, process: true]}" class="ui button red">${delLabel}</g:link>
                 </g:if>
                 <g:else>
-                    <input disabled type="submit" class="ui button red" value="${message(code:'deletion.subscription')}" />
+                    <input disabled type="submit" class="ui button red" value="${delLabel}" />
                 </g:else>
             </g:if>
         </g:else>

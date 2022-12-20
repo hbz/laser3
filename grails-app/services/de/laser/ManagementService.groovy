@@ -8,6 +8,7 @@ import de.laser.config.ConfigDefaults
 import de.laser.config.ConfigMapper
 import de.laser.interfaces.CalculatedType
 import de.laser.interfaces.ShareSupport
+import de.laser.utils.AppUtils
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.storage.RDConstants
@@ -817,7 +818,9 @@ class ManagementService {
                                             title: params.upload_title ?: params.original_filename,
                                             type: RefdataValue.getByValueAndCategory(params.doctype, RDConstants.DOCUMENT_TYPE),
                                             creator: result.user,
-                                            owner: contextService.getOrg())
+                                            owner: contextService.getOrg(),
+                                            server: AppUtils.getCurrentServer()
+                                    )
 
                                     doc_content.save()
 

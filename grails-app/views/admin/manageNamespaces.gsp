@@ -7,7 +7,7 @@
 			<ui:crumb message="menu.admin.manageIdentifierNamespaces" class="active"/>
 		</ui:breadcrumbs>
 
-        <ui:h1HeaderWithIcon message="menu.admin.manageIdentifierNamespaces" />
+        <ui:h1HeaderWithIcon message="menu.admin.manageIdentifierNamespaces" type="admin"/>
 
 		<ui:messages data="${flash}" />
 

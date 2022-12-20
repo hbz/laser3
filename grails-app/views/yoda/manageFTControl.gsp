@@ -5,7 +5,7 @@
         <ui:crumb text="FTControl" class="active" />
     </ui:breadcrumbs>
 
-    <ui:h1HeaderWithIcon text="FTControl" />
+    <ui:h1HeaderWithIcon text="FTControl" type="yoda" />
 
     <ui:msg class="${dataload.running ? 'success' : 'info'}" noClose="true">
         Last doFTUpdate: <strong>${dataload.lastFTIndexUpdateInfo}</strong> ; Currently running: <strong>${dataload.running.toString().toUpperCase()}</strong>

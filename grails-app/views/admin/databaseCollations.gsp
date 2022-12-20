@@ -7,7 +7,7 @@
     <ui:crumb message="menu.admin.databaseCollations" class="active"/>
 </ui:breadcrumbs>
 
-<ui:h1HeaderWithIcon message="menu.admin.databaseCollations" />
+<ui:h1HeaderWithIcon message="menu.admin.databaseCollations" type="admin"/>
 
 <div class="ui secondary stackable pointing tabular la-tab-with-js menu">
     <a data-tab="first" class="item active">Übersicht</a>

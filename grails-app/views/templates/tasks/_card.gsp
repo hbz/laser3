@@ -35,7 +35,9 @@
                 <i class="large la-list-icon la-popup-tooltip la-delay icon ${icon}" data-content="${tooltip}"></i>
                 <div class="content">
                     <a class="header la-js-toggle-showThis" onclick="JSPC.app.taskedit(${tsk.id});">${tsk.title}</a>
-                    <a class="header la-js-toggle-hideThis" onclick="JSPC.app.taskread(${tsk.id});">${tsk.title}</a>
+                    <g:if test="${controllerName != 'organisation' && controllerName != 'survey'}">
+                        <a class="header la-js-toggle-hideThis" onclick="JSPC.app.taskread(${tsk.id});">${tsk.title}</a>
+                    </g:if>
                     <div class="description">${message(code:'task.endDate.label')}
                         <g:formatDate format="${message(code:'default.date.format.notime')}" date="${tsk.endDate}"/>
                     </div>

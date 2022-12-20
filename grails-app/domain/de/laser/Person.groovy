@@ -120,12 +120,19 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
      * Retrieves all public persons attached to the given organisation and of the given function type
      * @param org the organisation whose contacts should be retrieved
      * @param func the function type string to get
+     * @param tenant the tenant organisation whose maintains
      * @return a {@link List} of persons matching to the given function type and attached to the given {@link Org}
      */
-    static List<Person> getPublicByOrgAndFunc(Org org, String func) {
+    static List<Person> getPublicByOrgAndFunc(Org org, String func, Org tenant = null) {
+        String tenantFilter = ''
+        Map<String, Object> params = [org: org, functionType: func]
+        if(tenant) {
+            tenantFilter = 'and p.tenant = :tenant'
+            params.tenant = tenant
+        }
         Person.executeQuery(
-                "select p from Person as p inner join p.roleLinks pr where p.isPublic = true and pr.org = :org and pr.functionType.value = :functionType",
-                [org: org, functionType: func]
+                "select p from Person as p inner join p.roleLinks pr where p.isPublic = true and pr.org = :org "+tenantFilter+" and pr.functionType.value = :functionType",
+                params
         )
     }
 

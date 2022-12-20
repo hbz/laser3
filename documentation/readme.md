@@ -12,7 +12,7 @@
 - Groovy 3.0.11
 - Java 11
 - PostgreSQL 12+
-- Elasticsearch 7.15.1
+- Elasticsearch 7.16.3
 
 See [details.md](./details.md) for detailed information.
 

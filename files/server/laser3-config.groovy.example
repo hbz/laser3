@@ -47,7 +47,7 @@ indexUpdateJobActive = false
 isSendEmailsForDueDatesOfAllUsers = false
 isUpdateDashboardTableInDatabase  = false
 
-laserSystemId = 'LAS:eR - 3.0'
+laserSystemId = 'LAS:eR' // 'LAS:eR-DEV @ Grails5', 'LAS:eR-QA @ Grails5', 'LAS:eR-Productive'
 
 notifications.email.from = 'laser@local'
 notifications.email.genericTemplate = true // if enabled, no customisation in email (else, customized template will be sent)
@@ -65,13 +65,13 @@ showDebugInfo  = true
 showStatsInfo  = true
 showSystemInfo = true
 
-statsApiUrl = 'https://sushi.xy.z'
-statsSyncJobActive = false
+statsApiUrl         = 'https://sushi.xy.z'
+statsSyncJobActive  = false
 
 systemEmail = 'laser@localhost'
 
-systemInsightIndex = 'laser3_system_insight_index'
-systemInsightJobActive = false
+systemInsightIndex      = 'laser3_system_insight_index'
+systemInsightJobActive  = false
 
 testJobActivate = false
 

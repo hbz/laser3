@@ -6,7 +6,7 @@
             <ui:crumb text="List Platform Duplicates" class="active"/>
         </ui:breadcrumbs>
 
-        <ui:h1HeaderWithIcon text="Platform Duplicates" />
+        <ui:h1HeaderWithIcon text="Platform Duplicates" type="datamanager"/>
 
         <ui:messages data="${flash}" />
 

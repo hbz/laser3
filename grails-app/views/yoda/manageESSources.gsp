@@ -5,7 +5,7 @@
         <ui:crumb text="ES Sources" class="active" />
     </ui:breadcrumbs>
 
-    <ui:h1HeaderWithIcon text="ES Sources" />
+    <ui:h1HeaderWithIcon text="ES Sources" type="yoda" />
 
     <ui:messages data="${flash}" />
 

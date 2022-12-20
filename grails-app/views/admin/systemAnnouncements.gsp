@@ -6,10 +6,10 @@
     </ui:breadcrumbs>
 
     <g:if test="${currentAnnouncement}">
-        <ui:h1HeaderWithIcon message="announcement.update.label" />
+        <ui:h1HeaderWithIcon message="announcement.update.label" type="admin"/>
     </g:if>
     <g:else>
-        <ui:h1HeaderWithIcon message="announcement.create.label" />
+        <ui:h1HeaderWithIcon message="announcement.create.label" type="admin"/>
     </g:else>
 
     <ui:messages data="${flash}" />

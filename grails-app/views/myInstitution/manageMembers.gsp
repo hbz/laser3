@@ -67,7 +67,7 @@
 <div class="la-clear-before">
     <g:if test="${members}">
         <laser:render template="export/individuallyExportModalOrgs" model="[modalID: 'individuallyExportModal', orgType: 'institution']" />
-        <g:form action="manageMembers" controller="myInstitution" method="post" class="ui form la-clear-before">
+        <g:form action="manageMembers" controller="myInstitution" method="post" class="ui form la-clear-before" data-confirm-id="manageMembers_form">
             <laser:render template="/templates/filter/orgFilterTable"
                       model="[orgList: members,
                               tmplShowCheckbox: editable,
@@ -77,9 +77,9 @@
 
 
         <g:if test="${members && editable}">
-            <input type="submit" class="ui button js-open-confirm-modal"
+            <input type="submit" class="ui button js-open-confirm-modal" data-confirm-id="manageMembers"
                    data-confirm-tokenMsg="${message(code:'members.confirmDelete')}"
-                   data-confirm-term-how="delete" value="${message(code: 'default.button.revoke.label')}"/>
+                   data-confirm-term-how="unlink" value="${message(code: 'default.button.revoke.label')}"/>
         </g:if>
     </g:form>
 </g:if>
