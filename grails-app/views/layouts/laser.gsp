@@ -22,7 +22,6 @@
     <laser:javascript src="base.js"/>%{-- dont move --}%
     <script data-type="fixed">
         <g:render template="/templates/jspc/jspc.js" />%{-- g:render; dont move --}%
-        <g:render template="/templates/jspc/jspc.dict.js" />%{-- g:render; dont move --}%
     </script>
 
     <g:layoutHead/>
