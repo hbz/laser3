@@ -60,7 +60,7 @@
                             <span data-position="top right" class="la-popup-tooltip la-delay" data-content="Aufgabe">
                                 <i class="calendar check outline icon la-list-icon"></i>
                             </span>
-                            <a href="#" class="header" onclick="JSPC.app.taskedit(${obj?.id});">${obj?.title}</a>
+                            <a href="#" class="header" onclick="JSPC.app.editTask(${obj?.id});">${obj?.title}</a>
                         </g:elseif>
                         <g:elseif test="${obj instanceof AbstractPropertyWithCalculatedLastUpdated}">
                             <g:if test="${obj.owner instanceof Person}">

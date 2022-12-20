@@ -60,7 +60,7 @@
                         </g:if>
 
                         <g:if test="${! docctx.sharedFrom}">
-                            <a onclick="JSPC.app.noteedit(${docctx.owner.id});" class="ui icon button blue la-modern-button"
+                            <a onclick="JSPC.app.editNote(${docctx.owner.id});" class="ui icon button blue la-modern-button"
                                role="button"
                                aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                 <i aria-hidden="true" class="write icon"></i>
@@ -81,7 +81,7 @@
     </table>
 
 <laser:script file="${this.getGroovyPageFileName()}">
-    JSPC.app.noteedit = function (id) {
+    JSPC.app.editNote = function (id) {
 
         $.ajax({
             url: '<g:createLink controller="ajaxHtml" action="editNote"/>?id='+id,
