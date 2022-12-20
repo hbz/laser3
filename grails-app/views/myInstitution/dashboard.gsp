@@ -185,7 +185,7 @@
                             <div class="meta">
                                 <div class="">Fällig: <strong><g:formatDate format="${message(code:'default.date.format.notime')}" date="${tsk?.endDate}"/></strong></div>
                             </div>
-                            <a class="header" onclick="JSPC.app.taskedit(${tsk?.id});">${tsk?.title}</a>
+                            <a class="header" onclick="JSPC.app.editTask(${tsk?.id});">${tsk?.title}</a>
 
                             <div class="description">
                                 <g:if test="${tsk.description}">
@@ -367,7 +367,7 @@
 
         JSPC.app.taskcreate = bb8.ajax4SimpleModalFunction("#modalCreateTask", "<g:createLink controller="ajaxHtml" action="createTask"/>", true);
 
-        JSPC.app.taskedit = function(id) {
+        JSPC.app.editTask = function(id) {
             var func = bb8.ajax4SimpleModalFunction("#modalEditTask", "<g:createLink controller="ajaxHtml" action="editTask"/>?id=" + id, true);
             func();
         }
