@@ -21,18 +21,18 @@
         <h4 class="ui header">${message(code: 'subscriptionsManagement.document.info.newDocument')}</h4>
 
         <div class="field required">
-            <label for="upload_title">${message(code: 'template.addDocument.name')}:</label>
+            <label for="bulk_upload_title">${message(code: 'template.addDocument.name')}:</label>
 
-            <input type="text" id="upload_title" name="upload_title" value=""/>
+            <input type="text" id="bulk_upload_title" name="bulk_upload_title" value=""/>
         </div>
 
         <div class="field required">
-            <label for="upload_file">${message(code: 'template.addDocument.file')}:</label>
+            <label for="bulk_upload_file">${message(code: 'template.addDocument.file')}:</label>
 
             <div class="ui fluid action input">
                 <input type="text" readonly="readonly"
                        placeholder="${message(code: 'template.addDocument.selectFile')}">
-                <input type="file" id="upload_file" name="upload_file" style="display: none;">
+                <input type="file" id="bulk_upload_file" name="bulk_upload_file" style="display: none;">
 
                 <div class="ui icon button" style="padding-left:30px; padding-right:30px">
                     <i class="attach icon"></i>
@@ -41,7 +41,7 @@
         </div>
 
         <div class="field">
-            <label for="doctype">${message(code: 'template.addDocument.type')}:</label>
+            <label for="bulk_upload_doctype">${message(code: 'template.addDocument.type')}:</label>
 
             <%
                 List notAvailable = [RDStore.DOC_TYPE_NOTE, RDStore.DOC_TYPE_ANNOUNCEMENT, RDStore.DOC_TYPE_ONIXPL]
@@ -51,8 +51,8 @@
                       class="ui dropdown fluid"
                       optionKey="value"
                       optionValue="${{ it.getI10n('value') }}"
-                      name="doctype"
-                      id="doctype"
+                      name="bulk_upload_doctype"
+                      id="bulk_upload_doctype"
                       value=""/>
         </div>
 

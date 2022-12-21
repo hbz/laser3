@@ -797,8 +797,8 @@ class ManagementService {
     void processDocuments(def controller, GrailsParameterMap params, def input_file) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(controller, params)
 
-        //Is be to need, because with upload_file the formService.validateToken(params) is not working really
-        params.remove('upload_file')
+        //Is be to need, because with bulk_upload_file the formService.validateToken(params) is not working really
+        params.remove('bulk_upload_file')
         def input_stream = input_file.inputStream
         File sourceFile
         if(result.editable && formService.validateToken(params)) {
@@ -815,8 +815,8 @@ class ManagementService {
                                             contentType: Doc.CONTENT_TYPE_FILE,
                                             filename: params.original_filename,
                                             mimeType: params.mimeType,
-                                            title: params.upload_title ?: params.original_filename,
-                                            type: RefdataValue.getByValueAndCategory(params.doctype, RDConstants.DOCUMENT_TYPE),
+                                            title: params.bulk_upload_title ?: params.original_filename,
+                                            type: RefdataValue.getByValueAndCategory(params.bulk_upload_doctype, RDConstants.DOCUMENT_TYPE),
                                             creator: result.user,
                                             owner: contextService.getOrg(),
                                             server: AppUtils.getCurrentServer()

@@ -1197,7 +1197,7 @@ join sub.orgRelations or_sub where
         }
 
         if(params.tab == 'documents' && params.processOption == 'newDoc') {
-            def input_file = request.getFile("upload_file")
+            def input_file = request.getFile("bulk_upload_file")
             if (input_file.size == 0) {
                 flash.error = message(code: 'template.emptyDocument.file') as String
                 redirect(url: request.getHeader('referer'))
