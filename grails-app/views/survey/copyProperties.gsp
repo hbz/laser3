@@ -337,7 +337,7 @@
                                     <g:checkBox name="selectedSub" value="${participant.newSub.id}" checked="false"/>
                                 </g:elseif>
                                 <g:elseif
-                                        test="${params.tab == 'surveyProperties' && (participant.oldSub && ((!participant.newCustomProperty && participant.surveyProperty) || (participant.newCustomProperty && participant.newCustomProperty.type.multipleOccurrence)))}">
+                                        test="${params.tab == 'surveyProperties' && (participant.oldSub && (participant.surveyProperty && participant.surveyProperty.getValue() && (!participant.newCustomProperty && participant.surveyProperty) || (participant.newCustomProperty && participant.newCustomProperty.type.multipleOccurrence)))}">
                                     <g:checkBox name="selectedSub" value="${participant.newSub.id}" checked="false"/>
                                 </g:elseif>
                             </td>
@@ -497,7 +497,7 @@
 
                             <g:if test="${params.tab == 'surveyProperties'}">
                                 <td class="center aligned">
-                                    <g:if test="${participant.surveyProperty}">
+                                    <g:if test="${participant.surveyProperty && participant.surveyProperty.getValue()}">
 
                                         <g:if test="${participant.surveyProperty.type.isIntegerType()}">
                                             <ui:xEditable owner="${participant.surveyProperty}" type="number"
