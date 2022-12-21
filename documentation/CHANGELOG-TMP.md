@@ -7,6 +7,20 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4415    19.12.2022  rc-3.0  3.0         Ingrid  Feature     Bestands-Detailansicht verbessern
+
+4509    19.12.2022  rc-3.0  3.0         Ingrid  Feature     Identifikatoren optisch überarbeiten
+
+4506    19.12.2022  rc-3.0  3.0         Ingrid  Feature     Accordions visuell überarbeiten
+
+4499    19.12.2022  rc-3.0  3.0         Ingrid  Feature     Header überarbeiten
+
+4472    19.12.2022  rc-3.0  3.0         Ingrid  Feature <    Laser auf 1440 pixel verbreitern
+
+4291    19.12.2022  rc-3.0  3.0         Ingrid  Feature     Fomantic anpassen
+
+4672    19.12.2022  rc-3.0  3.0         Ingrid  Feature     Paket-Detail-Ansicht: Überarbeitung
+
 4718    20.12.2022  rc-3.0  3.0.1         Andreas Bug       fehlende Exportfelder in Lizenzexport nachgereicht
 
 4709    20.12.2022  rc-3.0  3.0.1         Moe     Bug       Üertrag von Merkmalen bei der Lizenzverlängerung
