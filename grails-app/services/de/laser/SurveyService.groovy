@@ -204,9 +204,10 @@ class SurveyService {
                 }
 
                 surveyConfig.surveyUrls.eachWithIndex { SurveyUrl surveyUrl, int i ->
+                    Object[] args = ["${i+1}"]
                     titles.addAll([
-                            messageSource.getMessage('surveyconfig.url.label', [i], locale),
-                            messageSource.getMessage('surveyconfig.urlComment.label', [i], locale)])
+                            messageSource.getMessage('surveyconfig.url.label', args, locale),
+                            messageSource.getMessage('surveyconfig.urlComment.label', args, locale)])
                 }
                 titles.addAll([messageSource.getMessage('surveyConfigsInfo.comment', null, locale)])
 
@@ -245,9 +246,10 @@ class SurveyService {
                 titles.push(messageSource.getMessage('surveyInfo.endDate.label', null, locale))
                 if (surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]) {
                     surveyConfig.surveyUrls.eachWithIndex { SurveyUrl surveyUrl, int i ->
+                        Object[] args = ["${i+1}"]
                         titles.addAll([
-                                messageSource.getMessage('surveyconfig.url.label', [i], locale),
-                            messageSource.getMessage('surveyconfig.urlComment.label', [i], locale)])
+                                messageSource.getMessage('surveyconfig.url.label', args, locale),
+                            messageSource.getMessage('surveyconfig.urlComment.label', args, locale)])
                     }
                     titles.addAll([messageSource.getMessage('surveyProperty.subName', null, locale),
                                    messageSource.getMessage('surveyProperty.subProvider', null, locale),
@@ -271,7 +273,8 @@ class SurveyService {
                 if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY) {
                     titles.push(messageSource.getMessage('surveyInfo.name.label', null, locale))
                     surveyConfig.surveyUrls.eachWithIndex { SurveyUrl surveyUrl, int i ->
-                        titles.push(messageSource.getMessage('surveyconfig.url.label', [i], locale))
+                        Object[] args = ["${i+1}"]
+                        titles.push(messageSource.getMessage('surveyconfig.url.label', args, locale))
                     }
                 }
             }
@@ -494,9 +497,10 @@ class SurveyService {
                 }
 
                 surveyConfig.surveyUrls.eachWithIndex { SurveyUrl surveyUrl, int i ->
+                    Object[] args = ["${i+1}"]
                     titles.addAll([
-                            messageSource.getMessage('surveyconfig.url.label', [i], locale),
-                            messageSource.getMessage('surveyconfig.urlComment.label', [i], locale)])
+                            messageSource.getMessage('surveyconfig.url.label', args, locale),
+                            messageSource.getMessage('surveyconfig.urlComment.label', args, locale)])
                 }
 
                 if (surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT] ) {
@@ -568,9 +572,10 @@ class SurveyService {
             titles.addAll([messageSource.getMessage('surveyInfo.owner.label', null, locale)])
 
             surveyConfigs[0].surveyUrls.eachWithIndex { SurveyUrl surveyUrl, int i ->
+                Object[] args = ["${i+1}"]
                 titles.addAll([
-                        messageSource.getMessage('surveyconfig.url.label', [i], locale),
-                        messageSource.getMessage('surveyconfig.urlComment.label', [i], locale)])
+                        messageSource.getMessage('surveyconfig.url.label', args, locale),
+                        messageSource.getMessage('surveyconfig.urlComment.label', args, locale)])
             }
             titles.addAll([messageSource.getMessage('surveyInfo.name.label', null, locale),
                            messageSource.getMessage('surveyInfo.type.label', null, locale),
@@ -830,9 +835,10 @@ class SurveyService {
                            messageSource.getMessage('surveyInfo.name.label', null, locale)])
 
         surveyConfigs[0].surveyUrls.eachWithIndex { SurveyUrl surveyUrl, int i ->
+            Object[] args = ["${i+1}"]
             titles.addAll([
-                    messageSource.getMessage('surveyconfig.url.label', [i], locale),
-                    messageSource.getMessage('surveyconfig.urlComment.label', [i], locale)])
+                    messageSource.getMessage('surveyconfig.url.label', args, locale),
+                    messageSource.getMessage('surveyconfig.urlComment.label', args, locale)])
         }
 
         titles.addAll([messageSource.getMessage('surveyConfigsInfo.comment', null, locale),

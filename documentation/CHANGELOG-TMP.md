@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4719    21.12.2022  rc-3.0  3.0.1       Moe     Bug         Meine Umfragen pro TN: Export funktioniert nicht
+
 4686    21.12.2022  rc-3.0  3.0.1       Moe     Bug         Bestehende Titelumfrage lässt sich nicht öffnen
 
 4415    19.12.2022  rc-3.0  3.0         Ingrid  Feature     Bestands-Detailansicht verbessern
