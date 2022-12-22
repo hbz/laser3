@@ -804,7 +804,7 @@ class ManagementService {
         if(result.editable && formService.validateToken(params)) {
             Locale locale = LocaleUtils.getCurrentLocale()
             FlashScope flash = getCurrentFlashScope()
-            List selectedSubs = params.list("selectedSubs")
+            List selectedSubs = params.selectedSubscriptionIds ? params.selectedSubscriptionIds.split(',') : []
             if (selectedSubs) {
                 Set<Subscription> subscriptions = Subscription.findAllByIdInList(selectedSubs)
                     if(params.processOption == 'newDoc') {
