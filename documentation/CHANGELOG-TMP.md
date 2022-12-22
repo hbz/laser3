@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4717    22.12.2022  rc-3.0  3.0.1       David   Bug         500er in Meine Lizenzverwaltung
+
 4716    20.12.2022  rc-3.0  3.0.1       Andreas Bug         falsche Kopie der Mailadressen
 
 4714    19.12.2022  rc-3.0  3.0         Andreas Feature     URL-Präfixes nachgereicht
