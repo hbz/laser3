@@ -247,7 +247,7 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
             sortname = sortname.trim()
             sortname = sortname.toLowerCase()
             sortname = alphanum.matcher(sortname).replaceAll("")
-            sortname = sortname.replaceAll("\\s+", " ")
+            sortname = sortname.replaceAll("\\s+", " ").trim()
             sortname = _asciify(sortname)
             sortname = sortname.replaceFirst('^copy of ', '')
             sortname = sortname.replaceFirst('^the ', '')
