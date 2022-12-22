@@ -325,6 +325,9 @@
         </div>
     </div>
 
+    <br>
+    <br>
+
 
     <g:if test="${tipps}">
         <%

@@ -25,14 +25,14 @@
 --------------------*/
 
 @groupedMargin: @margin;
-@groupedBorder: none;
+@groupedBorder: @border;
 @groupedBoxShadow: @boxShadow;
 @groupedBorderRadius: @borderRadius;
 
 @nestedGroupMargin: @verticalMargin @verticalMargin;
 
 @groupedSegmentBorder: none;
-@groupedSegmentDivider: none;
+@groupedSegmentDivider: @border;
 @groupedSegmentMargin: 0em;
 @groupedSegmentWidth: auto;
 @groupedSegmentBoxShadow: none;
