@@ -1287,7 +1287,10 @@ class FilterService {
             qry_params.status = params.long('status')
         }
         else if(params.status != '' && params.status != null && params.list('status')) {
-            List<Long> status = params.list('status').collect { String statusId -> Long.parseLong(statusId) }
+            List<Long> status = []
+            params.list('status').each { String statusId ->
+                status << Long.parseLong(statusId)
+            }
             base_qry += " and ie.status.id in (:status) "
             qry_params.status = status
             filterSet = true
@@ -1433,9 +1436,9 @@ class FilterService {
             filterSet = true
         }
 
-        if(!params.forCount)
+        if(!params.forCount && !params.bulkOperation)
             base_qry += " group by tipp, ic, ie.id "
-        else base_qry += " group by tipp, ic "
+        else if(!params.bulkOperation) base_qry += " group by tipp, ic "
 
         if ((params.sort != null) && (params.sort.length() > 0)) {
             if(params.sort == 'startDate')
@@ -1448,7 +1451,7 @@ class FilterService {
                 else base_qry += "order by ie.${params.sort} ${params.order} "
             }
         }
-        else if(!params.forCount){
+        else if(!params.forCount && !params.bulkOperation){
             base_qry += "order by ie.sortname"
         }
 
@@ -1726,18 +1729,22 @@ class FilterService {
             }
             else if(entitlementInstance == IssueEntitlement.class.name) {
                 List<String> columns
-                if(configMap.select == 'bulkInsertTitleGroup')
-                    columns = ['0', 'now()', 'ie_id', configMap.titleGroupInsert, 'now()']
-                else
-                    columns = ['ie_id', 'tipp_id', '(select pkg_name from package where pkg_id = tipp_pkg_fk) as tipp_pkg_name', '(select plat_name from platform where plat_id = tipp_plat_fk) as tipp_plat_name',
-                               '(select plat_title_namespace from platform where plat_id = tipp_plat_fk) as tipp_plat_namespace',
-                               "case tipp_title_type when 'Journal' then 'serial' when 'Book' then 'monograph' when 'Database' then 'database' else 'other' end as title_type",
-                               'ie_name as name', 'coalesce(ie_access_start_date, tipp_access_start_date) as accessStartDate', 'coalesce(ie_access_end_date, tipp_access_end_date) as accessEndDate',
-                               'tipp_publisher_name', "(select ${refdata_value_col} from refdata_value where rdv_id = ie_medium_rv_fk) as tipp_medium", 'tipp_host_platform_url', 'tipp_date_first_in_print',
-                               'tipp_date_first_online', 'tipp_gokb_id', '(select pkg_gokb_id from package where pkg_id = tipp_pkg_fk) as tipp_pkg_uuid', 'tipp_date_created', 'tipp_last_updated', 'tipp_first_author', 'tipp_first_editor', 'tipp_volume', 'tipp_edition_number', 'tipp_series_name', 'tipp_subject_reference',
-                               "(select ${refdata_value_col} from refdata_value where rdv_id = ie_status_rv_fk) as status",
-                               "(select ${refdata_value_col} from refdata_value where rdv_id = tipp_access_type_rv_fk) as accessType",
-                               "(select ${refdata_value_col} from refdata_value where rdv_id = tipp_open_access_rv_fk) as openAccess"]
+                switch(configMap.select) {
+                    case 'bulkInsertTitleGroup': columns = ['0', 'now()', 'ie_id', configMap.titleGroupInsert, 'now()']
+                        break
+                    case 'bulkInsertPriceItem': columns = ['ie_id']
+                        break
+                    default: columns = ['ie_id', 'tipp_id', '(select pkg_name from package where pkg_id = tipp_pkg_fk) as tipp_pkg_name', '(select plat_name from platform where plat_id = tipp_plat_fk) as tipp_plat_name',
+                                   '(select plat_title_namespace from platform where plat_id = tipp_plat_fk) as tipp_plat_namespace',
+                                   "case tipp_title_type when 'Journal' then 'serial' when 'Book' then 'monograph' when 'Database' then 'database' else 'other' end as title_type",
+                                   'ie_name as name', 'coalesce(ie_access_start_date, tipp_access_start_date) as accessStartDate', 'coalesce(ie_access_end_date, tipp_access_end_date) as accessEndDate',
+                                   'tipp_publisher_name', "(select ${refdata_value_col} from refdata_value where rdv_id = ie_medium_rv_fk) as tipp_medium", 'tipp_host_platform_url', 'tipp_date_first_in_print',
+                                   'tipp_date_first_online', 'tipp_gokb_id', '(select pkg_gokb_id from package where pkg_id = tipp_pkg_fk) as tipp_pkg_uuid', 'tipp_date_created', 'tipp_last_updated', 'tipp_first_author', 'tipp_first_editor', 'tipp_volume', 'tipp_edition_number', 'tipp_series_name', 'tipp_subject_reference',
+                                   "(select ${refdata_value_col} from refdata_value where rdv_id = ie_status_rv_fk) as status",
+                                   "(select ${refdata_value_col} from refdata_value where rdv_id = tipp_access_type_rv_fk) as accessType",
+                                   "(select ${refdata_value_col} from refdata_value where rdv_id = tipp_open_access_rv_fk) as openAccess"]
+                        break
+                }
                 query = "select ${columns.join(',')} from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id"
                 if(configMap.pkgfilter != null && !configMap.pkgfilter.isEmpty()) {
                     params.pkgId = Long.parseLong(configMap.pkgfilter)

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.titles.JournalInstance; de.laser.titles.BookInstance; de.laser.remote.ApiSource; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Package; de.laser.RefdataCategory; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.IssueEntitlementCoverage; de.laser.titles.JournalInstance; de.laser.titles.BookInstance; de.laser.remote.ApiSource; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Package; de.laser.RefdataCategory; de.laser.storage.RDConstants" %>
 <laser:htmlStart message="subscription.details.current_ent" serviceInjection="true"/>
 
 <laser:render template="breadcrumb" model="${[params: params]}"/>
@@ -223,7 +223,14 @@
             <g:set var="counter" value="${offset + 1}"/>
             <g:hiddenField name="sub" value="${subscription.id}"/>
             <g:each in="${considerInBatch}" var="key">
-                <g:hiddenField name="${key}" value="${params[key]}"/>
+                <g:if test="${params[key] instanceof String[] || params[key] instanceof List}">
+                    <g:each in="${params[key]}" var="paramVal">
+                        <g:hiddenField name="${key}" value="${paramVal}"/>
+                    </g:each>
+                </g:if>
+                <g:else>
+                    <g:hiddenField name="${key}" value="${params[key]}"/>
+                </g:else>
             </g:each>
 
             <laser:script file="${this.getGroovyPageFileName()}">
@@ -234,71 +241,151 @@
             <g:if test="${editable}">
                 <g:set var="selected_label" value="${message(code: 'default.selected.label')}"/>
 
-                <div class="ui segment la-filter la-js-show-hide" style="display: none">
-                    <div class="six fields  left floated">
-
-                        <div class="field la-field-noLabel">
-                            <input id="select-all" type="checkbox" name="chkall" onClick="JSPC.app.selectAll()"/>
-                        </div>
-
-
-                        <div class="field la-field-noLabel">
-                            <div class="ui selection dropdown la-clearable">
-                                <input type="hidden" id="bulkOperationSelect" name="bulkOperation">
-                                <i class="dropdown icon"></i>
-
-                                <div class="default text">${message(code: 'default.select.choose.label')}</div>
-
-                                <div class="menu">
-                                    <div class="item"
-                                         data-value="edit">${message(code: 'default.edit.label', args: [selected_label])}</div>
-
-                                    <div class="item"
-                                         data-value="remove">${message(code: 'default.remove.label', args: [selected_label])}</div>
-                                    <g:if test="${institution.getCustomerType() == 'ORG_CONSORTIUM'}">
-                                        <div class="item"
-                                             data-value="removeWithChildren">${message(code: 'subscription.details.remove.withChildren.label')}</div>
-                                    </g:if>
+                <div class="ui segment grid la-filter la-js-show-hide" style="display: none">
+                    <g:if test="${IssueEntitlementCoverage.executeQuery('select count(ic) from IssueEntitlementCoverage ic join ic.issueEntitlement ie where ie.subscription = :sub and ie.status != :removed', [sub: subscription, removed: RDStore.TIPP_STATUS_REMOVED])[0] > 0}">
+                        <div class="row">
+                            <div class="three wide column">
+                                <div class="field">
+                                    <label><g:message code="tipp.startDate.tooltip"/></label>
+                                    <ui:datepicker hideLabel="true"
+                                                   placeholder="${message(code: 'default.from')}"
+                                                   inputCssClass="la-input-small" id="bulk_start_date"
+                                                   name="bulk_start_date"/>
+                                </div>
+                            </div>
+                            <div class="three wide column">
+                                <div class="field">
+                                    <label><g:message code="tipp.startVolume.tooltip"/></label>
+                                    <input class="ui input" type="text" name="bulk_start_volume"/>
+                                </div>
+                            </div>
+                            <div class="three wide column">
+                                <div class="field">
+                                    <label><g:message code="tipp.startIssue.tooltip"/></label>
+                                    <input class="ui input" type="text" name="bulk_start_issue"/>
                                 </div>
                             </div>
                         </div>
-
-
-
-                        <div class="field">
-                            <label><g:message code="subscription.details.access_dates"/></label>
-                            <ui:datepicker hideLabel="true"
-                                           placeholder="${message(code: 'default.from')}"
-                                           inputCssClass="la-input-small" id="bulk_access_start_date"
-                                           name="bulk_access_start_date"/>
+                        <div class="row">
+                            <div class="three wide column">
+                                <div class="field">
+                                    <label><g:message code="tipp.endDate.tooltip"/></label>
+                                    <ui:datepicker hideLabel="true"
+                                                   placeholder="${message(code: 'default.to')}"
+                                                   inputCssClass="la-input-small" id="bulk_end_date"
+                                                   name="bulk_end_date"/>
+                                </div>
+                            </div>
+                            <div class="three wide column">
+                                <div class="field">
+                                    <label><g:message code="tipp.endVolume.tooltip"/></label>
+                                    <input class="ui input" type="text" name="bulk_end_volume"/>
+                                </div>
+                            </div>
+                            <div class="three wide column">
+                                <div class="field">
+                                    <label><g:message code="tipp.endIssue.tooltip"/></label>
+                                    <input class="ui input" type="text" name="bulk_end_issue"/>
+                                </div>
+                            </div>
+                            <div class="three wide column">
+                                <div class="field">
+                                    <label>Embargo</label>
+                                    <input class="ui input" type="text" name="bulk_embargo"/>
+                                </div>
+                            </div>
                         </div>
+                    </g:if>
+                    <div class="row">
+                        <div class="three wide column">
+                            <div class="field">
+                                <label><g:message code="subscription.details.access_dates"/></label>
+                                <ui:datepicker hideLabel="true"
+                                               placeholder="${message(code: 'default.from')}"
+                                               inputCssClass="la-input-small" id="bulk_access_start_date"
+                                               name="bulk_access_start_date"/>
+                            </div>
+                        </div>
+                        <div class="three wide column">
+                            <div class="field la-field-noLabel">
+                                <ui:datepicker hideLabel="true"
+                                               placeholder="${message(code: 'default.to')}"
+                                               inputCssClass="la-input-small" id="bulk_access_end_date"
+                                               name="bulk_access_end_date"/>
 
-                        <div class="field la-field-noLabel">
-                            <ui:datepicker hideLabel="true"
-                                           placeholder="${message(code: 'default.to')}"
-                                           inputCssClass="la-input-small" id="bulk_access_end_date"
-                                           name="bulk_access_end_date"/>
-
+                            </div>
+                        </div>
+                        <div class="three wide column">
+                            <div class="field">
+                                <label><g:message code="tipp.price.localPrice"/></label>
+                                <input class="ui input" type="text" name="bulk_local_price"/>
+                            </div>
+                        </div>
+                        <div class="three wide column">
+                            <div class="field la-field-noLabel">
+                                <ui:select class="ui dropdown" name="bulk_local_currency" title="${message(code: 'financials.addNew.currencyType')}"
+                                    optionKey="id" optionValue="value" from="${RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.CURRENCY)}"/>
+                            </div>
+                        </div>
+                        <div class="two wide column">
+                            <div class="field">
+                                <label><g:message code="issueEntitlement.myNotes"/></label>
+                                <input class="ui input" type="text" name="bulk_notes"/>
+                            </div>
                         </div>
                         <g:if test="${subscription.ieGroups.size() > 0}">
-                            <div class="field">
-                                <label><g:message code="subscription.details.ieGroups"/></label>
-                                 <select class="ui dropdown" name="titleGroupInsert" id="titleGroupInsert">
-                                     <option value="">${message(code: 'default.select.choose.label')}</option>
-                                    <g:each in="${subscription.ieGroups.sort { it.name }}" var="titleGroup">
-                                        <option value="${titleGroup.id}">${titleGroup.name}</option>
-                                    </g:each>
-                                </select>
+                            <div class="two wide column">
+                                <div class="field">
+                                    <label><g:message code="subscription.details.ieGroups"/></label>
+                                    <select class="ui dropdown" name="titleGroupInsert" id="titleGroupInsert">
+                                        <option value="">${message(code: 'default.select.choose.label')}</option>
+                                        <g:each in="${subscription.ieGroups.sort { it.name }}" var="titleGroup">
+                                            <option value="${titleGroup.id}">${titleGroup.name}</option>
+                                        </g:each>
+                                    </select>
+                                </div>
                             </div>
                         </g:if>
 
-                        <div class="field">
-                            <label><g:message code="default.button.apply_batch.label"/></label>
-                            <button data-position="top right"
-                                    data-content="${message(code: 'default.button.apply_batch.label')}"
-                                    type="submit" onClick="return JSPC.app.confirmSubmit()"
-                                    class="ui icon button la-popup-tooltip la-delay"><i class="check icon"></i>
-                            </button>
+
+                    </div>
+                    <div class="row">
+                        <div class="ten wide column">
+                            <div class="field la-field-noLabel">
+                                <input id="select-all" type="checkbox" name="chkall" onClick="JSPC.app.selectAll()"/>
+                            </div>
+                        </div>
+                        <div class="four wide column">
+                            <div class="field la-field-noLabel">
+                                <div class="ui selection dropdown la-clearable">
+                                    <input type="hidden" id="bulkOperationSelect" name="bulkOperation">
+                                    <i class="dropdown icon"></i>
+
+                                    <div class="default text">${message(code: 'default.select.choose.label')}</div>
+
+                                    <div class="menu">
+                                        <div class="item"
+                                             data-value="edit">${message(code: 'default.edit.label', args: [selected_label])}</div>
+
+                                        <div class="item"
+                                             data-value="remove">${message(code: 'default.remove.label', args: [selected_label])}</div>
+                                        <g:if test="${institution.getCustomerType() == 'ORG_CONSORTIUM'}">
+                                            <div class="item"
+                                                 data-value="removeWithChildren">${message(code: 'subscription.details.remove.withChildren.label')}</div>
+                                        </g:if>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="two wide column">
+                            <div class="field">
+                                <label><g:message code="default.button.apply_batch.label"/></label>
+                                <button data-position="top right"
+                                        data-content="${message(code: 'default.button.apply_batch.label')}"
+                                        type="submit" onClick="return JSPC.app.confirmSubmit()"
+                                        class="ui icon button la-popup-tooltip la-delay"><i class="check icon"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -349,7 +436,7 @@
                                             </div>
 
                                             <div class="two wide column">
-                                                <g:each in="${ie.priceItems}" var="priceItem" status="i">
+                                                <g:each in="${ie.tipp.priceItems}" var="priceItem" status="i">
                                                     <g:if test="${priceItem.listCurrency}">
                                                         <div class="ui list">
                                                             <div class="item">
@@ -540,7 +627,8 @@
 
                                                                     <div class="description">
                                                                         <ui:xEditable field="localPrice"
-                                                                                      owner="${priceItem}"/> <ui:xEditableRefData
+                                                                                      owner="${priceItem}"/>
+                                                                        <ui:xEditableRefData
                                                                             field="localCurrency"
                                                                             owner="${priceItem}"
                                                                             config="Currency"/>

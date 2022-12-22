@@ -7,11 +7,13 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-4718    20.12.2022  rc-3.0  3.0.1         Andreas Bug       fehlende Exportfelder in Lizenzexport nachgereicht
+4597    22.12.2022  dev     3.1         Andreas Feature     Massenbearbeitung von Beständen erweitert
 
-4709    20.12.2022  rc-3.0  3.0.1         Moe     Bug       Üertrag von Merkmalen bei der Lizenzverlängerung
+4718    20.12.2022  rc-3.0  3.0.1       Andreas Bug         fehlende Exportfelder in Lizenzexport nachgereicht
 
-4711    20.12.2022  rc-3.0  3.0.1         Moe     Bug       Titel hinzufügen: Reiter Ausgewählter Bestand zeigt bei nächstem Aufruf Zahl in Bubble, Buttonsan
+4709    20.12.2022  rc-3.0  3.0.1       Moe     Bug         Übertrag von Merkmalen bei der Lizenzverlängerung
+
+4711    20.12.2022  rc-3.0  3.0.1       Moe     Bug         Titel hinzufügen: Reiter Ausgewählter Bestand zeigt bei nächstem Aufruf Zahl in Bubble, Buttonsan
 
 4716    20.12.2022  rc-3.0  3.0.1       Andreas Bug         falsche Kopie der Mailadressen
 

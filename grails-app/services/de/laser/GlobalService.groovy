@@ -2,6 +2,7 @@ package de.laser
 
 import de.laser.storage.BeanStore
 import grails.gorm.transactions.Transactional
+import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.sql.Sql
 import org.hibernate.Session
 import org.hibernate.SessionFactory
@@ -26,6 +27,18 @@ class GlobalService {
         Session session = sessionFactory.currentSession
         session.flush()
         session.clear()
+    }
+
+    static boolean isset(GrailsParameterMap params, String key) {
+        if(params.get(key) instanceof String[])
+            params.list(key).size() > 0
+        else if(params.get(key) instanceof GrailsParameterMap) {
+            params.get(key).size() > 0
+        }
+        else if(params.get(key) instanceof Boolean) {
+            params.get(key) != null
+        }
+        else params.get(key)?.trim()?.length() > 0
     }
 
     /**
