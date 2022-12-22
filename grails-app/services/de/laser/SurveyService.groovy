@@ -1676,28 +1676,81 @@ class SurveyService {
         result
     }
 
+    boolean hasParticipantPerpetualAccessToTitle(List<Subscription> subscriptions, TitleInstancePackagePlatform tipp) {
+        if(subscriptions){
+            List<Long> subscriptionIDs = subscriptions.id
+            return hasParticipantPerpetualAccessToTitle2(subscriptionIDs, tipp)
+        }else {
+            return false
+        }
+    }
+
     /**
      * Called from views
      * Checks if the participant has perpetual access to the given title
-     * @param subscriptions the subscriptions of the participant
+     * @param subscriptionIDs the subscription ids of the participant
      * @param tipp the title whose access should be checked
      * @return true if there is a title with perpetual access, false otherwise
      */
-    boolean hasParticipantPerpetualAccessToTitle(List<Subscription> subscriptions, TitleInstancePackagePlatform tipp){
-
-            Integer countIes = IssueEntitlement.executeQuery('select count(ie.id) from IssueEntitlement ie join ie.tipp tipp where tipp.hostPlatformURL = :hostPlatformURL ' +
-                    'and tipp.status = :tippStatus and ie.subscription in (:subs) and ie.acceptStatus = :acceptStatus and ie.status = :tippStatus and ie.perpetualAccessBySub is not null ',
-                [hostPlatformURL: tipp.hostPlatformURL,
-                 tippStatus: RDStore.TIPP_STATUS_CURRENT,
-                 subs: subscriptions,
-                 acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED])[0]
+    boolean hasParticipantPerpetualAccessToTitle2(List<Long> subscriptionIDs, TitleInstancePackagePlatform tipp){
+        if(subscriptionIDs){
+            Integer countIes = IssueEntitlement.executeQuery('select count(ie.id) from IssueEntitlement ie join ie.tipp tipp where ' +
+                    'ie.perpetualAccessBySub is not null and ' +
+                    'tipp.hostPlatformURL = :hostPlatformURL and ' +
+                    'tipp.status != :tippStatus and ' +
+                    'ie.status != :tippStatus and ' +
+                    'ie.acceptStatus = :acceptStatus and ' +
+                    'ie.subscription.id in (:subscriptionIDs)',
+                    [hostPlatformURL: tipp.hostPlatformURL,
+                     tippStatus: RDStore.TIPP_STATUS_REMOVED,
+                     subscriptionIDs: subscriptionIDs,
+                     acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED])[0]
 
             if(countIes > 0){
                 return true
             }else {
                 return false
             }
+        }else {
+            return false
+        }
     }
+
+    /**
+     * Called from views
+     * Checks if the org has perpetual access to the given title
+     * @param org
+     * @param tipp the title whose access should be checked
+     * @return true if there is a title with perpetual access, false otherwise
+     */
+    boolean hasOrgPerpetualAccessToTitle(Org org, TitleInstancePackagePlatform tipp){
+        List<Long> subscriptionIDs = subscriptionsOfOrg(org)
+        return hasParticipantPerpetualAccessToTitle2(subscriptionIDs, tipp)
+    }
+
+    List<Long> subscriptionsOfOrg(Org org){
+        String base_qry = ''
+        Map qry_params = [:]
+        RefdataValue role_sub = RDStore.OR_SUBSCRIBER
+        RefdataValue role_subCons = RDStore.OR_SUBSCRIBER_CONS
+        RefdataValue role_sub_consortia = RDStore.OR_SUBSCRIPTION_CONSORTIA
+
+        if (accessService.checkPerm(org, 'ORG_CONSORTIUM')) {
+            //nur Parents
+            base_qry = " from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
+                    " AND s.instanceOf is null "
+            qry_params << ['roleType': role_sub_consortia, 'activeInst': org]
+
+        } else {
+            base_qry = " from Subscription as s where (exists ( select o from s.orgRelations as o where ( ( o.roleType = :roleType1 or o.roleType in (:roleType2) ) AND o.org = :activeInst ) ) AND (( not exists ( select o from s.orgRelations as o where o.roleType in (:scRoleType) ) ) or ( ( exists ( select o from s.orgRelations as o where o.roleType in (:scRoleType) ) ) AND ( s.instanceOf is not null) ) ) )"
+            qry_params << ['roleType1': role_sub, 'roleType2': [role_subCons], 'activeInst': org, 'scRoleType': [role_sub_consortia]]
+        }
+
+        List<Long> subscriptionIDs = Subscription.executeQuery( "select s.id " + base_qry, qry_params)
+
+        return subscriptionIDs
+    }
+
 
     /**
      * Called from views

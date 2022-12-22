@@ -211,8 +211,16 @@
 
         <tbody>
         <g:each in="${tipps}" var="tipp">
+
+            <g:set var="perpetualAccessToTitle"
+                   value="${surveyService.hasParticipantPerpetualAccessToTitle2(subscriptionIDs, tipp)}"/>
+
             <tr data-index="${tipp.gokbId}">
-                <td><input type="checkbox" name="bulkflag" class="bulkcheck" ${checkedCache ? checkedCache[tipp.gokbId] : ''}></td>
+                <td>
+                    <g:if test="${!perpetualAccessToTitle}">
+                        <input type="checkbox" name="bulkflag" class="bulkcheck" ${checkedCache ? checkedCache[tipp.gokbId] : ''}>
+                    </g:if>
+                </td>
             <td>${counter++}</td>
 
             <td>
@@ -291,20 +299,27 @@
                 </td>
             </g:if>
             <td>
-                <g:if test="${!blockSubmit}">
-                    <g:link class="ui icon button blue la-modern-button la-popup-tooltip la-delay" action="processAddEntitlements"
-                            params="${[id: subscription.id, singleTitle: tipp.gokbId, uploadPriceInfo: uploadPriceInfo, preselectCoverageDates: preselectCoverageDates]}"
-                            data-content="${message(code: 'subscription.details.addEntitlements.add_now')}">
-                        <i class="plus icon"></i>
-                    </g:link>
-                </g:if>
-                <g:else>
-                    <div class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.details.addEntitlements.thread.running')}">
-                        <g:link class="ui icon disabled button la-popup-tooltip la-delay" action="processAddEntitlements"
-                                params="${[id: subscription.id, singleTitle: tipp.gokbId, uploadPriceInfo: uploadPriceInfo, preselectCoverageDates: preselectCoverageDates]}">
+                <g:if test="${!perpetualAccessToTitle}">
+                    <g:if test="${!blockSubmit}">
+                        <g:link class="ui icon button blue la-modern-button la-popup-tooltip la-delay" action="processAddEntitlements"
+                                params="${[id: subscription.id, singleTitle: tipp.gokbId, uploadPriceInfo: uploadPriceInfo, preselectCoverageDates: preselectCoverageDates]}"
+                                data-content="${message(code: 'subscription.details.addEntitlements.add_now')}">
                             <i class="plus icon"></i>
                         </g:link>
-                    </div>
+                    </g:if>
+                    <g:else>
+                        <div class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.details.addEntitlements.thread.running')}">
+                            <g:link class="ui icon disabled button la-popup-tooltip la-delay" action="processAddEntitlements"
+                                    params="${[id: subscription.id, singleTitle: tipp.gokbId, uploadPriceInfo: uploadPriceInfo, preselectCoverageDates: preselectCoverageDates]}">
+                                <i class="plus icon"></i>
+                            </g:link>
+                        </div>
+                    </g:else>
+                </g:if>
+                <g:else>
+                        <div class="la-inline-flexbox la-popup-tooltip la-delay" data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')}" data-position="left center" data-variation="tiny">
+                            <i class="icon redo alternate red"></i>
+                        </div>
                 </g:else>
             </td>
             </tr>
