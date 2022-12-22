@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4717    22.12.2022  rc-3.0  3.0.1       David   Bug         500er in Meine Lizenzverwaltung
+
 4597    22.12.2022  dev     3.1         Andreas Feature     Massenbearbeitung von Beständen erweitert
 
 4718    20.12.2022  rc-3.0  3.0.1       Andreas Bug         fehlende Exportfelder in Lizenzexport nachgereicht
