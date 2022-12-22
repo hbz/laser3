@@ -7,7 +7,15 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4223    22.12.2022  rc-3.0  3.0.1       Moe     Bug         Bestand aus Vorgängerlizenz bei Titelauswahl in lokalen Lizenzen blocken
+
+4538    22.12.2022  rc-3.0  3.0.1       Moe     Bug         Bestandstitel lizenz- und paketübergreifend blocken
+
 4717    22.12.2022  rc-3.0  3.0.1       David   Bug         500er in Meine Lizenzverwaltung
+
+4719    21.12.2022  rc-3.0  3.0.1       Moe     Bug         Meine Umfragen pro TN: Export funktioniert nicht
+
+4686    21.12.2022  rc-3.0  3.0.1       Moe     Bug         Bestehende Titelumfrage lässt sich nicht öffnen
 
 4415    19.12.2022  rc-3.0  3.0         Ingrid  Feature     Bestands-Detailansicht verbessern
 
