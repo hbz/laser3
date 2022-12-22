@@ -12,9 +12,8 @@
         </div>
     </g:if>
 
-    <div class="ui segment">
     <g:form action="${actionName}" controller="${controllerName}" params="[tab: 'documents']" method="post"
-            class="ui form newDocument" enctype="multipart/form-data">
+            class="ui segment form newDocument" enctype="multipart/form-data">
         <g:hiddenField id="pspm_id_${params.id}" name="id" value="${params.id}"/>
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
 
@@ -63,9 +62,15 @@
             </div>
         </g:if>
 
+        <input type="hidden" id="selectedSubscriptionIds" name="selectedSubscriptionIds" value="" />
+
+%{--        <div class="ui error message"></div>--}%
+
         <button class="ui button" ${!editable ? 'disabled="disabled"' : ''} type="submit" name="processOption"
                 value="newDoc">${message(code: 'default.button.create.label')}</button>
+    </g:form>
 
+    <div class="ui segment">
         <h3 class="ui header">
             <g:if test="${controllerName == "subscription"}">
                 ${message(code: 'subscriptionsManagement.subscriber')} <ui:totalNumber
@@ -156,7 +161,6 @@
             </g:each>
             </tbody>
         </table>
-    </g:form>
     </div>
 </g:if>
 <g:else>
@@ -179,7 +183,21 @@
         } else {
             $("tr[class!=disabled] input[name=selectedSubs]").prop('checked', false)
         }
+        JSPC.app.setSelectedSubscriptionIds();
     });
+
+    $("tr[class!=disabled] input[name=selectedSubs]").on ('change', function () {
+        JSPC.app.setSelectedSubscriptionIds();
+    });
+
+    JSPC.app.setSelectedSubscriptionIds = function() {
+        $('#selectedSubscriptionIds').val(
+            $("tr[class!=disabled] input[name=selectedSubs]:checked").map (function () {
+                return this.value;
+            }).get()
+        );
+        // $('.newDocument').form('validate form');
+    };
 
      $('.action .icon.button').click(function () {
         $(this).parent('.action').find('input:file').click();
@@ -190,38 +208,38 @@
         $('input:text', $(e.target).parent()).val(name);
     });
 
-    $('.newDocument').form({
-        on: 'blur',
-        inline: true,
-        fields: {
-            upload_title: {
-                identifier: 'upload_title',
-                rules: [
-                    {
-                        type: 'empty',
-                        prompt: '<g:message code="validation.needsToBeFilledOut"/>'
-                    }
-                ]
-            },
-            upload_file: {
-                identifier: 'upload_file',
-                rules: [
-                    {
-                        type: 'empty',
-                        prompt: '<g:message code="validation.needsToBeFilledOut"/>'
-                    }
-                ]
-            },
-            noSubscription: {
-                identifier: 'selectedSubs',
-                rules: [
-                    {
-                        type: 'checked',
-                        prompt: '<g:message code="subscriptionsManagement.noSelectedSubscriptions.table"/>'
-                    }
-                ]
-            }
-        }
-    });
+%{--    $('.newDocument').form({--}%
+%{--        on: 'blur',--}%
+%{--        inline: false,--}%
+%{--        fields: {--}%
+%{--            upload_title: {--}%
+%{--                identifier: 'upload_title',--}%
+%{--                rules: [--}%
+%{--                    {--}%
+%{--                        type: 'empty',--}%
+%{--                        prompt: '${message(code: 'template.addDocument.name')} ${message(code: "validation.needsToBeFilledOut")}'--}%
+%{--                    }--}%
+%{--                ]--}%
+%{--            },--}%
+%{--            upload_file: {--}%
+%{--                identifier: 'upload_file',--}%
+%{--                rules: [--}%
+%{--                    {--}%
+%{--                        type: 'empty',--}%
+%{--                        prompt: '${message(code: 'template.addDocument.file')} ${message(code: "validation.needsToBeFilledOut")}'--}%
+%{--                    }--}%
+%{--                ]--}%
+%{--            },--}%
+%{--            selectedSubscriptionIds: {--}%
+%{--                identifier: 'selectedSubscriptionIds',--}%
+%{--                rules: [--}%
+%{--                    {--}%
+%{--                        type: 'empty',--}%
+%{--                        prompt: '<g:message code="subscriptionsManagement.noSelectedSubscriptions.table"/>'--}%
+%{--                    }--}%
+%{--                ]--}%
+%{--            }--}%
+%{--        }--}%
+%{--    });--}%
 
 </laser:script>
