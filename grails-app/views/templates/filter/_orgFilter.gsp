@@ -64,12 +64,13 @@
                     <label for="identifierNamespace">
                         <g:message code="org.institution.search.identifier.namespace"/>
                     </label>
-                    <g:select class="ui dropdown multiple select search" id="identifierNamespace" name="identifierNamespace"
-                              from="${IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS, [sort: 'name_de'])}"
-                              value="${params.identifierNamespace}"
-                              optionKey="id"
-                              optionValue="${{ it.getI10n('name') ?: it.ns }}"
-                              noSelection="${['':message(code:'default.select.choose.label')]}"/>
+                    <select id="identifierNamespace" name="identifierNamespace" multiple="" class="ui selection fluid dropdown">
+                        <option value="">${message(code:'default.select.choose.label')}</option>
+                        <g:set var="identifierNamespaces" value="${IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS, [sort: 'name_de'])}" scope="request"/>
+                        <g:each in="${identifierNamespaces}" var="idns">
+                            <option <%=(params.list('identifierNamespace').contains(idns.id.toString())) ? 'selected="selected"' : '' %> value="${idns.id}">${idns.getI10n("name") ?: idns.ns}</option>
+                        </g:each>
+                    </select>
                 </div>
             </g:if>
 
@@ -78,12 +79,12 @@
                     <label for="customerIDNamespace">
                         <g:message code="org.institution.search.customer.identifier.namespace"/>
                     </label>
-                    <g:select class="ui dropdown multiple select search" id="customerIDNamespace" name="customerIDNamespace"
-                              from="${[[id: 'value', value: message(code: 'org.customerIdentifier')], [id: 'requestorKey', value: message(code: 'org.requestorKey')]]}"
-                              optionKey="id"
-                              optionValue="value"
-                              value="${params.customerIDNamespace}"
-                              noSelection="${['':message(code:'default.select.choose.label')]}"/>
+                    <select id="customerIDNamespace" name="customerIDNamespace" multiple="" class="ui selection fluid dropdown">
+                        <option value="">${message(code:'default.select.choose.label')}</option>
+                        <g:each in="${[[id: 'value', value: message(code: 'org.customerIdentifier')], [id: 'requestorKey', value: message(code: 'org.requestorKey')]]}" var="cust">
+                            <option <%=(params.list('customerIDNamespace').contains(cust.id)) ? 'selected="selected"' : '' %> value="${cust.id}">${cust.value}</option>
+                        </g:each>
+                    </select>
                 </div>
             </g:if>
 

@@ -152,3 +152,8 @@
   }
 }
 
+a i.circular.la-gokb:hover {
+  color: @white;
+  text-decoration: none;
+  background-color: @blue;
+}
