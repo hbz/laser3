@@ -12,13 +12,12 @@
         </div>
     </g:if>
 
-    <div class="ui segment">
+    <h2 class="ui header">${message(code: 'subscriptionsManagement.document.info.newDocument')}</h2>
+
     <g:form action="${actionName}" controller="${controllerName}" params="[tab: 'documents']" method="post"
-            class="ui form newDocument" enctype="multipart/form-data">
+            class="ui segment form newDocument" enctype="multipart/form-data">
         <g:hiddenField id="pspm_id_${params.id}" name="id" value="${params.id}"/>
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
-
-        <h4 class="ui header">${message(code: 'subscriptionsManagement.document.info.newDocument')}</h4>
 
         <div class="field required">
             <label for="upload_title">${message(code: 'template.addDocument.name')}:</label>
@@ -27,11 +26,10 @@
         </div>
 
         <div class="field required">
-            <label for="upload_file">${message(code: 'template.addDocument.file')}:</label>
+            <label for="upload_file_placeholder">${message(code: 'template.addDocument.file')}:</label>
 
             <div class="ui fluid action input">
-                <input type="text" readonly="readonly"
-                       placeholder="${message(code: 'template.addDocument.selectFile')}">
+                <input type="text" id="upload_file_placeholder" readonly="readonly" placeholder="${message(code: 'template.addDocument.selectFile')}">
                 <input type="file" id="upload_file" name="upload_file" style="display: none;">
 
                 <div class="ui icon button" style="padding-left:30px; padding-right:30px">
@@ -63,9 +61,15 @@
             </div>
         </g:if>
 
+        <input type="hidden" id="selectedSubscriptionIds" name="selectedSubscriptionIds" value="" />
+
+        <div class="ui error message"></div>
+
         <button class="ui button" ${!editable ? 'disabled="disabled"' : ''} type="submit" name="processOption"
                 value="newDoc">${message(code: 'default.button.create.label')}</button>
+    </g:form>
 
+    <div class="ui segment">
         <h3 class="ui header">
             <g:if test="${controllerName == "subscription"}">
                 ${message(code: 'subscriptionsManagement.subscriber')} <ui:totalNumber
@@ -156,7 +160,6 @@
             </g:each>
             </tbody>
         </table>
-    </g:form>
     </div>
 </g:if>
 <g:else>
@@ -179,6 +182,24 @@
         } else {
             $("tr[class!=disabled] input[name=selectedSubs]").prop('checked', false)
         }
+        JSPC.app.setSelectedSubscriptionIds();
+    });
+
+    $("tr[class!=disabled] input[name=selectedSubs]").on ('change', function () {
+        JSPC.app.setSelectedSubscriptionIds();
+    });
+
+    JSPC.app.setSelectedSubscriptionIds = function() {
+        $('#selectedSubscriptionIds').val(
+            $("tr[class!=disabled] input[name=selectedSubs]:checked").map (function () {
+                return this.value;
+            }).get()
+        );
+        $('.newDocument').form('validate form');
+    };
+
+    $('#upload_file').change( function () {
+        setTimeout (function () { $('.newDocument').form('validate form'); }, 100); // fixed event handling
     });
 
      $('.action .icon.button').click(function () {
@@ -192,31 +213,31 @@
 
     $('.newDocument').form({
         on: 'blur',
-        inline: true,
+        inline: false,
         fields: {
             upload_title: {
                 identifier: 'upload_title',
                 rules: [
                     {
                         type: 'empty',
-                        prompt: '<g:message code="validation.needsToBeFilledOut"/>'
+                        prompt: '${message(code: 'template.addDocument.name')} ${message(code: "validation.needsToBeFilledOut")}'
                     }
                 ]
             },
-            upload_file: {
-                identifier: 'upload_file',
+            upload_file_placeholder: {
+                identifier: 'upload_file_placeholder',
                 rules: [
                     {
                         type: 'empty',
-                        prompt: '<g:message code="validation.needsToBeFilledOut"/>'
+                        prompt: '${message(code: 'template.addDocument.file')} ${message(code: "validation.needsToBeFilledOut")}'
                     }
                 ]
             },
-            noSubscription: {
-                identifier: 'selectedSubs',
+            selectedSubscriptionIds: {
+                identifier: 'selectedSubscriptionIds',
                 rules: [
                     {
-                        type: 'checked',
+                        type: 'empty',
                         prompt: '<g:message code="subscriptionsManagement.noSelectedSubscriptions.table"/>'
                     }
                 ]

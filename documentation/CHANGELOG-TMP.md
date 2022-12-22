@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4223    22.12.2022  rc-3.0  3.0.1       Moe     Bug         Bestand aus Vorgängerlizenz bei Titelauswahl in lokalen Lizenzen blocken
+
+4538    22.12.2022  rc-3.0  3.0.1       Moe     Bug         Bestandstitel lizenz- und paketübergreifend blocken
+
+4717    22.12.2022  rc-3.0  3.0.1       David   Bug         500er in Meine Lizenzverwaltung
+
 4719    21.12.2022  rc-3.0  3.0.1       Moe     Bug         Meine Umfragen pro TN: Export funktioniert nicht
 
 4686    21.12.2022  rc-3.0  3.0.1       Moe     Bug         Bestehende Titelumfrage lässt sich nicht öffnen
@@ -19,17 +25,17 @@
 
 4499    19.12.2022  rc-3.0  3.0         Ingrid  Feature     Header überarbeiten
 
-4472    19.12.2022  rc-3.0  3.0         Ingrid  Feature <    Laser auf 1440 pixel verbreitern
+4472    19.12.2022  rc-3.0  3.0         Ingrid  Feature     Laser auf 1440 pixel verbreitern
 
 4291    19.12.2022  rc-3.0  3.0         Ingrid  Feature     Fomantic anpassen
 
 4672    19.12.2022  rc-3.0  3.0         Ingrid  Feature     Paket-Detail-Ansicht: Überarbeitung
 
-4718    20.12.2022  rc-3.0  3.0.1         Andreas Bug       fehlende Exportfelder in Lizenzexport nachgereicht
+4718    20.12.2022  rc-3.0  3.0.1       Andreas Bug         fehlende Exportfelder in Lizenzexport nachgereicht
 
-4709    20.12.2022  rc-3.0  3.0.1         Moe     Bug       Üertrag von Merkmalen bei der Lizenzverlängerung
+4709    20.12.2022  rc-3.0  3.0.1       Moe     Bug         Üertrag von Merkmalen bei der Lizenzverlängerung
 
-4711    20.12.2022  rc-3.0  3.0.1         Moe     Bug       Titel hinzufügen: Reiter Ausgewählter Bestand zeigt bei nächstem Aufruf Zahl in Bubble, Buttonsan
+4711    20.12.2022  rc-3.0  3.0.1       Moe     Bug         Titel hinzufügen: Reiter Ausgewählter Bestand zeigt bei nächstem Aufruf Zahl in Bubble, Buttonsan
 
 4716    20.12.2022  rc-3.0  3.0.1       Andreas Bug         falsche Kopie der Mailadressen
 
