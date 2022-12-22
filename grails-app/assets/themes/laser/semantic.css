@@ -6940,6 +6940,12 @@ i.icon.la-list-icon:before {
 .ui.inverted.button:hover {
   color: #1B1C1D;
 }
+
+a i.circular.la-gokb:hover {
+  color: #FFFFFF;
+  text-decoration: none;
+  background-color: #004678;
+}
 /*!
  * # Fomantic-UI 2.8.8 - Container
  * http://github.com/fomantic/Fomantic-UI/
@@ -44244,6 +44250,17 @@ a .ui.circular.label:focus {
   display: block;
   letter-spacing: 0.04em;
 }
+
+.ui.image.label .detail.js-copyTopic {
+  background: #004678;
+  color: #FFFFFF;
+  opacity: 1;
+}
+
+.ui.image.label .detail.js-copyTopic:hover {
+  background: #FFFFFF;
+  color: #004678;
+}
 /*!
  * # Fomantic-UI 2.8.8 - List
  * http://github.com/fomantic/Fomantic-UI/
@@ -47652,7 +47669,7 @@ dd {
   flex-direction: column;
   position: relative;
   margin: 1rem 0;
-  border: none;
+  border: 1px solid rgba(34, 36, 38, 0.15);
   -webkit-box-shadow: none;
   box-shadow: none;
   border-radius: 0.28571429rem;
@@ -47677,7 +47694,7 @@ dd {
   -webkit-box-shadow: none;
   box-shadow: none;
   border: none;
-  border-top: none;
+  border-top: 1px solid rgba(34, 36, 38, 0.15);
 }
 
 .ui.segments:not(.horizontal) > .segment:first-child {
@@ -47710,7 +47727,7 @@ dd {
 /* Nested Group */
 
 .ui.segments > .ui.segments {
-  border-top: none;
+  border-top: 1px solid rgba(34, 36, 38, 0.15);
   margin: 1rem 1rem;
 }
 
@@ -47755,7 +47772,7 @@ dd {
   border: none;
   -webkit-box-shadow: none;
   box-shadow: none;
-  border-top: none;
+  border-top: 1px solid rgba(34, 36, 38, 0.15);
 }
 
 /* Horizontal Segment */
@@ -48326,11 +48343,18 @@ aside.la-metabox + .la-metabox-spacer {
 }
 
 .ui.segments.la-accordion-segments {
+  border-top: none;
+  border-left: none;
+  border-right: none;
   border-bottom: 1px solid #d3dae3;
 }
 
 .ui.segments.la-accordion-segments:last-child {
   border-bottom: none;
+}
+
+.ui.segments.la-accordion-segments > .segment {
+  border-top: none;
 }
 
 .ui.segments.la-accordion-segments .ui.segment:nth-child(2).content {
@@ -48356,6 +48380,11 @@ aside.la-metabox + .la-metabox-spacer {
 
 .ui.la-segment-with-icon:last-child {
   margin-bottom: 0;
+}
+
+.ui.segment.la-timeLineSegment-contact {
+  -webkit-box-shadow: none;
+  box-shadow: none;
 }
 /*!
  * # Fomantic-UI 2.8.8 - Step
