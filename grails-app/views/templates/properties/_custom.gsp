@@ -304,7 +304,7 @@
                                   class="ui properties form"
                                   data-update="${custom_props_div}"
                                   data-done="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${custom_props_div}')">
-                        <input type="hidden" name="propIdent" data-desc="${prop_desc}" class="customPropSelect"/>
+                        <select class="customPropSelect" name="propIdent" data-desc="${prop_desc}"></select>
                         <input type="hidden" name="ownerId" value="${ownobj.id}"/>
                         <input type="hidden" name="editable" value="${editable}"/>
                         <input type="hidden" name="showConsortiaFunctions" value="${showConsortiaFunctions}"/>

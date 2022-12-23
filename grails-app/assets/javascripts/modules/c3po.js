@@ -36,19 +36,25 @@ c3po = {
 
         $("#cust_prop_refdatacatsearch").select2({
             placeholder: "Kategorie angeben ..",
+            language: JSPC.vars.locale,
             minimumInputLength: 1,
-            ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
+            allowClear: true,
+            // formatInputTooShort: function () { return JSPC.dict.get('select2.minChars.note', JSPC.currLanguage); },
+            // formatNoMatches:     function () { return JSPC.dict.get('select2.noMatchesFound', JSPC.currLanguage); },
+            // formatSearching:     function () { return JSPC.dict.get('select2.formatSearching', JSPC.currLanguage); },
+
+            ajax: {
                 url: ajaxurl,
                 dataType: 'json',
-                data: function (term, page) {
+                data: function (p) {
                     return {
-                        q: term, // search term
+                        q: p.term || '', // search term
                         page_limit: 10,
                         baseClass: 'de.laser.RefdataCategory'
                     };
                 },
-                results: function (data, page) {
-                    return {results: data.values};
+                processResults: function (data) {
+                    return { results: data.values };
                 }
             }
         });
@@ -68,18 +74,19 @@ c3po = {
 
         $(cssId + " .customPropSelect").select2({
             placeholder: JSPC.dict.get('property.select.placeholder', JSPC.currLanguage),
+            language: JSPC.vars.locale,
             minimumInputLength: 0,
             width: 300,
-            formatSearching: function ()           { return JSPC.dict.get('property.select.searching', JSPC.currLanguage); },
-            formatLoadMore:  function (pageNumber) { return JSPC.dict.get('property.select.loadMore', JSPC.currLanguage); },
-            formatNoMatches: function ()           { return JSPC.dict.get('property.select.noMatches', JSPC.currLanguage); },
+            // formatSearching: function ()           { return JSPC.dict.get('property.select.searching', JSPC.currLanguage); },
+            // formatLoadMore:  function (pageNumber) { return JSPC.dict.get('property.select.loadMore', JSPC.currLanguage); },
+            // formatNoMatches: function ()           { return JSPC.dict.get('property.select.noMatches', JSPC.currLanguage); },
 
-            ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
+            ajax: {
                 url: ajaxurl,
                 dataType: 'json',
-                data: function (term, page) {
+                data: function (p) {
                     return {
-                        q: term, // search term
+                        q: p.term || '', // search term
                         desc: desc,
                         oid: oid,
                         page_limit: 10,
@@ -87,8 +94,8 @@ c3po = {
                         tenant: tenantId
                     };
                 },
-                results: function (data, page) {
-                    return {results: data.values};
+                processResults: function (data) {
+                    return { results: data.values };
                 }
             },
             createSearchChoice: function (term, data) {

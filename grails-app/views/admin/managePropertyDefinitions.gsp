@@ -22,6 +22,11 @@
 
         <ui:h1HeaderWithIcon message="menu.admin.managePropertyDefinitions" type="admin"/>
 
+        <br />
+        <button class="ui button" value="" data-href="#addPropertyDefinitionModal" data-ui="modal" >${message(code:'propertyDefinition.create_new.label')}</button>
+        <br />
+        <br />
+
 		<ui:messages data="${flash}" />
 
 		<div class="ui styled fluid accordion">
@@ -227,7 +232,7 @@
 
                     <div class="field six wide hide" id="cust_prop_ref_data_name">
                         <label class="property-label"><g:message code="refdataCategory.label" /></label>
-                        <input type="hidden" name="refdatacategory" id="cust_prop_refdatacatsearch"/>
+                        <select id="cust_prop_refdatacatsearch" name="refdatacategory"></select>
                     </div>
                 </div>
 
@@ -259,34 +264,7 @@
 				}
 			});
 
-			$("#cust_prop_refdatacatsearch").select2({
-				placeholder: "Kategorie eintippen...",
-                minimumInputLength: 1,
-
-                formatInputTooShort: function () {
-                    return "${message(code:'select2.minChars.note')}";
-                },
-                formatNoMatches: function() {
-                    return "${message(code:'select2.noMatchesFound')}";
-                },
-                formatSearching:  function() {
-                    return "${message(code:'select2.formatSearching')}";
-                },
-				ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
-					url: '${createLink(controller:'ajaxJson', action:'lookup')}',
-					dataType: 'json',
-					data: function (term, page) {
-						return {
-							q: term, // search term
-							page_limit: 10,
-							baseClass:'${RefdataCategory.class.name}'
-						};
-					},
-					results: function (data, page) {
-						return {results: data.values};
-					}
-				}
-			});
+            c3po.refdataCatSearch('${createLink(controller:'ajaxJson', action:'lookup')}', '#cust_prop_refdatacatsearch');
 
 		</laser:script>
 

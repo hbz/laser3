@@ -135,7 +135,7 @@
                                       data-done="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${propertyWrapper}', ${tenant?.id})">
                         <!-- The actionName? and controllerName? need for PDF generation! In PDF generation actionName and controllerName not set! -->
                         <g:if test="${!(actionName?.contains('survey') || controllerName?.contains('survey'))}">
-                            <input type="hidden" name="propIdent"  data-desc="${prop_desc}" class="customPropSelect"/>
+                            <select class="customPropSelect" name="propIdent" data-desc="${prop_desc}"></select>
                             <input type="hidden" name="ownerId"    value="${ownobj?.id}"/>
                             <input type="hidden" name="tenantId"   value="${tenant?.id}"/>
                             <input type="hidden" name="editable"   value="${editable}"/>

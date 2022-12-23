@@ -104,9 +104,19 @@
                                         <input type="hidden" name="__context" value="${user.class.name}:${user.id}"/>
                                         <input type="hidden" name="__newObjectClass" value="${UserRole.class.name}"/>
                                         <input type="hidden" name="__recip" value="user"/>
-                                        <div class="ui field">
-                                            <input type="hidden" name="role" id="userRoleSelect"/>
-                                            <input type="submit" class="ui button" value="${message(code:'user.role.add')}"/>
+                                        <div class="ui fields">
+                                            <div class="field">
+                                                <g:select from="${Role.findAllByRoleType('global')}"
+                                                          class="ui dropdown fluid"
+                                                          name="role"
+                                                          optionKey="${{ it.class.name + ':' + it.id }}"
+                                                          optionValue="${{ it.getI10n('authority') }}"
+                                                          noSelection="${['': message(code: 'default.select.choose.label')]}"
+                                                />
+                                            </div>
+                                            <div class="field">
+                                                <input type="submit" class="ui button" value="${message(code:'user.role.add')}"/>
+                                            </div>
                                         </div>
                                     </g:form>
                                 </td>
@@ -114,31 +124,6 @@
                             </tfoot>
                         </g:if>
                     </table>
-
-                    <laser:script file="${this.getGroovyPageFileName()}">
-                        $("#userRoleSelect").select2({
-                          placeholder: "${message(code:'user.role.search.ph')}",
-                                minimumInputLength: 0,
-                                formatInputTooShort: function () {
-                                    return "${message(code:'select2.minChars.note')}";
-                                },
-                                ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
-                                  url: "<g:createLink controller='ajaxJson' action='lookup'/>",
-                                  dataType: 'json',
-                                  data: function (term, page) {
-                                      return {
-                                          q: term, // search term
-                                          page_limit: 10,
-                                          baseClass: '${Role.class.name}'
-                                      };
-                                  },
-                                  results: function (data, page) {
-                                    return {results: data.values};
-                                  }
-                                }
-                              });
-                    </laser:script>
-
                 </div>
             </div><!-- .column -->
         </sec:ifAnyGranted>

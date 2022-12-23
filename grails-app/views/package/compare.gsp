@@ -43,7 +43,7 @@
 						<br />
 						${message(code:'package.compare.select.first')}
 						<br />
-                        <input type="hidden" name="pkgA" id="packageSelectA" value="${pkgA}"/>
+						<select name="pkgA" id="packageSelectA" style="width:90%"></select>%{-- todo: value="${pkgA}" --}%
 					</td>
 					<td> 
 					    ${message(code:'package.compare.restrict.after')}
@@ -53,7 +53,7 @@
 						<br />
 						${message(code:'package.compare.select.second')}
 						<br />
-                        <input type="hidden" name="pkgB" id="packageSelectB" value="${pkgB}"/>
+						<select name="pkgB" id="packageSelectB" style="width:90%"></select>%{-- todo: value="${pkgB}" --}%
 					</td>
 				</tr>
 				<tr>
@@ -258,8 +258,8 @@
       var pkgB = {id:'${pkgInsts?.get(1)?.id}',text:"${pkgInsts?.get(1)?.name}"};
 
       $("#packageSelect"+filter).select2({
-      	width: "90%",
         placeholder: "${message(code:'package.compare.search.ph')}",
+        language: JSPC.vars.locale,
         minimumInputLength: 1,
         formatInputTooShort: function () {
             return "${message(code:'select2.minChars.note')}";
@@ -267,21 +267,20 @@
         ajax: { 
             url: '<g:createLink controller='ajaxJson' action='lookup'/>',
             dataType: 'json',
-            data: function (term, page) {
+            data: function (p) {
                 return {
                 	hideIdent: 'true',
                 	hasDate: 'true',
                 	inclPkgStartDate: 'true',
                 	startDate: $("#start"+filter).val(),
                 	endDate: $("#end"+filter).val(),
-                    q: term , // search term
+                    q: p.term || '', // search term
                     page_limit: 10,
                     baseClass:'${Package.class.name}'
                 };
             },
-            
-            results: function (data, page) {
-                return {results: data.values};
+            processResults: function (data) {
+                return { results: data.values };
             }
         },
 	    allowClear: true,
