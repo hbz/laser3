@@ -1695,4 +1695,3 @@
   return purify;
 
 }));
-//# sourceMappingURL=purify.js.map

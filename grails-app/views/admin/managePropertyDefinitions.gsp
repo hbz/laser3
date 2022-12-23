@@ -22,6 +22,11 @@
 
         <ui:h1HeaderWithIcon message="menu.admin.managePropertyDefinitions" type="admin"/>
 
+        <br />
+        <button class="ui button" value="" data-href="#addPropertyDefinitionModal" data-ui="modal" >${message(code:'propertyDefinition.create_new.label')}</button>
+        <br />
+        <br />
+
 		<ui:messages data="${flash}" />
 
 		<div class="ui styled fluid accordion">
@@ -227,7 +232,7 @@
 
                     <div class="field six wide hide" id="cust_prop_ref_data_name">
                         <label class="property-label"><g:message code="refdataCategory.label" /></label>
-                        <input type="hidden" name="refdatacategory" id="cust_prop_refdatacatsearch"/>
+                        <select id="cust_prop_refdatacatsearch" name="refdatacategory"></select>
                     </div>
                 </div>
 
@@ -262,7 +267,6 @@
 			$("#cust_prop_refdatacatsearch").select2({
 				placeholder: "Kategorie eintippen...",
                 minimumInputLength: 1,
-
                 formatInputTooShort: function () {
                     return "${message(code:'select2.minChars.note')}";
                 },
@@ -272,22 +276,22 @@
                 formatSearching:  function() {
                     return "${message(code:'select2.formatSearching')}";
                 },
-				ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
+                allowClear: true,
+				ajax: {
 					url: '${createLink(controller:'ajaxJson', action:'lookup')}',
 					dataType: 'json',
-					data: function (term, page) {
+					data: function (p) {
 						return {
-							q: term, // search term
+							q:  p.term || '', // search term
 							page_limit: 10,
 							baseClass:'${RefdataCategory.class.name}'
 						};
 					},
-					results: function (data, page) {
-						return {results: data.values};
+					processResults: function (data) {
+						return { results: data.values };
 					}
 				}
 			});
-
 		</laser:script>
 
 <laser:htmlEnd />

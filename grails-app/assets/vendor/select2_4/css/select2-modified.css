@@ -8,7 +8,7 @@
     box-sizing: border-box;
     cursor: pointer;
     display: block;
-    height: 28px;
+    height: 36px;
     user-select: none;
     -webkit-user-select: none; }
     .select2-container .select2-selection--single .select2-selection__rendered {
@@ -133,7 +133,7 @@
   border-radius: 4px; }
   .select2-container--default .select2-selection--single .select2-selection__rendered {
     color: #444;
-    line-height: 28px; }
+    line-height: 36px; }
   .select2-container--default .select2-selection--single .select2-selection__clear {
     cursor: pointer;
     float: right;
@@ -287,7 +287,7 @@
             padding-left: 6em; }
 
 .select2-container--default .select2-results__option--highlighted[aria-selected] {
-  background-color: #5897fb;
+  background-color: #3875d7;
   color: white; }
 
 .select2-container--default .select2-results__group {

@@ -105,7 +105,7 @@
                                         <input type="hidden" name="__newObjectClass" value="${UserRole.class.name}"/>
                                         <input type="hidden" name="__recip" value="user"/>
                                         <div class="ui field">
-                                            <input type="hidden" name="role" id="userRoleSelect"/>
+                                            <select id="userRoleSelect" name="role" style="max-width:200px;"></select>
                                             <input type="submit" class="ui button" value="${message(code:'user.role.add')}"/>
                                         </div>
                                     </g:form>
@@ -117,26 +117,27 @@
 
                     <laser:script file="${this.getGroovyPageFileName()}">
                         $("#userRoleSelect").select2({
-                          placeholder: "${message(code:'user.role.search.ph')}",
-                                minimumInputLength: 0,
-                                formatInputTooShort: function () {
-                                    return "${message(code:'select2.minChars.note')}";
+                            placeholder: "${message(code:'user.role.search.ph')}",
+                            minimumInputLength: 0,
+                            formatInputTooShort: function () {
+                                return "${message(code:'select2.minChars.note')}";
+                            },
+                            allowClear: true,
+                            ajax: {
+                                url: "<g:createLink controller='ajaxJson' action='lookup'/>",
+                                dataType: 'json',
+                                data: function (p) {
+                                    return {
+                                        q: p.term || '', // search term
+                                        page_limit: 10,
+                                        baseClass: '${Role.class.name}'
+                                    };
                                 },
-                                ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
-                                  url: "<g:createLink controller='ajaxJson' action='lookup'/>",
-                                  dataType: 'json',
-                                  data: function (term, page) {
-                                      return {
-                                          q: term, // search term
-                                          page_limit: 10,
-                                          baseClass: '${Role.class.name}'
-                                      };
-                                  },
-                                  results: function (data, page) {
-                                    return {results: data.values};
-                                  }
+                                processResults: function (data) {
+                                    return { results: data.values };
                                 }
-                              });
+                            }
+                        });
                     </laser:script>
 
                 </div>

@@ -244,7 +244,7 @@
             <div class="fields">
                 <div class="field hide" id="cust_prop_ref_data_name" style="width: 100%">
                     <label class="property-label"><g:message code="refdataCategory.label" /></label>
-                    <input type="hidden" name="refdatacategory" id="cust_prop_refdatacatsearch"/>
+                    <select id="cust_prop_refdatacatsearch" name="refdatacategory" style="width:100%"></select>
 
                     <div class="ui grid" style="margin-top:1em">
                         <div class="ten wide column">
@@ -305,7 +305,6 @@
     $("#cust_prop_refdatacatsearch").select2({
         placeholder: "Kategorie eintippen...",
         minimumInputLength: 1,
-
         formatInputTooShort: function () {
             return "${message(code:'select2.minChars.note')}";
         },
@@ -315,18 +314,19 @@
         formatSearching:  function() {
             return "${message(code:'select2.formatSearching')}";
         },
-        ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
+        allowClear: true,
+        ajax: {
             url: '${createLink(controller:'ajaxJson', action:'lookup')}',
             dataType: 'json',
-            data: function (term, page) {
+            data: function (p) {
                 return {
-                    q: term, // search term
+                    q: p.term || '', // search term
                     page_limit: 10,
                     baseClass:'${RefdataCategory.class.name}'
                 };
             },
-            results: function (data, page) {
-                return {results: data.values};
+            processResults: function (data) {
+                return { results: data.values };
             }
         }
     });

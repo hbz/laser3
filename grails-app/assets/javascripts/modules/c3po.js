@@ -37,18 +37,18 @@ c3po = {
         $("#cust_prop_refdatacatsearch").select2({
             placeholder: "Kategorie angeben ..",
             minimumInputLength: 1,
-            ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
+            ajax: {
                 url: ajaxurl,
                 dataType: 'json',
-                data: function (term, page) {
+                data: function (p) {
                     return {
-                        q: term, // search term
+                        q: p.term || '', // search term
                         page_limit: 10,
                         baseClass: 'de.laser.RefdataCategory'
                     };
                 },
-                results: function (data, page) {
-                    return {results: data.values};
+                processResults: function (data) {
+                    return { results: data.values };
                 }
             }
         });
@@ -74,12 +74,12 @@ c3po = {
             formatLoadMore:  function (pageNumber) { return JSPC.dict.get('property.select.loadMore', JSPC.currLanguage); },
             formatNoMatches: function ()           { return JSPC.dict.get('property.select.noMatches', JSPC.currLanguage); },
 
-            ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
+            ajax: {
                 url: ajaxurl,
                 dataType: 'json',
-                data: function (term, page) {
+                data: function (p) {
                     return {
-                        q: term, // search term
+                        q: p.term || '', // search term
                         desc: desc,
                         oid: oid,
                         page_limit: 10,
@@ -87,8 +87,8 @@ c3po = {
                         tenant: tenantId
                     };
                 },
-                results: function (data, page) {
-                    return {results: data.values};
+                processResults: function (data) {
+                    return { results: data.values };
                 }
             },
             createSearchChoice: function (term, data) {
