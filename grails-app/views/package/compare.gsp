@@ -259,6 +259,7 @@
 
       $("#packageSelect"+filter).select2({
         placeholder: "${message(code:'package.compare.search.ph')}",
+        language: JSPC.vars.locale,
         minimumInputLength: 1,
         formatInputTooShort: function () {
             return "${message(code:'select2.minChars.note')}";

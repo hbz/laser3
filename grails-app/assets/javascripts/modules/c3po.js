@@ -36,7 +36,13 @@ c3po = {
 
         $("#cust_prop_refdatacatsearch").select2({
             placeholder: "Kategorie angeben ..",
+            language: JSPC.vars.locale,
             minimumInputLength: 1,
+            allowClear: true,
+            // formatInputTooShort: function () { return JSPC.dict.get('select2.minChars.note', JSPC.currLanguage); },
+            // formatNoMatches:     function () { return JSPC.dict.get('select2.noMatchesFound', JSPC.currLanguage); },
+            // formatSearching:     function () { return JSPC.dict.get('select2.formatSearching', JSPC.currLanguage); },
+
             ajax: {
                 url: ajaxurl,
                 dataType: 'json',
@@ -68,11 +74,12 @@ c3po = {
 
         $(cssId + " .customPropSelect").select2({
             placeholder: JSPC.dict.get('property.select.placeholder', JSPC.currLanguage),
+            language: JSPC.vars.locale,
             minimumInputLength: 0,
             width: 300,
-            formatSearching: function ()           { return JSPC.dict.get('property.select.searching', JSPC.currLanguage); },
-            formatLoadMore:  function (pageNumber) { return JSPC.dict.get('property.select.loadMore', JSPC.currLanguage); },
-            formatNoMatches: function ()           { return JSPC.dict.get('property.select.noMatches', JSPC.currLanguage); },
+            // formatSearching: function ()           { return JSPC.dict.get('property.select.searching', JSPC.currLanguage); },
+            // formatLoadMore:  function (pageNumber) { return JSPC.dict.get('property.select.loadMore', JSPC.currLanguage); },
+            // formatNoMatches: function ()           { return JSPC.dict.get('property.select.noMatches', JSPC.currLanguage); },
 
             ajax: {
                 url: ajaxurl,

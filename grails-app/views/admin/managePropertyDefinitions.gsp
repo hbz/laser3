@@ -264,34 +264,8 @@
 				}
 			});
 
-			$("#cust_prop_refdatacatsearch").select2({
-				placeholder: "Kategorie eintippen...",
-                minimumInputLength: 1,
-                formatInputTooShort: function () {
-                    return "${message(code:'select2.minChars.note')}";
-                },
-                formatNoMatches: function() {
-                    return "${message(code:'select2.noMatchesFound')}";
-                },
-                formatSearching:  function() {
-                    return "${message(code:'select2.formatSearching')}";
-                },
-                allowClear: true,
-				ajax: {
-					url: '${createLink(controller:'ajaxJson', action:'lookup')}',
-					dataType: 'json',
-					data: function (p) {
-						return {
-							q:  p.term || '', // search term
-							page_limit: 10,
-							baseClass:'${RefdataCategory.class.name}'
-						};
-					},
-					processResults: function (data) {
-						return { results: data.values };
-					}
-				}
-			});
+            c3po.refdataCatSearch('${createLink(controller:'ajaxJson', action:'lookup')}', '#cust_prop_refdatacatsearch');
+
 		</laser:script>
 
 <laser:htmlEnd />

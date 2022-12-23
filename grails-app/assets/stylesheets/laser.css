@@ -4,5 +4,5 @@
  *= require base.css                    //--> bundle
  *= require /laser/semantic.css         //--> assets/themes
  *= require wysiwyg.css                 //--> bundle
- *= require modules/tmp_semui.css
+ *= require modules/tmp_semui.css       //--> tmp and/or fallback
  */
