@@ -1,5 +1,5 @@
 /**
- * Trumbowyg v2.25.2 - A lightweight WYSIWYG editor
+ * Trumbowyg v2.26.0 - A lightweight WYSIWYG editor
  * Default stylesheet for Trumbowyg editor
  * ------------------------
  * @link http://alex-d.github.io/Trumbowyg
@@ -9,11 +9,11 @@
  *         Website : alex-d.fr
  */
 
-/* moved from x-base.css */
+/* hbz: moved from x-base.css */
 
 .trumbowyg-editor {
   /*
-     * lset for resetCss option
+     * For resetCss option
      */ }
   .trumbowyg-editor object,
   .trumbowyg-editor embed,
@@ -28,7 +28,7 @@
   .trumbowyg-editor canvas:focus {
     outline: none; }
   .trumbowyg-editor.trumbowyg-reset-css {
-    background: #FEFEFE !important;
+    background: #fefefe !important;
     font-family: "Trebuchet MS", Helvetica, Verdana, sans-serif !important;
     font-size: 14px !important;
     line-height: 1.45em !important;
