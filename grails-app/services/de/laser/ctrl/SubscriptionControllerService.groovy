@@ -1353,15 +1353,13 @@ class SubscriptionControllerService {
 
             result.subscriber = newSub.getSubscriber()
 
-            result.subscriberSubs = []
+            result.subscriptionIDs = []
 
             Set<Subscription> subscriptions = []
             if(result.surveyConfig.pickAndChoosePerpetualAccess) {
                 subscriptions = linksGenerationService.getSuccessionChain(newSub, 'sourceSubscription')
                 subscriptions << newSub
-                if (subscriptions) {
-                    result.subscriberSubs = subscriptions.toList()
-                }
+                result.subscriptionIDs = surveyService.subscriptionsOfOrg(result.institution)
             }else {
                 subscriptions << previousSubscription
             }
@@ -1643,7 +1641,7 @@ class SubscriptionControllerService {
 
                     MultipartFile kbartFile = params.kbartPreselect
                     InputStream stream = kbartFile.getInputStream()
-                    result.selectProcess = subscriptionService.issueEntitlementSelectForSurvey(stream, result.subscription, result.surveyConfig, newSub, result.subscriberSubs)
+                    result.selectProcess = subscriptionService.issueEntitlementSelectForSurvey(stream, result.subscription, result.surveyConfig, newSub)
 
                         if (result.selectProcess.selectedIEs) {
                             checkedCache.put('checked', result.selectProcess.selectedIEs)
@@ -2226,6 +2224,9 @@ class SubscriptionControllerService {
                     addedTipps[ie.tipp] = ie.tipp.gokbId
             }*/
             // We need all issue entitlements from the parent subscription where no row exists in the current subscription for that item.
+
+            result.subscriptionIDs = surveyService.subscriptionsOfOrg(result.institution)
+
             String basequery
             Map<String,Object> qry_params = [subscription:result.subscription,tippStatus:tipp_current,issueEntitlementStatus:ie_current]
 
@@ -2538,8 +2539,14 @@ class SubscriptionControllerService {
                             ieCoverages.add(covStmt)
                             ieCandidate.coverages = ieCoverages
                             matches.each { String match ->
-                                issueEntitlementOverwrite[match] = ieCandidate
-                                selectedTippIds << match
+                                TitleInstancePackagePlatform titleInstancePackagePlatform = TitleInstancePackagePlatform.findByGokbId(match)
+                                if(result.subscriptionIDs && titleInstancePackagePlatform) {
+                                    boolean participantPerpetualAccessToTitle = surveyService.hasParticipantPerpetualAccessToTitle2(result.subscriptionIDs, titleInstancePackagePlatform)
+                                    if(!participantPerpetualAccessToTitle) {
+                                        issueEntitlementOverwrite[match] = ieCandidate
+                                        selectedTippIds << match
+                                    }
+                                }
                             }
                         }
                     }
