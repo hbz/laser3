@@ -68,6 +68,19 @@
                         </td>
                     </g:if>
                 </tr>
+                <tr>
+                    <th>${message(code: 'subscription.referenceYear.label')}</th>
+                    <td><ui:datepicker type="year" class="wide eight" id="subscription.reference_year" name="subscription.reference_year"
+                                       placeholder="default.date.format.yyyy" value="${permissionInfo?.sub_referenceYear}"/></td>
+                    <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
+                        <td class="center aligned">
+                            <div class="ui checkbox">
+                                <input type="checkbox" name="auditList"
+                                       value="referenceYear" ${AuditConfig.getConfig(subscription, 'referenceYear') ? 'checked' : ''}/>
+                            </div>
+                        </td>
+                    </g:if>
+                </tr>
                 <g:if test="${(subscription.type == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL &&
                         subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION) ||
                         (subscription.type == RDStore.SUBSCRIPTION_TYPE_LOCAL &&

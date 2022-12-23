@@ -23,6 +23,9 @@
                         <g:elseif test="${parentSuccessorSubscription.getProperty(prop.referenceField) instanceof java.lang.Boolean}">
                             ${parentSuccessorSubscription.getProperty(prop.referenceField) ? de.laser.storage.RDStore.YN_YES.getI10n('value') : de.laser.storage.RDStore.YN_NO.getI10n('value')}
                         </g:elseif>
+                        <g:elseif test="${parentSuccessorSubscription.getProperty(prop.referenceField) instanceof java.util.Date}">
+                            ${parentSuccessorSubscription.getProperty(prop.referenceField) ? g.formatDate(date: parentSuccessorSubscription.getProperty(prop.referenceField),format: message(code: 'default.date.format.notime')) : ''}
+                        </g:elseif>
                         <g:else>
                             ${parentSuccessorSubscription.getProperty(prop.referenceField)}
                         </g:else>

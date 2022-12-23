@@ -48,6 +48,14 @@ class XEditableTagLib {
 
                 default_empty = message(code:'default.date.format.notime.normal')
             }
+            else if (attrs.type == 'year') {
+                out << ' data-type="text"' // combodate | date
+
+                String df = "YYYY"
+                out << ' data-format="' + df + '" data-viewformat="' + df + '" data-template="' + df + '"'
+
+                default_empty = message(code:'default.date.format.yyyy').toUpperCase()
+            }
             else if (attrs.type == 'readerNumber') {
                 out << ' data-type="text"'
             }
@@ -66,6 +74,9 @@ class XEditableTagLib {
             switch (attrs.type) {
                 case 'date':
                     data_link = createLink(controller:'ajax', action: 'editableSetValue', params:[type:'date', format:"${message(code:'default.date.format.notime')}"]).encodeAsHTML()
+                break
+                case 'year':
+                    data_link = createLink(controller:'ajax', action: 'editableSetValue', params:[type:'year']).encodeAsHTML()
                 break
                 case 'url':
                     data_link = createLink(controller:'ajax', action: 'editableSetValue', params:[type:'url']).encodeAsHTML()

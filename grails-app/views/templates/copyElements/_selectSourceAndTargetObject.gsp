@@ -109,8 +109,8 @@
 
     JSPC.app.adjustDropdown = function () {
 
-        var showSubscriber = $("input[name='show.subscriber'").prop('checked');
-        var showConnectedObjs = $("input[name='show.connectedObjects'").prop('checked');
+        var showSubscriber = $("input[name='show.subscriber']").prop('checked');
+        var showConnectedObjs = $("input[name='show.connectedObjects']").prop('checked');
         var url = '<g:createLink controller="ajaxJson" action="${sourceObject instanceof License ? 'adjustLicenseList' : 'adjustSubscriptionList'}"/>'
 
         url = url + '?valueAsOID=true&showSubscriber=' + showSubscriber + '&showConnectedObjs=' + showConnectedObjs + '&context=' + ${sourceObject.id}
