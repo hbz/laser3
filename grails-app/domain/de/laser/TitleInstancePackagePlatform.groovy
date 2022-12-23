@@ -147,7 +147,7 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
          delayedOA column:'tipp_delayedoa_rv_fk'
           hybridOA column:'tipp_hybridoa_rv_fk'
       statusReason column:'tipp_status_reason_rv_fk'
-   hostPlatformURL column:'tipp_host_platform_url', type: 'text'
+   hostPlatformURL column:'tipp_host_platform_url', type: 'text', index: 'tipp_host_platform_url_idx'
       accessStartDate column:'tipp_access_start_date'
       accessEndDate column:'tipp_access_end_date'
       accessType column:'tipp_access_type_rv_fk'
