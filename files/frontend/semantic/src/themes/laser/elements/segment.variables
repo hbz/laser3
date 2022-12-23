@@ -11,5 +11,5 @@
 /* Raised */
 @raisedBoxShadow: 0;
 @groupedBoxShadow: 	none;
-@groupedBorder: none;
-@groupedSegmentDivider: none;
+@groupedBorder: @border;
+@groupedSegmentDivider: @border;

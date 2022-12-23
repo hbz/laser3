@@ -9,16 +9,21 @@
 //= require modules/a11y/collections/menu.js
 //= require modules/a11y/elements/icon.js
 //= require modules/a11y/modules/modal.js
+//= require modules/docs.js
 //= require modules/why.js
 //= require modules/verticalNavi.js
 //= require modules/responsiveTables.js
+//= require modules/setTextareaHeight.js
+//= require modules/system.js
+//= require wysiwyg.js                          //--> bundle
+//= require modules/wysiwyg.js
 
 console.log('+ bundle: accessibility.js')
 
 // here we go ..
 
 $(function () {
-    JSPC.modules.go( 'r2d2', 'bb8', 'a11yMenu', 'a11yIcon', 'verticalNavi', 'responsiveTables' );
+    JSPC.modules.go( 'r2d2', 'bb8', 'a11yMenu', 'a11yIcon', 'verticalNavi', 'responsiveTables', 'system' );
 
     $('main.ui.main').removeClass('hidden');
 })

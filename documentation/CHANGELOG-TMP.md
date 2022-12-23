@@ -7,13 +7,31 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-4718    20.12.2022  rc-3.0  3.0.1         Andreas Bug       fehlende Exportfelder in Lizenzexport nachgereicht
+4717    22.12.2022  rc-3.0  3.0.1       David   Bug         500er in Meine Lizenzverwaltung
 
-4709    20.12.2022  rc-3.0  3.0.1         Moe     Bug       Üertrag von Merkmalen bei der Lizenzverlängerung
+4597    22.12.2022  dev     3.1         Andreas Feature     Massenbearbeitung von Beständen erweitert
 
-4711    20.12.2022  rc-3.0  3.0.1         Moe     Bug       Titel hinzufügen: Reiter Ausgewählter Bestand zeigt bei nächstem Aufruf Zahl in Bubble, Buttonsan
+4718    20.12.2022  rc-3.0  3.0.1       Andreas Bug         fehlende Exportfelder in Lizenzexport nachgereicht
+
+4709    20.12.2022  rc-3.0  3.0.1       Moe     Bug         Übertrag von Merkmalen bei der Lizenzverlängerung
+
+4711    20.12.2022  rc-3.0  3.0.1       Moe     Bug         Titel hinzufügen: Reiter Ausgewählter Bestand zeigt bei nächstem Aufruf Zahl in Bubble, Buttonsan
 
 4716    20.12.2022  rc-3.0  3.0.1       Andreas Bug         falsche Kopie der Mailadressen
+
+4415    19.12.2022  rc-3.0  3.0         Ingrid  Feature     Bestands-Detailansicht verbessern
+
+4509    19.12.2022  rc-3.0  3.0         Ingrid  Feature     Identifikatoren optisch überarbeiten
+
+4506    19.12.2022  rc-3.0  3.0         Ingrid  Feature     Accordions visuell überarbeiten
+
+4499    19.12.2022  rc-3.0  3.0         Ingrid  Feature     Header überarbeiten
+
+4472    19.12.2022  rc-3.0  3.0         Ingrid  Feature     Laser auf 1440 pixel verbreitern
+
+4291    19.12.2022  rc-3.0  3.0         Ingrid  Feature     Fomantic anpassen
+
+4672    19.12.2022  rc-3.0  3.0         Ingrid  Feature     Paket-Detail-Ansicht: Überarbeitung
 
 4699    19.12.2022  dev     3.1         Andreas Feature     neue Filterfelder "Identifikatorbereich" und "Kundennummerbereich"
 

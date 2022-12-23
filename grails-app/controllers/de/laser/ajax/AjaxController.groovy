@@ -350,7 +350,7 @@ class AjaxController {
           // default ..
           else {
               if (it instanceof AbstractI10n) {
-                  result.add([value: "${rowobj.class.name}:${rowobj.id}", text: "${it.getI10n(config.cols[0])}"])
+                  result.add([value: "${rowobj.class.name}:${rowobj.id}", text: "${it.getI10n(config.cols[0])}", order: it.order])
               }
               else {
                   def objTest = rowobj[config.cols[0]]
@@ -367,7 +367,10 @@ class AjaxController {
       log.error("No config for refdata search ${params.id}");
     }
 
-      if (result && defaultOrder) {
+        if(params.id == 'Currency') {
+            result.sort{ x,y -> x.order.compareTo y.order  }
+        }
+      else if (result && defaultOrder) {
           result.sort{ x,y -> x.text.compareToIgnoreCase y.text  }
       }
 

@@ -8,11 +8,11 @@
         </div>
         <div class="la-card-flexRow">
             <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.startVolume.tooltip')}"></i>
-            <ui:xEditable owner="${covStmt}" field="startVolume" overwriteEditable="${overwriteEditable}"/>
+            <ui:xEditable owner="${covStmt}" field="startVolume" emptytext="-" overwriteEditable="${overwriteEditable}"/>
         </div>
         <div class="la-card-flexRow">
             <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.startIssue.tooltip')}"></i>
-            <ui:xEditable owner="${covStmt}" field="startIssue" overwriteEditable="${overwriteEditable}"/>
+            <ui:xEditable owner="${covStmt}" field="startIssue" emptytext="-" overwriteEditable="${overwriteEditable}"/>
         </div>
         <ui:dateDevider/>
         <!-- bis -->
@@ -22,11 +22,11 @@
         </div>
         <div class="la-card-flexRow">
             <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.endVolume.tooltip')}"></i>
-            <ui:xEditable owner="${covStmt}" field="endVolume" overwriteEditable="${overwriteEditable}"/>
+            <ui:xEditable owner="${covStmt}" field="endVolume" emptytext="-" overwriteEditable="${overwriteEditable}"/>
         </div>
         <div class="la-card-flexRow">
             <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.endIssue.tooltip')}"></i>
-            <ui:xEditable owner="${covStmt}" field="endIssue" overwriteEditable="${overwriteEditable}"/>
+            <ui:xEditable owner="${covStmt}" field="endIssue" emptytext="-" overwriteEditable="${overwriteEditable}"/>
         </div>
     </div>
     <div class="la-card-column-with-row">
