@@ -548,7 +548,7 @@ class MyInstitutionController  {
         if(childLicsOfSet) {
             Set rows = OrgRole.executeQuery('select oo.sub,oo.org.sortname from OrgRole oo where oo.sub in (:subChildren) and oo.roleType = :licType',[subChildren:childLicsOfSet,licType:RDStore.OR_LICENSEE_CONS])
             rows.each { row ->
-                log.debug("now processing ${row[0]}:${row[1]}")
+                //log.debug("now processing ${row[0]}:${row[1]}")
                 objectNames.put(row[0],row[1])
             }
         }
@@ -992,6 +992,7 @@ join sub.orgRelations or_sub where
                        g.message(code: 'subscription.startDate.label'),
                        g.message(code: 'subscription.endDate.label'),
                        g.message(code: 'subscription.manualCancellationDate.label'),
+                       g.message(code: 'subscription.referenceYear.label'),
                        g.message(code: 'subscription.isMultiYear.label')]
         if(!asCons) {
             titles.add(g.message(code: 'subscription.isAutomaticRenewAnnually.label'))
@@ -1069,7 +1070,7 @@ join sub.orgRelations or_sub where
         if(childSubsOfSet) {
             Set rows = OrgRole.executeQuery('select oo.sub,oo.org.sortname from OrgRole oo where oo.sub in (:subChildren) and oo.roleType in (:subscrTypes)',[subChildren:childSubsOfSet,subscrTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])
             rows.each { row ->
-                log.debug("now processing ${row[0]}:${row[1]}")
+                //log.debug("now processing ${row[0]}:${row[1]}")
                 objectNames.put(row[0],row[1])
             }
         }
@@ -1094,6 +1095,7 @@ join sub.orgRelations or_sub where
                     row.add([field: sub.startDate ? sdf.format(sub.startDate) : '', style: null])
                     row.add([field: sub.endDate ? sdf.format(sub.endDate) : '', style: null])
                     row.add([field: sub.manualCancellationDate ? sdf.format(sub.manualCancellationDate) : '', style: null])
+                    row.add([field: sub.referenceYear ?: '', style: null])
                     row.add([field: sub.isMultiYear ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
                     if(!asCons) {
                         row.add([field: sub.isAutomaticRenewAnnually ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
@@ -1127,6 +1129,7 @@ join sub.orgRelations or_sub where
                     row.add(sub.startDate ? sdf.format(sub.startDate) : '')
                     row.add(sub.endDate ? sdf.format(sub.endDate) : '')
                     row.add(sub.manualCancellationDate ? sdf.format(sub.manualCancellationDate) : '')
+                    row.add(sub.referenceYear ?: '')
                     row.add(sub.isMultiYear ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"))
                     if(!asCons) {
                         row.add(sub.isAutomaticRenewAnnually ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"))
@@ -3128,7 +3131,7 @@ join sub.orgRelations or_sub where
             headerRow.setHeightInPoints(16.75f)
             List titles = [message(code:'sidewide.number'),message(code:'myinst.consortiaSubscriptions.member'), message(code:'org.mainContact.label'),message(code:'default.subscription.label'),message(code:'globalUID.label'),
                            message(code:'license.label'), message(code:'myinst.consortiaSubscriptions.packages'),message(code:'myinst.consortiaSubscriptions.provider'),message(code:'myinst.consortiaSubscriptions.runningTimes'),
-                           message(code:'subscription.isPublicForApi.label'),message(code:'subscription.hasPerpetualAccess.label'),
+                           message(code: 'subscription.referenceYear.label'), message(code:'subscription.isPublicForApi.label'),message(code:'subscription.hasPerpetualAccess.label'),
                            message(code:'financials.amountFinal'),"${message(code:'financials.isVisibleForSubscriber')} / ${message(code:'financials.costItemConfiguration')}"]
             titles.eachWithIndex{ titleName, int i ->
                 Cell cell = headerRow.createCell(i)
@@ -3138,34 +3141,34 @@ join sub.orgRelations or_sub where
             Row row
             Cell cell
             int rownum = 1
-            int sumcell = 11
-            int sumTitleCell = 10
+            int sumcell = 12
+            int sumTitleCell = 11
             result.entries.eachWithIndex { entry, int sidewideNumber ->
-                log.debug("processing entry ${sidewideNumber} ...")
+                //log.debug("processing entry ${sidewideNumber} ...")
                 CostItem ci = (CostItem) entry[0] ?: new CostItem()
                 Subscription subCons = (Subscription) entry[1]
                 Org subscr = (Org) entry[2]
                 int cellnum = 0
                 row = sheet.createRow(rownum)
                 //sidewide number
-                log.debug("insert sidewide number")
+                //log.debug("insert sidewide number")
                 cell = row.createCell(cellnum++)
                 cell.setCellValue(rownum)
                 //sortname
-                log.debug("insert sortname")
+                //log.debug("insert sortname")
                 cell = row.createCell(cellnum++)
                 String subscrName = ""
                 if(subscr.sortname) subscrName += subscr.sortname
                 subscrName += "(${subscr.name})"
                 cell.setCellValue(subscrName)
-                log.debug("insert general contacts")
+                //log.debug("insert general contacts")
                 //general contacts
                 Set<String> generalContacts = mailAddresses.get(subscr)
                 cell = row.createCell(cellnum++)
                 if(generalContacts)
                     cell.setCellValue(generalContacts.join('; '))
                 //subscription name
-                log.debug("insert subscription name")
+                //log.debug("insert subscription name")
                 cell = row.createCell(cellnum++)
                 String subscriptionString = subCons.name
                 //if(subCons._getCalculatedPrevious()) //avoid! Makes 5846 queries!!!!!
@@ -3173,11 +3176,11 @@ join sub.orgRelations or_sub where
                     subscriptionString += " (${message(code:'subscription.hasPreviousSubscription')})"
                 cell.setCellValue(subscriptionString)
                 //subscription globalUID
-                log.debug("insert subscription global UID")
+                //log.debug("insert subscription global UID")
                 cell = row.createCell(cellnum++)
                 cell.setCellValue(subCons.globalUID)
                 //license name
-                log.debug("insert license name")
+                //log.debug("insert license name")
                 cell = row.createCell(cellnum++)
                 if(result.linkedLicenses.get(subCons)) {
                     List<String> references = result.linkedLicenses.get(subCons).collect { License l -> l.reference }
@@ -3186,7 +3189,7 @@ join sub.orgRelations or_sub where
                     else cell.setCellValue(" ")
                 }
                 //packages
-                log.debug("insert package name")
+                //log.debug("insert package name")
                 cell = row.createCell(cellnum++)
                 cell.setCellStyle(lineBreaks)
                 List<String> packageNames = []
@@ -3197,19 +3200,19 @@ join sub.orgRelations or_sub where
                     cell.setCellValue(packageNames.join("\n"))
                 else cell.setCellValue(" ")
                 //provider
-                log.debug("insert provider name")
+                //log.debug("insert provider name")
                 cell = row.createCell(cellnum++)
                 cell.setCellStyle(lineBreaks)
                 List<String> providerNames = []
                 subCons.orgRelations.findAll{ OrgRole oo -> oo.roleType in [RDStore.OR_PROVIDER,RDStore.OR_AGENCY] }.each { OrgRole p ->
-                    log.debug("Getting provider ${p.org}")
+                    //log.debug("Getting provider ${p.org}")
                     providerNames << p.org.name
                 }
                 if(providerNames)
                     cell.setCellValue(providerNames.join("\n"))
                 else cell.setCellValue(" ")
                 //running time from / to
-                log.debug("insert running times")
+                //log.debug("insert running times")
                 cell = row.createCell(cellnum++)
                 String dateString = ""
                 if(ci.id) {
@@ -3217,16 +3220,24 @@ join sub.orgRelations or_sub where
                     if(ci.getDerivedEndDate()) dateString += " - ${sdf.format(ci.getDerivedEndDate())}"
                 }
                 cell.setCellValue(dateString)
+                //reference year
+                //log.debug("insert reference year")
+                cell = row.createCell(cellnum++)
+                String refYearString = " "
+                if(subCons.referenceYear) {
+                    refYearString = subCons.referenceYear.toString()
+                }
+                cell.setCellValue(refYearString)
                 //is public for api
-                log.debug("insert api flag")
+                //log.debug("insert api flag")
                 cell = row.createCell(cellnum++)
                 cell.setCellValue(ci.sub?.isPublicForApi ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"))
                 //has perpetual access
-                log.debug("insert perpetual access flag")
+                //log.debug("insert perpetual access flag")
                 cell = row.createCell(cellnum++)
                 cell.setCellValue(ci.sub?.hasPerpetualAccess ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"))
                 //final sum
-                log.debug("insert final sum")
+                //log.debug("insert final sum")
                 cell = row.createCell(cellnum++)
                 if(ci.id && ci.costItemElementConfiguration) {
                     switch(ci.costItemElementConfiguration) {
@@ -3240,7 +3251,7 @@ join sub.orgRelations or_sub where
                     cell.setCellValue(formatNumber([number:ci.costInBillingCurrencyAfterTax ?: 0.0,type:'currency',currencySymbol:ci.billingCurrency ?: 'EUR']))
                 }
                 //cost item sign and visibility
-                log.debug("insert cost sign and visiblity")
+                //log.debug("insert cost sign and visiblity")
                 cell = row.createCell(cellnum++)
                 String costSignAndVisibility = ""
                 if(ci.id) {
@@ -3298,36 +3309,36 @@ join sub.orgRelations or_sub where
                 csv {
                     List titles = [message(code: 'sidewide.number'), message(code: 'myinst.consortiaSubscriptions.member'), message(code: 'org.mainContact.label'), message(code: 'default.subscription.label'), message(code: 'globalUID.label'),
                                    message(code: 'license.label'), message(code: 'myinst.consortiaSubscriptions.packages'), message(code: 'myinst.consortiaSubscriptions.provider'), message(code: 'myinst.consortiaSubscriptions.runningTimes'),
-                                   message(code: 'subscription.isPublicForApi.label'), message(code: 'subscription.hasPerpetualAccess.label'),
+                                   message(code: 'subscription.referenceYear.label'), message(code: 'subscription.isPublicForApi.label'), message(code: 'subscription.hasPerpetualAccess.label'),
                                    message(code: 'financials.amountFinal'), "${message(code: 'financials.isVisibleForSubscriber')} / ${message(code: 'financials.costItemConfiguration')}"]
                     List columnData = []
                     List row
                     result.entries.eachWithIndex { entry, int sidewideNumber ->
                         row = []
-                        log.debug("processing entry ${sidewideNumber} ...")
+                        //log.debug("processing entry ${sidewideNumber} ...")
                         CostItem ci = (CostItem) entry[0] ?: new CostItem()
                         Subscription subCons = (Subscription) entry[1]
                         Org subscr = (Org) entry[2]
                         int cellnum = 0
                         //sidewide number
-                        log.debug("insert sidewide number")
+                        //log.debug("insert sidewide number")
                         cellnum++
                         row.add(sidewideNumber)
                         //sortname
-                        log.debug("insert sortname")
+                        //log.debug("insert sortname")
                         cellnum++
                         String subscrName = ""
                         if (subscr.sortname) subscrName += subscr.sortname
                         subscrName += "(${subscr.name})"
                         row.add(subscrName.replaceAll(',', ' '))
-                        log.debug("insert general contacts")
+                        //log.debug("insert general contacts")
                         //general contacts
                         Set<String> generalContacts = mailAddresses.get(subscr)
                         if (generalContacts)
                             row.add(generalContacts.join('; '))
                         else row.add(' ')
                         //subscription name
-                        log.debug("insert subscription name")
+                        //log.debug("insert subscription name")
                         cellnum++
                         String subscriptionString = subCons.name
                         //if(subCons._getCalculatedPrevious()) //avoid! Makes 5846 queries!!!!!
@@ -3335,18 +3346,18 @@ join sub.orgRelations or_sub where
                             subscriptionString += " (${message(code: 'subscription.hasPreviousSubscription')})"
                         row.add(subscriptionString.replaceAll(',', ' '))
                         //subscription global uid
-                        log.debug("insert global uid")
+                        //log.debug("insert global uid")
                         cellnum++
                         row.add(subCons.globalUID)
                         //license name
-                        log.debug("insert license name")
+                        //log.debug("insert license name")
                         cellnum++
                         if (result.linkedLicenses.get(subCons)) {
                             List<String> references = result.linkedLicenses.get(subCons).collect { License l -> l.reference.replace(',', ' ') }
                             row.add(references.join(' '))
                         } else row.add(' ')
                         //packages
-                        log.debug("insert package name")
+                        //log.debug("insert package name")
                         cellnum++
                         String packagesString = " "
                         subCons.packages.each { subPkg ->
@@ -3354,16 +3365,16 @@ join sub.orgRelations or_sub where
                         }
                         row.add(packagesString.replaceAll(',', ' '))
                         //provider
-                        log.debug("insert provider name")
+                        //log.debug("insert provider name")
                         cellnum++
                         List<String> providerNames = []
                         subCons.orgRelations.findAll{ OrgRole oo -> oo.roleType in [RDStore.OR_PROVIDER,RDStore.OR_AGENCY] }.each { OrgRole p ->
-                            log.debug("Getting provider ${p.org}")
+                            //log.debug("Getting provider ${p.org}")
                             providerNames << p.org.name
                         }
                         row.add(providerNames.join( ' '))
                         //running time from / to
-                        log.debug("insert running times")
+                        //log.debug("insert running times")
                         cellnum++
                         String dateString = " "
                         if (ci.id) {
@@ -3371,22 +3382,30 @@ join sub.orgRelations or_sub where
                             if (ci.getDerivedEndDate()) dateString += " - ${sdf.format(ci.getDerivedEndDate())}"
                         }
                         row.add(dateString)
+                        //reference year
+                        //log.debug("insert reference year")
+                        cellnum++
+                        String refYearString = " "
+                        if(subCons.referenceYear) {
+                            refYearString = subCons.referenceYear.toString()
+                        }
+                        row.add(refYearString)
                         //is public for api
-                        log.debug("insert api flag")
+                        //log.debug("insert api flag")
                         cellnum++
                         row.add(ci.sub?.isPublicForApi ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"))
                         //has perpetual access
-                        log.debug("insert perpetual access flag")
+                        //log.debug("insert perpetual access flag")
                         cellnum++
                         row.add(ci.sub?.hasPerpetualAccess ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"))
                         //final sum
-                        log.debug("insert final sum")
+                        //log.debug("insert final sum")
                         cellnum++
                         if (ci.id && ci.costItemElementConfiguration) {
                             row.add("${ci.costInBillingCurrencyAfterTax ?: 0.0} ${ci.billingCurrency ?: 'EUR'}")
                         } else row.add(" ")
                         //cost item sign and visibility
-                        log.debug("insert cost sign and visiblity")
+                        //log.debug("insert cost sign and visiblity")
                         cellnum++
                         String costSignAndVisibility = " "
                         if (ci.id) {
@@ -3404,9 +3423,9 @@ join sub.orgRelations or_sub where
                     columnData.add([])
                     columnData.add([])
                     row = []
-                    //sumcell = 11
-                    //sumTitleCell = 10
-                    for (int h = 0; h < 10; h++) {
+                    //sumcell = 12
+                    //sumTitleCell = 11
+                    for (int h = 0; h < 11; h++) {
                         row.add(" ")
                     }
                     row.add(message(code: 'financials.export.sums'))
@@ -3414,7 +3433,7 @@ join sub.orgRelations or_sub where
                     columnData.add([])
                     result.finances.each { entry ->
                         row = []
-                        for (int h = 0; h < 10; h++) {
+                        for (int h = 0; h < 11; h++) {
                             row.add(" ")
                         }
                         row.add("${message(code: 'financials.sum.billing')} ${entry.key}")

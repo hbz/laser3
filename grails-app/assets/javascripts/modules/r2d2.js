@@ -72,6 +72,48 @@ r2d2 = {
                     JSPC.dict.get('loc.December', JSPC.currLanguage)
                 ]
             }
+        },
+        yearpicker : {
+            type: 'year',
+            onChange: function(date, text, mode) {
+                // deal with colored input field only when in filter context
+                if ($(this).parents('.la-filter').length) {
+                    if (!text) {
+                        $(this).removeClass("la-calendar-selected");
+                    } else {
+                        if( ! $(this).hasClass("la-calendar-selected") ) {
+                            $(this).addClass("la-calendar-selected");
+                        }
+                    }
+                }
+            },
+            onShow: function() {
+                $('.ui.popup.calendar .table .link').attr( {
+                    'role' : 'button'
+                });
+            },
+            minDate: new Date('1582-10-15'), //this is the start of the gregorian calendar
+            maxDate: new Date('2099-12-31'), //our grand-grandchildren may update this date ...
+            /*formatter: {
+                date: function (date, settings) {
+                    if (!date) return '';
+                    var day = date.getDate();
+                    if (day<10) day="0"+day;
+                    var month = date.getMonth() + 1;
+                    if (month<10) month="0"+month;
+                    var year = date.getFullYear();
+
+                    if ('dd.mm.yyyy' == JSPC.vars.dateFormat) {
+                        return day + '.' + month + '.' + year;
+                    }
+                    else if ('yyyy-mm-dd' == JSPC.vars.dateFormat) {
+                        return year + '-' + month + '-' + day;
+                    }
+                    else {
+                        alert('Please report this error: ' + JSPC.vars.dateFormat + ' for ui-datepicker unsupported');
+                    }
+                }
+            }*/
         }
     },
 
@@ -384,8 +426,15 @@ r2d2 = {
             format:   JSPC.vars.dateFormat,
             validate: function(value) {
                 if ($(this).attr('data-format') && value) {
-                    if(! (value.match(/^\d{1,2}\.\d{1,2}\.\d{4}$/) || value.match(/^\d{4}-\d{1,2}-\d{1,2}$/)) ) {
-                        return "Ungültiges Format";
+                    if($(this).attr('data-format') === 'YYYY') {
+                        if(! (value.match(/^\d{4}$/) ) ) {
+                            return "Ungültiges Format";
+                        }
+                    }
+                    else {
+                        if(! (value.match(/^\d{1,2}\.\d{1,2}\.\d{4}$/) || value.match(/^\d{4}-\d{1,2}-\d{1,2}$/)) ) {
+                            return "Ungültiges Format";
+                        }
                     }
                 }
                 // custom validate functions via ui:xEditable validation="xy"
@@ -448,7 +497,10 @@ r2d2 = {
             }
         }).on('shown', function() {
             if ($(this).attr('data-format')) {
-                $(ctxSel + ' .xEditable-datepicker').calendar(r2d2.configs.datepicker);
+                if($(this).attr('data-format') === 'YYYY')
+                    $(ctxSel + ' .xEditable-datepicker').calendar(r2d2.configs.yearpicker);
+                else
+                    $(ctxSel + ' .xEditable-datepicker').calendar(r2d2.configs.datepicker);
                 $(ctxSel + ' .editable-clear-x').click(function() {
                     $('.calendar').calendar('clear');
                 });

@@ -24,6 +24,7 @@ import grails.web.servlet.mvc.GrailsParameterMap
 import javax.persistence.Transient
 import java.text.SimpleDateFormat
 import java.time.LocalDate
+import java.time.Year
 
 import static java.time.temporal.ChronoUnit.DAYS
 
@@ -102,20 +103,21 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     //Only for Subscription with Type = Local
     boolean isAutomaticRenewAnnually = false
 
-  String name
-  String identifier
-  Date startDate
-  Date endDate
-  Date manualRenewalDate
-  Date manualCancellationDate
-  String cancellationAllowances
+    String name
+    String identifier
+    Date startDate
+    Date endDate
+    Date manualRenewalDate
+    Date manualCancellationDate
+    Year referenceYear
+    String cancellationAllowances
 
-  //Only for Consortia: ERMS-2098
-  String comment
+    //Only for Consortia: ERMS-2098
+    String comment
 
-  Subscription instanceOf
-  // If a subscription is administrative, subscription members will not see it resp. there is a toggle which en-/disables visibility
-  boolean administrative = false
+    Subscription instanceOf
+    // If a subscription is administrative, subscription members will not see it resp. there is a toggle which en-/disables visibility
+    boolean administrative = false
 
     String noticePeriod
 
@@ -123,9 +125,9 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     Date lastUpdated
     Date lastUpdatedCascading
 
-  SortedSet issueEntitlements
-  SortedSet packages
-  SortedSet ids
+    SortedSet issueEntitlements
+    SortedSet packages
+    SortedSet ids
 
   static hasMany = [
           ids                 : Identifier,
@@ -178,6 +180,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         endDate     column:'sub_end_date',          index: 'sub_dates_idx'
         manualRenewalDate       column:'sub_manual_renewal_date'
         manualCancellationDate  column:'sub_manual_cancellation_date'
+        referenceYear            column:'sub_reference_year', index: 'sub_reference_year_idx'
         instanceOf              column:'sub_parent_sub_fk', index:'sub_parent_idx'
         administrative          column:'sub_is_administrative'
         isSlaved        column:'sub_is_slaved'
@@ -224,6 +227,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         })
         manualRenewalDate       (nullable:true)
         manualCancellationDate  (nullable:true)
+        referenceYear            (nullable:true)
         instanceOf              (nullable:true)
         comment(nullable: true, blank: true)
         //hasPerpetualAccess(nullable: true) keep in case has perpetual access becomes nullable
@@ -235,7 +239,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
     @Override
     Collection<String> getLogIncluded() {
-        [ 'name', 'startDate', 'endDate', 'manualCancellationDate', 'status', 'type', 'kind', 'form', 'resource', 'isPublicForApi', 'hasPerpetualAccess', 'hasPublishComponent' ]
+        [ 'name', 'startDate', 'endDate', 'manualCancellationDate', 'referenceYear', 'status', 'type', 'kind', 'form', 'resource', 'isPublicForApi', 'hasPerpetualAccess', 'hasPublishComponent' ]
     }
     @Override
     Collection<String> getLogExcluded() {
