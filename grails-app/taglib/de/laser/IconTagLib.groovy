@@ -104,6 +104,9 @@ class IconTagLib {
             case 'manualCancellationDate':
                 icon = 'calendar alternate outline'
                 break
+            case 'referenceYear':
+                icon = 'calendar alternate outline'
+                break
             case 'licenseUrl':
                 icon = 'cloud'
                 break

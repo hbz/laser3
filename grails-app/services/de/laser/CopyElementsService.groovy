@@ -70,7 +70,7 @@ class CopyElementsService {
                 result = ['startDate', 'endDate', 'status', 'licenseCategory', 'openEnded', 'isPublicForApi']
                 break
             case Subscription.class.simpleName:
-                result = ['startDate', 'endDate', 'manualCancellationDate', 'status', 'kind', 'form', 'resource', 'isPublicForApi', 'hasPerpetualAccess', 'hasPublishComponent']
+                result = ['startDate', 'endDate', 'manualCancellationDate', 'referenceYear', 'status', 'kind', 'form', 'resource', 'isPublicForApi', 'hasPerpetualAccess', 'hasPublishComponent']
                 break
             case SurveyInfo.class.simpleName:
                 result = ['startDate', 'endDate', 'comment']

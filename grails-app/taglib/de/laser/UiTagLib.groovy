@@ -457,7 +457,7 @@ class UiTagLib {
         }
     }
 
-    //<ui:datepicker class="grid stuff here" label="" bean="${objInstance}" name="fieldname" value="" required="" modifiers="" />
+    //<ui:datepicker class="grid stuff here" type="" label="" bean="${objInstance}" name="fieldname" value="" required="" modifiers="" />
 
     def datepicker = { attrs, body ->
 
@@ -536,7 +536,8 @@ class UiTagLib {
         if (hideLabel) {
             out << '<label for="' + id + '">' + label + ' ' + mandatoryField + '</label>'
         }
-        out <<   '<div class="ui calendar datepicker">'
+        String type = attrs.type == 'year' ? 'yearpicker' : 'datepicker'
+        out <<   '<div class="ui calendar '+type+'">'
         out <<     '<div class="ui input left icon">'
         out <<       '<i aria-hidden="true" class="calendar icon"></i>'
         out <<       '<input class="' + inputCssClass + '" name="' + name +  '" id="' + id +'" type="text" placeholder="' + placeholder + '" value="' + value + '" ' + required + '>'

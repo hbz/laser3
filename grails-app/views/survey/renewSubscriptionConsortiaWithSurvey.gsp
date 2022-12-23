@@ -81,6 +81,15 @@
                 </td>
             </tr>
             <tr>
+                <th>${message(code: 'subscription.referenceYear.label')}</th>
+                <td><ui:datepicker class="wide eight" id="subscription.reference_year" name="subscription.reference_year" placeholder="default.date.format.yyyy" value="${permissionInfo?.sub_referenceYear}" type="year"/></td>
+                <td class="center aligned">
+                    <div class="ui checkbox">
+                        <input type="checkbox" name="auditList" value="referenceYear" ${AuditConfig.getConfig(subscription, 'referenceYear') ? 'checked': ''} />
+                    </div>
+                </td>
+            </tr>
+            <tr>
                 <th>${message(code: 'default.status.label')}</th>
                 <td>
                 <g:set var="rdcSubStatus" value="${RefdataCategory.getByDesc(RDConstants.SUBSCRIPTION_STATUS)}"/>

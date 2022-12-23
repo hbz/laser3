@@ -77,6 +77,17 @@
                             </g:if>
                         </dl>
 
+                        <dl>
+                            <dt class="control-label">${message(code: 'subscription.referenceYear.label')}</dt>
+                            <dd><ui:xEditable owner="${subscription}" field="referenceYear"
+                                                 type="year"/></dd>
+                            <g:if test="${editable}">
+                                <dd class="la-js-editmode-container"><ui:auditButton
+                                        auditable="[subscription, 'referenceYear']"
+                                        auditConfigs="${auditConfigs}"/></dd>
+                            </g:if>
+                        </dl>
+
                         <g:if test="${(subscription.type == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL &&
                                 subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION) ||
                                 (subscription.type == RDStore.SUBSCRIPTION_TYPE_LOCAL &&

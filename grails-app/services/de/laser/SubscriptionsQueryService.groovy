@@ -7,6 +7,7 @@ import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 
 import java.text.SimpleDateFormat
+import java.time.Year
 
 /**
  * This service generates compley subscription queries
@@ -336,6 +337,16 @@ class SubscriptionsQueryService {
                 qry_params.put('subRunTimeMultiYear', false)
                 filterSet = true
             }
+        }
+
+        if (params.referenceYears) {
+            base_qry += " and s.referenceYear in (:referenceYears) "
+            Set<Year> referenceYears = []
+            params.list('referenceYears').each { String referenceYear ->
+                referenceYears << Year.parse(referenceYear)
+            }
+            qry_params.put('referenceYears', referenceYears)
+            filterSet = true
         }
 
         if ((params.sort != null) && (params.sort.length() > 0)) {

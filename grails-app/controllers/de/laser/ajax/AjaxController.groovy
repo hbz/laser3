@@ -37,6 +37,7 @@ import de.laser.exceptions.ChangeAcceptException
 import javax.servlet.ServletOutputStream
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
+import java.time.Year
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -1909,6 +1910,30 @@ class AjaxController {
                         else if(target_object.dueDate)
                             ReaderNumber.executeUpdate('update ReaderNumber rn set rn.dateGroupNote = :note where rn.org = :org and rn.dueDate = :dueDate',[org: target_object.org, dueDate: target_object.dueDate, note: params.value])
                         result = params.value
+                        break
+                    case 'year':
+                        def backup = target_object."${params.name}"
+
+                        try {
+                            if (params.value && params.value.size() > 0) {
+                                // parse new year
+                                Year parsed_year = Year.parse(params.value)
+                                target_object."${params.name}" = parsed_year
+                            } else {
+                                // delete existing year
+                                target_object."${params.name}" = null
+                            }
+                            target_object.save(failOnError: true)
+                        }
+                        catch (Exception e) {
+                            target_object."${params.name}" = backup
+                            log.error(e.toString())
+                        }
+                        finally {
+                            if (target_object."${params.name}") {
+                                result = target_object."${params.name}"
+                            }
+                        }
                         break
                     default:
                         Map binding_properties = [:]

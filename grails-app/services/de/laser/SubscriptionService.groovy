@@ -33,6 +33,7 @@ import org.springframework.web.multipart.MultipartFile
 
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
+import java.time.Year
 
 @Transactional
 class SubscriptionService {
@@ -94,6 +95,13 @@ class SubscriptionService {
         }
 
         viableOrgs.add(contextOrg)
+
+        String consortiaFilter = ''
+        if(contextOrg.getCustomerType() == 'ORG_CONSORTIUM')
+            consortiaFilter = 'and s.instanceOf = null'
+
+        Set<Year> availableReferenceYears = Subscription.executeQuery('select s.referenceYear from OrgRole oo join oo.sub s where s.referenceYear != null and oo.org = :contextOrg '+consortiaFilter+' order by s.referenceYear', [contextOrg: contextOrg])
+        result.referenceYears = availableReferenceYears
 
         def date_restriction = null
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
@@ -183,6 +191,9 @@ class SubscriptionService {
 
         result.filterSubTypes = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE).minus(RDStore.SUBSCRIPTION_TYPE_LOCAL)
         result.filterPropList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextOrg)
+
+        Set<Year> availableReferenceYears = Subscription.executeQuery('select s.referenceYear from OrgRole oo join oo.sub s where s.referenceYear != null and oo.org = :contextOrg and s.instanceOf != null order by s.referenceYear', [contextOrg: contextOrg])
+        result.referenceYears = availableReferenceYears
 
         /*
         String query = "select ci, subT, roleT.org from CostItem ci join ci.owner orgK join ci.sub subT join subT.instanceOf subK " +
@@ -340,6 +351,15 @@ class SubscriptionService {
                 query += " and subT.isMultiYear = :subRunTimeMultiYear "
                 qarams.put('subRunTimeMultiYear', false)
             }
+        }
+
+        if (params.referenceYears) {
+            query += " and subT.referenceYear in (:referenceYears) "
+            Set<Year> referenceYears = []
+            params.list('referenceYears').each { String referenceYear ->
+                referenceYears << Year.parse(referenceYear)
+            }
+            qarams.put('referenceYears', referenceYears)
         }
 
         String orderQuery = " order by roleT.org.sortname, subT.name, subT.startDate, subT.endDate"

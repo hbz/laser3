@@ -177,7 +177,6 @@
                                     r2d2.initDynamicUiStuff('#costItem_ajaxModal');
                                     r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
                                     JSPC.app['finance'+idSuffix].updateTitleDropdowns();
-                                    JSPC.app.setupCalendar();
                                     JSPC.app['finance'+idSuffix].preselectMembers();
                                 },
                                 detachable: true,
@@ -216,7 +215,6 @@
                                 r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
 
                                 JSPC.app['finance'+idSuffix].updateTitleDropdowns();
-                                JSPC.app.setupCalendar();
                             },
                             detachable: true,
                             closable: false,
