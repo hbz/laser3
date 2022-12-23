@@ -1,6 +1,6 @@
 // bundle: assets/javascripts/base.js
 //
-//= require libs/jquery-3.6.0.js
+//= require libs/jquery-3.6.3.js
 //= require libs/jquery.poshytip.js
 //= require libs/jquery-editable-poshytip.js
 //= require libs/moment-with-locales-modified.js
