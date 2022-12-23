@@ -1008,7 +1008,6 @@
                                 r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
 
                                 JSPC.callbacks.dynPostFunc();
-                                JSPC.app.setupCalendar();
                             },
                             detachable: true,
                             closable: false,

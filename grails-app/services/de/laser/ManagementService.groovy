@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletRequest
 import java.nio.file.Files
 import java.nio.file.Path
 import java.text.SimpleDateFormat
+import java.time.Year
 import java.util.concurrent.ExecutorService
 
 /**
@@ -653,6 +654,7 @@ class ManagementService {
                 SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
                 Date startDate = params.valid_from ? sdf.parse(params.valid_from) : null
                 Date endDate = params.valid_to ? sdf.parse(params.valid_to) : null
+                Year referenceYear = params.reference_year ? Year.parse(params.reference_year) : null
                 Set<Subscription> subscriptions = Subscription.findAllByIdInList(selectedSubs)
                 if(params.processOption == 'changeProperties') {
                     subscriptions.each { Subscription subscription ->
@@ -670,6 +672,13 @@ class ManagementService {
                             }
                             if (endDate && auditService.getAuditConfig(subscription.instanceOf, 'endDate')) {
                                 noChange << messageSource.getMessage('default.endDate.label', null, locale)
+                            }
+                            if (referenceYear && !auditService.getAuditConfig(subscription.instanceOf, 'referenceYear')) {
+                                subscription.referenceYear = referenceYear
+                                change << messageSource.getMessage('subscription.referenceYear.label', null, locale)
+                            }
+                            if (referenceYear && auditService.getAuditConfig(subscription.instanceOf, 'referenceYear')) {
+                                noChange << messageSource.getMessage('subscription.referenceYear.label', null, locale)
                             }
                             if (params.process_status && !auditService.getAuditConfig(subscription.instanceOf, 'status')) {
                                 subscription.status = RefdataValue.get(params.process_status) ?: subscription.status

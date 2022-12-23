@@ -55,6 +55,7 @@ import java.sql.Timestamp
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.time.LocalDate
+import java.time.Year
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.temporal.TemporalAdjusters
@@ -3472,6 +3473,7 @@ class SubscriptionControllerService {
             else {
                 Date sub_startDate = params.subscription.start_date ? DateUtils.parseDateGeneric(params.subscription.start_date) : null
                 Date sub_endDate = params.subscription.end_date ? DateUtils.parseDateGeneric(params.subscription.end_date) : null
+                Year sub_refYear = params.subscription.reference_year ? Year.parse(params.subscription.reference_year) : null
                 RefdataValue sub_status = params.subStatus ? RefdataValue.get(params.subStatus) : RDStore.SUBSCRIPTION_NO_STATUS
                 boolean sub_isMultiYear = params.subscription.isMultiYear
                 String new_subname = params.subscription.name
@@ -3483,6 +3485,7 @@ class SubscriptionControllerService {
                         name: new_subname,
                         startDate: sub_startDate,
                         endDate: sub_endDate,
+                        referenceYear: sub_refYear,
                         manualCancellationDate: manualCancellationDate,
                         identifier: UUID.randomUUID().toString(),
                         isSlaved: result.subscription.isSlaved,

@@ -339,9 +339,13 @@ class SubscriptionsQueryService {
             }
         }
 
-        if (params.referenceYear) {
-            base_qry += " and s.referenceYear = :referenceYear "
-            qry_params.put('referenceYear', Year.parse(params.referenceYear))
+        if (params.referenceYears) {
+            base_qry += " and s.referenceYear in (:referenceYears) "
+            Set<Year> referenceYears = []
+            params.list('referenceYears').each { String referenceYear ->
+                referenceYears << Year.parse(referenceYear)
+            }
+            qry_params.put('referenceYears', referenceYears)
             filterSet = true
         }
 

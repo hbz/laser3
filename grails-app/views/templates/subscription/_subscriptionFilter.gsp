@@ -186,7 +186,7 @@
                 <select id="referenceYears" name="referenceYears" multiple="" class="ui search selection fluid dropdown">
                     <option value="">${message(code: 'default.select.choose.label')}</option>
                     <g:each in="${referenceYears}" var="referenceYear">
-                        <option <%=(params.list('referenceYears').contains(referenceYear)) ? 'selected="selected"' : ''%>
+                        <option <%=(params.list('referenceYears').contains(referenceYear.toString())) ? 'selected="selected"' : ''%>
                                 value="${referenceYear}">
                             ${referenceYear}
                         </option>

@@ -28,6 +28,7 @@ import org.springframework.transaction.TransactionStatus
 import java.sql.Array
 import java.text.SimpleDateFormat
 import java.time.Duration
+import java.time.Year
 
 /**
  * This service handles pending change processing and display
@@ -139,6 +140,15 @@ class PendingChangeService extends AbstractLockableService {
                                                 // yyyy-MM-dd'T'HH:mm:ss.SSSZ 2013-08-31T23:00:00Z
                                                 Date d = df.parse(payload.changeDoc.new)
                                                 target_object[payload.changeDoc.prop] = d
+                                            } else {
+                                                target_object[payload.changeDoc.prop] = null
+                                            }
+                                        }
+                                        else if (prop_info.getType() == java.time.Year) {
+                                            log.debug("Year processing.... parse \"${payload.changeDoc.new}\"");
+                                            if ((payload.changeDoc.new != null) && (payload.changeDoc.new.toString() != 'null')) {
+                                                Year y = new Year(payload.changeDoc.new.value)
+                                                target_object[payload.changeDoc.prop] = y
                                             } else {
                                                 target_object[payload.changeDoc.prop] = null
                                             }

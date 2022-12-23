@@ -145,8 +145,8 @@
         <laser:script file="${this.getGroovyPageFileName()}">
             JSPC.app.adjustDropdown = function () {
 
-                var showSubscriber = $("input[name='show.subscriber'").prop('checked');
-                var showConnectedObjs = $("input[name='show.connectedObjects'").prop('checked');
+                var showSubscriber = $("input[name='show.subscriber']").prop('checked');
+                var showConnectedObjs = $("input[name='show.connectedObjects']").prop('checked');
                 var url = '<g:createLink controller="ajaxJson"
                                          action="adjustSubscriptionList"/>'
 

@@ -577,6 +577,7 @@ r2d2 = {
             $(href + '.ui.modal').modal({
                 onVisible: function() {
                     $(this).find('.datepicker').calendar(r2d2.configs.datepicker);
+                    $(this).find('.yearpicker').calendar(r2d2.configs.yearpicker);
                 },
                 detachable: true,
                 autofocus: true,
@@ -645,8 +646,9 @@ r2d2 = {
         // checkboxes
         $(ctxSel + ' .ui.checkbox').not('#la-advanced').checkbox();
 
-        // datepicker
+        // datepicker + yearpicker
         $(ctxSel + ' .datepicker').calendar(r2d2.configs.datepicker);
+        $(ctxSel + ' .yearpicker').calendar(r2d2.configs.yearpicker);
 
         $(ctxSel + ' form').attr('autocomplete', 'off');
 

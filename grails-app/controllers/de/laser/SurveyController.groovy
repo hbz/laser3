@@ -41,6 +41,7 @@ import javax.servlet.ServletOutputStream
 import java.text.DateFormat
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
+import java.time.Year
 import java.util.concurrent.ExecutorService
 
 /**
@@ -3418,15 +3419,16 @@ class SurveyController {
         }
         params.surveyConfig = params.surveyConfig ?: null
         result.isRenewSub = true
-        result.permissionInfo = [sub_startDate: newStartDate ? sdf.format(newStartDate) : null,
-                                 sub_endDate  : newEndDate ? sdf.format(newEndDate) : null,
-                                 sub_name     : subscription.name,
-                                 sub_id       : subscription.id,
-                                 sub_status   : RDStore.SUBSCRIPTION_INTENDED.id.toString(),
-                                 sub_type     : subscription.type?.id?.toString(),
-                                 sub_form     : subscription.form?.id?.toString(),
-                                 sub_resource : subscription.resource?.id?.toString(),
-                                 sub_kind     : subscription.kind?.id?.toString(),
+        result.permissionInfo = [sub_startDate    : newStartDate ? sdf.format(newStartDate) : null,
+                                 sub_endDate      : newEndDate ? sdf.format(newEndDate) : null,
+                                 sub_referenceYear: subscription.referenceYear,
+                                 sub_name         : subscription.name,
+                                 sub_id           : subscription.id,
+                                 sub_status       : RDStore.SUBSCRIPTION_INTENDED.id.toString(),
+                                 sub_type         : subscription.type?.id?.toString(),
+                                 sub_form         : subscription.form?.id?.toString(),
+                                 sub_resource     : subscription.resource?.id?.toString(),
+                                 sub_kind         : subscription.kind?.id?.toString(),
                                  sub_isPublicForApi : subscription.isPublicForApi ? RDStore.YN_YES.id.toString() : RDStore.YN_NO.id.toString(),
                                  //sub_hasPerpetualAccess : subscription.hasPerpetualAccess,
                                  sub_hasPerpetualAccess : subscription.hasPerpetualAccess ? RDStore.YN_YES.id.toString() : RDStore.YN_NO.id.toString(),
@@ -3462,6 +3464,7 @@ class SurveyController {
         } else {
             Date sub_startDate = params.subscription.start_date ? DateUtils.parseDateGeneric(params.subscription.start_date) : null
             Date sub_endDate = params.subscription.end_date ? DateUtils.parseDateGeneric(params.subscription.end_date) : null
+            Year sub_refYear = params.subscription.reference_year ? Year.parse(params.subscription.reference_year) : null
             def sub_status = params.subStatus
             RefdataValue sub_type = RDStore.SUBSCRIPTION_TYPE_CONSORTIAL
             def sub_kind = params.subKind
@@ -3483,6 +3486,7 @@ class SurveyController {
                         name: new_subname,
                         startDate: sub_startDate,
                         endDate: sub_endDate,
+                        referenceYear: sub_refYear,
                         manualCancellationDate: manualCancellationDate,
                         identifier: java.util.UUID.randomUUID().toString(),
                         isSlaved: baseSub.isSlaved,
@@ -4576,6 +4580,7 @@ class SurveyController {
                         name: newParentSub.name,
                         startDate: startDate,
                         endDate: endDate,
+                        referenceYear: newParentSub.referenceYear ?: null,
                         administrative: newParentSub._getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE,
                         manualRenewalDate: newParentSub.manualRenewalDate,
                         identifier: UUID.randomUUID().toString(),

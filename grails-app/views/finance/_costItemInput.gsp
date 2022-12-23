@@ -331,7 +331,7 @@
                     <ui:datepicker label="financials.datePaid" name="newDatePaid" id="newDatePaid_${idSuffix}" placeholder="financials.datePaid" value="${costItem?.datePaid}" />
 
                     <%-- to restrict upon year: https://jsbin.com/ruqakehefa/1/edit?html,js,output , cf. example 8! --%>
-                    <ui:datepicker label="financials.financialYear" name="newFinancialYear" id="newFinancialYear_${idSuffix}" placeholder="financials.financialYear" value="${costItem?.financialYear}" />
+                    <ui:datepicker type="year" label="financials.financialYear" name="newFinancialYear" id="newFinancialYear_${idSuffix}" placeholder="financials.financialYear" value="${costItem?.financialYear}" />
                 </div>
                 <div class="two fields">
                     <ui:datepicker label="financials.dateFrom" name="newStartDate" id="newStartDate_${idSuffix}" placeholder="default.date.label" value="${costItem?.startDate}" />
@@ -803,21 +803,11 @@
         }
     }
     JSPC.app.finance${idSuffix}.init();
-    JSPC.app.setupCalendar = function () {
-        //console.log($("#newFinancialYear_${idSuffix}").parents(".datepicker").calendar());
-        $("#newFinancialYear_${idSuffix}").parents(".datepicker").calendar({
-            type: 'year',
-            minDate: new Date('1582-10-15'),
-            maxDate: new Date('2099-12-31')
-        });
-    }
-
-    JSPC.app.setupCalendar();
 
     JSPC.app.adjustDropdown = function () {
 
-        var showSubscriber = $("input[name='show.subscriber'").prop('checked');
-        var showConnectedObjs = $("input[name='show.connectedObjects'").prop('checked');
+        var showSubscriber = $("input[name='show.subscriber']").prop('checked');
+        var showConnectedObjs = $("input[name='show.connectedObjects']").prop('checked');
         var url = '<g:createLink controller="ajaxJson" action="adjustCompareSubscriptionList"/>?showSubscriber=' + showSubscriber + '&showConnectedObjs=' + showConnectedObjs
 
         var status = $("select#status").serialize()

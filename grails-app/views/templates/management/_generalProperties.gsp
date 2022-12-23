@@ -14,6 +14,7 @@
                     <th>${message(code: 'subscription')}</th>
                     <th>${message(code: 'default.startDate.label')}</th>
                     <th>${message(code: 'default.endDate.label')}</th>
+                    <th>${message(code: 'subscription.referenceYear.label')}</th>
                     <th>${message(code: 'default.status.label')}</th>
                     <th>${message(code: 'subscription.kind.label')}</th>
                     <th>${message(code: 'subscription.form.label')}</th>
@@ -35,6 +36,10 @@
                     <td>
                         <g:formatDate formatName="default.date.format.notime" date="${subscription.endDate}"/>
                         <ui:auditButton auditable="[subscription, 'endDate']"/>
+                    </td>
+                    <td>
+                        ${subscription.referenceYear}
+                        <ui:auditButton auditable="[subscription, 'referenceYear']"/>
                     </td>
                     <td>
                         ${subscription.status.getI10n('value')}
@@ -89,10 +94,12 @@
 
             <h4 class="ui header">${message(code: 'subscriptionsManagement.info.subscriptionProperty')}</h4>
 
-            <div class="two fields">
+            <div class="three fields">
                 <ui:datepicker label="subscription.startDate.label" id="valid_from" name="valid_from"/>
 
                 <ui:datepicker label="subscription.endDate.label" id="valid_to" name="valid_to"/>
+
+                <ui:datepicker label="subscription.referenceYear.label" id="reference_year" name="reference_year" type="year"/>
             </div>
 
             <div class="four fields">
@@ -202,6 +209,7 @@
                     </g:if>
                     <th>${message(code: 'default.startDate.label')}</th>
                     <th>${message(code: 'default.endDate.label')}</th>
+                    <th>${message(code: 'subscription.referenceYear.label')}</th>
                     <th>${message(code: 'default.status.label')}</th>
                     <th>${message(code: 'subscription.kind.label')}</th>
                     <th>${message(code: 'subscription.form.label')}</th>
@@ -274,6 +282,11 @@
                         <td><ui:xEditable owner="${sub}" field="endDate" type="date"
                                              overwriteEditable="${editableOld}" validation="datesCheck"/>
                         <ui:auditButton auditable="[sub, 'endDate']"/>
+                        </td>
+                        <td>
+                            <ui:xEditable owner="${sub}" field="referenceYear" type="year"
+                                          overwriteEditable="${editableOld}"/>
+                            <ui:auditButton auditable="[sub, 'referenceYear']"/>
                         </td>
                         <td>
                             <ui:xEditableRefData owner="${sub}" field="status"

@@ -1587,11 +1587,12 @@ class SubscriptionController {
             newEndDate = subscription.endDate ? (subscription.endDate + 1.year) : null
         }
         result.isRenewSub = true
-        result.permissionInfo = [sub_startDate: newStartDate ? sdf.format(newStartDate) : null,
-                                 sub_endDate  : newEndDate ? sdf.format(newEndDate) : null,
-                                 sub_name     : subscription.name,
-                                 sub_id       : subscription.id,
-                                 sub_status   : RDStore.SUBSCRIPTION_INTENDED.id.toString()]
+        result.permissionInfo = [sub_startDate    : newStartDate ? sdf.format(newStartDate) : null,
+                                 sub_endDate      : newEndDate ? sdf.format(newEndDate) : null,
+                                 sub_referenceYear: subscription.referenceYear,
+                                 sub_name         : subscription.name,
+                                 sub_id           : subscription.id,
+                                 sub_status       : RDStore.SUBSCRIPTION_INTENDED.id.toString()]
         result
     }
 
