@@ -186,7 +186,7 @@ class LinksGenerationService {
         Set chain = []
         Set first = _getRecursiveNext([startingPoint].toSet(),position)
         Set next
-        while(first.size() > 0) {
+        while(first.size() > 0 && chain.addAll(first)) {
             first.each { row ->
                 chain << row
             }
