@@ -16,7 +16,6 @@
 //= require modules/setTextareaHeight.js
 //= require modules/system.js
 //= require wysiwyg.js                          //--> bundle
-//= require modules/wysiwyg.js
 
 console.log('+ bundle: laser.js')
 
