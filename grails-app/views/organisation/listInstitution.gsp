@@ -45,6 +45,6 @@
 
     <ui:paginate action="listInstitution" params="${params}" max="${max}" total="${consortiaMemberTotal}" />
 
-    <laser:render template="/myInstitution/export/individuallyExportModalOrgs" model="[modalID: 'individuallyExportModal', orgType: 'institution']" />
+    <laser:render template="/myInstitution/export/individuallyExportModalOrgs" model="[modalID: 'individuallyExportModal', orgType: 'institution', contactSwitch: true]" />
 
 <laser:htmlEnd />
