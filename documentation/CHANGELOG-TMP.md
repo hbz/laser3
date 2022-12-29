@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+3996    28.12.2022  dev     3.1         Andreas Feature     Umsetzung der Kostenberechnung
+
 4663    23.12.2022  dev     3.1         Andreas Feature     neues Lizenzmerkmal "Zuordnungsjahr"
 
 4223    22.12.2022  rc-3.0  3.0.1       Moe     Bug         Bestand aus Vorgängerlizenz bei Titelauswahl in lokalen Lizenzen blocken
