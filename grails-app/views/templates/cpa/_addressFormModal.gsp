@@ -180,10 +180,10 @@
             let addressElements = [$('#type'), $('#name'), $('#additionFirst'), $('#additionSecond'), $('#street_1'), $('#street_2'), $('#zipcode'), $('#city'), $('#pob'), $('#pobZipcode'), $('#pobCity'), $('#country'), $('#region')];
             if(!JSPC.app.areElementsFilledOut(addressElements)) {
                 if(confirm("${message(code:'person.create.noAddressConfirm')}")) {
-                    $('#person_form').unbind('submit').submit();
+                    $('#create_address').unbind('submit').submit();
                 }
             }
-            else $('#person_form').unbind('submit').submit();
+            else $('#create_address').unbind('submit').submit();
         });
 
         JSPC.app.areElementsFilledOut = function (elems) {
