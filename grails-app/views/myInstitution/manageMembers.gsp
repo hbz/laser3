@@ -66,7 +66,7 @@
     </ui:filter>
 <div class="la-clear-before">
     <g:if test="${members}">
-        <laser:render template="export/individuallyExportModalOrgs" model="[modalID: 'individuallyExportModal', orgType: 'institution']" />
+        <laser:render template="export/individuallyExportModalOrgs" model="[modalID: 'individuallyExportModal', orgType: 'institution', contactSwitch: true]" />
         <g:form action="manageMembers" controller="myInstitution" method="post" class="ui form la-clear-before" data-confirm-id="manageMembers_form">
             <laser:render template="/templates/filter/orgFilterTable"
                       model="[orgList: members,

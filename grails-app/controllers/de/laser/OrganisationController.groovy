@@ -278,7 +278,9 @@ class OrganisationController  {
             Map<String, Object> selectedFields = [:]
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
 
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(availableOrgs, selectedFields, 'institution')
+            Set<String> contactSwitch = []
+            contactSwitch.addAll(params.list("contactSwitch"))
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(availableOrgs, selectedFields, 'institution', contactSwitch)
 
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -309,8 +311,59 @@ class OrganisationController  {
         availableOrgs.remove(Org.findByName("LAS:eR Backoffice"))
         result.consortiaTotal = availableOrgs.size()
         result.availableOrgs = availableOrgs.drop(result.offset).take(result.max)
+        String header = message(code: 'menu.public.all_cons')
+        String exportHeader = message(code: 'export.all.consortia')
+        SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
+        // Write the output to a file
+        String file = "${sdf.format(new Date())}_"+exportHeader
 
-        result
+        if ( params.exportXLS ) {
+
+            SXSSFWorkbook wb = (SXSSFWorkbook) organisationService.exportOrg(availableOrgs, header, false, 'xls')
+            response.setHeader "Content-disposition", "attachment; filename=\"${file}.xlsx\""
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
+            return
+        }
+        else if(params.exportClickMeExcel) {
+            if (params.filename) {
+                file = params.filename
+            }
+            Set<String> contactSwitch = []
+            contactSwitch.addAll(params.list("contactSwitch"))
+            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+            Map<String, Object> selectedFields = [:]
+            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(availableOrgs, selectedFields, 'consortium', contactSwitch)
+
+            response.setHeader "Content-disposition", "attachment; filename=\"${file}.xlsx\""
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
+            return
+        }
+        else {
+            withFormat {
+                html {
+                    result
+                }
+                csv {
+                    response.setHeader("Content-disposition", "attachment; filename=\"${file}.csv\"")
+                    response.contentType = "text/csv"
+                    ServletOutputStream out = response.outputStream
+                    out.withWriter { writer ->
+                        writer.write((String) organisationService.exportOrg(availableOrgs,header,false,"csv"))
+                    }
+                    out.close()
+                }
+            }
+        }
     }
 
     /**
