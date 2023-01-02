@@ -1,6 +1,7 @@
 // bundle: assets/javascripts/accessibility.js
 //
 //= require /javascript/semantic.min.js         //--> assets/themes
+//
 //= require modules/r2d2.js
 //= require modules/c3po.js
 //= require modules/decksaver.js
@@ -10,12 +11,12 @@
 //= require modules/a11y/elements/icon.js
 //= require modules/a11y/modules/modal.js
 //= require modules/docs.js
+//= require modules/wysiwyg.js
 //= require modules/why.js
 //= require modules/verticalNavi.js
 //= require modules/responsiveTables.js
 //= require modules/setTextareaHeight.js
 //= require modules/system.js
-//= require wysiwyg.js                          //--> bundle
 
 console.log('+ bundle: accessibility.js')
 

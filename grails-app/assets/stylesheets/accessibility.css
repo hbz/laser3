@@ -2,7 +2,8 @@
  * bundle: assets/stylesheets/accessibility.css
  *
  *= require base.css
+ *
  *= require /accessibility/semantic.min.css         //--> assets/themes
- *= require wysiwyg.css                             //--> bundle
+ *
  *= require modules/tmp_semui.css                   //--> tmp and/or fallback
  */
