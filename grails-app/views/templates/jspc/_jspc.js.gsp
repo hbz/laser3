@@ -25,25 +25,25 @@ JSPC = {
 
         add : function (label, module) {
             if (! JSPC.modules.registry.get (label) ) {
-                console.log ('  /- adding module ' + (JSPC.modules.registry.size+1) + ' > ' + label);
+                console.log ('  > adding module ' + label + ' (' + (JSPC.modules.registry.size+1) + ')');
                 JSPC.modules.registry.set (label, module);
                 if (window[label] != module) {
-                    console.warn ('  /- module OVERRIDES existing property ? ' + label);
+                    console.warn ('  > module OVERRIDES existing property ? ' + label);
                     window[label] = module;
                 }
             }
-            else { console.log ('  /- module EXISTS and ignored ? ' + label); }
+            else { console.log ('  > module EXISTS and ignored ? ' + label); }
         },
         go : function ( /*labels*/ ) {
             console.log ('JSPC.modules.go( ' + arguments.length + ' modules )')
             let i = 0;
             for (let label of arguments) {
                 if (JSPC.modules.registry.get (label)) {
-                    console.log ('  \\- running module ' + (++i) + ' > ' + label);
+                    console.log ('>> running module ' + label + ' (' + (++i) + ')');
                     JSPC.modules.registry.get (label).go();
                     why.tap();
                 }
-                else { console.log ('  \\- module NOT found ? ' + label ); }
+                else { console.log ('>> module NOT found ? ' + label ); }
             }
         }
     },

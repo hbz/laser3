@@ -13,39 +13,39 @@ why = {
 
     help: function() {
         console.log(
-            '_help      -> returns this help \n' +
+            '_help      : returns this help \n' +
             '  \n' +
-            '_tap       -> checks for duplicate event listener and id attributes, writes history \n' +
-            '_info      -> shows current details' +
-            '_history   -> shows existing history \n' +
+            '_tap       : checks for duplicate event listener and id attributes, writes history \n' +
+            '_info      : shows current details' +
+            '_history   : shows existing history \n' +
             '  \n' +
-            '_elem(id)  -> shows $(*[data-why-id="why-<id>"]) \n' +
-            '_forms     -> shows $(forms) \n' +
-            '_headlines -> shows $(h{1..6}) \n' +
-            '_comments  -> shows $(<!-- -->) \n' +
-            '_templates -> shows $(<!-- [template: .. ] -->) \n'
+            '_elem(id)  : shows $(*[data-why-id="why-<id>"]) \n' +
+            '_forms     : shows $(forms) \n' +
+            '_headlines : shows $(h{1..6}) \n' +
+            '_comments  : shows $(<!-- -->) \n' +
+            '_templates : shows $(<!-- [template: .. ] -->) \n'
         )
     },
 
     tap: function () {
-        console.log('why -> tap ' + (1 + why.el_keys.length))
+        console.log('why : tap ' + (1 + why.el_keys.length))
         why._executeTap ()
     },
 
     info: function (expand = true) {
-        console.log('why -> info')
+        console.log('why : info')
         why._executeTap (true, expand)
     },
 
     history: function () {
-        console.log('why -> history')
+        console.log('why : history')
         $.each(why.el_keys, function (i, e) {
             console.log(e)
         })
     },
 
     elem: function (id) {
-        console.log('why -> elem : $( [data-why-id] )')
+        console.log('why : elem : $( [data-why-id] )')
         let elem = $('*[data-why-id="why-' + id + '"]')
 
         if (elem) {
@@ -60,7 +60,7 @@ why = {
     },
 
     comments: function() {
-        console.log('why -> comments')
+        console.log('why : comments')
         let comments = $('*').contents().filter(function() { return this.nodeType === 8 })
         $.each(comments, function (i, elem) {
             console.log(elem)
@@ -68,21 +68,21 @@ why = {
     },
 
     forms: function() {
-        console.log('why -> forms')
+        console.log('why : forms')
         $.each($('form'), function (i, elem) {
             console.log(elem)
         })
     },
 
     headlines: function() {
-        console.log('why -> headlines')
+        console.log('why : headlines')
         $.each($('h1,h2,h3,h4,h5,h6'), function (i, elem) {
             console.log(elem)
         })
     },
 
     templates: function() {
-        console.log('why -> templates')
+        console.log('why : templates')
         let comments = $('*').contents().filter(function () { return this.nodeType === 8 && this.textContent.includes('[template:') && this.textContent.includes('START') })
         $.each(comments, function (i, elem) {
             console.log(elem)

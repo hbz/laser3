@@ -7,11 +7,10 @@
 			<ui:crumb message="menu.admin.managePropertyDefinitions" class="active"/>
 		</ui:breadcrumbs>
 
+%{--
         <ui:controlButtons>
-            <%--<laser:render template="actions"/>--%>
-            <%--
+            <laser:render template="actions"/>
             <button class="ui button" value="" data-href="#addPropertyDefinitionModal" data-ui="modal" >${message(code:'propertyDefinition.create_new.label')}</button>
-            --%>
             <%-- included in case someone of the admins wishes this export
             <ui:exportDropdown>
                 <ui:exportDropdownItem>
@@ -19,13 +18,9 @@
                 </ui:exportDropdownItem>
             </ui:exportDropdown>--%>
         </ui:controlButtons>
+--}%
 
         <ui:h1HeaderWithIcon message="menu.admin.managePropertyDefinitions" type="admin"/>
-
-        <br />
-        <button class="ui button" value="" data-href="#addPropertyDefinitionModal" data-ui="modal" >${message(code:'propertyDefinition.create_new.label')}</button>
-        <br />
-        <br />
 
 		<ui:messages data="${flash}" />
 
