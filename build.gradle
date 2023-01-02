@@ -12,7 +12,7 @@ buildscript {
     }
     dependencies {
         classpath 'org.grails:grails-gradle-plugin:' + grailsGradlePluginVersion
-        classpath 'org.grails.plugins:hibernate5:7.3.0'                                     // 2022
+        classpath 'org.grails.plugins:hibernate5:7.3.1'                                     // 2022
         classpath 'org.grails.plugins:database-migration:4.1.0'                             // 2022
         classpath 'com.bertramlabs.plugins:asset-pipeline-gradle:3.4.7'                     // 2022 : [freeze] : 4.0.0 available
         classpath 'com.gorylenko.gradle-git-properties:gradle-git-properties:2.4.1'         // 2022
@@ -91,7 +91,7 @@ dependencies {
     implementation 'org.grails.plugins:async'
     implementation 'org.grails.plugins:scaffolding'
     implementation 'org.grails.plugins:events'
-    implementation 'org.grails.plugins:hibernate5'
+    implementation 'org.grails.plugins:hibernate5:7.3.1'    // [fixed - tmp]
     implementation 'org.grails.plugins:gsp'
 
     implementation 'io.micronaut:micronaut-http-client'
@@ -105,7 +105,7 @@ dependencies {
     implementation 'org.elasticsearch:elasticsearch:7.16.3'                                 // 2022
     implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.16.3'   // 2022
 
-    implementation 'org.grails.plugins:spring-security-core:5.1.1'          // 2022
+    implementation 'org.grails.plugins:spring-security-core:5.2.0'          // 2022
     implementation 'org.grails.plugins:audit-logging:4.0.3'                 // 2021
     implementation 'org.grails.plugins:database-migration:4.1.0', {         // 2022
         exclude module: 'spring-boot-cli'
