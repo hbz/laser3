@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4730    28.12.2022  rc-3.0  3.0.1       Andreas Bug         Kostenausschüttung überschreibt Sichtbarkeitseinstellung trotz fehlender Eingabe
+
+4729    27.12.2022  rc-3.0  3.0.1       Andreas Bug         Kostenmodal löste bei Vollnutzern nicht aus
+
 4223    22.12.2022  rc-3.0  3.0.1       Moe     Bug         Bestand aus Vorgängerlizenz bei Titelauswahl in lokalen Lizenzen blocken
 
 4538    22.12.2022  rc-3.0  3.0.1       Moe     Bug         Bestandstitel lizenz- und paketübergreifend blocken
