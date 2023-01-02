@@ -2,7 +2,8 @@
  * bundle: assets/stylesheets/laser.css
  *
  *= require base.css                    //--> bundle
+ *
  *= require /laser/semantic.min.css         //--> assets/themes
- *= require wysiwyg.css                 //--> bundle
+ *
  *= require modules/tmp_semui.css       //--> tmp and/or fallback
  */
