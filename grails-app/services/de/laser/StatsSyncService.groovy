@@ -648,8 +648,8 @@ class StatsSyncService {
             //log.debug("${Thread.currentThread().getName()} reports success: ${resultCount.length}")
         }
         else {
-            String batchQuery = "insert into counter4report (c4r_version, c4r_online_identifier, c4r_print_identifier, c4r_proprietary_identifier, c4r_isbn, c4r_doi, c4r_publisher, c4r_platform_guid, c4r_report_institution_guid, c4r_report_type, c4r_category, c4r_metric_type, c4r_report_from, c4r_report_to, c4r_report_count, c4r_identifier_hash) " +
-                    "values (:version, :onlineIdentifier, :printIdentifier, :proprietaryIdentifier, :isbn, :doi, :publisher, :platform, :reportInstitution, :reportType, :category, :metricType, :reportFrom, :reportTo, :reportCount, :identifierHash) " +
+            String batchQuery = "insert into counter4report (c4r_version, c4r_online_identifier, c4r_print_identifier, c4r_proprietary_identifier, c4r_isbn, c4r_doi, c4r_publisher, c4r_platform_guid, c4r_report_institution_guid, c4r_report_type, c4r_category, c4r_metric_type, c4r_report_from, c4r_report_to, c4r_report_count, c4r_yop, c4r_identifier_hash) " +
+                    "values (:version, :onlineIdentifier, :printIdentifier, :proprietaryIdentifier, :isbn, :doi, :publisher, :platform, :reportInstitution, :reportType, :category, :metricType, :reportFrom, :reportTo, :reportCount, :yop, :identifierHash) " +
                     "on conflict (c4r_report_from, c4r_report_to, c4r_report_type, c4r_metric_type, c4r_platform_guid, c4r_report_institution_guid, c4r_identifier_hash) " +
                     "do update set c4r_report_count = :reportCount"
             /*if(reportData.reportID == Counter4Report.JOURNAL_REPORT_5) {
@@ -804,8 +804,8 @@ class StatsSyncService {
         else {
             //GParsPool.withExistingPool(pool) {
             reportData.reports.items.eachWithIndex { Map reportItem, int t ->
-                String batchQuery = "insert into counter5report (c5r_version, c5r_online_identifier, c5r_print_identifier, c5r_proprietary_identifier, c5r_isbn, c5r_doi, c5r_publisher, c5r_platform_guid, c5r_report_institution_guid, c5r_report_type, c5r_metric_type, c5r_data_type, c5r_access_type, c5r_access_method, c5r_report_from, c5r_report_to, c5r_report_count, c5r_identifier_hash) " +
-                        "values (:version, :onlineIdentifier, :printIdentifier, :proprietaryIdentifier, :isbn, :doi, :publisher, :platform, :reportInstitution, :reportType, :metricType, :dataType, :accessType, :accessMethod, :reportFrom, :reportTo, :reportCount, :identifierHash) " +
+                String batchQuery = "insert into counter5report (c5r_version, c5r_online_identifier, c5r_print_identifier, c5r_proprietary_identifier, c5r_isbn, c5r_doi, c5r_publisher, c5r_platform_guid, c5r_report_institution_guid, c5r_report_type, c5r_metric_type, c5r_data_type, c5r_access_type, c5r_access_method, c5r_report_from, c5r_report_to, c5r_report_count, c5r_yop, c5r_identifier_hash) " +
+                        "values (:version, :onlineIdentifier, :printIdentifier, :proprietaryIdentifier, :isbn, :doi, :publisher, :platform, :reportInstitution, :reportType, :metricType, :dataType, :accessType, :accessMethod, :reportFrom, :reportTo, :reportCount, :yop, :identifierHash) " +
                         "on conflict (c5r_report_from, c5r_report_to, c5r_report_type, c5r_metric_type, c5r_platform_guid, c5r_report_institution_guid, c5r_identifier_hash) " +
                         "do update set c5r_report_count = :reportCount, c5r_data_type = :dataType, c5r_access_type = :accessType, c5r_access_method = :accessMethod"
                 /*if(reportData.reportID.toLowerCase() in [Counter5Report.BOOK_REQUESTS, Counter5Report.BOOK_ACCESS_DENIED, Counter5Report.BOOK_USAGE_BY_ACCESS_TYPE, Counter5Report.JOURNAL_REQUESTS_BY_YOP, Counter5Report.JOURNAL_REQUESTS, Counter5Report.JOURNAL_ACCESS_DENIED, Counter5Report.JOURNAL_ARTICLE_REQUESTS, Counter5Report.JOURNAL_USAGE_BY_ACCESS_TYPE]) {

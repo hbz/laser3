@@ -147,9 +147,8 @@ class FinanceService {
                 newCostItem.issueEntitlementGroup = issueEntitlementGroup ?: null
                 newCostItem.order = configMap.order
                 newCostItem.invoice = configMap.invoice
-                if(sub)
-                    newCostItem.isVisibleForSubscriber = sub._getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE ? false : configMap.isVisibleForSubscriber
-                else newCostItem.isVisibleForSubscriber = false
+                if(configMap.isVisibleForSubscriber != null)
+                    newCostItem.isVisibleForSubscriber = sub?._getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE ? false : configMap.isVisibleForSubscriber
                 newCostItem.costItemElement = configMap.costItemElement
                 newCostItem.costItemStatus = configMap.costItemStatus
                 newCostItem.billingCurrency = configMap.billingCurrency
@@ -300,9 +299,9 @@ class FinanceService {
                             costItem.costInLocalCurrency = configMap.currencyRate * costItem.costInBillingCurrency
                             costItem.costInLocalCurrencyAfterTax = costItem.costInLocalCurrency * (1.0 + (0.01 * taxRate))
                         }
-                        if(result.subscription)
-                            costItem.isVisibleForSubscriber = result.subscription._getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE ? false : configMap.isVisibleForSubscriber
-                        else costItem.isVisibleForSubscriber = false
+                        if(configMap.isVisibleForSubscriber != null) {
+                            costItem.isVisibleForSubscriber = result.subscription?._getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE ? false : configMap.isVisibleForSubscriber
+                        }
                         costItem.costDescription = configMap.costDescription ?: costItem.costDescription
                         costItem.costTitle = configMap.costTitle ?: costItem.costTitle
                         costItem.datePaid = configMap.datePaid ?: costItem.datePaid
@@ -459,7 +458,10 @@ class FinanceService {
         //block header
         //row 1
         String costTitle = params.newCostTitle ?: null
-        boolean isVisibleForSubscriber = params.long('newIsVisibleForSubscriber') == RDStore.YN_YES.id
+        Boolean isVisibleForSubscriber = null //built-in datatype cannot be set to null while I need null value to check if value should be changed or not!
+        //one form sends 'null' as string, the other sends indeed no value ...
+        if(params.newIsVisibleForSubscriber != 'null' && params.newIsVisibleForSubscriber != null)
+            isVisibleForSubscriber = params.long('newIsVisibleForSubscriber') == RDStore.YN_YES.id
         RefdataValue costItemElement = params.newCostItemElement ? (RefdataValue.get(params.long('newCostItemElement'))): null    //admin fee, platform, etc
         RefdataValue elementSign
         try {
