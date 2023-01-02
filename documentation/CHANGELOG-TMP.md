@@ -9,6 +9,8 @@
 
 4730    28.12.2022  rc-3.0  3.0.1       Andreas Bug         Kostenausschüttung überschreibt Sichtbarkeitseinstellung trotz fehlender Eingabe
 
+3996    28.12.2022  dev     3.1         Andreas Feature     Umsetzung der Kostenberechnung
+
 4729    27.12.2022  rc-3.0  3.0.1       Andreas Bug         Kostenmodal löste bei Vollnutzern nicht aus
 
 4668    27.12.2022  dev     3.1         Andreas Feature     Export von Einrichtungsdaten korrigiert und teilweise neu implementiert
