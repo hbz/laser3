@@ -7,10 +7,40 @@
     </ui:breadcrumbs>
 
     <ui:controlButtons>
-
         <%
             editable = (editable && accessService.checkPerm('ORG_INST')) || contextService.getUser()?.hasRole('ROLE_ADMIN')
         %>
+        <ui:exportDropdown>
+            <ui:exportDropdownItem>
+                <a class="item" data-ui="modal" href="#individuallyExportModal">Click Me Excel Export</a>
+            </ui:exportDropdownItem>
+            <g:if test="${filterSet}">
+                <ui:exportDropdownItem>
+                    <g:link class="item js-open-confirm-modal"
+                            data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
+                            data-confirm-term-how="ok" controller="organisation" action="listConsortia"
+                            params="${params+[exportXLS:true]}">
+                        ${message(code:'default.button.exports.xls')}
+                    </g:link>
+                </ui:exportDropdownItem>
+                <ui:exportDropdownItem>
+                    <g:link class="item js-open-confirm-modal"
+                            data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
+                            data-confirm-term-how="ok" controller="organisation" action="listConsortia"
+                            params="${params+[format:'csv']}">
+                        ${message(code:'default.button.exports.csv')}
+                    </g:link>
+                </ui:exportDropdownItem>
+            </g:if>
+            <g:else>
+                <ui:exportDropdownItem>
+                    <g:link class="item" action="listConsortia" params="${params+[exportXLS:true]}">${message(code:'default.button.exports.xls')}</g:link>
+                </ui:exportDropdownItem>
+                <ui:exportDropdownItem>
+                    <g:link class="item" action="listConsortia" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link>
+                </ui:exportDropdownItem>
+            </g:else>
+        </ui:exportDropdown>
         <g:if test="${editable}">
             <laser:render template="actions" />
         </g:if>
@@ -30,6 +60,7 @@
         </g:form>
     </ui:filter>
 
+    <laser:render template="/myInstitution/export/individuallyExportModalOrgs" model="[modalID: 'individuallyExportModal', orgType: 'consortium', contactSwitch: true]" />
     <laser:render template="/templates/filter/orgFilterTable"
               model="[orgList: availableOrgs,
                       consortiaIds: consortiaIds,

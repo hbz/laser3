@@ -42,6 +42,7 @@ import groovy.time.TimeCategory
 import org.apache.commons.lang3.StringEscapeUtils
 import org.apache.commons.lang3.RandomStringUtils
 import org.codehaus.groovy.runtime.InvokerHelper
+import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.hibernate.SessionFactory
 import org.grails.orm.hibernate.cfg.GrailsDomainBinder
 import org.grails.orm.hibernate.cfg.PropertyConfig
@@ -361,15 +362,18 @@ class SubscriptionControllerService {
             [result: null, status: STATUS_ERROR]
         else {
             result.dateRun = new Date()
+            SimpleDateFormat yearFormat = DateUtils.getSDF_yyyy(), monthFormat = DateUtils.getSDF_yyyyMM()
             prf.setBenchmark('before subscribed platforms')
             Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription", [subscription: result.subscription])
             if(!subscribedPlatforms) {
                 subscribedPlatforms = Platform.executeQuery("select tipp.platform from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscription", [subscription: result.subscription])
             }
             result.platforms = subscribedPlatforms
-            Set<IdentifierNamespace> namespaces = [IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISSN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISSN, TitleInstancePackagePlatform.class.name).id, IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISBN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.PISBN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.DOI, TitleInstancePackagePlatform.class.name)] as Set<IdentifierNamespace>
+            Set<IdentifierNamespace> namespaces = [IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISSN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISSN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISBN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.PISBN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.DOI, TitleInstancePackagePlatform.class.name)] as Set<IdentifierNamespace>,
+            propIdNamespaces = []
             if(subscribedPlatforms.titleNamespace) {
-                namespaces.addAll(IdentifierNamespace.findAllByNsInList(subscribedPlatforms.titleNamespace))
+                propIdNamespaces.addAll(IdentifierNamespace.findAllByNsInList(subscribedPlatforms.titleNamespace))
+                namespaces.addAll(propIdNamespaces)
             }
             //at this point, we should be sure that at least the parent subscription has a holding!
             Set<Subscription> refSubs
@@ -378,176 +382,150 @@ class SubscriptionControllerService {
                 refSubs = [result.subscription]
             }
             else refSubs = [result.subscription.instanceOf]
-            Set c4usages = [], c4allYears = [], c5usages = [], c5allYears = []
-            Map<Date, Map<String, Integer>> c4sums = [:], c4allYearSums = [:], c5sums = [:], c5allYearSums = [:]
-            SortedSet monthsInRing = new TreeSet(), allYears = new TreeSet()
-            if(!params.tab)
-                params.tab = 'total'
+            Set<AbstractReport> c4usages = [], c5usages = []
+            Map<String, Object> c4sums = [:], c4allYearSums = [:], c5sums = [:], c5allYearSums = [:]
+            SortedSet datePoints = new TreeSet(), allYears = new TreeSet()
             String sort, customerUID = result.subscription.getSubscriber().globalUID, groupKey
             result.customer = customerUID
             if(subscribedPlatforms && refSubs) {
-                Set refTitles = fetchTitles(params, refSubs, namespaces, 'ids') //does not work because guids are missing
+                Map<String, Map<String, TitleInstancePackagePlatform>> titles = [:] //structure: namespace -> value -> tipp
+                //Set<TitleInstancePackagePlatform> titlesSorted = [] //fallback structure to preserve sorting
+                if(params.reportType in Counter4Report.COUNTER_4_TITLE_REPORTS || params.reportType in Counter5Report.COUNTER_5_TITLE_REPORTS) {
+                    fetchTitles(params, refSubs, namespaces, 'ids').each { Map titleMap ->
+                        //titlesSorted << titleMap.tipp
+                        Map<String, TitleInstancePackagePlatform> innerMap = titles.get(titleMap.namespace)
+                        if(!innerMap)
+                            innerMap = [:]
+                        innerMap.put(titleMap.value, GrailsHibernateUtil.unwrapIfProxy(titleMap.tipp))
+                        titles.put(titleMap.namespace, innerMap)
+                    }
+                }
                 Map<String, Object> dateRanges = getDateRange(params, result.subscription)
-                result.dateRangeParams = dateRanges.dateRangeParams
+                if(dateRanges.dateRange.length() > 0) {
+                    result.dateRangeParams = dateRanges.dateRangeParams
+                    if (!(params.reportType in [Counter4Report.JOURNAL_REPORT_5, Counter5Report.JOURNAL_REQUESTS_BY_YOP])) {
+                        datePoints.addAll(dateRanges.monthsInRing.collect { Date month -> monthFormat.format(month) })
+                    }
+                }
                 String filter = "", baseQuery, baseQueryAllYears, groupClause = " group by r.reportFrom, r.reportType, r.metricType"
                 Set<String> platforms = subscribedPlatforms.globalUID
-                boolean isCounter5 = false
+                boolean isCounter5 = params.reportType in Counter5Report.COUNTER_5_REPORTS
                 Counter5Report.withTransaction {
-                    Map<String, Object> queryParams = [customer: customerUID, platforms: platforms], queryParamsBound = queryParams.clone()
-                    if(dateRanges.dateRange.length() > 0) {
-                        queryParamsBound.startDate = dateRanges.startDate
-                        queryParamsBound.endDate = dateRanges.endDate
-                    }
-                    isCounter5 = Counter5Report.executeQuery('select count(r.id) from Counter5Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms)'+dateRanges.dateRange, queryParams)[0] > 0
+                    Map<String, Object> queryParams = [customer: customerUID, platforms: platforms]
                     if(isCounter5) {
                         result.revision = 'counter5'
-                        baseQueryAllYears = 'select new map(r.reportType as reportType, r.metricType as metricType, year(r.reportFrom) as year, sum(r.reportCount) as count) from Counter5Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms) '
-                        //reportFrom is correct at end-date because first of months are being passed!
-                        monthsInRing.addAll(Counter5Report.executeQuery('select r.reportFrom from Counter5Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms) and r.reportFrom >= :startDate and r.reportFrom <= :endDate group by r.reportFrom', queryParams+[startDate: dateRanges.monthsInRing.first(), endDate: dateRanges.monthsInRing.last()]))
-                        baseQuery = 'select new map(r.reportType as reportType, r.metricType as metricType, r.reportFrom as reportMonth, sum(r.reportCount) as count) from Counter5Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms) '
                         if(params.reportType) {
                             result.reportType = params.reportType
                             queryParams.reportType = result.reportType
                             filter += " and lower(r.reportType) = :reportType "
                         }
                         if(params.metricType) {
-                            result.metricType = params.list("metricType")
+                            result.metricType = params.metricType.split(',')
                             queryParams.metricType = result.metricType
                             filter += " and r.metricType in (:metricType) "
                         }
-                        queryParamsBound.putAll(queryParams)
-                        if(result.reportType in Counter5Report.COUNTER_5_PLATFORM_REPORTS) {
-                            //without titles
-                            c5usages.addAll(Counter5Report.executeQuery(baseQuery+filter+dateRanges.dateRange+groupClause, queryParamsBound))
-                            c5allYears.addAll(Counter5Report.executeQuery(baseQueryAllYears+filter+' group by year(r.reportFrom), r.reportType, r.metricType', queryParams))
+                        c5usages.addAll(Counter5Report.executeQuery('select r from Counter5Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms) '+filter+' order by r.metricType, r.reportFrom', queryParams))
+                        /*
+                        structure:
+                        (reportType is fixed, metricType is not)
+                        {
+                            metric: [
+                                month1: sum1, month2: sum2, ..., monthn: sumn
+                            ]
                         }
-                        if(result.reportType in Counter5Report.COUNTER_5_TITLE_REPORTS) {
-                            //with titles
-                            refTitles.collate(32700).each { List subList ->
-                                c5usages.addAll(Counter5Report.executeQuery(baseQuery+'and ((r.onlineIdentifier, r.printIdentifier, r.doi, r.isbn, r.proprietaryIdentifier) in (:ids) '+filter+dateRanges.dateRange+groupClause, queryParamsBound+[uids: subList]))
-                                c5allYears.addAll(Counter5Report.executeQuery(baseQueryAllYears+'and ((r.onlineIdentifier, r.printIdentifier, r.doi, r.isbn, r.proprietaryIdentifier) in (:ids)) '+filter+' group by year(r.reportFrom), r.reportType, r.metricType', queryParams+[uids: subList]))
+                         */
+                        c5usages.each { Counter5Report report ->
+                            boolean titleMatch = (params.reportType in Counter5Report.COUNTER_5_TITLE_REPORTS && matchReport(titles, propIdNamespaces, report) != null) || params.reportType in Counter5Report.COUNTER_5_PLATFORM_REPORTS
+                            if(titleMatch) {
+                                String year = yearFormat.format(report.reportFrom)
+                                Map<String, Object> metricDatePointSums = c5sums.get(report.metricType) ?: [total: 0], metricYearSums = c5allYearSums.get(report.metricType) ?: [:]
+                                if((!dateRanges.startDate || report.reportFrom >= dateRanges.startDate) && (!dateRanges.endDate || report.reportFrom <= dateRanges.endDate)) {
+                                    String datePoint
+                                    if(params.reportType == Counter5Report.JOURNAL_REQUESTS_BY_YOP) {
+                                        datePoint = "YOP ${yearFormat.format(report.yop)}"
+                                    }
+                                    else {
+                                        datePoint = monthFormat.format(report.reportFrom)
+                                    }
+                                    datePoints << datePoint
+                                    metricDatePointSums.total += report.reportCount
+                                    int monthCount = metricDatePointSums.get(datePoint) ?: 0
+                                    monthCount += report.reportCount
+                                    metricDatePointSums.put(datePoint, monthCount)
+                                    c5sums.put(report.metricType, metricDatePointSums)
+                                }
+                                int yearCount = metricYearSums.get(year) ?: 0
+                                yearCount += report.reportCount
+                                metricYearSums.put(year, yearCount)
+                                c5allYearSums.put(report.metricType, metricYearSums)
+                                allYears << year
                             }
-                        }
-                        c5usages.each { row ->
-                            Map<String, Object> reportSums = c5sums.get(row.reportType)
-                            if(!reportSums) {
-                                reportSums = [countsPerMonth: [:], sumsPerMetric: [:]]
-                            }
-                            Map<String, Object> countsPerMetric = reportSums.countsPerMonth.get(row.reportMonth)
-                            if(!countsPerMetric)
-                                countsPerMetric = [:]
-                            countsPerMetric.put(row.metricType, row.count)
-                            reportSums.countsPerMonth.put(row.reportMonth, countsPerMetric)
-                            reportSums.sumsPerMetric.put(row.metricType, reportSums.sumsPerMetric.get(row.metricType) ? reportSums.sumsPerMetric.get(row.metricType) + row.count : row.count)
-                            c5sums.put(row.reportType, reportSums)
-                        }
-                        c5allYears.each { row ->
-                            Map<String, Object> reportSums = c5allYearSums.get(row.reportType)
-                            if(!reportSums) {
-                                reportSums = [countsPerYear: [:], metrics: new TreeSet<String>()]
-                            }
-                            Map<String, Object> countsPerMetric = reportSums.countsPerYear.get(row.year)
-                            if(!countsPerMetric)
-                                countsPerMetric = [:]
-                            countsPerMetric.put(row.metricType, row.count)
-                            reportSums.countsPerYear.put(row.year, countsPerMetric)
-                            reportSums.metrics.add(row.metricType)
-                            c5allYearSums.put(row.reportType, reportSums)
-                            allYears << row.year
                         }
                         result.allYearSums = c5allYearSums
                         result.allYears = allYears
                         result.sums = c5sums
-                        result.monthsInRing = monthsInRing
+                        result.datePoints = datePoints
                     }
                     else {
                         result.revision = 'counter4'
-                        if(params.reportType == Counter4Report.JOURNAL_REPORT_5) {
-                            baseQuery = 'select new map(r.reportType as reportType, r.metricType as metricType, r.yop as yop, sum(r.reportCount) as count) from Counter4Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms) '
-                            groupClause = ' group by r.yop, r.reportType, r.metricType'
-                        }
-                        else
-                            baseQuery = 'select new map(r.reportType as reportType, r.metricType as metricType, r.reportFrom as reportMonth, sum(r.reportCount) as count) from Counter4Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms) '
-                        baseQueryAllYears = 'select new map(r.reportType as reportType, r.metricType as metricType, year(r.reportFrom) as year, sum(r.reportCount) as count) from Counter4Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms) '
-                        queryParams = [customer: customerUID, platforms: platforms]
-                        queryParamsBound = queryParams.clone()
-                        if(dateRanges.dateRange.length() > 0) {
-                            queryParamsBound.startDate = dateRanges.startDate
-                            queryParamsBound.endDate = dateRanges.endDate
-                        }
-                        //reportFrom is correct at end-date because first of months are being passed!
-                        monthsInRing.addAll(Counter4Report.executeQuery('select r.reportFrom from Counter4Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms) and r.reportFrom >= :startDate and r.reportFrom <= :endDate group by r.reportFrom', queryParams+[startDate: dateRanges.monthsInRing.first(), endDate: dateRanges.monthsInRing.last()]))
                         if(params.reportType) {
                             result.reportType = params.reportType
                             queryParams.reportType = result.reportType
                             filter += " and r.reportType = :reportType "
                         }
                         if(params.metricType) {
-                            result.metricType = params.list("metricType")
+                            result.metricType = params.metricType.split(',')
                             queryParams.metricType = result.metricType
                             filter += " and r.metricType in (:metricType) "
                         }
-                        queryParamsBound.putAll(queryParams)
-                        c4usages.addAll(Counter4Report.executeQuery(baseQuery+filter+dateRanges.dateRange+groupClause, queryParamsBound))
-                        c4allYears.addAll(Counter4Report.executeQuery(baseQueryAllYears+filter+' group by year(r.reportFrom), r.reportType, r.metricType', queryParams))
-                        Calendar cal = GregorianCalendar.getInstance()
-                        cal.set(2000, 0, 1)
-                        c4usages.each { row ->
-                            Map<String, Object> reportSums = c4sums.get(row.reportType)
-                            if(!reportSums) {
-                                reportSums = [sumsPerMetric: [:]]
-                                if(result.reportType == Counter4Report.JOURNAL_REPORT_5)
-                                    reportSums.countsPerYop = [:]
-                                else
-                                    reportSums.countsPerMonth = [:]
-                            }
-                            if(result.reportType == Counter4Report.JOURNAL_REPORT_5) {
-                                String yop
-                                if(row.yop < cal.getTime())
-                                    yop = 'before 2000'
-                                else yop = DateUtils.getSDF_yyyy().format(row.yop)
-                                Map<String, Object> countsPerMetric = reportSums.countsPerYop.get(yop)
-                                if(!countsPerMetric)
-                                    countsPerMetric = [:]
-                                countsPerMetric.put(row.metricType, row.count)
-                                reportSums.countsPerYop.put(yop, countsPerMetric)
-                            }
-                            else {
-                                Map<String, Object> countsPerMetric = reportSums.countsPerMonth.get(row.reportMonth)
-                                if(!countsPerMetric)
-                                    countsPerMetric = [:]
-                                countsPerMetric.put(row.metricType, row.count)
-                                reportSums.countsPerMonth.put(row.reportMonth, countsPerMetric)
-                            }
-                            reportSums.sumsPerMetric.put(row.metricType, reportSums.sumsPerMetric.get(row.metricType) ? reportSums.sumsPerMetric.get(row.metricType) + row.count : row.count)
-                            c4sums.put(row.reportType, reportSums)
+                        c4usages.addAll(Counter4Report.executeQuery('select r from Counter4Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms) '+filter+' order by r.metricType, r.reportFrom', queryParams))
+                        /*
+                        structure:
+                        (reportType is fixed, metricType is not)
+                        {
+                            metric: [
+                                month1: sum1, month2: sum2, ..., monthn: sumn
+                            ]
                         }
-                        prf.setBenchmark('after report loop')
-                        c4allYears.each { row ->
-                            Map<String, Object> reportYearSums = c4allYearSums.get(row.reportType)
-                            if(!reportYearSums) {
-                                reportYearSums = [countsPerYear: [:], metrics: new TreeSet<String>()]
+                         */
+                        c4usages.each { Counter4Report report ->
+                            boolean titleMatch = (params.reportType in Counter4Report.COUNTER_4_TITLE_REPORTS && matchReport(titles, propIdNamespaces, report) != null) || params.reportType in Counter4Report.COUNTER_4_PLATFORM_REPORTS
+                            if(titleMatch) {
+                                String year = yearFormat.format(report.reportFrom)
+                                Map<String, Object> metricDatePointSums = c4sums.get(report.metricType) ?: [total: 0], metricYearSums = c4allYearSums.get(report.metricType) ?: [:]
+                                if((!dateRanges.startDate || report.reportFrom >= dateRanges.startDate) && (!dateRanges.endDate || report.reportFrom <= dateRanges.endDate)) {
+                                    String datePoint
+                                    if(params.reportType == Counter4Report.JOURNAL_REPORT_5) {
+                                        datePoint = "YOP ${yearFormat.format(report.yop)}"
+                                    }
+                                    else {
+                                        datePoint = monthFormat.format(report.reportFrom)
+                                    }
+                                    datePoints << datePoint
+                                    metricDatePointSums.total += report.reportCount
+                                    int monthCount = metricDatePointSums.get(datePoint) ?: 0
+                                    monthCount += report.reportCount
+                                    metricDatePointSums.put(datePoint, monthCount)
+                                    c4sums.put(report.metricType, metricDatePointSums)
+                                }
+                                int yearCount = metricYearSums.get(year) ?: 0
+                                yearCount += report.reportCount
+                                metricYearSums.put(year, yearCount)
+                                c4allYearSums.put(report.metricType, metricYearSums)
+                                allYears << year
                             }
-                            Map<String, Object> countsPerMetricYear = reportYearSums.countsPerYear.get(row.year)
-                            if(!countsPerMetricYear)
-                                countsPerMetricYear = [:]
-                            countsPerMetricYear.put(row.metricType, row.count)
-                            reportYearSums.countsPerYear.put(row.year, countsPerMetricYear)
-                            reportYearSums.metrics.add(row.metricType)
-                            c4allYearSums.put(row.reportType, reportYearSums)
-                            allYears << row.year
                         }
                         result.allYearSums = c4allYearSums
                         result.allYears = allYears
                         result.sums = c4sums
-                        result.monthsInRing = monthsInRing
+                        result.datePoints = datePoints
                     }
                 }
             }
             else {
                 result.metricTypes = []
                 result.reportTypes = []
-                result.monthsInRing = []
+                result.datePoints = []
                 result.platforms = [] as JSON
             }
             [result: result, status: STATUS_OK]
@@ -583,7 +561,7 @@ class SubscriptionControllerService {
         Map<Integer, BigDecimal> allSums = [:]
         Calendar cal = GregorianCalendar.getInstance(), endTime = GregorianCalendar.getInstance()
         costItems.each { CostItem ci ->
-            cal.setTime(ci.startDate)
+            cal.setTime(ci.startDate ?: ci.sub.startDate)
             BigDecimal costForYear = allSums.get(cal.get(Calendar.YEAR)) ?: 0.0
             switch(ci.costItemElementConfiguration) {
                 case RDStore.CIEC_POSITIVE: costForYear += ci.costInBillingCurrencyAfterTax
@@ -593,7 +571,7 @@ class SubscriptionControllerService {
             }
             allSums.put(cal.get(Calendar.YEAR), costForYear)
         }
-        if(statsData.subscription.startDate) {
+        if(statsData.subscription.startDate && costItems) {
             List<Integer> reportYears = []
             if(statsData.subscription.isMultiYear) {
                 cal.setTime(statsData.subscription.startDate)
@@ -612,13 +590,12 @@ class SubscriptionControllerService {
                 reportYears << Integer.parseInt(DateUtils.getSDF_yyyy().format(statsData.subscription.startDate))
             //loop 1: subscription year rings
             reportYears.each { Integer reportYear ->
-                //loop 2: reports
-                statsData.allYearSums.each { String reportType, Map<String, Object> reportYearSums ->
+                //loop 2: metrics
+                statsData.allYearSums.each { String metricType, Map<String, Object> reportYearMetrics ->
                     //attempt; check data type of year
-                    Map<String, Object> countsPerMetric = reportYearSums.countsPerYear.get(reportYear) ?: [:]
-                    Long totalClicksInYear = countsPerMetric.values().sum()
+                    Integer totalClicksInYear = reportYearMetrics.values().sum()
                     //loop 3: metrics in report year
-                    countsPerMetric.each { String metricType, Long sum ->
+                    reportYearMetrics.each { String year, Integer sum ->
                         BigDecimal totalSum = allSums.get(reportYear)
                         if(totalSum) {
                             BigDecimal partOfTotalSum
@@ -686,6 +663,9 @@ class SubscriptionControllerService {
             startTime = subscription.startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
             endTime = LocalDate.now()
         }
+        else dateRange = ''
+        /*
+        range spans over the whole availability of reports, no preset!
         else {
             if(!params.containsKey('tabStat') || params.tabStat == 'total') {
                 dateRange = ''
@@ -698,11 +678,11 @@ class SubscriptionControllerService {
             }
             startTime = now.with(TemporalAdjusters.firstDayOfYear())
             endTime = now.with(TemporalAdjusters.lastDayOfYear())
-        }
+        }*/
         if(params.tabStat && params.tabStat != 'total' && params.exportXLS && params.data != 'fetchAll') {
             monthsInRing << DateUtils.getSDF_yyyyMM().parse(params.tabStat)
         }
-        else {
+        else if(startTime) {
             while(startTime.isBefore(endTime)) {
                 monthsInRing << Date.from(startTime.atStartOfDay(ZoneId.systemDefault()).toInstant())
                 startTime = startTime.plusMonths(1)
@@ -798,6 +778,34 @@ class SubscriptionControllerService {
         result.addAll(TitleInstancePackagePlatform.executeQuery(query, queryParams))
 
         result
+    }
+
+    TitleInstancePackagePlatform matchReport(Map<String, Map<String, TitleInstancePackagePlatform>> titles, Set<IdentifierNamespace> propIdNamespaces, AbstractReport report) {
+        TitleInstancePackagePlatform tipp = null
+        if(report.onlineIdentifier || report.isbn) {
+            tipp = titles[IdentifierNamespace.EISSN]?.get(report.onlineIdentifier)
+            if(!tipp)
+                tipp = titles[IdentifierNamespace.ISBN]?.get(report.onlineIdentifier)
+            if(!tipp)
+                tipp = titles[IdentifierNamespace.ISBN]?.get(report.isbn)
+        }
+        if(!tipp && (report.printIdentifier || report.isbn)) {
+            tipp = titles[IdentifierNamespace.ISSN]?.get(report.printIdentifier)
+            if(!tipp)
+                tipp = titles[IdentifierNamespace.PISBN]?.get(report.printIdentifier)
+            if(!tipp)
+                tipp = titles[IdentifierNamespace.PISBN]?.get(report.isbn)
+        }
+        if(!tipp && report.doi) {
+            tipp = titles[IdentifierNamespace.DOI]?.get(report.doi)
+        }
+        if(!tipp && report.proprietaryIdentifier) {
+            propIdNamespaces.each { String propIdNs ->
+                if(!tipp)
+                    tipp = titles[propIdNs]?.get(report.proprietaryIdentifier)
+            }
+        }
+        GrailsHibernateUtil.unwrapIfProxy(tipp)
     }
 
     //--------------------------------------------- new subscription creation -----------------------------------------------------------
@@ -1458,7 +1466,7 @@ class SubscriptionControllerService {
                     namespaces.addAll(propIdNamespaces)
                 }
                 fetchTitles(params, refSubs, namespaces, 'ids').each { Map titleMap ->
-                    titlesSorted << titleMap.tipp
+                    titlesSorted << GrailsHibernateUtil.unwrapIfProxy(titleMap.tipp)
                     Map<String, TitleInstancePackagePlatform> innerMap = titles.get(titleMap.namespace)
                     if(!innerMap)
                         innerMap = [:]
