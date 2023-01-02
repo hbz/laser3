@@ -1,4 +1,4 @@
-<%@ page import="de.laser.License;de.laser.RefdataCategory;de.laser.interfaces.CalculatedType;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.RefdataValue;de.laser.Links" %>
+<%@ page import="de.laser.License;de.laser.RefdataCategory;de.laser.interfaces.CalculatedType;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.RefdataValue;de.laser.Links;de.laser.Org" %>
 
 <laser:htmlStart message="license.current" serviceInjection="true" />
 
@@ -118,6 +118,38 @@
                       </g:each>
                   </select>
               </div>
+              <div class="field"></div>
+          </div>
+          <div class="three fields">
+          <%-- TODO [ticket=2276] provisoric, name check is in order to prevent id mismatch --%>
+              <g:if test="${!accessService.checkPerm("ORG_CONSORTIUM") || institution.globalUID == Org.findByName('LAS:eR Backoffice').globalUID}">
+                  <div class="field">
+                      <fieldset id="licenseType">
+                          <div class="inline fields la-filter-inline">
+                              <div class="inline field">
+                                  <div class="ui checkbox">
+                                      <label for="checkLicType-${RDStore.OR_LICENSEE}"><g:message code="license.filter.local"/></label>
+                                      <input id="checkLicType-${RDStore.OR_LICENSEE}" name="licTypes" type="checkbox" value="${RDStore.OR_LICENSEE.id.toString()}"
+                                          <g:if test="${params.list('licTypes').contains(RDStore.OR_LICENSEE.id.toString())}"> checked="" </g:if>
+                                             tabindex="0">
+                                  </div>
+                              </div>
+                              <div class="inline field">
+                                  <div class="ui checkbox">
+                                      <label for="checkLicType-${RDStore.OR_LICENSEE_CONS}"><g:message code="license.filter.member"/></label>
+                                      <input id="checkLicType-${RDStore.OR_LICENSEE_CONS}" name="licTypes" type="checkbox" value="${RDStore.OR_LICENSEE_CONS.id.toString()}"
+                                          <g:if test="${params.list('licTypes').contains(RDStore.OR_LICENSEE_CONS.id.toString())}"> checked="" </g:if>
+                                             tabindex="0">
+                                  </div>
+                              </div>
+                          </div>
+                      </fieldset>
+                  </div>
+              </g:if>
+              <g:else>
+                  <div class="field"></div>
+              </g:else>
+              <div class="field"></div>
               <div class="field la-field-right-aligned">
                   <g:link action="currentLicenses" params="[resetFilter:true]" class="ui reset secondary button">${message(code:'default.button.reset.label')}</g:link>
                   <input type="hidden" name="filterSet" value="true">
