@@ -8,6 +8,7 @@ import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.ctrl.UserControllerService
 import de.laser.custom.CustomWkhtmltoxService
 import de.laser.finance.PriceItem
+import de.laser.interfaces.CalculatedType
 import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.auth.Role
@@ -358,8 +359,16 @@ class MyInstitutionController  {
         Set<String> licenseFilterTable = []
 
         if (accessService.checkPerm("ORG_INST")) {
-            base_qry = "from License as l where ( exists ( select o from l.orgRelations as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :lic_org ) ) )"
-            qry_params = [roleType1:RDStore.OR_LICENSEE, roleType2:RDStore.OR_LICENSEE_CONS, lic_org:result.institution]
+            Set<RefdataValue> roleTypes = []
+            if(params.licTypes) {
+                Set<String> licTypes = params.list('licTypes')
+                licTypes.each { String licTypeId ->
+                    roleTypes << RefdataValue.get(licTypeId)
+                }
+            }
+            else roleTypes.addAll([RDStore.OR_LICENSEE, RDStore.OR_LICENSEE_CONS])
+            base_qry = "from License as l where ( exists ( select o from l.orgRelations as o where ( ( o.roleType in (:roleTypes) ) AND o.org = :lic_org ) ) )"
+            qry_params = [roleTypes: roleTypes, lic_org:result.institution]
             if(result.editable)
                 licenseFilterTable << "action"
             licenseFilterTable << "licensingConsortium"
@@ -2785,23 +2794,19 @@ join sub.orgRelations or_sub where
         result.totalConsortia    = totalConsortia
         result.consortiaCount    = totalConsortia.size()
         result.consortia         = totalConsortia.drop((int) result.offset).take((int) result.max)
-        //String header
-        //String exportHeader
-
-        //header = message(code: 'menu.my.insts')
-        //exportHeader = message(code: 'export.my.consortia')
-        //SimpleDateFormat sdf = DateUtils.getSDF_NoTimeNoPoint()
+        String header = message(code: 'menu.my.consortia')
+        String exportHeader = message(code: 'export.my.consortia')
+        SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
         // Write the output to a file
-        //String file = "${sdf.format(new Date())}_"+exportHeader
+        String file = "${sdf.format(new Date())}_"+exportHeader
 
 		List bm = prf.stopBenchmark()
 		result.benchMark = bm
 
-        result
-        /*
+
         if ( params.exportXLS ) {
 
-            SXSSFWorkbook wb = (SXSSFWorkbook) organisationService.exportOrg(totalMembers, header, true, 'xls')
+            SXSSFWorkbook wb = (SXSSFWorkbook) organisationService.exportOrg(totalConsortia, header, true, 'xls')
             response.setHeader "Content-disposition", "attachment; filename=\"${file}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             wb.write(response.outputStream)
@@ -2812,14 +2817,15 @@ join sub.orgRelations or_sub where
         }
         else if(params.exportClickMeExcel) {
             if (params.filename) {
-                file =params.filename
+                file = params.filename
             }
-
+            Set<String> contactSwitch = []
+            contactSwitch.addAll(params.list("contactSwitch"))
             Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
             Map<String, Object> selectedFields = [:]
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
 
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(totalMembers, selectedFields)
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(totalConsortia, selectedFields, 'consortium', contactSwitch)
 
             response.setHeader "Content-disposition", "attachment; filename=\"${file}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -2839,13 +2845,12 @@ join sub.orgRelations or_sub where
                     response.contentType = "text/csv"
                     ServletOutputStream out = response.outputStream
                     out.withWriter { writer ->
-                        writer.write((String) organisationService.exportOrg(totalMembers,header,true,"csv"))
+                        writer.write((String) organisationService.exportOrg(totalConsortia,header,true,"csv"))
                     }
                     out.close()
                 }
             }
         }
-        */
     }
 
     /**
@@ -2982,11 +2987,9 @@ join sub.orgRelations or_sub where
         result.totalMembers    = totalMembers
         result.membersCount    = totalMembers.size()
         result.members         = totalMembers.drop((int) result.offset).take((int) result.max)
-        String header
-        String exportHeader
+        String header = message(code: 'menu.my.insts')
+        String exportHeader = message(code: 'export.my.insts')
 
-        header = message(code: 'menu.my.insts')
-        exportHeader = message(code: 'export.my.consortia')
         SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
         // Write the output to a file
         String file = "${sdf.format(new Date())}_"+exportHeader

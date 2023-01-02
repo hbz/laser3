@@ -3,7 +3,7 @@
  *
  *= require base.css                    //--> bundle
  *
- *= require /laser/semantic.css         //--> assets/themes
+ *= require /laser/semantic.min.css         //--> assets/themes
  *
  *= require modules/tmp_semui.css       //--> tmp and/or fallback
  */

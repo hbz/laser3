@@ -1439,7 +1439,9 @@ class SurveyController {
                 Map<String, Object> selectedFields = [:]
                 selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
 
-                SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportSurveyEvaluation(result, selectedFields)
+                Set<String> contactSwitch = []
+                contactSwitch.addAll(params.list("contactSwitch"))
+                SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportSurveyEvaluation(result, selectedFields, contactSwitch)
                 // Write the output to a file
 
                 response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""

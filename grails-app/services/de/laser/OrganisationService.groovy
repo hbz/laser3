@@ -55,7 +55,6 @@ class OrganisationService {
 
     /**
      * Exports organisation data in the given format. It can be specified if higher education titles should be outputted or not.
-     * Do NOT mix this method with {@link ExportClickMeService#exportOrgs(java.util.List, java.util.Map, java.lang.String)} which is for consortia subscription members!
      * @param orgs the {@link List} of {@link Org}s
      * @param message the title of the Excel sheet (not used in csv)
      * @param addHigherEducationTitles add columns library type, library network, funder type, federal state, country with respective values
@@ -80,12 +79,15 @@ class OrganisationService {
         RefdataValue generalContact = RDStore.PRS_FUNC_GENERAL_CONTACT_PRS
         RefdataValue responsibleAdmin = RefdataValue.getByValueAndCategory('Responsible Admin', RDConstants.PERSON_FUNCTION)
         RefdataValue billingContact = RefdataValue.getByValueAndCategory('Functional Contact Billing Adress', RDConstants.PERSON_FUNCTION)
-        titles.addAll(['ISIL','WIB-ID','EZB-ID',generalContact.getI10n('value'),responsibleAdmin.getI10n('value'),billingContact.getI10n('value')])
+        titles.addAll(['ISIL','WIB-ID','EZB-ID',generalContact.getI10n('value')])
+        if(addHigherEducationTitles)
+            titles.add(responsibleAdmin.getI10n('value'))
+        titles.add(billingContact.getI10n('value'))
         Set<PropertyDefinition> propertyDefinitions = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
         titles.addAll(exportService.loadPropListHeaders(propertyDefinitions))
         List orgData = []
         Map<Org,Map<String,String>> identifiers = [:]
-        List identifierList = Identifier.executeQuery("select ident, ident.org from Identifier ident where ident.org in (:orgs) and ident.ns.ns in (:namespaces)",[orgs:orgs,namespaces:['wibid','ezb','ISIL']])
+        List identifierList = Identifier.executeQuery("select ident, ident.org from Identifier ident where ident.org in (:orgs) and ident.ns.ns in (:namespaces) and ident.value != null and ident.value != :unknown",[orgs:orgs,namespaces:['wibid','ezb','ISIL'],unknown:IdentifierNamespace.UNKNOWN])
         identifierList.each { row ->
             Identifier io = (Identifier) row[0]
             Org o = (Org) row[1]
@@ -147,7 +149,8 @@ class OrganisationService {
                     //General contact
                     row.add([field: furtherData.generalContact ?: '', style: null])
                     //Responsible admin
-                    row.add([field: furtherData.responsibleAdmin ?: '', style: null])
+                    if(addHigherEducationTitles)
+                        row.add([field: furtherData.responsibleAdmin ?: '', style: null])
                     //Billing contact
                     row.add([field: furtherData.billingContact ?: '', style: null])
                     row.addAll(exportService.processPropertyListValues(propertyDefinitions, format, org, null, null, null))
@@ -190,7 +193,8 @@ class OrganisationService {
                     //General contact
                     row.add(furtherData.generalContact ?: '')
                     //Responsible admin
-                    row.add(furtherData.responsibleAdmin ?: '')
+                    if(addHigherEducationTitles)
+                        row.add(furtherData.responsibleAdmin ?: '')
                     //Billing contact
                     row.add(furtherData.billingContact ?: '')
                     row.addAll(exportService.processPropertyListValues(propertyDefinitions, format, org, null, null, null))
