@@ -97,7 +97,7 @@
     <laser:render template="evaluationParticipantsView" model="[showCheckbox: false,
                                                         tmplConfigShow   : ['lineNumber', 'name', (surveyConfig.pickAndChoose ? 'finishedDate' : ''), (surveyConfig.pickAndChoose ? 'surveyTitlesCount' : ''), 'surveyProperties', 'commentOnlyForOwner']]"/>
 </div>
-<laser:render template="export/individuallyExportModal" model="[modalID: 'individuallyExportModal']" />
+<laser:render template="export/individuallyExportModal" model="[modalID: 'individuallyExportModal', contactSwitch: true]" />
 
 </g:else>
 

@@ -1,27 +1,23 @@
 <%@ page import="de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue" %>
 <laser:htmlStart message="menu.institutions.costConfiguration" />
 
-        <ui:breadcrumbs>
-            <ui:crumb message="menu.institutions.costConfiguration" class="active" />
-        </ui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb message="menu.institutions.costConfiguration" class="active" />
+</ui:breadcrumbs>
+<ui:h1HeaderWithIcon message="menu.institutions.costConfiguration" />
 
-        <ui:h1HeaderWithIcon message="menu.institutions.costConfiguration" />
+<g:if test="${editable}">
+    <ui:controlButtons>
+        <ui:actionsDropdown>
+            <ui:actionsDropdownItem controller="costConfiguration" action="createNewConfiguration" class="ui trigger-modal" message="costItemElementConfiguration.create_new.label"/>
+        </ui:actionsDropdown>
+    </ui:controlButtons>
+</g:if>
 
         <ui:messages data="${flash}"/>
 
         <ui:msg icon="ui info icon" class="warning" message="costConfiguration.preset" noClose="true" />
 
-        <g:if test="${editable}">
-            <div class="content ui form">
-                <div class="fields">
-                    <div class="field">
-                        <g:link controller="costConfiguration" action="createNewConfiguration" class="ui button trigger-modal">
-                            ${message(code:'costItemElementConfiguration.create_new.label')}
-                        </g:link>
-                    </div>
-                </div>
-            </div>
-        </g:if>
         <div class="ui styled fluid">
             <table class="ui celled la-js-responsive-table la-table compact table">
                 <thead>

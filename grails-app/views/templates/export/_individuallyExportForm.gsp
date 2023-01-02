@@ -10,6 +10,10 @@
                     <a class="${("tab-${i}" == "tab-0") ? 'active' : ''}  item"
                        data-tab="tab-${i}">${fields.value.message ? message(code: fields.value.message) : fields.value.label}</a>
                 </g:if>
+                <g:else>
+                    <a class="disabled item"
+                       data-tab="tab-${i}">${fields.value.message ? message(code: fields.value.message) : fields.value.label}</a>
+                </g:else>
             </g:each>
         </div>
 
