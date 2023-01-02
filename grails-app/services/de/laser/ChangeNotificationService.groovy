@@ -18,6 +18,7 @@ import java.util.concurrent.ExecutorService
  * has been triggered
  */
 @Transactional
+@Deprecated
 class ChangeNotificationService extends AbstractLockableService {
 
     ExecutorService executorService
@@ -190,6 +191,7 @@ class ChangeNotificationService extends AbstractLockableService {
     *  knowledge for what dependencies there are (For example, a title change should propagate to all packages using that title).
     *  Therefore, we get a new handle to the object.
     */
+    @Deprecated
     def fireEvent(Map<String, Object> changeDocument) {
         log.debug("fireEvent(${changeDocument})")
 
@@ -269,84 +271,6 @@ class ChangeNotificationService extends AbstractLockableService {
                 log.error("Problem saving pending change: ${new_pending_change.errors}")
             }
             return null
-        }
-    }
-
-    @Deprecated
-    def determinePendingChangeBehavior(Map<String,Object> args, String msgToken, SubscriptionPackage subscriptionPackage) {
-        println("determinePendingChangeBehavior")
-        /*
-            decision tree:
-            is there a configuration map directly for the subscription?
-                case one: if so: process as defined there
-            - if not: is there a configuration map for the parent subscription?
-                case two: if so: process as defined there
-            - if neither: check if consortial subscription
-                if so: case three - auto reject (because it is matter of survey)
-                if not: case four - treat as prompt
-         */
-        Org contextOrg
-        //consider collective later!
-        if(subscriptionPackage) {
-            if(subscriptionPackage.subscription.instanceOf)
-                contextOrg = subscriptionPackage.subscription.getConsortia()
-            else contextOrg = subscriptionPackage.subscription.getSubscriber()
-            RefdataValue settingValue
-            PendingChangeConfiguration directConf = subscriptionPackage.pendingChangeConfig.find { PendingChangeConfiguration pcc -> pcc.settingKey == msgToken}
-            if(msgToken in [PendingChangeConfiguration.PACKAGE_PROP,PendingChangeConfiguration.PACKAGE_DELETED]) {
-                if(directConf) {
-                    if(directConf.withNotification)
-                        PendingChange.construct([target:args.target,oid:args.oid,newValue:args.newValue,oldValue:args.oldValue,prop:args.prop,msgToken:msgToken,status:RDStore.PENDING_CHANGE_ACCEPTED,owner:contextOrg])
-                }
-                else {
-                    SubscriptionPackage parentSP = SubscriptionPackage.findBySubscriptionAndPkg(subscriptionPackage.subscription.instanceOf, subscriptionPackage.pkg)
-                    if(parentSP) {
-                        PendingChangeConfiguration parentConf = parentSP.pendingChangeConfig.find { PendingChangeConfiguration pcc -> pcc.settingKey == msgToken }
-                        if(parentConf && parentConf.withNotification)
-                            PendingChange.construct([target:args.target,oid:args.oid,newValue:args.newValue,oldValue:args.oldValue,prop:args.prop,msgToken:msgToken,status:RDStore.PENDING_CHANGE_ACCEPTED,owner:contextOrg])
-                    }
-                }
-            }
-            else {
-                if(directConf) {
-                    //case one
-                    settingValue = directConf.settingValue
-                }
-                else if(AuditConfig.getConfig(subscriptionPackage.subscription.instanceOf,msgToken)) {
-                    //case two
-                    List<RefdataValue> parentSPConfig = PendingChangeConfiguration.executeQuery('select pcc.settingValue from PendingChangeConfiguration pcc join pcc.subscriptionPackage sp where sp.subscription.instanceOf = :parent and sp.pkg = :pkg and pcc.settingKey = :msgToken',[parent:subscriptionPackage.subscription.instanceOf,pkg:subscriptionPackage.pkg,msgToken:msgToken])
-                    if(parentSPConfig)
-                        settingValue = parentSPConfig.get(0)
-                }
-                if((settingValue == null && !subscriptionPackage.subscription.instanceOf) || settingValue == RDStore.PENDING_CHANGE_CONFIG_PROMPT) {
-                    //case four, then fallback or explicitly set as such
-                    PendingChange.construct([target:args.target,oid:args.oid,newValue:args.newValue,oldValue:args.oldValue,prop:args.prop,msgToken:msgToken,status:RDStore.PENDING_CHANGE_PENDING,owner:contextOrg])
-                }
-                if(settingValue == RDStore.PENDING_CHANGE_CONFIG_ACCEPT) {
-                    //set up announcement and do accept! Pending because if some error occurs, the notification should still take place
-                    PendingChange pc = PendingChange.construct([target:args.target,oid:args.oid,newValue:args.newValue,oldValue:args.oldValue,prop:args.prop,msgToken:msgToken,status:RDStore.PENDING_CHANGE_PENDING,owner:contextOrg])
-                    pendingChangeService.accept(pc)
-                }
-                if(settingValue == RDStore.PENDING_CHANGE_CONFIG_REJECT) {
-                    PendingChange.construct([target:args.target,oid:args.oid,newValue:args.newValue,oldValue:args.oldValue,prop:args.prop,msgToken:msgToken,status:RDStore.PENDING_CHANGE_REJECTED,owner:contextOrg])
-                }
-                /*
-                    else we have case three - a child subscription with no inherited settings ->
-                    according to Micha as of March 16th, 2020, this means de facto that the holding manipulation should take place in a survey and
-                    with that, the behavior can only be auto reject because the members need their current holding data as measurement for survey evaluation
-                */
-            }
-        }
-        else {
-            if(msgToken == PendingChangeConfiguration.TITLE_DELETED) {
-                IssueEntitlement ie = (IssueEntitlement) genericOIDService.resolveOID(args.oid)
-                if(ie.subscription.instanceOf)
-                    contextOrg = ie.subscription.getConsortia()
-                else contextOrg = ie.subscription.getSubscriber()
-                //set up announcement and do accept! Pending because if some error occurs, the notification should still take place
-                PendingChange pc = PendingChange.construct([target:args.target,oid:args.oid,newValue:args.newValue,oldValue:args.oldValue,prop:args.prop,msgToken:msgToken,status:RDStore.PENDING_CHANGE_PENDING,owner:contextOrg])
-                pendingChangeService.accept(pc)
-            }
         }
     }
 

@@ -83,7 +83,6 @@ class AuditService {
     @Transient
     def beforeDeleteHandler(Auditable obj) {
 
-        obj.withNewSession {
             log.debug("beforeDeleteHandler() ${obj}")
 
             String oid = "${obj.class.name}:${obj.id}"
@@ -111,7 +110,6 @@ class AuditService {
                 ]
                 changeNotificationService.fireEvent(changeDoc)
             }
-        }
     }
 
     @Deprecated
@@ -148,12 +146,18 @@ class AuditService {
                         Map<String, Object> event = [:]
                         String clsName = obj."${cp}".getClass().getName()
 
-                        log.debug("notifyChangeEvent() " + obj + " : " + clsName)
-
+                        log.debug("trigger inheritance: " + obj + " : " + clsName)
+                        // CustomProperty
                         if ((obj instanceof AbstractPropertyWithCalculatedLastUpdated && !obj.type.tenant && obj.isPublic == true) || obj instanceof Identifier) {
 
                             if (getAuditConfig(obj)) {
+                                if(oldMap[cp] instanceof RefdataValue) {
 
+                                }
+                                else {
+
+                                }
+                                /*
                                 String old_oid
                                 String new_oid
                                 if (oldMap[cp] instanceof RefdataValue) {
@@ -174,18 +178,21 @@ class AuditService {
                                         newLabel: newMap[cp] instanceof RefdataValue ? newMap[cp].toString() : newMap[cp],
                                         //propertyOID: "${obj.class.name}:${obj.id}"
                                 ]
+                                */
                             } else {
                                 log.debug("ignored because no audit config")
                             }
-                        } // CustomProperty
+                        }
+                        // Subscription or License
                         else {
 
                             boolean isSubOrLic = (obj instanceof Subscription || obj instanceof License)
 
                             if (!isSubOrLic || (isSubOrLic && getAuditConfig(obj, cp))) {
 
-                                if (clsName == RefdataValue.class.name) {
 
+                                if (clsName == RefdataValue.class.name) {
+                                    /*
                                     String old_oid = oldMap[cp] ? "${oldMap[cp].class.name}:${oldMap[cp].id}" : null
                                     String new_oid = newMap[cp] ? "${newMap[cp].class.name}:${newMap[cp].id}" : null
 
@@ -199,8 +206,10 @@ class AuditService {
                                             new     : new_oid,
                                             newLabel: newMap[cp]?.toString()
                                     ]
-                                } else {
-
+                                    */
+                                }
+                                else {
+                                    /*
                                     event = [
                                             OID  : "${obj.class.name}:${obj.id}",
                                             event: "${obj.class.simpleName}.updated",
@@ -209,13 +218,14 @@ class AuditService {
                                             old  : oldMap[cp],
                                             new  : newMap[cp]
                                     ]
+                                    */
                                 }
-                            } // Subscription or License
+                            }
                             else {
                                 log.debug("ignored because no audit config")
                             }
                         }
-
+                        /*
                         log.debug( "event: " + event.toMapString() )
 
                         if (event) {
@@ -225,6 +235,7 @@ class AuditService {
                                 changeNotificationService.fireEvent(event)
                             }
                         }
+                        */
                     }
                 }
             }
