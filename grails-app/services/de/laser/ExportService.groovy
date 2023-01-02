@@ -736,7 +736,6 @@ class ExportService {
 		}
 		prf.setBenchmark('get date ranges')
 		Map<String, Object> dateRangeParams = subscriptionControllerService.getDateRange(params, result.subscription)
-        Calendar cal = GregorianCalendar.getInstance()
 		XSSFWorkbook workbook = new XSSFWorkbook()
 		POIXMLProperties xmlProps = workbook.getProperties()
 		POIXMLProperties.CoreProperties coreProps = xmlProps.getCoreProperties()
@@ -747,13 +746,13 @@ class ExportService {
 		Cell cell
 		SXSSFSheet sheet
 		Set<IdentifierNamespace> propIdNamespaces = IdentifierNamespace.findAllByNsInList(subscribedPlatforms.titleNamespace)
-        Set<String> reportTypes = params.list('reportType'), metricTypes = params.list('metricType')
+        Set<String> reportTypes = params.list('reportType'), metricTypes = params.metricType.split(',')
 		Map<String, Map<String, TitleInstancePackagePlatform>> titles = [:] //structure: namespace -> value -> tipp
 		Set<TitleInstancePackagePlatform> titlesSorted = [] //fallback structure to preserve sorting
 		prf.setBenchmark('prepare title identifier map')
         if(reportTypes.any { String reportType -> reportType in Counter4Report.COUNTER_4_TITLE_REPORTS || reportType in Counter5Report.COUNTER_5_TITLE_REPORTS }) {
 			subscriptionControllerService.fetchTitles(params, refSubs, namespaces, 'ids').each { Map titleMap ->
-				titlesSorted << titleMap.tipp
+				titlesSorted << GrailsHibernateUtil.unwrapIfProxy(titleMap.tipp)
 				Map<String, TitleInstancePackagePlatform> innerMap = titles.get(titleMap.namespace)
 				if(!innerMap)
 					innerMap = [:]
@@ -761,17 +760,17 @@ class ExportService {
 				titles.put(titleMap.namespace, innerMap)
 			}
         }
-		//continue here: fetch usage data and groups accordingly
 		reportTypes.each { String reportType ->
 			prf.setBenchmark("start loop for ${reportType}")
 			Set<String> columnHeaders = []
             SortedSet<String> monthHeaders = new TreeSet<String>()
 			Map<TitleInstancePackagePlatform, Map> titleRows = [:]
+			Map<String, Object> sumsPerYOP
 			int rowno = 0
 			//revision 4
 			if(params.revision == 'counter4') {
                 metricTypes.each { String metricType ->
-					sheet = wb.createSheet(reportType)
+					sheet = wb.createSheet(metricType)
 					sheet.flushRows(10)
 					sheet.setAutobreaks(true)
 					//sheet.trackAllColumnsForAutoSizing()
@@ -819,30 +818,27 @@ class ExportService {
                     cell.setCellValue(DateUtils.getSDF_yyyyMMdd().format(new Date()))
                     columnHeaders.addAll(Counter4Report.COLUMN_HEADERS.valueOf(reportType).headers)
                     if(reportType == Counter4Report.JOURNAL_REPORT_5) {
-						prf.setBenchmark('get YOP (should appear in JR5 ONLY)')
-                        Calendar limit = GregorianCalendar.getInstance()
-                        limit.set(2000, 0, 1)
-                        Counter4Report.withNewSession {
-							Counter4Report.executeQuery('select distinct(r.yop) from Counter4Report r where r.reportType = :reportType and r.metricType = :metricType and r.reportInstitutionUID = :customer and r.platformUID in (:platforms)'+dateRangeParams.dateRange+'and r.yop >= :limit order by r.yop', queryParams+[limit: limit.getTime()]).each { Date yop ->
-								monthHeaders.add('YOP '+DateUtils.getSDF_yyyy().format(yop))
-							}
-                        }
-                        columnHeaders.addAll(monthHeaders)
-                        columnHeaders.add('YOP Pre-2000')
-                        columnHeaders.add('YOP unknown')
-                    }
+						Map<String, Object> data = prepareDataWithTitles(titles, propIdNamespaces, reportType, counter4Reports, showPriceDate, showOtherData)
+						titleRows = data.titleRows
+						sumsPerYOP = data.sumsPerYOP
+						for(String yop: sumsPerYOP.keySet()) {
+							monthHeaders << yop
+						}
+						columnHeaders.addAll(monthHeaders)
+						columnHeaders.add('YOP Pre-2000')
+						columnHeaders.add('YOP unknown')
+					}
                     else {
-						if(dateRangeParams.containsKey('startDate') && dateRangeParams.containsKey('endDate'))
-							monthHeaders.addAll(dateRangeParams.monthsInRing.collect { Date month -> DateUtils.getSDF_yyyyMM().format(month) })
-						else {
+						if(dateRangeParams.dateRange.length() == 0) {
 							Calendar month = GregorianCalendar.getInstance(), finalPoint = GregorianCalendar.getInstance()
 							month.setTime(counter4Reports.first().reportFrom)
 							finalPoint.setTime(counter4Reports.last().reportTo)
 							while(month.before(finalPoint)) {
-								monthHeaders << DateUtils.getSDF_yyyyMM().format(month.getTime())
+								dateRangeParams.monthsInRing << month.getTime()
 								month.add(Calendar.MONTH, 1)
 							}
 						}
+						monthHeaders.addAll(dateRangeParams.monthsInRing.collect { Date month -> DateUtils.getSDF_yyyyMM().format(month) })
                         columnHeaders.addAll(monthHeaders)
 					}
                     if(showPriceDate) {
@@ -869,6 +865,7 @@ class ExportService {
 							Cell totalCell = row.createCell(7)
 							int totalCount = 0
 							Map<String, Object> data = prepareDataWithTitles(titles, propIdNamespaces, reportType, counter4Reports, showPriceDate, showOtherData)
+							titleRows = data.titleRows
 							int j = 0
 							for(Date month: dateRangeParams.monthsInRing) {
 								cell = row.createCell(j+10)
@@ -929,45 +926,45 @@ class ExportService {
 							titleRows = data.titleRows
                             rowno = 9
                             break
-                        case Counter4Report.JOURNAL_REPORT_5:
-                            rowno = 8
-                            Counter4Report.withNewSession {
-                                sumRows.addAll(Counter4Report.executeQuery('select new map(r.yop as yop, r.metricType as metricType, r.platformUID as platformUID, sum(r.reportCount) as count) from Counter4Report r where r.reportType = :reportType and r.metricType = :metricType and r.reportInstitutionUID = :customer and r.platformUID in (:platforms)' + dateRangeParams.dateRange + 'group by r.platformUID, r.yop, r.metricType', queryParams))
-                                sumRows.eachWithIndex { countPerYOP, int i ->
-                                    cell = row.createCell(0)
-                                    cell.setCellValue("Total for all journals")
-                                    cell = row.createCell(2)
-                                    cell.setCellValue(Platform.findByGlobalUID(countPerYOP.platformUID).name)
-                                    cell = row.createCell(i+8)
-                                    cell.setCellValue(countPerYOP.count)
-                                }
-                            }
-                            rowno++
-                            row = sheet.createRow(rowno)
-							Map<String, Object> data = prepareDataWithTitles(titles, propIdNamespaces, reportType, counter4Reports, showPriceDate, showOtherData)
-							titleRows = data.titleRows
+                        case Counter4Report.JOURNAL_REPORT_5: cell = row.createCell(0)
+							cell.setCellValue("Total for all journals")
+							for(int i = 1; i < 8; i++) {
+								cell = row.createCell(i)
+								cell.setCellValue("")
+							}
+							int j = 0
+							for(String yop: monthHeaders) {
+								cell = row.createCell(j+8)
+								Integer countPerMonth = sumsPerYOP.get(yop)
+								cell.setCellValue(countPerMonth)
+								j++
+							}
+							rowno = 9
                             break
                         case Counter4Report.BOOK_REPORT_5:
-                            rowno = 8
-							int totalSum = 0
-							Counter4Report.withNewSession {
-                                sumRows.addAll(Counter4Report.executeQuery('select new map(r.reportFrom as reportFrom, r.metricType as metricType, r.platformUID as platformUID, sum(r.reportCount) as count) from Counter4Report r where r.reportType = :reportType and r.metricType = :metricType and r.reportInstitutionUID = :customer and r.platformUID in (:platforms)'+dateRangeParams.dateRange+'group by r.platformUID, r.reportFrom, r.metricType', queryParams))
-                                sumRows.eachWithIndex { countPerMonth, int i ->
-									cell = row.createCell(0)
-									cell.setCellValue(countPerMonth.metricType == 'search_reg' ? "Total searches" : "Total searches: Searches: federated and automated")
-									cell = row.createCell(2)
-									cell.setCellValue(Platform.findByGlobalUID(countPerMonth.platformUID).name)
-									cell = row.createCell(i+9)
-									cell.setCellValue(countPerMonth.count)
-									totalSum += countPerMonth.count
-								}
-							}
-							cell = row.createCell(8)
-							cell.setCellValue(totalSum)
-							rowno++
-							row = sheet.createRow(rowno)
 							Map<String, Object> data = prepareDataWithTitles(titles, propIdNamespaces, reportType, counter4Reports, showPriceDate, showOtherData)
 							titleRows = data.titleRows
+							if(titleRows) {
+								rowno = 8
+								cell = row.createCell(0)
+								cell.setCellValue(params.metricType == 'search_reg' ? "Total searches" : "Total searches: Searches: federated and automated")
+								cell = row.createCell(2)
+								cell.setCellValue(titleRows.keySet().first().platform.name)
+								int i = 0
+								int totalCount = 0
+								prf.setBenchmark('prepare sum row')
+								for(Date month: dateRangeParams.monthsInRing) {
+									cell = row.createCell(i+9)
+									Integer countPerMonth = data.sumRows.get(month) ?: 0
+									totalCount += countPerMonth
+									cell.setCellValue(countPerMonth)
+									i++
+								}
+								cell = row.createCell(8)
+								cell.setCellValue(totalCount)
+								rowno++
+								row = sheet.createRow(rowno)
+							}
                             break
                         case Counter4Report.DATABASE_REPORT_1:
                         case Counter4Report.PLATFORM_REPORT_1:
@@ -1025,7 +1022,10 @@ class ExportService {
 							cell.setCellValue(title.name)
 							for(int c = 1; c < columnHeaders.size(); c++) {
 								cell = row.createCell(c)
-								cell.setCellValue(titleRow.get(columnHeaders[c]) ?: "")
+								def empty = ""
+								if(columnHeaders[c].matches('\\d{4}-\\d{2}'))
+									empty = 0
+								cell.setCellValue(titleRow.get(columnHeaders[c]) ?: empty)
 							}
 							i++
 						}
@@ -1057,7 +1057,7 @@ class ExportService {
 				if(reportType in Counter5Report.COUNTER_5_TITLE_REPORTS) {
 					Counter5Report.withNewSession {
 						//report type should restrict enough; we now need to select appropriate titles in case of an existing identifier
-						counter5Reports.addAll(Counter4Report.executeQuery('select r from Counter5Report r where lower(r.reportType) = :reportType'+metricFilter+'and r.reportInstitutionUID = :customer and r.platformUID in (:platforms) '+dateRangeParams.dateRange+'order by r.reportFrom', queryParams))
+						counter5Reports.addAll(Counter5Report.executeQuery('select r from Counter5Report r where lower(r.reportType) = :reportType'+metricFilter+'and r.reportInstitutionUID = :customer and r.platformUID in (:platforms) '+dateRangeParams.dateRange+'order by r.reportFrom', queryParams))
 					}
 				}
 				//the header
@@ -1155,6 +1155,7 @@ class ExportService {
 				rowno = 14
 				switch(reportType.toLowerCase()) {
 					case Counter5Report.PLATFORM_MASTER_REPORT:
+					case Counter5Report.DATABASE_MASTER_REPORT:
 						Counter5Report.withNewSession {
 							Map<String, Object> metricRows = [:]
 							Counter5Report.executeQuery('select new map(r.platformUID as platformUID, r.accessMethod as accessMethod, r.dataType as dataType, r.metricType as metricType, r.reportFrom as reportMonth, sum(r.reportCount) as count) from Counter5Report r where lower(r.reportType) = :reportType and r.metricType in (:metricTypes) and r.reportInstitutionUID = :customer and r.platformUID in (:platforms)'+dateRangeParams.dateRange+'group by r.metricType, r.platformUID, r.reportFrom, r.accessMethod, r.dataType order by r.reportFrom',queryParams).each { reportRow ->
@@ -1184,6 +1185,8 @@ class ExportService {
 						}
 						break
 					case Counter5Report.PLATFORM_USAGE:
+					case Counter5Report.DATABASE_ACCESS_DENIED:
+					case Counter5Report.DATABASE_SEARCH_AND_ITEM_USAGE:
 						Counter5Report.withNewSession {
 							Map<String, Object> metricRows = [:]
 							Counter5Report.executeQuery('select new map(r.platformUID as platformUID, r.accessMethod as accessMethod, r.metricType as metricType, r.reportFrom as reportMonth, sum(r.reportCount) as count) from Counter5Report r where lower(r.reportType) = :reportType and r.metricType in (:metricTypes) and r.reportInstitutionUID = :customer and r.platformUID in (:platforms)'+dateRangeParams.dateRange+'group by r.metricType, r.platformUID, r.reportFrom, r.accessMethod order by r.reportFrom',queryParams).each { reportRow ->
@@ -1287,34 +1290,11 @@ class ExportService {
 	 */
 	Map<String, Object> prepareDataWithTitles(Map<String, Map<String, TitleInstancePackagePlatform>> titles, Set<IdentifierNamespace> propIdNamespaces, String reportType, Set<AbstractReport> reports, Boolean showPriceDate = false, Boolean showOtherData = false) {
 		Map<TitleInstancePackagePlatform, Map<String, Map>> titleRows = [:]
-		Map<Date, Integer> countsPerMonth = [:]
+		Map<Date, Integer> countsPerMonth = [:], sumsPerYOP = [:]
 		Calendar limit = GregorianCalendar.getInstance()
 		limit.set(2000, 0, 1)
 		for(AbstractReport report: reports) {
-			TitleInstancePackagePlatform tipp = null
-			if(report.onlineIdentifier || report.isbn) {
-				tipp = titles[IdentifierNamespace.EISSN]?.get(report.onlineIdentifier)
-				if(!tipp)
-					tipp = titles[IdentifierNamespace.ISBN]?.get(report.onlineIdentifier)
-				if(!tipp)
-					tipp = titles[IdentifierNamespace.ISBN]?.get(report.isbn)
-			}
-			if(!tipp && (report.printIdentifier || report.isbn)) {
-				tipp = titles[IdentifierNamespace.ISSN]?.get(report.printIdentifier)
-				if(!tipp)
-					tipp = titles[IdentifierNamespace.PISBN]?.get(report.printIdentifier)
-				if(!tipp)
-					tipp = titles[IdentifierNamespace.PISBN]?.get(report.isbn)
-			}
-			if(!tipp && report.doi) {
-				tipp = titles[IdentifierNamespace.DOI]?.get(report.doi)
-			}
-			if(!tipp && report.proprietaryIdentifier) {
-				propIdNamespaces.each { String propIdNs ->
-					if(!tipp)
-						tipp = titles[propIdNs]?.get(report.proprietaryIdentifier)
-				}
-			}
+			TitleInstancePackagePlatform tipp = subscriptionControllerService.matchReport(titles, propIdNamespaces, report)
 			if(tipp) {
 				Set<Identifier> titleIDs = tipp.ids
 				Set<PriceItem> priceItems = []
@@ -1343,10 +1323,17 @@ class ExportService {
 						//key naming identical to column headers
 						titleRow.put("Publisher", report.publisher)
 						titleRow.put("Platform", report.platform.name)
-						titleRow.put("Book DOI", doi)
 						titleRow.put("Proprietary Identifier", proprietaryIdentifier)
-						titleRow.put("ISBN", eisbn ?: isbn)
-						titleRow.put("ISSN", eissn ?: issn)
+						titleRow.put("Journal DOI", doi)
+						titleRow.put("Book DOI", doi)
+						if(reportType == Counter4Report.JOURNAL_REPORT_5) {
+							titleRow.put("Print ISSN", issn)
+							titleRow.put("Online ISSN", eissn)
+						}
+						else {
+							titleRow.put("ISBN", eisbn ?: isbn)
+							titleRow.put("ISSN", eissn ?: issn)
+						}
 						DecimalFormat df = new DecimalFormat("###,##0.00")
 						df.decimalFormatSymbols = new DecimalFormatSymbols(LocaleUtils.getCurrentLocale())
 						if (showPriceDate && priceItems) {
@@ -1405,6 +1392,12 @@ class ExportService {
 								currVal = 0
 							currVal += report.reportCount
 							titleRow.put(key, currVal)
+							Integer countPerYOP = sumsPerYOP.get(key)
+							if(!countPerYOP) {
+								countPerYOP = 0
+							}
+							countPerYOP += report.reportCount
+							sumsPerYOP.put(key, countPerYOP)
 							break
 					}
 					titleRows.put(tipp, titleRow)
@@ -1509,7 +1502,7 @@ class ExportService {
 				//}
 			}
 		}
-		[titleRows: titleRows, sumRows: countsPerMonth]
+		[titleRows: titleRows, sumRows: countsPerMonth, sumsPerYOP: sumsPerYOP]
 	}
 
 	/**

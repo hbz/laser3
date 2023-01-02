@@ -8,6 +8,7 @@ import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.ctrl.UserControllerService
 import de.laser.custom.CustomWkhtmltoxService
 import de.laser.finance.PriceItem
+import de.laser.interfaces.CalculatedType
 import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.auth.Role
@@ -358,8 +359,16 @@ class MyInstitutionController  {
         Set<String> licenseFilterTable = []
 
         if (accessService.checkPerm("ORG_INST")) {
-            base_qry = "from License as l where ( exists ( select o from l.orgRelations as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :lic_org ) ) )"
-            qry_params = [roleType1:RDStore.OR_LICENSEE, roleType2:RDStore.OR_LICENSEE_CONS, lic_org:result.institution]
+            Set<RefdataValue> roleTypes = []
+            if(params.licTypes) {
+                Set<String> licTypes = params.list('licTypes')
+                licTypes.each { String licTypeId ->
+                    roleTypes << RefdataValue.get(licTypeId)
+                }
+            }
+            else roleTypes.addAll([RDStore.OR_LICENSEE, RDStore.OR_LICENSEE_CONS])
+            base_qry = "from License as l where ( exists ( select o from l.orgRelations as o where ( ( o.roleType in (:roleTypes) ) AND o.org = :lic_org ) ) )"
+            qry_params = [roleTypes: roleTypes, lic_org:result.institution]
             if(result.editable)
                 licenseFilterTable << "action"
             licenseFilterTable << "licensingConsortium"

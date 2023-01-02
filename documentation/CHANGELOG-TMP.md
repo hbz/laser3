@@ -7,7 +7,11 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4438    29.12.2022  dev     3.1         Andreas Feature     Erweiterung des Vertragsfilters
+
 4730    28.12.2022  rc-3.0  3.0.1       Andreas Bug         Kostenausschüttung überschreibt Sichtbarkeitseinstellung trotz fehlender Eingabe
+
+3996    28.12.2022  dev     3.1         Andreas Feature     Umsetzung der Kostenberechnung
 
 4729    27.12.2022  rc-3.0  3.0.1       Andreas Bug         Kostenmodal löste bei Vollnutzern nicht aus
 
