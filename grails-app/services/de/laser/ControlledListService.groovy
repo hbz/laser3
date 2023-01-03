@@ -452,7 +452,7 @@ class ControlledListService {
     Map getInvoiceNumbers(Map params) {
         Map result = [results:[]]
         Org org = contextService.getOrg()
-        String queryString = 'select i from Invoice i where i.owner = :owner'
+        String queryString = 'select distinct(i.invoiceNumber) from Invoice i where i.owner = :owner'
         LinkedHashMap filter = [owner:org]
         if(params.query && params.query.length() > 0) {
             filter.put("query",params.query)
@@ -460,8 +460,8 @@ class ControlledListService {
         }
         queryString += " order by i.invoiceNumber asc"
         List invoiceNumbers = Invoice.executeQuery(queryString,filter)
-        invoiceNumbers.each { Invoice inv ->
-            result.results.add([name:inv.invoiceNumber,value:inv.invoiceNumber])
+        invoiceNumbers.each { String invoiceNumber ->
+            result.results.add([name:invoiceNumber,value:invoiceNumber])
         }
         result
     }
@@ -474,7 +474,7 @@ class ControlledListService {
     Map getOrderNumbers(Map params) {
         Map result = [results:[]]
         Org org = contextService.getOrg()
-        String queryString = 'select ord from Order ord where ord.owner = :owner'
+        String queryString = 'select distinct(ord.orderNumber) from Order ord where ord.owner = :owner'
         LinkedHashMap filter = [owner:org]
         if(params.query && params.query.length() > 0) {
             filter.put("query",params.query)
@@ -483,8 +483,8 @@ class ControlledListService {
         }
         queryString += " order by ord.orderNumber asc"
         List orderNumbers = Order.executeQuery(queryString,filter)
-        orderNumbers.each { Order ord ->
-            result.results.add([name:ord.orderNumber,value:ord.orderNumber])
+        orderNumbers.each { String orderNumber ->
+            result.results.add([name:orderNumber,value:orderNumber])
         }
         result
     }

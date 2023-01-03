@@ -311,8 +311,7 @@
                 <td>
                     <g:each in="${PersonRole.findAllByFunctionTypeAndOrg(RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, org)}"
                             var="personRole">
-                        <g:if test="${personRole.prs.isPublic || (!personRole.prs.isPublic && personRole?.prs?.tenant?.id == contextService.getOrg().id)}">
-                            <div class="item js-copyTriggerParent">
+                        <g:if test="${personRole.prs.isPublic || (!personRole.prs.isPublic && personRole.prs.tenant?.id == contextService.getOrg().id)}">
                                 <%--
                                 <g:if test="${! personRole.prs.isPublic}">
                                     <span class="la-popup-tooltip la-delay" data-content="${message(code:'address.private')}" data-position="top right">
@@ -323,27 +322,32 @@
                                     <i class="address card icon"></i>
                                 </g:else>
                                 --%>
-                                ${personRole?.getPrs()?.getFirst_name()} ${personRole?.getPrs()?.getLast_name()} <br />
+                                ${personRole.getPrs()?.getFirst_name()} ${personRole.getPrs()?.getLast_name()} <br />
 
                                 <g:each in="${Contact.findAllByPrsAndContentType(
                                         personRole.getPrs(),
                                         RDStore.CCT_EMAIL
                                 )}" var="email">
-                                    <i class="ui icon envelope outline la-list-icon js-copyTrigger"></i>
-                                    <span data-position="right center"
-                                          class="la-popup-tooltip la-delay"
-                                          data-content="Mail senden an ${personRole?.getPrs()?.getFirst_name()} ${personRole?.getPrs()?.getLast_name()}">
-                                        <a class="js-copyTopic" href="mailto:${email?.content}">${email?.content}</a>
-                                    </span><br />
+                                    <div class="item js-copyTriggerParent">
+                                            <span data-position="right center"
+                                                  class="la-popup-tooltip la-delay js-copyTrigger"
+                                                  data-content="Mail senden an ${personRole.getPrs()?.getFirst_name()} ${personRole.getPrs()?.getLast_name()}">
+                                        <ui:contactIcon type="${email.contentType.value}"/>
+                                        <a class="js-copyTopic" href="mailto:${email.content}">${email.content}</a>
+                                        </span><br />
+                                    </div>
                                 </g:each>
                                 <g:each in="${Contact.findAllByPrsAndContentType(
                                         personRole.getPrs(),
                                         RDStore.CCT_PHONE
                                 )}" var="telNr">
-                                    <i class="ui icon phone"></i>
-                                    <span data-position="right center">
-                                        ${telNr?.content}
-                                    </span><br />
+                                    <div class="item">
+                                        <span data-position="right center">
+                                            <i class="ui icon phone"></i>
+                                            ${telNr.content}
+                                        </span><br />
+                                    </div>
+
                                 </g:each>
 
                             </div>

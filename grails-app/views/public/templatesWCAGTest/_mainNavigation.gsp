@@ -39,7 +39,7 @@
                         <a id="17" href="#" class="item" role="menuitem" >Kostenübersicht</a>
                         <a id="18" href="#" class="item" role="menuitem" >Budgetverwaltung</a>
                         <a id="19" href="#" class="item" role="menuitem" >Kostenelemente verwalten</a>
-                        <a id="20" href="#" class="item" role="menuitem" >Kostenposten hochladen</a>
+                        <a id="20" href="#" class="item" role="menuitem" >Kosten hochladen</a>
                         <div class="divider"></div>
                         <a id="21" href="#" class="item" role="menuitem" >Nutzerverwaltung</a>
                         <a id="22" href="#" class="item" role="menuitem" >Historie</a>
