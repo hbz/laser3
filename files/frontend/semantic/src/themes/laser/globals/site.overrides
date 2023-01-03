@@ -240,7 +240,7 @@ aside.ui.accordion .title:not(.ui) {
         padding-bottom: 0.71em;
     }
 }
-.ui.form .field.la-field-right-aligned {
+.la-field-right-aligned {
     text-align: right;
     margin-top: 1.6rem !important;
 }

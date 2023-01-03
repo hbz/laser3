@@ -170,7 +170,7 @@
         </div>
         <div class="ui bottom attached tab active segment">
     </g:if>
-    <div class="grid">
+    <div class="ui grid">
         <div class="row">
             <div class="column">
                 <laser:render template="/templates/filter/tipp_ieFilter"/>
@@ -190,7 +190,7 @@
     sortFieldMap['tipp.accessStartDate'] = "${message(code: 'subscription.details.access_dates')} ${message(code: 'default.from')}"
     sortFieldMap['tipp.accessEndDate'] = "${message(code: 'subscription.details.access_dates')} ${message(code: 'default.to')}"
 %>
-    <div class="grid">
+    <div class="ui grid">
         <div class="row">
             <div class="eight wide column">
                 <h3 class="ui icon header la-clear-before la-noMargin-top"><span
