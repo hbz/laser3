@@ -23,7 +23,7 @@
             'timeline-cost' : [
                     'de' : [
                             'Die Abfrage visualisiert die zeitliche Entwicklung der Teilnehmerkosten für diese Lizenz',
-                            'Gelistet werden alle relevanten Lizenzen (referenzierte Vorgänger, bzw. Nachfolger) mit ihren jeweiligen Datumsgrenzen. Über betroffene Teilnehmerlizenzen und existierende Kostenposten werden folgende Informationen berechnet:',
+                            'Gelistet werden alle relevanten Lizenzen (referenzierte Vorgänger, bzw. Nachfolger) mit ihren jeweiligen Datumsgrenzen. Über betroffene Teilnehmerlizenzen und existierende Kosten werden folgende Informationen berechnet:',
                             'Kumulierter Endpreis in Euro (nach Steuern)',
                             'Kumulierter Wert in Euro',
                             'Neutrale Kosten in Euro (nach Steuern)',
