@@ -89,7 +89,7 @@ class FinanceController  {
                             [sub: result.subscription.instanceOf,
                              org: result.subscription.getSubscriber(),
                              invalidStatuses: [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY]]).size()
-                    result.currentCostItemCounts = result.financialData.cons.count
+                    result.currentCostItemCounts = result.financialData.subscr ? result.financialData.subscr.count : result.financialData.cons.count
                 }else{
                     result.currentSurveysCounts = SurveyConfig.findAllBySubscription(result.subscription).size()
                     result.currentCostItemCounts = "${result.financialData.own.count}/${result.financialData.cons.count}"

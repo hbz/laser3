@@ -25,7 +25,7 @@
                        value="${surveyService.titleContainedBySubscription(newSub, tipp)}"/>
                 <g:if test="${surveyConfig.pickAndChoosePerpetualAccess}">
                     <g:set var="participantPerpetualAccessToTitle"
-                           value="${surveyService.hasParticipantPerpetualAccessToTitle(subscriberSubs, tipp)}"/>
+                           value="${surveyService.hasParticipantPerpetualAccessToTitle2(subscriptionIDs, tipp)}"/>
                     <g:set var="allowedToSelect"
                            value="${!(participantPerpetualAccessToTitle) && (!ieInNewSub || (ieInNewSub && ieInNewSub.acceptStatus == RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION))}"/>
                 </g:if>

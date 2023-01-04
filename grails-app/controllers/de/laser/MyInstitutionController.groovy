@@ -981,6 +981,7 @@ join sub.orgRelations or_sub where
      */
     private def _exportcurrentSubscription(List<Subscription> subscriptions, String format, Org contextOrg) {
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
+        boolean asCons = accessService.checkPerm('ORG_CONSORTIUM')
         List titles = ['Name',
                        g.message(code: 'globalUID.label'),
                        g.message(code: 'license.label'),
@@ -991,17 +992,19 @@ join sub.orgRelations or_sub where
                        g.message(code: 'subscription.startDate.label'),
                        g.message(code: 'subscription.endDate.label'),
                        g.message(code: 'subscription.manualCancellationDate.label'),
-                       g.message(code: 'default.identifiers.label'),
+                       g.message(code: 'subscription.isMultiYear.label')]
+        if(!asCons) {
+            titles.add(g.message(code: 'subscription.isAutomaticRenewAnnually.label'))
+        }
+        titles.addAll([g.message(code: 'default.identifiers.label'),
                        g.message(code: 'default.status.label'),
                        g.message(code: 'subscription.kind.label'),
                        g.message(code: 'subscription.form.label'),
                        g.message(code: 'subscription.resource.label'),
                        g.message(code: 'subscription.isPublicForApi.label'),
                        g.message(code: 'subscription.hasPerpetualAccess.label'),
-                       g.message(code: 'subscription.hasPublishComponent.label')]
-        boolean asCons = false
-        if(accessService.checkPerm('ORG_CONSORTIUM')) {
-            asCons = true
+                       g.message(code: 'subscription.hasPublishComponent.label')])
+        if(asCons) {
             titles.addAll([g.message(code: 'subscription.memberCount.label'),g.message(code: 'subscription.memberCostItemsCount.label')])
         }
         //Set<PropertyDefinition> propertyDefinitions = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP],contextOrg)
@@ -1091,6 +1094,10 @@ join sub.orgRelations or_sub where
                     row.add([field: sub.startDate ? sdf.format(sub.startDate) : '', style: null])
                     row.add([field: sub.endDate ? sdf.format(sub.endDate) : '', style: null])
                     row.add([field: sub.manualCancellationDate ? sdf.format(sub.manualCancellationDate) : '', style: null])
+                    row.add([field: sub.isMultiYear ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
+                    if(!asCons) {
+                        row.add([field: sub.isAutomaticRenewAnnually ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
+                    }
                     row.add([field: subIdentifiers.join(", "),style: null])
                     row.add([field: sub.status?.getI10n("value"), style: null])
                     row.add([field: sub.kind?.getI10n("value") ?: '', style: null])
@@ -1120,6 +1127,10 @@ join sub.orgRelations or_sub where
                     row.add(sub.startDate ? sdf.format(sub.startDate) : '')
                     row.add(sub.endDate ? sdf.format(sub.endDate) : '')
                     row.add(sub.manualCancellationDate ? sdf.format(sub.manualCancellationDate) : '')
+                    row.add(sub.isMultiYear ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"))
+                    if(!asCons) {
+                        row.add(sub.isAutomaticRenewAnnually ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"))
+                    }
                     row.add(subIdentifiers.join("; "))
                     row.add(sub.status?.getI10n("value"))
                     row.add(sub.kind?.getI10n("value"))
@@ -1961,11 +1972,9 @@ join sub.orgRelations or_sub where
                /* result.iesFixListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
                         'where p.listPrice is not null and ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus',
                         [sub: result.subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0 */
-                log.debug("Test")
                 result.countSelectedIEs = subscriptionService.countIssueEntitlementsNotFixed(result.subscription)
 
                 if (result.surveyConfig.pickAndChoosePerpetualAccess) {
-                    log.debug("Test2")
                     result.countCurrentIEs = surveyService.countPerpetualAccessTitlesBySub(result.subscription)
                 } else {
                     result.countCurrentIEs = (result.previousSubscription ? subscriptionService.countIssueEntitlementsFixed(result.previousSubscription) : 0) + subscriptionService.countIssueEntitlementsFixed(result.subscription)
