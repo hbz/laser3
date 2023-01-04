@@ -17,6 +17,7 @@
                     <th>#</th>
                     <th>Anbieter</th>
                     <th>Plattform</th>
+                    <th>Datum letzter Abruf</th>
                     <th>zentraler API-Schlüssel</th>
                     <th>Aktionen</th>
                 </tr>
@@ -38,6 +39,14 @@
                         <td>Plattform - ${platform.id}</td>
                         <td>${platform.org ? platform.org.name : null}</td>
                         <td>${platform.name}</td>
+                        <td>
+                            <g:if test="${platform.counter5LastRun}">
+                                <g:formatDate date="${platform.counter5LastRun}" format="${message(code:'default.date.format.notime')}"/>
+                            </g:if>
+                            <g:elseif test="${platform.counter4LastRun}">
+                                <g:formatDate date="${platform.counter4LastRun}" format="${message(code:'default.date.format.notime')}"/>
+                            </g:elseif>
+                        </td>
                         <td><ui:xEditable owner="${platform}" field="centralApiKey" overwriteEditable="${true}"/></td>
                         <td>
                             <g:if test="${!platformInstanceRecords[platform.gokbId].containsKey("noCursor")}">
