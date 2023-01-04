@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4735    03.01.2023  rc-3.0  3.0.1       Andreas Bug         Ladelogik der Finanzen umgestellt
+
+4734    02.01.2023  rc-3.0  3.0.1       Andreas Bug         E-Rechnungspanel wurde bei Konsorten ausgeblendet
+
+4733    02.01.2023  rc-3.0  3.0.1       Andreas Bug         Adressmodal war falsch verdrahtet
+
 4438    29.12.2022  dev     3.1         Andreas Feature     Erweiterung des Vertragsfilters
 
 4730    28.12.2022  rc-3.0  3.0.1       Andreas Bug         Kostenausschüttung überschreibt Sichtbarkeitseinstellung trotz fehlender Eingabe

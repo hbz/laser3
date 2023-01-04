@@ -286,8 +286,8 @@ class DeletionService {
         result.info << ['Anstehende Änderungen', pendingChanges]
         result.info << ['IssueEntitlements', ies]
         //TODO is a temporary solution for ERMS-2535 and is subject of refactoring!
-        result.info << ['nicht gelöschte Kostenposten', nonDeletedCosts, FLAG_BLOCKER]
-        result.info << ['gelöschte Kostenposten', deletedCosts]
+        result.info << ['nicht gelöschte Kosten', nonDeletedCosts, FLAG_BLOCKER]
+        result.info << ['gelöschte Kosten', deletedCosts]
         result.info << ['OrgAccessPointLink', oapl]
         result.info << ['Private Merkmale', sub.propertySet.findAll { it.type.tenant != null }]
         result.info << ['Allgemeine Merkmale', sub.propertySet.findAll { it.type.tenant == null }]
@@ -580,8 +580,8 @@ class DeletionService {
         result.info << ['Merkmalsgruppen (gebunden)', propDefGroupBindings, FLAG_BLOCKER]
 
         result.info << ['BudgetCodes', budgetCodes, FLAG_BLOCKER]
-        result.info << ['Kostenposten', costItems, FLAG_BLOCKER]
-        result.info << ['Kostenposten-Konfigurationen', costItemsECs, FLAG_BLOCKER]
+        result.info << ['Kosten', costItems, FLAG_BLOCKER]
+        result.info << ['Kosten-Konfigurationen', costItemsECs, FLAG_BLOCKER]
         result.info << ['Rechnungen', invoices, FLAG_BLOCKER]
         result.info << ['Aufträge', orderings, FLAG_BLOCKER]
 

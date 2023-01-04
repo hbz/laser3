@@ -168,7 +168,7 @@
                 </div>
             </div><!-- .card -->
 
-            <g:if test="${orgInstance.getCustomerType() == 'ORG_INST'}">
+            <g:if test="${orgInstance.getCustomerType() in ['ORG_BASIC_MEMBER','ORG_INST']}">
                 <div class="ui card">
                     <div class="content">
                         <dl>
@@ -198,7 +198,7 @@
                     </div>
                 </div><!-- .card -->
             </g:if>
-            <g:elseif test="${isProviderOrAgency && orgInstanceRecord}">
+            <g:if test="${isProviderOrAgency && orgInstanceRecord}">
                 <div class="ui card">
                     <div class="content">
                         <dl>
@@ -223,7 +223,7 @@
                         </dl>
                     </div>
                 </div><!-- .card -->
-            </g:elseif>
+            </g:if>
 
             <g:if test="${isGrantedOrgRoleAdminOrOrgEditor}">
                 <div class="ui card">
