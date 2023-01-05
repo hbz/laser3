@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4740    05.01.2023  rc-3.0  3.0.2       Andreas Bug         Ausblenden entfernter Plattformen
+
 4735    03.01.2023  rc-3.0  3.0.1       Andreas Bug         Ladelogik der Finanzen umgestellt
 
 4734    02.01.2023  rc-3.0  3.0.1       Andreas Bug         E-Rechnungspanel wurde bei Konsorten ausgeblendet
