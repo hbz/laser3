@@ -4,6 +4,7 @@ import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.config.ConfigMapper
 import de.laser.properties.PropertyDefinition
+import de.laser.remote.ApiSource
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.AppUtils
@@ -22,6 +23,7 @@ class OrganisationService {
     ExportService exportService
     InstAdmService instAdmService
     UserService userService
+    GokbService gokbService
 
     List<String> errors = []
 
@@ -317,7 +319,11 @@ class OrganisationService {
      * @return the ordered {@link List} of {@link Platform}s
      */
     List<Platform> getAllPlatforms() {
-        Platform.executeQuery('select p from Platform p join p.org o where p.org is not null order by o.name, o.sortname, p.name')
+        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        Set<String> uuids = []
+        Map<String, Object> result = gokbService.doQuery([user: contextService.getUser(), editUrl: apiSource.editUrl], [max: '1000', offset: '0'], "?componentType=Platform&status=Current")
+        uuids.addAll(result.records.collect { Map platRecord -> platRecord.uuid })
+        Platform.executeQuery('select p from Platform p join p.org o where p.gokbId in (:uuids) and p.org is not null order by o.name, o.sortname, p.name', [uuids: uuids])
     }
 
 }
