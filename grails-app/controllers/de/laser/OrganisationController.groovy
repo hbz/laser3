@@ -1054,6 +1054,10 @@ class OrganisationController  {
                     query += " and platform.id = :platform"
                     queryParams.platform = params.long("ciPlatform")
                 }
+                else {
+                    query += " and platform in (:wekbPlatforms)"
+                    queryParams.wekbPlatforms = result.allPlatforms
+                }
                 String sort = " order by platform.org.name asc"
                 if(params.sort) {
                     sort = " order by ${params.sort} ${params.order}"
