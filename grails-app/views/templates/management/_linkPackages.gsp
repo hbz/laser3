@@ -44,36 +44,6 @@
         </div>
     </g:if>
 
-    <div class="ui icon info message">
-        <i class="info icon"></i>
-
-        <div class="content">
-            <div class="header">Info</div>
-
-            <p>${message(code: 'subscriptionsManagement.package.info')}</p>
-        </div>
-    </div>
-
-    <g:if test="${controllerName == "subscription"}">
-
-        <div class="ui segment">
-            <h4 class="ui header">${message(code: 'subscriptionsManagement.unlinkInfo')}</h4>
-
-            <div class="ui buttons">
-                <g:link class="ui button negative js-open-confirm-modal ${!editable || isLinkingRunning  ? 'disabled' : ''}"
-                        data-confirm-tokenMsg="${message(code: 'subscriptionsManagement.unlinkInfo.onlyPackage.confirm')}"
-                        data-confirm-term-how="ok" action="${actionName}"
-                        params="[processOption: 'allWithoutTitle', tab: params.tab, id: params.id]">${message(code: 'subscriptionsManagement.unlinkInfo.onlyPackage')}</g:link>
-                <div class="or" data-text="${message(code: 'default.or')}"></div>
-                <g:link class="ui button negative js-open-confirm-modal ${!editable || isLinkingRunning  ? 'disabled' : ''}"
-                        data-confirm-tokenMsg="${message(code: 'subscriptionsManagement.unlinkInfo.withIE.confirm')}"
-                        data-confirm-term-how="ok" action="${actionName}"
-                        params="[processOption: 'allWithTitle', tab: params.tab, id: params.id]">${message(code: 'subscriptionsManagement.unlinkInfo.withIE')}</g:link>
-            </div>
-
-        </div>
-    </g:if>
-
     <g:form action="${actionName}" params="[tab: params.tab, id: params.id]" data-confirm-id="processLinkPackagesMembers_form"
             method="post"
             class="ui form packagesForm">
@@ -91,11 +61,11 @@
                                       args="${args.superOrgType}"/> <g:message code="messageRequiredField"/></label>
 
                     <g:if test="${validPackages}">
-                        <g:select class="ui search dropdown"
+                        <g:select class="ui multiple search dropdown"
                                   optionKey="id" optionValue="${{ it.getPackageNameWithCurrentTippsCount() }}"
                                   from="${validPackages}" name="selectedPackage" value=""
                                   required=""
-                                  noSelection='["": "${message(code: 'subscriptionsManagement.noSelection.package')}"]'/>
+                                  noSelection='["all": "${message(code: 'subscriptionsManagement.all.package')}"]'/>
                     </g:if>
                     <g:else>
                         <g:message code="subscriptionsManagement.noValidPackages" args="${args.superOrgType}"/>
@@ -103,7 +73,7 @@
                 </g:if>
 
                 <g:if test="${controllerName == "myInstitution"}">
-                    <g:select class="ui search dropdown"
+                    <g:select class="ui multiple search dropdown"
                               optionKey="id" optionValue="${{ it.getPackageNameWithCurrentTippsCount() }}"
                               from="${validPackages}" name="selectedPackage" value=""
                               required=""
@@ -115,12 +85,12 @@
             <div class="two fields">
                 <div class="eight wide field" style="text-align: left;">
                     <div class="ui buttons">
-                        <button class="ui button" ${!editable || isLinkingRunning  ? 'disabled="disabled"' : ''} type="submit"
+                        <button class="ui green button" ${!editable || isLinkingRunning  ? 'disabled="disabled"' : ''} type="submit"
                                 name="processOption"
                                 value="linkwithoutIE">${message(code: 'subscriptionsManagement.linkwithoutIE')}</button>
 
                         <div class="or" data-text="${message(code: 'default.or')}"></div>
-                        <button class="ui button" ${!editable || isLinkingRunning ? 'disabled="disabled"' : ''} type="submit"
+                        <button class="ui green button" ${!editable || isLinkingRunning ? 'disabled="disabled"' : ''} type="submit"
                                 name="processOption"
                                 value="linkwithIE">${message(code: 'subscriptionsManagement.linkwithIE')}</button>
                     </div>
