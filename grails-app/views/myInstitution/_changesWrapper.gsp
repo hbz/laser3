@@ -1,54 +1,53 @@
 <%@ page import="de.laser.storage.RDStore" %>
 <laser:serviceInjection/>
-<g:if test="${editable}">
-    <div id="pendingChangesWrapper">
-        <%--<div class="la-float-right">
-            <g:if test="${packages}">
-                <g:form controller="pendingChange" action="processAll">
-                    <g:select from="${packages}" noSelection="${['':message(code:'default.select.choose.label')]}" name="acceptChangesForPackages" class="ui select search multiple dropdown" optionKey="${{it.id}}" optionValue="${{it.pkg.name}}"/>
-                    <div class="ui buttons">
-                        <g:submitButton class="ui button positive" name="acceptAll" value="${message(code:'pendingChange.takeAll')}"/>
-                        <div class="or" data-text="${message(code:'default.or')}"></div>
-                        <g:submitButton class="ui button negative" name="rejectAll" value="${message(code:'pendingChange.rejectAll')}"/>
-                    </div>
-                </g:form>
-            </g:if>
-        </div>--%>
-        <div class="ui internally celled grid">
+<div id="pendingChangesWrapper">
+<%--<div class="la-float-right">
+        <g:if test="${packages}">
+            <g:form controller="pendingChange" action="processAll">
+                <g:select from="${packages}" noSelection="${['':message(code:'default.select.choose.label')]}" name="acceptChangesForPackages" class="ui select search multiple dropdown" optionKey="${{it.id}}" optionValue="${{it.pkg.name}}"/>
+                <div class="ui buttons">
+                    <g:submitButton class="ui button positive" name="acceptAll" value="${message(code:'pendingChange.takeAll')}"/>
+                    <div class="or" data-text="${message(code:'default.or')}"></div>
+                    <g:submitButton class="ui button negative" name="rejectAll" value="${message(code:'pendingChange.rejectAll')}"/>
+                </div>
+             </g:form>
+        </g:if>
+    </div>--%>
+    <div class="ui internally celled grid">
+        <div class="row">
+            <div class="six wide column">
+                <g:message code="profile.dashboard.changes.object"/>
+            </div><!-- .column -->
+            <div class="ten wide column">
+                <g:message code="profile.dashboard.changes.event"/>
+            </div><!-- .column -->
+        </div>
+        <g:each in="${pending}" var="entry">
             <div class="row">
+                <%--${notification}--%>
                 <div class="six wide column">
-                    <g:message code="profile.dashboard.changes.object"/>
+                    <g:if test="${entry.packageSubscription}">
+                        <g:link controller="subscription" action="index" id="${entry.packageSubscription.id}">${entry.packageSubscription.name}</g:link>
+                    </g:if>
+                    <g:elseif test="${entry.costItemSubscription}">
+                        <g:link controller="subscription" action="index" mapping="subfinance" params="${[sub:entry.costItemSubscription.id]}">${entry.costItemSubscription.name}</g:link>
+                    </g:elseif>
+                    <g:elseif test="${entry.subscription}">
+                        <div class="right aligned wide column">
+                            <g:link controller="subscription" action="show" id="${entry.subscription.id}">
+                                ${entry.subscription.name}
+                            </g:link>
+                        </div>
+                    </g:elseif>
                 </div><!-- .column -->
                 <div class="ten wide column">
-                    <g:message code="profile.dashboard.changes.event"/>
-                </div><!-- .column -->
-            </div>
-            <g:each in="${pending}" var="entry">
-                <div class="row">
-                    <%--${notification}--%>
-                    <div class="six wide column">
-                        <g:if test="${entry.packageSubscription}">
-                            <g:link controller="subscription" action="index" id="${entry.packageSubscription.id}">${entry.packageSubscription.name}</g:link>
-                        </g:if>
-                        <g:elseif test="${entry.costItemSubscription}">
-                            <g:link controller="subscription" action="index" mapping="subfinance" params="${[sub:entry.costItemSubscription.id]}">${entry.costItemSubscription.name}</g:link>
-                        </g:elseif>
-                        <g:elseif test="${entry.subscription}">
-                            <div class="right aligned wide column">
-                                <g:link controller="subscription" action="show" id="${entry.subscription.id}">
-                                    ${entry.subscription.name}
-                                </g:link>
-                            </div>
-                        </g:elseif>
-                    </div><!-- .column -->
-                    <div class="ten wide column">
-                        <g:if test="${entry.packageSubscription}">
-                            <g:link controller="subscription" action="entitlementChanges" id="${entry.packageSubscription.id}" params="[tab: 'changes', eventType: entry.msgToken]">${raw(entry.eventString)}</g:link>
-                        </g:if>
-                        <g:else>
-                            ${raw(entry.eventString)}
-                        </g:else>
-
+                    <g:if test="${entry.packageSubscription}">
+                        <g:link controller="subscription" action="entitlementChanges" id="${entry.packageSubscription.id}" params="[tab: 'changes', eventType: entry.msgToken]">${raw(entry.eventString)}</g:link>
+                    </g:if>
+                    <g:else>
+                        ${raw(entry.eventString)}
+                    </g:else>
+                    <g:if test="${editable}">
                         <g:if test="${entry.subscription}">
                             <div class="right aligned wide column">
                                 <g:link class="ui button" controller="subscription" action="copyMyElements" params="${[sourceObjectId: entry.subscription.source, targetObjectId: entry.subscription.target]}">
@@ -77,15 +76,15 @@
                                 </div>
                             </div>
                         </g:if>
-                    </div><!-- .column -->
-                </div><!-- .row -->
-            </g:each>
-        </div><!-- .grid -->
-        <div>
-            <ui:paginate controller="myInstitution" action="dashboard" offset="${pendingOffset ? pendingOffset : '0'}" max="${max}" params="${[view:'PendingChanges']}" total="${pendingCount}"/>
-        </div>
+                    </g:if>
+                </div><!-- .column -->
+            </div><!-- .row -->
+        </g:each>
+    </div><!-- .grid -->
+    <div>
+        <ui:paginate controller="myInstitution" action="dashboard" offset="${pendingOffset ? pendingOffset : '0'}" max="${max}" params="${[view:'PendingChanges']}" total="${pendingCount}"/>
     </div>
-</g:if>
+</div>
 <div id="acceptedChangesWrapper">
     <div class="la-float-right">
         <%--<g:link action="changes" class="ui button"><g:message code="myinst.changes.submit.label"/></g:link>--%>

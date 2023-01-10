@@ -86,6 +86,7 @@ class RDStore {
 
     public final static RefdataValue ORG_STATUS_CURRENT     = getRefdataValue('Current', RDConstants.ORG_STATUS)
     public final static RefdataValue ORG_STATUS_DELETED     = getRefdataValue('Deleted', RDConstants.ORG_STATUS)
+    public final static RefdataValue ORG_STATUS_REMOVED     = getRefdataValue('Removed', RDConstants.ORG_STATUS)
     public final static RefdataValue ORG_STATUS_RETIRED     = getRefdataValue('Retired', RDConstants.ORG_STATUS)
 
     public final static RefdataValue OR_LICENSING_CONSORTIUM    = getRefdataValue('Licensing Consortium', RDConstants.ORGANISATIONAL_ROLE)
@@ -118,6 +119,7 @@ class RDStore {
     public final static RefdataValue OT_PUBLISHER           = getRefdataValue('Publisher', RDConstants.ORG_TYPE)
 
     public final static RefdataValue PACKAGE_STATUS_DELETED = getRefdataValue('Deleted', RDConstants.PACKAGE_STATUS)
+    public final static RefdataValue PACKAGE_STATUS_REMOVED = getRefdataValue('Removed', RDConstants.PACKAGE_STATUS)
 
     public final static RefdataValue PACKAGE_SCOPE_NATIONAL = getRefdataValue('National', RDConstants.PACKAGE_SCOPE)
 
@@ -144,6 +146,7 @@ class RDStore {
 
     public final static RefdataValue PLATFORM_STATUS_CURRENT    = getRefdataValue('Current', RDConstants.PLATFORM_STATUS)
     public final static RefdataValue PLATFORM_STATUS_DELETED    = getRefdataValue('Deleted', RDConstants.PLATFORM_STATUS)
+    public final static RefdataValue PLATFORM_STATUS_REMOVED    = getRefdataValue('Removed', RDConstants.PLATFORM_STATUS)
 
     public final static RefdataValue PRS_RESP_SPEC_SUB_EDITOR   = getRefdataValue('Specific subscription editor', RDConstants.PERSON_RESPONSIBILITY)
     public final static RefdataValue PRS_RESP_SPEC_LIC_EDITOR   = getRefdataValue('Specific license editor', RDConstants.PERSON_RESPONSIBILITY)

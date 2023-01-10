@@ -137,7 +137,6 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
           orgRelations        : OrgRole,
           prsLinks            : PersonRole,
           derivedSubscriptions: Subscription,
-          pendingChanges      : PendingChange,
           propertySet         : SubscriptionProperty,
           costItems           : CostItem,
           ieGroups            : IssueEntitlementGroup
@@ -151,7 +150,6 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
                       orgRelations: 'sub',
                       prsLinks: 'sub',
                       derivedSubscriptions: 'instanceOf',
-                      pendingChanges: 'subscription',
                       costItems: 'sub',
                       propertySet: 'owner'
                       ]
@@ -196,7 +194,6 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         noticePeriod    column:'sub_notice_period'
         isMultiYear column: 'sub_is_multi_year'
         isAutomaticRenewAnnually column: 'sub_is_automatic_renew_annually'
-        pendingChanges  sort: 'ts', order: 'asc', batchSize: 10
 
         ids             sort: 'ns', batchSize: 10
         packages            batchSize: 10
@@ -748,65 +745,6 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         }
 
         return false
-    }
-
-    /**
-     * Method used by generic call. Propagates changes to a consortial subscription to member objects, i.e. triggers inheritance
-     * @param changeDocument the change map as JSON document which will be passed to the child objects
-     */
-    @Transient
-    void notifyDependencies(Map changeDocument) {
-        log.debug("notifyDependencies(${changeDocument})")
-
-        List<PendingChange> slavedPendingChanges = []
-        List<Subscription> derived_subscriptions = getNonDeletedDerivedSubscriptions()
-
-        derived_subscriptions.each { ds ->
-
-            log.debug("Send pending change to ${ds.id}")
-
-            Locale locale = LocaleUtils.getCurrentLocale()
-            String description = BeanStore.getMessageSource().getMessage('default.accept.placeholder',null, locale)
-            String definedType = 'text'
-
-            if (this."${changeDocument.prop}" instanceof RefdataValue) {
-                definedType = 'rdv'
-            }
-            else if (this."${changeDocument.prop}" instanceof Date) {
-                definedType = 'date'
-            }
-
-            List<String> msgParams = [
-                    definedType,
-                    "${changeDocument.prop}",
-                    "${changeDocument.old}",
-                    "${changeDocument.new}",
-                    "${description}"
-            ]
-
-            PendingChange newPendingChange = BeanStore.getChangeNotificationService().registerPendingChange(
-                    PendingChange.PROP_SUBSCRIPTION,
-                    ds,
-                    ds.getSubscriber(),
-                    [
-                            changeTarget:"${Subscription.class.name}:${ds.id}",
-                            changeType:PendingChangeService.EVENT_PROPERTY_CHANGE,
-                            changeDoc:changeDocument
-                    ],
-                    PendingChange.MSG_SU01,
-                    msgParams,
-                    "<strong>${changeDocument.prop}</strong> hat sich von <strong>\"${changeDocument.oldLabel?:changeDocument.old}\"</strong> zu <strong>\"${changeDocument.newLabel?:changeDocument.new}\"</strong> von der Lizenzvorlage geändert. " + description
-            )
-
-            if (newPendingChange && ds.isSlaved) {
-                slavedPendingChanges << newPendingChange
-            }
-        }
-
-        slavedPendingChanges.each { spc ->
-            log.debug('autoAccept! performing: ' + spc)
-            BeanStore.getPendingChangeService().performAccept(spc)
-        }
     }
 
     /**

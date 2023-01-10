@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4739    10.01.2023  dev     3.1         Andreas Feature     Plattformsynchronisation und -bereinigung
+
+4585    10.01.2023  dev     3.1         Andreas Feature     Überarbeitung des Schaltschrankes, Entfall nicht mehr verwendeter Logik
+
+4261    10.01.2023  dev     3.1         Andreas Feature     Abbau der komplexen Vererbungslogik
+
 4740    05.01.2023  rc-3.0  3.0.2       Andreas Bug         Ausblenden entfernter Plattformen
 
 4735    03.01.2023  rc-3.0  3.0.1       Andreas Bug         Ladelogik der Finanzen umgestellt

@@ -37,89 +37,6 @@ class DataManagerController  {
         result
     }
 
-    @Deprecated
-  @Secured(['ROLE_ADMIN'])
-  def deletedTitles() {
-    Map<String, Object> result = [:]
-
-        result.user = contextService.getUser()
-        SwissKnife.setPaginationParams(result, params, (User) result.user)
-
-        String base_qry = " from TitleInstance as t where ( t.status = :status )"
-        if (params.sort?.length() > 0) {
-            base_qry += " order by " + params.sort
-
-            if (params.order?.length() > 0) {
-                base_qry += " " + params.order
-            }
-        }
-        Map<String, Object> qry_params = [status: RDStore.TITLE_STATUS_DELETED]
-
-        result.titleInstanceTotal = Subscription.executeQuery( "select t.id " + base_qry, qry_params ).size()
-        result.titleList = Subscription.executeQuery( "select t " + base_qry, qry_params, [max:result.max, offset:result.offset] )
-
-        result
-    }
-
-    @Deprecated
-    @Secured(['ROLE_ADMIN'])
-    def deletedOrgs() {
-        Map<String, Object> result = [:]
-
-        result.user = contextService.getUser()
-        result.editable = true
-        SwissKnife.setPaginationParams(result, params, (User) result.user)
-
-        String query = " from Org as o where ( o.status = :status )"
-        if (params.sort?.length() > 0) {
-            query += " order by " + params.sort
-
-            if (params.order?.length() > 0) {
-                query += " " + params.order
-            }
-        }
-        Map<String, Object> qry_params = [status: RDStore.O_STATUS_DELETED]
-
-        result.orgTotal = Org.executeQuery( "select o.id " + query, qry_params ).size()
-        result.orgList = Org.executeQuery( "select o " + query, qry_params, [max:result.max, offset:result.offset] )
-
-        result
-    }
-
-    /**
-     * Cleanup method to depollute the database from platform duplicates
-     */
-    @Secured(['ROLE_YODA'])
-    Map<String,Object> listPlatformDuplicates() {
-        log.debug("listPlatformDuplicates ...")
-        SessionCacheWrapper sessionCache = contextService.getSessionCache()
-        Map<String, Object> result = sessionCache.get("DataManagerController/listPlatformDuplicates/result")
-        if(!result){
-            result = yodaService.listPlatformDuplicates()
-            sessionCache.put("DataManagerController/listDeletedTIPPS/result",result)
-        }
-
-        log.debug("listPlatformDuplicates ... returning")
-        result
-    }
-
-    /**
-     * Executes the deduplicating of platforms. Is a very dangerous procedure, please handle it with extreme care!
-     */
-    @Secured(['ROLE_YODA'])
-    def executePlatformCleanup() {
-        log.debug("WARNING: bulk deletion of platforms triggered! Start nuking!")
-        SessionCacheWrapper sessionCache = contextService.getSessionCache()
-        Map<String,Object> result = (Map<String,Object>) sessionCache.get("DataManagerController/listDeletedTIPPS/result")
-        if(result) {
-            yodaService.executePlatformCleanup(result)
-        }
-        else {
-            log.warn("Data missing. Please rebuild data ...")
-        }
-        redirect(controller: 'platform',action: 'list')
-    }
-
     /**
      * Lists titles which have been marked as deleted; gets result from cache if it is set
      */
@@ -168,43 +85,6 @@ class DataManagerController  {
         else {
             log.error("data missing, rebuilding data")
         }
-    }
-
-  @Deprecated
-  @Secured(['ROLE_ADMIN'])
-  def checkPackageTIPPs() {
-    Map<String, Object> result = [:]
-    result.user = contextService.getUser()
-    params.max =  params.max ?: result.user.getPageSizeOrDefault()
-
-        List gokbRecords = []
-
-      ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true).each { api ->
-            gokbRecords << gokbService.getPackagesMap(api, params.q, false).records
-        }
-
-        params.sort = params.sort ?: 'name'
-        params.order = params.order ?: 'asc'
-
-        result.records = gokbRecords ? gokbRecords.flatten().sort() : null
-
-        result.records?.sort { x, y ->
-            if (params.order == 'desc') {
-                y."${params.sort}".toString().compareToIgnoreCase x."${params.sort}".toString()
-            } else {
-                x."${params.sort}".toString().compareToIgnoreCase y."${params.sort}".toString()
-            }
-        }
-
-        result.resultsTotal2 = result.records?.size()
-
-        Integer start = params.offset ? params.int('offset') : 0
-        Integer end = params.offset ? params.int('max') + params.int('offset') : params.int('max')
-        end = (end > result.records?.size()) ? result.records?.size() : end
-
-        result.records = result.records?.subList(start, end)
-
-        result
     }
 
     /**

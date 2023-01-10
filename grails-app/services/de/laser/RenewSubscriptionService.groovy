@@ -68,7 +68,6 @@ class RenewSubscriptionService extends AbstractLockableService {
                             copySub.orgRelations = null
                             copySub.prsLinks = null
                             copySub.derivedSubscriptions = null
-                            copySub.pendingChanges = null
                             copySub.propertySet = null
                             copySub.costItems = null
                             copySub.ieGroups = null

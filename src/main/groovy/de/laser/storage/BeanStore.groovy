@@ -1,6 +1,6 @@
 package de.laser.storage
 
-import de.laser.ChangeNotificationService
+
 import de.laser.ESWrapperService
 import de.laser.GenericOIDService
 import de.laser.PendingChangeService
@@ -93,9 +93,6 @@ class BeanStore {
     }
     static CascadingUpdateService getCascadingUpdateService() {
         Holders.grailsApplication.mainContext.getBean('cascadingUpdateService') as CascadingUpdateService
-    }
-    static ChangeNotificationService getChangeNotificationService() {
-        Holders.grailsApplication.mainContext.getBean('changeNotificationService') as ChangeNotificationService
     }
     static ContextService getContextService() {
         Holders.grailsApplication.mainContext.getBean('contextService') as ContextService
