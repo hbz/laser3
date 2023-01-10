@@ -27,10 +27,14 @@ responsiveTables = {
       let currentTable = $(this);
       $('>tbody>tr', this).each(function () {
         $('>td', this).each(function () {
+
           let th = $(currentTable.find('th')).eq($(this).index());
+          if ((th.length === 0)) {
+            return false;
+          }
 
           // table header is icon
-          if( th.html().includes("la-popup-tooltip"))  {
+          if( (th.html().includes("la-popup-tooltip")))  {
             let dataContent = th.find('.la-popup-tooltip').attr("data-content");
             $(this).attr('data-label', dataContent + ':');
           }
@@ -41,7 +45,7 @@ responsiveTables = {
 
           else
             // table header is empty
-            if (th.text() == 0) {
+            if (th.text() === 0) {
             }
             // table header is dropdown menu
             else if( th.html().includes("menu"))  {
