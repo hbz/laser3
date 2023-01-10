@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4744    10.01.2023  rc-3.0  3.0.2       Moe     Bug         Umfrage exportieren (als Vollnutzer) führt zu 500er
+
 4732    10.01.2023  rc-3.0  3.0.2       Moe     Bug         Automatische Verlängerung hakt
 
 4743    10.01.2023  rc-3.0  3.0.2       Moe     Bug         Automatische Verlängerung 2023 ist nicht ausgeführt worden
