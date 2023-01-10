@@ -42,7 +42,7 @@
 </div>
 
 <div class="ui bottom attached tab active segment">
-    <g:if test="${packages && params.tab != 'acceptedChanges' && changes}">
+    <g:if test="${packages && params.tab != 'acceptedChanges' && changes && editable}">
         <g:form controller="pendingChange" action="processAll">
             <g:hiddenField name="eventType" value="${params.eventType}"/>
             <g:select from="${packages}" noSelection="${['': message(code: 'default.select.choose.label')]}"
@@ -80,7 +80,7 @@
                 <g:link controller="subscription" action="entitlementChanges" id="${subscription.id}"
                         params="[eventType: event, tab: params.tab]"
                         class="item ${params.eventType == event ? 'active' : ''}">
-                    <g:message code="subscription.packages.${event}"/>
+                    <g:message code="subscription.packages.tabs.${event}"/>
                     <span class="ui circular label">
                         ${currentCount}
                     </span>
@@ -101,9 +101,9 @@
                 <g:if test="${params.tab == 'acceptedChanges'}">
                     <th><g:message code="default.status.label"/></th>
                 </g:if>
-                <g:else>
+                <g:elseif test="${editable}">
                     <th><g:message code="default.action.label"/></th>
-                </g:else>
+                </g:elseif>
             </tr>
             </thead>
             <tbody>
@@ -119,12 +119,6 @@
                         <g:if test="${entry.tipp}">
                             <g:set var="tipp" value="${entry.tipp}"/>
                         </g:if>
-                        <g:if test="${entry.tippCoverage}">
-                            <g:set var="tipp" value="${entry.tippCoverage.tipp}"/>
-                        </g:if>
-                    <%--<g:elseif test="${entry.priceItem}">
-                        <g:set var="tipp" value="${entry.priceItem.tipp}"/>
-                    </g:elseif>--%>
                         <g:elseif test="${entry.oid}">
                             <g:set var="object" value="${genericOIDService.resolveOID(entry.oid)}"/>
                             <g:if test="${object instanceof IssueEntitlement}">
@@ -180,21 +174,15 @@
                             <g:set var="newValue" value="${entry.newValue}"/>
                         </g:else>
 
-                        <g:if test="${entry.msgToken == PendingChangeConfiguration.TITLE_DELETED}">
+                        <g:if test="${entry.msgToken in [PendingChangeConfiguration.TITLE_DELETED, PendingChangeConfiguration.TITLE_REMOVED]}">
                             <g:message code="subscription.packages.${entry.msgToken}"/>
                         </g:if>
-                        <g:elseif test="${entry.msgToken == PendingChangeConfiguration.COVERAGE_DELETED}">
-                            <g:set var="oldValue" value="${JSON.parse(entry.oldValue)}"/>
-                            <g:if test="${oldValue.startDate}">
-                                ${oldValue.startDate} - ${oldValue.startVolume}/${oldValue.startIssue} – ${oldValue.endDate} - ${oldValue.endVolume}/${oldValue.endIssue}
-                            </g:if>
-                        </g:elseif>
                         <g:else>
                             <g:if test="${oldValue != null || newValue != null}">
-                                ${(message(code: 'tipp.' + (entry.priceItem ? 'price.' : '') + entry.targetProperty) ?: '') + ': ' + message(code: 'pendingChange.change', args: [oldValue, newValue])}
+                                ${(message(code: 'tipp.' + entry.targetProperty) ?: '') + ': ' + message(code: 'pendingChange.change', args: [oldValue, newValue])}
                             </g:if>
                             <g:elseif test="${entry.targetProperty}">
-                                ${message(code: 'tipp.' + (entry.priceItem ? 'price.' : '') + entry.targetProperty)}
+                                ${message(code: 'tipp.' + entry.targetProperty)}
                             </g:elseif>
                         </g:else>
 
@@ -205,7 +193,7 @@
                     <g:if test="${params.tab == 'acceptedChanges'}">
                         <td>${entry.status.getI10n('value')}</td>
                     </g:if>
-                    <g:else>
+                    <g:elseif test="${editable}">
                         <td>
                             <div class="ui buttons">
                                 <g:link class="ui positive button" controller="pendingChange" action="accept"
@@ -219,7 +207,7 @@
                                         code="default.button.reject.label"/></g:link>
                             </div>
                         </td>
-                    </g:else>
+                    </g:elseif>
 
                 </tr>
 
