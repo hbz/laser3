@@ -13,7 +13,6 @@ import grails.plugin.springsecurity.annotation.Secured
 class PendingChangeController  {
 
     ContextService contextService
-    ExecutorWrapperService executorWrapperService
     GenericOIDService genericOIDService
     PendingChangeService pendingChangeService
 
@@ -26,10 +25,6 @@ class PendingChangeController  {
         log.debug("Accept")
         //distinct between legacy accept and new accept!
         PendingChange pc = PendingChange.get(params.long('id'))
-        if (pc.msgParams) {
-            pendingChangeService.performAccept(pc)
-        }
-        else if (!pc.payload) {
             SessionCacheWrapper scw = new SessionCacheWrapper()
             String ctx = 'dashboard/changes'
             Map<String, Object> changesCache = scw.get(ctx) as Map<String, Object>
@@ -57,7 +52,6 @@ class PendingChangeController  {
             else {
                 pendingChangeService.accept(pc, params.subId)
             }
-        }
         redirect(url: request.getHeader('referer'))
     }
 
@@ -70,12 +64,7 @@ class PendingChangeController  {
         log.debug("Reject")
         //distinct between legacy reject and new reject!
         PendingChange pc = PendingChange.get(params.long('id'))
-        if (pc.msgParams) {
-            pendingChangeService.performReject(pc)
-        }
-        else if (!pc.payload) {
-            pendingChangeService.reject(pc, Long.parseLong(params.subId))
-        }
+        pendingChangeService.reject(pc, Long.parseLong(params.subId))
         redirect(url: request.getHeader('referer'))
     }
 
@@ -112,14 +101,6 @@ class PendingChangeController  {
                         query = 'select pc from PendingChange pc join pc.tipp.pkg pkg where pkg = :package and pc.msgToken = :eventType and exists(select ie from IssueEntitlement ie where ie.tipp = pc.tipp and ie.subscription = :subscription and ie.status != :removed)'
                         queryParams = [package: sp.pkg, eventType: params.eventType, subscription: sp.subscription, removed: RDStore.TIPP_STATUS_REMOVED]
                     }
-                    else if(params.eventType in [PendingChangeConfiguration.NEW_COVERAGE, PendingChangeConfiguration.COVERAGE_DELETED]) {
-                        query = 'select pc from PendingChange pc join pc.tippCoverage.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken = :eventType and not exists (select pca.id from PendingChange pca join pca.tippCoverage tcA where tcA = pc.tippCoverage and pca.oid = :subOid and pc.status in (:pendingStatus)) and pc.status = :packageHistory'
-                        queryParams = [package: sp.pkg, entryDate: sp.dateCreated, eventType: params.eventType, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(sp.subscription), packageHistory: RDStore.PENDING_CHANGE_HISTORY]
-                    }
-                    else if(params.eventType == PendingChangeConfiguration.COVERAGE_UPDATED) {
-                        query = 'select pc from PendingChange pc join pc.tippCoverage.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken = :eventType and not exists (select pca.id from PendingChange pca join pca.tippCoverage tcA where tcA = pc.tippCoverage and pca.oid = :subOid and pca.newValue = pc.newValue and pca.status in (:pendingStatus)) and pc.status = :packageHistory'
-                        queryParams = [package: sp.pkg, entryDate: sp.dateCreated, eventType: params.eventType, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(sp.subscription), packageHistory: RDStore.PENDING_CHANGE_HISTORY]
-                    }
                     Set<PendingChange> pendingChanges = PendingChange.executeQuery(query, queryParams)
 
                     pendingChanges.each { PendingChange pc ->
@@ -136,48 +117,6 @@ class PendingChangeController  {
                     }
                 }
             }
-        }
-        redirect(url: request.getHeader('referer'))
-    }
-
-    /**
-     * Call to bulk-accept a set of changes. The changes are going to be looped and accepting triggered in each of them
-     */
-    @DebugInfo(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
-    def acceptAll() {
-        log.debug("acceptAll - ${params}")
-        if(params.OID) {
-            def owner = genericOIDService.resolveOID(params.OID)
-            Collection<PendingChange> pendingChanges = owner?.pendingChanges?.findAll {
-                (it.status == RDStore.PENDING_CHANGE_PENDING) || it.status == null
-            }
-            executorWrapperService.processClosure({
-                pendingChanges.each { pc ->
-                    pendingChangeService.performAccept(pc)
-                }
-            }, owner)
-        }
-        redirect(url: request.getHeader('referer'))
-    }
-
-    /**
-     * Call to bulk-reject a set of changes. The changes are going to be looped and rejecting triggered in each of them
-     */
-    @DebugInfo(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
-    def rejectAll() {
-        log.debug("rejectAll ${params}")
-        if(params.OID) {
-            def owner = genericOIDService.resolveOID(params.OID)
-            Collection<PendingChange> pendingChanges = owner?.pendingChanges?.findAll {
-                (it.status == RDStore.PENDING_CHANGE_PENDING) || it.status == null
-            }
-            executorWrapperService.processClosure({
-                pendingChanges.each { pc ->
-                    pendingChangeService.performReject(pc)
-                }
-            }, owner)
         }
         redirect(url: request.getHeader('referer'))
     }

@@ -1,6 +1,6 @@
 package de.laser
 
-
+import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.properties.LicenseProperty
 import de.laser.properties.SubscriptionProperty
@@ -15,8 +15,6 @@ import javax.persistence.Transient
  */
 @Transactional
 class AuditService {
-
-    ChangeNotificationService changeNotificationService
 
     /**
      * Retrieves the list of properties which trigger inheritance for the given object
@@ -83,41 +81,10 @@ class AuditService {
     @Transient
     def beforeDeleteHandler(Auditable obj) {
 
-            log.debug("beforeDeleteHandler() ${obj}")
-
-            String oid = "${obj.class.name}:${obj.id}"
-
-            if (obj instanceof SubscriptionProperty) {
-
-                Map<String, Object> changeDoc = [
-                        OID  : oid,
-                        event: 'SubscriptionProperty.deleted',
-                        prop : obj.type.name,
-                        old  : "",
-                        new  : "property removed",
-                        name : obj.type.name
-                ]
-                changeNotificationService.fireEvent(changeDoc)
-            }
-            else if (obj instanceof LicenseProperty) {
-
-                Map<String, Object> changeDoc = [ OID: oid,
-                        event:'LicenseProperty.deleted',
-                        prop: obj.type.name,
-                        old: "",
-                        new: "property removed",
-                        name: obj.type.name
-                ]
-                changeNotificationService.fireEvent(changeDoc)
-            }
-    }
-
-    @Deprecated
-    @Transient
-    def beforeSaveHandler(Auditable obj) {
-
-        obj.withNewSession {
-            log.debug("beforeSaveHandler() ${obj}")
+        log.debug("beforeDeleteHandler() ${obj}")
+        Set depending = (new GroovyClassLoader()).loadClass(obj.class.name).findAllByInstanceOf(obj)
+        depending.each { dependingObj ->
+            dependingObj.delete()
         }
     }
 
@@ -133,7 +100,7 @@ class AuditService {
     @Transient
     def beforeUpdateHandler(Auditable obj, def oldMap, def newMap) {
 
-        obj.withNewSession {
+        obj.withNewTransaction {
             log.debug("beforeUpdateHandler() ${obj} : ${oldMap} => ${newMap}")
 
             if (obj.instanceOf == null) {
@@ -147,38 +114,15 @@ class AuditService {
                         String clsName = obj."${cp}".getClass().getName()
 
                         log.debug("trigger inheritance: " + obj + " : " + clsName)
-                        // CustomProperty
+                        // CustomProperty or Identifier
                         if ((obj instanceof AbstractPropertyWithCalculatedLastUpdated && !obj.type.tenant && obj.isPublic == true) || obj instanceof Identifier) {
-
                             if (getAuditConfig(obj)) {
-                                if(oldMap[cp] instanceof RefdataValue) {
-
+                                Set depending = (new GroovyClassLoader()).loadClass(obj.class.name).findAllByInstanceOf(obj)
+                                depending.each { dependingObj ->
+                                    dependingObj[cp] = newMap[cp]
+                                    //it would be way more elegant to execute it by query but it needs to trigger the API increment, so I need to trigger the beforeUpdate() handlers of each object!
+                                    dependingObj.save()
                                 }
-                                else {
-
-                                }
-                                /*
-                                String old_oid
-                                String new_oid
-                                if (oldMap[cp] instanceof RefdataValue) {
-                                    old_oid = oldMap[cp] ? "${oldMap[cp].class.name}:${oldMap[cp].id}" : null
-                                    new_oid = newMap[cp] ? "${newMap[cp].class.name}:${newMap[cp].id}" : null
-                                }
-
-                                event = [
-                                        OID     : "${obj.class.name}:${obj.id}",
-                                        //OID        : "${obj.owner.class.name}:${obj.owner.id}",
-                                        event   : "${obj.class.simpleName}.updated",
-                                        prop    : cp,
-                                        name    : obj instanceof AbstractPropertyWithCalculatedLastUpdated ? obj.type.name : obj.ns.getI10n("name"),
-                                        type    : obj."${cp}".class.name,
-                                        old     : old_oid ?: oldMap[cp], // Backward Compatibility
-                                        oldLabel: oldMap[cp] instanceof RefdataValue ? oldMap[cp].toString() : oldMap[cp],
-                                        new     : new_oid ?: newMap[cp], // Backward Compatibility
-                                        newLabel: newMap[cp] instanceof RefdataValue ? newMap[cp].toString() : newMap[cp],
-                                        //propertyOID: "${obj.class.name}:${obj.id}"
-                                ]
-                                */
                             } else {
                                 log.debug("ignored because no audit config")
                             }
@@ -189,53 +133,16 @@ class AuditService {
                             boolean isSubOrLic = (obj instanceof Subscription || obj instanceof License)
 
                             if (!isSubOrLic || (isSubOrLic && getAuditConfig(obj, cp))) {
-
-
-                                if (clsName == RefdataValue.class.name) {
-                                    /*
-                                    String old_oid = oldMap[cp] ? "${oldMap[cp].class.name}:${oldMap[cp].id}" : null
-                                    String new_oid = newMap[cp] ? "${newMap[cp].class.name}:${newMap[cp].id}" : null
-
-                                    event = [
-                                            OID     : "${obj.class.name}:${obj.id}",
-                                            event   : "${obj.class.simpleName}.updated",
-                                            prop    : cp,
-                                            type    : RefdataValue.class.name,
-                                            old     : old_oid,
-                                            oldLabel: oldMap[cp]?.toString(),
-                                            new     : new_oid,
-                                            newLabel: newMap[cp]?.toString()
-                                    ]
-                                    */
+                                Set depending = (new GroovyClassLoader()).loadClass(obj.class.name).findAllByInstanceOf(obj)
+                                depending.each { dependingObj ->
+                                    dependingObj[cp] = newMap[cp]
+                                    //it would be way more elegant to execute it by query but it needs to trigger the API increment, so I need to trigger the beforeUpdate() handlers of each object!
+                                    dependingObj.save()
                                 }
-                                else {
-                                    /*
-                                    event = [
-                                            OID  : "${obj.class.name}:${obj.id}",
-                                            event: "${obj.class.simpleName}.updated",
-                                            prop : cp,
-                                            type : obj."${cp}".class.name,
-                                            old  : oldMap[cp],
-                                            new  : newMap[cp]
-                                    ]
-                                    */
-                                }
-                            }
-                            else {
+                            } else {
                                 log.debug("ignored because no audit config")
                             }
                         }
-                        /*
-                        log.debug( "event: " + event.toMapString() )
-
-                        if (event) {
-                            if (!changeNotificationService) {
-                                log.error("changeNotificationService not implemented @ ${it}")
-                            } else {
-                                changeNotificationService.fireEvent(event)
-                            }
-                        }
-                        */
                     }
                 }
             }

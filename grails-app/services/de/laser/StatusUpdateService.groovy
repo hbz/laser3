@@ -17,11 +17,8 @@ import java.text.SimpleDateFormat
 @Transactional
 class StatusUpdateService extends AbstractLockableService {
 
-    ChangeNotificationService changeNotificationService
     ContextService contextService
-    GenericOIDService genericOIDService
     GlobalSourceSyncService globalSourceSyncService
-    EscapeService escapeService
 
     /**
      * Cronjob-triggered.
@@ -353,53 +350,21 @@ class StatusUpdateService extends AbstractLockableService {
                         break
                     case 'update':
                         diff.diffs.each { tippDiff ->
-                            switch(tippDiff.prop) {
-                                case 'coverage': tippDiff.covDiffs.each { covEntry ->
-                                    switch(covEntry.event) {
-                                        case 'add': packagePendingChanges << new PendingChange(msgToken:PendingChangeConfiguration.NEW_COVERAGE, tippCoverage: covEntry.target)
-                                            break
-                                        case 'update': covEntry.diffs.each { covDiff ->
-                                            def oldValue, newValue
-                                            if (covDiff.prop in PendingChange.DATE_FIELDS) {
-                                                SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
-                                                newValue = (covDiff.newValue && covDiff.newValue instanceof Date) ? sdf.format(covDiff.newValue) : (covDiff.newValue ?: null)
-                                                oldValue = (covDiff.oldValue && covDiff.oldValue instanceof Date) ? sdf.format(covDiff.oldValue) : (covDiff.oldValue ?: null)
-                                            }
-                                            else if (covDiff.prop in PendingChange.REFDATA_FIELDS) {
-                                                newValue = (covDiff.newValue && covDiff.newValue instanceof Long) ? covDiff.newValue.toString() : (covDiff.newValue ?: null)
-                                                oldValue = (covDiff.oldValue && covDiff.oldValue instanceof Long) ? covDiff.oldValue.toString() : (covDiff.oldValue ?: null)
-                                            }
-                                            else {
-                                                newValue = covDiff.newValue
-                                                oldValue = covDiff.oldValue
-                                            }
-                                            packagePendingChanges << new PendingChange(msgToken: PendingChangeConfiguration.COVERAGE_UPDATED, tippCoverage: covEntry.target, targetProperty: covDiff.prop, oldValue: oldValue, newValue: newValue)
-                                        }
-                                            break
-                                        case 'delete': JSON oldMap = covEntry.target.properties as JSON
-                                            packagePendingChanges << new PendingChange(msgToken:PendingChangeConfiguration.COVERAGE_DELETED, target:covEntry.targetParent, oldValue: oldMap.toString())
-                                            break
-                                    }
-                                }
-                                    break
-                                default:
-                                    def oldValue, newValue
-                                    if (tippDiff.prop in PendingChange.DATE_FIELDS) {
-                                        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
-                                        newValue = (tippDiff.newValue && tippDiff.newValue instanceof Date) ? sdf.format(tippDiff.newValue) : (tippDiff.newValue ?: null)
-                                        oldValue = (tippDiff.oldValue && tippDiff.oldValue instanceof Date) ? sdf.format(tippDiff.oldValue) : (tippDiff.oldValue ?: null)
-                                    }
-                                    else if (tippDiff.prop in PendingChange.REFDATA_FIELDS) {
-                                        newValue = (tippDiff.newValue && tippDiff.newValue instanceof Long) ? tippDiff.newValue.toString() : (tippDiff.newValue ?: null)
-                                        oldValue = (tippDiff.oldValue && tippDiff.oldValue instanceof Long) ? tippDiff.oldValue.toString() : (tippDiff.oldValue ?: null)
-                                    }
-                                    else {
-                                        newValue = tippDiff.newValue
-                                        oldValue = tippDiff.oldValue
-                                    }
-                                    packagePendingChanges << new PendingChange(msgToken:PendingChangeConfiguration.TITLE_UPDATED,tipp:diff.target,targetProperty: tippDiff.prop,newValue:newValue,oldValue:oldValue)
-                                    break
+                            def oldValue, newValue
+                            if (tippDiff.prop in PendingChange.DATE_FIELDS) {
+                                SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+                                newValue = (tippDiff.newValue && tippDiff.newValue instanceof Date) ? sdf.format(tippDiff.newValue) : (tippDiff.newValue ?: null)
+                                oldValue = (tippDiff.oldValue && tippDiff.oldValue instanceof Date) ? sdf.format(tippDiff.oldValue) : (tippDiff.oldValue ?: null)
                             }
+                            else if (tippDiff.prop in PendingChange.REFDATA_FIELDS) {
+                                newValue = (tippDiff.newValue && tippDiff.newValue instanceof Long) ? tippDiff.newValue.toString() : (tippDiff.newValue ?: null)
+                                oldValue = (tippDiff.oldValue && tippDiff.oldValue instanceof Long) ? tippDiff.oldValue.toString() : (tippDiff.oldValue ?: null)
+                            }
+                            else {
+                                newValue = tippDiff.newValue
+                                oldValue = tippDiff.oldValue
+                            }
+                            packagePendingChanges << new PendingChange(msgToken:PendingChangeConfiguration.TITLE_UPDATED,tipp:diff.target,targetProperty: tippDiff.prop,newValue:newValue,oldValue:oldValue)
                         }
                         break
                     case 'delete': packagePendingChanges << new PendingChange(msgToken:PendingChangeConfiguration.TITLE_DELETED,tipp:diff.target,oldValue:diff.oldValue,status:RDStore.PENDING_CHANGE_HISTORY)
@@ -411,83 +376,6 @@ class StatusUpdateService extends AbstractLockableService {
             Org org = Org.executeQuery('select oo.org from OrgRole oo where oo.sub = :sub and oo.roleType in (:roleTypes)', [sub: sp.subscription, roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA]])[0]
             globalSourceSyncService.autoAcceptPendingChanges(org, sp, packagePendingChanges)
         }
-        /*
-        SubscriptionPackage.withTransaction { TransactionStatus stat ->
-            allSPs.each { SubscriptionPackage sp ->
-                //for session refresh
-                Set<IssueEntitlement> currentIEs = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.status != :removed and ie.subscription = :sub and ie.tipp.pkg = :pkg',[sub:sp.subscription,pkg:pkg,removed:RDStore.TIPP_STATUS_REMOVED])
-                //A and B are naming convention for A (old entity which is out of sync) and B (new entity with data up to date)
-                currentIEs.eachWithIndex { IssueEntitlement ieA, int index ->
-                    Map<String,Object> changeMap = [target:ieA.subscription]
-                    String changeDesc
-                    if(ieA.tipp.status != RDStore.TIPP_STATUS_REMOVED) {
-                        TitleInstancePackagePlatform tippB = TitleInstancePackagePlatform.get(ieA.tipp.id) //for session refresh
-                        Set<Map<String,Object>> diffs = globalSourceSyncService.getTippDiff(ieA,tippB)
-                        diffs.each { Map<String,Object> diff ->
-                            // log.debug("now processing entry #${index}, payload: ${diff}")
-                            if(diff.prop == 'coverage') {
-                                //the city Coventry is beautiful, isn't it ... but here is the COVerageENTRY meant.
-                                diff.covDiffs.each { covEntry ->
-                                    def tippCov = covEntry.target
-                                    switch(covEntry.event) {
-                                        case 'update': IssueEntitlementCoverage ieCov = (IssueEntitlementCoverage) tippCov.findEquivalent(ieA.coverages)
-                                            if(ieCov) {
-                                                covEntry.diffs.each { covDiff ->
-                                                    changeDesc = PendingChangeConfiguration.COVERAGE_UPDATED
-                                                    changeMap.oid = genericOIDService.getOID(ieA)
-                                                    changeMap.prop = covDiff.prop
-                                                    changeMap.oldValue = ieCov[covDiff.prop]
-                                                    changeMap.newValue = covDiff.newValue
-                                                }
-                                            }
-                                            else {
-                                                changeDesc = PendingChangeConfiguration.NEW_COVERAGE
-                                                changeMap.oid = genericOIDService.getOID(tippCov)
-                                            }
-                                            break
-                                        case 'add':
-                                            changeDesc = PendingChangeConfiguration.NEW_COVERAGE
-                                            changeMap.oid = genericOIDService.getOID(tippCov)
-                                            break
-                                        case 'delete':
-                                            IssueEntitlementCoverage ieCov = (IssueEntitlementCoverage) tippCov.findEquivalent(ieA.coverages)
-                                            if(ieCov) {
-                                                changeDesc = PendingChangeConfiguration.COVERAGE_DELETED
-                                                changeMap.oid = genericOIDService.getOID(ieCov)
-                                            }
-                                            break
-                                    }
-                                }
-                            }
-                            else {
-                                changeDesc = PendingChangeConfiguration.TITLE_UPDATED
-                                changeMap.oid = genericOIDService.getOID(ieA)
-                                changeMap.prop = diff.prop
-                                if(diff.prop in PendingChange.REFDATA_FIELDS)
-                                    changeMap.oldValue = ieA[diff.prop].id
-                                else if(diff.prop in ['hostPlatformURL'])
-                                    changeMap.oldValue = diff.oldValue
-                                else
-                                    changeMap.oldValue = ieA[diff.prop]
-                                changeMap.newValue = diff.newValue
-                            }
-                        }
-                    }
-                    else {
-                        changeDesc = PendingChangeConfiguration.TITLE_DELETED
-                        changeMap.oid = genericOIDService.getOID(ieA)
-                    }
-                }
-                Set<TitleInstancePackagePlatform> currentTIPPs = sp.subscription.issueEntitlements.collect { IssueEntitlement ie -> ie.tipp }
-                Set<TitleInstancePackagePlatform> inexistentTIPPs = pkg.tipps.findAll { TitleInstancePackagePlatform tipp -> !currentTIPPs.contains(tipp) && tipp.status != RDStore.TIPP_STATUS_REMOVED }
-                inexistentTIPPs.each { TitleInstancePackagePlatform tippB ->
-                    log.debug("adding new TIPP ${tippB} to subscription ${sp.subscription.id}")
-                }
-                stat.flush()
-                //sess.clear()
-                // //propertyInstanceMap.get().clear()
-            }
-        }*/
     }
 
     /**

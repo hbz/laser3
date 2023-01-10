@@ -15,6 +15,4 @@
     <ui:securedSubNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" controller="license" action="documents" params="${[id:params.id]}" message="license.nav.docs" />
     <ui:subNavItem controller="license" action="notes" params="${[id:params.id]}" counts="${notesCount}" message="license.nav.notes" />
 
-    <ui:subNavItem controller="license" action="changes" params="${[id:params.id]}" message="license.nav.todo_history" />
-
 </ui:subNav>

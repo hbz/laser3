@@ -47,7 +47,6 @@ import java.time.LocalDate
 class AdminController  {
 
     CacheService cacheService
-    ChangeNotificationService changeNotificationService
     ContextService contextService
     DataConsistencyService dataConsistencyService
     DataloadService dataloadService
@@ -845,13 +844,6 @@ class AdminController  {
         }
         redirect(action:'recoveryDoc', params: ['docID': docWithoutFile.id])
 
-    }
-
-    @Deprecated
-    @Secured(['ROLE_ADMIN'])
-    def forceSendNotifications() {
-        changeNotificationService.aggregateAndNotifyChanges()
-        redirect(controller:'home')
     }
 
     /**

@@ -74,12 +74,6 @@
                         break
                     case PendingChangeConfiguration.TITLE_REMOVED: currentCount = params.tab == 'changes' ? titlesRemovedPending : 0
                         break
-                    case PendingChangeConfiguration.NEW_COVERAGE: currentCount = params.tab == 'acceptedChanges' ? newCoveragesAccepted : newCoveragesPending
-                        break
-                    case PendingChangeConfiguration.COVERAGE_UPDATED: currentCount = params.tab == 'acceptedChanges' ? coveragesUpdatedAccepted : coveragesUpdatedPending
-                        break
-                    case  PendingChangeConfiguration.COVERAGE_DELETED: currentCount = params.tab == 'acceptedChanges' ? coveragesDeletedAccepted : coveragesDeletedPending
-                        break
                 }
             %>
             <g:if test="${(event == PendingChangeConfiguration.TITLE_REMOVED && params.tab == 'changes') || event != PendingChangeConfiguration.TITLE_REMOVED}">

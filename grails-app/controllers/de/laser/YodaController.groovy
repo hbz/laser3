@@ -33,8 +33,6 @@ import grails.plugin.springsecurity.annotation.Secured
 import grails.gorm.transactions.Transactional
 import grails.util.Holders
 import grails.web.Action
-import groovyx.gpars.GParsExecutorsPool
-import groovyx.gpars.GParsPool
 import org.elasticsearch.client.RequestOptions
 import org.elasticsearch.client.RestHighLevelClient
 import org.elasticsearch.client.core.CountRequest
@@ -753,15 +751,19 @@ class YodaController {
     def updateData() {
         if(!globalSourceSyncService.running) {
             log.debug("start reloading ...")
-            if(params.dataToLoad == "iemedium")
-                yodaService.fillIEMedium()
-            else
-                globalSourceSyncService.updateData(params.dataToLoad)
+            String dataToLoad = params.dataToLoad, objType = params.objType
+            executorService.execute({
+                Thread.currentThread().setName("UpdateData")
+                if (dataToLoad in ["medium", "openAccess", "accessType"] && objType == 'issueEntitlement')
+                    yodaService.fillValue(dataToLoad)
+                else
+                    globalSourceSyncService.updateData(dataToLoad)
+            })
         }
         else {
             log.debug("process running, lock is set!")
         }
-        redirect controller: 'package'
+        redirect action: 'systemThreads'
     }
 
     /**
@@ -773,7 +775,10 @@ class YodaController {
     def reloadPackages() {
         if(!globalSourceSyncService.running) {
             log.debug("start reloading ...")
-            globalSourceSyncService.reloadData('TitleInstancePackagePlatform')
+            executorService.execute({
+                Thread.currentThread().setName("GlobalDataUpdate_${componentType}")
+                globalSourceSyncService.reloadData('TitleInstancePackagePlatform')
+            })
         }
         else {
             log.debug("process running, lock is set!")
@@ -831,15 +836,42 @@ class YodaController {
      * if no match is being found for the given we:kb ID, a new record will be created!
      */
     @Secured(['ROLE_YODA'])
-    def reloadWekbOrg() {
+    def reloadWekbProvider() {
         if(!globalSourceSyncService.running) {
+            //continue here and with running GlobalDataSync (beware: other GRS are switched off for test, test also with sources enabled!)
             log.debug("start reloading ...")
-            globalSourceSyncService.reloadData('Org')
+            executorService.execute({
+                Thread.currentThread().setName("GlobalDataUpdate_Org")
+                globalSourceSyncService.reloadData('Org')
+                yodaService.expungeRemovedComponents(Org.class.name)
+            })
         }
         else {
             log.debug("process running, lock is set!")
         }
         redirect controller: 'organisation', action: 'listProvider'
+    }
+
+    /**
+     * Call to reload all platform data from the speicified we:kb instance.
+     * Note that the platforms whose data should be updated need a we:kb ID for match;
+     * if no match is being found for the given we:kb ID, a new record will be created!
+     */
+    @Secured(['ROLE_YODA'])
+    def reloadWekbPlatform() {
+        if(!globalSourceSyncService.running) {
+            log.debug("start reloading ...")
+            //continue here with tests
+            executorService.execute({
+                Thread.currentThread().setName("GlobalDataUpdate_Platform")
+                globalSourceSyncService.reloadData('Platform')
+                yodaService.expungeRemovedComponents(Platform.class.name)
+            })
+        }
+        else {
+            log.debug("process running, lock is set!")
+        }
+        redirect controller: 'platform', action: 'list'
     }
 
     /**
