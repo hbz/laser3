@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4745    10.01.2023  rc-3.0  3.0.2       Moe     Feature     Reiter Teilnehmer: Titelumfrage -> Meine Einrichtung ausblenden
+
 4621    10.01.2023  rc-3.0  3.0.2       Moe     Bug         Wording anpassen: Titel-Umfrage "Ausgewählte Titel"
 
 4744    10.01.2023  rc-3.0  3.0.2       Moe     Bug         Umfrage exportieren (als Vollnutzer) führt zu 500er

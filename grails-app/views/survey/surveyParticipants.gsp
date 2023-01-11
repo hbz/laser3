@@ -64,16 +64,17 @@
                             params="[surveyConfigID: surveyConfig.id, tab: 'selectedParticipants']">
                         ${message(code: 'surveyParticipants.selectedParticipants')}
                         <div class="ui floating blue circular label">${selectedParticipants.size() ?: 0}</div></g:link>
-                </g:if>
 
-                <g:if test="${surveyInfo.status in [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY, RDStore.SURVEY_SURVEY_STARTED]}">
-                    <g:link class="item ${params.tab == 'consortiaMembers' ? 'active' : ''}"
-                            controller="survey" action="surveyParticipants"
-                            id="${surveyConfig.surveyInfo.id}"
-                            params="[surveyConfigID: surveyConfig.id, tab: 'consortiaMembers']">
-                        ${message(code: 'surveyParticipants.consortiaMembers')}
-                        <div class="ui floating blue circular label">${consortiaMembers.size() ?: 0}</div>
-                    </g:link>
+
+                    <g:if test="${surveyInfo.status in [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY, RDStore.SURVEY_SURVEY_STARTED]}">
+                        <g:link class="item ${params.tab == 'consortiaMembers' ? 'active' : ''}"
+                                controller="survey" action="surveyParticipants"
+                                id="${surveyConfig.surveyInfo.id}"
+                                params="[surveyConfigID: surveyConfig.id, tab: 'consortiaMembers']">
+                            ${message(code: 'surveyParticipants.consortiaMembers')}
+                            <div class="ui floating blue circular label">${consortiaMembers.size() ?: 0}</div>
+                        </g:link>
+                    </g:if>
                 </g:if>
             </div>
 
