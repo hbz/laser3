@@ -7,7 +7,11 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4752    11.01.2023  rc-3.0  3.0.2       Andreas Feature     Objekt-ID-Spalte entfällt, wenn keine der Ampel angesteuert wird
+
 4750    11.01.2023  rc-3.0  3.0.2       Moe     Feature     Umfrage: Bemerkungsfelder für Teilnehmer in Reiter darstellen
+
+4748    11.01.2023  rc-3.0  3.0.2       Andreas Bug         Umrechnungskurs kann jetzt ohne Beschränkung eingegeben werden und Summe wird korrekt berechnet
 
 4745    11.01.2023  rc-3.0  3.0.2       Moe     Feature     Reiter Teilnehmer: Titelumfrage -> Meine Einrichtung ausblenden
 

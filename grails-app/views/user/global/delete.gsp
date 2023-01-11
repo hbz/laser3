@@ -112,7 +112,9 @@
             <tr>
                 <th>Objekte, Referenzen</th>
                 <th>${message(code:'default.count.label')}</th>
-                <th>Objekt-Ids</th>
+                <g:if test="${delResult.status}">
+                    <th>Objekt-Ids</th>
+                </g:if>
             </tr>
             </thead>
             <tbody>
@@ -139,11 +141,13 @@
                             ${info[1].size()}
                         </g:else>
                     </td>
-                    <td>
-                        <div style="overflow-y:scroll;scrollbar-color:grey white;max-height:14.25em">
-                            ${info[1].collect{ item -> (item.hasProperty('id') && item.id) ? item.id : item}.sort().join(', ')}
-                        </div>
-                    </td>
+                    <g:if test="${delResult.status}">
+                        <td>
+                            <div style="overflow-y:scroll;scrollbar-color:grey white;max-height:14.25em">
+                                ${info[1].collect{ item -> (item.hasProperty('id') && item.id) ? item.id : item}.sort().join(', ')}
+                            </div>
+                        </td>
+                    </g:if>
                 </tr>
             </g:each>
             </tbody>
