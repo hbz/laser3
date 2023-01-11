@@ -293,7 +293,7 @@ class ManagementService {
                         result.isLinkingRunning = true
                     }
                 }
-                result.validPackages = result.subscription.packages
+                result.validPackages = Package.executeQuery('select sp from SubscriptionPackage sp where sp.subscription = :subscription', [subscription: result.subscription])
                 result.filteredSubscriptions = subscriptionControllerService.getFilteredSubscribers(params,result.subscription)
                 if(result.filteredSubscriptions)
                     result.childWithCostItems = CostItem.executeQuery('select ci.subPkg from CostItem ci where ci.subPkg.subscription in (:filteredSubChildren) and ci.costItemStatus != :deleted and ci.owner = :context',[context:result.institution, deleted:RDStore.COST_ITEM_DELETED, filteredSubChildren:result.filteredSubscriptions.collect { row -> row.sub }])
@@ -332,39 +332,46 @@ class ManagementService {
             FlashScope flash = getCurrentFlashScope()
             Locale locale = LocaleUtils.getCurrentLocale()
             List selectedSubs = params.list("selectedSubs")
+            List selectedPackageKeys = params.list("selectedPackages")
+            Set<Package> pkgsToProcess = []
             result.message = []
             result.error = []
+            if(selectedPackageKeys.contains('all') && result.subscription) {
+                pkgsToProcess.addAll(Package.executeQuery('select sp.pkg from SubscriptionPackage sp where sp.subscription = :subscription', [subscription: result.subscription]))
+            }
+            else {
+                selectedPackageKeys.each { String pkgKey ->
+                    pkgsToProcess.add(Package.get(pkgKey))
+                }
+            }
+            pkgsToProcess.each { Package pkg ->
+                selectedSubs.each { String subKey ->
+                    Subscription selectedSub = Subscription.get(subKey)
+                    if(selectedSub.isEditableBy(result.user)) {
+                        SubscriptionPackage sp = SubscriptionPackage.findBySubscriptionAndPkg(selectedSub, pkg)
+                        if(params.processOption =~ /^link/) {
+                            if(!sp) {
+                                subscriptionService.addToSubscription(selectedSub, pkg, params.processOption == 'linkwithIE')
+                            }
+                        }
+                        else if(params.processOption =~ /^unlink/) {
+                            if(sp) {
+                                if (!CostItem.executeQuery('select ci from CostItem ci where ci.subPkg = :sp and ci.costItemStatus != :deleted and ci.owner = :context', [sp: sp, deleted: RDStore.COST_ITEM_DELETED, context: result.institution])) {
+                                    packageService.unlinkFromSubscription(pkg, selectedSub, result.institution, params.processOption == 'unlinkwithIE')
+                                }
+                                else {
+                                    Object[] args = [pkg.name, selectedSub.getSubscriber().name]
+                                    result.error << messageSource.getMessage('subscriptionsManagement.unlinkInfo.costsExisting', args, locale)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
             /*
             dos:
             1. extend to multi package option
-             */
-            if (result.subscription && (params.processOption == 'allWithoutTitle' || params.processOption == 'allWithTitle')) {
-                List<SubscriptionPackage> validSubChildPackages = SubscriptionPackage.executeQuery("select sp from SubscriptionPackage sp join sp.subscription sub where sub.instanceOf = :parent", [parent: result.subscription])
-                validSubChildPackages.each { SubscriptionPackage sp ->
-                    if (!CostItem.executeQuery('select ci from CostItem ci where ci.subPkg = :sp and ci.costItemStatus != :deleted and ci.owner = :context', [sp: sp, deleted: RDStore.COST_ITEM_DELETED, context: result.institution])) {
-                        if (params.processOption == 'allWithTitle') {
-                            if (packageService.unlinkFromSubscription(sp.pkg, sp.subscription, result.institution, true)) {
-                                Object[] args = [sp.pkg.name, sp.subscription.getSubscriber().name]
-                                result.message << messageSource.getMessage('subscriptionsManagement.unlinkInfo.withIE.successful', args, locale)
-                            } else {
-                                Object[] args = [sp.pkg.name, sp.subscription.getSubscriber().name]
-                                result.error << messageSource.getMessage('subscriptionsManagement.unlinkInfo.withIE.fail', args, locale)
-                            }
-                        } else {
-                            if (packageService.unlinkFromSubscription(sp.pkg, sp.subscription, result.institution, false)) {
-                                Object[] args = [sp.pkg.name, sp.subscription.getSubscriber().name]
-                                result.message << messageSource.getMessage('subscriptionsManagement.unlinkInfo.onlyPackage.successful', args, locale)
-                            } else {
-                                Object[] args = [sp.pkg.name, sp.subscription.getSubscriber().name]
-                                result.error << messageSource.getMessage('subscriptionsManagement.unlinkInfo.onlyPackage.fail', args, locale)
-                            }
-                        }
-                    } else {
-                        Object[] args = [sp.pkg.name, sp.subscription.getSubscriber().name]
-                        result.error << messageSource.getMessage('subscriptionsManagement.unlinkInfo.costsExisting', args, locale)
-                    }
-                }
-            } else if (selectedSubs && params.selectedPackage && params.processOption) {
+            else if (selectedSubs && params.selectedPackage && params.processOption) {
                 List<Long> selectedKeys = []
                 if(!params.list("selectedPackage").contains("all")) {
                     params.list("selectedPackage").each { String pkgId ->
@@ -445,6 +452,7 @@ class ManagementService {
             if (result.message) {
                 flash.message = result.message.join('<br>')
             }
+                    */
         }
     }
 

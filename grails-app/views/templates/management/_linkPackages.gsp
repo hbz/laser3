@@ -62,8 +62,8 @@
 
                     <g:if test="${validPackages}">
                         <g:select class="ui multiple search dropdown"
-                                  optionKey="id" optionValue="${{ it.getPackageNameWithCurrentTippsCount() }}"
-                                  from="${validPackages}" name="selectedPackage" value=""
+                                  optionKey="${{ it.pkg.id }}" optionValue="${{ it.getPackageNameWithCurrentTippsCount() }}"
+                                  from="${validPackages}" name="selectedPackages" value=""
                                   required=""
                                   noSelection='["all": "${message(code: 'subscriptionsManagement.all.package')}"]'/>
                     </g:if>
@@ -75,7 +75,7 @@
                 <g:if test="${controllerName == "myInstitution"}">
                     <g:select class="ui multiple search dropdown"
                               optionKey="id" optionValue="${{ it.getPackageNameWithCurrentTippsCount() }}"
-                              from="${validPackages}" name="selectedPackage" value=""
+                              from="${validPackages}" name="selectedPackages" value=""
                               required=""
                               noSelection='["": "${message(code: 'subscriptionsManagement.noSelection.package')}"]'/>
                 </g:if>
