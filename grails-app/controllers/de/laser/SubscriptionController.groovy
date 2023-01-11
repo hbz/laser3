@@ -1355,7 +1355,7 @@ class SubscriptionController {
             }
             if(params.tab == 'selectedIEs') {
                 queryMap = [sub: ctrlResult.result.newSub, ieAcceptStatusNotFixed: true, ieStatus: RDStore.TIPP_STATUS_CURRENT, pkgIds: ctrlResult.result.subscription.packages?.pkg?.id]
-                filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.currentEntitlements') + '_' + ctrlResult.result.newSub.dropdownNamingConvention())
+                filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.currentTitlesSelect') + '_' + ctrlResult.result.newSub.dropdownNamingConvention())
             }
 
             if(params.tab == 'currentIEs' && ctrlResult.result.previousSubscription) {
