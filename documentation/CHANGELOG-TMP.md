@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4750    11.01.2023  rc-3.0  3.0.2       Moe     Feature     Umfrage: Bemerkungsfelder für Teilnehmer in Reiter darstellen
+
+4745    11.01.2023  rc-3.0  3.0.2       Moe     Feature     Reiter Teilnehmer: Titelumfrage -> Meine Einrichtung ausblenden
+
+4621    11.01.2023  rc-3.0  3.0.2       Moe     Bug         Wording anpassen: Titel-Umfrage "Ausgewählte Titel"
+
 4744    10.01.2023  rc-3.0  3.0.2       Moe     Bug         Umfrage exportieren (als Vollnutzer) führt zu 500er
 
 4732    10.01.2023  rc-3.0  3.0.2       Moe     Bug         Automatische Verlängerung hakt
