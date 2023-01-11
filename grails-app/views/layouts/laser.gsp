@@ -168,11 +168,6 @@
                             <div class="menu" role="menu">
 
                                     <ui:link generateElementId="true" class="item" role="menuitem" controller="dataManager" action="index">${message(code:'default.dashboard')}</ui:link>
-                                    <ui:link generateElementId="true" class="item" role="menuitem" controller="dataManager"
-                                            action="deletedTitles">${message(code: 'datamanager.deletedTitleManagement.label')}</ui:link>
-
-                                    <ui:link generateElementId="true" class="item" role="menuitem" controller="dataManager"
-                                            action="deletedOrgs">${message(code: 'datamanager.deletedOrgManagement.label')}</ui:link>
 
                                     <div class="divider"></div>
 
@@ -353,9 +348,13 @@
                                                 ${message(code:'menu.admin.syncManagement.reload')} <i class="dropdown icon"></i>
                                             </div>
                                             <div class="menu" role="menu">
+                                                <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="reloadWekbProvider" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.reloadProvider')}</ui:link>
+                                                <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="reloadWekbPlatform" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.reloadPlatform')}</ui:link>
                                                 <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="updateData" params="[dataToLoad:'identifier']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateIdentifiers')}</ui:link>
                                                 <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="updateData" params="[dataToLoad:'editionStatement']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateEditionStatement')}</ui:link>
-                                                <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="updateData" params="[dataToLoad:'iemedium']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateIEMedium')}</ui:link>
+                                                <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="updateData" params="[dataToLoad:'medium', objType:'issueEntitlement']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateIEMedium')}</ui:link>
+                                                <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="updateData" params="[dataToLoad:'accessType', objType:'issueEntitlement']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateIEAccessType')}</ui:link>
+                                                <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="updateData" params="[dataToLoad:'openAccess', objType:'issueEntitlement']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateIEOpenAccess')}</ui:link>
                                                 <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="updateData" params="[dataToLoad:'ddc']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateDDC')}</ui:link>
                                                 <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="updateData" params="[dataToLoad:'language']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateLanguage')}</ui:link>
                                                 <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="updateData" params="[dataToLoad:'accessType']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateAccessType')}</ui:link>
@@ -396,7 +395,6 @@
                                     </div>
 
                                     <div class="menu" role="menu">
-                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="dataManager" action="listPlatformDuplicates">List Platform Duplicates</ui:link>
                                         <ui:link generateElementId="true" class="item" role="menuitem" controller="package" action="getDuplicatePackages">List Package Duplicates</ui:link>
                                         <ui:link generateElementId="true" class="item" role="menuitem" controller="dataManager" action="listDeletedTIPPS">List TIPP Duplicates and deleted TIPPs</ui:link>
                                         <%--<ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="userMerge">${message(code:'menu.admin.userMerge')}</ui:link>--%>

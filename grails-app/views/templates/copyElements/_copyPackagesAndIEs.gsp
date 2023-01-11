@@ -138,9 +138,6 @@
                                                     <tbody>
                                                         <g:each in="${packageSettings}"
                                                                 var="pcc">
-                                                            <g:if test="${!(pcc.settingKey in [PendingChangeConfiguration.NEW_PRICE,
-                                                                                               PendingChangeConfiguration.PRICE_UPDATED,
-                                                                                               PendingChangeConfiguration.PRICE_DELETED])}">
                                                                 <tr class="la-copyPack-item" data-pkgid="${sp.id}">
                                                                     <td><g:message code="subscription.packages.${pcc.settingKey}"/></td>
                                                                     <td>
@@ -181,7 +178,6 @@
                                                                         </g:else>
                                                                     </g:if>
                                                                 </tr>
-                                                            </g:if>
                                                         </g:each>
                                                     </tbody>
                                                 </table>
@@ -268,9 +264,6 @@
                                                 <ul>
                                                     <g:each in="${packageSettings}"
                                                             var="pcc">
-                                                        <g:if test="${!(pcc.settingKey in [PendingChangeConfiguration.NEW_PRICE,
-                                                                                           PendingChangeConfiguration.PRICE_UPDATED,
-                                                                                           PendingChangeConfiguration.PRICE_DELETED])}">
                                                             <li class="la-copyPack-item">
                                                                 <g:message
                                                                         code="subscription.packages.${pcc.settingKey}"/>: ${pcc.settingValue ? pcc.settingValue.getI10n('value') : RDStore.PENDING_CHANGE_CONFIG_PROMPT.getI10n('value')} (<g:message
@@ -284,7 +277,6 @@
                                                                     </g:if>
                                                                 </g:if>
                                                             </li>
-                                                        </g:if>
                                                     </g:each>
                                                 </ul>
                                             </div>

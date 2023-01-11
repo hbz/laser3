@@ -47,7 +47,6 @@ class LicenseController {
     LinksGenerationService linksGenerationService
     LicenseService licenseService
     OrgTypeService orgTypeService
-    PendingChangeService pendingChangeService
     PropertyService propertyService
     SubscriptionsQueryService subscriptionsQueryService
     SubscriptionService subscriptionService
@@ -81,40 +80,6 @@ class LicenseController {
         //used for showing/hiding the License Actions menus
         List<Role> admin_role = Role.findAllByAuthority("INST_ADM")
         result.canCopyOrgs = UserOrg.executeQuery("select uo.org from UserOrg uo where uo.user=(:user) and uo.formalRole=(:role) ", [user: result.user, role: admin_role])
-
-        // ---- pendingChanges : start
-
-        prf.setBenchmark('pending changes')
-
-        if (executorWrapperService.hasRunningProcess(result.license)) {
-            log.debug("PendingChange processing in progress")
-            result.processingpc = true
-        }
-        else {
-            List<PendingChange> pendingChanges = PendingChange.executeQuery("" +
-                    "select pc from PendingChange as pc where license = :lic and ( pc.status is null or pc.status = :status ) order by pc.ts desc",
-                    [lic: result.license, status: RDStore.PENDING_CHANGE_PENDING]
-            )
-
-            log.debug("pc result is ${result.pendingChanges}");
-
-            if (result.license.isSlaved && ! pendingChanges.isEmpty()) {
-                log.debug("Slaved lincence, auto-accept pending changes")
-                List changesDesc = []
-                pendingChanges.each { change ->
-                    if (!pendingChangeService.performAccept(change)) {
-                        log.debug("Auto-accepting pending change has failed.")
-                    } else {
-                        changesDesc.add(change.desc)
-                    }
-                }
-                flash.message = changesDesc
-            } else {
-                result.pendingChanges = pendingChanges
-            }
-        }
-
-        // ---- pendingChanges : end
 
         prf.setBenchmark('tasks')
 
@@ -584,34 +549,6 @@ class LicenseController {
         }
         fsq.query = fsq.query.replaceFirst("select o from ", "select o.id from ")
         Org.executeQuery(fsq.query, fsq.queryParams, tmpParams)
-    }
-
-    /**
-     * Should enumerate the changes done on the given license, function currently undetermined
-     */
-    @DebugInfo(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
-    @Check404()
-    def changes() {
-        Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW)
-        if (!result) {
-            response.sendError( HttpStatus.SC_FORBIDDEN ); return
-        }
-
-        String baseQuery = "select pc from PendingChange as pc where pc.license = :lic and pc.status.value in (:stats)"
-        Map<String, Object> baseParams = [lic: result.license, stats: ['Accepted', 'Rejected']]
-
-        result.todoHistoryLines = PendingChange.executeQuery(
-                baseQuery + " order by pc.ts desc",
-                baseParams,
-                [max: result.max, offset: result.offset]
-        )
-        result.todoHistoryLinesTotal = PendingChange.executeQuery(
-                baseQuery,
-                baseParams
-        )[0] ?: 0
-
-        result
     }
 
     /**

@@ -37,7 +37,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
     GlobalRecordSource source
 
     public static final long RECTYPE_PACKAGE = 0
-    public static final long RECTYPE_TITLE = 1
+    public static final long RECTYPE_PLATFORM = 1
     public static final long RECTYPE_ORG = 2
     public static final long RECTYPE_TIPP = 3
     public static final String PERMANENTLY_DELETED = "Permanently Deleted"
@@ -108,6 +108,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 */
                 switch(source.rectype) {
                     case RECTYPE_ORG: componentType = 'Org'
+                        break
+                    case RECTYPE_PLATFORM: componentType = 'Platform'
                         break
                     case RECTYPE_TIPP: componentType = 'TitleInstancePackagePlatform'
                         break
@@ -258,9 +260,18 @@ class GlobalSourceSyncService extends AbstractLockableService {
     void reloadData(String componentType) {
         running = true
         defineMapFields()
-        executorService.execute({
-            Thread.currentThread().setName("GlobalDataUpdate_${componentType}")
-            this.source = GlobalRecordSource.findByActiveAndRectype(true,RECTYPE_TIPP)
+            long rectype
+            switch(componentType) {
+                case 'Org': rectype = RECTYPE_ORG
+                    break
+                case 'Platform': rectype = RECTYPE_PLATFORM
+                    break
+                case 'TitleInstancePackagePlatform': rectype = RECTYPE_TIPP
+                    break
+                default: rectype = -1
+                    break
+            }
+            this.source = GlobalRecordSource.findByActiveAndRectype(true,rectype)
             this.apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI,true)
             log.info("getting all records from job #${source.id} with uri ${source.uri}")
             try {
@@ -278,7 +289,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 log.error("package reloading has failed, please consult stacktrace as follows: ",e)
             }
             running = false
-        })
     }
 
     /**
@@ -287,8 +297,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
      */
     void updateData(String dataToLoad) {
         running = true
-        executorService.execute({
-            Thread.currentThread().setName("UpdateData")
             this.source = GlobalRecordSource.findByActiveAndRectype(true,RECTYPE_TIPP)
             this.apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI,true)
             List<String> triggeredTypes
@@ -477,7 +485,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 log.error("component reloading has failed, please consult stacktrace as follows: ",e)
             }
             running = false
-        })
     }
 
     /**
@@ -528,6 +535,17 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                 createOrUpdateOrgJSON(record)
                             }
                             break
+                        case RECTYPE_PLATFORM:
+                            result.records.each { record ->
+                                try {
+                                    createOrUpdatePlatformJSON(record)
+                                }
+                                catch (SyncException e) {
+                                    log.error("Error on updating platform ${record.uuid}: ",e)
+                                    SystemEvent.createEvent("GSSS_JSON_WARNING",[platformRecordKey:record.uuid])
+                                }
+                            }
+                            break
                         case RECTYPE_TIPP: if(offset == 0) updateRecords(result.records, offset, permanentlyDeletedTitles)
                             else updateRecords(result.records, offset)
                             break
@@ -571,6 +589,17 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             }
                         }
                         createOrUpdateOrgJSON(record)
+                    }
+                    break
+                case RECTYPE_PLATFORM:
+                    result.records.each { record ->
+                        try {
+                            createOrUpdatePlatformJSON(record)
+                        }
+                        catch (SyncException e) {
+                            log.error("Error on updating platform ${record.uuid}: ",e)
+                            SystemEvent.createEvent("GSSS_JSON_WARNING",[platformRecordKey:record.uuid])
+                        }
                     }
                     break
                 case RECTYPE_TIPP: updateRecords(result.records, 0, permanentlyDeletedTitles)
@@ -785,44 +814,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             break
                         case 'update':
                             diff.diffs.each { tippDiff ->
-                                switch(tippDiff.prop) {
-                                    case 'coverage': tippDiff.covDiffs.each { covEntry ->
-                                        switch(covEntry.event) {
-                                            case 'add': packagePendingChanges << PendingChange.construct([msgToken:PendingChangeConfiguration.NEW_COVERAGE,target:covEntry.target,status:RDStore.PENDING_CHANGE_HISTORY])
-                                                break
-                                            case 'update': covEntry.diffs.each { covDiff ->
-                                                    packagePendingChanges << PendingChange.construct([msgToken: PendingChangeConfiguration.COVERAGE_UPDATED, target: covEntry.target, status: RDStore.PENDING_CHANGE_HISTORY, prop: covDiff.prop, newValue: covDiff.newValue, oldValue: covDiff.oldValue])
-                                                    //log.debug("tippDiff.covDiffs.covDiff: " + covDiff)
-                                                }
-                                                break
-                                            case 'delete': JSON oldMap = covEntry.target.properties as JSON
-                                                packagePendingChanges << PendingChange.construct([msgToken:PendingChangeConfiguration.COVERAGE_DELETED, target:covEntry.targetParent, oldValue: oldMap.toString() , status:RDStore.PENDING_CHANGE_HISTORY])
-                                                break
-                                        }
-                                    }
-                                        break
-                                    /*
-                                    case 'price': tippDiff.priceDiffs.each { priceEntry ->
-                                        switch(priceEntry.event) {
-                                            case 'add': packagePendingChanges << PendingChange.construct([msgToken:PendingChangeConfiguration.NEW_PRICE,target:priceEntry.target,status:RDStore.PENDING_CHANGE_HISTORY])
-                                                break
-                                            case 'update':
-                                                priceEntry.diffs.each { priceDiff ->
-                                                    //packagePendingChanges << PendingChange.construct([msgToken: PendingChangeConfiguration.PRICE_UPDATED, target: priceEntry.target, status: RDStore.PENDING_CHANGE_HISTORY, prop: priceDiff.prop, newValue: priceDiff.newValue, oldValue: priceDiff.oldValue])
-                                                }
-                                                //log.debug("tippDiff.priceDiffs: "+ priceEntry)
-                                                break
-                                            case 'delete': //JSON oldMap = priceEntry.target.properties as JSON
-                                                //packagePendingChanges << PendingChange.construct([msgToken:PendingChangeConfiguration.PRICE_DELETED,target:priceEntry.targetParent,oldValue:oldMap.toString(),status:RDStore.PENDING_CHANGE_HISTORY])
-                                                break
-                                        }
-                                    }
-                                        break
-                                     */
-                                    default:
-                                        packagePendingChanges << PendingChange.construct([msgToken:PendingChangeConfiguration.TITLE_UPDATED,target:diff.target,status:RDStore.PENDING_CHANGE_HISTORY,prop:tippDiff.prop,newValue:tippDiff.newValue,oldValue:tippDiff.oldValue])
-                                        break
-                                }
+                                packagePendingChanges << PendingChange.construct([msgToken:PendingChangeConfiguration.TITLE_UPDATED,target:diff.target,status:RDStore.PENDING_CHANGE_HISTORY,prop:tippDiff.prop,newValue:tippDiff.newValue,oldValue:tippDiff.oldValue])
                             }
                             break
                         case 'delete': packagePendingChanges << PendingChange.construct([msgToken:PendingChangeConfiguration.TITLE_DELETED,target:diff.target,oldValue:diff.oldValue,status:RDStore.PENDING_CHANGE_HISTORY])
@@ -833,7 +825,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             diff.diffs.each { pkgPropDiff ->
                                 packagePendingChanges << PendingChange.construct([mskTogen: PendingChangeConfiguration.PACKAGE_PROP, target: diff.target, prop: pkgPropDiff.prop, newValue: pkgPropDiff.newValue, oldValue: pkgPropDiff.oldValue, status: RDStore.PENDING_CHANGE_HISTORY])
                             }
-
                             break
                     }
                     //PendingChange.construct([msgToken,target,status,prop,newValue,oldValue])
@@ -856,8 +847,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
      */
     void autoAcceptPendingChanges(Org contextOrg, SubscriptionPackage subPkg, Set<PendingChange> packageChanges) {
         //get for each subscription package the tokens which should be accepted
-        String query = 'select pcc.settingKey from PendingChangeConfiguration pcc join pcc.subscriptionPackage sp where pcc.settingValue = :accept and sp = :sp and pcc.settingKey not in (:excludes)'
-        List<String> pendingChangeConfigurations = PendingChangeConfiguration.executeQuery(query,[accept:RDStore.PENDING_CHANGE_CONFIG_ACCEPT,sp:subPkg,excludes:[PendingChangeConfiguration.NEW_PRICE,PendingChangeConfiguration.PRICE_DELETED,PendingChangeConfiguration.PRICE_UPDATED]])
+        String query = 'select pcc.settingKey from PendingChangeConfiguration pcc join pcc.subscriptionPackage sp where pcc.settingValue = :accept and sp = :sp '
+        List<String> pendingChangeConfigurations = PendingChangeConfiguration.executeQuery(query,[accept:RDStore.PENDING_CHANGE_CONFIG_ACCEPT,sp:subPkg])
         if(pendingChangeConfigurations) {
             Map<String,Object> changeParams = [pkg:subPkg.pkg,history:RDStore.PENDING_CHANGE_HISTORY,subscriptionJoin:subPkg.dateCreated,msgTokens:pendingChangeConfigurations,oid:genericOIDService.getOID(subPkg.subscription),accepted:RDStore.PENDING_CHANGE_ACCEPTED]
             Set<PendingChange> acceptedChanges = PendingChange.findAllByOidAndStatusAndMsgTokenIsNotNull(genericOIDService.getOID(subPkg.subscription),RDStore.PENDING_CHANGE_ACCEPTED)
@@ -915,7 +906,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             else {
                 Package pkg = newPackages.get(tippB.packageUUID)
                 //Unbelievable! But package may miss at this point!
-                if(pkg && pkg?.packageStatus != packageStatus.get("Deleted") && !(tippB.status in [PERMANENTLY_DELETED, RDStore.TIPP_STATUS_DELETED.value, RDStore.TIPP_STATUS_REMOVED.value])) {
+                if(pkg && pkg?.packageStatus != RDStore.PACKAGE_STATUS_REMOVED && !(tippB.status in [PERMANENTLY_DELETED, RDStore.TIPP_STATUS_DELETED.value, RDStore.TIPP_STATUS_REMOVED.value])) {
                     //new TIPP
                     TitleInstancePackagePlatform target = addNewTIPP(pkg, tippB, newPlatforms)
                     result.event = 'add'
@@ -945,22 +936,22 @@ class GlobalSourceSyncService extends AbstractLockableService {
             Date lastUpdatedDisplay = DateUtils.parseDateGeneric(packageRecord.lastUpdatedDisplay)
             if(!result || result?.lastUpdated < lastUpdatedDisplay) {
                 log.info("package record loaded, reconciling package record for UUID ${packageUUID}")
-                RefdataValue packageStatus = packageRecord.status ? packageStatus.get(packageRecord.status) : null
+                RefdataValue packageRecordStatus = packageRecord.status ? packageStatus.get(packageRecord.status) : null
                 RefdataValue contentType = packageRecord.contentType ? RefdataValue.getByValueAndCategory(packageRecord.contentType,RDConstants.PACKAGE_CONTENT_TYPE) : null
                 RefdataValue file = packageRecord.file ? RefdataValue.getByValueAndCategory(packageRecord.file,RDConstants.PACKAGE_FILE) : null
                 RefdataValue scope = packageRecord.scope ? RefdataValue.getByValueAndCategory(packageRecord.scope,RDConstants.PACKAGE_SCOPE) : null
                 Map<String,Object> newPackageProps = [
                     uuid: packageUUID,
                     name: packageRecord.name,
-                    packageStatus: packageStatus,
+                    packageStatus: packageRecordStatus,
                     contentType: packageRecord.contentType,
                     file: file,
                     scope: scope
                 ]
                 if(result) {
-                    if(packageStatus == packageStatus.get("Deleted") && result.packageStatus != packageStatus.get("Deleted")) {
-                        log.info("package #${result.id}, with GOKb id ${result.gokbId} got deleted, mark as deleted and rapport!")
-                        result.packageStatus = packageStatus
+                    if(packageRecordStatus == RDStore.PACKAGE_STATUS_REMOVED && result.packageStatus != RDStore.PACKAGE_STATUS_REMOVED) {
+                        log.info("package #${result.id}, with GOKb id ${result.gokbId} got removed, mark as deleted and rapport!")
+                        result.packageStatus = packageRecordStatus
                     }
                     else {
                         if(packageRecord.nominalPlatformUuid) {
@@ -989,7 +980,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     result = new Package(gokbId: packageRecord.uuid)
                 }
                 result.name = packageRecord.name
-                result.packageStatus?.id = packageStatus?.id
+                result.packageStatus?.id = packageRecordStatus?.id
                 result.contentType?.id = contentType?.id
                 result.scope?.id = scope?.id
                 result.file?.id = file?.id
@@ -1067,8 +1058,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
             //test if local record trace exists ...
             Package result = Package.findByGokbId(packageUUID)
             if(result) {
-                log.warn("Package found, set cascading delete ...")
-                result.packageStatus = RDStore.PACKAGE_STATUS_DELETED
+                log.warn("Package found, set cascading removed ...")
+                result.packageStatus = RDStore.PACKAGE_STATUS_REMOVED
                 result.save()
                 result
             }
@@ -1102,95 +1093,100 @@ class GlobalSourceSyncService extends AbstractLockableService {
             if(provider)
                 provider.gokbId = providerRecord.uuid
         }
-        //second attempt failed - create new org
+        //second attempt failed - create new org if record is not deleted
         if(!provider) {
-            provider = new Org(
-                    name: providerRecord.name,
-                    gokbId: providerRecord.uuid
-            )
+            if(!(providerRecord.status in [PERMANENTLY_DELETED, 'Removed']))
+                provider = new Org(
+                        name: providerRecord.name,
+                        gokbId: providerRecord.uuid
+                )
         }
-        provider.url = providerRecord.homepage
-        if((provider.status == RDStore.ORG_STATUS_CURRENT || !provider.status) && providerRecord.status == RDStore.ORG_STATUS_RETIRED.value) {
-            //value is not implemented in we:kb yet
-            if(providerRecord.retirementDate) {
-                provider.retirementDate = DateUtils.parseDateGeneric(providerRecord.retirementDate)
+        //avoid creating new deleted entries
+        if(provider) {
+            provider.url = providerRecord.homepage
+            if((provider.status == RDStore.ORG_STATUS_CURRENT || !provider.status) && providerRecord.status == RDStore.ORG_STATUS_RETIRED.value) {
+                //value is not implemented in we:kb yet
+                if(providerRecord.retirementDate) {
+                    provider.retirementDate = DateUtils.parseDateGeneric(providerRecord.retirementDate)
+                }
+                else provider.retirementDate = new Date()
             }
-            else provider.retirementDate = new Date()
+            provider.status = orgStatus.get(providerRecord.status)
+            if(!provider.sector)
+                provider.sector = RDStore.O_SECTOR_PUBLISHER
+            if(provider.save()) {
+                if(!provider.getAllOrgTypeIds().contains(RDStore.OT_PROVIDER.id))
+                    provider.addToOrgType(RDStore.OT_PROVIDER)
+                //providedPlatforms are missing in ES output -> see GOKb-ticket #378! But maybe, it is wiser to not implement it at all
+                if(providerRecord.contacts) {
+                    List<String> typeNames = contactTypes.values().collect { RefdataValue cct -> cct.getI10n("value") }
+                    typeNames.addAll(contactTypes.keySet())
+                    List<Person> oldPersons = Person.executeQuery('select p from Person p where p.tenant = :provider and p.isPublic = true and p.last_name in (:contactTypes)',[provider: provider, contactTypes: typeNames])
+                    List<Long> funcTypes = contactTypes.values().collect { RefdataValue cct -> cct.id }
+                    oldPersons.each { Person old ->
+                        PersonRole.executeUpdate('delete from PersonRole pr where pr.org = :provider and pr.prs = :oldPerson and pr.functionType.id in (:funcTypes)', [provider: provider, oldPerson: old, funcTypes: funcTypes])
+                        Contact.executeUpdate('delete from Contact c where c.prs = :oldPerson', [oldPerson: old])
+                        if(PersonRole.executeQuery('select count(pr) from PersonRole pr where pr.prs = :oldPerson and pr.org = :provider and (pr.functionType.id not in (:funcTypes) or pr.functionType = null)', [provider: provider, oldPerson: old, funcTypes: funcTypes])[0] == 0) {
+                            Person.executeUpdate('delete from Person p where p = :oldPerson', [oldPerson: old])
+                        }
+                    }
+                    providerRecord.contacts.findAll{ Map<String, String> cParams -> cParams.content != null }.each { contact ->
+                        switch(contact.type) {
+                            case "Metadata Contact":
+                                contact.rdType = RDStore.PRS_FUNC_METADATA
+                                break
+                            case "Service Support":
+                                contact.rdType = RDStore.PRS_FUNC_SERVICE_SUPPORT
+                                break
+                            case "Technical Support":
+                                contact.rdType = RDStore.PRS_FUNC_TECHNICAL_SUPPORT
+                                break
+                            default: log.warn("unhandled additional property type for ${provider.gokbId}: ${contact.name}")
+                                break
+                        }
+                        if(contact.rdType && contact.contentType != null) {
+                            createOrUpdateSupport(provider, contact)
+                        }
+                        else log.warn("contact submitted without content type, rejecting contact")
+                    }
+                }
+                if(providerRecord.altname) {
+                    List<String> oldAltNames = provider.altnames.collect { AlternativeName altname -> altname.name }
+                    providerRecord.altname.each { String newAltName ->
+                        if(!oldAltNames.contains(newAltName)) {
+                            if(!AlternativeName.construct([org: provider, name: newAltName]))
+                                throw new SyncException("error on creating new alternative name for provider ${provider}")
+                        }
+                    }
+                }
+                providerRecord.platforms.each { Map platformData ->
+                    Platform plat = Platform.findByGokbId(platformData.uuid)
+                    if(!plat)
+                        plat = createOrUpdatePlatformJSON(platformData.uuid)
+                    if(plat) {
+                        plat.org = provider
+                        plat.save()
+                    }
+                }
+                if(providerRecord.identifiers) {
+                    if(provider.ids) {
+                        Identifier.executeUpdate('delete from Identifier i where i.org = :org',[org:provider]) //damn those wrestlers ...
+                    }
+                    providerRecord.identifiers.each { id ->
+                        if(!(id.namespace.toLowerCase() in ['originediturl','uri'])) {
+                            Identifier.construct([namespace: id.namespace, value: id.value, name_de: id.namespaceName, reference: provider, isUnique: false, nsType: Org.class.name])
+                        }
+                    }
+                }
+                Date lastUpdatedTime = DateUtils.parseDateGeneric(providerRecord.lastUpdatedDisplay)
+                if(lastUpdatedTime.getTime() > maxTimestamp) {
+                    maxTimestamp = lastUpdatedTime.getTime()
+                }
+                provider
+            }
+            else throw new SyncException(provider.errors)
         }
-        provider.status = orgStatus.get(providerRecord.status)
-        if(!provider.sector)
-            provider.sector = RDStore.O_SECTOR_PUBLISHER
-        if(provider.save()) {
-            if(!provider.getAllOrgTypeIds().contains(RDStore.OT_PROVIDER.id))
-                provider.addToOrgType(RDStore.OT_PROVIDER)
-            //providedPlatforms are missing in ES output -> see GOKb-ticket #378! But maybe, it is wiser to not implement it at all
-            if(providerRecord.contacts) {
-                List<String> typeNames = contactTypes.values().collect { RefdataValue cct -> cct.getI10n("value") }
-                typeNames.addAll(contactTypes.keySet())
-                List<Person> oldPersons = Person.executeQuery('select p from Person p where p.tenant = :provider and p.isPublic = true and p.last_name in (:contactTypes)',[provider: provider, contactTypes: typeNames])
-                List<Long> funcTypes = contactTypes.values().collect { RefdataValue cct -> cct.id }
-                oldPersons.each { Person old ->
-                    PersonRole.executeUpdate('delete from PersonRole pr where pr.org = :provider and pr.prs = :oldPerson and pr.functionType.id in (:funcTypes)', [provider: provider, oldPerson: old, funcTypes: funcTypes])
-                    Contact.executeUpdate('delete from Contact c where c.prs = :oldPerson', [oldPerson: old])
-                    if(PersonRole.executeQuery('select count(pr) from PersonRole pr where pr.prs = :oldPerson and pr.org = :provider and (pr.functionType.id not in (:funcTypes) or pr.functionType = null)', [provider: provider, oldPerson: old, funcTypes: funcTypes])[0] == 0) {
-                        Person.executeUpdate('delete from Person p where p = :oldPerson', [oldPerson: old])
-                    }
-                }
-                providerRecord.contacts.findAll{ Map<String, String> cParams -> cParams.content != null }.each { contact ->
-                    switch(contact.type) {
-                        case "Metadata Contact":
-                            contact.rdType = RDStore.PRS_FUNC_METADATA
-                            break
-                        case "Service Support":
-                            contact.rdType = RDStore.PRS_FUNC_SERVICE_SUPPORT
-                            break
-                        case "Technical Support":
-                            contact.rdType = RDStore.PRS_FUNC_TECHNICAL_SUPPORT
-                            break
-                        default: log.warn("unhandled additional property type for ${provider.gokbId}: ${contact.name}")
-                            break
-                    }
-                    if(contact.rdType && contact.contentType != null) {
-                        createOrUpdateSupport(provider, contact)
-                    }
-                    else log.warn("contact submitted without content type, rejecting contact")
-                }
-            }
-            if(providerRecord.altname) {
-                List<String> oldAltNames = provider.altnames.collect { AlternativeName altname -> altname.name }
-                providerRecord.altname.each { String newAltName ->
-                    if(!oldAltNames.contains(newAltName)) {
-                        if(!AlternativeName.construct([org: provider, name: newAltName]))
-                            throw new SyncException("error on creating new alternative name for provider ${provider}")
-                    }
-                }
-            }
-            providerRecord.platforms.each { Map platformData ->
-                Platform plat = Platform.findByGokbId(platformData.uuid)
-                if(!plat)
-                    plat = createOrUpdatePlatformJSON(platformData.uuid)
-                if(plat) {
-                    plat.org = provider
-                    plat.save()
-                }
-            }
-            if(providerRecord.identifiers) {
-                if(provider.ids) {
-                    Identifier.executeUpdate('delete from Identifier i where i.org = :org',[org:provider]) //damn those wrestlers ...
-                }
-                providerRecord.identifiers.each { id ->
-                    if(!(id.namespace.toLowerCase() in ['originediturl','uri'])) {
-                        Identifier.construct([namespace: id.namespace, value: id.value, name_de: id.namespaceName, reference: provider, isUnique: false, nsType: Org.class.name])
-                    }
-                }
-            }
-            Date lastUpdatedTime = DateUtils.parseDateGeneric(providerRecord.lastUpdatedDisplay)
-            if(lastUpdatedTime.getTime() > maxTimestamp) {
-                maxTimestamp = lastUpdatedTime.getTime()
-            }
-            provider
-        }
-        else throw new SyncException(provider.errors)
+
     }
 
     /**
@@ -1299,57 +1295,69 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * @param platformUUID the platform UUID
      * @throws SyncException
      */
-    Platform createOrUpdatePlatformJSON(String platformUUID) throws SyncException {
-        Map<String,Object> platformJSON = fetchRecordJSON(false,[uuid: platformUUID])
-        if(platformJSON.records) {
-            Map platformRecord = platformJSON.records[0]
+    Platform createOrUpdatePlatformJSON(platformInput) throws SyncException {
+        Map<String,Object> platformJSON = [:], platformRecord = [:]
+        if(platformInput instanceof String) {
+            platformJSON = fetchRecordJSON(false, [uuid: platformInput])
+            platformRecord = platformJSON.records[0]
+        }
+        else if(platformInput instanceof Map)
+            platformRecord = platformInput
+        if(platformRecord) {
             //Platform.withTransaction { TransactionStatus ts ->
-            Platform platform = Platform.findByGokbId(platformUUID)
+            Platform platform = Platform.findByGokbId(platformRecord.uuid)
             if(platform) {
                 platform.name = platformRecord.name
             }
-            else {
+            else if(!(platformRecord.status in [PERMANENTLY_DELETED, 'Removed'])){
                 platform = new Platform(name: platformRecord.name, gokbId: platformRecord.uuid)
             }
-            platform.status = RefdataValue.getByValueAndCategory(platformRecord.status, RDConstants.PLATFORM_STATUS)
-            platform.normname = platformRecord.name.toLowerCase()
-            if(platformRecord.primaryUrl)
-                platform.primaryUrl = new URL(platformRecord.primaryUrl)
-            /*
-            TEST: create linking from provider to platform, not from platform to provider! Platforms should exist also without titles!
-            if(platformRecord.providerUuid) {
-                Map<String, Object> providerData = fetchRecordJSON(false,[uuid: platformRecord.providerUuid])
-                if(providerData && !providerData.error)
-                    platform.org = createOrUpdateOrgJSON(providerData)
-                else if(providerData && providerData.error == 404) {
-                    throw new SyncException("we:kb server is currently down")
+            //trigger if both records exist or if we:kb record is deleted but LAS:eR is not
+            if(platform) {
+                platform.status = platformRecord.status == PERMANENTLY_DELETED ? RDStore.PLATFORM_STATUS_REMOVED : RefdataValue.getByValueAndCategory(platformRecord.status, RDConstants.PLATFORM_STATUS)
+                platform.normname = platformRecord.name.toLowerCase()
+                if(platformRecord.primaryUrl)
+                    platform.primaryUrl = new URL(platformRecord.primaryUrl)
+                /*
+                TEST: create linking from provider to platform, not from platform to provider! Platforms should exist also without titles!
+                if(platformRecord.providerUuid) {
+                    Map<String, Object> providerData = fetchRecordJSON(false,[uuid: platformRecord.providerUuid])
+                    if(providerData && !providerData.error)
+                        platform.org = createOrUpdateOrgJSON(providerData)
+                    else if(providerData && providerData.error == 404) {
+                        throw new SyncException("we:kb server is currently down")
+                    }
+                    else {
+                        throw new SyncException("Provider loading failed for ${platformRecord.providerUuid}")
+                    }
                 }
-                else {
-                    throw new SyncException("Provider loading failed for ${platformRecord.providerUuid}")
+                */
+                if(platform.save()) {
+                    //update platforms
+                    Map<String, Object> packagesOfPlatform = fetchRecordJSON(false, [componentType: 'Package', platform: platformRecord.uuid])
+                    if(packagesOfPlatform && packagesOfPlatform.count > 0) {
+                        Package.executeUpdate('update Package pkg set pkg.nominalPlatform = :plat where pkg.gokbId in (:uuids)', [uuids: packagesOfPlatform.records.uuid, plat: platform])
+                    }
+                    Date lastUpdatedTime = DateUtils.parseDateGeneric(platformRecord.lastUpdatedDisplay)
+                    if(lastUpdatedTime.getTime() > maxTimestamp) {
+                        maxTimestamp = lastUpdatedTime.getTime()
+                    }
+                    platform
                 }
+                else throw new SyncException("Error on saving platform: ${platform.errors}")
+                //}
             }
-            */
-            if(platform.save()) {
-                //update platforms
-                Map<String, Object> packagesOfPlatform = fetchRecordJSON(false, [componentType: 'Package', platform: platformRecord.uuid])
-                if(packagesOfPlatform && packagesOfPlatform.count > 0) {
-                    Package.executeUpdate('update Package pkg set pkg.nominalPlatform = :plat where pkg.gokbId in (:uuids)', [uuids: packagesOfPlatform.records.uuid, plat: platform])
-                }
-                platform
-            }
-            else throw new SyncException("Error on saving platform: ${platform.errors}")
-            //}
         }
         else if(platformJSON && platformJSON.error == 404) {
             throw new SyncException("we:kb server is down")
         }
         else {
-            log.warn("Platform ${platformUUID} seems to be unexistent!")
+            log.warn("Platform ${platformInput} seems to be unexistent!")
             //test if local record trace exists ...
-            Platform result = Platform.findByGokbId(platformUUID)
+            Platform result = Platform.findByGokbId(platformInput)
             if(result) {
                 log.warn("Platform found, set cascading delete ...")
-                result.status = RDStore.PLATFORM_STATUS_DELETED
+                result.status = RDStore.PLATFORM_STATUS_REMOVED
                 result.save()
                 result
             }
@@ -1445,9 +1453,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
             tippA.seriesName = tippB.seriesName
             tippA.subjectReference = tippB.subjectReference
             tippA.medium?.id = titleMedium.get(tippB.medium)?.id
+            tippA.accessStartDate = tippB.accessStartDate
+            tippA.accessEndDate = tippB.accessEndDate
             tippA.volume = tippB.volume
-            tippA.accessType?.id = accessType.get(tippB.accessType)?.id
-            tippA.openAccess?.id = openAccess.get(tippB.openAccess)?.id
             if(!tippA.save())
                 throw new SyncException("Error on updating base title data: ${tippA.errors}")
             if(tippB.titlePublishers) {
@@ -1456,6 +1464,43 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 }
                 tippB.titlePublishers.each { publisher ->
                     lookupOrCreateTitlePublisher([name: publisher.name, gokbId: publisher.uuid], tippA)
+                }
+            }
+            if(tippB.coverages) {
+                if(tippA.coverages) {
+                    TIPPCoverage.executeUpdate('delete from TIPPCoverage tc where tc.tipp = :tipp',[tipp: tippA])
+                }
+                tippB.coverages.each { covB ->
+                    TIPPCoverage covStmt = new TIPPCoverage(
+                            startDate: (Date) covB.startDate ?: null,
+                            startVolume: covB.startVolume,
+                            startIssue: covB.startIssue,
+                            endDate: (Date) covB.endDate ?: null,
+                            endVolume: covB.endVolume,
+                            endIssue: covB.endIssue,
+                            embargo: covB.embargo,
+                            coverageDepth: covB.coverageDepth,
+                            coverageNote: covB.coverageNote,
+                            tipp: tippA
+                    )
+                    if (!covStmt.save())
+                        throw new SyncException("Error on saving coverage data: ${covStmt.errors}")
+                }
+            }
+            if(tippB.priceItems) {
+                if(tippA.priceItems) {
+                    PriceItem.executeUpdate('delete from PriceItem pi where pi.tipp = :tipp', [tipp: tippA])
+                }
+                tippB.priceItems.each { piB ->
+                    PriceItem priceItem = new PriceItem(startDate: (Date) piB.startDate ?: null,
+                            endDate: (Date) piB.endDate ?: null,
+                            listPrice: piB.listPrice,
+                            listCurrency: piB.listCurrency,
+                            tipp: tippA
+                    )
+                    priceItem.setGlobalUID()
+                    if(!priceItem.save())
+                        throw new SyncException("Error on saving price data: ${priceItem.errors}")
                 }
             }
             if(tippB.identifiers) {
@@ -1516,57 +1561,25 @@ class GlobalSourceSyncService extends AbstractLockableService {
             //includes also changes in coverage statement set
             if (diffs) {
                 //process actual diffs
-                diffs.each { Map<String,Object> diff ->
+                diffs.each { Map<String, Object> diff ->
                     log.info("Got tipp diff: ${diff}")
-                    switch(diff.prop) {
-                        case 'coverage':
-                            diff.covDiffs.each { entry ->
-                                switch (entry.event) {
-                                    case 'add':
-                                        if (!entry.target.save())
-                                            throw new SyncException("Error on adding coverage statement for TIPP ${tippA.gokbId}: ${entry.target.errors}")
-                                        break
-                                    case 'delete': PendingChange.executeUpdate('delete from PendingChange pc where pc.tippCoverage = :toDelete',[toDelete:entry.target])
-                                        //TIPPCoverage.executeUpdate('delete from TIPPCoverage tc where tc.id = :id',[id:entry.target.id])
-                                        tippA.removeFromCoverages(entry.target)
-                                        entry.target.delete()
-                                        tippA.save()
-                                        break
-                                    case 'update': entry.diffs.each { covDiff ->
-                                        entry.target[covDiff.prop] = covDiff.newValue
-                                    }
-                                        if (!entry.target.save())
-                                            throw new SyncException("Error on updating coverage statement for TIPP ${tippA.gokbId}: ${entry.target.errors}")
-                                        break
-                                }
-                            }
-                            break
-                        case 'price':
-                            diff.priceDiffs.each { entry ->
-                                switch (entry.event) {
-                                    case 'add':
-                                        if (!entry.target.save())
-                                            throw new SyncException("Error on adding price item for TIPP ${tippA.gokbId}: ${entry.target.errors}")
-                                        break
-                                    case 'delete': PendingChange.executeUpdate('delete from PendingChange pc where pc.priceItem = :toDelete',[toDelete:entry.target])
-                                        PriceItem.executeUpdate('delete from PriceItem pi where pi.id = :id',[id:entry.target.id])
-                                        break
-                                    case 'update': entry.diffs.each { priceDiff ->
-                                        entry.target[priceDiff.prop] = priceDiff.newValue
-                                    }
-                                        if (!entry.target.save())
-                                            throw new SyncException("Error on updating coverage statement for TIPP ${tippA.gokbId}: ${entry.target.errors}")
-                                        break
-                                }
-                            }
-                            break
-                        default:
-                            if (diff.prop in PendingChange.REFDATA_FIELDS) {
-                                tippA[diff.prop] = tippStatus.values().find { RefdataValue rdv -> rdv.id == diff.newValue }
-                            } else {
-                                tippA[diff.prop] = diff.newValue
-                            }
-                            break
+                    if (diff.prop in PendingChange.REFDATA_FIELDS) {
+                        RefdataValue newProp
+                        switch(diff.prop) {
+                            case 'status': newProp = tippStatus.values().find { RefdataValue rdv -> rdv.id == diff.newValue }
+                                break
+                            case 'accessType': newProp = accessType.values().find { RefdataValue rdv -> rdv.id == diff.newValue }
+                                break
+                            case 'openAccess': newProp = openAccess.values().find { RefdataValue rdv -> rdv.id == diff.newValue }
+                                break
+                            default: newProp = null
+                                break
+                        }
+                        if(newProp)
+                            tippA[diff.prop] = newProp
+                    }
+                    else {
+                        tippA[diff.prop] = diff.newValue
                     }
                 }
                 if (tippA.save())
@@ -1699,34 +1712,16 @@ class GlobalSourceSyncService extends AbstractLockableService {
             log.info("processing diffs; the respective objects are: ${tippa.id} (TitleInstancePackagePlatform) pointing to ${tippb.id} (TIPP)")
         Set<Map<String, Object>> result = []
 
-        /*
-        IssueEntitlements do not have hostPlatformURLs
-        if (tippa.hasProperty("hostPlatformURL") && tippa.hostPlatformURL != tippb.hostPlatformURL) {
-            if(!((tippa.hostPlatformURL == null && tippb.hostPlatformURL == "") || (tippa.hostPlatformURL == "" && tippb.hostPlatformURL == null)))
-                result.add([prop: 'hostPlatformURL', newValue: tippb.hostPlatformURL, oldValue: tippa.hostPlatformURL])
-        }
-        */
-
-        // This is the boss enemy when refactoring coverage statements ... works so far, is going to be kept
-        // the question marks are necessary because only JournalInstance's TIPPs are supposed to have coverage statements
-        Set<Map<String, Object>> coverageDiffs = getSubListDiffs(tippa,tippb.coverages,'coverage')
-        if(!coverageDiffs.isEmpty())
-            result.add([prop: 'coverage', covDiffs: coverageDiffs])
-
-        Set<Map<String, Object>> priceDiffs = getSubListDiffs(tippa,tippb.priceItems,'price')
-        //if(!priceDiffs.isEmpty())
-            //result.add([prop: 'price', priceDiffs: priceDiffs]) are auto-applied
-
         if (tippb.containsKey("name") && tippa.name != tippb.name) {
             result.add([prop: 'name', newValue: tippb.name, oldValue: tippa.name])
         }
 
-        if (tippb.containsKey("accessStartDate") && tippa.accessStartDate != tippb.accessStartDate) {
-            result.add([prop: 'accessStartDate', newValue: tippb.accessStartDate, oldValue: tippa.accessStartDate])
+        if(tippa.accessType?.id != accessType.get(tippb.accessType)?.id) {
+            result.add([prop: 'accessType', newValue: accessType.get(tippb.accessType).id, oldValue: tippa.accessType ? tippa.accessType.id : null])
         }
 
-        if (tippb.containsKey("accessEndDate") && tippa.accessEndDate != tippb.accessEndDate) {
-            result.add([prop: 'accessEndDate', newValue: tippb.accessEndDate, oldValue: tippa.accessEndDate])
+        if(tippa.openAccess?.id != openAccess.get(tippb.openAccess)?.id) {
+            result.add([prop: 'openAccess', newValue: openAccess.get(tippb.openAccess).id, oldValue: tippa.openAccess ? tippa.openAccess.id : null])
         }
 
         if(tippa instanceof TitleInstancePackagePlatform && tippb instanceof Map) {
@@ -1750,7 +1745,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * @param listB the new statements (a {@link List} of remote records, kept in {@link Map}s)
      * @param instanceType the container class (may be coverage or price)
      * @return a {@link Set} of {@link Map}s reflecting the differences between the statements
+     * @deprecated issue entitlements should not have sub list objects reflecting the title ones; there are very few cases in which they are needed actually. Should be deleted without replacal
      */
+    @Deprecated
     Set<Map<String,Object>> getSubListDiffs(TitleInstancePackagePlatform tippA, listB, String instanceType) {
         Set subDiffs = []
         Set listA
@@ -2044,7 +2041,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         else http = new BasicHttpClient(uri+'find')
         Map<String,Object> result = [:]
         //setting default status
-        if((queryParams.componentType == 'TitleInstancePackagePlatform' || queryParams.component_type == 'TitleInstancePackagePlatform') && !queryParams.status) {
+        if(!queryParams.status) {
             queryParams.status = ["Current","Expected","Retired","Deleted",PERMANENTLY_DELETED,"Removed"]
             //queryParams.status = ["Removed"] //debug only
         }
@@ -2107,10 +2104,11 @@ class GlobalSourceSyncService extends AbstractLockableService {
         RefdataValue.findAllByIdNotInListAndOwner(packageStatus.values().collect { RefdataValue rdv -> rdv.id }, RefdataCategory.findByDesc(RDConstants.PACKAGE_STATUS)).each { RefdataValue rdv ->
             packageStatus.put(rdv.value, rdv)
         }
-        packageStatus.put(PERMANENTLY_DELETED, RDStore.PACKAGE_STATUS_DELETED)
+        packageStatus.put(PERMANENTLY_DELETED, RDStore.PACKAGE_STATUS_REMOVED)
         orgStatus.put(RDStore.ORG_STATUS_CURRENT.value,RDStore.ORG_STATUS_CURRENT)
         orgStatus.put(RDStore.ORG_STATUS_DELETED.value,RDStore.ORG_STATUS_DELETED)
-        orgStatus.put(PERMANENTLY_DELETED,RDStore.ORG_STATUS_DELETED)
+        orgStatus.put(PERMANENTLY_DELETED,RDStore.ORG_STATUS_REMOVED)
+        orgStatus.put(RDStore.ORG_STATUS_REMOVED.value,RDStore.ORG_STATUS_REMOVED)
         orgStatus.put(RDStore.ORG_STATUS_RETIRED.value,RDStore.ORG_STATUS_RETIRED)
         RefdataCategory.getAllRefdataValues(RDConstants.CURRENCY).each { RefdataValue rdv ->
             currency.put(rdv.value, rdv)

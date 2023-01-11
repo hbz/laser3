@@ -169,17 +169,6 @@
                                             id="${subscription.instanceOf.id}">${subscription.instanceOf}</g:link>
                                 </dd>
                             </dl>
-
-                            <sec:ifAnyGranted roles="ROLE_ADMIN">
-                                <dl>
-                                    <dt class="control-label">
-                                        ${message(code: 'license.details.linktoLicense.pendingChange')}
-                                    </dt>
-                                    <dd>
-                                        <ui:xEditableBoolean owner="${subscription}" field="isSlaved"/>
-                                    </dd>
-                                </dl>
-                            </sec:ifAnyGranted>
                         </g:if>
 
                         <dl>

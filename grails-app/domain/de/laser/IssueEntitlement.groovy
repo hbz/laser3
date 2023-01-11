@@ -49,6 +49,12 @@ class IssueEntitlement extends AbstractBase implements Comparable {
     @RefdataInfo(cat = RDConstants.TIPP_STATUS)
     RefdataValue status
 
+    @RefdataInfo(cat = RDConstants.TIPP_ACCESS_TYPE)
+    RefdataValue accessType
+
+    @RefdataInfo(cat = RDConstants.LICENSE_OA_TYPE)
+    RefdataValue openAccess
+
     @Deprecated
     @RefdataInfo(cat = RDConstants.TITLE_MEDIUM)
     RefdataValue medium // legacy; was distinguished back then; I see no reason why I should still do so. Is legacy.
@@ -91,6 +97,8 @@ class IssueEntitlement extends AbstractBase implements Comparable {
           sortname column:'ie_sortname', type: 'text'
              notes column:'ie_notes', type: 'text'
             status column:'ie_status_rv_fk', index: 'ie_status_idx, ie_status_accept_status_idx, ie_tipp_status_accept_status_idx'
+        accessType column:'ie_access_type_rv_fk', index: 'ie_access_type_idx'
+        openAccess column:'ie_open_access_rv_fk', index: 'ie_open_access_idx'
       subscription column:'ie_subscription_fk', index: 'ie_sub_idx, ie_sub_tipp_idx, ie_status_accept_status_idx, ie_tipp_status_accept_status_idx'
               tipp column:'ie_tipp_fk',         index: 'ie_tipp_idx, ie_sub_tipp_idx, ie_tipp_status_accept_status_idx'
         perpetualAccessBySub column:'ie_perpetual_access_by_sub_fk'
@@ -107,10 +115,12 @@ class IssueEntitlement extends AbstractBase implements Comparable {
 
     static constraints = {
         globalUID      (nullable:true, blank:false, unique:true, maxSize:255)
-        status         (nullable:true)
         name           (nullable:true)
         sortname       (nullable:true)
         notes          (nullable:true)
+        status         (nullable:true)
+        accessType     (nullable:true)
+        openAccess     (nullable:true)
         medium         (nullable:true)
         accessStartDate(nullable:true)
         accessEndDate  (nullable:true)
@@ -133,7 +143,7 @@ class IssueEntitlement extends AbstractBase implements Comparable {
       TitleInstancePackagePlatform tipp = (TitleInstancePackagePlatform) configMap.tipp
       IssueEntitlement ie = findBySubscriptionAndTippAndStatusNotEqual(subscription,tipp, RDStore.TIPP_STATUS_REMOVED)
       if(!ie) {
-          ie = new IssueEntitlement(subscription: subscription, tipp: tipp, medium: tipp.medium, status:tipp.status, acceptStatus: configMap.acceptStatus, name: tipp.name)
+          ie = new IssueEntitlement(subscription: subscription, tipp: tipp, medium: tipp.medium, status:tipp.status, accessType: tipp.accessType, openAccess: tipp.openAccess, acceptStatus: configMap.acceptStatus, name: tipp.name)
           ie.generateSortTitle()
       }
       if(ie.save()) {
