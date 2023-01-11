@@ -481,7 +481,7 @@ class FinanceService {
         //value is transient
         Double costBillingCurrencyAfterTax = params.newCostInBillingCurrencyAfterTax ? format.parse(params.newCostInBillingCurrencyAfterTax).doubleValue() : costBillingCurrency
         //row 2
-        Double currencyRate = params.newCostCurrencyRate ? params.double('newCostCurrencyRate', 1.00) : 1.0 //1.00
+        Double currencyRate = params.newCostCurrencyRate ? format.parse(params.newCostCurrencyRate) : 1.0 //1.00
         CostItem.TAX_TYPES taxKey = setTaxKey(params.newTaxRate)
         //row 3
         Double costLocalCurrency = params.newCostInLocalCurrency ? format.parse(params.newCostInLocalCurrency).doubleValue() : 0.0 //0.00
