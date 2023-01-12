@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.PropertyStore; de.laser.survey.SurveyConfigProperties; de.laser.SubscriptionPackage; de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig; de.laser.DocContext; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.Subscription; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.Platform; de.laser.SubscriptionPackage; de.laser.Org" %>
+<%@ page import="de.laser.utils.DateUtils; java.text.SimpleDateFormat; java.text.DateFormat; de.laser.storage.PropertyStore; de.laser.survey.SurveyConfigProperties; de.laser.SubscriptionPackage; de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig; de.laser.DocContext; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.Subscription; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.Platform; de.laser.SubscriptionPackage; de.laser.Org" %>
 <laser:serviceInjection/>
 <g:set var="surveyOrg"
        value="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution)}"/>
@@ -154,12 +154,23 @@
                             </div>
 
                             <div class="ui bottom attached tab segment active" data-tab="comment">
-                                <div class="ui form">
-                                    <div class="field">
-                                        <textarea class="la-textarea-resize-vertical" name="comment"
-                                                  rows="15">${surveyConfig.comment}</textarea>
+                                <g:if test="${surveyConfig.dateCreated > DateUtils.getSDF_yyyyMMdd().parse('2023-01-12')}">
+                                    <div id="commentDiv">
+                                        <div id="comment">${raw(surveyConfig.comment)}</div>
+
+                                        <laser:script file="${this.getGroovyPageFileName()}">
+                                            wysiwyg.initEditor('#commentDiv #comment');
+                                        </laser:script>
                                     </div>
-                                </div>
+                                </g:if>
+                                <g:else>
+                                    <div class="ui form">
+                                        <div class="field">
+                                            <textarea class="la-textarea-resize-vertical" name="comment"
+                                                      rows="15">${surveyConfig.comment}</textarea>
+                                        </div>
+                                    </div>
+                                </g:else>
                                 <br>
 
                                 <div class="left aligned">
@@ -169,12 +180,23 @@
                             </div>
 
                             <div class="ui bottom attached tab segment" data-tab="commentForNewParticipants">
-                                <div class="ui form">
-                                    <div class="field">
-                                        <textarea class="la-textarea-resize-vertical" name="commentForNewParticipants"
-                                                  rows="15">${surveyConfig.commentForNewParticipants}</textarea>
+                                <g:if test="${surveyConfig.dateCreated > DateUtils.getSDF_yyyyMMdd().parse('2023-01-12')}">
+                                    <div id="commentForNewParticipantsDiv">
+                                        <div id="commentForNewParticipants">${raw(surveyConfig.commentForNewParticipants)}</div>
+
+                                        <laser:script file="${this.getGroovyPageFileName()}">
+                                            wysiwyg.initEditor('#commentForNewParticipantsDiv #commentForNewParticipants');
+                                        </laser:script>
                                     </div>
-                                </div>
+                                </g:if>
+                                <g:else>
+                                    <div class="ui form">
+                                        <div class="field">
+                                            <textarea class="la-textarea-resize-vertical" name="commentForNewParticipants"
+                                                      rows="15">${surveyConfig.commentForNewParticipants}</textarea>
+                                        </div>
+                                    </div>
+                                </g:else>
                                 <br>
 
                                 <div class="left aligned">
@@ -235,8 +257,20 @@
                                     <g:message code="surveyConfigsInfo.comment"/>
                                 </label>
                                 <g:if test="${surveyConfig.comment}">
-                                    <textarea class="la-textarea-resize-vertical" readonly="readonly"
+                                    <g:if test="${surveyConfig.dateCreated > DateUtils.getSDF_yyyyMMdd().parse('2023-01-12')}">
+                                        <div id="comment-wrapper-${surveyConfig.id}">
+                                            <article id="comment-${surveyConfig.id}" class="ui segment trumbowyg-editor trumbowyg-reset-css" style="margin:0; padding:0.5em 1em; box-shadow:none;">
+                                                ${raw(surveyConfig.comment)}
+                                            </article>
+                                            <laser:script file="${this.getGroovyPageFileName()}">
+                                                wysiwyg.analyzeNote_TMP( $("#comment-${surveyConfig.id}"), $("#comment-wrapper-${surveyConfig.id}"), true );
+                                            </laser:script>
+                                        </div>
+                                    </g:if>
+                                    <g:else>
+                                        <textarea class="la-textarea-resize-vertical" readonly="readonly"
                                               rows="1">${surveyConfig.comment}</textarea>
+                                    </g:else>
                                 </g:if>
                                 <g:else>
                                     <g:message code="surveyConfigsInfo.comment.noComment"/>
@@ -251,8 +285,20 @@
                                     <g:message code="surveyConfigsInfo.comment"/>
                                 </label>
                                 <g:if test="${surveyConfig.commentForNewParticipants}">
-                                    <textarea class="la-textarea-resize-vertical" readonly="readonly"
+                                    <g:if test="${surveyConfig.dateCreated > DateUtils.getSDF_yyyyMMdd().parse('2023-01-12')}">
+                                        <div id="commentForNewParticipants-wrapper-${surveyConfig.id}">
+                                            <article id="commentForNewParticipants-${surveyConfig.id}" class="ui segment trumbowyg-editor trumbowyg-reset-css" style="margin:0; padding:0.5em 1em; box-shadow:none;">
+                                                ${raw(surveyConfig.commentForNewParticipants)}
+                                            </article>
+                                            <laser:script file="${this.getGroovyPageFileName()}">
+                                                wysiwyg.analyzeNote_TMP( $("#commentForNewParticipants-${surveyConfig.id}"), $("#commentForNewParticipants-wrapper-${surveyConfig.id}"), true );
+                                            </laser:script>
+                                        </div>
+                                    </g:if>
+                                    <g:else>
+                                        <textarea class="la-textarea-resize-vertical" readonly="readonly"
                                               rows="1">${surveyConfig.commentForNewParticipants}</textarea>
+                                    </g:else>
                                 </g:if>
                                 <g:else>
                                     <g:message code="surveyConfigsInfo.comment.noComment"/>
