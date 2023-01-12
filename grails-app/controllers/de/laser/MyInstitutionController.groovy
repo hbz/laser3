@@ -1069,15 +1069,17 @@ join sub.orgRelations or_sub where
         if(childSubsOfSet) {
             Set rows = OrgRole.executeQuery('select oo.sub,oo.org.sortname from OrgRole oo where oo.sub in (:subChildren) and oo.roleType in (:subscrTypes)',[subChildren:childSubsOfSet,subscrTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])
             rows.each { row ->
-                log.debug("now processing ${row[0]}:${row[1]}")
                 objectNames.put(row[0],row[1])
             }
         }
         List subscriptionData = []
         subscriptions.each { Subscription sub ->
+            log.debug("now processing ${sub}")
             List row = []
-            TreeSet subProviders = sub.orgRelations.findAll { OrgRole oo -> oo.roleType == RDStore.OR_PROVIDER }.collect { OrgRole oo -> oo.org.name }
-            TreeSet subAgencies = sub.orgRelations.findAll { OrgRole oo -> oo.roleType == RDStore.OR_AGENCY }.collect { OrgRole oo -> oo.org.name }
+            //TreeSet subProviders = sub.orgRelations.findAll { OrgRole oo -> oo.roleType == RDStore.OR_PROVIDER }.collect { OrgRole oo -> oo.org.name }
+            //TreeSet subAgencies = sub.orgRelations.findAll { OrgRole oo -> oo.roleType == RDStore.OR_AGENCY }.collect { OrgRole oo -> oo.org.name }
+            Set subProviders = OrgRole.executeQuery('select org.name from OrgRole oo join oo.org org where oo.sub = :sub and oo.roleType = :provider order by org.name', [sub: sub, provider: RDStore.OR_PROVIDER])
+            Set subAgencies = OrgRole.executeQuery('select org.name from OrgRole oo join oo.org org where oo.sub = :sub and oo.roleType = :agency order by org.name', [sub: sub, agency: RDStore.OR_AGENCY])
             TreeSet subIdentifiers = sub.ids.collect { Identifier id -> "(${id.ns.ns}) ${id.value}" }
             switch (format) {
                 case [ "xls", "xlsx" ]:
