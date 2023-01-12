@@ -53,7 +53,7 @@ class EscapeService {
      * @return the sum parsed as BigDecimal
      */
     BigDecimal parseFinancialValue(String input) {
-        String uniformedThousandSeparator = input.replaceAll("[',.](\\d{3})",'$1')
+        String uniformedThousandSeparator = input.replaceAll("[',.](\\d{3})",'$1').trim()
         BigDecimal output = new BigDecimal(uniformedThousandSeparator.replaceAll(",","."))
         output
     }

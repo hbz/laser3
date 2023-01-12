@@ -3046,13 +3046,9 @@ class SurveyController {
             response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
-        if(params.setComment){
-            result.surveyConfig.comment = params.comment
-        }
+        result.surveyConfig.comment = params.comment
 
-        if(params.setCommentForNewParticipants){
-            result.surveyConfig.commentForNewParticipants = params.commentForNewParticipants
-        }
+        result.surveyConfig.commentForNewParticipants = params.commentForNewParticipants
 
         SurveyConfig.withTransaction {
             if (!result.surveyConfig.save()) {
