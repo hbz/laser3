@@ -41,8 +41,8 @@
                                     <i class="la-gokb icon la-list-icon"></i>
                                 </span>
                             </g:if>
+                            <g:link controller="organisation" action="show" id="${platformInstance.org.id}">${platformInstance.org.getDesignation()}</g:link>
                         </div>
-                        <g:link controller="organisation" action="show" id="${platformInstance.org.id}">${platformInstance.org.getDesignation()}</g:link>
                     </g:if>
                 </td>
                 <td>
