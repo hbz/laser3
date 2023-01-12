@@ -197,7 +197,7 @@ class SurveyService {
                                messageSource.getMessage('surveyParticipants.label', null, locale),
                                messageSource.getMessage('surveyOrg.ownerComment.label', null, locale)])
                 if (surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]) {
-                    titles.push(messageSource.getMessage('surveyProperty.subName', null, locale))
+                    titles.add(messageSource.getMessage('surveyProperty.subName', null, locale))
                 }
                 if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY) {
                     titles.addAll([messageSource.getMessage('surveyInfo.name.label', null, locale)])
@@ -241,9 +241,9 @@ class SurveyService {
                 }
 
             } else {
-                titles.push(messageSource.getMessage('surveyInfo.owner.label', null, locale))
-                titles.push(messageSource.getMessage('surveyConfigsInfo.comment', null, locale))
-                titles.push(messageSource.getMessage('surveyInfo.endDate.label', null, locale))
+                titles.add(messageSource.getMessage('surveyInfo.owner.label', null, locale))
+                titles.add(messageSource.getMessage('surveyConfigsInfo.comment', null, locale))
+                titles.add(messageSource.getMessage('surveyInfo.endDate.label', null, locale))
                 if (surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]) {
                     surveyConfig.surveyUrls.eachWithIndex { SurveyUrl surveyUrl, int i ->
                         Object[] args = ["${i+1}"]
@@ -271,10 +271,11 @@ class SurveyService {
                     }
                 }
                 if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY) {
-                    titles.push(messageSource.getMessage('surveyInfo.name.label', null, locale))
+                    titles.add(messageSource.getMessage('surveyInfo.name.label', null, locale))
                     surveyConfig.surveyUrls.eachWithIndex { SurveyUrl surveyUrl, int i ->
                         Object[] args = ["${i+1}"]
-                        titles.push(messageSource.getMessage('surveyconfig.url.label', args, locale))
+                        titles.add(messageSource.getMessage('surveyconfig.url.label', args, locale))
+                        titles.add(messageSource.getMessage('surveyconfig.urlComment.label', args, locale))
                     }
                 }
             }
@@ -467,6 +468,10 @@ class SurveyService {
             sheetData.put(escapeService.escapeString(surveyConfig.getConfigNameShort()), [titleRow: titles, columnData: surveyData])
         }
 
+        if(sheetData.isEmpty()){
+            sheetData.put(messageSource.getMessage('survey.plural', null, locale), [titleRow: [], columnData: []])
+        }
+
         return exportService.generateXLSXWorkbook(sheetData)
     }
 
@@ -490,7 +495,7 @@ class SurveyService {
                 titles.addAll([messageSource.getMessage('org.sortname.label', null, locale),
                                messageSource.getMessage('surveyParticipants.label', null, locale)])
                 if (surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT] ) {
-                    titles.push(messageSource.getMessage('surveyProperty.subName', null, locale))
+                    titles.add(messageSource.getMessage('surveyProperty.subName', null, locale))
                 }
                 if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY) {
                     titles.addAll([messageSource.getMessage('surveyInfo.name.label', null, locale)])

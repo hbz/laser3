@@ -7,6 +7,32 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4757    12.01.2023  rc-3.0  3.0.2       Moe     Feature     Titelumfrage: Reiter + Export Auswählbar ausblenden bei Dauerhafte Titel-Umfrage
+
+4756    12.01.2023  rc-3.0  3.0.2       Andreas Bug         Export der Lizenzen beschleunigt
+
+4746    12.01.2023  rc-3.0  3.0.2       Moe     Feature     Editor-Funktion auch bei Umfrage-Texten
+
+4626    12.01.2023  rc-3.0  3.0.2       Andreas Feature     Verfahrensverzeichnis aktualisiert
+
+4752    11.01.2023  rc-3.0  3.0.2       Andreas Feature     Objekt-ID-Spalte entfällt, wenn keine der Ampel angesteuert wird
+
+4750    11.01.2023  rc-3.0  3.0.2       Moe     Feature     Umfrage: Bemerkungsfelder für Teilnehmer in Reiter darstellen
+
+4748    11.01.2023  rc-3.0  3.0.2       Andreas Bug         Umrechnungskurs kann jetzt ohne Beschränkung eingegeben werden und Summe wird korrekt berechnet
+
+4745    11.01.2023  rc-3.0  3.0.2       Moe     Feature     Reiter Teilnehmer: Titelumfrage -> Meine Einrichtung ausblenden
+
+4621    11.01.2023  rc-3.0  3.0.2       Moe     Bug         Wording anpassen: Titel-Umfrage "Ausgewählte Titel"
+
+4744    10.01.2023  rc-3.0  3.0.2       Moe     Bug         Umfrage exportieren (als Vollnutzer) führt zu 500er
+
+4732    10.01.2023  rc-3.0  3.0.2       Moe     Bug         Automatische Verlängerung hakt
+
+4743    10.01.2023  rc-3.0  3.0.2       Moe     Bug         Automatische Verlängerung 2023 ist nicht ausgeführt worden
+
+4740    05.01.2023  rc-3.0  3.0.2       Andreas Bug         Ausblenden entfernter Plattformen
+
 4735    03.01.2023  rc-3.0  3.0.1       Andreas Bug         Ladelogik der Finanzen umgestellt
 
 4734    02.01.2023  rc-3.0  3.0.1       Andreas Bug         E-Rechnungspanel wurde bei Konsorten ausgeblendet
