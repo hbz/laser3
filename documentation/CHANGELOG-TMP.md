@@ -7,6 +7,14 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4757    12.01.2023  rc-3.0  3.0.2       Moe     Feature     Titelumfrage: Reiter + Export Auswählbar ausblenden bei Dauerhafte Titel-Umfrage
+
+4756    12.01.2023  rc-3.0  3.0.2       Andreas Bug         Export der Lizenzen beschleunigt
+
+4746    12.01.2023  rc-3.0  3.0.2       Moe     Feature     Editor-Funktion auch bei Umfrage-Texten
+
+4626    12.01.2023  rc-3.0  3.0.2       Andreas Feature     Verfahrensverzeichnis aktualisiert
+
 4752    11.01.2023  rc-3.0  3.0.2       Andreas Feature     Objekt-ID-Spalte entfällt, wenn keine der Ampel angesteuert wird
 
 4750    11.01.2023  rc-3.0  3.0.2       Moe     Feature     Umfrage: Bemerkungsfelder für Teilnehmer in Reiter darstellen
