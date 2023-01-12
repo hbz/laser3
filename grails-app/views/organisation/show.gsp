@@ -109,7 +109,7 @@
                                 </g:each>
                             </div>
                             <g:if test="${orgInstanceRecord == null}">
-                                <input name="addAltname" id="addAltname" type="button" class="ui button" value="Altnernativnamen hinzufügen">
+                                <input name="addAltname" id="addAltname" type="button" class="ui button" value="${message(code: 'org.altname.add')}">
                             </g:if>
                         </dd>
                     </dl>
