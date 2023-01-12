@@ -40,7 +40,7 @@
 
         <div class="eleven wide column">
             <div class="la-inline-lists">
-                <div class="ui two cards">
+                <div class="ui two doubling stackable cards">
                     <div class="ui card la-time-card">
                         <div class="content">
                             <dl>
@@ -447,7 +447,7 @@
                         <div class="ui card ">
                             <div class="content">
                                 <h2 class="ui header">${message(code: 'gasco.contacts.plural')}</h2>
-                                <table class="ui table">
+                                <table class="ui compact table">
                                     <g:each in="${gascoContacts}" var="entry">
                                         <g:set var="gascoContact" value="${entry.getValue()}"/>
                                         <g:each in ="${gascoContact.personRoles}" var="personRole">
