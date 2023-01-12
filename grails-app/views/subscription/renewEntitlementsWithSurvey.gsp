@@ -19,13 +19,15 @@
     <ui:exportDropdown>
 
         <div class="header">KBART Exports</div>
-        <ui:exportDropdownItem>
-            <g:link class="item" action="renewEntitlementsWithSurvey"
-                    id="${newSub.id}"
-                    params="${[surveyConfigID: surveyConfig.id,
-                               exportKBart   : true,
-                               tab           : 'toBeSelectedIEs']}">${message(code: 'renewEntitlementsWithSurvey.toBeSelectedIEs')}</g:link>
-        </ui:exportDropdownItem>
+        <g:if test="${surveyConfig.pickAndChoosePerpetualAccess}">
+            <ui:exportDropdownItem>
+                <g:link class="item" action="renewEntitlementsWithSurvey"
+                        id="${newSub.id}"
+                        params="${[surveyConfigID: surveyConfig.id,
+                                   exportKBart   : true,
+                                   tab           : 'toBeSelectedIEs']}">${message(code: 'renewEntitlementsWithSurvey.toBeSelectedIEs')}</g:link>
+            </ui:exportDropdownItem>
+        </g:if>
 
         <ui:exportDropdownItem>
             <g:link class="item" action="renewEntitlementsWithSurvey"
@@ -58,13 +60,15 @@
 
         <div class="header">${message(code: 'default.button.exports.xls')}s</div>
 
-        <ui:exportDropdownItem>
-            <g:link class="item" action="renewEntitlementsWithSurvey"
-                    id="${newSub.id}"
-                    params="${[surveyConfigID: surveyConfig.id,
-                               exportXLS     : true,
-                               tab           : 'toBeSelectedIEs']}">${message(code: 'renewEntitlementsWithSurvey.toBeSelectedIEs')}</g:link>
-        </ui:exportDropdownItem>
+        <g:if test="${surveyConfig.pickAndChoosePerpetualAccess}">
+            <ui:exportDropdownItem>
+                <g:link class="item" action="renewEntitlementsWithSurvey"
+                        id="${newSub.id}"
+                        params="${[surveyConfigID: surveyConfig.id,
+                                   exportXLS     : true,
+                                   tab           : 'toBeSelectedIEs']}">${message(code: 'renewEntitlementsWithSurvey.toBeSelectedIEs')}</g:link>
+            </ui:exportDropdownItem>
+        </g:if>
 
         <ui:exportDropdownItem>
             <g:link class="item" action="renewEntitlementsWithSurvey"
@@ -94,7 +98,7 @@
                                tab           : 'selectedIEs']}">${message(code: 'renewEntitlementsWithSurvey.currentTitlesSelect')}</g:link>
         </ui:exportDropdownItem>
 
-        <g:if test="${showStatisticByParticipant}">
+        <g:if test="${showStatisticByParticipant && surveyConfig.pickAndChoosePerpetualAccess}">
             <ui:exportDropdownItem>
                 <g:link class="item" action="renewEntitlementsWithSurvey"
                         id="${newSub.id}"
@@ -301,10 +305,12 @@
                     params="[id: newSub.id, surveyConfigID: surveyConfig.id, tab: 'allIEs']"
                     text="${message(code: "renewEntitlementsWithSurvey.selectableTitles")}" tab="allIEs"
                     counts="${countAllIEs}"/>
-    <ui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
-                    params="[id: newSub.id, surveyConfigID: surveyConfig.id, tab: 'toBeSelectedIEs']"
-                    text="${message(code: "renewEntitlementsWithSurvey.toBeSelectedIEs")}" tab="toBeSelectedIEs"
-                    counts="${toBeSelectedIEs}"/>
+    <g:if test="${surveyConfig.pickAndChoosePerpetualAccess}">
+        <ui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
+                        params="[id: newSub.id, surveyConfigID: surveyConfig.id, tab: 'toBeSelectedIEs']"
+                        text="${message(code: "renewEntitlementsWithSurvey.toBeSelectedIEs")}" tab="toBeSelectedIEs"
+                        counts="${toBeSelectedIEs}"/>
+    </g:if>
     <ui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
                     params="[id: newSub.id, surveyConfigID: surveyConfig.id, tab: 'selectedIEs']"
                     text="${message(code: "renewEntitlementsWithSurvey.currentTitlesSelect")}" tab="selectedIEs"
