@@ -141,18 +141,18 @@
                     <div class="field la-exchange-rate">
                         <label>${g.message(code:'financials.newCosts.exchangeRate')}</label>
                         <%
-                            Double value
+                            String value
                             if(idSuffix != 'bulk') {
                                 if(costItem) {
-                                    value = costItem.currencyRate
+                                    value = costItem.currencyRate.toString().replace('.', ',')
                                 }
-                                else value = 1.0
+                                else value = '1,0'
                             }
                         %>
-                        <input title="${g.message(code:'financials.addNew.currencyRate')}" type="number" class="calc la-82Percent"
+                        <input title="${g.message(code:'financials.addNew.currencyRate')}" type="text" class="calc la-82Percent"
                                name="newCostCurrencyRate" id="newCostCurrencyRate_${idSuffix}"
                                placeholder="${g.message(code:'financials.newCosts.exchangeRate')}"
-                               value="${value}" step="0.001" />
+                               value="${value}" />
 
                         <div id="calculateExchangeRate_${idSuffix}" class="ui icon blue button la-popup-tooltip la-delay" data-content="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
                             <i class="calculator icon"></i>
@@ -558,8 +558,8 @@
             }
         },
         checkValues: function () {
-            if ( (JSPC.app.finance${idSuffix}.convertDouble(JSPC.app.finance${idSuffix}.costBillingCurrency.val()) * JSPC.app.finance${idSuffix}.costCurrencyRate.val()).toFixed(2) !== JSPC.app.finance${idSuffix}.convertDouble(JSPC.app.finance${idSuffix}.costLocalCurrency.val()).toFixed(2) ) {
-                //console.log("inserted values are: "+JSPC.app.finance${idSuffix}.convertDouble(JSPC.app.finance${idSuffix}.costBillingCurrency.val())+" * "+JSPC.app.finance${idSuffix}.costCurrencyRate.val()+" = "+JSPC.app.finance${idSuffix}.convertDouble(JSPC.app.finance${idSuffix}.costLocalCurrency.val()).toFixed(2)+", correct would be: "+(JSPC.app.finance${idSuffix}.convertDouble(JSPC.app.finance${idSuffix}.costBillingCurrency.val()) * JSPC.app.finance${idSuffix}.costCurrencyRate.val()).toFixed(2));
+            if ( (JSPC.app.finance${idSuffix}.convertDouble(JSPC.app.finance${idSuffix}.costBillingCurrency.val()) * JSPC.app.finance${idSuffix}.convertDouble(JSPC.app.finance${idSuffix}.costCurrencyRate.val())).toFixed(2) !== JSPC.app.finance${idSuffix}.convertDouble(JSPC.app.finance${idSuffix}.costLocalCurrency.val()).toFixed(2) ) {
+                console.log("inserted values are: "+JSPC.app.finance${idSuffix}.convertDouble(JSPC.app.finance${idSuffix}.costBillingCurrency.val())+" * "+JSPC.app.finance${idSuffix}.convertDouble(JSPC.app.finance${idSuffix}.costCurrencyRate.val())+" = "+JSPC.app.finance${idSuffix}.convertDouble(JSPC.app.finance${idSuffix}.costLocalCurrency.val()).toFixed(2)+", correct would be: "+(JSPC.app.finance${idSuffix}.convertDouble(JSPC.app.finance${idSuffix}.costBillingCurrency.val()) * JSPC.app.finance${idSuffix}.costCurrencyRate.val()).toFixed(2));
                 JSPC.app.finance${idSuffix}.costElems.parent('.field').addClass('error');
                 return false;
             }
@@ -656,7 +656,8 @@
             this.calculateBillingCurrency.click( function() {
                 if (! JSPC.app.finance${idSuffix}.isError(JSPC.app.finance${idSuffix}.costLocalCurrency) && ! JSPC.app.finance${idSuffix}.isError(JSPC.app.finance${idSuffix}.costCurrencyRate)) {
                     let parsedLocalCurrency = JSPC.app.finance${idSuffix}.convertDouble(JSPC.app.finance${idSuffix}.costLocalCurrency.val().trim());
-                    JSPC.app.finance${idSuffix}.costBillingCurrency.val(JSPC.app.finance${idSuffix}.outputValue(parsedLocalCurrency / JSPC.app.finance${idSuffix}.costCurrencyRate.val().trim()));
+                    let parsedCurrencyRate = JSPC.app.finance${idSuffix}.convertDouble(JSPC.app.finance${idSuffix}.costCurrencyRate.val().trim());
+                    JSPC.app.finance${idSuffix}.costBillingCurrency.val(JSPC.app.finance${idSuffix}.outputValue(parsedLocalCurrency / parsedCurrencyRate));
                     $(".la-account-currency").find(".field").removeClass("error");
                     JSPC.app.finance${idSuffix}.calcTaxResults();
                 }
@@ -665,7 +666,7 @@
                 if (! JSPC.app.finance${idSuffix}.isError(JSPC.app.finance${idSuffix}.costLocalCurrency) && ! JSPC.app.finance${idSuffix}.isError(JSPC.app.finance${idSuffix}.costBillingCurrency)) {
                     let parsedLocalCurrency = JSPC.app.finance${idSuffix}.convertDouble(JSPC.app.finance${idSuffix}.costLocalCurrency.val().trim());
                     let parsedBillingCurrency = JSPC.app.finance${idSuffix}.convertDouble(JSPC.app.finance${idSuffix}.costBillingCurrency.val().trim());
-                    JSPC.app.finance${idSuffix}.costCurrencyRate.val((parsedLocalCurrency / parsedBillingCurrency));
+                    JSPC.app.finance${idSuffix}.costCurrencyRate.val(JSPC.app.finance${idSuffix}.outputValue((parsedLocalCurrency / parsedBillingCurrency)));
                     $(".la-account-currency").find(".field").removeClass("error");
                     JSPC.app.finance${idSuffix}.calcTaxResults();
                 }
@@ -673,7 +674,8 @@
             this.calculateLocalCurrency.click( function() {
                 if (! JSPC.app.finance${idSuffix}.isError(JSPC.app.finance${idSuffix}.costBillingCurrency) && ! JSPC.app.finance${idSuffix}.isError(JSPC.app.finance${idSuffix}.costCurrencyRate)) {
                     let parsedBillingCurrency = JSPC.app.finance${idSuffix}.convertDouble(JSPC.app.finance${idSuffix}.costBillingCurrency.val().trim());
-                    JSPC.app.finance${idSuffix}.costLocalCurrency.val(JSPC.app.finance${idSuffix}.outputValue(parsedBillingCurrency * JSPC.app.finance${idSuffix}.costCurrencyRate.val().trim()));
+                    let parsedCurrencyRate = JSPC.app.finance${idSuffix}.convertDouble(JSPC.app.finance${idSuffix}.costCurrencyRate.val().trim());
+                    JSPC.app.finance${idSuffix}.costLocalCurrency.val(JSPC.app.finance${idSuffix}.outputValue(parsedBillingCurrency * parsedCurrencyRate));
                     $(".la-account-currency").find(".field").removeClass("error");
                     JSPC.app.finance${idSuffix}.calcTaxResults();
                 }
@@ -697,9 +699,17 @@
                 JSPC.app.finance${idSuffix}.elementChangeable = false;
             });
             this.costElems.blur(function(e) {
+                let allSet = JSPC.app.finance${idSuffix}.costBillingCurrency.val().length > 0 && JSPC.app.finance${idSuffix}.costLocalCurrency.val().length > 0 && JSPC.app.finance${idSuffix}.costCurrencyRate.val().length > 0
                 if(JSPC.app.finance${idSuffix}.elementChangeable === true){
                     JSPC.app.finance${idSuffix}.costElems.removeClass('focused');
-                    JSPC.app.finance${idSuffix}.calculateLocalCurrency.click();
+                    if(allSet) {
+                        if($(this).attr("id") === JSPC.app.finance${idSuffix}.costCurrencyRate.attr("id") || $(this).attr("id") === JSPC.app.finance${idSuffix}.costBillingCurrency.attr("id")) {
+                            JSPC.app.finance${idSuffix}.calculateLocalCurrency.click();
+                        }
+                        if($(this).attr("id") === JSPC.app.finance${idSuffix}.costLocalCurrency.attr("id")) {
+                            JSPC.app.finance${idSuffix}.calculateCurrencyRate.click();
+                        }
+                    }
                     JSPC.app.finance${idSuffix}.calcTaxResults();
                 }
             });
@@ -716,7 +726,7 @@
                 }, 10);
             });
             this.calc.change( function() {
-                if('${idSuffix}' !== 'bulk' && !$(this).hasClass("focused")) {
+                if(!$(this).hasClass("focused")) {
                     JSPC.app.finance${idSuffix}.calcTaxResults();
                 }
             });
