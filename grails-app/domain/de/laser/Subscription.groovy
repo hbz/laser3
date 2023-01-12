@@ -631,7 +631,11 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
      */
     boolean isMultiYearSubscription() {
         // TODO Moe - date.minusDays()
-        return (this.startDate && this.endDate && (this.endDate.minus(this.startDate) > 366))
+        ///return (this.startDate && this.endDate && (this.endDate.minus(this.startDate) > 366))
+
+        LocalDate endDate = DateUtils.dateToLocalDate(this.endDate)
+        LocalDate startDate = DateUtils.dateToLocalDate(this.startDate)
+        return (startDate && endDate && (DAYS.between(startDate, endDate) > 366))
     }
 
     @Deprecated
