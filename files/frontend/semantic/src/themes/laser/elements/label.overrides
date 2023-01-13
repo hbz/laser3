@@ -314,6 +314,7 @@ a .ui.circular.label {
   letter-spacing: 0.04em;
 }
 .ui.image.label .detail.js-copyTopic {
+  border: @basicBorder;
   background: @blue;
   color: @white;
   opacity:1;
