@@ -14,7 +14,7 @@
 .ui.segment.la-timeLineSegment-contact {
   background-color:transparent;
   border: none;
-  padding-top: 0;
+  padding-top: 10px;
   padding-bottom: 0;
   .ui.header {
     margin-top: 0.5rem;

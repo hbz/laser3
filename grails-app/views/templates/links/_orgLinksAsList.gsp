@@ -1,7 +1,7 @@
 <%@ page import="de.laser.PersonRole; de.laser.RefdataValue; de.laser.Person; de.laser.Contact; de.laser.storage.RDConstants; de.laser.storage.RDStore; de.laser.remote.ApiSource" %>
 <laser:serviceInjection />
 <g:set var="wekbAPI" value="${ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"/>
-<table class="ui table">
+<table class="ui compact table">
     <g:each in="${roleLinks.sort{it.roleType.id}}" var="role">
         <g:if test="${role.org}">
             <g:set var="cssId" value="prsLinksModal-${role.org.id}-${role.roleType.id}" />
@@ -108,7 +108,7 @@
                                                 <div class="two wide column">
                                                     <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
                                                 </div>
-                                                <div class="twelve wide column">
+                                                <div class="thirteen wide column">
                                                     <div class="ui  label">
                                                         ${(RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)).getI10n('value')}
                                                     </div>
@@ -154,7 +154,7 @@
                                                             <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
                                                         </g:else>
                                                     </div>
-                                                    <div class="twelve wide column">
+                                                    <div class="thirteen wide column">
                                                         <div class="ui  label">
                                                             ${(RefdataValue.getByValueAndCategory('Technical Support', RDConstants.PERSON_FUNCTION)).getI10n('value')}
                                                         </div>
@@ -184,7 +184,7 @@
                                                             <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
                                                         </g:else>
                                                     </div>
-                                                    <div class="twelve wide column">
+                                                    <div class="thirteen wide column">
                                                         <div class="ui  label">
                                                             ${(RefdataValue.getByValueAndCategory('Service Support', RDConstants.PERSON_FUNCTION)).getI10n('value')}
                                                         </div>
@@ -214,7 +214,7 @@
                                                             <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
                                                         </g:else>
                                                     </div>
-                                                    <div class="twelve wide column">
+                                                    <div class="thirteen wide column">
                                                         <div class="ui  label">
                                                             ${(RefdataValue.getByValueAndCategory('Metadata Contact', RDConstants.PERSON_FUNCTION)).getI10n('value')}
                                                         </div>
@@ -240,7 +240,7 @@
                                                 <div class="two wide column">
                                                     <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
                                                 </div>
-                                                <div class="twelve wide column">
+                                                <div class="thirteen wide column">
                                                     <div class="ui  label">
                                                         ${(RefdataValue.getByValue(roleRespValue)).getI10n('value')}
                                                     </div>
@@ -292,7 +292,7 @@
                                                 <div class="two wide column">
                                                     <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
                                                 </div>
-                                                <div class="twelve wide column">
+                                                <div class="thirteen wide column">
                                                     <div class="ui  label">
                                                         ${(RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)).getI10n('value')}
                                                     </div>
@@ -318,7 +318,7 @@
                                                     <div class="two wide column">
                                                         <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
                                                     </div>
-                                                    <div class="twelve wide column">
+                                                    <div class="thirteen wide column">
                                                         <div class="ui  label">
                                                             ${(RefdataValue.getByValueAndCategory('Technical Support', RDConstants.PERSON_FUNCTION)).getI10n('value')}
                                                         </div>
@@ -343,7 +343,7 @@
                                                     <div class="two wide column">
                                                         <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
                                                     </div>
-                                                    <div class="twelve wide column">
+                                                    <div class="thirteen wide column">
                                                         <div class="ui  label">
                                                             ${(RefdataValue.getByValueAndCategory('Service Support', RDConstants.PERSON_FUNCTION)).getI10n('value')}
                                                         </div>
@@ -368,7 +368,7 @@
                                                     <div class="two wide column">
                                                         <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
                                                     </div>
-                                                    <div class="twelve wide column">
+                                                    <div class="thirteen wide column">
                                                         <div class="ui  label">
                                                             ${(RefdataValue.getByValueAndCategory('Metadata Contact', RDConstants.PERSON_FUNCTION)).getI10n('value')}
                                                         </div>
