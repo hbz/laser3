@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4761    13.01.2023  dev     3.1         Andreas Feature     Entknüpfen ohne Titel umgestellt auf Nur Titel entknüpfen
+
+4638    13.01.2023  dev     3.1         Andreas Feature     Umstrukturierung der Paketverwaltung
+
 4757    12.01.2023  rc-3.0  3.0.2       Moe     Feature     Titelumfrage: Reiter + Export Auswählbar ausblenden bei Dauerhafte Titel-Umfrage
 
 4756    12.01.2023  rc-3.0  3.0.2       Andreas Bug         Export der Lizenzen beschleunigt
