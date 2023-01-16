@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4770    16.01.2023  rc-3.0  3.0.3       Moe     Bug         500er Sortierung Bestand
+
 --      16.01.2023  rc-3.0  3.0.3       Moe     Bug         allgemeine Umfrage öffnen sich nicht mehr
 
 4757    12.01.2023  rc-3.0  3.0.2       Moe     Feature     Titelumfrage: Reiter + Export Auswählbar ausblenden bei Dauerhafte Titel-Umfrage
