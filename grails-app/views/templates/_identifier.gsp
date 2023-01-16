@@ -5,7 +5,7 @@
         <span class="item js-copyTriggerParent">
             <span class="ui small basic image label js-copyTrigger la-popup-tooltip la-delay" data-position="top center" data-content="${message(code: 'tooltip.clickToCopy', args: [title_id.ns.ns])}">
                 <i class="la-copy grey icon la-js-copyTriggerIcon"></i>
-                ${title_id.ns.ns}: <div class="detail js-copyTopic">${title_id.value}</div>
+                ${title_id.ns.ns}: <span class="detail js-copyTopic">${title_id.value}</span>
             </span>
         </span>
     </g:each>
