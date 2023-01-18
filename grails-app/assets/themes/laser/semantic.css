@@ -44252,6 +44252,7 @@ a .ui.circular.label:focus {
 }
 
 .ui.image.label .detail.js-copyTopic {
+  border: 1px solid rgba(34, 36, 38, 0.15);
   background: #004678;
   color: #FFFFFF;
   opacity: 1;
@@ -44260,6 +44261,20 @@ a .ui.circular.label:focus {
 .ui.image.label .detail.js-copyTopic:hover {
   background: #FFFFFF;
   color: #004678;
+}
+
+/* Identifier */
+
+.ui.list > .item.js-copyTriggerParent {
+  display: -webkit-box!important;
+  display: -ms-flexbox!important;
+  display: flex!important;
+}
+
+.ui.list > .item.js-copyTriggerParent .js-copyTrigger {
+  display: -webkit-inline-box !important;
+  display: -ms-inline-flexbox !important;
+  display: inline-flex !important;
 }
 /*!
  * # Fomantic-UI 2.8.8 - List

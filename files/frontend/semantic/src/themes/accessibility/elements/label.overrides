@@ -314,6 +314,7 @@ a .ui.circular.label {
   letter-spacing: 0.04em;
 }
 .ui.image.label .detail.js-copyTopic {
+  border: @basicBorder;
   background: @blue;
   color: @white;
   opacity:1;
@@ -321,4 +322,11 @@ a .ui.circular.label {
     background: @white;
     color: @blue;
   }
+}
+/* Identifier */
+.ui.list>.item.js-copyTriggerParent {
+    display:flex!important;
+    .js-copyTrigger{
+        display: inline-flex!important
+    }
 }

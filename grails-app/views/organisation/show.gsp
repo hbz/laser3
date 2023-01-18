@@ -531,9 +531,9 @@
                                     </g:each>
                                 </div>
                             </g:if>
-                            </dd>
-                        <g:if test="${isProviderOrAgency}">
-                            <dd>
+
+                            <g:if test="${isProviderOrAgency}">
+
                                 <div class="ui cards">
                                     <%
                                         List visiblePersons = addressbookService.getVisiblePersons("addressbook",[org: orgInstance, sort: 'p.last_name, p.first_name'])
