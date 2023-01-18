@@ -62,14 +62,17 @@
 									<td>
 										<div class="ui list">
 											<span class="item js-copyTriggerParent">
-												<span class="ui small basic image label js-copyTrigger la-popup-tooltip la-delay" data-position="top center" data-content="${message(code: 'globalUID.label')}">
+												<span class="ui small basic image label js-copyTrigger la-popup-tooltip la-delay"
+													  data-position="top center"
+													  data-content="${message(code: 'globalUID.label')}">
 													<i class="la-copy grey icon la-js-copyTriggerIcon"></i>
-													<g:message code="globalUID.label" />:
+													<g:message code="globalUID.label"/>:
 													<span class="detail js-copyTopic">
 														<g:fieldValue bean="${organisationInstance}" field="globalUID"/>
 														<g:if test="${organisationInstance.gokbId}">
-															<g:message code="org.wekbId.label" />:
-																<g:fieldValue bean="${organisationInstance}" field="gokbId"/>
+															<g:message code="org.wekbId.label"/>:
+															<g:fieldValue bean="${organisationInstance}"
+																		  field="gokbId"/>
 														</g:if>
 													</span>
 												</span>
