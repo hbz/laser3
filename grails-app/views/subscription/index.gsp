@@ -430,7 +430,7 @@
 
                                                     <!-- START TEMPLATE -->
                                                     <laser:render template="/templates/identifier"
-                                                                  model="${[ie: ie, tipp: ie.tipp]}"/>
+                                                                  model="${[tipp: ie.tipp]}"/>
                                                     <!-- END TEMPLATE -->
                                                 </div>
 

@@ -19,14 +19,8 @@
     <br/>
 </g:if>
 
-<g:each in="${tipp.ids.sort { it.ns.ns }}" var="title_id">
-    <span class="ui small basic image label" style="background: none">
-        ${title_id.ns.ns}: <div class="detail">${title_id.value}</div>
-    </span>
-</g:each>
-<!--                  ISSN:<strong>${tipp.getIdentifierValue('ISSN') ?: ' - '}</strong>,
-                  eISSN:<strong>${tipp.getIdentifierValue('eISSN') ?: ' - '}</strong><br />-->
-<br/>
+<laser:render template="/templates/identifier"
+              model="${[tipp: tipp]}"/>
 
 <g:if test="${!showCompact}">
     <br/>

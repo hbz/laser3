@@ -61,8 +61,8 @@
 									</td>
 									<td>
 										<div class="ui list">
-											<span class="item js-copyTriggerParent" style="display: flex">
-												<span class="ui small basic image label js-copyTrigger la-popup-tooltip la-delay" style="display: inline-flex!important" data-position="top center" data-content="${message(code: 'globalUID.label')}">
+											<span class="item js-copyTriggerParent">
+												<span class="ui small basic image label js-copyTrigger la-popup-tooltip la-delay" data-position="top center" data-content="${message(code: 'globalUID.label')}">
 													<i class="la-copy grey icon la-js-copyTriggerIcon"></i>
 													<g:message code="globalUID.label" />:
 													<span class="detail js-copyTopic">
@@ -77,7 +77,7 @@
 										</div>
 										
 										<laser:render template="/templates/identifier"
-													  model="${[ie: null, tipp: organisationInstance]}"/>
+													  model="${[tipp: organisationInstance]}"/>
 
 									</td>
 									<td>${organisationInstance.shortname}</td>

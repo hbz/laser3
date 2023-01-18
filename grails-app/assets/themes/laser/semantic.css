@@ -44262,6 +44262,20 @@ a .ui.circular.label:focus {
   background: #FFFFFF;
   color: #004678;
 }
+
+/* Identifier */
+
+.ui.list > .item.js-copyTriggerParent {
+  display: -webkit-box!important;
+  display: -ms-flexbox!important;
+  display: flex!important;
+}
+
+.ui.list > .item.js-copyTriggerParent .js-copyTrigger {
+  display: -webkit-inline-box !important;
+  display: -ms-inline-flexbox !important;
+  display: inline-flex !important;
+}
 /*!
  * # Fomantic-UI 2.8.8 - List
  * http://github.com/fomantic/Fomantic-UI/

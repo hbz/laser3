@@ -323,3 +323,10 @@ a .ui.circular.label {
     color: @blue;
   }
 }
+/* Identifier */
+.ui.list>.item.js-copyTriggerParent {
+    display:flex!important;
+    .js-copyTrigger{
+        display: inline-flex!important
+    }
+}
