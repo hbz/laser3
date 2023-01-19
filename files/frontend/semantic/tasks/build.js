@@ -88,6 +88,13 @@ function clear() {
 }
 
 module.exports = function (callback) {
+    console.info('Building Fomantic');
+
+    if (!install.isSetup()) {
+        console.error('Cannot find semantic.json. Run "gulp install" to set-up Fomantic');
+
+        return 1;
+    }
   // Tasks to define the execution of the functions simultaneously or in series
   parallel( series(clear, copyThemeLaser, 'build-css', copyOutputCssLaser, clear, copyThemeAccessibility, 'build-css', copyOutputCssAccessibility),
       series('build-javascript',copyJavascript),
