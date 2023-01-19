@@ -362,7 +362,7 @@ class StatusUpdateService extends AbstractLockableService {
                                         case 'update': covEntry.diffs.each { covDiff ->
                                             def oldValue, newValue
                                             if (covDiff.prop in PendingChange.DATE_FIELDS) {
-                                                SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+                                                SimpleDateFormat sdf = DateUtils.getSDF_yyyyMMdd()
                                                 newValue = (covDiff.newValue && covDiff.newValue instanceof Date) ? sdf.format(covDiff.newValue) : (covDiff.newValue ?: null)
                                                 oldValue = (covDiff.oldValue && covDiff.oldValue instanceof Date) ? sdf.format(covDiff.oldValue) : (covDiff.oldValue ?: null)
                                             }
@@ -386,7 +386,7 @@ class StatusUpdateService extends AbstractLockableService {
                                 default:
                                     def oldValue, newValue
                                     if (tippDiff.prop in PendingChange.DATE_FIELDS) {
-                                        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+                                        SimpleDateFormat sdf = DateUtils.getSDF_yyyyMMdd()
                                         newValue = (tippDiff.newValue && tippDiff.newValue instanceof Date) ? sdf.format(tippDiff.newValue) : (tippDiff.newValue ?: null)
                                         oldValue = (tippDiff.oldValue && tippDiff.oldValue instanceof Date) ? sdf.format(tippDiff.oldValue) : (tippDiff.oldValue ?: null)
                                     }
