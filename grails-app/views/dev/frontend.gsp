@@ -76,6 +76,8 @@
     <laser:render template="frontend_responsibleTable" />
     %{-- LABELS --}%
     <laser:render template="frontend_labels" />
+    %{-- FLYOUT --}%
+    <laser:render template="frontend_flyout" />
 </section>
 %{-- OFFENE FRAGEN WCAG  --}%
 <laser:render template="frontend_wcag" />
