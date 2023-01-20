@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4777    20.01.2023  rc-3.0  3.0.3       Moe     Bug         Verträge kopieren
+
 4770    16.01.2023  rc-3.0  3.0.3       Moe     Bug         500er Sortierung Bestand
 
 --      16.01.2023  rc-3.0  3.0.3       Moe     Bug         allgemeine Umfrage öffnen sich nicht mehr
