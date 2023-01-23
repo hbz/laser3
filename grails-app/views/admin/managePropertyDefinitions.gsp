@@ -192,6 +192,7 @@
 
         <laser:render template="/myInstitution/replacePropertyDefinition" model="[action: actionName]"/>
 
+%{--
         <ui:modal id="addPropertyDefinitionModal" message="propertyDefinition.create_new.label">
 
             <g:form class="ui form" id="create_cust_prop" url="[controller: 'ajax', action: 'addCustomPropertyType']" >
@@ -243,7 +244,6 @@
         </ui:modal>
 
 		<laser:script file="${this.getGroovyPageFileName()}">
-
             if( $( "#cust_prop_modal_select option:selected" ).val() == "${RefdataValue.class.name}") {
                 $("#cust_prop_ref_data_name").show();
             } else {
@@ -260,7 +260,6 @@
 			});
 
             c3po.refdataCatSearch('${createLink(controller:'ajaxJson', action:'lookup')}', '#cust_prop_refdatacatsearch');
-
 		</laser:script>
-
+--}%
 <laser:htmlEnd />

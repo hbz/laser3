@@ -49,6 +49,8 @@
 
 4733    02.01.2023  rc-3.0  3.0.1       Andreas Bug         Adressmodal war falsch verdrahtet
 
+4724    02.01.2023  dev     3.1         David   Feature     Javascript: Select2
+
 4438    29.12.2022  dev     3.1         Andreas Feature     Erweiterung des Vertragsfilters
 
 4730    28.12.2022  rc-3.0  3.0.1       Andreas Bug         Kostenausschüttung überschreibt Sichtbarkeitseinstellung trotz fehlender Eingabe

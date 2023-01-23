@@ -2,7 +2,7 @@
 
 <laser:htmlStart message="menu.institutions.private_props" serviceInjection="true"/>
 
-        <g:set var="entityName" value="${message(code: 'org.label')}" />
+    <g:set var="entityName" value="${message(code: 'org.label')}" />
 
     <ui:breadcrumbs>
         <ui:crumb message="menu.institutions.manage_props" class="active" />
@@ -29,8 +29,7 @@
             <g:each in="${propertyDefinitions}" var="entry">
                 <%
                     String active = ""
-                    if(desc == entry.key)
-                        active = "active"
+                    if (desc == entry.key) { active = "active" }
                 %>
                 <div class="${active} title">
                     <i class="dropdown icon"></i>
@@ -211,8 +210,9 @@
                     <%
                         Map<String,Object> availablePrivateDescr = [:]
                         Set<String> availablePrivDescs = PropertyDefinition.AVAILABLE_PRIVATE_DESCR
-                        if(institution.getCustomerType() == "ORG_INST")
-                            availablePrivDescs = PropertyDefinition.AVAILABLE_PRIVATE_DESCR-PropertyDefinition.SVY_PROP
+                        if (institution.getCustomerType() == "ORG_INST") {
+                            availablePrivDescs = PropertyDefinition.AVAILABLE_PRIVATE_DESCR - PropertyDefinition.SVY_PROP
+                        }
                         availablePrivDescs.each { String pd ->
                             availablePrivateDescr[pd] = message(code:"propertyDefinition.${pd}.label")
                         }
