@@ -6,9 +6,8 @@ c3po = {
     PROP_SEARCH_GROUPED: 'PROP_SEARCH_GROUPED',
 
     initProperties: function (ajaxurl, cssId, tenantId) {
-        // fallback for hardcoded id
         if (!cssId) {
-            cssId = "#custom_props_div"
+            cssId = "#custom_props_div" // fallback for hardcoded id
         }
         console.log ('c3po.initProperties( ' + ajaxurl + ', ' + cssId + ', ' + tenantId + ' )')
 
@@ -17,9 +16,8 @@ c3po = {
     },
 
     initGroupedProperties: function (ajaxurl, cssId, tenantId) {
-        // fallback for hardcoded id
         if (!cssId) {
-            cssId = "#custom_props_div"
+            cssId = "#custom_props_div" // fallback for hardcoded id
         }
         console.log ('c3po.initGroupedProperties( ' + ajaxurl + ', ' + cssId + ', ' + tenantId + ' )')
 
@@ -35,53 +33,30 @@ c3po = {
 
         $select.dropdown('destroy').dropdown({
             apiSettings: {
-                url: ajaxurl + appender + 'q={query}&baseClass=de.laser.RefdataCategory',
-
-                cache: false,
+                url     : ajaxurl + appender + 'q={query}&baseClass=de.laser.RefdataCategory',
+                cache   : false,
 
                 onResponse: function (response) {
                     console.log( response )
                     return { succes: true, values: response.values };
                 }
             },
-
             filterRemoteData: true,
             saveRemoteData: false,
             duration: 50,
 
             fields: {
                 remoteValues : 'values', // mapping: grouping for api results
-                // values       : 'values', // mapping: grouping for all dropdown values
                 name         : 'text',   // mapping: displayed dropdown text
                 value        : 'id',     // mapping: actual dropdown value
                 text         : 'text'    // mapping: displayed text when selected
             }
         })
 
-        // $("#remoteRefdataSearch").select2({
         //     placeholder: "Kategorie angeben ..",
-        //     language: JSPC.vars.locale,
-        //     minimumInputLength: 1,
-        //     allowClear: true,
         //     // formatInputTooShort: function () { return JSPC.dict.get('select2.minChars.note', JSPC.currLanguage); },
         //     // formatNoMatches:     function () { return JSPC.dict.get('select2.noMatchesFound', JSPC.currLanguage); },
         //     // formatSearching:     function () { return JSPC.dict.get('select2.formatSearching', JSPC.currLanguage); },
-        //
-        //     ajax: {
-        //         url: ajaxurl,
-        //         dataType: 'json',
-        //         data: function (p) {
-        //             return {
-        //                 q: p.term || '', // search term
-        //                 page_limit: 10,
-        //                 baseClass: 'de.laser.RefdataCategory'
-        //             };
-        //         },
-        //         processResults: function (data) {
-        //             return { results: data.values };
-        //         }
-        //     }
-        // });
     },
 
     remotePropertySearch: function (grouped, ajaxurl, cssId, tenantId) {
@@ -96,27 +71,24 @@ c3po = {
 
         $select.dropdown('destroy').dropdown({
             apiSettings: {
-                url: ajaxurl + appender + 'q={query}'+
-                    (oid ? '&oid=' + oid : '') +
-                    (baseClass ? '&baseClass=' + baseClass : '') +
-                    (desc ? '&desc=' + desc : '') +
-                    (tenantId ? '&tenant=' + tenantId : ''),
-
-                cache: false,
+                url     : ajaxurl + appender + 'q={query}'+
+                        (oid ? '&oid=' + oid : '') +
+                        (baseClass ? '&baseClass=' + baseClass : '') +
+                        (desc ? '&desc=' + desc : '') +
+                        (tenantId ? '&tenant=' + tenantId : ''),
+                cache   : false,
 
                 onResponse: function (response) {
                     console.log( response )
                     return { succes: true, values: response.values };
                 }
             },
-
             filterRemoteData: true,
             saveRemoteData: false,
             duration: 50,
 
             fields: {
                 remoteValues : 'values', // mapping: grouping for api results
-                // values       : 'values', // mapping: grouping for all dropdown values
                 name         : 'text',   // mapping: displayed dropdown text
                 value        : 'id',     // mapping: actual dropdown value
                 text         : 'text'    // mapping: displayed text when selected

@@ -722,14 +722,6 @@
                 console.log(JSPC);
                 why.info(false);
                 </g:if>
-
-                // workaround; remove if possible
-                // @ jquery 3.6+ & select2 4+
-                // select2 does not auto-focus because of jquerys focus handling @ https://blog.jquery.com/2021/03/02/jquery-3-6-0-released/
-
-                $(document).on('select2:open', () => {
-                    document.querySelector('.select2-search__field').focus();
-                });
             })
         </script>
     </body>

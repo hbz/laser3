@@ -135,7 +135,6 @@ r2d2 = {
         $.ajaxSetup({
             statusCode: {
                 401: function() {
-                    $('.select2-container').select2('close');
                     $('*[class^=xEditable]').editable('hide');
                     showAjaxLoginModal();
                 }
