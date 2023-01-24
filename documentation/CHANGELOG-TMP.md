@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4785    24.01.2023  dev     3.1         David   Feature     Javascript: Select2 durch Fomantic (remote) ersetzen
+
 4761    13.01.2023  dev     3.1         Andreas Feature     Entknüpfen ohne Titel umgestellt auf Nur Titel entknüpfen
 
 4638    13.01.2023  dev     3.1         Andreas Feature     Umstrukturierung der Paketverwaltung

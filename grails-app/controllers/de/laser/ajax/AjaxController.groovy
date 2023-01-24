@@ -293,9 +293,8 @@ class AjaxController {
      * @return a {@link List} of {@link Map}s of structure [value: oid, text: text] to be used in dropdowns; the list may be returned purely or as JSON
      */
     @Secured(['ROLE_USER'])
-    def select2RefdataSearch() {
-
-        log.debug("select2RefdataSearch params: ${params}")
+    def remoteRefdataSearch() {
+        log.debug("remoteRefdataSearch params: ${params}")
     
         List result = []
         Map<String, Object> config = refdata_config.get(params.id?.toString()) //we call toString in case we got a GString
@@ -374,14 +373,7 @@ class AjaxController {
           result.sort{ x,y -> x.text.compareToIgnoreCase y.text  }
       }
 
-        withFormat {
-            html {
-                result
-            }
-            json {
-                render result as JSON
-            }
-        }
+    render result as JSON
     }
 
     /**

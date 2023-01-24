@@ -228,7 +228,7 @@
 
                     <div class="field six wide hide" id="remoteRefdataSearchWrapper">
                         <label class="property-label"><g:message code="refdataCategory.label" /></label>
-                        <select class="ui search selection dropdown remoteRefdataSearch" name="refdatacategory" id="remoteRefdataSearch"></select>
+                        <select class="ui search selection dropdown remoteRefdataSearch" name="refdatacategory"></select>
                     </div>
                 </div>
 

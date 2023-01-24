@@ -28,35 +28,34 @@ c3po = {
     remoteRefdataSearch: function (ajaxurl, cssId) {
         console.log ('c3po.remoteRefdataSearch() ' + ajaxurl + ', ' + cssId + ' )')
 
-        let $select = $(cssId + " #remoteRefdataSearch")
+        let $select = $(cssId + " .remoteRefdataSearch")
         let appender = ajaxurl.indexOf('?') < 0 ? '?' : '&'
 
-        $select.dropdown('destroy').dropdown({
-            apiSettings: {
-                url     : ajaxurl + appender + 'q={query}&baseClass=de.laser.RefdataCategory',
-                cache   : false,
+        $select
+            .dropdown('destroy')
+            .dropdown({
+                apiSettings : {
+                    url     : ajaxurl + appender + 'q={query}&baseClass=de.laser.RefdataCategory',
+                    cache   : false,
 
-                onResponse: function (response) {
-                    console.log( response )
-                    return { succes: true, values: response.values };
-                }
-            },
-            filterRemoteData: true,
-            saveRemoteData: false,
-            duration: 50,
-
-            fields: {
-                remoteValues : 'values', // mapping: grouping for api results
-                name         : 'text',   // mapping: displayed dropdown text
-                value        : 'id',     // mapping: actual dropdown value
-                text         : 'text'    // mapping: displayed text when selected
-            }
-        })
-
-        //     placeholder: "Kategorie angeben ..",
-        //     // formatInputTooShort: function () { return JSPC.dict.get('select2.minChars.note', JSPC.currLanguage); },
-        //     // formatNoMatches:     function () { return JSPC.dict.get('select2.noMatchesFound', JSPC.currLanguage); },
-        //     // formatSearching:     function () { return JSPC.dict.get('select2.formatSearching', JSPC.currLanguage); },
+                    onResponse : function (response) {
+                        return { succes: true, values: response.values };
+                    }
+                },
+                fields : {
+                    remoteValues : 'values', // mapping: grouping for api results
+                    name         : 'text',   // mapping: displayed dropdown text
+                    value        : 'id',     // mapping: actual dropdown value
+                    text         : 'text'    // mapping: displayed text when selected
+                },
+                placeholder : JSPC.dict.get('select2.placeholder', JSPC.currLanguage),
+                message : {
+                    noResults : JSPC.dict.get('select2.noMatchesFound', JSPC.currLanguage)
+                },
+                duration : 50,
+                saveRemoteData : false,
+            })
+            .dropdown('restore placeholder text')
     },
 
     remotePropertySearch: function (grouped, ajaxurl, cssId, tenantId) {
@@ -69,31 +68,35 @@ c3po = {
         let baseClass = (grouped === c3po.PROP_SEARCH_GROUPED) ? 'de.laser.properties.PropertyDefinitionGroup' : 'de.laser.properties.PropertyDefinition'
         let appender  = ajaxurl.indexOf('?') < 0 ? '?' : '&'
 
-        $select.dropdown('destroy').dropdown({
-            apiSettings: {
-                url     : ajaxurl + appender + 'q={query}'+
-                        (oid ? '&oid=' + oid : '') +
-                        (baseClass ? '&baseClass=' + baseClass : '') +
-                        (desc ? '&desc=' + desc : '') +
-                        (tenantId ? '&tenant=' + tenantId : ''),
-                cache   : false,
+        $select
+            .dropdown('destroy')
+            .dropdown({
+                apiSettings : {
+                    url     : ajaxurl + appender + 'q={query}'+
+                            (oid ? '&oid=' + oid : '') +
+                            (baseClass ? '&baseClass=' + baseClass : '') +
+                            (desc ? '&desc=' + desc : '') +
+                            (tenantId ? '&tenant=' + tenantId : ''),
+                    cache   : false,
 
-                onResponse: function (response) {
-                    console.log( response )
-                    return { succes: true, values: response.values };
-                }
-            },
-            filterRemoteData: true,
-            saveRemoteData: false,
-            duration: 50,
-
-            fields: {
-                remoteValues : 'values', // mapping: grouping for api results
-                name         : 'text',   // mapping: displayed dropdown text
-                value        : 'id',     // mapping: actual dropdown value
-                text         : 'text'    // mapping: displayed text when selected
-            }
-        })
+                    onResponse : function (response) {
+                        return { succes: true, values: response.values };
+                    }
+                },
+                fields : {
+                    remoteValues : 'values', // mapping: grouping for api results
+                    name         : 'text',   // mapping: displayed dropdown text
+                    value        : 'id',     // mapping: actual dropdown value
+                    text         : 'text'    // mapping: displayed text when selected
+                },
+                placeholder : JSPC.dict.get('select2.placeholder', JSPC.currLanguage),
+                message : {
+                    noResults : JSPC.dict.get('select2.noMatchesFound', JSPC.currLanguage)
+                },
+                duration : 50,
+                saveRemoteData : false,
+            })
+            .dropdown('restore placeholder text')
     }
 }
 

@@ -138,7 +138,7 @@
                         <g:if test="${!(actionName?.contains('survey') || controllerName?.contains('survey'))}">
                             <div class="two fields" style="margin-bottom:0">
                                 <div class="field" style="margin-bottom:0">
-                                    <select class="ui search selection dropdown la-not-clearable remotePropertySearch" name="propIdent" data-desc="${prop_desc}"></select>
+                                    <select class="ui search selection dropdown remotePropertySearch" name="propIdent" data-desc="${prop_desc}"></select>
                                 </div>
                                 <div class="field" style="margin-bottom:0">
                                     <input type="submit" value="${message(code:'default.button.add.label')}" class="ui button js-wait-wheel"/>
