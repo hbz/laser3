@@ -228,7 +228,7 @@
 
                     <div class="field six wide hide" id="remoteRefdataSearchWrapper">
                         <label class="property-label"><g:message code="refdataCategory.label" /></label>
-                        <select id="remoteRefdataSearch" name="refdatacategory"></select>
+                        <select class="ui search selection dropdown remoteRefdataSearch" name="refdatacategory" id="remoteRefdataSearch"></select>
                     </div>
                 </div>
 
@@ -259,7 +259,7 @@
 				}
 			});
 
-            c3po.refdataCatSearch('${createLink(controller:'ajaxJson', action:'lookup')}', '#remoteRefdataSearch');
+            c3po.remoteRefdataSearch('${createLink(controller:'ajaxJson', action:'lookup')}', '#remoteRefdataSearchWrapper');
 		</laser:script>
 --}%
 <laser:htmlEnd />

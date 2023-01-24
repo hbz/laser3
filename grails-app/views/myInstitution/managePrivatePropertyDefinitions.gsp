@@ -244,7 +244,7 @@
             <div class="fields">
                 <div class="field hide" id="remoteRefdataSearchWrapper" style="width: 100%">
                     <label class="property-label"><g:message code="refdataCategory.label" /></label>
-                    <select id="remoteRefdataSearch" name="refdatacategory" style="width:100%"></select>
+                    <select class="ui search selection dropdown remoteRefdataSearch" name="refdatacategory" id="remoteRefdataSearch"></select>
 
                     <div class="ui grid" style="margin-top:1em">
                         <div class="ten wide column">
@@ -302,7 +302,7 @@
 
     $('#pd_type').trigger('change');
 
-        c3po.refdataCatSearch('${createLink(controller:'ajaxJson', action:'lookup')}', '#remoteRefdataSearch');
+        c3po.remoteRefdataSearch('${createLink(controller:'ajaxJson', action:'lookup')}', '#remoteRefdataSearchWrapper');
 
     </laser:script>
 

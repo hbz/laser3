@@ -12,9 +12,8 @@ c3po = {
         }
         console.log ('c3po.initProperties( ' + ajaxurl + ', ' + cssId + ', ' + tenantId + ' )')
 
-        c3po.refdataCatSearch(ajaxurl, cssId)
-        c3po.searchProp(c3po.PROP_SEARCH_NATIVE, ajaxurl, cssId, tenantId)
-        c3po.showHideRefData(cssId)
+        c3po.remoteRefdataSearch (ajaxurl, cssId)
+        c3po.remotePropertySearch (c3po.PROP_SEARCH_NATIVE, ajaxurl, cssId, tenantId)
     },
 
     initGroupedProperties: function (ajaxurl, cssId, tenantId) {
@@ -24,42 +23,69 @@ c3po = {
         }
         console.log ('c3po.initGroupedProperties( ' + ajaxurl + ', ' + cssId + ', ' + tenantId + ' )')
 
-        c3po.refdataCatSearch(ajaxurl, cssId)
-        c3po.searchProp(c3po.PROP_SEARCH_GROUPED, ajaxurl, cssId, tenantId)
-        c3po.showHideRefData(cssId)
+        c3po.remoteRefdataSearch (ajaxurl, cssId)
+        c3po.remotePropertySearch (c3po.PROP_SEARCH_GROUPED, ajaxurl, cssId, tenantId)
     },
 
-    refdataCatSearch: function (ajaxurl, cssId) {
-        console.log ('c3po.refdataCatSearch() ' + ajaxurl + ', ' + cssId + ' )')
+    remoteRefdataSearch: function (ajaxurl, cssId) {
+        console.log ('c3po.remoteRefdataSearch() ' + ajaxurl + ', ' + cssId + ' )')
 
-        $("#remoteRefdataSearch").select2({
-            placeholder: "Kategorie angeben ..",
-            language: JSPC.vars.locale,
-            minimumInputLength: 1,
-            allowClear: true,
-            // formatInputTooShort: function () { return JSPC.dict.get('select2.minChars.note', JSPC.currLanguage); },
-            // formatNoMatches:     function () { return JSPC.dict.get('select2.noMatchesFound', JSPC.currLanguage); },
-            // formatSearching:     function () { return JSPC.dict.get('select2.formatSearching', JSPC.currLanguage); },
+        let $select = $(cssId + " #remoteRefdataSearch")
+        let appender = ajaxurl.indexOf('?') < 0 ? '?' : '&'
 
-            ajax: {
-                url: ajaxurl,
-                dataType: 'json',
-                data: function (p) {
-                    return {
-                        q: p.term || '', // search term
-                        page_limit: 10,
-                        baseClass: 'de.laser.RefdataCategory'
-                    };
-                },
-                processResults: function (data) {
-                    return { results: data.values };
+        $select.dropdown('destroy').dropdown({
+            apiSettings: {
+                url: ajaxurl + appender + 'q={query}&baseClass=de.laser.RefdataCategory',
+
+                cache: false,
+
+                onResponse: function (response) {
+                    console.log( response )
+                    return { succes: true, values: response.values };
                 }
+            },
+
+            filterRemoteData: true,
+            saveRemoteData: false,
+            duration: 50,
+
+            fields: {
+                remoteValues : 'values', // mapping: grouping for api results
+                // values       : 'values', // mapping: grouping for all dropdown values
+                name         : 'text',   // mapping: displayed dropdown text
+                value        : 'id',     // mapping: actual dropdown value
+                text         : 'text'    // mapping: displayed text when selected
             }
-        });
+        })
+
+        // $("#remoteRefdataSearch").select2({
+        //     placeholder: "Kategorie angeben ..",
+        //     language: JSPC.vars.locale,
+        //     minimumInputLength: 1,
+        //     allowClear: true,
+        //     // formatInputTooShort: function () { return JSPC.dict.get('select2.minChars.note', JSPC.currLanguage); },
+        //     // formatNoMatches:     function () { return JSPC.dict.get('select2.noMatchesFound', JSPC.currLanguage); },
+        //     // formatSearching:     function () { return JSPC.dict.get('select2.formatSearching', JSPC.currLanguage); },
+        //
+        //     ajax: {
+        //         url: ajaxurl,
+        //         dataType: 'json',
+        //         data: function (p) {
+        //             return {
+        //                 q: p.term || '', // search term
+        //                 page_limit: 10,
+        //                 baseClass: 'de.laser.RefdataCategory'
+        //             };
+        //         },
+        //         processResults: function (data) {
+        //             return { results: data.values };
+        //         }
+        //     }
+        // });
     },
 
-    searchProp: function (grouped, ajaxurl, cssId, tenantId) {
-        console.log ('c3po.searchProp( ' + ajaxurl + ', ' + cssId + ', ' + tenantId + ' )')
+    remotePropertySearch: function (grouped, ajaxurl, cssId, tenantId) {
+        console.log ('c3po.remotePropertySearch( ' + ajaxurl + ', ' + cssId + ', ' + tenantId + ' )')
 
         let $select = $(cssId + " .remotePropertySearch")
         let desc    = $select.find('select').attr('data-desc')
@@ -79,10 +105,7 @@ c3po = {
                 cache: false,
 
                 onResponse: function (response) {
-                    // make some adjustments to response
-                    console.log( 'onResponse' )
                     console.log( response )
-
                     return { succes: true, values: response.values };
                 }
             },
@@ -99,19 +122,6 @@ c3po = {
                 text         : 'text'    // mapping: displayed text when selected
             }
         })
-    },
-
-    // TODO -refactoring
-    showHideRefData: function (cssId) {
-        console.log ('c3po.showHideRefData( ' + cssId + ' )')
-
-        $('#pd_type').change(function () {
-            if ($("#pd_type option:selected").val() === "de.laser.RefdataValue") {
-                $("#remoteRefdataSearchWrapper").show();
-            } else {
-                $("#remoteRefdataSearchWrapper").hide();
-            }
-        });
     }
 }
 
