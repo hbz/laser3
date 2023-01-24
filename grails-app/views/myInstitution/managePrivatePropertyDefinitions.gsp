@@ -222,13 +222,13 @@
                 </div>
 
                 <div class="field five wide required">
-                    <label class="property-label" for="cust_prop_modal_select"><g:message code="propertyDefinition.type.label" /> <g:message code="messageRequiredField" /></label>
+                    <label class="property-label" for="pd_type"><g:message code="propertyDefinition.type.label" /> <g:message code="messageRequiredField" /></label>
                     <g:select class="ui dropdown"
                         from="${PropertyDefinition.validTypes.entrySet()}"
                         optionKey="key" optionValue="${{PropertyDefinition.getLocalizedValue(it.key)}}"
                         noSelection="${[null:message(code:'default.select.choose.label')]}"
                         name="pd_type"
-                        id="cust_prop_modal_select" />
+                        id="pd_type" />
                 </div>
 
                 <div class="field four wide">
@@ -242,9 +242,9 @@
             </div>
 
             <div class="fields">
-                <div class="field hide" id="cust_prop_ref_data_name" style="width: 100%">
+                <div class="field hide" id="remoteRefdataSearchWrapper" style="width: 100%">
                     <label class="property-label"><g:message code="refdataCategory.label" /></label>
-                    <select id="cust_prop_refdatacatsearch" name="refdatacategory" style="width:100%"></select>
+                    <select id="remoteRefdataSearch" name="refdatacategory" style="width:100%"></select>
 
                     <div class="ui grid" style="margin-top:1em">
                         <div class="ten wide column">
@@ -281,13 +281,13 @@
     <laser:script file="${this.getGroovyPageFileName()}">
 
     $('#pd_descr').change(function() {
-        $('#cust_prop_modal_select').trigger('change');
+        $('#pd_type').trigger('change');
     });
 
-    $('#cust_prop_modal_select').change(function() {
-        var selectedText = $( "#cust_prop_modal_select option:selected" ).val();
+    $('#pd_type').change(function() {
+        var selectedText = $( "#pd_type option:selected" ).val();
         if( selectedText == "${RefdataValue.name}") {
-            $("#cust_prop_ref_data_name").show();
+            $("#remoteRefdataSearchWrapper").show();
 
             var $pMatch = $( "p[data-prop-def-desc='" + $( "#pd_descr option:selected" ).val() + "']" )
             if ($pMatch) {
@@ -296,13 +296,13 @@
             }
         }
         else {
-            $("#cust_prop_ref_data_name").hide();
+            $("#remoteRefdataSearchWrapper").hide();
         }
     });
 
-    $('#cust_prop_modal_select').trigger('change');
+    $('#pd_type').trigger('change');
 
-        c3po.refdataCatSearch('${createLink(controller:'ajaxJson', action:'lookup')}', '#cust_prop_refdatacatsearch');
+        c3po.refdataCatSearch('${createLink(controller:'ajaxJson', action:'lookup')}', '#remoteRefdataSearch');
 
     </laser:script>
 

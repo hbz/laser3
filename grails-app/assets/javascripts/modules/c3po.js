@@ -14,7 +14,6 @@ c3po = {
 
         c3po.refdataCatSearch(ajaxurl, cssId)
         c3po.searchProp(c3po.PROP_SEARCH_NATIVE, ajaxurl, cssId, tenantId)
-        // c3po.showModalOnSelect(cssId)
         c3po.showHideRefData(cssId)
     },
 
@@ -27,14 +26,13 @@ c3po = {
 
         c3po.refdataCatSearch(ajaxurl, cssId)
         c3po.searchProp(c3po.PROP_SEARCH_GROUPED, ajaxurl, cssId, tenantId)
-        // c3po.showModalOnSelect(cssId)
         c3po.showHideRefData(cssId)
     },
 
     refdataCatSearch: function (ajaxurl, cssId) {
         console.log ('c3po.refdataCatSearch() ' + ajaxurl + ', ' + cssId + ' )')
 
-        $("#cust_prop_refdatacatsearch").select2({
+        $("#remoteRefdataSearch").select2({
             placeholder: "Kategorie angeben ..",
             language: JSPC.vars.locale,
             minimumInputLength: 1,
@@ -63,7 +61,7 @@ c3po = {
     searchProp: function (grouped, ajaxurl, cssId, tenantId) {
         console.log ('c3po.searchProp( ' + ajaxurl + ', ' + cssId + ', ' + tenantId + ' )')
 
-        let $select = $(cssId + " .remotePropertySelect")
+        let $select = $(cssId + " .remotePropertySearch")
         let desc    = $select.find('select').attr('data-desc')
         let oid     = $select.find('select').attr('data-oid')
 
@@ -101,66 +99,17 @@ c3po = {
                 text         : 'text'    // mapping: displayed text when selected
             }
         })
-
-        // let desc = $(cssId + " .customPropSelect").attr('data-desc')
-        // let oid  = $(cssId + " .customPropSelect").attr('data-oid')
-        // $(cssId + " .customPropSelect").select2({
-        //     placeholder: JSPC.dict.get('property.select.placeholder', JSPC.currLanguage),
-        //     language: JSPC.vars.locale,
-        //     minimumInputLength: 0,
-        //     width: 300,
-        //     // formatSearching: function ()           { return JSPC.dict.get('property.select.searching', JSPC.currLanguage); },
-        //     // formatLoadMore:  function (pageNumber) { return JSPC.dict.get('property.select.loadMore', JSPC.currLanguage); },
-        //     // formatNoMatches: function ()           { return JSPC.dict.get('property.select.noMatches', JSPC.currLanguage); },
-        //
-        //     ajax: {
-        //         url: ajaxurl,
-        //         dataType: 'json',
-        //         data: function (p) {
-        //             return {
-        //                 q: p.term || '', // search term
-        //                 desc: desc,
-        //                 oid: oid,
-        //                 page_limit: 10,
-        //                 baseClass: baseClass,
-        //                 tenant: tenantId
-        //             };
-        //         },
-        //         processResults: function (data) {
-        //             return { results: data.values };
-        //         }
-        //     },
-        //     createSearchChoice: function (term, data) {
-        //         return null; // {id: -1, text: "Neue Eigenschaft: " + term};
-        //     }
-        // });
     },
-
-    // TODO -refactoring
-    // showModalOnSelect: function (cssId) {
-    //     console.log ('c3po.showModalOnSelect( ' + cssId + ' )')
-    //
-    //     $(cssId + " .customPropSelect").on("select2-selecting", function (e) {
-    //         if (e.val == -1) {
-    //             let selectedText = e.object.text;
-    //             selectedText = selectedText.replace("Neue Eigenschaft: ", "")
-    //             $("input[name='cust_prop_name']").val(selectedText);
-    //             $('#cust_prop_add_modal').modal('show');
-    //
-    //         }
-    //     });
-    // },
 
     // TODO -refactoring
     showHideRefData: function (cssId) {
         console.log ('c3po.showHideRefData( ' + cssId + ' )')
 
-        $('#cust_prop_modal_select').change(function () {
-            let selectedText = $("#cust_prop_modal_select option:selected").val();
-            if (selectedText == "de.laser.RefdataValue") {
-                $("#cust_prop_ref_data_name").show();
+        $('#pd_type').change(function () {
+            if ($("#pd_type option:selected").val() === "de.laser.RefdataValue") {
+                $("#remoteRefdataSearchWrapper").show();
             } else {
-                $("#cust_prop_ref_data_name").hide();
+                $("#remoteRefdataSearchWrapper").hide();
             }
         });
     }

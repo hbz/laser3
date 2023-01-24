@@ -219,16 +219,16 @@
                             from="${PropertyDefinition.validTypes.entrySet()}"
                             optionKey="key" optionValue="${{PropertyDefinition.getLocalizedValue(it.key)}}"
                             name="cust_prop_type"
-                            id="cust_prop_modal_select" />
+                            id="pd_type" />
                     </div>
                     <div class="field five wide">
                         <label class="property-label">${message(code:'propertyDefinition.expl.label')}</label>
                         <textarea name="cust_prop_expl" id="eust_prop_expl" class="ui textarea"></textarea>
                     </div>
 
-                    <div class="field six wide hide" id="cust_prop_ref_data_name">
+                    <div class="field six wide hide" id="remoteRefdataSearchWrapper">
                         <label class="property-label"><g:message code="refdataCategory.label" /></label>
-                        <select id="cust_prop_refdatacatsearch" name="refdatacategory"></select>
+                        <select id="remoteRefdataSearch" name="refdatacategory"></select>
                     </div>
                 </div>
 
@@ -244,22 +244,22 @@
         </ui:modal>
 
 		<laser:script file="${this.getGroovyPageFileName()}">
-            if( $( "#cust_prop_modal_select option:selected" ).val() == "${RefdataValue.class.name}") {
-                $("#cust_prop_ref_data_name").show();
+            if( $( "#pd_type option:selected" ).val() == "${RefdataValue.class.name}") {
+                $("#remoteRefdataSearchWrapper").show();
             } else {
-                 $("#cust_prop_ref_data_name").hide();
+                 $("#remoteRefdataSearchWrapper").hide();
             }
 
-			$('#cust_prop_modal_select').change(function() {
-				var selectedText = $( "#cust_prop_modal_select option:selected" ).val();
+			$('#pd_type').change(function() {
+				var selectedText = $( "#pd_type option:selected" ).val();
 				if( selectedText == "${RefdataValue.class.name}") {
-					$("#cust_prop_ref_data_name").show();
+					$("#remoteRefdataSearchWrapper").show();
 				}else{
-					$("#cust_prop_ref_data_name").hide();
+					$("#remoteRefdataSearchWrapper").hide();
 				}
 			});
 
-            c3po.refdataCatSearch('${createLink(controller:'ajaxJson', action:'lookup')}', '#cust_prop_refdatacatsearch');
+            c3po.refdataCatSearch('${createLink(controller:'ajaxJson', action:'lookup')}', '#remoteRefdataSearch');
 		</laser:script>
 --}%
 <laser:htmlEnd />
