@@ -218,8 +218,6 @@ assets {
             'bulma/**',
             'crypto-js-4.1.1/**',
             'echarts/**',
-            'select2/**/*.js',
-            'select2/**/*.css',
             'spring-websocket/**',
             'swagger-ui/**',
     ]

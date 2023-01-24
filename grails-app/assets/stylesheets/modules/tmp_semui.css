@@ -16,9 +16,6 @@
 .ui.main a[class~=button],.ui.main a[class~=button]:hover {
     border-bottom: none;
 }
-.ui.main .select2-container .select2-choice {
-    border-bottom: 1px solid #aaa;
-}
 
 /* form validation */
 .ui.form input:focus:invalid:focus,
@@ -56,18 +53,6 @@
 .ui.button > i.icon {
     /*margin-right: 0 !important;*/
     opacity: 1 !important;
-}
-/* select 2 */
-
-.ui .select2-container {
-    vertical-align: top;
-    width: inherit;
-}
-.ui .select2-container .select2-choice {
-    height: 36px;
-}
-.ui .select2-container .select2-choice > .select2-chosen {
-    line-height: 36px;
 }
 
 /* <type>Details/show */
@@ -112,8 +97,6 @@ body.myInstitution_dashboard .ui.tab .item .header {
 #mainSearch .input {
     height: 60%;
 }
-
-/* select2 helper @ finance */
 
 .la-full-width {
     width: 100%;

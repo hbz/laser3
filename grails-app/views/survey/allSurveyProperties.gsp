@@ -150,7 +150,7 @@
                           from="${PropertyDefinition.validTypes.entrySet()}"
                           optionKey="key" optionValue="${{ PropertyDefinition.getLocalizedValue(it.key) }}"
                           name="pd_type"
-                          id="cust_prop_modal_select"/>
+                          id="pd_type"/>
             </div>
 
             %{--<div class="field four wide">
@@ -165,9 +165,9 @@
         </div>
 
         <div class="fields">
-            <div class="field hide" id="cust_prop_ref_data_name" style="width: 100%">
+            <div class="field hide" id="remoteRefdataSearchWrapper" style="width: 100%">
                 <label class="property-label"><g:message code="refdataCategory.label"/></label>
-                <select name="refdatacategory" id="cust_prop_refdatacatsearch" style="width:100%;"></select>
+                <select class="ui search selection dropdown remoteRefdataSearch" name="refdatacategory"></select>
 
                 <div class="ui grid" style="margin-top:1em">
                     <div class="ten wide column">
@@ -205,28 +205,27 @@
 <laser:script file="${this.getGroovyPageFileName()}">
 
 $('#pd_descr').change(function() {
-    $('#cust_prop_modal_select').trigger('change');
+    $('#pd_type').trigger('change');
 });
 
-$('#cust_prop_modal_select').change(function() {
-var selectedText = $( "#cust_prop_modal_select option:selected" ).val();
-if( selectedText == "${RefdataValue.class.name}") {
-$("#cust_prop_ref_data_name").show();
+$('#pd_type').change(function() {
+    if( selectedText === $( "#pd_type option:selected" ).val()) {
+        $("#remoteRefdataSearchWrapper").show();
 
-var $pMatch = $( "p[data-prop-def-desc='" + $( "#pd_descr option:selected" ).val() + "']" )
-if ($pMatch) {
-$( "p[data-prop-def-desc]" ).addClass('hidden')
-$pMatch.removeClass('hidden')
-}
-}
-else {
-$("#cust_prop_ref_data_name").hide();
-}
+        var $pMatch = $( "p[data-prop-def-desc='" + $( "#pd_descr option:selected" ).val() + "']" )
+        if ($pMatch) {
+            $( "p[data-prop-def-desc]" ).addClass('hidden')
+            $pMatch.removeClass('hidden')
+        }
+    }
+    else {
+        $("#remoteRefdataSearchWrapper").hide();
+    }
 });
 
-$('#cust_prop_modal_select').trigger('change');
+$('#pd_type').trigger('change');
 
-c3po.refdataCatSearch('${createLink(controller:'ajaxJson', action:'lookup')}', '#cust_prop_refdatacatsearch');
+c3po.remoteRefdataSearch('${createLink(controller:'ajaxJson', action:'lookup')}', '#remoteRefdataSearchWrapper');
 
 $(".la-popup").popup({
 });
