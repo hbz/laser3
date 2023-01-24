@@ -14,7 +14,7 @@ c3po = {
 
         c3po.refdataCatSearch(ajaxurl, cssId)
         c3po.searchProp(c3po.PROP_SEARCH_NATIVE, ajaxurl, cssId, tenantId)
-        c3po.showModalOnSelect(cssId)
+        // c3po.showModalOnSelect(cssId)
         c3po.showHideRefData(cssId)
     },
 
@@ -27,7 +27,7 @@ c3po = {
 
         c3po.refdataCatSearch(ajaxurl, cssId)
         c3po.searchProp(c3po.PROP_SEARCH_GROUPED, ajaxurl, cssId, tenantId)
-        c3po.showModalOnSelect(cssId)
+        // c3po.showModalOnSelect(cssId)
         c3po.showHideRefData(cssId)
     },
 
@@ -63,61 +63,93 @@ c3po = {
     searchProp: function (grouped, ajaxurl, cssId, tenantId) {
         console.log ('c3po.searchProp( ' + ajaxurl + ', ' + cssId + ', ' + tenantId + ' )')
 
-        let desc = $(cssId + " .customPropSelect").attr('data-desc')
-        let oid  = $(cssId + " .customPropSelect").attr('data-oid')
+        let $select = $(cssId + " .remotePropertySelect")
+        let desc    = $select.find('select').attr('data-desc')
+        let oid     = $select.find('select').attr('data-oid')
 
-        let baseClass = 'de.laser.properties.PropertyDefinition'
+        let baseClass = (grouped === c3po.PROP_SEARCH_GROUPED) ? 'de.laser.properties.PropertyDefinitionGroup' : 'de.laser.properties.PropertyDefinition'
+        let appender  = ajaxurl.indexOf('?') < 0 ? '?' : '&'
 
-        if (grouped == c3po.PROP_SEARCH_GROUPED) {
-            baseClass = 'de.laser.properties.PropertyDefinitionGroup'
-        }
+        $select.dropdown('destroy').dropdown({
+            apiSettings: {
+                url: ajaxurl + appender + 'q={query}'+
+                    (oid ? '&oid=' + oid : '') +
+                    (baseClass ? '&baseClass=' + baseClass : '') +
+                    (desc ? '&desc=' + desc : '') +
+                    (tenantId ? '&tenant=' + tenantId : ''),
 
-        $(cssId + " .customPropSelect").select2({
-            placeholder: JSPC.dict.get('property.select.placeholder', JSPC.currLanguage),
-            language: JSPC.vars.locale,
-            minimumInputLength: 0,
-            width: 300,
-            // formatSearching: function ()           { return JSPC.dict.get('property.select.searching', JSPC.currLanguage); },
-            // formatLoadMore:  function (pageNumber) { return JSPC.dict.get('property.select.loadMore', JSPC.currLanguage); },
-            // formatNoMatches: function ()           { return JSPC.dict.get('property.select.noMatches', JSPC.currLanguage); },
+                cache: false,
 
-            ajax: {
-                url: ajaxurl,
-                dataType: 'json',
-                data: function (p) {
-                    return {
-                        q: p.term || '', // search term
-                        desc: desc,
-                        oid: oid,
-                        page_limit: 10,
-                        baseClass: baseClass,
-                        tenant: tenantId
-                    };
-                },
-                processResults: function (data) {
-                    return { results: data.values };
+                onResponse: function (response) {
+                    // make some adjustments to response
+                    console.log( 'onResponse' )
+                    console.log( response )
+
+                    return { succes: true, values: response.values };
                 }
             },
-            createSearchChoice: function (term, data) {
-                return null; // {id: -1, text: "Neue Eigenschaft: " + term};
+
+            filterRemoteData: true,
+            saveRemoteData: false,
+            duration: 50,
+
+            fields: {
+                remoteValues : 'values', // mapping: grouping for api results
+                // values       : 'values', // mapping: grouping for all dropdown values
+                name         : 'text',   // mapping: displayed dropdown text
+                value        : 'id',     // mapping: actual dropdown value
+                text         : 'text'    // mapping: displayed text when selected
             }
-        });
+        })
+
+        // let desc = $(cssId + " .customPropSelect").attr('data-desc')
+        // let oid  = $(cssId + " .customPropSelect").attr('data-oid')
+        // $(cssId + " .customPropSelect").select2({
+        //     placeholder: JSPC.dict.get('property.select.placeholder', JSPC.currLanguage),
+        //     language: JSPC.vars.locale,
+        //     minimumInputLength: 0,
+        //     width: 300,
+        //     // formatSearching: function ()           { return JSPC.dict.get('property.select.searching', JSPC.currLanguage); },
+        //     // formatLoadMore:  function (pageNumber) { return JSPC.dict.get('property.select.loadMore', JSPC.currLanguage); },
+        //     // formatNoMatches: function ()           { return JSPC.dict.get('property.select.noMatches', JSPC.currLanguage); },
+        //
+        //     ajax: {
+        //         url: ajaxurl,
+        //         dataType: 'json',
+        //         data: function (p) {
+        //             return {
+        //                 q: p.term || '', // search term
+        //                 desc: desc,
+        //                 oid: oid,
+        //                 page_limit: 10,
+        //                 baseClass: baseClass,
+        //                 tenant: tenantId
+        //             };
+        //         },
+        //         processResults: function (data) {
+        //             return { results: data.values };
+        //         }
+        //     },
+        //     createSearchChoice: function (term, data) {
+        //         return null; // {id: -1, text: "Neue Eigenschaft: " + term};
+        //     }
+        // });
     },
 
     // TODO -refactoring
-    showModalOnSelect: function (cssId) {
-        console.log ('c3po.showModalOnSelect( ' + cssId + ' )')
-
-        $(cssId + " .customPropSelect").on("select2-selecting", function (e) {
-            if (e.val == -1) {
-                let selectedText = e.object.text;
-                selectedText = selectedText.replace("Neue Eigenschaft: ", "")
-                $("input[name='cust_prop_name']").val(selectedText);
-                $('#cust_prop_add_modal').modal('show');
-
-            }
-        });
-    },
+    // showModalOnSelect: function (cssId) {
+    //     console.log ('c3po.showModalOnSelect( ' + cssId + ' )')
+    //
+    //     $(cssId + " .customPropSelect").on("select2-selecting", function (e) {
+    //         if (e.val == -1) {
+    //             let selectedText = e.object.text;
+    //             selectedText = selectedText.replace("Neue Eigenschaft: ", "")
+    //             $("input[name='cust_prop_name']").val(selectedText);
+    //             $('#cust_prop_add_modal').modal('show');
+    //
+    //         }
+    //     });
+    // },
 
     // TODO -refactoring
     showHideRefData: function (cssId) {

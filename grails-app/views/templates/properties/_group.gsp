@@ -283,7 +283,15 @@
                                   data-update="${custom_props_div}"
                                   data-done="c3po.initGroupedProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${custom_props_div}')">
 
-                        <select class="customPropSelect" name="propIdent" data-desc="${prop_desc}" data-oid="${genericOIDService.getOID(propDefGroup)}"></select>
+                        <div class="two fields" style="margin-bottom:0">
+                            <div class="field" style="margin-bottom:0">
+                                <select class="ui search selection dropdown la-not-clearable remotePropertySelect" name="propIdent" data-desc="${prop_desc}" data-oid="${genericOIDService.getOID(propDefGroup)}"></select>
+                            </div>
+                            <div class="field" style="margin-bottom:0">
+                                <input type="submit" value="${message(code:'default.button.add.label')}" class="ui button js-wait-wheel"/>
+                            </div>
+                        </div>
+
                         <input type="hidden" name="ownerId" value="${ownobj.id}"/>
                         <input type="hidden" name="editable" value="${editable}"/>
                         <input type="hidden" name="showConsortiaFunctions" value="${showConsortiaFunctions}"/>
@@ -291,8 +299,6 @@
                         <input type="hidden" name="propDefGroup" value="${genericOIDService.getOID(propDefGroup)}"/>
                         <input type="hidden" name="propDefGroupBinding" value="${genericOIDService.getOID(propDefGroupBinding)}"/>
                         <input type="hidden" name="custom_props_div" value="${custom_props_div}"/>
-
-                        <input type="submit" value="${message(code:'default.button.add.label')}" class="ui button js-wait-wheel"/>
                     </ui:remoteForm>
 
                 </td>
