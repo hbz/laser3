@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore" %>
+<%@ page import="de.laser.utils.AppUtils; de.laser.storage.RDStore" %>
 <laser:serviceInjection/>
 
 <g:if test="${accessService.checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN')}">
@@ -21,8 +21,16 @@
                 <div class="divider"></div>
 
                 <g:if test="${workflowService.hasUserPerm_init()}"><!-- TODO: workflows-permissions -->
-                    <g:if test="${inContextOrg || isProviderOrAgency}">
-                        <ui:actionsDropdownItem message="workflow.instantiate" data-ui="modal" href="#modalInstantiateWorkflow" />
+
+                    <g:if test="${inContextOrg}">
+                        <ui:actionsDropdownItem message="workflow.light.instantiate" data-ui="modal" href="#modalInstantiateWorkflowLight" />
+                    </g:if>
+                    <g:if test="${AppUtils.getCurrentServer() in [AppUtils.DEV, AppUtils.LOCAL]}">
+                        <g:if test="${inContextOrg || isProviderOrAgency}">%{-- preserve constraint --}%
+                            <ui:actionsDropdownItem message="workflow.instantiate" data-ui="modal" href="#modalInstantiateWorkflow" />
+                        </g:if>
+                    </g:if>
+                    <g:if test="${inContextOrg || (AppUtils.getCurrentServer() in [AppUtils.DEV, AppUtils.LOCAL] && isProviderOrAgency)}">
                         <div class="divider"></div>
                     </g:if>
                 </g:if>
@@ -51,7 +59,10 @@
             </g:if>
             <g:if test="${actionName == 'workflows'}">
                 <g:if test="${workflowService.hasUserPerm_init()}"><!-- TODO: workflows-permissions -->
-                    <g:if test="${inContextOrg || isProviderOrAgency}">
+                    <g:if test="${inContextOrg}">
+                        <ui:actionsDropdownItem message="workflow.light.instantiate" data-ui="modal" href="#modalInstantiateWorkflowLight" />
+                    </g:if>
+                    <g:if test="${AppUtils.getCurrentServer() in [AppUtils.DEV, AppUtils.LOCAL] && (inContextOrg || isProviderOrAgency)}">
                         <ui:actionsDropdownItem message="workflow.instantiate" data-ui="modal" href="#modalInstantiateWorkflow" />
                     </g:if>
                 </g:if>
@@ -140,10 +151,15 @@
 
 <g:if test="${workflowService.hasUserPerm_init()}"><!-- TODO: workflows-permissions -->
     <g:if test="${inContextOrg}">
-        <laser:render template="/templates/workflow/instantiate" model="${[cmd: RDStore.WF_WORKFLOW_TARGET_TYPE_INSTITUTION, target: orgInstance]}"/>
+        <laser:render template="/templates/workflow/light/instantiate" model="${[cmd: RDStore.WF_WORKFLOW_TARGET_TYPE_INSTITUTION, target: orgInstance]}"/>
     </g:if>
-    <g:if test="${isProviderOrAgency}">
-        <laser:render template="/templates/workflow/instantiate" model="${[cmd: RDStore.WF_WORKFLOW_TARGET_TYPE_PROVIDER, target: orgInstance]}"/>
+    <g:if test="${AppUtils.getCurrentServer() in [AppUtils.DEV, AppUtils.LOCAL]}">
+        <g:if test="${inContextOrg}">
+            <laser:render template="/templates/workflow/instantiate" model="${[cmd: RDStore.WF_WORKFLOW_TARGET_TYPE_INSTITUTION, target: orgInstance]}"/>
+        </g:if>
+        <g:if test="${isProviderOrAgency}">
+            <laser:render template="/templates/workflow/instantiate" model="${[cmd: RDStore.WF_WORKFLOW_TARGET_TYPE_PROVIDER, target: orgInstance]}"/>
+        </g:if>
     </g:if>
 </g:if>
 

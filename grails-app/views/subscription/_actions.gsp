@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Subscription; de.laser.Links; de.laser.interfaces.CalculatedType; de.laser.OrgRole; de.laser.Org; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.SubscriptionPackage" %>
+<%@ page import="de.laser.utils.AppUtils; de.laser.Subscription; de.laser.Links; de.laser.interfaces.CalculatedType; de.laser.OrgRole; de.laser.Org; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.SubscriptionPackage" %>
 
 <laser:serviceInjection />
 <g:set var="actionStart" value="${System.currentTimeMillis()}"/>
@@ -79,7 +79,10 @@
         <div class="divider"></div>
         <g:if test="${editable}">
             <g:if test="${workflowService.hasUserPerm_init()}"><!-- TODO: workflows-permissions -->
-                <ui:actionsDropdownItem message="workflow.instantiate" data-ui="modal" href="#modalInstantiateWorkflow" />
+                <ui:actionsDropdownItem message="workflow.light.instantiate" data-ui="modal" href="#modalInstantiateWorkflowLight" />
+                <g:if test="${AppUtils.getCurrentServer() in [AppUtils.DEV, AppUtils.LOCAL]}">
+                    <ui:actionsDropdownItem message="workflow.instantiate" data-ui="modal" href="#modalInstantiateWorkflow" />
+                </g:if>
                 <div class="divider"></div>
             </g:if>
         <g:if test="${(contextCustomerType == 'ORG_INST' && subscription._getCalculatedType() == Subscription.TYPE_LOCAL) || (contextCustomerType == "ORG_CONSORTIUM" && subscription._getCalculatedType() == Subscription.TYPE_CONSORTIAL)}">
@@ -205,5 +208,8 @@
     <laser:render template="/templates/notes/modal_create" model="${[ownobj: subscription, owntp: 'subscription']}"/>
 </g:if>
 <g:if test="${workflowService.hasUserPerm_init()}"><!-- TODO: workflows-permissions -->
-    <laser:render template="/templates/workflow/instantiate" model="${[cmd: RDStore.WF_WORKFLOW_TARGET_TYPE_SUBSCRIPTION, target: subscription]}"/>
+    <laser:render template="/templates/workflow/light/instantiate" model="${[cmd: RDStore.WF_WORKFLOW_TARGET_TYPE_SUBSCRIPTION, target: subscription]}"/>
+    <g:if test="${AppUtils.getCurrentServer() in [AppUtils.DEV, AppUtils.LOCAL]}">
+        <laser:render template="/templates/workflow/instantiate" model="${[cmd: RDStore.WF_WORKFLOW_TARGET_TYPE_SUBSCRIPTION, target: subscription]}"/>
+    </g:if>
 </g:if>
