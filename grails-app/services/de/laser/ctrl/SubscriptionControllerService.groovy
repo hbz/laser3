@@ -30,6 +30,8 @@ import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
 import de.laser.workflow.WfWorkflow
+import de.laser.workflow.light.WfChecklist
+import de.laser.workflow.light.WfCheckpoint
 import grails.converters.JSON
 import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5Report
@@ -43,7 +45,6 @@ import org.apache.commons.lang3.StringEscapeUtils
 import org.apache.commons.lang3.RandomStringUtils
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
-import org.hibernate.SessionFactory
 import org.grails.orm.hibernate.cfg.GrailsDomainBinder
 import org.grails.orm.hibernate.cfg.PropertyConfig
 import org.springframework.context.MessageSource
@@ -59,7 +60,6 @@ import java.time.LocalDate
 import java.time.Year
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.time.temporal.TemporalAdjusters
 import java.util.concurrent.ExecutorService
 
 /**
@@ -93,10 +93,10 @@ class SubscriptionControllerService {
     PackageService packageService
     PendingChangeService pendingChangeService
     PropertyService propertyService
-    SessionFactory sessionFactory
     SubscriptionService subscriptionService
     SurveyService surveyService
     TaskService taskService
+    WorkflowLightService workflowLightService
     WorkflowService workflowService
 
     //-------------------------------------- general or ungroupable section -------------------------------------------
@@ -3860,11 +3860,17 @@ class SubscriptionControllerService {
 
         if (params.cmd) {
             String[] cmd = params.cmd.split(':')
-            if (cmd[0] in ['edit']) {
-                result.putAll( workflowService.cmd(params) ) // @ workflows
+
+            if (cmd[1] in [WfChecklist.KEY, WfCheckpoint.KEY] ) { // light
+                result.putAll( workflowLightService.cmd(params) ) // @ workflows
             }
             else {
-                result.putAll( workflowService.usage(params) ) // @ workflows
+                if (cmd[0] in ['edit']) {
+                    result.putAll( workflowService.cmd(params) ) // @ workflows
+                }
+                else {
+                    result.putAll( workflowService.usage(params) ) // @ workflows
+                }
             }
         }
         if (params.info) {

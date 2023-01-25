@@ -8,6 +8,8 @@ import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.LocaleUtils
 import de.laser.workflow.WfWorkflow
+import de.laser.workflow.light.WfChecklist
+import de.laser.workflow.light.WfCheckpoint
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -32,6 +34,7 @@ class OrganisationControllerService {
     LinksGenerationService linksGenerationService
     MessageSource messageSource
     TaskService taskService
+    WorkflowLightService workflowLightService
     WorkflowService workflowService
 
     //---------------------------------------- linking section -------------------------------------------------
@@ -158,11 +161,17 @@ class OrganisationControllerService {
 
         if (params.cmd) {
             String[] cmd = params.cmd.split(':')
-            if (cmd[0] in ['edit']) {
-                result.putAll( workflowService.cmd(params) ) // @ workflows
+
+            if (cmd[1] in [WfChecklist.KEY, WfCheckpoint.KEY] ) { // light
+                result.putAll( workflowLightService.cmd(params) ) // @ workflows
             }
             else {
-                result.putAll( workflowService.usage(params) ) // @ workflows
+                if (cmd[0] in ['edit']) {
+                    result.putAll( workflowService.cmd(params) ) // @ workflows
+                }
+                else {
+                    result.putAll( workflowService.usage(params) ) // @ workflows
+                }
             }
         }
         if (params.info) {

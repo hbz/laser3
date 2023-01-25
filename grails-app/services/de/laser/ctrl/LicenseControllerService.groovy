@@ -5,6 +5,8 @@ import de.laser.auth.User
 import de.laser.utils.SwissKnife
 import de.laser.interfaces.CalculatedType
 import de.laser.workflow.WfWorkflow
+import de.laser.workflow.light.WfChecklist
+import de.laser.workflow.light.WfCheckpoint
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 
@@ -23,7 +25,9 @@ class LicenseControllerService {
     DocstoreService docstoreService
     LinksGenerationService linksGenerationService
     TaskService taskService
+    WorkflowLightService workflowLightService
     WorkflowService workflowService
+
 
     //--------------------------------------------- workflows -------------------------------------------------
 
@@ -32,11 +36,17 @@ class LicenseControllerService {
 
         if (params.cmd) {
             String[] cmd = params.cmd.split(':')
-            if (cmd[0] in ['edit']) {
-                result.putAll( workflowService.cmd(params) ) // @ workflows
+
+            if (cmd[1] in [WfChecklist.KEY, WfCheckpoint.KEY] ) { // light
+                result.putAll( workflowLightService.cmd(params) ) // @ workflows
             }
             else {
-                result.putAll( workflowService.usage(params) ) // @ workflows
+                if (cmd[0] in ['edit']) {
+                    result.putAll( workflowService.cmd(params) ) // @ workflows
+                }
+                else {
+                    result.putAll( workflowService.usage(params) ) // @ workflows
+                }
             }
         }
         if (params.info) {
