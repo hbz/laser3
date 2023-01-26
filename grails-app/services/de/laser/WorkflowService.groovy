@@ -24,45 +24,6 @@ class WorkflowService {
     public static final String OP_STATUS_ERROR = 'OP_STATUS_ERROR'
 
     /**
-     * Subclass to parse parameters
-     */
-    class ParamsHelper {
-
-        ParamsHelper(String cmpKey, GrailsParameterMap params) {
-            this.cmpKey = cmpKey + '_'
-            this.params = params
-        }
-
-        String cmpKey
-        GrailsParameterMap params
-
-        boolean containsKey(String key) {
-            params.containsKey(cmpKey + key)
-        }
-
-        String getString(String key) {
-            params.get(cmpKey + key) ? params.get(cmpKey + key).toString().trim() : null
-        }
-        Long getLong(String key) {
-            params.long(cmpKey + key)
-        }
-        Integer getInt(String key) {
-            params.int(cmpKey + key)
-        }
-        Date getDate(String key) {
-            params.get(cmpKey + key) ? DateUtils.parseDateGeneric(params.get(cmpKey + key) as String) : null
-        }
-        DocContext getDocContext(String key) {
-            Long id = getLong(key)
-            DocContext.findById(id)
-        }
-        RefdataValue getRefdataValue(String key) {
-            Long id = getLong(key)
-            RefdataValue.findById(id)
-        }
-    }
-
-    /**
      * Gets a parameter helper instance
      * @param cmpKey the key for the parameter
      * @param params the request parameter map
@@ -78,7 +39,7 @@ class WorkflowService {
      * @param params the request parameter map
      * @return the call result map, depending on the call
      */
-    Map<String, Object> cmd(GrailsParameterMap params) {
+    Map<String, Object> cmd(GrailsParameterMap params) { // create, edit, delete
         log.debug('cmd() ' + params)
         Map<String, Object> result = [:]
 
@@ -277,7 +238,7 @@ class WorkflowService {
         log.debug( 'internalEditWorkflow() ' + wf.toString() )
         String[] cmd = (params.cmd as String).split(':')
 
-        ParamsHelper ph = new ParamsHelper( cmd[1], params )
+        ParamsHelper ph = getNewParamsHelper( cmd[1], params )
 
         if (cmd[1] == WfWorkflowPrototype.KEY) {
             wf = wf as WfWorkflowPrototype
@@ -320,7 +281,7 @@ class WorkflowService {
         log.debug( 'internalEditTask() ' + task.toString() )
         String[] cmd = (params.cmd as String).split(':')
 
-        ParamsHelper ph = new ParamsHelper( cmd[1], params )
+        ParamsHelper ph = getNewParamsHelper( cmd[1], params )
 
         if (cmd[1] == WfTaskPrototype.KEY) {
             task = task as WfTaskPrototype
@@ -378,7 +339,7 @@ class WorkflowService {
         log.debug( 'internalEditCondition() ' + condition.toString() )
         String[] cmd = (params.cmd as String).split(':')
 
-        ParamsHelper ph = new ParamsHelper( cmd[1], params )
+        ParamsHelper ph = getNewParamsHelper( cmd[1], params )
 
         Closure resetValuesAndMeta = { WfConditionBase wfc ->
 
@@ -489,7 +450,6 @@ class WorkflowService {
                         result.status = OP_STATUS_ERROR
 
                         log.debug( 'instantiateCompleteWorkflow() -> ' + result.workflow.getErrors().toString() )
-
                         log.debug( 'TransactionStatus.setRollbackOnly()' )
                         ts.setRollbackOnly()
                     }
@@ -534,7 +494,6 @@ class WorkflowService {
                         result.status = OP_STATUS_ERROR
 
                         log.debug( 'removeCompleteWorkflow() -> ' + result.workflow.getErrors().toString() )
-
                         log.debug( 'TransactionStatus.setRollbackOnly(A)' )
                         ts.setRollbackOnly()
                     }
@@ -563,7 +522,7 @@ class WorkflowService {
      * @param params the request parameter map
      * @return a result containing the execution result
      */
-    Map<String, Object> usage(GrailsParameterMap params) {
+    Map<String, Object> usage(GrailsParameterMap params) { // instantiate, usage, delete
         log.debug('usage() ' + params)
         String[] cmd = (params.cmd as String).split(':')
 
