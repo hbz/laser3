@@ -178,6 +178,9 @@ class OrganisationControllerService {
             result.info = params.info // @ currentWorkflows @ dashboard
         }
 
+        result.checklists = workflowLightService.sortByLastUpdated( WfChecklist.findAllByOrgAndOwner(result.orgInstance as Org, result.contextOrg as Org) )
+        result.checklistCount = result.checklists.size()
+
         result.workflows = workflowService.sortByLastUpdated( WfWorkflow.findAllByOrgAndOwner(result.orgInstance as Org, result.contextOrg as Org) )
         result.workflowCount = result.workflows.size()
 

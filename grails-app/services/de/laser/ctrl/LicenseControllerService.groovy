@@ -53,6 +53,9 @@ class LicenseControllerService {
             result.info = params.info // @ currentWorkflows @ dashboard
         }
 
+        result.checklists = workflowLightService.sortByLastUpdated( WfChecklist.findAllByLicenseAndOwner(result.license as License, result.contextOrg as Org) )
+        result.checklistCount = result.checklists.size()
+
         result.workflows = workflowService.sortByLastUpdated( WfWorkflow.findAllByLicenseAndOwner(result.license as License, result.contextOrg as Org) )
         result.workflowCount = result.workflows.size()
 

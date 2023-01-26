@@ -3877,6 +3877,9 @@ class SubscriptionControllerService {
             result.info = params.info // @ currentWorkflows @ dashboard
         }
 
+        result.checklists = workflowLightService.sortByLastUpdated( WfChecklist.findAllBySubscriptionAndOwner(result.subscription as Subscription, result.contextOrg as Org) )
+        result.checklistCount = result.checklists.size()
+
         result.workflows = workflowService.sortByLastUpdated( WfWorkflow.findAllBySubscriptionAndOwner(result.subscription as Subscription, result.contextOrg as Org) )
         result.workflowCount = result.workflows.size()
 

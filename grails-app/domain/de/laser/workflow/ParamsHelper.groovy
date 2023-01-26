@@ -2,6 +2,7 @@ package de.laser.workflow
 
 import de.laser.DocContext
 import de.laser.RefdataValue
+import de.laser.storage.BeanStore
 import de.laser.utils.DateUtils
 import grails.web.servlet.mvc.GrailsParameterMap
 
@@ -32,6 +33,8 @@ class ParamsHelper {
         params.get(cmpKey + key) ? DateUtils.parseDateGeneric(params.get(cmpKey + key) as String) : null
     }
 
+    // --
+
     DocContext getDocContext(String key) {
         Long id = getLong(key)
         DocContext.findById(id)
@@ -40,5 +43,11 @@ class ParamsHelper {
     RefdataValue getRefdataValue(String key) {
         Long id = getLong(key)
         RefdataValue.findById(id)
+    }
+
+    // --
+
+    def getTarget() {
+        params.get('target') ? BeanStore.getGenericOIDService().resolveOID(params.target) : null
     }
 }

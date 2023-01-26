@@ -44,13 +44,31 @@ class WfChecklist {
         org              (nullable: true)
     }
 
-    Set<WfCheckpoint> getSequence() {
-        WfCheckpoint.executeQuery('select cp from WfCheckpoint cp where cp.checklist = :cl order by cp.position', [cl: this]) as Set<WfCheckpoint>
+    WfCheckpoint instantiate(Object target) throws Exception {
+
     }
 
     void remove() throws Exception {
         WfCheckpoint.executeUpdate('delete from WfCheckpoint cp where cp.checklist = :cl', [cl: this])
         this.delete()
+    }
+
+    Set<WfCheckpoint> getSequence() {
+        WfCheckpoint.executeQuery('select cp from WfCheckpoint cp where cp.checklist = :cl order by cp.position', [cl: this]) as Set<WfCheckpoint>
+    }
+
+    Map<String, Object> getInfo() {
+
+        Map<String, Object> info = [
+                lastUpdated: lastUpdated
+        ]
+
+        getSequence().each {cpoint ->
+            // TODO
+            if (cpoint.lastUpdated > info.lastUpdated) { info.lastUpdated = cpoint.lastUpdated }
+        }
+
+        info
     }
 
     static Set<WfChecklist> getAllChecklistsByOwnerAndObj(Org owner, def obj) {

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.WorkflowService; de.laser.workflow.*; de.laser.utils.DateUtils; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.utils.AppUtils; de.laser.WorkflowService; de.laser.workflow.*; de.laser.utils.DateUtils; de.laser.storage.RDStore" %>
 <laser:serviceInjection />
 
 <g:if test="${status == WorkflowService.OP_STATUS_DONE}">
@@ -17,6 +17,40 @@
         <ui:msg class="negative" message="workflow.edit.error" />
     </g:else>
 </g:elseif>
+
+<table class="ui celled table la-js-responsive-table la-table">
+    <thead>
+        <tr>
+            <th class="one wide" scope="col" rowspan="2">${message(code:'default.status.label')}</th>
+            <th class="six wide" scope="col" rowspan="2">${message(code:'workflow.label')}</th>
+            <th class="five wide" scope="col" rowspan="2">${message(code:'default.progress.label')}</th>
+            <th class="two wide la-smaller-table-head" scope="col" >${message(code:'default.lastUpdated.label')}</th>
+            <th class="two wide" scope="col" rowspan="2">${message(code:'default.actions.label')}</th>
+        </tr>
+        <tr>
+            <th class="two wide la-smaller-table-head" scope="col" >${message(code:'default.dateCreated.label')}</th>
+        <tr>
+    </thead>
+    <tbody>
+        <g:each in="${checklists}" var="clist">
+            <g:set var="clistInfo" value="${clist.getInfo()}" />
+            <tr>
+                <td> </td>
+                <td> ${clist} </td>
+                <td> ${clist.getSequence()} </td>
+                <td>
+                    ${DateUtils.getLocalizedSDF_noTime().format(clistInfo.lastUpdated)}
+                    <br />
+                    ${DateUtils.getLocalizedSDF_noTime().format(clist.dateCreated)}
+                </td>
+                <td> </td>
+        </g:each>
+    </tbody>
+</table>
+
+<g:if test="${AppUtils.getCurrentServer() in [AppUtils.DEV, AppUtils.LOCAL]}">
+
+<br />
 
 <table class="ui celled table la-js-responsive-table la-table">
     <thead>
@@ -109,3 +143,5 @@
         }
     </g:else>
 </laser:script>
+
+</g:if> %{-- [AppUtils.DEV, AppUtils.LOCAL] --}%
