@@ -43,8 +43,6 @@
                     <g:if test="${clist.description}">
                         <br /> ${clist.description}
                     </g:if>
-                    <br />
-                    ${clistInfo}
                 </td>
                 <td>
                     <div class="ui buttons">
