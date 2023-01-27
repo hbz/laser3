@@ -29,7 +29,7 @@
         </g:else>
     </g:if>
     <g:if test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
-        <ui:subNavItem controller="organisation" action="workflows" counts="${workflowCount}" params="${[id:params.id]}" message="workflow.plural" />
+        <ui:subNavItem controller="organisation" action="workflows" counts="${workflowCount || checklistCount ? workflowCount + checklistCount : null}" params="${[id:params.id]}" message="workflow.plural" />
     </g:if>
 
     <ui:securedSubNavItem controller="organisation" action="tasks" params="${breadcrumbParams}" counts="${tasksCount}" affiliation="INST_USER" orgPerm="ORG_INST,ORG_CONSORTIUM" message="menu.institutions.tasks"/>

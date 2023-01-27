@@ -297,12 +297,9 @@ class OrganisationControllerService {
         int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.orgInstance).size()
         result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
 
-        result.notesCount = docstoreService.getNotes(result.orgInstance, result.contextOrg).size()
-
-        result.workflowCount = WfWorkflow.executeQuery(
-                'select count(wf) from WfWorkflow wf where wf.org = :org and wf.owner = :ctxOrg',
-                [org: result.orgInstance, ctxOrg: result.contextOrg]
-        )[0]
+        result.notesCount       = docstoreService.getNotes(result.orgInstance, result.contextOrg).size()
+        result.workflowCount    = workflowService.getWorkflowCount(result.orgInstance, result.contextOrg)
+        result.checklistCount   = workflowLightService.getWorkflowCount(result.orgInstance, result.contextOrg)
 
         result.links = linksGenerationService.getOrgLinks(result.orgInstance)
         result.targetCustomerType = result.orgInstance.getCustomerType()

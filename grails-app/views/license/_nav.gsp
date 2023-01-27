@@ -9,7 +9,7 @@
         <ui:subNavItem controller="license" action="members" params="${[id:params.id]}" text="${message(code:'license.details.incoming.childs')}"/>
     </g:if>
     <g:if test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
-        <ui:subNavItem controller="license" action="workflows" counts="${workflowCount}" params="${[id:params.id]}" message="workflow.plural" />
+        <ui:subNavItem controller="license" action="workflows" counts="${workflowCount || checklistCount ? workflowCount + checklistCount : null}" params="${[id:params.id]}" message="workflow.plural" />
     </g:if>
     <ui:securedSubNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" controller="license" action="tasks" params="${[id:params.id]}" counts="${tasksCount}" message="task.plural" />
     <ui:securedSubNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" controller="license" action="documents" params="${[id:params.id]}" message="license.nav.docs" />

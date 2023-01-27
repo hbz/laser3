@@ -3781,13 +3781,9 @@ class SubscriptionControllerService {
             int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.subscription).size()
             result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
 
-
-            result.notesCount = docstoreService.getNotes(result.subscription, result.contextOrg).size()
-
-            result.workflowCount = WfWorkflow.executeQuery(
-                    'select count(wf) from WfWorkflow wf where wf.subscription = :sub and wf.owner = :ctxOrg',
-                    [sub: result.subscription, ctxOrg: result.contextOrg]
-            )[0]
+            result.notesCount       = docstoreService.getNotes(result.subscription, result.contextOrg).size()
+            result.workflowCount    = workflowService.getWorkflowCount(result.subscription, result.contextOrg)
+            result.checklistCount   = workflowLightService.getWorkflowCount(result.subscription, result.contextOrg)
 
             if (checkOption in [AccessService.CHECK_VIEW, AccessService.CHECK_VIEW_AND_EDIT]) {
                 if (!result.subscription.isVisibleBy(result.user)) {

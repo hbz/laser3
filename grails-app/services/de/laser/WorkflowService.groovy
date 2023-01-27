@@ -712,6 +712,21 @@ class WorkflowService {
         wfList.sort{ a,b -> b.getInfo().lastUpdated <=> a.getInfo().lastUpdated }
     }
 
+    int getWorkflowCount(def obj, Org owner) {
+        if (obj instanceof Subscription) {
+            WfWorkflow.executeQuery('select count(wf) from WfWorkflow wf where wf.subscription = :sub and wf.owner = :ctxOrg', [sub: obj, ctxOrg: owner])[0]
+        }
+        else if (obj instanceof License) {
+            WfWorkflow.executeQuery('select count(wf) from WfWorkflow wf where wf.license = :lic and wf.owner = :ctxOrg', [lic: obj, ctxOrg: owner])[0]
+        }
+        else if (obj instanceof Org) {
+            WfWorkflow.executeQuery('select count(wf) from WfWorkflow wf where wf.org = :org and wf.owner = :ctxOrg', [org: obj, ctxOrg: owner])[0]
+        }
+        else {
+            return 0
+        }
+    }
+
     boolean hasUserPerm_read() {
         _innerPermissionCheck('INST_USER')
     }
