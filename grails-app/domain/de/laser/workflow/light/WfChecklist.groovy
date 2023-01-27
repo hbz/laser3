@@ -1,6 +1,10 @@
 package de.laser.workflow.light
 
 import de.laser.*
+import de.laser.storage.BeanStore
+import de.laser.storage.RDStore
+import de.laser.utils.LocaleUtils
+import org.springframework.context.MessageSource
 
 class WfChecklist {
 
@@ -59,14 +63,57 @@ class WfChecklist {
 
     Map<String, Object> getInfo() {
 
+        MessageSource ms = BeanStore.getMessageSource()
+        Locale locale = LocaleUtils.getCurrentLocale()
+
         Map<String, Object> info = [
-                lastUpdated: lastUpdated
+                target: null,
+                targetName: '',
+                targetTitle: '',
+                targetIcon: '',
+                targetController: '',
+                tasksOpen: 0,
+                tasksCanceled: 0,
+                tasksDone: 0,
+                tasksNormal: 0,
+                tasksOptional: 0,
+                tasksImportant: 0,
+                tasksNormalBlocking: 0,
+                tasksImportantBlocking: 0,
+                lastUpdated: lastUpdated,
+                status: RDStore.WF_WORKFLOW_STATUS_DONE
         ]
 
+        if (org) {
+            info.target = org
+            info.targetName = org.name
+            info.targetTitle = ms.getMessage('org.institution.label', null, locale) + '/' + ms.getMessage('default.provider.label', null, locale)
+            info.targetIcon = 'university'
+            info.targetController = 'org'
+        }
+        else if (license) {
+            info.target = license
+            info.targetName = license.reference
+            info.targetTitle = ms.getMessage('license.label', null, locale)
+            info.targetIcon = 'balance scale'
+            info.targetController = 'lic'
+        }
+        else if (subscription) {
+            info.target = subscription
+            info.targetName = subscription.name
+            info.targetTitle = ms.getMessage('subscription.label', null, locale)
+            info.targetIcon = 'clipboard'
+            info.targetController = 'subscription'
+        }
+
+        boolean sequenceIsDone = true
         getSequence().each {cpoint ->
             // TODO
             if (cpoint.lastUpdated > info.lastUpdated) { info.lastUpdated = cpoint.lastUpdated }
+            sequenceIsDone = sequenceIsDone && cpoint.done
         }
+
+        info.status = sequenceIsDone ? RDStore.WF_WORKFLOW_STATUS_DONE : RDStore.WF_WORKFLOW_STATUS_OPEN
 
         info
     }

@@ -37,12 +37,17 @@ class LicenseControllerService {
         if (params.cmd) {
             String[] cmd = params.cmd.split(':')
 
-            if (cmd[1] in [WfChecklist.KEY, WfCheckpoint.KEY] ) { // light
-                result.putAll( workflowLightService.cmd(params) ) // @ workflows
+            if (cmd[0] in ['edit']) {
+                if (cmd[1] in [WfChecklist.KEY, WfCheckpoint.KEY] ) { // light
+                    result.putAll( workflowLightService.cmd(params) ) // @ workflows
+                }
+                else {
+                    result.putAll( workflowService.cmd(params) ) // @ workflows
+                }
             }
             else {
-                if (cmd[0] in ['edit']) {
-                    result.putAll( workflowService.cmd(params) ) // @ workflows
+                if (cmd[1] in [WfChecklist.KEY, WfCheckpoint.KEY] ) { // light
+                    result.putAll( workflowLightService.usage(params) ) // @ workflows
                 }
                 else {
                     result.putAll( workflowService.usage(params) ) // @ workflows

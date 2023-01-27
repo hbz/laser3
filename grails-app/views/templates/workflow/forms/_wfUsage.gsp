@@ -1,11 +1,11 @@
-<%@ page import="de.laser.Doc; de.laser.Org; de.laser.utils.DateUtils; de.laser.storage.RDStore; de.laser.Subscription; de.laser.workflow.WorkflowHelper; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.workflow.*;" %>
+<%@ page import="de.laser.workflow.light.WfCheckpoint; de.laser.Doc; de.laser.Org; de.laser.utils.DateUtils; de.laser.storage.RDStore; de.laser.Subscription; de.laser.workflow.WorkflowHelper; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.workflow.*;" %>
 <laser:serviceInjection />
-<g:set var="wfEditPerm" value="${workflowService.hasUserPerm_edit()}" />
+%{--via model: <g:set var="wfEditPerm" value="${workflowService.hasUserPerm_edit()}" />--}%
 
 <g:form id="wfForm" url="${formUrl}" method="POST" class="ui form">
 
-    %{-- WORKFLOW --}%
-    %{-- WORKFLOW --}%
+    %{-- WORKFLOW -- usage --}%
+    %{-- WORKFLOW -- usage --}%
 
     <g:if test="${prefix == WfWorkflow.KEY}">
         <g:set var="prefixOverride" value="${WfWorkflow.KEY}" />
@@ -126,8 +126,8 @@
 
     </g:if>
 
-    %{-- TASK --}%
-    %{-- TASK --}%
+    %{-- TASK -- usage --}%
+    %{-- TASK -- usage --}%
 
     <g:elseif test="${prefix == WfTask.KEY}">
         <g:set var="prefixOverride" value="${WfTask.KEY}" />
@@ -397,7 +397,62 @@
         </g:if>
         <input type="hidden" name="cmd" value="usage:${prefix}:${task.id}" />
     </g:elseif>
- </g:form>
+
+    %{-- CHECKPOINT -- usage --}%
+    %{-- CHECKPOINT -- usage --}%
+
+    <g:elseif test="${prefix == WfCheckpoint.KEY}">
+        <g:set var="prefixOverride" value="${WfCheckpoint.KEY}" />
+        <g:set var="wfInfo" value="${checkpoint.checklist.getInfo()}" />
+
+        <div class="field" style="margin-bottom:1.5em;">
+        %{--            <p><strong>${checkpoint.title}</strong></p>--}%
+            <g:if test="${checkpoint.description}">
+                <p>${checkpoint.description}</p>
+            </g:if>
+            <p>
+%{--                <i class="icon ${WorkflowHelper.getCssIconByTaskPriority(task.priority)} sc_darkgrey"></i>--}%
+%{--                ${task.priority.getI10n('value')}--}%
+            </p>
+        </div>
+        <div class="field">
+            <label for="${prefixOverride}_comment">${message(code:'default.comment.label')}</label>
+            <g:if test="${wfEditPerm}">
+                <textarea id="${prefixOverride}_comment" name="${prefixOverride}_comment" rows="4">${checkpoint.comment}</textarea>
+            </g:if>
+            <g:else>
+                <p id="${prefixOverride}_comment">${checkpoint.comment ?: '-'}</p>
+            </g:else>
+        </div>
+        <div class="field">
+            <g:set var="field" value="done" />
+            <label for="${prefixOverride}_${field}">${message(code:'workflow.checkpoint.done')}</label>
+            <div class="ui checkbox ${wfEditPerm ? '' : 'read-only'}">
+                <input type="checkbox" name="${prefixOverride}_${field}" id="${prefixOverride}_${field}"
+                    <% print checkpoint.getProperty(field) == true ? 'checked="checked"' : '' %>
+                />
+            </div>
+        </div>
+        <div class="field">
+            <g:set var="field" value="date" />
+            <label for="${prefixOverride}_${field}">${message(code:'workflow.checkpoint.date')}</label>
+            <g:if test="${wfEditPerm}">
+                <ui:datepicker hideLabel="true" id="${prefixOverride}_${field}" name="${prefixOverride}_${field}"
+                               value="${checkpoint.getProperty(field) ? DateUtils.getSDF_yyyyMMdd().format(checkpoint.getProperty(field)) : ''}">
+                </ui:datepicker>
+            </g:if>
+            <g:else>
+                <input type="text" id="${prefixOverride}_${field}" readonly="readonly" value="${checkpoint.getProperty(field) ? DateUtils.getLocalizedSDF_noTime().format(checkpoint.getProperty(field)) : ''}" />
+            </g:else>
+        </div>
+
+        <g:if test="${info}">
+            <input type="hidden" name="info" value="${info}" />
+        </g:if>
+        <input type="hidden" name="cmd" value="usage:${prefix}:${checkpoint.id}" />
+    </g:elseif>
+
+</g:form>
 
 
 

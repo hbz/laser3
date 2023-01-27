@@ -531,9 +531,9 @@ class WorkflowService {
         if (cmd[0] == 'instantiate') {
             result.status = OP_STATUS_ERROR
 
-            if (params.target && params.workflowId) {
+            if (params.target && params.sourceId) {
                 GrailsParameterMap clone = params.clone() as GrailsParameterMap
-                clone.setProperty( 'cmd', params.cmd + ':' + params.workflowId )
+                clone.setProperty('cmd', params.cmd + ':' + params.sourceId)
 
                 result = instantiateCompleteWorkflow( clone )
             }
@@ -566,7 +566,7 @@ class WorkflowService {
                     result.status = workflow.save() ? OP_STATUS_DONE : OP_STATUS_ERROR
                 }
             }
-            if (cmd[1] == WfTask.KEY) {
+            else if (cmd[1] == WfTask.KEY) {
                 WfTask task = WfTask.get( cmd[2] )
                 boolean tChanged
 
@@ -715,15 +715,12 @@ class WorkflowService {
     boolean hasUserPerm_read() {
         _innerPermissionCheck('INST_USER')
     }
-
     boolean hasUserPerm_init() {
         _innerPermissionCheck('INST_EDITOR')
     }
-
     boolean hasUserPerm_edit() {
         _innerPermissionCheck('INST_EDITOR')
     }
-
     boolean hasUserPerm_wrench() {
         _innerPermissionCheck('INST_EDITOR')
     }

@@ -67,6 +67,7 @@ import de.laser.workflow.WfWorkflow
 import de.laser.workflow.WfWorkflowPrototype
 import de.laser.workflow.WfTask
 import de.laser.workflow.WfTaskPrototype
+import de.laser.workflow.light.WfCheckpoint
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.poi.ss.usermodel.Workbook
 import org.mozilla.universalchardet.UniversalDetector
@@ -1091,6 +1092,8 @@ class AjaxHtmlController {
                 tmplFormUrl: createLink(controller: 'myInstitution', action: 'currentWorkflows')
         ]
 
+        String template = '/templates/workflow/forms/modalWrapper' // todo
+
         if (params.key) {
             String[] key = (params.key as String).split(':')
 
@@ -1122,16 +1125,18 @@ class AjaxHtmlController {
 
             if (result.prefix == WfWorkflow.KEY) {
                 result.workflow       = WfWorkflow.get( key[3] )
-                //result.tmplModalTitle = '<i class="icon tasks"></i> ' + result.workflow.title
                 result.tmplModalTitle = g.message(code:'workflow.label') + ': ' + result.workflow.title
-                //g.message(code: 'default.edit.label', args: [g.message(code:'workflow.label')])
 
             }
             else if (result.prefix == WfTask.KEY) {
                 result.task           = WfTask.get( key[3] )
-                //result.tmplModalTitle = '<i class="icon check circle outline"></i> ' + result.task.title
                 result.tmplModalTitle = g.message(code:'task.label') + ': ' +  result.task.title
-                //g.message(code: 'default.edit.label', args: [g.message(code:'task.label')])
+            }
+            else if (result.prefix == WfCheckpoint.KEY) {
+                result.checkpoint     = WfCheckpoint.get( key[3] )
+                result.tmplModalTitle = g.message(code:'task.label') + ': ' +  result.checkpoint.title
+
+                template              = '/templates/workflow/light/modalWrapper' // todo
             }
         }
 
@@ -1139,7 +1144,7 @@ class AjaxHtmlController {
             result.info = params.info
         }
 
-        render template: '/templates/workflow/forms/modalWrapper', model: result
+        render template: template, model: result
     }
 
     /**

@@ -54,10 +54,10 @@
             </div>
             </div>
             <div class="field">
-                <label for="workflowId">${message(code:'workflow.template')}</label>
+                <label for="sourceId">${message(code:'workflow.template')}</label>
 
                 <ui:dropdownWithI18nExplanations class="ui dropdown la-not-clearable"
-                                                 name="workflowId" id="workflowId"
+                                                 name="sourceId" id="sourceId"
                                                  noSelection="${message(code:'default.select.choose.label')}"
                                                  from="${wfPrototypeList}"
                                                  optionKey="id"

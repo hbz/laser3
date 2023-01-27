@@ -32,6 +32,9 @@ class ParamsHelper {
     Date getDate(String key) {
         params.get(cmpKey + key) ? DateUtils.parseDateGeneric(params.get(cmpKey + key) as String) : null
     }
+    boolean getChecked(String key) {
+        params.get(cmpKey + key) ? params.get(cmpKey + key) == 'on' : false
+    }
 
     // --
 

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.AppUtils; de.laser.WorkflowService; de.laser.workflow.*; de.laser.utils.DateUtils; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.workflow.light.WfCheckpoint; de.laser.workflow.light.WfChecklist; de.laser.utils.AppUtils; de.laser.WorkflowService; de.laser.workflow.*; de.laser.utils.DateUtils; de.laser.storage.RDStore" %>
 <laser:serviceInjection />
 
 <g:if test="${status == WorkflowService.OP_STATUS_DONE}">
@@ -35,15 +35,49 @@
         <g:each in="${checklists}" var="clist">
             <g:set var="clistInfo" value="${clist.getInfo()}" />
             <tr>
-                <td> </td>
-                <td> ${clist} </td>
-                <td> ${clist.getSequence()} </td>
+                <td class="center aligned">
+                    <uiWorkflow:statusIcon checklist="${clist}" size="normal" />
+                </td>
+                <td>
+                    <strong>${clist.title}</strong>
+                    <g:if test="${clist.description}">
+                        <br /> ${clist.description}
+                    </g:if>
+                    <br />
+                    ${clistInfo}
+                </td>
+                <td>
+                    <div class="ui buttons">
+                        <g:set var="cpoints" value="${clist.getSequence()}" />
+                        <g:each in="${cpoints}" var="cpoint" status="ci">
+                            <uiWorkflow:checkpoint checkpoint="${cpoint}" params="${[key: '' + clistInfo.target.class.name + ':' + clistInfo.target.id + ':' + WfCheckpoint.KEY + ':' + cpoint.id]}" />
+                        </g:each>
+                    </div>
                 <td>
                     ${DateUtils.getLocalizedSDF_noTime().format(clistInfo.lastUpdated)}
                     <br />
                     ${DateUtils.getLocalizedSDF_noTime().format(clist.dateCreated)}
                 </td>
-                <td> </td>
+                <td class="center aligned">
+                    <g:if test="${workflowLightService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
+%{--                        <uiWorkflow:usageIconLinkButton workflow="${clist}" params="${[key: wfLinkParam]}" />--}%
+%{--                        <button class="ui icon button blue la-modern-button" data-wfId="${clist.id}"><i class="icon pencil"></i></button>--}%
+                    </g:if>
+                    <g:elseif test="${workflowLightService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
+%{--                        <uiWorkflow:usageIconLinkButton workflow="${clist}" params="${[key: wfLinkParam]}" />--}%
+                        <button class="ui icon button blue la-modern-button" data-wfId="${clist.id}"><i class="icon pencil"></i></button>
+                    </g:elseif>
+                    <g:if test="${workflowLightService.hasUserPerm_init()}"><!-- TODO: workflows-permissions -->
+                        <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.workflow", args: [clist.title])}"
+                                data-confirm-term-how="delete"
+                                controller="${clistInfo.targetController}" action="workflows" id="${clistInfo.target.id}" params="${[cmd:"delete:${WfChecklist.KEY}:${clist.id}"]}"
+                                role="button"
+                                aria-label="${message(code: 'ariaLabel.delete.universal')}">
+                            <i class="trash alternate outline icon"></i>
+                        </g:link>
+                    </g:if>
+                </td>
         </g:each>
     </tbody>
 </table>
@@ -92,7 +126,7 @@
                 <br />
                 ${DateUtils.getLocalizedSDF_noTime().format(wf.dateCreated)}
             </td>
-            <td class="x">
+            <td class="center aligned">
                 <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
                     <uiWorkflow:usageIconLinkButton workflow="${wf}" params="${[key: wfLinkParam]}" />
                     <button class="ui icon button blue la-modern-button" data-wfId="${wf.id}"><i class="icon pencil"></i></button>
