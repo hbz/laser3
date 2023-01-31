@@ -5,6 +5,7 @@ import de.laser.finance.PriceItem
 import de.laser.storage.RDStore
 import de.laser.base.AbstractLockableService
 import de.laser.system.SystemEvent
+import de.laser.utils.DateUtils
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 
@@ -352,7 +353,7 @@ class StatusUpdateService extends AbstractLockableService {
                         diff.diffs.each { tippDiff ->
                             def oldValue, newValue
                             if (tippDiff.prop in PendingChange.DATE_FIELDS) {
-                                SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+                                SimpleDateFormat sdf = DateUtils.getSDF_yyyyMMdd()
                                 newValue = (tippDiff.newValue && tippDiff.newValue instanceof Date) ? sdf.format(tippDiff.newValue) : (tippDiff.newValue ?: null)
                                 oldValue = (tippDiff.oldValue && tippDiff.oldValue instanceof Date) ? sdf.format(tippDiff.oldValue) : (tippDiff.oldValue ?: null)
                             }

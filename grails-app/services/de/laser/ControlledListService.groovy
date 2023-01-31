@@ -821,11 +821,10 @@ class ControlledListService {
         }
         else {
             rawSubjects.each { String rawSubject ->
-                /*
+                //ERMS-4280 point 3 is void!
                 rawSubject.tokenize(',;|').each { String rs ->
                     subjects.add(rs.trim())
                 }
-                 */
                 subjects << rawSubject.trim()
             }
         }
@@ -851,11 +850,9 @@ class ControlledListService {
         }
         else {
             rawSubjects.each { String rawSubject ->
-                /*
                 rawSubject.tokenize(',;|').each { String rs ->
                     subjects.add(rs)
                 }
-                */
                 subjects << rawSubject.trim()
             }
         }
