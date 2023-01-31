@@ -56,7 +56,12 @@
                     <dl>
                         <dt><g:message code="default.name.label" /></dt>
                         <dd>
-                            <ui:xEditable owner="${orgInstance}" field="name"/>
+                            <ui:xEditable
+                                    data_confirm_tokenMsg="${message(code: 'org.setting.OAMONITOR_SERVER_ACCESS.confirm')}"
+                                    data_confirm_term_how="ok"
+                                    cssClass="js-open-confirm-modal-xeditable"
+                                    owner="${orgInstance}" field="name"/>
+
                             <g:if test="${orgInstance.getCustomerType() == 'ORG_INST'}">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                                       data-content="${orgInstance.getCustomerTypeI10n()}">
