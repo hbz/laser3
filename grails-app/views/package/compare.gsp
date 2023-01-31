@@ -257,6 +257,8 @@
       var pkgA = {id:'${pkgInsts?.get(0)?.id}',text:"${pkgInsts?.get(0)?.name}"};
       var pkgB = {id:'${pkgInsts?.get(1)?.id}',text:"${pkgInsts?.get(1)?.name}"};
 
+		/* TODO - ERMS-4785 */
+
       $("#packageSelect"+filter).select2({
         placeholder: "${message(code:'package.compare.search.ph')}",
         language: JSPC.vars.locale,

@@ -70,10 +70,10 @@
     <div class="card">
         <div class="content">
             <div class="header la-primary-header">
-                ${RDStore.PRS_FUNC_TECHNICAL_SUPPORT.getI10n('value')}
                 <g:if test="${existsWekbRecord == true}">
                     <i class="ui light grey la-gokb icon la-popup-tooltip" data-content="${message(code:'org.isWekbCurated.header.label')}"></i>
                 </g:if>
+                ${RDStore.PRS_FUNC_TECHNICAL_SUPPORT.getI10n('value')}
             </div>
 
             <div class="description">
@@ -108,10 +108,10 @@
         <div class="card">
             <div class="content">
                 <div class="header la-primary-header">
-                    ${RDStore.PRS_FUNC_SERVICE_SUPPORT.getI10n('value')}
                     <g:if test="${existsWekbRecord == true}">
                         <i class="ui light grey la-gokb icon la-popup-tooltip" data-content="${message(code:'org.isWekbCurated.header.label')}"></i>
                     </g:if>
+                    ${RDStore.PRS_FUNC_SERVICE_SUPPORT.getI10n('value')}
                 </div>
 
                 <div class="description">
@@ -144,10 +144,10 @@
         <div class="card">
             <div class="content">
                 <div class="header la-primary-header">
-                    ${RDStore.PRS_FUNC_METADATA.getI10n('value')}
                     <g:if test="${existsWekbRecord == true}">
                         <i class="ui light grey la-gokb icon la-popup-tooltip" data-content="${message(code:'org.isWekbCurated.header.label')}"></i>
                     </g:if>
+                    ${RDStore.PRS_FUNC_METADATA.getI10n('value')}
                 </div>
 
                 <div class="description">

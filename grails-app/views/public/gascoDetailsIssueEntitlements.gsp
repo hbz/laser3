@@ -87,10 +87,8 @@
                     </td>
 
                     <td>
-                        <g:each in="${tipp.ids?.sort{it?.ns?.ns}}" var="title_id">
-                            ${title_id.ns.ns}: <strong>${title_id.value}</strong>
-                            <br />
-                        </g:each>
+                            <laser:render template="/templates/identifier"
+                                          model="${[tipp: tipp]}"/>
                     </td>
                 </tr>
             </g:each>

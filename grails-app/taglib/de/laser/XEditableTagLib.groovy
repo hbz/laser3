@@ -166,7 +166,7 @@ class XEditableTagLib {
             if ( editable ) {
                 String oid   = "${owner.class.name}:${owner.id}"
 
-                Map<String, Object> params = [id:attrs.config, format:'json', oid:oid]
+                Map<String, Object> params = [id:attrs.config, oid:oid]
 
                 if (attrs.constraint) {
                     params.put('constraint', attrs.constraint)
@@ -174,7 +174,7 @@ class XEditableTagLib {
 
                 String data_link = createLink(
                         controller: attrs.dataController ?: 'ajax',
-                        action:     attrs.dataAction ?: 'select2RefdataSearch',
+                        action:     attrs.dataAction ?: 'remoteRefdataSearch',
                         params: params
                 ).encodeAsHTML()
 
@@ -402,7 +402,7 @@ class XEditableTagLib {
             }
         }
         else if (attrs.type == "refdata") {
-            String data_link = createLink(controller: 'ajax', action: 'select2RefdataSearch', params:[id: attrs.category, format: 'json'])
+            String data_link = createLink(controller: 'ajax', action: 'remoteRefdataSearch', params: [id: attrs.category])
             out << " data-type=\"select\" data-source=\"${data_link}\" "
         }
         else {

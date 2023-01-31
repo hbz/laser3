@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4785    24.01.2023  dev     3.1         David   Feature     Javascript: Select2 durch Fomantic (remote) ersetzen
+
 4761    13.01.2023  dev     3.1         Andreas Feature     Entknüpfen ohne Titel umgestellt auf Nur Titel entknüpfen
 
 4638    13.01.2023  dev     3.1         Andreas Feature     Umstrukturierung der Paketverwaltung
@@ -48,6 +50,8 @@
 4734    02.01.2023  rc-3.0  3.0.1       Andreas Bug         E-Rechnungspanel wurde bei Konsorten ausgeblendet
 
 4733    02.01.2023  rc-3.0  3.0.1       Andreas Bug         Adressmodal war falsch verdrahtet
+
+4724    02.01.2023  dev     3.1         David   Feature     Javascript: Select2
 
 4438    29.12.2022  dev     3.1         Andreas Feature     Erweiterung des Vertragsfilters
 

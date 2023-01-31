@@ -80,7 +80,7 @@
 <h4 class="ui header">Auswahl einer bestimmten Option im X-Editable Dropdown</h4>
 <div class="html ui top attached segment example">
     <div class="ui top attached label"></div>
-    <a href="#" id="ezb_server_access" class="xEditableManyToOne js-open-confirm-modal-xeditable editable editable-click" data-onblur="ignore" data-pk="de.laser.OrgSetting:3103" data-confirm-term-how="ok" data-confirm-tokenmsg="Wollen Sie wirklich der Weitergabe der Lizenzdaten Ihrer Einrichtung an die EZB zustimmen?" data-confirm-value="de.laser.RefdataValue:1" data-type="select" data-name="rdValue" data-source="/ajax/select2RefdataSearch/y.n?format=json&amp;oid=de.laser.OrgSetting%3A3103" data-url="/ajax/genericSetData" data-emptytext="Bearbeiten" style="background-color: rgb(241, 235, 229);">Ja</a>
+    <a href="#" id="ezb_server_access" class="xEditableManyToOne js-open-confirm-modal-xeditable editable editable-click" data-onblur="ignore" data-pk="de.laser.OrgSetting:3103" data-confirm-term-how="ok" data-confirm-tokenmsg="Wollen Sie wirklich der Weitergabe der Lizenzdaten Ihrer Einrichtung an die EZB zustimmen?" data-confirm-value="de.laser.RefdataValue:1" data-type="select" data-name="rdValue" data-source="/ajax/remoteRefdataSearch/y.n?oid=de.laser.OrgSetting%3A3103" data-url="/ajax/genericSetData" data-emptytext="Bearbeiten" style="background-color: rgb(241, 235, 229);">Ja</a>
     <laser:script file="${this.getGroovyPageFileName()}">
         $('body #ezb_server_access').editable('destroy').editable({
             tpl: '<select class="ui dropdown"></select>'

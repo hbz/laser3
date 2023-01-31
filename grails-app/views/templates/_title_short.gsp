@@ -18,19 +18,8 @@
     <g:if test="${!showCompact}">
         <br/>
     </g:if>
-
-    <g:each in="${tipp.ids.sort { it.ns.ns }}" var="title_id">
-        <div class="js-copyTriggerParent">
-            <span class="ui small basic image label js-copyTrigger la-popup-tooltip la-delay"
-                  data-position="top center" data-content="${message(code: 'tooltip.clickToCopySimple')}">
-                <i class="la-copy grey icon la-js-copyTriggerIcon" aria-hidden="true"></i>
-                ${title_id.ns.ns}:
-                <div class="detail js-copyTopic">${title_id.value}</div>
-            </span>
-        </div>
-    </g:each>
-<!--                  ISSN:<strong>${tipp.getIdentifierValue('ISSN') ?: ' - '}</strong>,
-                  eISSN:<strong>${tipp.getIdentifierValue('eISSN') ?: ' - '}</strong><br />-->
+    <laser:render template="/templates/identifier"
+                  model="${[tipp: tipp]}"/>
     <br/>
 
     <g:if test="${!showCompact}">
