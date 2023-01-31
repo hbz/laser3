@@ -729,8 +729,11 @@ class SubscriptionControllerService {
                 queryParams.seriesName = params.list("series_names")
             }
             if(params.subject_references) {
-                query += " and title.subjectReference in (:subjectReference) "
-                queryParams.subjectReference = params.list("subject_references")
+                Set<String> subjectQuery = []
+                params.list('subject_references').each { String subReference ->
+                    subjectQuery << "genfunc_filter_matcher(title.subjectReference, '${subReference.toLowerCase()}') = true"
+                }
+                query += " and (${subjectQuery.join(" or ")}) "
             }
             if(params.ddcs && params.list("ddcs").size() > 0) {
                 query += " and exists (select ddc.id from title.ddcs ddc where ddc.ddc.id in (:ddcs)) "

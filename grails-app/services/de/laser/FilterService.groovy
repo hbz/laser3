@@ -1321,8 +1321,11 @@ class FilterService {
         }
 
         if (params.subject_references && params.subject_references != "" && params.list('subject_references')) {
-            base_qry += " and lower(tipp.subjectReference) in (:subject_references)"
-            qry_params.subject_references = params.list('subject_references').collect { ""+it.toLowerCase()+"" }
+            Set<String> subjectQuery = []
+            params.list('subject_references').each { String subReference ->
+                subjectQuery << "genfunc_filter_matcher(tipp.subjectReference, '${subReference.toLowerCase()}') = true"
+            }
+            base_qry += " and (${subjectQuery.join(" or ")}) "
             filterSet = true
         }
 
@@ -1525,7 +1528,7 @@ class FilterService {
         if (params.subject_references && params.subject_references != "" && listReaderWrapper(params, 'subject_references')) {
             base_qry += ' and ( '
             listReaderWrapper(params, 'subject_references').eachWithIndex { String subRef, int i ->
-                base_qry += " lower(tipp.subjectReference) like '%"+subRef.trim().toLowerCase()+"%' "
+                base_qry += " genfunc_filter_matcher(tipp.subjectReference,'"+subRef.trim().toLowerCase()+"') "
                 if(i < listReaderWrapper(params, 'subject_references').size()-1)
                     base_qry += 'or'
             }
@@ -1843,9 +1846,9 @@ class FilterService {
             }
             if(configMap.subject_references != null && !configMap.subject_references.isEmpty()) {
                 List<Object> subjectReferences = []
-                subjectReferences.addAll(listReaderWrapper(configMap, 'subject_references').collect { it.toLowerCase() })
+                subjectReferences.addAll(listReaderWrapper(configMap, 'subject_references').collect { '%'+it.toLowerCase()+'%' })
                 params.subjectReferences = connection.createArrayOf('varchar', subjectReferences.toArray())
-                where += " and lower(tipp_subject_reference) = any(:subjectReferences)"
+                where += " and lower(tipp_subject_reference) like any(:subjectReferences)"
             }
             if(configMap.series_names != null && !configMap.series_names.isEmpty()) {
                 List<Object> seriesNames = []
