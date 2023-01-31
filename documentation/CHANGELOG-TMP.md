@@ -7,6 +7,24 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      31.01.2023  rc-3.0  3.0.3       Andreas Bug         Bug bei der Synchronisation der Titel behoben
+
+--      31.01.2023  rc-3.0  3.0.3       Andreas Bug         diverse Optimierungen beim Statistik-Sync
+
+4795    31.01.2023  rc-3.0  3.0.3       Andreas Feature     Angaben sind bei Anbietern ex we:kb nicht mehr bearbeitbar
+
+4783    31.01.2023  rc-3.0  3.0.3       Andreas Bug         Listenpreise werden bei Hinzufügen der Titel mit hinzugefügt
+
+3343    31.01.2023  rc-3.0  3.0.3       Andreas Feature     Begriffe im Dropdown werden jetzt wieder getrennt
+
+4774    20.01.2023  rc-3.0  3.0.3       Moe     Bug         500er: Bestand - Titel entfernen
+
+4777    20.01.2023  rc-3.0  3.0.3       Moe     Bug         Verträge kopieren
+
+4770    16.01.2023  rc-3.0  3.0.3       Moe     Bug         500er Sortierung Bestand
+
+--      16.01.2023  rc-3.0  3.0.3       Moe     Bug         allgemeine Umfrage öffnen sich nicht mehr
+
 4785    24.01.2023  dev     3.1         David   Feature     Javascript: Select2 durch Fomantic (remote) ersetzen
 
 4761    13.01.2023  dev     3.1         Andreas Feature     Entknüpfen ohne Titel umgestellt auf Nur Titel entknüpfen

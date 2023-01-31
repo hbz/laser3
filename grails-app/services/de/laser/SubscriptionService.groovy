@@ -770,8 +770,11 @@ class SubscriptionService {
             }
 
             if (params.subject_references && params.subject_references != "" && params.list('subject_references')) {
-                base_qry += " and lower(ie.tipp.subjectReference) in (:subject_references)"
-                qry_params.subject_references = params.list('subject_references').collect { ""+it.toLowerCase()+"" }
+                Set<String> subjectQuery = []
+                params.list('subject_references').each { String subReference ->
+                    subjectQuery << "genfunc_filter_matcher(ie.tipp.subjectReference, '${subReference.toLowerCase()}') = true"
+                }
+                base_qry += " and (${subjectQuery.join(" or ")}) "
             }
 
             if (params.series_names && params.series_names != "" && params.list('series_names')) {
@@ -1573,8 +1576,7 @@ class SubscriptionService {
                         else {
                             ieDirectMapSet << configMap
                             coverageDirectMapSet << coverageMap
-                            if(withPriceData)
-                                priceItemDirectSet << priceMap
+                            priceItemDirectSet << priceMap
                         }
                     }
                 }
