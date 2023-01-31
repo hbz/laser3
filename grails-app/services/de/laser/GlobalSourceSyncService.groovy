@@ -15,9 +15,12 @@ import de.laser.utils.DateUtils
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import io.micronaut.http.HttpResponse
+import io.micronaut.http.client.DefaultHttpClientConfiguration
+import io.micronaut.http.client.HttpClientConfiguration
 import org.hibernate.Session
 
 import java.text.SimpleDateFormat
+import java.time.Duration
 import java.util.concurrent.ExecutorService
 
 /**
@@ -36,11 +39,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
     ApiSource apiSource
     GlobalRecordSource source
 
-    public static final long RECTYPE_PACKAGE = 0
-    public static final long RECTYPE_PLATFORM = 1
-    public static final long RECTYPE_ORG = 2
-    public static final long RECTYPE_TIPP = 3
-    public static final String PERMANENTLY_DELETED = "Permanently Deleted"
+    static final long RECTYPE_PACKAGE = 0
+    static final long RECTYPE_PLATFORM = 1
+    static final long RECTYPE_ORG = 2
+    static final long RECTYPE_TIPP = 3
+    static final String PERMANENTLY_DELETED = "Permanently Deleted"
+    static final int MAX_CONTENT_LENGTH = 1024 * 1024 * 100
 
     Map<String, RefdataValue> titleMedium = [:],
             tippStatus = [:],
@@ -1816,7 +1820,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 }
                 listA.each { itemA ->
                     if(!toKeep.contains(itemA)) {
-                        subDiffs << [event: 'delete', target: itemA, targetParent: tippA]
+                        JSON oldMap = itemA.properties as JSON
+                        subDiffs << [event: 'delete', target: itemA, targetObj: oldMap.toString(), targetParent: tippA]
                     }
                 }
             }
@@ -2030,15 +2035,18 @@ class GlobalSourceSyncService extends AbstractLockableService {
     Map<String,Object> fetchRecordJSON(boolean useScroll, Map<String,Object> queryParams) throws SyncException {
         BasicHttpClient http
         String uri = source.uri.endsWith('/') ? source.uri : source.uri+'/'
+        HttpClientConfiguration config = new DefaultHttpClientConfiguration()
+        config.readTimeout = Duration.ofMinutes(1)
+        config.maxContentLength = MAX_CONTENT_LENGTH
         if(useScroll) {
-            http = new BasicHttpClient(uri + 'scroll')
+            http = new BasicHttpClient(uri + 'scroll', config)
             String debugString = uri+'scroll?'
             queryParams.each { String k, v ->
                 debugString += '&' + k + '=' + v
             }
             log.debug(debugString)
         }
-        else http = new BasicHttpClient(uri+'find')
+        else http = new BasicHttpClient(uri+'find', config)
         Map<String,Object> result = [:]
         //setting default status
         if(!queryParams.status) {

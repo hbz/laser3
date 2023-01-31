@@ -986,7 +986,7 @@ class OrganisationController  {
             response.sendError(401)
             return
         }
-        result.editable_identifier = result.editable
+        result.editable_identifier = !result.orgInstance.gokbId && result.editable
 
         //this is a flag to check whether the page has been called directly after creation
         result.fromCreate = params.fromCreate ? true : false
@@ -995,13 +995,13 @@ class OrganisationController  {
 
         prf.setBenchmark('editable_identifier')
 
-        //IF ORG is a Provider
-        if(result.orgInstance.sector == RDStore.O_SECTOR_PUBLISHER || RDStore.OT_PROVIDER.id in result.allOrgTypeIds) {
+        //IF ORG is a Provider and is NOT ex we:kb
+        if(!result.orgInstance.gokbId && (result.orgInstance.sector == RDStore.O_SECTOR_PUBLISHER || RDStore.OT_PROVIDER.id in result.allOrgTypeIds)) {
             prf.setBenchmark('editable_identifier2')
             result.editable_identifier = accessService.checkMinUserOrgRole(result.user, result.orgInstance, 'INST_EDITOR') ||
                     accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
         }
-        else {
+        else if(!result.orgInstance.gokbId) {
             prf.setBenchmark('editable_identifier2')
             if(accessService.checkPerm("ORG_CONSORTIUM")) {
                 List<Long> consortia = Combo.executeQuery('select c.id from Combo c where c.type = :type and c.fromOrg = :target and c.toOrg = :context',[type:RDStore.COMBO_TYPE_CONSORTIUM,target:result.orgInstance,context:result.institution])
