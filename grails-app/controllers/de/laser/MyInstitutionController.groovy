@@ -36,6 +36,7 @@ import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
 import de.laser.workflow.WfWorkflow
+import de.laser.workflow.light.WfChecklist
 import grails.gsp.PageRenderer
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
@@ -99,6 +100,7 @@ class MyInstitutionController  {
     UserControllerService userControllerService
     UserService userService
     CustomWkhtmltoxService wkhtmltoxService
+    WorkflowLightService workflowLightService
     WorkflowService workflowService
 
     /**
@@ -2606,13 +2608,109 @@ join sub.orgRelations or_sub where
         }
     }
 
+    @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_USER", ctrlService = DebugInfo.IN_BETWEEN)
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER") })
+    def currentWorkflows() {
+
+        println params
+
+        Map<String, Object> result = [
+            tab:    params.tab    ?: 'open',
+            offset: params.offset ? params.int('offset') : 0,
+            max:    params.max    ? params.int('max') : contextService.getUser().getPageSizeOrDefault()
+        ]
+
+        // modal, delete, etc. - process and remove form params
+        if (params.cmd) {
+            result.putAll(workflowLightService.cmd(params))
+        }
+
+        // filter
+        Map filter = params.findAll{ it.key.startsWith('filter') }
+        result.putAll(filter)
+
+        String idQuery = 'select wf.id from WfChecklist wf where wf.owner = :ctxOrg'
+        Map<String, Object> queryParams = [ctxOrg: contextService.getOrg()]
+
+        if (result.filterTargetType) {
+            if (result.filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_INSTITUTION.id.toString()) {
+                idQuery = idQuery + ' and wf.org is not null'
+            }
+            else if (result.filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_LICENSE.id.toString()) {
+                idQuery = idQuery + ' and wf.license is not null'
+            }
+            else if (result.filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_PROVIDER.id.toString()) {
+                idQuery = idQuery + ' and wf.org is not null'
+            }
+            if (result.filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_SUBSCRIPTION.id.toString()) {
+                idQuery = idQuery + ' and wf.subscription is not null'
+            }
+        }
+
+        // templates
+//        result.currentPrototypes = WfChecklist.executeQuery(
+//                idQuery + ' and wf.template = true order by wf.title', queryParams
+//        ).collect{ wf ->
+//            Map<String, Object> info = wf.getInfo()
+//            return [
+//                    id: wf.id,
+//                    title: wf.title,
+//                    lastUpdated: DateUtils.getLocalizedSDF_noTime().format(info.lastUpdated),
+//                    dateCreated: DateUtils.getLocalizedSDF_noTime().format(wf.dateCreated)
+//            ]
+//        }
+
+        println idQuery
+
+        List<Long> checklistIds = WfChecklist.executeQuery(idQuery + ' order by wf.id desc', queryParams)
+
+        result.openWorkflows = []
+        result.doneWorkflows = []
+
+        String resultQuery = 'select wf from WfChecklist wf where wf.id in (:idList)'
+
+        WfChecklist.executeQuery(resultQuery, [idList: checklistIds]).each{ clist ->
+            Map info = clist.getInfo()
+
+            if (info.status == RDStore.WF_WORKFLOW_STATUS_OPEN) {
+                result.openWorkflows << clist
+            }
+            else if (info.status == RDStore.WF_WORKFLOW_STATUS_DONE) {
+                result.doneWorkflows << clist
+            }
+        }
+        result.currentWorkflows = WfChecklist.executeQuery(resultQuery, [idList: checklistIds])
+
+        // filter
+        if (result.filterStatus) {
+            if (result.filterStatus == RDStore.WF_WORKFLOW_STATUS_OPEN.id.toString()) {
+                result.currentWorkflows = result.openWorkflows
+            }
+            else if (result.filterStatus == RDStore.WF_WORKFLOW_STATUS_DONE.id.toString()) {
+                result.currentWorkflows = result.doneWorkflows
+            }
+        }
+
+        result.currentWorkflows = result.currentWorkflows.drop(result.offset).take(result.max)
+//        if (result.tab == 'open') {
+//        result.currentOpenWorkflows = workflowLightService.sortByLastUpdated( WfChecklist.executeQuery(resultQuery, [idList: result.currentWorkflowIds_open])).drop(result.offset).take(result.max)
+//        }
+//        else if (result.tab == 'done') {
+//        result.currentDoneWorkflows = workflowLightService.sortByLastUpdated( WfChecklist.executeQuery(resultQuery, [idList: result.currentWorkflowIds_done])).drop(result.offset).take(result.max)
+//        }
+        result.total = checklistIds.size()
+
+        println result
+        result
+    }
+
     /**
      * Call for the overview of current workflows for the context institution
      * @return the entry view for the workflows, loading current cache settings
      */
     @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_USER", ctrlService = DebugInfo.IN_BETWEEN)
     @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER") })
-    def currentWorkflows() {
+    def currentWorkflowsOld() {
         Map<String, Object> result = [:]
 
         SessionCacheWrapper cache = contextService.getSessionCache()

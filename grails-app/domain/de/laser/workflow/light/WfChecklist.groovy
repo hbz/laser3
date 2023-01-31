@@ -1,7 +1,9 @@
 package de.laser.workflow.light
 
 import de.laser.*
+import de.laser.annotations.RefdataInfo
 import de.laser.storage.BeanStore
+import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.LocaleUtils
 import org.springframework.context.MessageSource
@@ -9,6 +11,9 @@ import org.springframework.context.MessageSource
 class WfChecklist {
 
     static final String KEY = 'WF_CHECKLIST'
+
+//    @RefdataInfo(cat = RDConstants.WF_WORKFLOW_STATUS)
+//    RefdataValue status
 
     String title
     String description
@@ -27,6 +32,7 @@ class WfChecklist {
     static mapping = {
                    id column: 'wfcl_id'
               version column: 'wfcl_version'
+//               status column: 'wfcl_status_rv_fk'
                 title column: 'wfcl_title'
           description column: 'wfcl_description', type: 'text'
               comment column: 'wfcl_comment', type: 'text'
