@@ -69897,8 +69897,8 @@ a.inverted.ui.card:hover,
 
 .ui.accordion:not(.styled) .title ~ .content,
 .ui.accordion:not(.styled) .accordion .title ~ .content {
-  margin: "";
-  padding: 0.5em 0 1em;
+  margin: 0;
+  padding: 1em;
 }
 
 .ui.accordion:not(.styled) .title ~ .content:last-child {
