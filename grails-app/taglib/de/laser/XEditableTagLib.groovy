@@ -36,10 +36,9 @@ class XEditableTagLib {
             String default_empty = message(code:'default.button.edit.label')
             String data_link     = ''
             String data_confirm_tokenMsg = attrs.data_confirm_tokenMsg
-            String cssClass = attrs.cssClass
+            String cssClass = attrs.class
 
-           //  out << '<a href="#" id="' + id + '" class="xEditableValue ' + (attrs.class ?: '') + '"'
-            out << "<a href=\"#\" id=\"${cssClass}\" class=\"${cssClass} xEditableValue\" "
+            out << '<a href="#" id="' + id + '" class="xEditableValue ' + (cssClass ?: '')  + '"'
 
             out << (owner instanceof SurveyResult ? ' data-onblur="submit"' : ' data-onblur="ignore"')
 
@@ -180,7 +179,7 @@ class XEditableTagLib {
 
                 String update_link = createLink(controller:'ajax', action: 'genericSetData').encodeAsHTML()
                 String id = attrs.id ?: "${oid}:${field}"
-                String cssClass = attrs.cssClass
+                String cssClass = attrs.class
                 String data_confirm_tokenMsg = attrs.data_confirm_tokenMsg
                 String emptyText = ' data-emptytext="' + ( attrs.emptytext ?: message(code:'default.button.edit.label') ) + '"'
 

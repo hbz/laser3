@@ -57,9 +57,9 @@
                         <dt><g:message code="default.name.label" /></dt>
                         <dd>
                             <ui:xEditable
-                                    data_confirm_tokenMsg="${message(code: 'org.setting.OAMONITOR_SERVER_ACCESS.confirm')}"
+                                    data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
                                     data_confirm_term_how="ok"
-                                    cssClass="js-open-confirm-modal-xeditable"
+                                    class="js-open-confirm-modal-xEditable"
                                     owner="${orgInstance}" field="name"/>
 
                             <g:if test="${orgInstance.getCustomerType() == 'ORG_INST'}">
@@ -797,6 +797,11 @@
         func();
     }
 </g:if>
+
+    $('.js-open-confirm-modal-xEditable').editable('destroy').editable().on('shown', function() {
+                                    r2d2.initDynamicUiStuff('body');
+                                });
+
 </laser:script>
 
 <laser:htmlEnd />
