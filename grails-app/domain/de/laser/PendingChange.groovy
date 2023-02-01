@@ -157,8 +157,8 @@ class PendingChange {
                     if (configMap.prop) {
                         Map<String, Object> changeParams = [target: configMap.target, prop: configMap.prop]
                         if (!configMap.oid) {
-                            pc = new PendingChange()
                             executeUpdate('update PendingChange pc set pc.status = :superseded where :target in (pc.subscription,pc.costItem) and pc.targetProperty = :prop', changeParams + [superseded: RDStore.PENDING_CHANGE_SUPERSEDED])
+                            pc = new PendingChange()
                         } else {
                             pc = new PendingChange()
                         }

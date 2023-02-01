@@ -76,6 +76,17 @@
                                 </div>
                             </div>
                         </g:if>
+                        <g:elseif test="${entry.costItem}">
+                            <div class="right aligned wide column">
+                                <g:link controller="finance" action="acknowledgeChange" id="${entry.changeId}" class="ui icon primary button la-modern-button js-open-confirm-modal"
+                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.changes.acknowledge")}"
+                                        data-confirm-term-how="ok"
+                                        role="button"
+                                        aria-label="${message(code: 'ariaLabel.check.universal')}">
+                                    ${message(code: 'pendingChange.acknowledge')}
+                                </g:link>
+                            </div>
+                        </g:elseif>
                     </g:if>
                 </div><!-- .column -->
             </div><!-- .row -->

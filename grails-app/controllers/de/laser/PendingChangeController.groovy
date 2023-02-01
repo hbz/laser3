@@ -64,7 +64,7 @@ class PendingChangeController  {
         log.debug("Reject")
         //distinct between legacy reject and new reject!
         PendingChange pc = PendingChange.get(params.long('id'))
-        pendingChangeService.reject(pc, Long.parseLong(params.subId))
+        pendingChangeService.reject(pc, params.subId)
         redirect(url: request.getHeader('referer'))
     }
 
