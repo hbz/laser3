@@ -185,11 +185,8 @@ class PendingChange {
                     if (configMap.prop) {
                         Map<String, Object> changeParams = [target: configMap.target, prop: configMap.prop]
                         if (!configMap.oid) {
-                            List<PendingChange> pendingChangeCheck = executeQuery('select pc from PendingChange pc where pc.status in (:processed) and pc.' + targetClass + ' = :target and pc.targetProperty = :prop', changeParams + [processed: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_PENDING, RDStore.PENDING_CHANGE_HISTORY]])
-                            if (pendingChangeCheck)
-                                return pendingChangeCheck[0]
-                            else pc = new PendingChange()
                             executeUpdate('update PendingChange pc set pc.status = :superseded where :target in (pc.subscription,pc.license,pc.costItem) and pc.targetProperty = :prop', changeParams + [superseded: RDStore.PENDING_CHANGE_SUPERSEDED])
+                            pc = new PendingChange()
                         } else {
                             changeParams.oid = configMap.oid
                             List<PendingChange> pendingChangeCheck = executeQuery('select pc from PendingChange pc where pc.status in (:processed) and pc.' + targetClass + ' = :target and pc.oid = :oid and pc.targetProperty = :prop', changeParams + [processed: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_PENDING]])

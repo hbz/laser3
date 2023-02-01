@@ -385,6 +385,7 @@ class FinanceService {
                     order.delete()
                 if (!CostItem.findByInvoiceAndIdNotEqualAndCostItemStatusNotEqual(invoice, ci.id, RDStore.COST_ITEM_DELETED))
                     invoice.delete()
+                PendingChange.executeUpdate('delete from PendingChange pc where pc.costItem = :ci', [ci: ci])
                 cigs.each { CostItemGroup item ->
                     item.delete()
                     log.debug("deleting CostItemGroup: " + item)
