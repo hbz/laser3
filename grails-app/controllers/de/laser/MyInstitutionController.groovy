@@ -2646,6 +2646,14 @@ join sub.orgRelations or_sub where
                 idQuery = idQuery + ' and wf.subscription is not null'
             }
         }
+        if (result.filterTemplates) {
+            if (result.filterTemplates == 'yes') {
+                idQuery = idQuery + ' and wf.template = true'
+            }
+            else if (result.filterTemplates == 'no') {
+                idQuery = idQuery + ' and wf.template = false'
+            }
+        }
 
         // templates
 //        result.currentPrototypes = WfChecklist.executeQuery(

@@ -246,7 +246,7 @@ class WorkflowTagLib {
 
         WfCheckpoint cpoint = attrs.checkpoint as WfCheckpoint
 
-        String tooltip = '<p><strong>' + cpoint.title + '</strong></p>' + ( cpoint.description ? '<p>' + cpoint.description + '</p>' : '')
+        String tooltip = '<p><strong>' + cpoint.title + '</strong></p>' + ( cpoint.comment ? '<p>' + cpoint.comment + '</p>' : '')
         tooltip = tooltip + '<div class="ui divider"></div>'
 
         List<String> fields = []
@@ -263,7 +263,8 @@ class WorkflowTagLib {
         tooltip = tooltip + '<p>' + fields.join('<br/>') + '</p>'
 
         String cssColor = WorkflowHelper.getCssColorByStatus( cpoint.done ? RDStore.WF_TASK_STATUS_DONE : RDStore.WF_TASK_STATUS_OPEN )
-        String cssIcon = WorkflowHelper.getCssIconByTaskPriority( RDStore.WF_TASK_PRIORITY_NORMAL )
+//        String cssIcon = WorkflowHelper.getCssIconByTaskPriority( RDStore.WF_TASK_PRIORITY_NORMAL )
+        String cssIcon = cpoint.done ? 'check' : 'circle'
 
         out << '<span class="la-popup-tooltip la-delay" data-position="top center" data-html="' + tooltip.encodeAsHTML() + '">'
         out <<   '<a href="' + g.createLink( controller:'ajaxHtml', action:'useWfXModal', params:attrs.params ) + '" class="ui icon button wfModalLink">'

@@ -6,6 +6,7 @@ import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.LocaleUtils
+import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.springframework.context.MessageSource
 
 class WfChecklist {
@@ -15,16 +16,16 @@ class WfChecklist {
 //    @RefdataInfo(cat = RDConstants.WF_WORKFLOW_STATUS)
 //    RefdataValue status
 
-    String title
-    String description
+    String title                // instantiate
+    String description          // instantiate
     String comment
 
     Subscription subscription
     License license
     Org org
 
-    Org owner
-    Boolean template
+    Org owner                   // instantiate
+    Boolean template = false
 
     Date dateCreated
     Date lastUpdated
@@ -54,13 +55,39 @@ class WfChecklist {
         org              (nullable: true)
     }
 
-    WfCheckpoint instantiate(Object target) throws Exception {
+    WfChecklist instantiate(Object target) throws Exception {
 
-    }
+        WfChecklist checklist   = new WfChecklist()
+        checklist.title         = this.title
+        checklist.description   = this.description
+        checklist.owner         = this.owner
 
-    void remove() throws Exception {
-        WfCheckpoint.executeUpdate('delete from WfCheckpoint cp where cp.checklist = :cl', [cl: this])
-        this.delete()
+        if (target instanceof Org) {
+            checklist.org = target
+        }
+        else if (target instanceof License) {
+            checklist.license = target
+        }
+        else if (target instanceof Subscription) {
+            checklist.subscription = target
+        }
+
+        this.getSequence().each{ cpoint ->
+            WfCheckpoint checkpoint = new WfCheckpoint()
+            checkpoint.title        = cpoint.title
+            checkpoint.description  = cpoint.description
+            checkpoint.checklist    = cpoint.checklist
+            checkpoint.position     = cpoint.position
+
+            if (! checkpoint.validate()) {
+                log.debug( '[ ' + this.id + ' ].instantiate() : ' + checkpoint.getErrors().toString() )
+            }
+        }
+
+        if (! checklist.validate()) {
+            log.debug( '[ ' + this.id + ' ].instantiate(' + target + ') : ' + checklist.getErrors().toString() )
+        }
+        checklist
     }
 
     Set<WfCheckpoint> getSequence() {
@@ -91,21 +118,21 @@ class WfChecklist {
         ]
 
         if (org) {
-            info.target = org
+            info.target = GrailsHibernateUtil.unwrapIfProxy(org)
             info.targetName = org.name
             info.targetTitle = ms.getMessage('org.institution.label', null, locale) + '/' + ms.getMessage('default.provider.label', null, locale)
             info.targetIcon = 'university'
             info.targetController = 'org'
         }
         else if (license) {
-            info.target = license
+            info.target = GrailsHibernateUtil.unwrapIfProxy(license)
             info.targetName = license.reference
             info.targetTitle = ms.getMessage('license.label', null, locale)
             info.targetIcon = 'balance scale'
             info.targetController = 'lic'
         }
         else if (subscription) {
-            info.target = subscription
+            info.target = GrailsHibernateUtil.unwrapIfProxy(subscription)
             info.targetName = subscription.name
             info.targetTitle = ms.getMessage('subscription.label', null, locale)
             info.targetIcon = 'clipboard'

@@ -22,23 +22,23 @@
                            optionValue="value" />
 
             </div>
-%{--            <div class="field">--}%
-%{--                <label>Basierend auf ${message(code: 'workflow.label')}</label>--}%
-%{--                <g:select class="ui dropdown" name="filterPrototypeMeta"--}%
-%{--                          from="${ currentPrototypes }"--}%
-%{--                          optionKey="${{it.id}}"--}%
-%{--                          optionValue="${{it.title + ' (' + it.lastUpdated + '/' + it.dateCreated + ')'}}"--}%
-%{--                          value="${filterPrototypeMeta}"--}%
-%{--                          noSelection="${['' : message(code:'default.select.choose.label')]}"/>--}%
-%{--            </div>--}%
             <div class="field">
                 <label>${message(code: 'default.status.label')}</label>
                 <ui:select class="ui dropdown" name="filterStatus"
-                  from="${[RDStore.WF_WORKFLOW_STATUS_OPEN, RDStore.WF_WORKFLOW_STATUS_DONE]}"
-                  optionKey="id"
-                  optionValue="value"
-                  value="${filterStatus}"
-                  noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+                          from="${[RDStore.WF_WORKFLOW_STATUS_OPEN, RDStore.WF_WORKFLOW_STATUS_DONE]}"
+                          optionKey="id"
+                          optionValue="value"
+                          value="${filterStatus}"
+                          noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+            </div>
+            <div class="field">
+                <label>${message(code: 'workflow.template.plural')}</label>
+                <g:select class="ui dropdown" name="filterTemplates"
+                          from="${ ['yes':'Nur Vorlagen', 'no':'Keine Vorlagen'] }"
+                          optionKey="${{it.key}}"
+                          optionValue="${{it.value}}"
+                          value="${filterTemplates}"
+                          noSelection="${['' : message(code:'default.select.choose.label')]}"/>
             </div>
         </div>
         <div class="field la-field-right-aligned">
@@ -89,11 +89,12 @@
     <thead>
         <tr>
             <th class="one wide" rowspan="2">${message(code:'sidewide.number')}</th>
-            <th class="three wide" rowspan="2">${message(code:'workflow.label')}</th>
+            <th class="one wide" rowspan="2"></th>
+            <th class="four wide" rowspan="2">${message(code:'workflow.label')}</th>
             <th class="four wide" rowspan="2">${message(code:'default.relation.label')}</th>
-            <th class="four wide" rowspan="2">${message(code:'default.progress.label')}</th>
+            <th class="three wide" rowspan="2">${message(code:'default.progress.label')}</th>
             <th class="two wide la-smaller-table-head">${message(code:'default.lastUpdated.label')}</th>
-            <th class="two wide" rowspan="2">${message(code:'default.actions.label')}</th>
+            <th class="one wide" rowspan="2">${message(code:'default.actions.label')}</th>
         </tr>
         <tr>
             <th class="two wide la-smaller-table-head">${message(code:'default.dateCreated.label')}</th>
@@ -107,10 +108,10 @@
                 <td class="center aligned">
                     ${wfi + 1 + offset}
                 </td>
+                <td class="center aligned">
+                    <uiWorkflow:statusIcon checklist="${wf}" size="normal" />
+                </td>
                 <td>
-                    <g:if test="${currentTab != 'open'}">
-                        <uiWorkflow:statusIcon checklist="${wf}" size="normal" />
-                    </g:if>
                     <g:link controller="${clistInfo.targetController}" action="workflows" id="${clistInfo.target.id}" params="${[info: '' + clistInfo.target.class.name + ':' + clistInfo.target.id + ':' + WfChecklist.KEY + ':' + wf.id]}">
                         <strong>${wf.title}</strong>
                     </g:link>
@@ -146,11 +147,11 @@
                 <td class="center aligned">
                     <g:if test="${workflowLightService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
 %{--                        <uiWorkflow:usageIconLinkButton workflow="${wf}" params="${[key: 'myInstitution:' + wf.id + ':' + WfChecklist.KEY + ':' + wf.id]}" />--}%
-                        <button class="ui icon button blue la-modern-button" data-wfId="${wf.id}"><i class="icon pencil"></i></button>
+%{--                        <button class="ui icon button blue la-modern-button" data-wfId="${wf.id}"><i class="icon pencil"></i></button>--}%
                     </g:if>
                     <g:elseif test="${workflowLightService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
 %{--                        <uiWorkflow:usageIconLinkButton workflow="${wf}" params="${[key: 'myInstitution:' + wf.id + ':' + WfChecklist.KEY + ':' + wf.id]}" />--}%
-                        <button class="ui icon button blue la-modern-button" data-wfId="${wf.id}"><i class="icon pencil"></i></button>
+%{--                        <button class="ui icon button blue la-modern-button" data-wfId="${wf.id}"><i class="icon pencil"></i></button>--}%
                     </g:elseif>
                     <g:if test="${workflowLightService.hasUserPerm_init()}"><!-- TODO: workflows-permissions -->
                         <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"

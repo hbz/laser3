@@ -18,6 +18,8 @@
     </g:else>
 </g:elseif>
 
+%{-- CHECKLISTS --}%
+<g:if test="${checklists}">
 <table class="ui celled table la-js-responsive-table la-table">
     <thead>
         <tr>
@@ -59,7 +61,7 @@
                 <td class="center aligned">
                     <g:if test="${workflowLightService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
 %{--                        <uiWorkflow:usageIconLinkButton workflow="${clist}" params="${[key: wfLinkParam]}" />--}%
-%{--                        <button class="ui icon button blue la-modern-button" data-wfId="${clist.id}"><i class="icon pencil"></i></button>--}%
+                        <button class="ui icon button blue la-modern-button" data-wfId="${clist.id}"><i class="icon pencil"></i></button>
                     </g:if>
                     <g:elseif test="${workflowLightService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
 %{--                        <uiWorkflow:usageIconLinkButton workflow="${clist}" params="${[key: wfLinkParam]}" />--}%
@@ -79,11 +81,14 @@
         </g:each>
     </tbody>
 </table>
+</g:if>
 
 <g:if test="${AppUtils.getCurrentServer() in [AppUtils.DEV, AppUtils.LOCAL]}">
 
 <br />
 
+%{-- WORKFLOWS --}%
+<g:if test="${workflows}">
 <table class="ui celled table la-js-responsive-table la-table">
     <thead>
     <tr>
@@ -148,6 +153,7 @@
     </g:each>
     </tbody>
 </table>
+</g:if>
 
 <div id="wfModal" class="ui modal"></div>
 

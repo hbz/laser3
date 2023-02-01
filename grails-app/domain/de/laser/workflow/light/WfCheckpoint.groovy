@@ -4,15 +4,15 @@ class WfCheckpoint {
 
     static final String KEY = 'WF_CHECKPOINT'
 
-    String title
-    String description
+    String title            // instantiate
+    String description      // instantiate
     String comment
 
     Date date
-    Boolean done
+    Boolean done = false
 
-    WfChecklist checklist
-    int position
+    WfChecklist checklist   // instantiate
+    int position            // instantiate
 
     Date dateCreated
     Date lastUpdated
