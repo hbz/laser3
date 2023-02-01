@@ -14,6 +14,7 @@ import de.laser.system.SystemEvent
 import grails.gorm.transactions.Transactional
 import groovy.time.TimeCategory
 import org.codehaus.groovy.runtime.InvokerHelper
+import org.grails.datastore.gorm.events.AutoTimestampEventListener
 
 import java.nio.file.Files
 import java.nio.file.Path
@@ -25,6 +26,7 @@ import java.nio.file.Path
 class RenewSubscriptionService extends AbstractLockableService {
 
     ContextService contextService
+    AutoTimestampEventListener autoTimestampEventListener
 
     /**
      * Triggered by cronjob
@@ -252,40 +254,46 @@ class RenewSubscriptionService extends AbstractLockableService {
 
                                 //Documents
                                 subscription.documents.each { DocContext dctx ->
-                                Doc newDoc = new Doc()
-                                InvokerHelper.setProperties(newDoc, dctx.owner.properties)
+                                    if (dctx.owner.title != 'Automatisch um ein Jahr verlängert (Automatic renew annually)') {
+                                        autoTimestampEventListener.withoutTimestamps {
+                                            Doc newDoc = new Doc()
+                                            InvokerHelper.setProperties(newDoc, dctx.owner.properties)
 
-                                if (newDoc.save()) {
-                                    DocContext newDocContext = new DocContext()
-                                    InvokerHelper.setProperties(newDocContext, dctx.properties)
-                                    newDocContext.subscription = copySub
-                                    newDocContext.owner = newDoc
+                                            if (newDoc.save(flush: true)) {
+                                                DocContext newDocContext = new DocContext()
+                                                InvokerHelper.setProperties(newDocContext, dctx.properties)
+                                                newDocContext.subscription = copySub
+                                                newDocContext.owner = newDoc
+                                                newDocContext.dateCreated = new Date()
+                                                newDocContext.lastUpdated = new Date()
 
-                                    if (!newDocContext.save()) {
-                                        log.error("Problem saving DocContext ${newDocContext.errors}")
-                                        fail = true
-                                    } else {
+                                                if (!newDocContext.save(flush: true)) {
+                                                    log.error("Problem saving DocContext ${newDocContext.errors}")
+                                                    fail = true
+                                                } else {
 
-                                        if (dctx.isDocAFile() && (dctx.status?.value != 'Deleted')) {
-                                            try {
-                                                String fPath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
+                                                    if (dctx.isDocAFile() && (dctx.status?.value != 'Deleted')) {
+                                                        try {
+                                                            String fPath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
 
-                                                Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
-                                                Path target = new File("${fPath}/${newDoc.uuid}").toPath()
-                                                Files.copy(source, target)
+                                                            Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
+                                                            Path target = new File("${fPath}/${newDoc.uuid}").toPath()
+                                                            Files.copy(source, target)
 
-                                            }
-                                            catch (Exception e) {
-                                                log.error("Problem by Saving Doc in documentStorageLocation (Doc ID: ${dctx.owner.id} -> ${e})")
+                                                        }
+                                                        catch (Exception e) {
+                                                            log.error("Problem by Saving Doc in documentStorageLocation (Doc ID: ${dctx.owner.id} -> ${e})")
+                                                            fail = true
+                                                        }
+                                                    }
+                                                }
+                                            } else {
+                                                log.error("Problem saving Doc ${newDoc.errors}")
                                                 fail = true
                                             }
                                         }
                                     }
-                                } else {
-                                    log.error("Problem saving Doc ${newDoc.errors}")
-                                    fail = true
                                 }
-                            }
 
                                 //PersonRole
                                 subscription.prsLinks.each { PersonRole prsLink ->
