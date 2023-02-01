@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4787    01.02.2023  rc-3.0  3.0.3       David   Feature     Testen: Funktioniert Fachbereichsfilter korrekt?
+
 --      31.01.2023  rc-3.0  3.0.3       Andreas Bug         Bug bei der Synchronisation der Titel behoben
 
 --      31.01.2023  rc-3.0  3.0.3       Andreas Bug         diverse Optimierungen beim Statistik-Sync
