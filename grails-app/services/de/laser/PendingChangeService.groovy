@@ -589,8 +589,9 @@ class PendingChangeService extends AbstractLockableService {
             pending.addAll(getEventRows(titlePendingCount, locale, status, roleTypes, sql, subPromptPkgs))
             pending.addAll(getEventRows(coveragePendingCount, locale, status, roleTypes, sql, subPromptPkgs))
             pending.addAll(getEventRows(removedTitlesCount, locale, status, roleTypes, sql, new HashSet()))
-            sql.rows("select pc_id, pc_ci_fk, pc_msg_token, pc_old_value, pc_new_value, pc_sub_fk, pc_status_rdv_fk, pc_ts from pending_change where pc_owner = :contextOrg and pc_status_rdv_fk = any(:status) and (pc_msg_token = :newSubscription or pc_ci_fk is not null)", [contextOrg: configMap.contextOrg.id, status: sql.connection.createArrayOf('bigint', acceptedStatus.keySet() as Object[]), newSubscription: 'pendingChange.message_SU_NEW_01']).each { GroovyRowResult pc ->
+            sql.rows("select pc_id, pc_ci_fk, pc_msg_token, pc_old_value, pc_new_value, pc_sub_fk, pc_status_rdv_fk, pc_ts from pending_change right join cost_item on pc_ci_fk = ci_id where pc_owner = :contextOrg and pc_status_rdv_fk = any(:status) and (pc_msg_token = :newSubscription or (pc_ci_fk is not null and ci_status_rv_fk != :deleted))", [contextOrg: configMap.contextOrg.id, status: sql.connection.createArrayOf('bigint', acceptedStatus.keySet() as Object[]), newSubscription: 'pendingChange.message_SU_NEW_01', deleted: RDStore.COST_ITEM_DELETED.id]).each { GroovyRowResult pc ->
                 Map<String,Object> eventRow = [event:pc.get("pc_msg_token")]
+                boolean hasObject = true
                 if(pc.get("pc_ci_fk")) {
                     Map<String, Long> subscrRoleTypes = roleTypes
                     subscrRoleTypes.remove('consortia')
@@ -603,6 +604,7 @@ class PendingChangeService extends AbstractLockableService {
                         eventRow.eventString = messageSource.getMessage(pc.get("pc_msg_token"),args,locale)
                         eventRow.changeId = pc.get("pc_id")
                     }
+                    else hasObject = false
                 }
                 else {
                     List prevSub = sql.rows("select l_dest_sub_fk, sub_name, sub_start_date, sub_end_date, sub_status_rv_fk, org_sortname, or_roletype_fk, sub_parent_sub_fk from links join subscription on l_dest_sub_fk = sub_id join org_role on sub_id = or_sub_fk join org on or_org_fk = org_id where l_source_sub_fk = :newSub and l_link_type_rv_fk = :follows", [newSub: pc.get("pc_sub_fk"), follows: RDStore.LINKTYPE_FOLLOWS.id])
@@ -612,11 +614,13 @@ class PendingChangeService extends AbstractLockableService {
                         eventRow.subscription = [source: Subscription.class.name + ':' + previous.get("l_dest_sub_fk"), target: Subscription.class.name + ':' + pc.get("pc_sub_fk"), id: pc.get("pc_sub_fk"), name: subscriptionName(previous, status, locale)]
                     }
                 }
-                if(pc.get("pc_status_rdv_fk") == RDStore.PENDING_CHANGE_PENDING.id)
-                    pending << eventRow
-                else if(pc.get("pc_status_rdv_fk") in [RDStore.PENDING_CHANGE_ACCEPTED.id, RDStore.PENDING_CHANGE_REJECTED.id]) {
-                    if(pc.get("pc_ts") >= time)
-                        notifications << eventRow
+                if(hasObject) {
+                    if(pc.get("pc_status_rdv_fk") == RDStore.PENDING_CHANGE_PENDING.id)
+                        pending << eventRow
+                    else if(pc.get("pc_status_rdv_fk") in [RDStore.PENDING_CHANGE_ACCEPTED.id, RDStore.PENDING_CHANGE_REJECTED.id]) {
+                        if(pc.get("pc_ts") >= time)
+                            notifications << eventRow
+                    }
                 }
             }
         }
@@ -1349,7 +1353,7 @@ class PendingChangeService extends AbstractLockableService {
      * @param subId the subscription which would have been affected
      * @return true if the rejection was successful, false otherwise
      */
-    boolean reject(PendingChange pc, Long subId = null) {
+    boolean reject(PendingChange pc, subId = null) {
         if(pc.status != RDStore.PENDING_CHANGE_HISTORY) {
             pc.status = RDStore.PENDING_CHANGE_REJECTED
             pc.actionDate = new Date()
@@ -1370,7 +1374,7 @@ class PendingChangeService extends AbstractLockableService {
                 target = pc.tippCoverage
             }
             if(target) {
-                List<SubscriptionPackage> subPkg = SubscriptionPackage.executeQuery('select sp from SubscriptionPackage sp join sp.subscription s join s.orgRelations oo where sp.pkg = :pkg and sp.subscription.id = :subscription and oo.org = :ctx and s.instanceOf is null',[ctx:contextOrg,pkg:targetPkg,subscription:subId])
+                List<SubscriptionPackage> subPkg = SubscriptionPackage.executeQuery('select sp from SubscriptionPackage sp join sp.subscription s join s.orgRelations oo where sp.pkg = :pkg and sp.subscription.id = :subscription and oo.org = :ctx and s.instanceOf is null',[ctx:contextOrg,pkg:targetPkg,subscription:Long.parseLong(subId)])
                 if(subPkg.size() == 1) {
                     PendingChange toReject = PendingChange.construct([target: target, oid: genericOIDService.getOID(subPkg[0].subscription), newValue: pc.newValue, oldValue: pc.oldValue, prop: pc.targetProperty, msgToken: pc.msgToken, status: RDStore.PENDING_CHANGE_REJECTED, owner: contextOrg])
                     if (!toReject)

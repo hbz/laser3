@@ -30,7 +30,7 @@
             formatter (params) {
                 var str = JSPC.app.reporting.current.chart.option.title.text
                 str += JSPC.app.reporting.helper.tooltip.getEntry(params.marker, params.name, params.data[2])
-                return str
+                return '<div style="max-width:800px;word-break:break-word;white-space:pre-wrap;">' + str + '</div>' /* erms-4787 */
            }
         },
         legend: {
@@ -38,7 +38,9 @@
             left: 'center',
             z: 1,
             formatter: function (value) {
-                return value.replace(/\s\(ID:[0-9]*\)/,'')
+                var v = value.replace(/\s\(ID:[0-9]*\)/,'')
+                if (v.length > 80) { v = v.substring(0, 55) + '[..]' + v.substring(v.length - 20) }  /* erms-4787 */
+                return v
             }
         },
         series: [
@@ -104,7 +106,7 @@
             formatter (params) {
                 var str = JSPC.app.reporting.current.chart.option.title.text
                 str += JSPC.app.reporting.helper.tooltip.getEntry(params.marker, params.name, params.data[2])
-                return str
+                return '<div style="max-width:800px;word-break:break-word;white-space:pre-wrap;">' + str + '</div>' /* erms-4787 */
            }
         },
         grid:  {
@@ -115,7 +117,15 @@
             containLabel: true
         },
         xAxis: { },
-        yAxis: { type: 'category' },
+        yAxis: {
+            type: 'category',
+            axisLabel: {
+                formatter: function(v) {
+                    if (v.length > 80) { v = v.substring(0, 55) + '[..]' + v.substring(v.length - 20) }  /* erms-4787 */
+                    return v
+                }
+            },
+        },
         series: [
             {
                 type: 'bar',

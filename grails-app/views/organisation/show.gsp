@@ -60,7 +60,8 @@
                                     data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
                                     data_confirm_term_how="ok"
                                     class="js-open-confirm-modal-xEditable"
-                                    owner="${orgInstance}" field="name"/>
+                                    owner="${orgInstance}" field="name"
+                                    overwriteEditable="${editable && orgInstanceRecord == null}"/>
 
                             <g:if test="${orgInstance.getCustomerType() == 'ORG_INST'}">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
@@ -74,7 +75,7 @@
                         <dl>
                             <dt><g:message code="org.shortname.label" /></dt>
                             <dd>
-                                <ui:xEditable owner="${orgInstance}" field="shortname"/>
+                                <ui:xEditable owner="${orgInstance}" field="shortname" overwriteEditable="${editable && orgInstanceRecord == null}"/>
                             </dd>
                         </dl>
                         <g:if test="${!isProviderOrAgency}">
@@ -121,7 +122,7 @@
                     <dl>
                         <dt><g:message code="default.url.label"/></dt>
                         <dd>
-                            <ui:xEditable owner="${orgInstance}" type="url" field="url" class="la-overflow la-ellipsis" />
+                            <ui:xEditable owner="${orgInstance}" type="url" field="url" class="la-overflow la-ellipsis" overwriteEditable="${editable && orgInstanceRecord == null}"/>
                             <g:if test="${orgInstance.url}">
                                 <ui:linkWithIcon href="${orgInstance.url}" />
                             </g:if>
@@ -230,34 +231,30 @@
                 </div><!-- .card -->
             </g:if>
 
-            <g:if test="${isGrantedOrgRoleAdminOrOrgEditor}">
-                <div class="ui card">
-                    <div class="content">
+            <div class="ui card">
+                <div class="content">
+                    <dl>
+                        <dt><g:message code="org.sector.label" /></dt>
+                        <dd>
+                            <ui:xEditableRefData owner="${orgInstance}" field="sector" config="${RDConstants.ORG_SECTOR}" overwriteEditable="${isGrantedOrgRoleAdminOrOrgEditor && orgInstanceRecord == null}"/>
+                        </dd>
+                    </dl>
+                    <dl>
+                        <dt>${message(code: 'default.status.label')}</dt>
+                        <dd>
+                            <ui:xEditableRefData owner="${orgInstance}" field="status" config="${RDConstants.ORG_STATUS}" overwriteEditable="${isGrantedOrgRoleAdminOrOrgEditor && orgInstanceRecord == null}"/>
+                        </dd>
+                    </dl>
+                    <g:if test="${orgInstance.status == RDStore.ORG_STATUS_RETIRED}">
                         <dl>
-                            <dt><g:message code="org.sector.label" /></dt>
+                            <dt>${message(code: 'org.retirementDate.label')}</dt>
                             <dd>
-                                <ui:xEditableRefData owner="${orgInstance}" field="sector" config="${RDConstants.ORG_SECTOR}"/>
+                                <g:formatDate date="${orgInstance.retirementDate}" format="${message(code: 'default.date.format.notime')}"/>
                             </dd>
                         </dl>
-                        <dl>
-                            <dt>${message(code: 'default.status.label')}</dt>
-
-                            <dd>
-                                <ui:xEditableRefData owner="${orgInstance}" field="status" config="${RDConstants.ORG_STATUS}"/>
-                            </dd>
-                        </dl>
-                        <g:if test="${orgInstance.status == RDStore.ORG_STATUS_RETIRED}">
-                            <dl>
-                                <dt>${message(code: 'org.retirementDate.label')}</dt>
-
-                                <dd>
-                                    <g:formatDate date="${orgInstance.retirementDate}" format="${message(code: 'default.date.format.notime')}"/>
-                                </dd>
-                            </dl>
-                        </g:if>
-                    </div>
-                </div><!-- .card -->
-            </g:if>
+                    </g:if>
+                </div>
+            </div><!-- .card -->
 
             <g:if test="${links || isGrantedOrgRoleAdminOrOrgEditor}">
                 <div class="ui card">
