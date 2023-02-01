@@ -248,7 +248,7 @@
                         </g:if>
                     </g:if>
                     <g:else>
-                        <g:link controller="organisation" action="show" id="${org.id}" params="${actionName == "currentProviders" ? [my: true] : [:]}">
+                        <g:link controller="organisation" action="show" id="${org.id}" params="${actionName in ["currentProviders", "manageMembers"] ? [my: true] : [:]}">
                             <g:if test="${org.shortname}">
                                 ${fieldValue(bean: org, field: "shortname")}
                             </g:if>
@@ -272,7 +272,7 @@
                             </g:if>
                         </g:if>
                         <g:else>
-                            <g:link controller="organisation" action="show" id="${org.id}" params="${actionName == "currentProviders" ? [my: true] : [:]}">
+                            <g:link controller="organisation" action="show" id="${org.id}" params="${actionName in ["currentProviders", "manageMembers"] ? [my: true] : [:]}">
                                 ${fieldValue(bean: org, field: "name")}
                                 <g:if test="${org.shortname && !tmplConfigItem.equalsIgnoreCase('shortname')}">
                                     <br />
