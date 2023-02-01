@@ -825,7 +825,7 @@ class ControlledListService {
                 rawSubject.tokenize(',;|').each { String rs ->
                     subjects.add(rs.trim())
                 }
-                subjects << rawSubject.trim()
+                //subjects << rawSubject.trim()
             }
         }
 
@@ -851,9 +851,9 @@ class ControlledListService {
         else {
             rawSubjects.each { String rawSubject ->
                 rawSubject.tokenize(',;|').each { String rs ->
-                    subjects.add(rs)
+                    subjects.add(rs.trim())
                 }
-                subjects << rawSubject.trim()
+                //subjects << rawSubject.trim()
             }
         }
 
