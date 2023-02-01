@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4772    01.02.2023  dev     3.1         Andreas Bug         Entfernen zweier funktionsloser Checkboxen
+
+4764    01.02.2023  dev     3.1         Andreas Bug         Ausbau einer Mehrfachsicherung, die zum Verhängnis wurde
+
+4585    01.02.2023  dev     3.1         Andreas Feature     weitreichende Umstrukturierung des Vererbungsmechanismusses
+
 4790    01.02.2023  rc-3.0  3.0.3       Andreas Bug         Absturz bei Ablehnen einer Änderung behoben
 
 4788    01.02.2023  rc-3.0  3.0.3       Andreas Bug         diverse Bugs in der Anzeige behoben
