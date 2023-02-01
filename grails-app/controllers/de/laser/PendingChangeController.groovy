@@ -74,7 +74,7 @@ class PendingChangeController  {
             pendingChangeService.performReject(pc)
         }
         else if (!pc.payload) {
-            pendingChangeService.reject(pc, Long.parseLong(params.subId))
+            pendingChangeService.reject(pc, params.subId)
         }
         redirect(url: request.getHeader('referer'))
     }
