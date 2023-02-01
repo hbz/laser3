@@ -9,6 +9,8 @@
 
 4772    01.02.2023  dev     3.1         Andreas Bug         Entfernen zweier funktionsloser Checkboxen
 
+4766    01.02.2023  dev     3.1         Andreas Feature     Brotkrümelweiche bei Einrichtungen eingebaut
+
 4764    01.02.2023  dev     3.1         Andreas Bug         Ausbau einer Mehrfachsicherung, die zum Verhängnis wurde
 
 4585    01.02.2023  dev     3.1         Andreas Feature     weitreichende Umstrukturierung des Vererbungsmechanismusses

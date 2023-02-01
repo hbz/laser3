@@ -13,7 +13,12 @@
         </g:if>
         <g:else>
             <g:if test="${institutionalView}">
-                <ui:crumb message="menu.my.insts" controller="myInstitution" action="manageMembers" params="[comboType:RDStore.COMBO_TYPE_CONSORTIUM]"/>
+                <g:if test="${params.my}">
+                    <ui:crumb message="menu.my.insts" controller="myInstitution" action="manageMembers" params="[comboType:RDStore.COMBO_TYPE_CONSORTIUM]"/>
+                </g:if>
+                <g:else>
+                    <ui:crumb message="menu.public.all_insts" controller="org" action="listInstitution"/>
+                </g:else>
                 <ui:crumb text="${orgInstance.sortname}" class="active"/>
             </g:if>
             <g:elseif test="${consortialView}">
