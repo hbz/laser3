@@ -476,6 +476,7 @@ class AjaxJsonController {
 
         render result as JSON
     }
+
     @Secured(['ROLE_USER'])
     def getOwnerStatus() {
         List<Map<String, Object>> result = []
