@@ -118,7 +118,7 @@
                                                                             id="natstat_server_access"
                                                                             data_confirm_tokenMsg="${message(code: 'org.setting.NATSTAT_SERVER_ACCESS.confirm')}"
                                                                             data_confirm_term_how="ok"
-                                                                            cssClass="js-open-confirm-modal-xeditable"
+                                                                            class="js-open-confirm-modal-xEditableRefData"
                                                                             data_confirm_value="${RefdataValue.class.name}:${RDStore.YN_YES.id}"
                                                                             config="${os.key.rdc}" />
                                                 </g:if>
@@ -128,7 +128,7 @@
                                                                             id="oamonitor_server_access"
                                                                             data_confirm_tokenMsg="${message(code: 'org.setting.OAMONITOR_SERVER_ACCESS.confirm')}"
                                                                             data_confirm_term_how="ok"
-                                                                            cssClass="js-open-confirm-modal-xeditable"
+                                                                            class="js-open-confirm-modal-xEditableRefData"
                                                                             data_confirm_value="${RefdataValue.class.name}:${RDStore.YN_YES.id}"
                                                                             config="${os.key.rdc}" />
                                                 </g:elseif>
@@ -138,7 +138,7 @@
                                                                             id="ezb_server_access"
                                                                             data_confirm_tokenMsg="${message(code: 'org.setting.EZB.confirm')}"
                                                                             data_confirm_term_how="ok"
-                                                                            cssClass="js-open-confirm-modal-xeditable"
+                                                                            class="js-open-confirm-modal-xEditableRefData"
                                                                             data_confirm_value="${RefdataValue.class.name}:${RDStore.YN_YES.id}"
                                                                             config="${os.key.rdc}" />
                                                 </g:elseif>

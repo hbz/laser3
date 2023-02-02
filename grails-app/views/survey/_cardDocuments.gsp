@@ -99,7 +99,7 @@
 %{--                            <g:if test="${(ownobj instanceof SurveyConfig)}"> -- erms-4627 --}%
                             <g:if test="${(ownobj instanceof SurveyConfig && docctx.owner.owner.id == contextService.getOrg().id)}">
                                 <laser:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />
-                                <button type="button" class="ui icon blue button la-modern-button editable-cancel"
+                                <button type="button" class="ui icon blue button la-modern-button"
                                         data-ui="modal"
                                         data-href="#modalEditDocument_${docctx.id}"
                                         aria-label="${message(code: 'ariaLabel.change.universal')}">
