@@ -3142,9 +3142,9 @@ join sub.orgRelations or_sub where
             int sumTitleCell = 10
             result.entries.eachWithIndex { entry, int sidewideNumber ->
                 log.debug("processing entry ${sidewideNumber} ...")
-                CostItem ci = (CostItem) entry[0] ?: new CostItem()
-                Subscription subCons = (Subscription) entry[1]
-                Org subscr = (Org) entry[2]
+                CostItem ci = (CostItem) entry.cost ?: new CostItem()
+                Subscription subCons = (Subscription) entry.sub
+                Org subscr = (Org) entry.org
                 int cellnum = 0
                 row = sheet.createRow(rownum)
                 //sidewide number

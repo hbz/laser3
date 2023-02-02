@@ -202,14 +202,13 @@ class SubscriptionService {
         Map<Subscription,Set<License>> linkedLicenses = [:]
 
         if('withCostItems' in tableConf) {
-            query = "select ci, subT, roleT.org " +
+            query = "select new map((case when ci.owner = :org then ci else null end) as cost, subT as sub, roleT.org as org) " +
                     " from CostItem ci right outer join ci.sub subT join subT.instanceOf subK " +
                     " join subK.orgRelations roleK join subT.orgRelations roleTK join subT.orgRelations roleT " +
                     " where roleK.org = :org and roleK.roleType = :rdvCons " +
                     " and roleTK.org = :org and roleTK.roleType = :rdvCons " +
                     " and roleT.roleType in (:rdvSubscr) " +
-                    " and ( (ci is null or ci.costItemStatus != :deleted) ) " +
-                    " and (ci.owner = :org or ci is null)"
+                    " and ( (ci is null or ci.costItemStatus != :deleted) ) "
             qarams = [org      : contextOrg,
                       rdvCons  : RDStore.OR_SUBSCRIPTION_CONSORTIA,
                       rdvSubscr: [RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN],
@@ -356,7 +355,7 @@ class SubscriptionService {
         if('withCostItems' in tableConf) {
             prf.setBenchmark('costs init')
 
-            List costs = CostItem.executeQuery(
+            Set costs = CostItem.executeQuery(
                     query + " " + orderQuery, qarams
             )
             prf.setBenchmark('read off costs')
@@ -365,7 +364,7 @@ class SubscriptionService {
             result.totalCount = costs.size()
             result.totalMembers = []
             costs.each { row ->
-                result.totalMembers << row[2]
+                result.totalMembers << row.org
             }
             if(params.exportXLS || params.format)
                 result.entries = costs
@@ -374,8 +373,8 @@ class SubscriptionService {
             result.finances = {
                 Map entries = [:]
                 result.entries.each { obj ->
-                    if (obj[0] && obj[0].owner.id == contextOrg.id) {
-                        CostItem ci = (CostItem) obj[0]
+                    if (obj.cost && obj.cost.owner.id == contextOrg.id) {
+                        CostItem ci = (CostItem) obj.cost
                         if (!entries."${ci.billingCurrency}") {
                             entries."${ci.billingCurrency}" = 0.0
                         }
@@ -388,8 +387,8 @@ class SubscriptionService {
                         }
                         //result.totalMembers << ci.sub.getSubscriber()
                     }
-                    if (obj[1]) {
-                        Subscription subCons = (Subscription) obj[1]
+                    if (obj.sub) {
+                        Subscription subCons = (Subscription) obj.sub
                         //linkedLicenses.put(subCons,Links.findAllByDestinationSubscriptionAndLinkType(subCons,RDStore.LINKTYPE_LICENSE).collect { Links row -> genericOIDService.resolveOID(row.source)})
                         linkedLicenses.put(subCons,Links.executeQuery('select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType',[subscription:subCons,linkType:RDStore.LINKTYPE_LICENSE]))
                     }
