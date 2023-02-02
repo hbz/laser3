@@ -208,10 +208,10 @@
 
             /*-- charts --*/
 
-            $('*[id^=query-chooser').on ('change', function (e) {
+            $('*[id^=query-chooser]').on ('change', function (e) {
                 var value = $(e.target).val();
                 if (value) {
-                    $('*[id^=query-chooser').not( $('#' + this.id)).dropdown('clear');
+                    $('*[id^=query-chooser]').not( $('#' + this.id)).dropdown('clear');
                     JSPC.app.reporting.current.request.query = value;
                     JSPC.app.reporting.requestChartJsonData();
                 }
