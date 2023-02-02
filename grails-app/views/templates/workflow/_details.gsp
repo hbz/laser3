@@ -6,13 +6,13 @@
 
     <g:set var="clistInfo" value="${clist.getInfo()}" />
 
-    <div data-wfId="${clist.id}" class="workflow-details" style="margin-top:5em; margin-bottom:5em; position:relative; display:none;">
+    <div data-wfId="${clist.id}" class="workflow-details" style="margin:5rem; position:relative; display:none;">
 
         <div class="ui piled segments wf-details">
 
             <div class="ui segment">
                 <p style="text-align: center">
-                    <strong>${clist.title}</strong>
+                    Sie bearbeiten den Workflow: <strong>${clist.title}</strong>
                 </p>
             </div>
 
@@ -23,31 +23,54 @@
                             <uiWorkflow:statusIcon checklist="${clist}" size="big" />
                         </div>
                         <div class="ten wide column">
-                            <div class="ui header">
-                                <span class="tmp-inline-label">Titel:</span>
-                                <ui:xEditable owner="${clist}" field="title" type="text" />
-                            </div>
-                            <div class="description">
-                                <span class="tmp-inline-label">Beschreibung:</span>
-                                <ui:xEditable owner="${clist}" field="description" type="textarea" />
-                            </div>
-                            <div class="comment">
-                                <span class="tmp-inline-label">Kommentar:</span>
-                                <ui:xEditable owner="${clist}" field="comment" type="textarea" />
-                            </div>
-                            <!-- -->
-                            <div class="template">
-                                <span class="tmp-inline-label">Vorlage:</span>
-                                <ui:xEditableBoolean owner="${clist}" field="template" />
-                            </div>
-                            <div class="info">
-                                <div class="la-flexbox">
-                                    <span class="tmp-inline-label">Objekt:</span>
-                                    <i class="icon ${clistInfo.targetIcon} la-list-icon"></i>
-                                    <g:link controller="${clistInfo.targetController}" action="show" params="${[id: clistInfo.target.id]}">
-                                        ${clistInfo.targetName}
-                                    </g:link>
+
+                            <div class="ui grid">
+                                <div class="row">
+                                    <div class="four wide column">
+                                        <strong>${message(code: 'workflow.label')}</strong>
+                                    </div>
+                                    <div class="twelve wide column">
+                                        <div class="ui header">
+                                            <ui:xEditable owner="${clist}" field="title" type="text" />
+                                        </div>
+                                    </div>
                                 </div>
+                                <div class="row">
+                                    <div class="four wide column">
+                                        <strong>${message(code: 'default.description.label')}</strong>
+                                    </div>
+                                    <div class="twelve wide column">
+                                        <ui:xEditable owner="${clist}" field="description" type="textarea" />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="four wide column">
+                                        <strong>${message(code: 'default.comment.label')}</strong>
+                                    </div>
+                                    <div class="twelve wide column">
+                                        <ui:xEditable owner="${clist}" field="comment" type="textarea" />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="four wide column">
+                                        <strong>${message(code: 'workflow.template')}</strong>
+                                    </div>
+                                    <div class="twelve wide column">
+                                        <ui:xEditableBoolean owner="${clist}" field="template" />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="four wide column">
+                                        <strong>Objekt</strong>
+                                    </div>
+                                    <div class="twelve wide column">
+                                        <i class="icon ${clistInfo.targetIcon} la-list-icon"></i>
+                                        <g:link controller="${clistInfo.targetController}" action="show" params="${[id: clistInfo.target.id]}">
+                                            ${clistInfo.targetName}
+                                        </g:link>
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
                         <div class="two wide column wf-centered">
@@ -73,27 +96,52 @@
                                 <i class="icon large ${WorkflowHelper.getCssIconAndColorByStatus(cpoint.done ? RDStore.WF_TASK_STATUS_DONE : RDStore.WF_TASK_STATUS_OPEN)}"></i>
                             </div>
                             <div class="ten wide column">
-                                <div class="ui header">
-                                    <span class="tmp-inline-label">Titel:</span>
-                                    <ui:xEditable owner="${cpoint}" field="title" type="text" />
+
+                                <div class="ui grid">
+                                    <div class="row">
+                                        <div class="four wide column">
+                                            <strong>${message(code: 'workflow.task.label')}</strong>
+                                        </div>
+                                        <div class="twelve wide column">
+                                            <div class="ui header">
+                                                <ui:xEditable owner="${cpoint}" field="title" type="text" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="four wide column">
+                                            <strong>${message(code: 'default.description.label')}</strong>
+                                        </div>
+                                        <div class="twelve wide column">
+                                            <ui:xEditable owner="${cpoint}" field="description" type="textarea" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="four wide column">
+                                            <strong>${message(code: 'default.comment.label')}</strong>
+                                        </div>
+                                        <div class="twelve wide column">
+                                            <ui:xEditable owner="${cpoint}" field="comment" type="textarea" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="four wide column">
+                                            <strong>${message(code: 'workflow.checkpoint.done')}</strong>
+                                        </div>
+                                        <div class="twelve wide column">
+                                            <ui:xEditableBoolean owner="${cpoint}" field="done" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="four wide column">
+                                            <strong>${message(code: 'workflow.checkpoint.date')}</strong>
+                                        </div>
+                                        <div class="twelve wide column">
+                                            <ui:xEditable owner="${cpoint}" field="date" type="date" />
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="description">
-                                    <span class="tmp-inline-label">Beschreibung:</span>
-                                    <ui:xEditable owner="${cpoint}" field="description" type="textarea" />
-                                </div>
-                                <div class="comment">
-                                    <span class="tmp-inline-label">Kommentar:</span>
-                                    <ui:xEditable owner="${cpoint}" field="comment" type="textarea" />
-                                </div>
-                                <!-- -->
-                                <div class="cpoint">
-                                    <span class="tmp-inline-label">Aufgabe erledigt:</span>
-                                    <ui:xEditableBoolean owner="${cpoint}" field="done" />
-                                </div>
-                                <div class="date">
-                                    <span class="tmp-inline-label">Datumsangabe:</span>
-                                    <ui:xEditable owner="${cpoint}" field="date" type="date" />
-                                </div>
+
                             </div>
                             <div class="two wide column wf-centered">
                                 <div class="${DateUtils.isDateToday(cpoint.lastUpdated) ? '' : 'sc_darkgrey'}" style="text-align: right">
@@ -119,6 +167,11 @@
                                             <i class="icon arrow down"></i>
                                         </g:link>
                                     </g:if>
+                                    <g:elseif test="${ti == cpoints.size()-1}">
+                                        <g:link class="ui icon button blue compact la-modern-button" action="workflows" id="${clistInfo.target.id}" params="${[cmd:"create:${WfCheckpoint.KEY}:${cpoint.id}"]}">
+                                            <i class="icon plus"></i>
+                                        </g:link>
+                                    </g:elseif>
                                     <g:else>
                                         <div class="ui icon button compact la-hidden"><i class="coffee icon"></i></div>
                                     </g:else>
@@ -149,9 +202,15 @@
     </div>
 
     <style>
-        .tmp-inline-label {
-            display: inline-block;
-            width: 120px;
+        .ui.grid .row {
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
+        .ui.grid .row:first-of-type {
+            padding-top: 1rem;
+        }
+        .ui.grid .row:last-of-type {
+            padding-bottom: 1rem;
         }
     </style>
 </g:each>
