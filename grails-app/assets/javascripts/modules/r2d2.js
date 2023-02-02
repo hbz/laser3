@@ -896,23 +896,36 @@ r2d2 = {
             _buildConfirmationModal(this);
         });
 
-        // x-editable
-        $('.js-open-confirm-modal-xeditable').next('.editable-container.editable-inline').find('.button.editable-submit').click(function(e) {
-            let test = $('.js-open-confirm-modal-xeditable').data('confirm-value');
+        // x-editable xEditableRefData - one refData was selected
+        $('.js-open-confirm-modal-xEditableRefData')
+            .next('.editable-container.editable-inline')
+            .find('.button.editable-submit')
+            .click(function(e) {
 
-
-            if ($('.js-open-confirm-modal-xeditable').next('.editable-container.editable-inline').find('select').val() ==  $('.js-open-confirm-modal-xeditable').data('confirm-value')) {
+            if ($('.js-open-confirm-modal-xEditableRefData').next('.editable-container.editable-inline').find('select').val() ==  $('.js-open-confirm-modal-xEditableRefData').data('confirm-value')) {
 
                 if (confirmationModalXeditableFlag == false) {
                     e.preventDefault();
                     confirmationModalXeditableFlag = true;
 
-                    let x = $('.js-open-confirm-modal-xeditable')[0];
+                    let x = $('.js-open-confirm-modal-xEditableRefData')[0];
                     _buildConfirmationModal(x);
                 }
             }
         });
+        // x-editable
+        $('.js-open-confirm-modal-xEditable')
+        .next('.editable-container.editable-inline')
+        .find('.button.editable-submit')
+        .click(function(e) {
+            if (confirmationModalXeditableFlag == false) {
+                e.preventDefault();
+                confirmationModalXeditableFlag = true;
 
+                let x = $('.js-open-confirm-modal-xEditable')[0];
+                _buildConfirmationModal(x);
+            }
+        });
         // for old remote links = ajax calls
         $(ctxSel + ' .js-open-confirm-modal-copycat').click(function(e) {
             var onclickString = $(this).next('.js-gost').attr("onclick");

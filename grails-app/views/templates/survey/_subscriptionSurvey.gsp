@@ -1249,7 +1249,7 @@
                                     <ui:xEditableRefData
                                             data_confirm_tokenMsg="${surveyOrg.orgInsertedItself ? message(code: 'survey.participationProperty.confirmation2') : message(code: 'survey.participationProperty.confirmation')}"
                                             data_confirm_term_how="ok"
-                                            cssClass="js-open-confirm-modal-xeditable"
+                                            class="js-open-confirm-modal-xEditableRefData"
                                             data_confirm_value="${RefdataValue.class.name}:${RDStore.YN_NO.id}"
                                             owner="${surveyResult}"
                                             field="refValue" type="text"
