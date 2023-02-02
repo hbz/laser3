@@ -810,12 +810,13 @@
         func();
     }
 </g:if>
-    <g:if test="${editable && orgInstanceRecord == null}">
-        let confirmationCard = $('#js-confirmationCard');
-        $('.js-open-confirm-modal-xEditable', confirmationCard).editable('destroy').editable().on('shown', function() {
-                                        r2d2.initDynamicUiStuff('.js-open-confirm-modal-xEditable');
-                                    });
-    </g:if >
+
+<g:if test="${editable && orgInstanceRecord == null}">
+    let confirmationCard = $('#js-confirmationCard');
+    $('.js-open-confirm-modal-xEditable', confirmationCard).editable('destroy').editable().on('shown', function() {
+                                    r2d2.initDynamicUiStuff('.js-open-confirm-modal-xEditable');
+                                });
+</g:if >
 
 
 </laser:script>
