@@ -35,7 +35,6 @@ class XEditableTagLib {
             String id            = attrs.id ?: "${oid}:${field}"
             String default_empty = message(code:'default.button.edit.label')
             String data_link     = ''
-            String data_confirm_tokenMsg = attrs.data_confirm_tokenMsg
             String cssClass = attrs.class
 
             out << '<a href="#" id="' + id + '" class="xEditableValue ' + (cssClass ?: '')  + '"'
@@ -93,7 +92,7 @@ class XEditableTagLib {
             }
 
             if(attrs.data_confirm_tokenMsg) {
-                out << "data-confirm-tokenmsg=\"${data_confirm_tokenMsg}\" "
+                out << 'data-confirm-tokenmsg="' + attrs.data_confirm_tokenMsg + '" '
             }
 
             if (! body) {
