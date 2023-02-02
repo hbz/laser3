@@ -28,6 +28,9 @@ class RenewSubscriptionService extends AbstractLockableService {
     ContextService contextService
     AutoTimestampEventListener autoTimestampEventListener
 
+
+    static final String AUTOMATIC_RENEW_ANNUALLY_DOC_TITLE = 'Automatisch um ein Jahr verlängert (Automatic renew annually)'
+
     /**
      * Triggered by cronjob
      * Checks whether there are local subscriptions due to renewal, if there is a successor and if it has been flagged for automatic renewal.
@@ -254,7 +257,7 @@ class RenewSubscriptionService extends AbstractLockableService {
 
                                 //Documents
                                 subscription.documents.each { DocContext dctx ->
-                                    if (dctx.owner.title != 'Automatisch um ein Jahr verlängert (Automatic renew annually)') {
+                                    if (dctx.owner.title != AUTOMATIC_RENEW_ANNUALLY_DOC_TITLE) {
                                         autoTimestampEventListener.withoutTimestamps {
                                             Doc newDoc = new Doc()
                                             InvokerHelper.setProperties(newDoc, dctx.owner.properties)
@@ -338,7 +341,7 @@ class RenewSubscriptionService extends AbstractLockableService {
 
                                 }
 
-                                Doc docContent = new Doc(contentType: Doc.CONTENT_TYPE_STRING, content: 'Diese Lizenz ist eine Kopie der vorherigen Lizenz. Es wurde automatisch vom System erstellt, da in der vorherigen Lizenz das Flag "Automatisch um ein Jahr verlängern" gesetzt war. (This subscription is a copy of the previous subscription. It was created automatically by the system because the flag "Automatic renew annually" was set in the previous subscription.)', title: 'Automatisch um ein Jahr verlängert (Automatic renew annually)', type: RefdataValue.getByValueAndCategory('Note', RDConstants.DOCUMENT_TYPE), owner: org, user: null)
+                                Doc docContent = new Doc(contentType: Doc.CONTENT_TYPE_STRING, content: 'Diese Lizenz ist eine Kopie der vorherigen Lizenz. Es wurde automatisch vom System erstellt, da in der vorherigen Lizenz das Flag "Automatisch um ein Jahr verlängern" gesetzt war. (This subscription is a copy of the previous subscription. It was created automatically by the system because the flag "Automatic renew annually" was set in the previous subscription.)', title: AUTOMATIC_RENEW_ANNUALLY_DOC_TITLE, type: RefdataValue.getByValueAndCategory('Note', RDConstants.DOCUMENT_TYPE), owner: org, user: null)
                                 if(docContent.save()) {
                                     DocContext dc = new DocContext(subscription: copySub, owner: docContent)
                                     dc.save()
