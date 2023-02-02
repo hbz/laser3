@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4799    01.02.2023  rc-3.0  3.0.3       Moe     Bug         Automatische Verlängerung erzeugt doppelte Anmerkung
+
 4790    01.02.2023  rc-3.0  3.0.3       Andreas Bug         Absturz bei Ablehnen einer Änderung behoben
 
 4788    01.02.2023  rc-3.0  3.0.3       Andreas Bug         diverse Bugs in der Anzeige behoben
