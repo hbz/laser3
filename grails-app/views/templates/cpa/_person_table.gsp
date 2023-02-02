@@ -220,7 +220,8 @@
 
 <laser:script file="${this.getGroovyPageFileName()}">
     JSPC.app.editPerson = function (id) {
-        var url = '<g:createLink controller="ajaxHtml" action="editPerson" params="[showAddresses: showAddresses?:false, showContacts: showContacts?:false, org: (restrictToOrg ? restrictToOrg?.id : '')]"/>&id='+id;
+        //addresses deactivated as of ERMS-4492; the argument was showAddresses?:false
+        var url = '<g:createLink controller="ajaxHtml" action="editPerson" params="[showAddresses: false, showContacts: showContacts?:false, org: (restrictToOrg ? restrictToOrg?.id : '')]"/>&id='+id;
         JSPC.app.person_editModal(url)
     }
     JSPC.app.person_editModal = function (url) {

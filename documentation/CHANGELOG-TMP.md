@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4492    02.02.2023  dev     3.1         Andreas Feature     Adressen können nicht mehr zu Personen neu angelegt werden
+
 4772    01.02.2023  dev     3.1         Andreas Bug         Entfernen zweier funktionsloser Checkboxen
 
 4766    01.02.2023  dev     3.1         Andreas Feature     Brotkrümelweiche bei Einrichtungen eingebaut
