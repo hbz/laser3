@@ -1,6 +1,6 @@
 <%@ page import="de.laser.workflow.light.WfCheckpoint; de.laser.Doc; de.laser.Org; de.laser.utils.DateUtils; de.laser.storage.RDStore; de.laser.Subscription; de.laser.workflow.WorkflowHelper; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.workflow.*;" %>
 <laser:serviceInjection />
-%{--via model: <g:set var="wfEditPerm" value="${workflowService.hasUserPerm_edit()}" />--}%
+%{--via model: <g:set var="wfEditPerm" value="${workflowService.hasUserPerm_edit() || workflowLightService.hasUserPerm_edit()}" />--}%
 
 <g:form id="wfForm" url="${formUrl}" method="POST" class="ui form">
 

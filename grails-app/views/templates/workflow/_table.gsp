@@ -67,7 +67,7 @@
 %{--                        <uiWorkflow:usageIconLinkButton workflow="${clist}" params="${[key: wfLinkParam]}" />--}%
                         <button class="ui icon button blue la-modern-button" data-wfId="${clist.id}"><i class="icon pencil"></i></button>
                     </g:elseif>
-                    <g:if test="${workflowLightService.hasUserPerm_init()}"><!-- TODO: workflows-permissions -->
+                    <g:if test="${workflowLightService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
                         <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.workflow", args: [clist.title])}"
                                 data-confirm-term-how="delete"

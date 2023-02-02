@@ -2612,22 +2612,38 @@ join sub.orgRelations or_sub where
     @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER") })
     def currentWorkflows() {
 
-        println params
+        SessionCacheWrapper cache = contextService.getSessionCache()
+        String urlKey = 'myInstitution/currentWorkflows'
+        String fmKey  = urlKey + '/_filterMap'
 
         Map<String, Object> result = [
-            tab:    params.tab    ?: 'open',
-            offset: params.offset ? params.int('offset') : 0,
-            max:    params.max    ? params.int('max') : contextService.getUser().getPageSizeOrDefault()
+                offset: params.offset ? params.int('offset') : 0,
+                max:    params.max    ? params.int('max') : contextService.getUser().getPageSizeOrDefault()
         ]
 
-        // modal, delete, etc. - process and remove form params
-        if (params.cmd) {
-            result.putAll(workflowLightService.cmd(params))
+        // filter
+
+        Map<String, Object> filter = params.findAll{ it.key.startsWith('filter') } as Map
+
+        if (filter.get('filter') == 'reset') {
+            cache.remove(fmKey)
+        }
+        else if (filter.get('filter') == 'true') {
+            filter.remove('filter') // remove control flag
+            cache.put(fmKey, filter)   // store filter settings
+        }
+        else if (params.size() == 2 && params.containsKey('controller') && params.containsKey('action')) { // first visit
+            cache.remove(fmKey)
         }
 
-        // filter
-        Map filter = params.findAll{ it.key.startsWith('filter') }
-        result.putAll(filter)
+        if (cache.get(fmKey)) {
+            result.putAll(cache.get(fmKey) as Map) // restore filter settings
+        }
+
+        if (params.cmd) {
+            result.putAll(workflowLightService.cmd(params))
+            params.clear()
+        }
 
         String idQuery = 'select wf.id from WfChecklist wf where wf.owner = :ctxOrg'
         Map<String, Object> queryParams = [ctxOrg: contextService.getOrg()]
@@ -2655,20 +2671,7 @@ join sub.orgRelations or_sub where
             }
         }
 
-        // templates
-//        result.currentPrototypes = WfChecklist.executeQuery(
-//                idQuery + ' and wf.template = true order by wf.title', queryParams
-//        ).collect{ wf ->
-//            Map<String, Object> info = wf.getInfo()
-//            return [
-//                    id: wf.id,
-//                    title: wf.title,
-//                    lastUpdated: DateUtils.getLocalizedSDF_noTime().format(info.lastUpdated),
-//                    dateCreated: DateUtils.getLocalizedSDF_noTime().format(wf.dateCreated)
-//            ]
-//        }
-
-        println idQuery
+        // result
 
         List<Long> checklistIds = WfChecklist.executeQuery(idQuery + ' order by wf.id desc', queryParams)
 
@@ -2689,7 +2692,6 @@ join sub.orgRelations or_sub where
         }
         result.currentWorkflows = WfChecklist.executeQuery(resultQuery, [idList: checklistIds])
 
-        // filter
         if (result.filterStatus) {
             if (result.filterStatus == RDStore.WF_WORKFLOW_STATUS_OPEN.id.toString()) {
                 result.currentWorkflows = result.openWorkflows
@@ -2699,16 +2701,9 @@ join sub.orgRelations or_sub where
             }
         }
 
-        result.currentWorkflows = result.currentWorkflows.drop(result.offset).take(result.max)
-//        if (result.tab == 'open') {
-//        result.currentOpenWorkflows = workflowLightService.sortByLastUpdated( WfChecklist.executeQuery(resultQuery, [idList: result.currentWorkflowIds_open])).drop(result.offset).take(result.max)
-//        }
-//        else if (result.tab == 'done') {
-//        result.currentDoneWorkflows = workflowLightService.sortByLastUpdated( WfChecklist.executeQuery(resultQuery, [idList: result.currentWorkflowIds_done])).drop(result.offset).take(result.max)
-//        }
-        result.total = checklistIds.size()
+        result.total = result.currentWorkflows.size()
+        result.currentWorkflows = workflowLightService.sortByLastUpdated(result.currentWorkflows) // todo - .drop(result.offset).take(result.max)
 
-        println result
         result
     }
 

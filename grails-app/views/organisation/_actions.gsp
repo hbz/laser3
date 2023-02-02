@@ -157,9 +157,9 @@
         <g:if test="${inContextOrg}">
             <laser:render template="/templates/workflow/instantiate" model="${[cmd: RDStore.WF_WORKFLOW_TARGET_TYPE_INSTITUTION, target: orgInstance]}"/>
         </g:if>
-        <g:if test="${isProviderOrAgency}">
-            <laser:render template="/templates/workflow/instantiate" model="${[cmd: RDStore.WF_WORKFLOW_TARGET_TYPE_PROVIDER, target: orgInstance]}"/>
-        </g:if>
+%{--        <g:if test="${isProviderOrAgency}">--}%
+%{--            <laser:render template="/templates/workflow/instantiate" model="${[cmd: RDStore.WF_WORKFLOW_TARGET_TYPE_PROVIDER, target: orgInstance]}"/>--}%
+%{--        </g:if>--}%
     </g:if>
 </g:if>
 

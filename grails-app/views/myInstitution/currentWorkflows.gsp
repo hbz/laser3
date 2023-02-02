@@ -46,7 +46,7 @@
             <input type="submit" class="ui primary button" value="${message(code:'default.button.filter.label')}" />
         </div>
         <input type="hidden" name="filter" value="true" />
-        <input type="hidden" name="tab" value="${tab}" />
+%{--        <input type="hidden" name="tab" value="${tab}" />--}%
     </form>
 </ui:filter>
 
@@ -67,32 +67,14 @@
     </g:else>
 </g:elseif>
 
-%{--<div id="wfTabs" class="ui secondary stackable pointing tabular la-tab-with-js menu" style="margin-top:2em;">--}%
-%{--    <a class="${tab == 'open' ? 'active item':'item'}" data-tab="open">--}%
-%{--        ${RDStore.WF_WORKFLOW_STATUS_OPEN.getI10n('value')} <div class="ui  circular label">${openWorkflows.size()}</div>--}%
-%{--    </a>--}%
-%{--    <a class="${tab == 'done'  ? 'active item':'item'}" data-tab="done">--}%
-%{--        ${RDStore.WF_WORKFLOW_STATUS_DONE.getI10n('value')} <div class="ui  circular label">${doneWorkflows.size()}</div>--}%
-%{--    </a>--}%
-%{--</div>--}%
-
-%{--<g:each in="${['open':openWorkflows, 'done':doneWorkflows]}" var="wfmap">--}%
-%{--    <g:set var="currentTab" value="${wfmap.key}" />--}%
-%{--    <g:set var="currentWorkflows" value="${wfmap.value}" />--}%
-
-%{--    <div class="ui bottom attached tab ${tab == currentTab ? 'active':''}" data-tab="${currentTab}">--}%
-%{--    <g:if test="${tab == currentTab}">--}%
-
-%{--        <div>--}%
-
 <table class="ui celled table la-js-responsive-table la-table">
     <thead>
         <tr>
             <th class="one wide" rowspan="2">${message(code:'sidewide.number')}</th>
             <th class="one wide" rowspan="2"></th>
-            <th class="four wide" rowspan="2">${message(code:'workflow.label')}</th>
+            <th class="three wide" rowspan="2">${message(code:'workflow.label')}</th>
             <th class="four wide" rowspan="2">${message(code:'default.relation.label')}</th>
-            <th class="three wide" rowspan="2">${message(code:'default.progress.label')}</th>
+            <th class="four wide" rowspan="2">${message(code:'default.progress.label')}</th>
             <th class="two wide la-smaller-table-head">${message(code:'default.lastUpdated.label')}</th>
             <th class="one wide" rowspan="2">${message(code:'default.actions.label')}</th>
         </tr>
@@ -153,7 +135,7 @@
 %{--                        <uiWorkflow:usageIconLinkButton workflow="${wf}" params="${[key: 'myInstitution:' + wf.id + ':' + WfChecklist.KEY + ':' + wf.id]}" />--}%
 %{--                        <button class="ui icon button blue la-modern-button" data-wfId="${wf.id}"><i class="icon pencil"></i></button>--}%
                     </g:elseif>
-                    <g:if test="${workflowLightService.hasUserPerm_init()}"><!-- TODO: workflows-permissions -->
+                    <g:if test="${workflowLightService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
                         <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.workflow", args: [wf.title])}"
                                 data-confirm-term-how="delete"
@@ -168,18 +150,6 @@
         </g:each>
     </tbody>
 </table>
-
-%{--        </div>--}%
-
-%{--        <ui:paginate action="currentWorkflows" controller="myInstitution"--}%
-%{--                     max="${max}" offset="${offset}"--}%
-%{--                     total="${(currentTab == 'open' ? openWorkflows.size() : doneWorkflows.size())}"--}%
-%{--                     params="${params + [tab: currentTab]}" />--}%
-
-%{--    </g:if>--}%
-%{--    </div>--}%
-
-%{--</g:each>--}%
 
 <div id="wfModal" class="ui modal"></div>
 

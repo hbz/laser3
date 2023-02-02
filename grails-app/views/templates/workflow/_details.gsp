@@ -81,7 +81,8 @@
                         </div>
 
                         <g:set var="wfKey" value="${clistInfo.target.class.name}:${clistInfo.target.id}:${WfChecklist.KEY}:${clist.id}" />
-                        <div class="two wide column wf-centered"></div>
+                        <div class="two wide column wf-centered">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -167,17 +168,12 @@
                                             <i class="icon arrow down"></i>
                                         </g:link>
                                     </g:if>
-                                    <g:elseif test="${ti == cpoints.size()-1}">
-                                        <g:link class="ui icon button blue compact la-modern-button" action="workflows" id="${clistInfo.target.id}" params="${[cmd:"create:${WfCheckpoint.KEY}:${cpoint.id}"]}">
-                                            <i class="icon plus"></i>
-                                        </g:link>
-                                    </g:elseif>
                                     <g:else>
                                         <div class="ui icon button compact la-hidden"><i class="coffee icon"></i></div>
                                     </g:else>
                                 </g:if>
 
-                                <g:if test="${workflowLightService.hasUserPerm_init()}"><!-- TODO: workflows-permissions -->
+                                <g:if test="${workflowLightService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
                                     <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.checkpoint", args: [cpoint.title])}"
                                             data-confirm-term-how="delete"
@@ -196,6 +192,18 @@
             </g:each>
 
             <div class="ui segment">
+                <div class="ui grid">
+                    <div class="row">
+                        <div class="two wide column wf-centered"></div>
+                        <div class="ten wide column"></div>
+                        <div class="two wide column wf-centered"></div>
+                        <div class="two wide column wf-centered">
+                            <g:link class="ui icon button blue compact la-modern-button" action="workflows" id="${clistInfo.target.id}" params="${[cmd:"create:${WfCheckpoint.KEY}:${clist.id}"]}">
+                                <i class="icon plus"></i>
+                            </g:link>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 

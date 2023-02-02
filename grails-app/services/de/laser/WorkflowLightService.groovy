@@ -395,13 +395,7 @@ class WorkflowLightService {
     boolean hasUserPerm_read() {
         _innerPermissionCheck('INST_USER')
     }
-    boolean hasUserPerm_init() {
-        _innerPermissionCheck('INST_EDITOR')
-    }
     boolean hasUserPerm_edit() {
-        _innerPermissionCheck('INST_EDITOR')
-    }
-    boolean hasUserPerm_wrench() {
         _innerPermissionCheck('INST_EDITOR')
     }
 
