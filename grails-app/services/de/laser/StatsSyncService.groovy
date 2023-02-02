@@ -49,10 +49,11 @@ class StatsSyncService {
 
     static final int THREAD_POOL_SIZE = 4
     static final String SYNC_STATS_FROM = '2012-01-01'
-    static final int MONTH_DUE_DATE = 28 //default is 28, do not commit other days!
-    static final int YEARLY_MONTH = Calendar.DECEMBER
-    static final List HALF_YEARLY_MONTHS = [Calendar.JUNE, YEARLY_MONTH]
-    static final List QUARTERLY_MONTHS = HALF_YEARLY_MONTHS+[Calendar.MARCH, Calendar.SEPTEMBER]
+    static final int WEEK_INTERVAL = 7
+    static final int MONTH_INTERVAL = 28 //default is 28, do not commit other days!
+    static final int YEAR_INTERVAL = 365
+    static final int HALF_YEAR_INTERVAL = 180
+    static final int QUARTER_INTERVAL = 90
     static final int MAX_CONTENT_LENGTH = 1024 * 1024 * 100
 
     ExecutorService executorService
@@ -230,21 +231,20 @@ class StatsSyncService {
                             Calendar now = GregorianCalendar.getInstance()
                             json.counter4ApiSources.each { c4as ->
                                 boolean add = false
+                                Platform plat = Platform.findByGokbId(c4as[0] as String)
                                 switch(c4as[2]) {
                                     case 'Daily': add = true
                                         break
-                                    case 'Weekly': add = now.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY
+                                    case 'Weekly': add = (!plat.counter4LastRun || DAYS.between(DateUtils.dateToLocalDate(plat.counter4LastRun), LocalDate.now()) >= WEEK_INTERVAL)
                                         break
-                                    case 'Monthly': Platform plat = Platform.findByGokbId(c4as[0] as String)
-                                        if(!plat.counter4LastRun || DAYS.between(LocalDate.now(), DateUtils.dateToLocalDate(plat.counter4LastRun)) == 28) {
-                                            add = true
-                                        }
+                                    case 'Quarterly': add = (!plat.counter4LastRun || DAYS.between(DateUtils.dateToLocalDate(plat.counter4LastRun), LocalDate.now()) >= QUARTER_INTERVAL)
                                         break
-                                    case 'Quarterly': add = now.get(Calendar.DAY_OF_MONTH) == MONTH_DUE_DATE && now.get(Calendar.MONTH) in QUARTERLY_MONTHS
+                                    case 'Half-Yearly': add = (!plat.counter4LastRun || DAYS.between(DateUtils.dateToLocalDate(plat.counter4LastRun), LocalDate.now()) >= HALF_YEAR_INTERVAL)
                                         break
-                                    case 'Half-Yearly': add = now.get(Calendar.DAY_OF_MONTH) == MONTH_DUE_DATE && now.get(Calendar.MONTH) in HALF_YEARLY_MONTHS
+                                    case 'Yearly': add = (!plat.counter4LastRun || DAYS.between(DateUtils.dateToLocalDate(plat.counter4LastRun), LocalDate.now()) >= YEAR_INTERVAL)
                                         break
-                                    case 'Yearly': add = now.get(Calendar.DAY_OF_MONTH) == MONTH_DUE_DATE && now.get(Calendar.MONTH) == YEARLY_MONTH
+                                    //includes monthly
+                                    default: add = (!plat.counter4LastRun || DAYS.between(DateUtils.dateToLocalDate(plat.counter4LastRun), LocalDate.now()) >= MONTH_INTERVAL)
                                         break
                                 }
                                 if(add) {
@@ -253,21 +253,20 @@ class StatsSyncService {
                             }
                             json.counter5ApiSources.each { c5as ->
                                 boolean add = false
+                                Platform plat = Platform.findByGokbId(c5as[0] as String)
                                 switch(c5as[2]) {
                                     case 'Daily': add = true
                                         break
-                                    case 'Weekly': add = now.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY
+                                    case 'Weekly': add = (!plat.counter5LastRun || DAYS.between(DateUtils.dateToLocalDate(plat.counter5LastRun), LocalDate.now()) >= WEEK_INTERVAL)
                                         break
-                                    case 'Monthly': Platform plat = Platform.findByGokbId(c5as[0] as String)
-                                        if(!plat.counter5LastRun || DAYS.between(LocalDate.now(), DateUtils.dateToLocalDate(plat.counter5LastRun)) == 28) {
-                                            add = true
-                                        }
+                                    case 'Quarterly': add = (!plat.counter5LastRun || DAYS.between(DateUtils.dateToLocalDate(plat.counter5LastRun), LocalDate.now()) >= QUARTER_INTERVAL)
                                         break
-                                    case 'Quarterly': add = now.get(Calendar.DAY_OF_MONTH) == MONTH_DUE_DATE && now.get(Calendar.MONTH) in QUARTERLY_MONTHS
+                                    case 'Half-Yearly': add = (!plat.counter5LastRun || DAYS.between(DateUtils.dateToLocalDate(plat.counter5LastRun), LocalDate.now()) >= HALF_YEAR_INTERVAL)
                                         break
-                                    case 'Half-Yearly': add = now.get(Calendar.DAY_OF_MONTH) == MONTH_DUE_DATE && now.get(Calendar.MONTH) in HALF_YEARLY_MONTHS
+                                    case 'Yearly': add = (!plat.counter5LastRun || DAYS.between(DateUtils.dateToLocalDate(plat.counter5LastRun), LocalDate.now()) >= YEAR_INTERVAL)
                                         break
-                                    case 'Yearly': add = now.get(Calendar.DAY_OF_MONTH) == MONTH_DUE_DATE && now.get(Calendar.MONTH) == YEARLY_MONTH
+                                    //includes monthly
+                                    default: add = (!plat.counter5LastRun || DAYS.between(DateUtils.dateToLocalDate(plat.counter5LastRun), LocalDate.now()) >= MONTH_INTERVAL)
                                         break
                                 }
                                 if(add) {
@@ -309,7 +308,7 @@ class StatsSyncService {
                     if (c4as[1] != null) {
                         String statsUrl = c4as[1]
                         //.endsWith('/') ? c4as[1] : c4as[1]+'/' does not work with every platform!
-                        List keyPairs = CustomerIdentifier.executeQuery('select new map(cust.id as customerId, cust.globalUID as customerUID, cust.sortname as customerName, ci.value as value, ci.requestorKey as requestorKey) from CustomerIdentifier ci join ci.customer cust where ci.platform = :plat and ci.value != null and ci.requestorKey != null', [plat: c4asPlatform])
+                        List keyPairs = CustomerIdentifier.executeQuery('select new map(cust.id as customerId, cust.globalUID as customerUID, cust.sortname as customerName, ci.value as value, ci.requestorKey as requestorKey) from CustomerIdentifier ci join ci.customer cust where ci.platform = :plat and ci.value != null', [plat: c4asPlatform])
                         if (keyPairs) {
                             GParsPool.withPool(THREAD_POOL_SIZE) { pool ->
                                 keyPairs.eachWithIndexParallel { Map keyPair, int i ->
@@ -335,8 +334,8 @@ class StatsSyncService {
                                             //log.debug("${Thread.currentThread().getName()} is starting ${reportID} for ${keyPair.customerName} at ${yyyyMMdd.format(startTime.getTime())}-${yyyyMMdd.format(currentYearEnd.getTime())}")
                                             boolean more = true
                                             while (more) {
-                                                //long limbo = Long.parseLong(Thread.currentThread().getName().split('worker-')[1])*1000
-                                                long limbo = Long.parseLong(Thread.currentThread().getName().split('worker-')[1])*500
+                                                long limbo = Long.parseLong(Thread.currentThread().getName().split('worker-')[1])*1000
+                                                //long limbo = Long.parseLong(Thread.currentThread().getName().split('worker-')[1])*500
                                                 Thread.currentThread().sleep(limbo)
                                                 //log.debug("${Thread.currentThread().getName()} is getting ${reportID} for ${keyPair.customerName} from ${yyyyMMdd.format(startTime.getTime())}-${yyyyMMdd.format(currentYearEnd.getTime())}")
                                                 Map<String, Object> result = performCounter4Request(statsUrl, reportID, calendarConfig.now, startTime, currentYearEnd, keyPair)
@@ -447,13 +446,13 @@ class StatsSyncService {
                                 statsUrl = c5as[1] + 'reports'
                             else statsUrl = c5as[1] + '/reports'
                         }
-                        List keyPairs = CustomerIdentifier.executeQuery('select new map(cust.id as customerId, cust.globalUID as customerUID, cust.sortname as customerName, ci.value as value, ci.requestorKey as requestorKey) from CustomerIdentifier ci join ci.customer cust where ci.platform = :plat and ci.value != null and ci.requestorKey != null', [plat: c5asPlatform])
+                        List keyPairs = CustomerIdentifier.executeQuery('select new map(cust.id as customerId, cust.globalUID as customerUID, cust.sortname as customerName, ci.value as value, ci.requestorKey as requestorKey) from CustomerIdentifier ci join ci.customer cust where ci.platform = :plat and ci.value != null', [plat: c5asPlatform])
                         if (keyPairs) {
                             Map<String, List<Map<String, Object>>> reports = [:]
                             GParsPool.withPool(THREAD_POOL_SIZE) { pool ->
                                 keyPairs.eachWithIndexParallel { Map<String, Object> keyPair, int i ->
-                                    //long limbo = Long.parseLong(Thread.currentThread().getName().split('worker-')[1])*1000
-                                    long limbo = 500
+                                    long limbo = Long.parseLong(Thread.currentThread().getName().split('worker-')[1])*1000
+                                    //long limbo = 500
                                     Thread.currentThread().sleep(limbo)
                                     log.debug("now processing key pair ${i}, requesting data for ${keyPair.customerName}:${keyPair.value}:${keyPair.requestorKey}")
                                     Sql statsSql = GlobalService.obtainStorageSqlConnection()
@@ -466,7 +465,9 @@ class StatsSyncService {
                                         Calendar startTime = GregorianCalendar.getInstance(), currentYearEnd = GregorianCalendar.getInstance()
                                         SimpleDateFormat monthFormatter = DateUtils.getSDF_yyyyMM()
                                         String apiKey = c5asPlatform.centralApiKey ?: keyPair.requestorKey
-                                        String params = "?customer_id=${keyPair.value}&requestor_id=${keyPair.requestorKey}&api_key=${apiKey}"
+                                        String params = "?customer_id=${keyPair.value}"
+                                        if(keyPair.requestorKey || apiKey)
+                                            params += "&requestor_id=${keyPair.requestorKey}&api_key=${apiKey}"
                                         Map<String, Object> availableReports = fetchJSONData(statsUrl + params, true)
                                         if (availableReports && availableReports.list) {
                                             List<String> reportList = availableReports.list.collect { listEntry -> listEntry["Report_ID"].toLowerCase() }

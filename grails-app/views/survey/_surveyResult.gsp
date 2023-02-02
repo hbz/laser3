@@ -28,7 +28,7 @@
     <g:elseif test="${surResult.type.isURLType()}">
         <ui:xEditable owner="${surResult}" type="url" field="urlValue"
                          overwriteEditable="${overwriteEditable}"
-                         class="la-overflow la-ellipsis"/>
+                      class="la-overflow la-ellipsis"/>
         <g:if test="${surResult.urlValue}">
             <ui:linkWithIcon/>
         </g:if>

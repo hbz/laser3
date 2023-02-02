@@ -124,9 +124,7 @@
 '</div>' +
 '</div>';
 
-
                             $('label[for=filterProp]').next().replaceWith(select);
-
 
                             $('.la-filterProp').dropdown({
                                 duration: 150,
@@ -175,9 +173,7 @@ $.ajax({
 '</div>' +
 '</div>';
 
-
                             $('label[for=filterProp]').next().replaceWith(select);
-
 
                             $('.la-filterProp').dropdown({
                                 duration: 150,

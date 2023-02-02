@@ -897,19 +897,6 @@ class DeletionService {
         log.debug "processing tipps (${tippsToDelete.collect { TitleInstancePackagePlatform tipp -> tipp.id}})"
         Map<String,Collection<TitleInstancePackagePlatform>> toDelete = [toDelete:tippsToDelete]
         Map<String,Collection<IssueEntitlement>> delIssueEntitlements = [toDelete:IssueEntitlement.findAllByTippInListAndStatus(tippsToDelete, RDStore.TIPP_STATUS_REMOVED)]
-        Counter4Report.withTransaction { status ->
-            try {
-                log.info("${Counter4Report.executeUpdate('delete from Counter4Report c4r where c4r.titleUID in (:toDelete)', [toDelete: tippsToDelete.globalUID])} COUNTER 4 reports deleted")
-                log.info("${Counter5Report.executeUpdate('delete from Counter5Report c5r where c5r.titleUID in (:toDelete)', [toDelete: tippsToDelete.globalUID])} COUNTER 5 reports deleted")
-                return true
-            }
-            catch (Exception e) {
-                log.error 'error while deleting tipp usage stats ' + tippsToDelete + ' .. rollback: ' + e.message
-                e.printStackTrace()
-                status.setRollbackOnly()
-                return false
-            }
-        }
         TitleInstancePackagePlatform.withTransaction { status ->
             try {
                 log.info("${PendingChange.executeUpdate('delete from PendingChange pc where pc.tippCoverage in (select tc from TIPPCoverage tc where tc.tipp in (:toDelete))',toDelete)} coverage pending changes deleted")

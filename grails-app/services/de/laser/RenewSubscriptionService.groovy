@@ -14,6 +14,7 @@ import de.laser.system.SystemEvent
 import grails.gorm.transactions.Transactional
 import groovy.time.TimeCategory
 import org.codehaus.groovy.runtime.InvokerHelper
+import org.grails.datastore.gorm.events.AutoTimestampEventListener
 
 import java.nio.file.Files
 import java.nio.file.Path
@@ -25,6 +26,10 @@ import java.nio.file.Path
 class RenewSubscriptionService extends AbstractLockableService {
 
     ContextService contextService
+    AutoTimestampEventListener autoTimestampEventListener
+
+
+    static final String AUTOMATIC_RENEW_ANNUALLY_DOC_TITLE = 'Automatisch um ein Jahr verlängert (Automatic renew annually)'
 
     /**
      * Triggered by cronjob
@@ -252,40 +257,48 @@ class RenewSubscriptionService extends AbstractLockableService {
 
                                 //Documents
                                 subscription.documents.each { DocContext dctx ->
-                                Doc newDoc = new Doc()
-                                InvokerHelper.setProperties(newDoc, dctx.owner.properties)
+                                    if (dctx.owner.title != AUTOMATIC_RENEW_ANNUALLY_DOC_TITLE) {
+                                        //Because of autoTimestampEventListener.withoutTimestamps closure the old dateCreated and lastUpdated of doc are not overwritten (see gorm doc ->  Automatic timestamping)
+                                        //Because the timestamp handling is only disabled for the duration of the closure, you must flush the session during the closure execution!
+                                        autoTimestampEventListener.withoutTimestamps {
+                                            Doc newDoc = new Doc()
+                                            InvokerHelper.setProperties(newDoc, dctx.owner.properties)
 
-                                if (newDoc.save()) {
-                                    DocContext newDocContext = new DocContext()
-                                    InvokerHelper.setProperties(newDocContext, dctx.properties)
-                                    newDocContext.subscription = copySub
-                                    newDocContext.owner = newDoc
+                                            if (newDoc.save(flush: true)) {
+                                                DocContext newDocContext = new DocContext()
+                                                InvokerHelper.setProperties(newDocContext, dctx.properties)
+                                                newDocContext.subscription = copySub
+                                                newDocContext.owner = newDoc
+                                                newDocContext.dateCreated = new Date()
+                                                newDocContext.lastUpdated = new Date()
 
-                                    if (!newDocContext.save()) {
-                                        log.error("Problem saving DocContext ${newDocContext.errors}")
-                                        fail = true
-                                    } else {
+                                                if (!newDocContext.save(flush: true)) {
+                                                    log.error("Problem saving DocContext ${newDocContext.errors}")
+                                                    fail = true
+                                                } else {
 
-                                        if (dctx.isDocAFile() && (dctx.status?.value != 'Deleted')) {
-                                            try {
-                                                String fPath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
+                                                    if (dctx.isDocAFile() && (dctx.status?.value != 'Deleted')) {
+                                                        try {
+                                                            String fPath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
 
-                                                Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
-                                                Path target = new File("${fPath}/${newDoc.uuid}").toPath()
-                                                Files.copy(source, target)
+                                                            Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
+                                                            Path target = new File("${fPath}/${newDoc.uuid}").toPath()
+                                                            Files.copy(source, target)
 
-                                            }
-                                            catch (Exception e) {
-                                                log.error("Problem by Saving Doc in documentStorageLocation (Doc ID: ${dctx.owner.id} -> ${e})")
+                                                        }
+                                                        catch (Exception e) {
+                                                            log.error("Problem by Saving Doc in documentStorageLocation (Doc ID: ${dctx.owner.id} -> ${e})")
+                                                            fail = true
+                                                        }
+                                                    }
+                                                }
+                                            } else {
+                                                log.error("Problem saving Doc ${newDoc.errors}")
                                                 fail = true
                                             }
                                         }
                                     }
-                                } else {
-                                    log.error("Problem saving Doc ${newDoc.errors}")
-                                    fail = true
                                 }
-                            }
 
                                 //PersonRole
                                 subscription.prsLinks.each { PersonRole prsLink ->
@@ -330,7 +343,7 @@ class RenewSubscriptionService extends AbstractLockableService {
 
                                 }
 
-                                Doc docContent = new Doc(contentType: Doc.CONTENT_TYPE_STRING, content: 'Diese Lizenz ist eine Kopie der vorherigen Lizenz. Es wurde automatisch vom System erstellt, da in der vorherigen Lizenz das Flag "Automatisch um ein Jahr verlängern" gesetzt war. (This subscription is a copy of the previous subscription. It was created automatically by the system because the flag "Automatic renew annually" was set in the previous subscription.)', title: 'Automatisch um ein Jahr verlängert (Automatic renew annually)', type: RefdataValue.getByValueAndCategory('Note', RDConstants.DOCUMENT_TYPE), owner: org, user: null)
+                                Doc docContent = new Doc(contentType: Doc.CONTENT_TYPE_STRING, content: 'Diese Lizenz ist eine Kopie der vorherigen Lizenz. Es wurde automatisch vom System erstellt, da in der vorherigen Lizenz das Flag "Automatisch um ein Jahr verlängern" gesetzt war. (This subscription is a copy of the previous subscription. It was created automatically by the system because the flag "Automatic renew annually" was set in the previous subscription.)', title: AUTOMATIC_RENEW_ANNUALLY_DOC_TITLE, type: RefdataValue.getByValueAndCategory('Note', RDConstants.DOCUMENT_TYPE), owner: org, user: null)
                                 if(docContent.save()) {
                                     DocContext dc = new DocContext(subscription: copySub, owner: docContent)
                                     dc.save()

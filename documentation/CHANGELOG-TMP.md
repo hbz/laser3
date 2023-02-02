@@ -7,6 +7,38 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      02.02.2023  rc-3.0  3.0.3       Andreas Bug         Meine Lizenzen pro Einrichtung lieferte unvollständige Daten
+
+--      02.02.2023  rc-3.0  3.0.3       Andreas Bug         inkorrekte Rundung der Rechnungssumme behoben
+
+4799    01.02.2023  rc-3.0  3.0.3       Moe     Bug         Automatische Verlängerung erzeugt doppelte Anmerkung
+
+4790    01.02.2023  rc-3.0  3.0.3       Andreas Bug         Absturz bei Ablehnen einer Änderung behoben
+
+4788    01.02.2023  rc-3.0  3.0.3       Andreas Bug         diverse Bugs in der Anzeige behoben
+
+4784    01.02.2023  rc-3.0  3.0.3       Andreas Bug         Umbenennung im Menü
+
+4787    01.02.2023  rc-3.0  3.0.3       David   Feature     Testen: Funktioniert Fachbereichsfilter korrekt?
+
+--      31.01.2023  rc-3.0  3.0.3       Andreas Bug         Bug bei der Synchronisation der Titel behoben
+
+--      31.01.2023  rc-3.0  3.0.3       Andreas Bug         diverse Optimierungen beim Statistik-Sync
+
+4795    31.01.2023  rc-3.0  3.0.3       Andreas Feature     Angaben sind bei Anbietern ex we:kb nicht mehr bearbeitbar
+
+4783    31.01.2023  rc-3.0  3.0.3       Andreas Bug         Listenpreise werden bei Hinzufügen der Titel mit hinzugefügt
+
+3343    31.01.2023  rc-3.0  3.0.3       Andreas Feature     Begriffe im Dropdown werden jetzt wieder getrennt
+
+4774    20.01.2023  rc-3.0  3.0.3       Moe     Bug         500er: Bestand - Titel entfernen
+
+4777    20.01.2023  rc-3.0  3.0.3       Moe     Bug         Verträge kopieren
+
+4770    16.01.2023  rc-3.0  3.0.3       Moe     Bug         500er Sortierung Bestand
+
+--      16.01.2023  rc-3.0  3.0.3       Moe     Bug         allgemeine Umfrage öffnen sich nicht mehr
+
 4757    12.01.2023  rc-3.0  3.0.2       Moe     Feature     Titelumfrage: Reiter + Export Auswählbar ausblenden bei Dauerhafte Titel-Umfrage
 
 4756    12.01.2023  rc-3.0  3.0.2       Andreas Bug         Export der Lizenzen beschleunigt

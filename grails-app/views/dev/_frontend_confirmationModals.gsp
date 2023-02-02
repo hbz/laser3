@@ -80,7 +80,7 @@
 <h4 class="ui header">Auswahl einer bestimmten Option im X-Editable Dropdown</h4>
 <div class="html ui top attached segment example">
     <div class="ui top attached label"></div>
-    <a href="#" id="ezb_server_access" class="xEditableManyToOne js-open-confirm-modal-xeditable editable editable-click" data-onblur="ignore" data-pk="de.laser.OrgSetting:3103" data-confirm-term-how="ok" data-confirm-tokenmsg="Wollen Sie wirklich der Weitergabe der Lizenzdaten Ihrer Einrichtung an die EZB zustimmen?" data-confirm-value="de.laser.RefdataValue:1" data-type="select" data-name="rdValue" data-source="/ajax/select2RefdataSearch/y.n?format=json&amp;oid=de.laser.OrgSetting%3A3103" data-url="/ajax/genericSetData" data-emptytext="Bearbeiten" style="background-color: rgb(241, 235, 229);">Ja</a>
+    <a href="#" id="ezb_server_access" class="xEditableManyToOne js-open-confirm-modal-xEditableRefData editable editable-click" data-onblur="ignore" data-pk="de.laser.OrgSetting:3103" data-confirm-term-how="ok" data-confirm-tokenmsg="Wollen Sie wirklich der Weitergabe der Lizenzdaten Ihrer Einrichtung an die EZB zustimmen?" data-confirm-value="de.laser.RefdataValue:1" data-type="select" data-name="rdValue" data-source="/ajax/select2RefdataSearch/y.n?format=json&amp;oid=de.laser.OrgSetting%3A3103" data-url="/ajax/genericSetData" data-emptytext="Bearbeiten" style="background-color: rgb(241, 235, 229);">Ja</a>
     <laser:script file="${this.getGroovyPageFileName()}">
         $('body #ezb_server_access').editable('destroy').editable({
             tpl: '<select class="ui dropdown"></select>'
@@ -101,7 +101,7 @@
                 <li>das x-editable braucht eine HTML-ID. Sie wird benutzt, um Javascript mit dem x-Editable zu verbinden, zum Beispiel <strong>id="oamonitor_server_access"</strong></li>
                 <li>data_confirm_tokenMsg="HIER KOMMT DIE FRAGE IM CONFIRMATION MODAL REIN"</li>
                 <li>data_confirm_term_how="ok"</li>
-                <li>cssClass="js-open-confirm-modal-xeditable"</li>
+                <li>class="js-open-confirm-modal-xEditableRefData"</li>
                 <li>data_confirm_value="HIER KOMMT DAS VALUE, DASS DAS MODAL AUSLÖSEN SOLL REIN", zum Beispiel <pre aria-hidden="true">&#x0024;{RefdataValue.class.name}:&#x0024;{RDStore.YN_YES.id}</pre> </li>
             </ol>
         </li>

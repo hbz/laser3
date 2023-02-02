@@ -35,8 +35,9 @@ class XEditableTagLib {
             String id            = attrs.id ?: "${oid}:${field}"
             String default_empty = message(code:'default.button.edit.label')
             String data_link     = ''
+            String cssClass = attrs.class
 
-            out << '<a href="#" id="' + id + '" class="xEditableValue ' + (attrs.class ?: '') + '"'
+            out << '<a href="#" id="' + id + '" class="xEditableValue ' + (cssClass ?: '')  + '"'
 
             out << (owner instanceof SurveyResult ? ' data-onblur="submit"' : ' data-onblur="ignore"')
 
@@ -86,6 +87,13 @@ class XEditableTagLib {
             if (attrs.type == 'date' && attrs.language) {
                 out << "data-datepicker=\"{ 'language': '${attrs.language}' }\" language=\"${attrs.language}\" "
             }
+            if (attrs.data_confirm_term_how) {
+                out << 'data-confirm-term-how="' + attrs.data_confirm_term_how + '" '
+            }
+
+            if(attrs.data_confirm_tokenMsg) {
+                out << 'data-confirm-tokenmsg="' + attrs.data_confirm_tokenMsg + '" '
+            }
 
             if (! body) {
                 String oldValue = ''
@@ -106,6 +114,7 @@ class XEditableTagLib {
                         oldValue = owner[field]
                     }
                 }
+
                 out << ' data-oldvalue="' + oldValue.encodeAsHTML() + '">'
                 out << oldValue.encodeAsHTML()
             }
@@ -169,7 +178,7 @@ class XEditableTagLib {
 
                 String update_link = createLink(controller:'ajax', action: 'genericSetData').encodeAsHTML()
                 String id = attrs.id ?: "${oid}:${field}"
-                String cssClass = attrs.cssClass
+                String cssClass = attrs.class
                 String data_confirm_tokenMsg = attrs.data_confirm_tokenMsg
                 String emptyText = ' data-emptytext="' + ( attrs.emptytext ?: message(code:'default.button.edit.label') ) + '"'
 

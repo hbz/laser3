@@ -123,7 +123,7 @@ class FinanceService {
                 if(params.costItemId && params.mode != 'copy') {
                     newCostItem = CostItem.get(Long.parseLong(params.costItemId))
                     //get copied cost items
-                    copiedCostItems = CostItem.findAllByCopyBaseAndCostItemStatusNotEqualAndOwnerNotEqual(newCostItem, RDStore.COST_ITEM_DELETED, result.institution)
+                    copiedCostItems = CostItem.findAllByCopyBaseAndCostItemStatusNotEqualAndOwnerNotEqualAndSubIsNotNull(newCostItem, RDStore.COST_ITEM_DELETED, result.institution)
                     if(params.newOrderNumber == null || params.newOrderNumber.length() < 1) {
                         CostItem costItemWithOrder = CostItem.findByOrderAndIdNotEqualAndCostItemStatusNotEqual(newCostItem.order,newCostItem.id,RDStore.COST_ITEM_DELETED)
                         if(!costItemWithOrder)
@@ -137,7 +137,7 @@ class FinanceService {
                 }
                 else {
                     newCostItem = new CostItem()
-                    if(params.mode == 'copy')
+                    if(params.mode == 'copy' && sub?._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && sub?.getSubscriber() == result.institution)
                         newCostItem.copyBase = CostItem.get(Long.parseLong(params.costItemId))
                 }
                 newCostItem.owner = (Org) result.institution
@@ -189,20 +189,22 @@ class FinanceService {
                         }
                     }
                     //notify cost items copied from this cost item
-                    copiedCostItems.each { cci ->
-                        List diffs = []
-                        if(newCostItem.costInBillingCurrencyAfterTax != cci.costInBillingCurrency) {
-                            diffs.add([prop:'billingCurrency', msgToken: PendingChangeConfiguration.BILLING_SUM_UPDATED, oldValue: cci.costInBillingCurrency, newValue:newCostItem.costInBillingCurrencyAfterTax])
-                        }
-                        if(newCostItem.costInLocalCurrencyAfterTax != cci.costInLocalCurrency) {
-                            diffs.add([prop:'localCurrency',msgToken:PendingChangeConfiguration.LOCAL_SUM_UPDATED,oldValue: cci.costInLocalCurrency,newValue:newCostItem.costInLocalCurrencyAfterTax])
-                        }
-                        diffs.each { diff ->
-                            try {
-                                PendingChange.construct([target:cci,owner:cci.owner,prop:diff.prop,oldValue:diff.oldValue,newValue:diff.newValue,msgToken:diff.msgToken,status:RDStore.PENDING_CHANGE_PENDING])
+                    copiedCostItems.each { CostItem cci ->
+                        if(cci.sub._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION) {
+                            List diffs = []
+                            if(newCostItem.costInBillingCurrencyAfterTax != cci.costInBillingCurrency) {
+                                diffs.add([prop:'billingCurrency', msgToken: PendingChangeConfiguration.BILLING_SUM_UPDATED, oldValue: cci.costInBillingCurrency, newValue:newCostItem.costInBillingCurrencyAfterTax])
                             }
-                            catch (CreationException e) {
-                                log.error( e.toString() )
+                            if(newCostItem.costInLocalCurrencyAfterTax != cci.costInLocalCurrency) {
+                                diffs.add([prop:'localCurrency',msgToken:PendingChangeConfiguration.LOCAL_SUM_UPDATED,oldValue: cci.costInLocalCurrency,newValue:newCostItem.costInLocalCurrencyAfterTax])
+                            }
+                            diffs.each { diff ->
+                                try {
+                                    PendingChange.construct([target:cci,owner:cci.owner,prop:diff.prop,oldValue:diff.oldValue,newValue:diff.newValue,msgToken:diff.msgToken,status:RDStore.PENDING_CHANGE_PENDING])
+                                }
+                                catch (CreationException e) {
+                                    log.error( e.toString() )
+                                }
                             }
                         }
                     }
@@ -385,6 +387,7 @@ class FinanceService {
                     order.delete()
                 if (!CostItem.findByInvoiceAndIdNotEqualAndCostItemStatusNotEqual(invoice, ci.id, RDStore.COST_ITEM_DELETED))
                     invoice.delete()
+                PendingChange.executeUpdate('delete from PendingChange pc where pc.costItem = :ci', [ci: ci])
                 cigs.each { CostItemGroup item ->
                     item.delete()
                     log.debug("deleting CostItemGroup: " + item)

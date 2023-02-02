@@ -729,8 +729,11 @@ class SubscriptionControllerService {
                 queryParams.seriesName = params.list("series_names")
             }
             if(params.subject_references) {
-                query += " and title.subjectReference in (:subjectReference) "
-                queryParams.subjectReference = params.list("subject_references")
+                Set<String> subjectQuery = []
+                params.list('subject_references').each { String subReference ->
+                    subjectQuery << "genfunc_filter_matcher(title.subjectReference, '${subReference.toLowerCase()}') = true"
+                }
+                query += " and (${subjectQuery.join(" or ")}) "
             }
             if(params.ddcs && params.list("ddcs").size() > 0) {
                 query += " and exists (select ddc.id from title.ddcs ddc where ddc.ddc.id in (:ddcs)) "
@@ -2017,7 +2020,7 @@ class SubscriptionControllerService {
                     }
                 }
                 Set filteredIDs = entitlements.drop(result.offset).take(result.max)
-                result.entitlements = IssueEntitlement.executeQuery('select distinct(ie) from IssueEntitlement ie join ie.tipp tipp left join ie.coverages ic where ie.id in (:entIDs) '+orderClause,[entIDs:filteredIDs.id]) //please check eventual side effects on sorting! toSet() is needed because of coverage statement doublets!                result.journalsOnly = result.entitlements.find { IssueEntitlement ie -> ie.tipp.titleType != RDStore.TITLE_TYPE_JOURNAL.value } == null
+                result.entitlements = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.tipp tipp left join ie.coverages ic where ie.id in (:entIDs) '+orderClause,[entIDs:filteredIDs.id]) //please check eventual side effects on sorting! toSet() is needed because of coverage statement doublets!                result.journalsOnly = result.entitlements.find { IssueEntitlement ie -> ie.tipp.titleType != RDStore.TITLE_TYPE_JOURNAL.value } == null
             }
             else result.entitlements = []
             Set<SubscriptionPackage> deletedSPs = result.subscription.packages.findAll { SubscriptionPackage sp -> sp.pkg.packageStatus == RDStore.PACKAGE_STATUS_DELETED }

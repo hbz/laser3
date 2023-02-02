@@ -1538,8 +1538,11 @@ class SurveyService {
                 queryParams.seriesName = params.list("series_names")
             }
             if(params.subject_references) {
-                filter += " and title.subjectReference in (:subjectReference) "
-                queryParams.subjectReference = params.list("subject_references")
+                Set<String> subjectQuery = []
+                params.list('subject_references').each { String subReference ->
+                    subjectQuery << "genfunc_filter_matcher(title.subjectReference, '${subReference.toLowerCase()}') = true"
+                }
+                filter += " and (${subjectQuery.join(" or ")}) "
             }
             if(params.ddcs && params.list("ddcs").size() > 0) {
                 filter += " and exists (select ddc.id from title.ddcs ddc where ddc.ddc.id in (:ddcs)) "

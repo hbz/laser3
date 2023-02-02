@@ -222,7 +222,15 @@
                 <g:set var="counter" value="${offset + 1}"/>
                 <g:hiddenField name="sub" value="${subscription.id}"/>
                 <g:each in="${considerInBatch}" var="key">
-                    <g:hiddenField name="${key}" value="${params[key]}"/>
+                    <g:if test="${params.list(key)}">
+                        <g:each in="${params.list(key)}" var="paramsListValue">
+                            <g:hiddenField name="${key}" value="${paramsListValue}"/>
+                        </g:each>
+                    </g:if>
+                    <g:else>
+                        <g:hiddenField name="${key}" value="${params[key]}"/>
+                    </g:else>
+
                 </g:each>
 
                 <laser:script file="${this.getGroovyPageFileName()}">
