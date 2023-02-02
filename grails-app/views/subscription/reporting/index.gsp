@@ -37,12 +37,12 @@
         </style>
 
         <laser:script file="${this.getGroovyPageFileName()}">
-            $('*[id^=query-chooser-1').on ('change', function (e) {
+            $('*[id^=query-chooser-1]').on ('change', function (e) {
                 var value = $(e.target).dropdown('get value');
                 if (value) {
                     $('#chart-chooser').removeAttr('disabled').parent().removeClass('disabled');
 
-                    $('*[id^=query-chooser').not($('#' + e.target.id)).dropdown('clear');
+                    $('*[id^=query-chooser]').not($('#' + e.target.id)).dropdown('clear');
                     JSPC.app.reporting.current.request = {
                         id: ${subscription.id},
                         query: value,
@@ -54,13 +54,13 @@
                 }
             })
 
-            $('*[id^=query-chooser-2').on ('change', function (e) {
+            $('*[id^=query-chooser-2]').on ('change', function (e) {
                 var value = $(e.target).dropdown('get value');
                 if (value) {
                     $('#chart-chooser').attr('disabled', 'disabled').parent().addClass('disabled')
                     $('#chart-chooser').dropdown('set selected', 'bar');
 
-                    $('*[id^=query-chooser').not($('#' + e.target.id)).dropdown('clear');
+                    $('*[id^=query-chooser]').not($('#' + e.target.id)).dropdown('clear');
                     JSPC.app.reporting.current.request = {
                         id: ${subscription.id},
                         query: value,
