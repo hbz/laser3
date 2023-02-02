@@ -51,7 +51,7 @@
     <div class="eleven wide column">
 
         <div class="la-inline-lists">
-            <div class="ui card">
+            <div class="ui card" id="js-confirmationCard">
                 <div class="content">
                     <dl>
                         <dt><g:message code="default.name.label" /></dt>
@@ -810,8 +810,8 @@
         func();
     }
 </g:if>
-
-    $('.js-open-confirm-modal-xEditable').editable('destroy').editable().on('shown', function() {
+    let confirmationCard = $('#js-confirmationCard')
+    $('.js-open-confirm-modal-xEditable', confirmationCard).editable('destroy').editable().on('shown', function() {
                                     r2d2.initDynamicUiStuff('body');
                                 });
 
