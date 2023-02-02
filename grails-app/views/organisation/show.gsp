@@ -812,7 +812,7 @@
 </g:if>
     let confirmationCard = $('#js-confirmationCard')
     $('.js-open-confirm-modal-xEditable', confirmationCard).editable('destroy').editable().on('shown', function() {
-                                    r2d2.initDynamicUiStuff('.js-open-confirm-modal-xEditable', confirmationCard);
+                                    r2d2.initDynamicUiStuff('.js-open-confirm-modal-xEditable');
                                 });
 
 </laser:script>
