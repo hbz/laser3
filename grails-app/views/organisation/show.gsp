@@ -51,12 +51,18 @@
     <div class="eleven wide column">
 
         <div class="la-inline-lists">
-            <div class="ui card">
+            <div class="ui card" id="js-confirmationCard">
                 <div class="content">
                     <dl>
                         <dt><g:message code="default.name.label" /></dt>
                         <dd>
-                            <ui:xEditable owner="${orgInstance}" field="name" overwriteEditable="${editable && orgInstanceRecord == null}"/>
+                            <ui:xEditable
+                                    data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                    data_confirm_term_how="ok"
+                                    class="js-open-confirm-modal-xEditable"
+                                    owner="${orgInstance}" field="name"
+                                    overwriteEditable="${editable && orgInstanceRecord == null}"/>
+
                             <g:if test="${orgInstance.getCustomerType() == 'ORG_INST'}">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                                       data-content="${orgInstance.getCustomerTypeI10n()}">
@@ -69,7 +75,11 @@
                         <dl>
                             <dt><g:message code="org.shortname.label" /></dt>
                             <dd>
-                                <ui:xEditable owner="${orgInstance}" field="shortname" overwriteEditable="${editable && orgInstanceRecord == null}"/>
+                                <ui:xEditable
+                                        data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                        data_confirm_term_how="ok"
+                                        class="js-open-confirm-modal-xEditable"
+                                        owner="${orgInstance}" field="shortname" overwriteEditable="${editable && orgInstanceRecord == null}"/>
                             </dd>
                         </dl>
                         <g:if test="${!isProviderOrAgency}">
@@ -78,7 +88,11 @@
                                     <g:message code="org.sortname.label" />
                                 </dt>
                                 <dd>
-                                    <ui:xEditable owner="${orgInstance}" field="sortname"/>
+                                    <ui:xEditable
+                                            data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                            data_confirm_term_how="ok"
+                                            class="js-open-confirm-modal-xEditable"
+                                            owner="${orgInstance}" field="sortname"/>
                                 </dd>
                             </dl>
                         </g:if>
@@ -92,7 +106,11 @@
                                 <g:each in="${orgInstance.altnames}" var="altname">
                                     <div class="ui item" data-objId="${altname.id}">
                                         <div class="content la-space-right">
-                                            <ui:xEditable owner="${altname}" field="name" overwriteEditable="${editable && orgInstanceRecord == null}"/>
+                                            <ui:xEditable
+                                                    data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                                    data_confirm_term_how="ok"
+                                                    class="js-open-confirm-modal-xEditable"
+                                                    owner="${altname}" field="name" overwriteEditable="${editable && orgInstanceRecord == null}"/>
                                         </div>
                                         <g:if test="${editable && orgInstanceRecord == null}">
                                             <div class="content la-space-right">
@@ -116,7 +134,11 @@
                     <dl>
                         <dt><g:message code="default.url.label"/></dt>
                         <dd>
-                            <ui:xEditable owner="${orgInstance}" type="url" field="url" class="la-overflow la-ellipsis" overwriteEditable="${editable && orgInstanceRecord == null}"/>
+                            <ui:xEditable
+                                    data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                    data_confirm_term_how="ok"
+                                    class="js-open-confirm-modal-xEditable la-overflow la-ellipsis"
+                                    owner="${orgInstance}" type="url" field="url"  overwriteEditable="${editable && orgInstanceRecord == null}"/>
                             <g:if test="${orgInstance.url}">
                                 <ui:linkWithIcon href="${orgInstance.url}" />
                             </g:if>
@@ -788,6 +810,15 @@
         func();
     }
 </g:if>
+
+<g:if test="${editable && orgInstanceRecord == null}">
+    let confirmationCard = $('#js-confirmationCard');
+    $('.js-open-confirm-modal-xEditable', confirmationCard).editable('destroy').editable().on('shown', function() {
+                                    r2d2.initDynamicUiStuff('.js-open-confirm-modal-xEditable');
+                                });
+</g:if >
+
+
 </laser:script>
 
 <laser:htmlEnd />

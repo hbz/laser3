@@ -82,8 +82,8 @@
 <laser:script file="${this.getGroovyPageFileName()}">
 
     $('#${modalID} select[name=fileformat]').on( 'change', function() {
-        $('#${modalID} *[id^=fileformat-query-').addClass('hidden')
-        $('#${modalID} *[id^=fileformat-query-' + $('#${modalID} select[name=fileformat]').val()).removeClass('hidden')
+        $('#${modalID} *[id^=fileformat-query-]').addClass('hidden')
+        $('#${modalID} *[id^=fileformat-query-' + $('#${modalID} select[name=fileformat]').val() + ']').removeClass('hidden')
     }).trigger('change');
 
     /* -- TODO -- */

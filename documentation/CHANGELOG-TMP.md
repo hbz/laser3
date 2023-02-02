@@ -9,6 +9,12 @@
 
 4492    02.02.2023  dev     3.1         Andreas Feature     Adressen können nicht mehr zu Personen neu angelegt werden
 
+--      02.02.2023  rc-3.0  3.0.3       Andreas Bug         Meine Lizenzen pro Einrichtung lieferte unvollständige Daten
+
+--      02.02.2023  rc-3.0  3.0.3       Andreas Bug         inkorrekte Rundung der Rechnungssumme behoben
+
+4799    01.02.2023  rc-3.0  3.0.3       Moe     Bug         Automatische Verlängerung erzeugt doppelte Anmerkung
+
 4772    01.02.2023  dev     3.1         Andreas Bug         Entfernen zweier funktionsloser Checkboxen
 
 4766    01.02.2023  dev     3.1         Andreas Feature     Brotkrümelweiche bei Einrichtungen eingebaut
