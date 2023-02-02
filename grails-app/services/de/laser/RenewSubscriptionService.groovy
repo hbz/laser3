@@ -258,6 +258,8 @@ class RenewSubscriptionService extends AbstractLockableService {
                                 //Documents
                                 subscription.documents.each { DocContext dctx ->
                                     if (dctx.owner.title != AUTOMATIC_RENEW_ANNUALLY_DOC_TITLE) {
+                                        //Because of autoTimestampEventListener.withoutTimestamps closure the old dateCreated and lastUpdated of doc are not overwritten (see gorm doc ->  Automatic timestamping)
+                                        //Because the timestamp handling is only disabled for the duration of the closure, you must flush the session during the closure execution!
                                         autoTimestampEventListener.withoutTimestamps {
                                             Doc newDoc = new Doc()
                                             InvokerHelper.setProperties(newDoc, dctx.owner.properties)
