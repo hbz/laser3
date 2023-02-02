@@ -63,7 +63,7 @@
                                   value="${Subscription.get(params.id).status?.id.toString()}"/>
                     </div>
                     <div class="field">
-                        <label><g:message code="myinst.copyLicense"/></label>
+                        <label><g:message code="license.label"/></label>
                         <g:if test="${memberLicenses}">
                             <div class="grouped fields">
                                 <div class="field">

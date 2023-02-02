@@ -15,9 +15,12 @@ import de.laser.utils.DateUtils
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import io.micronaut.http.HttpResponse
+import io.micronaut.http.client.DefaultHttpClientConfiguration
+import io.micronaut.http.client.HttpClientConfiguration
 import org.hibernate.Session
 
 import java.text.SimpleDateFormat
+import java.time.Duration
 import java.util.concurrent.ExecutorService
 
 /**
@@ -36,11 +39,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
     ApiSource apiSource
     GlobalRecordSource source
 
-    public static final long RECTYPE_PACKAGE = 0
-    public static final long RECTYPE_PLATFORM = 1
-    public static final long RECTYPE_ORG = 2
-    public static final long RECTYPE_TIPP = 3
-    public static final String PERMANENTLY_DELETED = "Permanently Deleted"
+    static final long RECTYPE_PACKAGE = 0
+    static final long RECTYPE_PLATFORM = 1
+    static final long RECTYPE_ORG = 2
+    static final long RECTYPE_TIPP = 3
+    static final String PERMANENTLY_DELETED = "Permanently Deleted"
+    static final int MAX_CONTENT_LENGTH = 1024 * 1024 * 100
 
     Map<String, RefdataValue> titleMedium = [:],
             tippStatus = [:],
@@ -850,8 +854,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
         String query = 'select pcc.settingKey from PendingChangeConfiguration pcc join pcc.subscriptionPackage sp where pcc.settingValue = :accept and sp = :sp '
         List<String> pendingChangeConfigurations = PendingChangeConfiguration.executeQuery(query,[accept:RDStore.PENDING_CHANGE_CONFIG_ACCEPT,sp:subPkg])
         if(pendingChangeConfigurations) {
-            Map<String,Object> changeParams = [pkg:subPkg.pkg,history:RDStore.PENDING_CHANGE_HISTORY,subscriptionJoin:subPkg.dateCreated,msgTokens:pendingChangeConfigurations,oid:genericOIDService.getOID(subPkg.subscription),accepted:RDStore.PENDING_CHANGE_ACCEPTED]
-            Set<PendingChange> acceptedChanges = PendingChange.findAllByOidAndStatusAndMsgTokenIsNotNull(genericOIDService.getOID(subPkg.subscription),RDStore.PENDING_CHANGE_ACCEPTED)
+            //Map<String,Object> changeParams = [pkg:subPkg.pkg,history:RDStore.PENDING_CHANGE_HISTORY,subscriptionJoin:subPkg.dateCreated,msgTokens:pendingChangeConfigurations,oid:genericOIDService.getOID(subPkg.subscription),accepted:RDStore.PENDING_CHANGE_ACCEPTED]
+            //Set<PendingChange> acceptedChanges = PendingChange.findAllByOidAndStatusAndMsgTokenIsNotNull(genericOIDService.getOID(subPkg.subscription),RDStore.PENDING_CHANGE_ACCEPTED)
             /*newChanges.addAll(PendingChange.executeQuery('select pc from PendingChange pc join pc.tipp tipp join tipp.pkg pkg where pkg = :pkg and pc.status = :history and pc.ts > :subscriptionJoin and pc.msgToken in (:msgTokens) and not exists (select pca.id from PendingChange pca where pca.tipp = pc.tipp and pca.oid = :oid and pca.targetProperty = pc.targetProperty and pca.status = :accepted)',changeParams))
             newChanges.addAll(PendingChange.executeQuery('select pc from PendingChange pc join pc.tipp tipp join tipp.pkg pkg where pkg = :pkg and pc.status = :history and pc.ts > :subscriptionJoin and pc.msgToken in (:msgTokens) and pc.targetProperty = null and not exists (select pca.id from PendingChange pca where pca.tipp = pc.tipp and pca.oid = :oid and pca.targetProperty = null and pca.status = :accepted)',changeParams))
             newChanges.addAll(PendingChange.executeQuery('select pc from PendingChange pc join pc.tippCoverage tc join tc.tipp tipp join tipp.pkg pkg where pkg = :pkg and pc.status = :history and pc.ts > :subscriptionJoin and pc.msgToken in (:msgTokens) and not exists (select pca.id from PendingChange pca where pca.tipp = pc.tipp and pca.oid = :oid and pca.targetProperty = pc.targetProperty and pca.status = :accepted)',changeParams))
@@ -859,30 +863,22 @@ class GlobalSourceSyncService extends AbstractLockableService {
             //newChanges.addAll(PendingChange.executeQuery('select pc from PendingChange pc join pc.priceItem pi join pi.tipp tipp join tipp.pkg pkg where pkg = :pkg and pc.status = :history and pc.ts > :subscriptionJoin and pc.msgToken in (:msgTokens)',changeParams))
             packageChanges.each { PendingChange newChange ->
                 if(newChange.msgToken in pendingChangeConfigurations) {
-                    boolean processed = false
+                    //very dangerous ... risk of malfunction!
+                    /*boolean processed = false
                     if(newChange.tipp) {
                         if(newChange.targetProperty)
                             processed = acceptedChanges.find { PendingChange accepted -> accepted.tipp == newChange.tipp && accepted.msgToken == newChange.msgToken && accepted.targetProperty == newChange.targetProperty && accepted.newValue == newChange.newValue && accepted.oldValue == newChange.oldValue } != null
                         else
                             processed = acceptedChanges.find { PendingChange accepted -> accepted.tipp == newChange.tipp && accepted.msgToken == newChange.msgToken } != null
-                    }
-                    else if(newChange.tippCoverage) {
-                        if(newChange.targetProperty)
-                            processed = acceptedChanges.find { PendingChange accepted -> accepted.tippCoverage == newChange.tippCoverage && accepted.msgToken == newChange.msgToken && accepted.targetProperty == newChange.targetProperty && accepted.newValue == newChange.newValue && accepted.oldValue == newChange.oldValue } != null
-                        else
-                            processed = acceptedChanges.find { PendingChange accepted -> accepted.tippCoverage == newChange.tippCoverage && accepted.msgToken == newChange.msgToken } != null
-                    }
-                    /*else if(newChange.priceItem && newChange.priceItem.tipp) {
-                        processed = acceptedChanges.find { PendingChange accepted -> accepted.priceItem == newChange.priceItem && accepted.msgToken == newChange.msgToken } != null
                     }*/
 
-                    if(!processed) {
+                    //if(!processed) {
                         /*
                         get each change for each subscribed package and token, fetch issue entitlement equivalent and process the change
                         if a change is being accepted, create a copy with target = subscription of subscription package and oid = the target of the processed change
                          */
                         pendingChangeService.applyPendingChange(newChange,subPkg,contextOrg)
-                    }
+                    //}
                 }
             }
         }
@@ -1816,7 +1812,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 }
                 listA.each { itemA ->
                     if(!toKeep.contains(itemA)) {
-                        subDiffs << [event: 'delete', target: itemA, targetParent: tippA]
+                        JSON oldMap = itemA.properties as JSON
+                        subDiffs << [event: 'delete', target: itemA, targetObj: oldMap.toString(), targetParent: tippA]
                     }
                 }
             }
@@ -2030,15 +2027,18 @@ class GlobalSourceSyncService extends AbstractLockableService {
     Map<String,Object> fetchRecordJSON(boolean useScroll, Map<String,Object> queryParams) throws SyncException {
         BasicHttpClient http
         String uri = source.uri.endsWith('/') ? source.uri : source.uri+'/'
+        HttpClientConfiguration config = new DefaultHttpClientConfiguration()
+        config.readTimeout = Duration.ofMinutes(1)
+        config.maxContentLength = MAX_CONTENT_LENGTH
         if(useScroll) {
-            http = new BasicHttpClient(uri + 'scroll')
+            http = new BasicHttpClient(uri + 'scroll', config)
             String debugString = uri+'scroll?'
             queryParams.each { String k, v ->
                 debugString += '&' + k + '=' + v
             }
             log.debug(debugString)
         }
-        else http = new BasicHttpClient(uri+'find')
+        else http = new BasicHttpClient(uri+'find', config)
         Map<String,Object> result = [:]
         //setting default status
         if(!queryParams.status) {

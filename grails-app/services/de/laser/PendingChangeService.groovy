@@ -139,8 +139,9 @@ class PendingChangeService extends AbstractLockableService {
             pending.addAll(getEventRows(titlePendingCount, locale, status, roleTypes, sql, subPromptPkgs))
             pending.addAll(getEventRows(coveragePendingCount, locale, status, roleTypes, sql, subPromptPkgs))
             pending.addAll(getEventRows(removedTitlesCount, locale, status, roleTypes, sql, new HashSet()))
-            sql.rows("select pc_id, pc_ci_fk, pc_msg_token, pc_old_value, pc_new_value, pc_sub_fk, pc_status_rdv_fk, pc_ts from pending_change where pc_owner = :contextOrg and pc_status_rdv_fk = any(:status) and (pc_msg_token = :newSubscription or pc_ci_fk is not null)", [contextOrg: configMap.contextOrg.id, status: sql.connection.createArrayOf('bigint', acceptedStatus.keySet() as Object[]), newSubscription: 'pendingChange.message_SU_NEW_01']).each { GroovyRowResult pc ->
+            sql.rows("select pc_id, pc_ci_fk, pc_msg_token, pc_old_value, pc_new_value, pc_sub_fk, pc_status_rdv_fk, pc_ts from pending_change right join cost_item on pc_ci_fk = ci_id where pc_owner = :contextOrg and pc_status_rdv_fk = any(:status) and (pc_msg_token = :newSubscription or (pc_ci_fk is not null and ci_status_rv_fk != :deleted))", [contextOrg: configMap.contextOrg.id, status: sql.connection.createArrayOf('bigint', acceptedStatus.keySet() as Object[]), newSubscription: 'pendingChange.message_SU_NEW_01', deleted: RDStore.COST_ITEM_DELETED.id]).each { GroovyRowResult pc ->
                 Map<String,Object> eventRow = [event:pc.get("pc_msg_token")]
+                boolean hasObject = true
                 if(pc.get("pc_ci_fk")) {
                     Map<String, Long> subscrRoleTypes = roleTypes
                     subscrRoleTypes.remove('consortia')
@@ -153,6 +154,7 @@ class PendingChangeService extends AbstractLockableService {
                         eventRow.eventString = messageSource.getMessage(pc.get("pc_msg_token"),args,locale)
                         eventRow.changeId = pc.get("pc_id")
                     }
+                    else hasObject = false
                 }
                 else {
                     List prevSub = sql.rows("select l_dest_sub_fk, sub_name, sub_start_date, sub_end_date, sub_status_rv_fk, org_sortname, or_roletype_fk, sub_parent_sub_fk from links join subscription on l_dest_sub_fk = sub_id join org_role on sub_id = or_sub_fk join org on or_org_fk = org_id where l_source_sub_fk = :newSub and l_link_type_rv_fk = :follows", [newSub: pc.get("pc_sub_fk"), follows: RDStore.LINKTYPE_FOLLOWS.id])
@@ -162,11 +164,13 @@ class PendingChangeService extends AbstractLockableService {
                         eventRow.subscription = [source: Subscription.class.name + ':' + previous.get("l_dest_sub_fk"), target: Subscription.class.name + ':' + pc.get("pc_sub_fk"), id: pc.get("pc_sub_fk"), name: subscriptionName(previous, status, locale)]
                     }
                 }
-                if(pc.get("pc_status_rdv_fk") == RDStore.PENDING_CHANGE_PENDING.id)
-                    pending << eventRow
-                else if(pc.get("pc_status_rdv_fk") in [RDStore.PENDING_CHANGE_ACCEPTED.id, RDStore.PENDING_CHANGE_REJECTED.id]) {
-                    if(pc.get("pc_ts") >= time)
-                        notifications << eventRow
+                if(hasObject) {
+                    if(pc.get("pc_status_rdv_fk") == RDStore.PENDING_CHANGE_PENDING.id)
+                        pending << eventRow
+                    else if(pc.get("pc_status_rdv_fk") in [RDStore.PENDING_CHANGE_ACCEPTED.id, RDStore.PENDING_CHANGE_REJECTED.id]) {
+                        if(pc.get("pc_ts") >= time)
+                            notifications << eventRow
+                    }
                 }
             }
         }
@@ -452,28 +456,28 @@ class PendingChangeService extends AbstractLockableService {
      * @param pkgList the list of packages (as {@link SubscriptionPackage} link objects) whose counts should be retrieved
      * @return a {@link Map} of counts, grouped by events and application status (pending or accepted)
      */
-    Map<String, Integer> getCountsForPackages(Map<SubscriptionPackage, Set<String>> pkgList) {
+    Map<String, Integer> getCountsForPackages(Map<SubscriptionPackage, Map<String, RefdataValue>> pkgList) {
         Integer newTitlesPending = 0, titlesUpdatedPending = 0, titlesDeletedPending = 0, titlesRemovedPending = 0
         Integer newTitlesAccepted = 0, titlesUpdatedAccepted = 0, titlesDeletedAccepted = 0
         List<RefdataValue> pendingStatus = [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED]
-        pkgList.each { SubscriptionPackage sp, Set<String> settings ->
+        pkgList.each { SubscriptionPackage sp, Map<String, RefdataValue> settings ->
             //spontaneous convention: 1: title, a: accepted, b: pending
             List acceptedTitleCounts = PendingChange.executeQuery('select count(pc.id), pc.msgToken from PendingChange pc join pc.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken in (:eventTypes) and pc.oid = :subOid and pc.status in (:pendingStatus) group by pc.msgToken', [package: sp.pkg, entryDate: sp.dateCreated, subOid: genericOIDService.getOID(sp.subscription), eventTypes: [PendingChangeConfiguration.NEW_TITLE, PendingChangeConfiguration.TITLE_UPDATED, PendingChangeConfiguration.TITLE_DELETED], pendingStatus: pendingStatus])
             //String query1b
-            List pendingTitleCounts = [], pendingCoverageCounts = []
-            if(PendingChangeConfiguration.NEW_TITLE in settings) {
+            List pendingTitleCounts = []
+            if(PendingChangeConfiguration.NEW_TITLE in settings.keySet() && (settings.get(PendingChangeConfiguration.NEW_TITLE) == null || settings.get(PendingChangeConfiguration.NEW_TITLE) == RDStore.PENDING_CHANGE_CONFIG_PROMPT)) {
                 //if(params.eventType == PendingChangeConfiguration.NEW_TITLE)
                 pendingTitleCounts.addAll(PendingChange.executeQuery('select count(pc.id), pc.msgToken from PendingChange pc join pc.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken = :eventType and pc.tipp.status != :removed and (not exists (select pca.id from PendingChange pca join pca.tipp tippA where tippA = pc.tipp and pca.oid = :subOid and pca.status in (:pendingStatus)) and not exists (select ie.id from IssueEntitlement ie where ie.tipp = pc.tipp and ie.status != :removed and ie.subscription = :subscription)) and pc.status = :packageHistory group by pc.msgToken, pc.tipp', [package: sp.pkg, entryDate: sp.dateCreated, eventType: PendingChangeConfiguration.NEW_TITLE, subOid: genericOIDService.getOID(sp.subscription), pendingStatus: pendingStatus, removed: RDStore.TIPP_STATUS_REMOVED, subscription: sp.subscription, packageHistory: RDStore.PENDING_CHANGE_HISTORY]))
             }
-            if(PendingChangeConfiguration.TITLE_UPDATED in settings) {
+            if(PendingChangeConfiguration.TITLE_UPDATED in settings.keySet() && (settings.get(PendingChangeConfiguration.TITLE_UPDATED) == null || settings.get(PendingChangeConfiguration.TITLE_UPDATED) == RDStore.PENDING_CHANGE_CONFIG_PROMPT)) {
                 //else if(params.eventType == PendingChangeConfiguration.TITLE_UPDATED)
                 pendingTitleCounts.addAll(PendingChange.executeQuery('select count(pc.id), pc.msgToken from PendingChange pc join pc.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken = :eventType and pc.tipp.status != :removed and not exists (select pca.id from PendingChange pca join pca.tipp tippA where tippA = pc.tipp and pca.oid = :subOid and (pca.newValue = pc.newValue or (pca.newValue is null and pc.newValue is null)) and pca.status in (:pendingStatus)) and pc.status = :packageHistory group by pc.msgToken', [package: sp.pkg, entryDate: sp.dateCreated, eventType: PendingChangeConfiguration.TITLE_UPDATED, subOid: genericOIDService.getOID(sp.subscription), pendingStatus: pendingStatus, removed: RDStore.TIPP_STATUS_REMOVED, packageHistory: RDStore.PENDING_CHANGE_HISTORY]))
             }
-            if(PendingChangeConfiguration.TITLE_DELETED in settings) {
+            if(PendingChangeConfiguration.TITLE_DELETED in settings.keySet() && (settings.get(PendingChangeConfiguration.TITLE_DELETED) == null || settings.get(PendingChangeConfiguration.TITLE_DELETED) == RDStore.PENDING_CHANGE_CONFIG_PROMPT)) {
                 //else if(params.eventType == PendingChangeConfiguration.TITLE_DELETED)
                 pendingTitleCounts.addAll(PendingChange.executeQuery('select count(pc.id), pc.msgToken from PendingChange pc join pc.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken = :eventType and pc.tipp.status != :removed and not exists (select pca.id from PendingChange pca join pca.tipp tippA where tippA = pc.tipp and pca.oid = :subOid and pca.status in (:pendingStatus)) and exists(select ie.id from IssueEntitlement ie where ie.tipp = pc.tipp and ie.status not in (:deleted) and ie.subscription = :subscription) and pc.status = :packageHistory group by pc.msgToken', [package: sp.pkg, entryDate: sp.dateCreated, eventType: PendingChangeConfiguration.TITLE_DELETED, subOid: genericOIDService.getOID(sp.subscription), pendingStatus: pendingStatus, removed: RDStore.TIPP_STATUS_REMOVED, deleted: [RDStore.TIPP_STATUS_REMOVED, RDStore.TIPP_STATUS_DELETED], subscription: sp.subscription, packageHistory: RDStore.PENDING_CHANGE_HISTORY]))
             }
-            if(PendingChangeConfiguration.TITLE_REMOVED in settings) {
+            if(PendingChangeConfiguration.TITLE_REMOVED in settings.keySet()) {
                 //else if(params.eventType == PendingChangeConfiguration.TITLE_REMOVED)
                 pendingTitleCounts.addAll(PendingChange.executeQuery('select count(pc.id), pc.msgToken from PendingChange pc join pc.tipp tipp where tipp in (select ie.tipp from IssueEntitlement ie where ie.subscription = :sub and ie.status != :removed) and tipp.pkg = :pkg and pc.msgToken = :eventType group by pc.msgToken', [sub: sp.subscription, pkg: sp.pkg, removed: RDStore.TIPP_STATUS_REMOVED, eventType: PendingChangeConfiguration.TITLE_REMOVED]))
             }
@@ -678,7 +682,7 @@ class PendingChangeService extends AbstractLockableService {
      * @param subId the subscription which would have been affected
      * @return true if the rejection was successful, false otherwise
      */
-    boolean reject(PendingChange pc, Long subId = null) {
+    boolean reject(PendingChange pc, subId = null) {
         if(pc.status != RDStore.PENDING_CHANGE_HISTORY) {
             pc.status = RDStore.PENDING_CHANGE_REJECTED
             pc.actionDate = new Date()
@@ -699,7 +703,7 @@ class PendingChangeService extends AbstractLockableService {
                 target = pc.tippCoverage
             }
             if(target) {
-                List<SubscriptionPackage> subPkg = SubscriptionPackage.executeQuery('select sp from SubscriptionPackage sp join sp.subscription s join s.orgRelations oo where sp.pkg = :pkg and sp.subscription.id = :subscription and oo.org = :ctx and s.instanceOf is null',[ctx:contextOrg,pkg:targetPkg,subscription:subId])
+                List<SubscriptionPackage> subPkg = SubscriptionPackage.executeQuery('select sp from SubscriptionPackage sp join sp.subscription s join s.orgRelations oo where sp.pkg = :pkg and sp.subscription.id = :subscription and oo.org = :ctx and s.instanceOf is null',[ctx:contextOrg,pkg:targetPkg,subscription:Long.parseLong(subId)])
                 if(subPkg.size() == 1) {
                     PendingChange toReject = PendingChange.construct([target: target, oid: genericOIDService.getOID(subPkg[0].subscription), newValue: pc.newValue, oldValue: pc.oldValue, prop: pc.targetProperty, msgToken: pc.msgToken, status: RDStore.PENDING_CHANGE_REJECTED, owner: contextOrg])
                     if (!toReject)

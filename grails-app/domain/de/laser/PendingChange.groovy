@@ -146,38 +146,25 @@ class PendingChange {
             else if (configMap.target instanceof CostItem)
                 targetClass = PROP_COST_ITEM
             if (targetClass) {
-                if (configMap.msgToken in SETTING_KEYS) {
+                /*if (configMap.msgToken in SETTING_KEYS) {
                     pc = checkPendingChangeExistsForSync(configMap, targetClass)
-                }
-                else if(configMap.msgToken == PendingChangeConfiguration.TITLE_REMOVED) {
+                }*/
+                if(configMap.msgToken == PendingChangeConfiguration.TITLE_REMOVED) {
                     Map<String, Object> changeParams = [target: configMap.target, msgToken: configMap.msgToken]
-                    List<PendingChange> pendingChangeCheck = executeQuery('select pc from PendingChange pc where pc.status in (:processed) and pc.' + targetClass + ' = :target and pc.msgToken = :msgToken', changeParams + [processed: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_PENDING, RDStore.PENDING_CHANGE_HISTORY]])
-                    if (pendingChangeCheck)
-                        return pendingChangeCheck[0]
-                    else pc = new PendingChange()
+                    pc = new PendingChange()
                 }
                 else {
                     if (configMap.prop) {
                         Map<String, Object> changeParams = [target: configMap.target, prop: configMap.prop]
                         if (!configMap.oid) {
-                            List<PendingChange> pendingChangeCheck = executeQuery('select pc from PendingChange pc where pc.status in (:processed) and pc.' + targetClass + ' = :target and pc.targetProperty = :prop', changeParams + [processed: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_PENDING, RDStore.PENDING_CHANGE_HISTORY]])
-                            if (pendingChangeCheck)
-                                return pendingChangeCheck[0]
-                            else pc = new PendingChange()
                             executeUpdate('update PendingChange pc set pc.status = :superseded where :target in (pc.subscription,pc.costItem) and pc.targetProperty = :prop', changeParams + [superseded: RDStore.PENDING_CHANGE_SUPERSEDED])
+                            pc = new PendingChange()
                         } else {
-                            changeParams.oid = configMap.oid
-                            List<PendingChange> pendingChangeCheck = executeQuery('select pc from PendingChange pc where pc.status in (:processed) and pc.' + targetClass + ' = :target and pc.oid = :oid and pc.targetProperty = :prop', changeParams + [processed: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_PENDING]])
-                            if (pendingChangeCheck)
-                                return pendingChangeCheck[0]
-                            else pc = new PendingChange()
+                            pc = new PendingChange()
                         }
                     } else {
                         Map<String, Object> changeParams = [target: configMap.target, msgToken: configMap.msgToken, oid: configMap.oid]
-                        List<PendingChange> pendingChangeCheck = executeQuery('select pc from PendingChange pc where pc.status in (:processed) and pc.oid = :oid and pc.' + targetClass + ' = :target and pc.msgToken = :msgToken', changeParams + [processed: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_PENDING, RDStore.PENDING_CHANGE_HISTORY]])
-                        if (pendingChangeCheck)
-                            return pendingChangeCheck[0]
-                        else pc = new PendingChange()
+                        pc = new PendingChange()
                         executeUpdate('update PendingChange pc set pc.status = :superseded where :target in (pc.subscription,pc.costItem) and pc.msgToken = :msgToken and pc.oid = :oid', changeParams + [superseded: RDStore.PENDING_CHANGE_SUPERSEDED])
                     }
                 }

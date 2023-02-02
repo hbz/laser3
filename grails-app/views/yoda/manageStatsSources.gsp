@@ -1,4 +1,4 @@
-<%@page import="grails.converters.JSON" %>
+<%@page import="grails.converters.JSON; de.laser.RefdataValue; de.laser.storage.RDConstants" %>
 
 <laser:htmlStart text="Manage Stats Sources" />
 
@@ -18,6 +18,7 @@
                     <th>Anbieter</th>
                     <th>Plattform</th>
                     <th>Datum letzter Abruf</th>
+                    <th>Intervall</th>
                     <th>zentraler API-Schlüssel</th>
                     <th>Aktionen</th>
                 </tr>
@@ -46,6 +47,11 @@
                             <g:elseif test="${platform.counter4LastRun}">
                                 <g:formatDate date="${platform.counter4LastRun}" format="${message(code:'default.date.format.notime')}"/>
                             </g:elseif>
+                        </td>
+                        <td>
+                            <g:if test="${platformInstanceRecords[platform.gokbId].statisticsUpdate}">
+                                ${RefdataValue.getByValueAndCategory(platformInstanceRecords[platform.gokbId].statisticsUpdate, RDConstants.PLATFORM_STATISTICS_FREQUENCY)?.getI10n("value")}
+                            </g:if>
                         </td>
                         <td><ui:xEditable owner="${platform}" field="centralApiKey" overwriteEditable="${true}"/></td>
                         <td>
