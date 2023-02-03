@@ -42,9 +42,8 @@
                 </td>
                 <td>
                     <strong>${clist.title}</strong>
-                    <g:if test="${clist.description}">
-                        <br /> ${clist.description}
-                    </g:if>
+                    <g:if test="${clist.template}">&nbsp;&nbsp;<span class="ui label tiny">Vorlage</span></g:if>
+                    <g:if test="${clist.description}"><br /> ${clist.description}</g:if>
                 </td>
                 <td>
                     <div class="ui buttons">

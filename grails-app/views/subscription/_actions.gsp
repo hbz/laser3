@@ -78,13 +78,17 @@
         <ui:actionsDropdownItem message="template.addNote" data-ui="modal" href="#modalCreateNote" />
         <div class="divider"></div>
         <g:if test="${editable}">
-            <g:if test="${workflowService.hasUserPerm_init()}"><!-- TODO: workflows-permissions -->
+
+            <g:if test="${workflowLightService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
                 <ui:actionsDropdownItem message="workflow.light.instantiate" data-ui="modal" href="#modalInstantiateWorkflowLight" />
+            </g:if>
+            <g:if test="${workflowService.hasUserPerm_init()}"><!-- TODO: workflows-permissions -->
                 <g:if test="${AppUtils.getCurrentServer() in [AppUtils.DEV, AppUtils.LOCAL]}">
                     <ui:actionsDropdownItem message="workflow.instantiate" data-ui="modal" href="#modalInstantiateWorkflow" />
                 </g:if>
-                <div class="divider"></div>
             </g:if>
+            <div class="divider"></div>
+
         <g:if test="${(contextCustomerType == 'ORG_INST' && subscription._getCalculatedType() == Subscription.TYPE_LOCAL) || (contextCustomerType == "ORG_CONSORTIUM" && subscription._getCalculatedType() == Subscription.TYPE_CONSORTIAL)}">
                 <ui:actionsDropdownItem controller="subscription" action="copySubscription" params="${[sourceObjectId: genericOIDService.getOID(subscription), copyObject: true]}" message="myinst.copySubscription" />
             </g:if>
@@ -207,8 +211,11 @@
 <g:if test="${accessService.checkMinUserOrgRole(user,contextOrg,'INST_EDITOR')}">
     <laser:render template="/templates/notes/modal_create" model="${[ownobj: subscription, owntp: 'subscription']}"/>
 </g:if>
-<g:if test="${workflowService.hasUserPerm_init()}"><!-- TODO: workflows-permissions -->
+
+<g:if test="${workflowLightService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
     <laser:render template="/templates/workflow/light/instantiate" model="${[cmd: RDStore.WF_WORKFLOW_TARGET_TYPE_SUBSCRIPTION, target: subscription]}"/>
+</g:if>
+<g:if test="${workflowService.hasUserPerm_init()}"><!-- TODO: workflows-permissions -->
     <g:if test="${AppUtils.getCurrentServer() in [AppUtils.DEV, AppUtils.LOCAL]}">
         <laser:render template="/templates/workflow/instantiate" model="${[cmd: RDStore.WF_WORKFLOW_TARGET_TYPE_SUBSCRIPTION, target: subscription]}"/>
     </g:if>

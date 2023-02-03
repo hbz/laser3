@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore; de.laser.utils.DateUtils; de.laser.workflow.WorkflowHelper; de.laser.workflow.WfWorkflow; de.laser.UserSetting; de.laser.system.SystemAnnouncement; de.laser.storage.RDConstants; de.laser.AccessService; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DashboardDueDate" %>
+<%@ page import="de.laser.workflow.light.WfChecklist; de.laser.storage.RDStore; de.laser.utils.DateUtils; de.laser.workflow.WorkflowHelper; de.laser.workflow.WfWorkflow; de.laser.UserSetting; de.laser.system.SystemAnnouncement; de.laser.storage.RDConstants; de.laser.AccessService; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DashboardDueDate" %>
 
 <laser:htmlStart message="menu.institutions.dash" serviceInjection="true"/>
 
@@ -95,10 +95,11 @@
             </a>
         </g:if>
 
-        <g:if test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
+        <g:if test="${workflowService.hasUserPerm_read() || workflowLightService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
             <a class="${us_dashboard_tab.value == 'Workflows' ? 'active item':'item'}" data-tab="workflows">
                 <i class="tasks icon large"></i>
-                ${myWorkflowsCount + allWorkflowsCount} ${message(code:'workflow.plural')}
+%{--                ${myWorkflowsCount + allWorkflowsCount} ${message(code:'workflow.plural')}--}%
+                ${allChecklistsCount} ${message(code:'workflow.plural')}
             </a>
         </g:if>
 
@@ -250,18 +251,91 @@
             </div>
         </div>
 
-        <g:if test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
+        <g:if test="${workflowService.hasUserPerm_read() || workflowLightService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
             <div class="ui bottom attached tab ${us_dashboard_tab.value == 'Workflows' ? 'active':''}" data-tab="workflows">
 
-                <g:if test="${myWorkflows || allWorkflows}">
+                <g:if test="${allChecklists}">
                     <ui:msg class="info" noClose="true">
-                        <g:if test="${Math.max(myWorkflowsCount, allWorkflowsCount) > user.getPageSizeOrDefault()}">
+                        <g:if test="${allChecklistsCount > user.getPageSizeOrDefault()}">
                             ${message(code:'workflow.dashboard.msg.more', args:[user.getPageSizeOrDefault(), g.createLink(controller:'myInstitution', action:'currentWorkflows', params:[filter:'reset', max:500]) ])}
                             <br />
                         </g:if>
                         ${message(code:'workflow.dashboard.msg.new', args:[message(code:'profile.itemsTimeWindow'), user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)])}
                     </ui:msg>
+
+
+                    <table class="ui celled table la-js-responsive-table la-table">
+                        <thead>
+                            <tr>
+                                <th class="five wide" rowspan="2">${message(code:'workflow.label')}</th>
+                                <th class="six wide" rowspan="2">${message(code:'default.relation.label')}</th>
+                                <th class="three wide"  rowspan="2">${message(code:'default.progress.label')}</th>
+                                <th class="two wide"  class="la-smaller-table-head">${message(code:'default.lastUpdated.label')}</th>
+                            </tr>
+                            <tr>
+                                <th class="la-smaller-table-head">${message(code:'default.dateCreated.label')}</th>
+                            <tr>
+                        </thead>
+                        <tbody>
+                            <g:each in="${allChecklists}" var="clist">
+                                <g:set var="clistInfo" value="${clist.getInfo()}" />
+                                <g:set var="clistLinkParamPart" value="${clistInfo.target.id + ':' + WfChecklist.KEY + ':' + clist.id}" />
+                                <tr>
+                                    <td>
+                                        <div class="la-flexbox">
+                                            <i class="ui icon tasks la-list-icon"></i>
+                                            <g:link controller="${clistInfo.targetController}" action="workflows" id="${clistInfo.target.id}"
+                                                    params="${[info: '' + clistInfo.target.class.name + ':' + clistLinkParamPart]}">
+                                                <strong>${clist.title}</strong>
+                                            </g:link>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="la-flexbox">
+                                            <i class="ui icon ${clistInfo.targetIcon} la-list-icon"></i>
+                                            <g:link controller="${clistInfo.targetController}" action="show" params="${[id: clistInfo.target.id]}">
+                                                ${clistInfo.targetName}
+                                                <g:if test="${clistInfo.target instanceof Subscription || clistInfo.target instanceof License}">
+                                                    <g:if test="${clistInfo.target.startDate || clistInfo.target.endDate}">
+                                                        (${clistInfo.target.startDate ? DateUtils.getLocalizedSDF_noTime().format(clistInfo.target.startDate) : ''} -
+                                                        ${clistInfo.target.endDate ? DateUtils.getLocalizedSDF_noTime().format(clistInfo.target.endDate) : ''})
+                                                    </g:if>
+                                                </g:if>
+                                            </g:link>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <g:if test="${clistInfo.tasksOpen}">
+                                            <span class="ui label circular">${clistInfo.tasksOpen}</span>
+                                        </g:if>
+                                        <g:if test="${clistInfo.tasksCanceled}">
+                                            <span class="ui label circular orange">${clistInfo.tasksCanceled}</span>
+                                        </g:if>
+                                        <g:if test="${clistInfo.tasksDone}">
+                                            <span class="ui label circular green">${clistInfo.tasksDone}</span>
+                                        </g:if>
+                                    </td>
+                                    <td>
+                                        ${DateUtils.getLocalizedSDF_noTime().format(clistInfo.lastUpdated)}
+                                        <br />
+                                        ${DateUtils.getLocalizedSDF_noTime().format(clist.dateCreated)}
+                                    </td>
+                                </tr>
+                            </g:each>
+                        </tbody>
+                    </table>
                 </g:if>
+
+
+%{--                <g:if test="${myWorkflows || allWorkflows}">--}%
+%{--                    <ui:msg class="info" noClose="true">--}%
+%{--                        <g:if test="${Math.max(myWorkflowsCount, allWorkflowsCount) > user.getPageSizeOrDefault()}">--}%
+%{--                            ${message(code:'workflow.dashboard.msg.more', args:[user.getPageSizeOrDefault(), g.createLink(controller:'myInstitution', action:'currentWorkflows', params:[filter:'reset', max:500]) ])}--}%
+%{--                            <br />--}%
+%{--                        </g:if>--}%
+%{--                        ${message(code:'workflow.dashboard.msg.new', args:[message(code:'profile.itemsTimeWindow'), user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)])}--}%
+%{--                    </ui:msg>--}%
+%{--                </g:if>--}%
 
                 <g:each in="${[myWorkflows, allWorkflows]}" var="currentWorkflows">
 

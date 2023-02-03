@@ -9,6 +9,7 @@ import de.laser.utils.SwissKnife
 import de.laser.survey.SurveyInfo
 import de.laser.system.SystemAnnouncement
 import de.laser.workflow.WfWorkflow
+import de.laser.workflow.light.WfChecklist
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -27,6 +28,7 @@ class MyInstitutionControllerService {
     FilterService filterService
     SurveyService surveyService
     TaskService taskService
+    WorkflowLightService workflowLightService
     WorkflowService workflowService
 
     static final int STATUS_OK = 0
@@ -100,7 +102,8 @@ class MyInstitutionControllerService {
                  status: RDStore.SURVEY_SURVEY_STARTED])
         */
 
-        if (workflowService.hasUserPerm_read()){
+        // TODO
+        if (false && workflowService.hasUserPerm_read()){
             /*activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where surConfig.surveyInfo.status = :status  and surConfig.surveyInfo.owner = :org " +
                     " order by surConfig.surveyInfo.endDate",
                     [org: result.institution,
@@ -124,6 +127,20 @@ class MyInstitutionControllerService {
 
 //            result.currentWorkflowsCount = result.myCurrentWorkflows.size() + result.allCurrentWorkflows.size()
 //            result.currentWorkflows      = workflows.take(contextService.getUser().getPageSizeOrDefault())
+        }
+
+        if (workflowLightService.hasUserPerm_read()){
+            List<WfChecklist> workflows = []
+
+            workflowLightService.sortByLastUpdated( WfChecklist.findAllByOwner(result.institution) ).each { clist ->
+                Map info = clist.getInfo()
+
+                if (info.status == RDStore.WF_WORKFLOW_STATUS_OPEN) {
+                    workflows.add(clist)
+                }
+            }
+            result.allChecklistsCount = workflows.size()
+            result.allChecklists = workflows.take(contextService.getUser().getPageSizeOrDefault())
         }
         /*
         result.surveys = activeSurveyConfigs.groupBy {it?.id}

@@ -32,9 +32,12 @@
                 </g:if>
             </g:if>
 
-            <g:if test="${workflowService.hasUserPerm_init()}"><!-- TODO: workflows-permissions -->
-                <div class="divider"></div>
+            <div class="divider"></div>
+
+            <g:if test="${workflowLightService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
                 <ui:actionsDropdownItem message="workflow.light.instantiate" data-ui="modal" href="#modalInstantiateWorkflowLight" />
+            </g:if>
+            <g:if test="${workflowService.hasUserPerm_init()}"><!-- TODO: workflows-permissions -->
                 <g:if test="${AppUtils.getCurrentServer() in [AppUtils.DEV, AppUtils.LOCAL]}">
                     <ui:actionsDropdownItem message="workflow.instantiate" data-ui="modal" href="#modalInstantiateWorkflow" />
                 </g:if>
@@ -87,8 +90,10 @@
     <laser:render template="/templates/notes/modal_create" model="${[ownobj: license, owntp: 'license']}"/>
 </g:if>
 
-<g:if test="${workflowService.hasUserPerm_init()}"><!-- TODO: workflows-permissions -->
+<g:if test="${workflowLightService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
     <laser:render template="/templates/workflow/light/instantiate" model="${[cmd: RDStore.WF_WORKFLOW_TARGET_TYPE_LICENSE, target: license]}"/>
+</g:if>
+<g:if test="${workflowService.hasUserPerm_init()}"><!-- TODO: workflows-permissions -->
     <g:if test="${AppUtils.getCurrentServer() in [AppUtils.DEV, AppUtils.LOCAL]}">
         <laser:render template="/templates/workflow/instantiate" model="${[cmd: RDStore.WF_WORKFLOW_TARGET_TYPE_LICENSE, target: license]}"/>
     </g:if>
