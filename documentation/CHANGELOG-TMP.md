@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4492    02.02.2023  dev     3.1         Andreas Feature     Adressen können nicht mehr zu Personen neu angelegt werden
+
 --      02.02.2023  rc-3.0  3.0.3       Andreas Bug         Meine Lizenzen pro Einrichtung lieferte unvollständige Daten
 
 --      02.02.2023  rc-3.0  3.0.3       Andreas Bug         inkorrekte Rundung der Rechnungssumme behoben
