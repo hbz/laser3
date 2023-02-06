@@ -32,7 +32,7 @@
                     <div class="divider"></div>
                 </g:if>
 
-                <ui:actionsDropdownItem data-ui="modal" href="#propDefGroupBindings" message="menu.institutions.configure_prop_groups" />
+%{--                <ui:actionsDropdownItem data-ui="modal" href="#propDefGroupBindings" message="menu.institutions.configure_prop_groups" />--}% %{-- erms-4798 --}%
                 <g:set var="createModal" value="${true}"/>
             </g:if>
             <g:if test="${actionName == 'ids'}">
