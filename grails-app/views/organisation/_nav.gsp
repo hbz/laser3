@@ -28,7 +28,7 @@
             <ui:securedSubNavItem affiliation="INST_USER" controller="organisation" action="accessPoints" params="${[id: orgInstance.id]}" message="org.nav.accessPoints"/>
         </g:else>
 
-        <g:if test="${workflowService.hasUserPerm_read() || workflowLightService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
+        <g:if test="${inContextOrg && (workflowOldService.hasUserPerm_read() || workflowService.hasUserPerm_read())}"><!-- TODO: workflows-permissions -->
             <ui:subNavItem controller="organisation" action="workflows" counts="${workflowCount || checklistCount ? workflowCount + checklistCount : null}" params="${[id:params.id]}" message="workflow.plural" />
         </g:if>
     </g:if>

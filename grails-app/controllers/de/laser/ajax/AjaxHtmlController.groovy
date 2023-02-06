@@ -67,6 +67,7 @@ import de.laser.workflow.WfWorkflow
 import de.laser.workflow.WfWorkflowPrototype
 import de.laser.workflow.WfTask
 import de.laser.workflow.WfTaskPrototype
+import de.laser.workflow.light.WfChecklist
 import de.laser.workflow.light.WfCheckpoint
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.poi.ss.usermodel.Workbook
@@ -1094,6 +1095,7 @@ class AjaxHtmlController {
 
         String template = '/templates/workflow/forms/modalWrapper' // todo
 
+        println params
         if (params.key) {
             String[] key = (params.key as String).split(':')
 
@@ -1131,6 +1133,12 @@ class AjaxHtmlController {
             else if (result.prefix == WfTask.KEY) {
                 result.task           = WfTask.get( key[3] )
                 result.tmplModalTitle = g.message(code:'task.label') + ': ' +  result.task.title
+            }
+            else if (result.prefix == WfChecklist.KEY) {
+                result.checklist      = WfChecklist.get( key[3] )
+                result.tmplModalTitle = g.message(code:'task.label') + ': ' +  result.checklist.title
+
+                template              = '/templates/workflow/light/modalWrapper' // todo
             }
             else if (result.prefix == WfCheckpoint.KEY) {
                 result.checkpoint     = WfCheckpoint.get( key[3] )

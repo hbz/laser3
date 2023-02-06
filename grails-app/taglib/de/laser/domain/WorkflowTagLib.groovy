@@ -251,15 +251,15 @@ class WorkflowTagLib {
 
         List<String> fields = []
 
+        fields.add( (cpoint.date ?
+                '<i class="icon calendar alternate outline"></i> ' + message(code:'workflow.checkpoint.date') + ': <strong>' + DateUtils.getLocalizedSDF_noTime().format(cpoint.date) + '</strong>' :
+                '<i class="icon calendar alternate outline la-light-grey"></i> ' + message(code:'workflow.checkpoint.noDate')
+        ))
         fields.add( (cpoint.done == true ?
                 '<i class="ui icon check square outline"></i> ' + message(code:'workflow.checkpoint.done') :
                 '<i class="ui icon square outline la-light-grey"></i> ' + message(code:'workflow.checkpoint.open')
         ))
 
-        fields.add( (cpoint.date ?
-                '<i class="icon calendar alternate outline"></i> ' + message(code:'workflow.checkpoint.date') + ': <strong>' + DateUtils.getLocalizedSDF_noTime().format(cpoint.date) + '</strong>' :
-                '<i class="icon calendar alternate outline la-light-grey"></i> ' + message(code:'workflow.checkpoint.noDate')
-        ))
         tooltip = tooltip + '<p>' + fields.join('<br/>') + '</p>'
 
         String cssColor = WorkflowHelper.getCssColorByStatus( cpoint.done ? RDStore.WF_TASK_STATUS_DONE : RDStore.WF_TASK_STATUS_OPEN )

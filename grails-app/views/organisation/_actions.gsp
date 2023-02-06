@@ -21,15 +21,14 @@
                 <div class="divider"></div>
 
                 <g:if test="${inContextOrg && !isProviderOrAgency}">
-                    <g:if test="${workflowLightService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
+                    <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
                         <ui:actionsDropdownItem message="workflow.light.instantiate" data-ui="modal" href="#modalInstantiateWorkflowLight" />
                     </g:if>
-                    <g:if test="${workflowService.hasUserPerm_init()}"><!-- TODO: workflows-permissions -->
+                    <g:if test="${workflowOldService.hasUserPerm_init()}"><!-- TODO: workflows-permissions -->
                         <g:if test="${AppUtils.getCurrentServer() in [AppUtils.DEV, AppUtils.LOCAL]}">
                             <ui:actionsDropdownItem message="workflow.instantiate" data-ui="modal" href="#modalInstantiateWorkflow" />
                         </g:if>
                     </g:if>
-                    <div class="divider"></div>
                 </g:if>
 
 %{--                <ui:actionsDropdownItem data-ui="modal" href="#propDefGroupBindings" message="menu.institutions.configure_prop_groups" />--}% %{-- erms-4798 --}%
@@ -56,10 +55,10 @@
             </g:if>
             <g:if test="${actionName == 'workflows'}">
                 <g:if test="${inContextOrg && !isProviderOrAgency}">
-                    <g:if test="${workflowLightService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
+                    <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
                         <ui:actionsDropdownItem message="workflow.light.instantiate" data-ui="modal" href="#modalInstantiateWorkflowLight" />
                     </g:if>
-                    <g:if test="${workflowService.hasUserPerm_init()}"><!-- TODO: workflows-permissions -->
+                    <g:if test="${workflowOldService.hasUserPerm_init()}"><!-- TODO: workflows-permissions -->
                         <g:if test="${AppUtils.getCurrentServer() in [AppUtils.DEV, AppUtils.LOCAL]}">
                             <ui:actionsDropdownItem message="workflow.instantiate" data-ui="modal" href="#modalInstantiateWorkflow" />
                         </g:if>
@@ -149,10 +148,10 @@
 </g:if>
 
 <g:if test="${inContextOrg && !isProviderOrAgency}">
-    <g:if test="${workflowLightService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
+    <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
         <laser:render template="/templates/workflow/light/instantiate" model="${[cmd: RDStore.WF_WORKFLOW_TARGET_TYPE_INSTITUTION, target: orgInstance]}"/>
     </g:if>
-    <g:if test="${workflowService.hasUserPerm_init()}"><!-- TODO: workflows-permissions -->
+    <g:if test="${workflowOldService.hasUserPerm_init()}"><!-- TODO: workflows-permissions -->
         <g:if test="${AppUtils.getCurrentServer() in [AppUtils.DEV, AppUtils.LOCAL]}">
             <laser:render template="/templates/workflow/instantiate" model="${[cmd: RDStore.WF_WORKFLOW_TARGET_TYPE_INSTITUTION, target: orgInstance]}"/>
         </g:if>

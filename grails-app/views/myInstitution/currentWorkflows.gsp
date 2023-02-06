@@ -1,4 +1,4 @@
-<%@ page import="de.laser.workflow.light.WfCheckpoint; de.laser.workflow.light.WfChecklist; de.laser.License; de.laser.Subscription; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.storage.*; de.laser.RefdataCategory; de.laser.workflow.*; de.laser.WorkflowLightService" %>
+<%@ page import="de.laser.workflow.light.WfCheckpoint; de.laser.workflow.light.WfChecklist; de.laser.License; de.laser.Subscription; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.storage.*; de.laser.RefdataCategory; de.laser.workflow.*; de.laser.WorkflowService" %>
 
 <laser:htmlStart message="menu.my.workflows" serviceInjection="true"/>
 
@@ -50,7 +50,7 @@
     </form>
 </ui:filter>
 
-<g:if test="${status == workflowLightService.OP_STATUS_DONE}">
+<g:if test="${status == workflowService.OP_STATUS_DONE}">
     <g:if test="${cmd == 'delete'}">
         <ui:msg class="positive" message="workflow.delete.ok" />
     </g:if>
@@ -58,7 +58,7 @@
         <ui:msg class="positive" message="workflow.edit.ok" />
     </g:else>
 </g:if>
-<g:elseif test="${status == workflowLightService.OP_STATUS_ERROR}">
+<g:elseif test="${status == workflowService.OP_STATUS_ERROR}">
     <g:if test="${cmd == 'delete'}">
         <ui:msg class="negative" message="workflow.delete.error" />
     </g:if>
@@ -83,12 +83,12 @@
         <tr>
     </thead>
     <tbody>
-        <g:each in="${currentWorkflows}" var="wf" status="wfi">
+        <g:each in="${currentWorkflows}" var="wf" status="cwfi">
             <g:set var="clistInfo" value="${wf.getInfo()}" />
 
             <tr>
                 <td class="center aligned">
-                    ${wfi + 1 + offset}
+                    ${cwfi + 1 + offset}
                 </td>
                 <td class="center aligned">
                     <uiWorkflow:statusIcon checklist="${wf}" size="normal" />
@@ -127,15 +127,15 @@
                     ${DateUtils.getLocalizedSDF_noTime().format(wf.dateCreated)}
                 </td>
                 <td class="center aligned">
-                    <g:if test="${workflowLightService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
+                    <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
 %{--                        <uiWorkflow:usageIconLinkButton workflow="${wf}" params="${[key: 'myInstitution:' + wf.id + ':' + WfChecklist.KEY + ':' + wf.id]}" />--}%
 %{--                        <button class="ui icon button blue la-modern-button" data-wfId="${wf.id}"><i class="icon pencil"></i></button>--}%
                     </g:if>
-                    <g:elseif test="${workflowLightService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
+                    <g:elseif test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
 %{--                        <uiWorkflow:usageIconLinkButton workflow="${wf}" params="${[key: 'myInstitution:' + wf.id + ':' + WfChecklist.KEY + ':' + wf.id]}" />--}%
 %{--                        <button class="ui icon button blue la-modern-button" data-wfId="${wf.id}"><i class="icon pencil"></i></button>--}%
                     </g:elseif>
-                    <g:if test="${workflowLightService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
+                    <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
                         <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.workflow", args: [wf.title])}"
                                 data-confirm-term-how="delete"

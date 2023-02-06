@@ -28,8 +28,8 @@ class MyInstitutionControllerService {
     FilterService filterService
     SurveyService surveyService
     TaskService taskService
-    WorkflowLightService workflowLightService
     WorkflowService workflowService
+    WorkflowOldService workflowOldService
 
     static final int STATUS_OK = 0
     static final int STATUS_ERROR = 1
@@ -103,17 +103,17 @@ class MyInstitutionControllerService {
         */
 
         // TODO
-        if (false && workflowService.hasUserPerm_read()){
+        if (false && workflowOldService.hasUserPerm_read()){
             /*activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where surConfig.surveyInfo.status = :status  and surConfig.surveyInfo.owner = :org " +
                     " order by surConfig.surveyInfo.endDate",
                     [org: result.institution,
                      status: RDStore.SURVEY_SURVEY_STARTED])*/
 
             if (params.cmd && params.cmd.contains(WfWorkflow.KEY)) {
-                workflowService.usage(params)
+                workflowOldService.usage(params)
             }
 
-            List<WfWorkflow> workflows = workflowService.sortByLastUpdated(
+            List<WfWorkflow> workflows = workflowOldService.sortByLastUpdated(
                     WfWorkflow.findAllByOwnerAndStatus(result.institution as Org, RDStore.WF_WORKFLOW_STATUS_OPEN)
             )
 
@@ -129,10 +129,10 @@ class MyInstitutionControllerService {
 //            result.currentWorkflows      = workflows.take(contextService.getUser().getPageSizeOrDefault())
         }
 
-        if (workflowLightService.hasUserPerm_read()){
+        if (workflowService.hasUserPerm_read()){
             List<WfChecklist> workflows = []
 
-            workflowLightService.sortByLastUpdated( WfChecklist.findAllByOwner(result.institution) ).each { clist ->
+            workflowService.sortByLastUpdated( WfChecklist.findAllByOwner(result.institution) ).each { clist ->
                 Map info = clist.getInfo()
 
                 if (info.status == RDStore.WF_WORKFLOW_STATUS_OPEN) {

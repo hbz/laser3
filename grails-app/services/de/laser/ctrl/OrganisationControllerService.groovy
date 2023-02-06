@@ -34,8 +34,8 @@ class OrganisationControllerService {
     LinksGenerationService linksGenerationService
     MessageSource messageSource
     TaskService taskService
-    WorkflowLightService workflowLightService
     WorkflowService workflowService
+    WorkflowOldService workflowOldService
 
     //---------------------------------------- linking section -------------------------------------------------
 
@@ -163,14 +163,14 @@ class OrganisationControllerService {
             String[] cmd = params.cmd.split(':')
 
             if (cmd[1] in [WfChecklist.KEY, WfCheckpoint.KEY] ) { // light
-                result.putAll( workflowLightService.cmd(params) )
+                result.putAll( workflowService.cmd(params) )
             }
             else {
                 if (cmd[0] in ['edit']) {
-                    result.putAll( workflowService.cmd(params) ) // @ workflows
+                    result.putAll( workflowOldService.cmd(params) ) // @ workflows
                 }
                 else {
-                    result.putAll( workflowService.usage(params) ) // @ workflows
+                    result.putAll( workflowOldService.usage(params) ) // @ workflows
                 }
             }
         }
@@ -178,10 +178,10 @@ class OrganisationControllerService {
             result.info = params.info // @ currentWorkflows @ dashboard
         }
 
-        result.checklists = workflowLightService.sortByLastUpdated( WfChecklist.findAllByOrgAndOwner(result.orgInstance as Org, result.contextOrg as Org) )
+        result.checklists = workflowService.sortByLastUpdated( WfChecklist.findAllByOrgAndOwner(result.orgInstance as Org, result.contextOrg as Org) )
         result.checklistCount = result.checklists.size()
 
-        result.workflows = workflowService.sortByLastUpdated( WfWorkflow.findAllByOrgAndOwner(result.orgInstance as Org, result.contextOrg as Org) )
+        result.workflows = workflowOldService.sortByLastUpdated( WfWorkflow.findAllByOrgAndOwner(result.orgInstance as Org, result.contextOrg as Org) )
         result.workflowCount = result.workflows.size()
 
         [result: result, status: (result ? STATUS_OK : STATUS_ERROR)]
@@ -293,8 +293,8 @@ class OrganisationControllerService {
         result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
 
         result.notesCount       = docstoreService.getNotes(result.orgInstance, result.contextOrg).size()
-        result.workflowCount    = workflowService.getWorkflowCount(result.orgInstance, result.contextOrg)
-        result.checklistCount   = workflowLightService.getWorkflowCount(result.orgInstance, result.contextOrg)
+        result.workflowCount    = workflowOldService.getWorkflowCount(result.orgInstance, result.contextOrg)
+        result.checklistCount   = workflowService.getWorkflowCount(result.orgInstance, result.contextOrg)
 
         result.links = linksGenerationService.getOrgLinks(result.orgInstance)
         result.targetCustomerType = result.orgInstance.getCustomerType()

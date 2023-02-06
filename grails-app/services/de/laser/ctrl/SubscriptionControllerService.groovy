@@ -96,8 +96,8 @@ class SubscriptionControllerService {
     SubscriptionService subscriptionService
     SurveyService surveyService
     TaskService taskService
-    WorkflowLightService workflowLightService
     WorkflowService workflowService
+    WorkflowOldService workflowOldService
 
     //-------------------------------------- general or ungroupable section -------------------------------------------
 
@@ -3787,8 +3787,8 @@ class SubscriptionControllerService {
             result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
 
             result.notesCount       = docstoreService.getNotes(result.subscription, result.contextOrg).size()
-            result.workflowCount    = workflowService.getWorkflowCount(result.subscription, result.contextOrg)
-            result.checklistCount   = workflowLightService.getWorkflowCount(result.subscription, result.contextOrg)
+            result.workflowCount    = workflowOldService.getWorkflowCount(result.subscription, result.contextOrg)
+            result.checklistCount   = workflowService.getWorkflowCount(result.subscription, result.contextOrg)
 
             if (checkOption in [AccessService.CHECK_VIEW, AccessService.CHECK_VIEW_AND_EDIT]) {
                 if (!result.subscription.isVisibleBy(result.user)) {
@@ -3863,14 +3863,14 @@ class SubscriptionControllerService {
             String[] cmd = params.cmd.split(':')
 
             if (cmd[1] in [WfChecklist.KEY, WfCheckpoint.KEY] ) { // light
-                result.putAll( workflowLightService.cmd(params) )
+                result.putAll( workflowService.cmd(params) )
             }
             else {
                 if (cmd[0] in ['edit']) {
-                    result.putAll( workflowService.cmd(params) ) // @ workflows
+                    result.putAll( workflowOldService.cmd(params) ) // @ workflows
                 }
                 else {
-                    result.putAll( workflowService.usage(params) ) // @ workflows
+                    result.putAll( workflowOldService.usage(params) ) // @ workflows
                 }
             }
         }
@@ -3878,10 +3878,10 @@ class SubscriptionControllerService {
             result.info = params.info // @ currentWorkflows @ dashboard
         }
 
-        result.checklists = workflowLightService.sortByLastUpdated( WfChecklist.findAllBySubscriptionAndOwner(result.subscription as Subscription, result.contextOrg as Org) )
+        result.checklists = workflowService.sortByLastUpdated( WfChecklist.findAllBySubscriptionAndOwner(result.subscription as Subscription, result.contextOrg as Org) )
         result.checklistCount = result.checklists.size()
 
-        result.workflows = workflowService.sortByLastUpdated( WfWorkflow.findAllBySubscriptionAndOwner(result.subscription as Subscription, result.contextOrg as Org) )
+        result.workflows = workflowOldService.sortByLastUpdated( WfWorkflow.findAllBySubscriptionAndOwner(result.subscription as Subscription, result.contextOrg as Org) )
         result.workflowCount = result.workflows.size()
 
         [result: result, status: (result ? STATUS_OK : STATUS_ERROR)]

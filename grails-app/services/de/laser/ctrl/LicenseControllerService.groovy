@@ -25,8 +25,8 @@ class LicenseControllerService {
     DocstoreService docstoreService
     LinksGenerationService linksGenerationService
     TaskService taskService
-    WorkflowLightService workflowLightService
     WorkflowService workflowService
+    WorkflowOldService workflowOldService
 
 
     //--------------------------------------------- workflows -------------------------------------------------
@@ -38,14 +38,14 @@ class LicenseControllerService {
             String[] cmd = params.cmd.split(':')
 
             if (cmd[1] in [WfChecklist.KEY, WfCheckpoint.KEY] ) { // light
-                result.putAll( workflowLightService.cmd(params) )
+                result.putAll( workflowService.cmd(params) )
             }
             else {
                 if (cmd[0] in ['edit']) {
-                    result.putAll( workflowService.cmd(params) ) // @ workflows
+                    result.putAll( workflowOldService.cmd(params) ) // @ workflows
                 }
                 else {
-                    result.putAll( workflowService.usage(params) ) // @ workflows
+                    result.putAll( workflowOldService.usage(params) ) // @ workflows
                 }
             }
         }
@@ -53,10 +53,10 @@ class LicenseControllerService {
             result.info = params.info // @ currentWorkflows @ dashboard
         }
 
-        result.checklists = workflowLightService.sortByLastUpdated( WfChecklist.findAllByLicenseAndOwner(result.license as License, result.contextOrg as Org) )
+        result.checklists = workflowService.sortByLastUpdated( WfChecklist.findAllByLicenseAndOwner(result.license as License, result.contextOrg as Org) )
         result.checklistCount = result.checklists.size()
 
-        result.workflows = workflowService.sortByLastUpdated( WfWorkflow.findAllByLicenseAndOwner(result.license as License, result.contextOrg as Org) )
+        result.workflows = workflowOldService.sortByLastUpdated( WfWorkflow.findAllByLicenseAndOwner(result.license as License, result.contextOrg as Org) )
         result.workflowCount = result.workflows.size()
 
         [result: result, status: (result ? STATUS_OK : STATUS_ERROR)]
@@ -117,8 +117,8 @@ class LicenseControllerService {
         result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
 
         result.notesCount       = docstoreService.getNotes(result.license, result.contextOrg).size()
-        result.workflowCount    = workflowService.getWorkflowCount(result.license, result.contextOrg)
-        result.checklistCount   = workflowLightService.getWorkflowCount(result.license, result.contextOrg)
+        result.workflowCount    = workflowOldService.getWorkflowCount(result.license, result.contextOrg)
+        result.checklistCount   = workflowService.getWorkflowCount(result.license, result.contextOrg)
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 

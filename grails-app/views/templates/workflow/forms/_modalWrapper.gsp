@@ -1,4 +1,5 @@
 <laser:serviceInjection />
+%{-- AjaxHtmlController.useWfXModal --}%
 
 <g:if test="${tmplCmd == 'usage'}">
     <g:set var="wfEditPerm" value="${workflowService.hasUserPerm_edit()}" />

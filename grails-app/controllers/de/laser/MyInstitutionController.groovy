@@ -8,7 +8,6 @@ import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.ctrl.UserControllerService
 import de.laser.custom.CustomWkhtmltoxService
 import de.laser.finance.PriceItem
-import de.laser.interfaces.CalculatedType
 import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.auth.Role
@@ -100,8 +99,8 @@ class MyInstitutionController  {
     UserControllerService userControllerService
     UserService userService
     CustomWkhtmltoxService wkhtmltoxService
-    WorkflowLightService workflowLightService
     WorkflowService workflowService
+    WorkflowOldService workflowOldService
 
     /**
      * The landing page after login; this is also the call when the home button is clicked
@@ -2641,7 +2640,7 @@ join sub.orgRelations or_sub where
         }
 
         if (params.cmd) {
-            result.putAll(workflowLightService.cmd(params))
+            result.putAll(workflowService.cmd(params))
             params.clear()
         }
 
@@ -2702,7 +2701,7 @@ join sub.orgRelations or_sub where
         }
 
         result.total = result.currentWorkflows.size()
-        result.currentWorkflows = workflowLightService.sortByLastUpdated(result.currentWorkflows) // todo - .drop(result.offset).take(result.max)
+        result.currentWorkflows = workflowService.sortByLastUpdated(result.currentWorkflows) // todo - .drop(result.offset).take(result.max)
 
         result
     }
@@ -2726,7 +2725,7 @@ join sub.orgRelations or_sub where
             cache.remove(pmKey)
         }
         else if (params.cmd) { // modal,delete, etc. - process and remove form params
-            result.putAll( workflowService.usage(params) )
+            result.putAll( workflowOldService.usage(params) )
             params.clear()
         }
 
@@ -2834,13 +2833,13 @@ join sub.orgRelations or_sub where
         result.currentWorkflowIds_done     = WfWorkflow.executeQuery(statusQuery, [idList: workflowIds, status: RDStore.WF_WORKFLOW_STATUS_DONE])
 
         if (result.tab == 'open') {
-            result.currentWorkflows = workflowService.sortByLastUpdated( WfWorkflow.executeQuery(resultQuery, [idList: result.currentWorkflowIds_open])).drop(result.offset).take(result.max)
+            result.currentWorkflows = workflowOldService.sortByLastUpdated( WfWorkflow.executeQuery(resultQuery, [idList: result.currentWorkflowIds_open])).drop(result.offset).take(result.max)
         }
         else if (result.tab == 'canceled') {
-            result.currentWorkflows = workflowService.sortByLastUpdated( WfWorkflow.executeQuery(resultQuery, [idList: result.currentWorkflowIds_canceled])).drop(result.offset).take(result.max)
+            result.currentWorkflows = workflowOldService.sortByLastUpdated( WfWorkflow.executeQuery(resultQuery, [idList: result.currentWorkflowIds_canceled])).drop(result.offset).take(result.max)
         }
         else if (result.tab == 'done') {
-            result.currentWorkflows = workflowService.sortByLastUpdated( WfWorkflow.executeQuery(resultQuery, [idList: result.currentWorkflowIds_done])).drop(result.offset).take(result.max)
+            result.currentWorkflows = workflowOldService.sortByLastUpdated( WfWorkflow.executeQuery(resultQuery, [idList: result.currentWorkflowIds_done])).drop(result.offset).take(result.max)
         }
         result.total = workflowIds.size()
 

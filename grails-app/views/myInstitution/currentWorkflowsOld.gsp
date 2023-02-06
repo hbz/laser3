@@ -1,4 +1,4 @@
-<%@ page import="de.laser.License; de.laser.Subscription; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.storage.*; de.laser.RefdataCategory; de.laser.workflow.*; de.laser.WorkflowService" %>
+<%@ page import="de.laser.License; de.laser.Subscription; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.storage.*; de.laser.RefdataCategory; de.laser.workflow.*; de.laser.WorkflowOldService" %>
 
 <laser:htmlStart message="menu.my.workflows" serviceInjection="true"/>
 
@@ -108,7 +108,7 @@
     </form>
 </ui:filter>
 
-<g:if test="${status == WorkflowService.OP_STATUS_DONE}">
+<g:if test="${status == WorkflowOldService.OP_STATUS_DONE}">
     <g:if test="${cmd == 'delete'}">
         <ui:msg class="positive" message="workflow.delete.ok" />
     </g:if>
@@ -116,7 +116,7 @@
         <ui:msg class="positive" message="workflow.edit.ok" />
     </g:else>
 </g:if>
-<g:elseif test="${status == WorkflowService.OP_STATUS_ERROR}">
+<g:elseif test="${status == WorkflowOldService.OP_STATUS_ERROR}">
     <g:if test="${cmd == 'delete'}">
         <ui:msg class="negative" message="workflow.delete.error" />
     </g:if>
@@ -203,13 +203,13 @@
                     ${DateUtils.getLocalizedSDF_noTime().format(wf.dateCreated)}
                 </td>
                 <td class="center aligned">
-                    <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
+                    <g:if test="${workflowOldService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
                         <uiWorkflow:usageIconLinkButton workflow="${wf}" params="${[key: 'myInstitution:' + wf.id + ':' + WfWorkflow.KEY + ':' + wf.id]}" />
                     </g:if>
-                    <g:elseif test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
+                    <g:elseif test="${workflowOldService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
                         <uiWorkflow:usageIconLinkButton workflow="${wf}" params="${[key: 'myInstitution:' + wf.id + ':' + WfWorkflow.KEY + ':' + wf.id]}" />
                     </g:elseif>
-                    <g:if test="${workflowService.hasUserPerm_init()}"><!-- TODO: workflows-permissions -->
+                    <g:if test="${workflowOldService.hasUserPerm_init()}"><!-- TODO: workflows-permissions -->
                         <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.workflow", args: [wf.title])}"
                                 data-confirm-term-how="delete"

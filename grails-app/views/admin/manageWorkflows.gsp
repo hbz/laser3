@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.DateUtils; de.laser.License; de.laser.Subscription; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.workflow.*; de.laser.WorkflowService" %>
+<%@ page import="de.laser.utils.DateUtils; de.laser.License; de.laser.Subscription; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.workflow.*; de.laser.WorkflowOldService" %>
 
 <laser:htmlStart message="menu.admin.manageWorkflows" serviceInjection="true" />
 
@@ -49,7 +49,7 @@
         </div>
     </ui:msg>
 
-    <g:set var="currentWorkflows" value="${workflowService.sortByLastUpdated( WfWorkflow.findAll() )}" />
+    <g:set var="currentWorkflows" value="${workflowOldService.sortByLastUpdated( WfWorkflow.findAll() )}" />
     <p class="ui header">
         * Workflows insgesamt: <ui:totalNumber total="${currentWorkflows.size()}"/>
     </p>
