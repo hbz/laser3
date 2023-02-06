@@ -18,16 +18,14 @@
                 <ui:actionsDropdownItem data-ui="modal" href="#modalCreateDocument" message="template.documents.add"/>
                 <ui:actionsDropdownItem data-ui="modal" href="#modalCreateNote" message="template.notes.add"/>
 
-                <div class="divider"></div>
-
                 <g:if test="${workflowService.hasUserPerm_init()}"><!-- TODO: workflows-permissions -->
                     <g:if test="${inContextOrg || isProviderOrAgency}">
-                        <ui:actionsDropdownItem message="workflow.instantiate" data-ui="modal" href="#modalInstantiateWorkflow" />
                         <div class="divider"></div>
+                        <ui:actionsDropdownItem message="workflow.instantiate" data-ui="modal" href="#modalInstantiateWorkflow" />
                     </g:if>
                 </g:if>
 
-                <ui:actionsDropdownItem data-ui="modal" href="#propDefGroupBindings" message="menu.institutions.configure_prop_groups" />
+%{--                <ui:actionsDropdownItem data-ui="modal" href="#propDefGroupBindings" message="menu.institutions.configure_prop_groups" />--}% %{-- erms-4798 --}%
                 <g:set var="createModal" value="${true}"/>
             </g:if>
             <g:if test="${actionName == 'ids'}">
