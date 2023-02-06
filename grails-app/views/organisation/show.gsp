@@ -101,31 +101,33 @@
                         <dt><g:message code="org.altname.label" /></dt>
                         <dd>
                             <div id="altnames" class="ui divided middle aligned selection list la-flex-list accordion">
-                                <div class="title" id="altname_title"><g:message code="org.altname.show"/> <i class="dropdown icon"></i></div>
-                                <div class="content">
-                                    <g:each in="${orgInstance.altnames}" var="altname">
-                                        <div class="ui item" data-objId="${altname.id}">
-                                            <div class="content la-space-right">
-                                                <ui:xEditable
-                                                        data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
-                                                        data_confirm_term_how="ok"
-                                                        class="js-open-confirm-modal-xEditable"
-                                                        owner="${altname}" field="name" overwriteEditable="${editable && orgInstanceRecord == null}"/>
-                                            </div>
-                                            <g:if test="${editable && orgInstanceRecord == null}">
+                                <g:if test="${orgInstance.altnames}">
+                                    <div class="title" id="altname_title"><g:message code="org.altname.show"/> <i class="dropdown icon"></i></div>
+                                    <div class="content">
+                                        <g:each in="${orgInstance.altnames}" var="altname">
+                                            <div class="ui item" data-objId="${altname.id}">
                                                 <div class="content la-space-right">
-                                                    <div class="ui buttons">
-                                                        <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
-                                                                       data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
-                                                                       data-confirm-term-how="delete" data-done="JSPC.app.removeAltname(${altname.id})">
-                                                            <i class="trash alternate outline icon"></i>
-                                                        </ui:remoteLink>
-                                                    </div>
+                                                    <ui:xEditable
+                                                            data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                                            data_confirm_term_how="ok"
+                                                            class="js-open-confirm-modal-xEditable"
+                                                            owner="${altname}" field="name" overwriteEditable="${editable && orgInstanceRecord == null}"/>
                                                 </div>
-                                            </g:if>
-                                        </div>
-                                    </g:each>
-                                </div>
+                                                <g:if test="${editable && orgInstanceRecord == null}">
+                                                    <div class="content la-space-right">
+                                                        <div class="ui buttons">
+                                                            <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
+                                                                           data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
+                                                                           data-confirm-term-how="delete" data-done="JSPC.app.removeAltname(${altname.id})">
+                                                                <i class="trash alternate outline icon"></i>
+                                                            </ui:remoteLink>
+                                                        </div>
+                                                    </div>
+                                                </g:if>
+                                            </div>
+                                        </g:each>
+                                    </div>
+                                </g:if>
                             </div>
                             <g:if test="${orgInstanceRecord == null}">
                                 <input name="addAltname" id="addAltname" type="button" class="ui button" value="${message(code: 'org.altname.add')}">
@@ -829,10 +831,10 @@
                                                                 <div class="ui header">${prs}</div>
                                                                 <g:each in="${prs.roleLinks}" var="personRole">
                                                                     <g:if test="${personRole.org.id == orgInstance.id && personRole.positionType}">
-                                                                        ${personRole.positionType.getI10n('value')} (Position)
+                                                                        ${personRole.positionType.getI10n('value')}
                                                                     </g:if>
-                                                                    <g:elseif test="${personRole.org.id == orgInstance.id && personRole.responsibilityType}">
-                                                                        ${personRole.responsibilityType.getI10n('value')} (Verantwortlichkeit)
+                                                                    <g:elseif test="${personRole.org.id == orgInstance.id && personRole.responsibilityType && (personRole.sub?.status == RDStore.SUBSCRIPTION_CURRENT || personRole.lic?.status == RDStore.LICENSE_CURRENT)}">
+                                                                        ${personRole.responsibilityType.getI10n('value')}
                                                                     </g:elseif>
                                                                 </g:each>
                                                                 <g:if test="${prs.contacts}">
@@ -869,10 +871,10 @@
                                                                 <div class="ui header">${prs}</div>
                                                                 <g:each in="${prs.roleLinks}" var="personRole">
                                                                     <g:if test="${personRole.org.id == orgInstance.id && personRole.positionType}">
-                                                                        ${personRole.positionType.getI10n('value')} (Position)
+                                                                        ${personRole.positionType.getI10n('value')}
                                                                     </g:if>
-                                                                    <g:elseif test="${personRole.org.id == orgInstance.id && personRole.responsibilityType}">
-                                                                        ${personRole.responsibilityType.getI10n('value')} (Verantwortlichkeit)
+                                                                    <g:elseif test="${personRole.org.id == orgInstance.id && personRole.responsibilityType && (personRole.sub?.status == RDStore.SUBSCRIPTION_CURRENT || personRole.lic?.status == RDStore.LICENSE_CURRENT)}">
+                                                                        ${personRole.responsibilityType.getI10n('value')}
                                                                     </g:elseif>
                                                                 </g:each>
                                                                 <g:if test="${prs.contacts}">
@@ -1095,11 +1097,14 @@
                                                     <g:each in="${visiblePersons}" var="person">
                                                         <%
                                                             SortedSet<String> roles = new TreeSet<String>()
+                                                            SortedSet<String> responsibilities = new TreeSet<String>()
                                                             person.roleLinks.each { PersonRole pr ->
                                                                 if(pr.functionType)
                                                                     roles << pr.functionType.getI10n('value')
                                                                 if(pr.positionType)
                                                                     roles << pr.positionType.getI10n('value')
+                                                                if(pr.responsibilityType)
+                                                                    responsibilities << pr.responsibilityType.getI10n('value')
                                                             }
                                                         %>
                                                         <div class="row">
@@ -1114,22 +1119,23 @@
                                                             <div class="fourteen wide column">
                                                                 <div class="ui label">${roles.join(' / ')}</div>
                                                                 <div class="ui header">${person}</div>
-                                                                    <g:if test="${person.contacts}">
-                                                                        <g:each in="${person.contacts.toSorted()}" var="contact">
-                                                                            <g:if test="${contact.contentType && contact.contentType.value in ['E-Mail', 'Mail', 'Url', 'Phone', 'Mobil', 'Fax']}">
-                                                                                <laser:render template="/templates/cpa/contact" model="${[
-                                                                                        overwriteEditable   : false,
-                                                                                        contact             : contact,
-                                                                                        tmplShowDeleteButton: false
-                                                                                ]}"/>
-                                                                            </g:if>
-                                                                        </g:each>
-                                                                    </g:if>
-                                                                    <g:each in="${person.addresses.sort { it.type.each{it?.getI10n('value') }}}" var="address">
-                                                                        <laser:render template="/templates/cpa/address"
-                                                                                      model="${[address: address, tmplShowDeleteButton: false, editable: false]}"/>
+                                                                ${responsibilities.join('<br>')}
+                                                                <g:if test="${person.contacts}">
+                                                                    <g:each in="${person.contacts.toSorted()}" var="contact">
+                                                                        <g:if test="${contact.contentType && contact.contentType.value in ['E-Mail', 'Mail', 'Url', 'Phone', 'Mobil', 'Fax']}">
+                                                                            <laser:render template="/templates/cpa/contact" model="${[
+                                                                                    overwriteEditable   : false,
+                                                                                    contact             : contact,
+                                                                                    tmplShowDeleteButton: false
+                                                                            ]}"/>
+                                                                        </g:if>
                                                                     </g:each>
-                                                                    <%--<laser:render template="/templates/cpa/person_full_details" model="${[
+                                                                </g:if>
+                                                                <g:each in="${person.addresses.sort { it.type.each{it?.getI10n('value') }}}" var="address">
+                                                                    <laser:render template="/templates/cpa/address"
+                                                                                  model="${[address: address, tmplShowDeleteButton: false, editable: false]}"/>
+                                                                </g:each>
+                                                                <%--<laser:render template="/templates/cpa/person_full_details" model="${[
                                                                             person                 : person,
                                                                             personContext          : orgInstance,
                                                                             tmplShowDeleteButton   : true,
@@ -1142,7 +1148,7 @@
                                                                             id                     : orgInstance.id,
                                                                             editable               : false,
                                                                             noSelection            : true
-                                                                    ]}"/>--%>
+                                                                ]}"/>--%>
                                                             </div>
                                                         </div>
                                                     </g:each>
