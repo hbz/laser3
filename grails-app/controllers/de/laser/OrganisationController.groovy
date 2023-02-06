@@ -940,10 +940,15 @@ class OrganisationController  {
             }
             result.packages = packages.sort { Package pkg -> pkg.sortname }
             //may become a performance bottleneck - SUBJECT OF OBSERVATION!
-            String consortialFilter = ''
-            if (result.institution.getCustomerType() == 'ORG_CONSORTIUM')
-                consortialFilter = " and s.instanceOf is null"
-            result.subLinks = OrgRole.executeQuery('select distinct(oo.sub) from OrgRole oo join oo.sub s where oo.org = :org and exists(select ooo from OrgRole ooo where s = ooo.sub and ooo.org = :ctx)'+consortialFilter+' order by s.name, s.startDate, s.endDate',[org: result.orgInstance, ctx: result.institution])
+            String subConsortialFilter = '', licConsortialFilter = ''
+            if (result.institution.getCustomerType() == 'ORG_CONSORTIUM') {
+                subConsortialFilter = " and s.instanceOf is null"
+                licConsortialFilter = " and l.instanceOf is null"
+            }
+            result.subLinks = OrgRole.executeQuery('select distinct(oo.sub) from OrgRole oo join oo.sub s where oo.org = :org and exists(select ooo from OrgRole ooo where s = ooo.sub and ooo.org = :ctx)'+subConsortialFilter+' order by s.name, s.startDate, s.endDate',[org: result.orgInstance, ctx: result.institution])
+            result.currentSubscriptionsCount = OrgRole.executeQuery('select distinct(oo.sub) from OrgRole oo join oo.sub s where s.status = :current and oo.org = :org and exists(select ooo from OrgRole ooo where s = ooo.sub and ooo.org = :ctx)'+subConsortialFilter+' order by s.name, s.startDate, s.endDate',[org: result.orgInstance, ctx: result.institution, current: RDStore.SUBSCRIPTION_CURRENT]).size()
+            result.licLinks = OrgRole.executeQuery('select distinct(oo.lic) from OrgRole oo join oo.lic l where oo.org = :org and exists(select ooo from OrgRole ooo where l = ooo.lic and ooo.org = :ctx)'+licConsortialFilter+' order by l.reference, l.startDate, l.endDate',[org: result.orgInstance, ctx: result.institution])
+            result.currentLicensesCount = OrgRole.executeQuery('select distinct(oo.lic) from OrgRole oo join oo.lic l where l.status = :current and oo.org = :org and exists(select li from Links li where li.sourceLicense = l and li.destinationSubscription in (select s from OrgRole oos join oos.sub s where oos.org = :ctx and s.status = :subCurrent'+subConsortialFilter+')) and exists(select ooo from OrgRole ooo where l = ooo.lic and ooo.org = :ctx)'+licConsortialFilter+' order by l.reference, l.startDate, l.endDate',[org: result.orgInstance, ctx: result.institution, subCurrent: RDStore.SUBSCRIPTION_CURRENT, current: RDStore.LICENSE_CURRENT]).size()
         }
 
         prf.setBenchmark('createdBy and legallyObligedBy')
