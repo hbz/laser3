@@ -198,7 +198,7 @@
                         <div class="ten wide column"></div>
                         <div class="two wide column wf-centered"></div>
                         <div class="two wide column wf-centered">
-                            <g:link class="ui icon button blue compact la-modern-button" action="workflows" id="${clistInfo.target.id}" params="${[cmd:"create:${WfCheckpoint.KEY}:${clist.id}"]}">
+                            <g:link class="ui icon button blue compact la-modern-button" action="workflows" id="${clistInfo.target.id}" params="${[cmd:"add:${WfChecklist.KEY}:${clist.id}"]}">
                                 <i class="icon plus"></i>
                             </g:link>
                         </div>
