@@ -29,8 +29,8 @@ import de.laser.config.ConfigMapper
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
-import de.laser.workflow.light.WfChecklist
-import de.laser.workflow.light.WfCheckpoint
+import de.laser.workflow.WfChecklist
+import de.laser.workflow.WfCheckpoint
 import grails.converters.JSON
 import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5Report

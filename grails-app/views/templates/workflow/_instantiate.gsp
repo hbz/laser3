@@ -1,4 +1,4 @@
-<%@ page import="de.laser.workflow.light.*; de.laser.storage.RDStore; de.laser.workflow.*; de.laser.WorkflowOldService" %>
+<%@ page import="de.laser.workflow.*; de.laser.storage.RDStore; de.laser.workflow.*; de.laser.WorkflowOldService" %>
 
 <%
     // TODO

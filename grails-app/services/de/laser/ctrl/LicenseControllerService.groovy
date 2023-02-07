@@ -4,8 +4,8 @@ import de.laser.*
 import de.laser.auth.User
 import de.laser.utils.SwissKnife
 import de.laser.interfaces.CalculatedType
-import de.laser.workflow.light.WfChecklist
-import de.laser.workflow.light.WfCheckpoint
+import de.laser.workflow.WfChecklist
+import de.laser.workflow.WfCheckpoint
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 

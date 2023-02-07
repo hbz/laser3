@@ -1,4 +1,4 @@
-<%@ page import="de.laser.workflow.light.WfCheckpoint; de.laser.workflow.light.WfChecklist; de.laser.WorkflowOldService; de.laser.workflow.*; de.laser.utils.DateUtils; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.workflow.WfCheckpoint; de.laser.workflow.WfChecklist; de.laser.WorkflowOldService; de.laser.workflow.*; de.laser.utils.DateUtils; de.laser.storage.RDStore" %>
 <laser:serviceInjection />
 
 %{-- CHECKLISTS --}%

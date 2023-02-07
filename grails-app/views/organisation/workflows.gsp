@@ -19,7 +19,7 @@
 
     <laser:render template="/templates/workflow/table" model="${[target:orgInstance, workflows:workflows, checklists:checklists]}"/>
 
-    <laser:render template="/templates/workflow/details" model="${[target:orgInstance, workflows:workflows, checklists:checklists]}"/>
+%{--    <laser:render template="/templates/workflow/details" model="${[target:orgInstance, workflows:workflows, checklists:checklists]}"/>--}%
 
 %{--    <div id="wfModal" class="ui modal"></div>--}%
 

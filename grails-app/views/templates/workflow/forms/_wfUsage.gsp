@@ -1,4 +1,4 @@
-<%@ page import="de.laser.workflow.light.WfChecklist; de.laser.workflow.light.WfCheckpoint; de.laser.Doc; de.laser.Org; de.laser.utils.DateUtils; de.laser.storage.RDStore; de.laser.Subscription; de.laser.workflow.WorkflowHelper; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.workflow.*;" %>
+<%@ page import="de.laser.workflow.WfChecklist; de.laser.workflow.WfCheckpoint; de.laser.Doc; de.laser.Org; de.laser.utils.DateUtils; de.laser.storage.RDStore; de.laser.Subscription; de.laser.workflow.WorkflowHelper; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.workflow.*;" %>
 <laser:serviceInjection />
 %{--via model: <g:set var="wfEditPerm" value="${workflowOldService.hasUserPerm_edit() || workflowService.hasUserPerm_edit()}" />--}%
 

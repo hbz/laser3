@@ -35,7 +35,7 @@ import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
 import de.laser.workflow.WfWorkflow
-import de.laser.workflow.light.WfChecklist
+import de.laser.workflow.WfChecklist
 import grails.gsp.PageRenderer
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured

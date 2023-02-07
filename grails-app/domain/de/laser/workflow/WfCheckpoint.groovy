@@ -1,4 +1,4 @@
-package de.laser.workflow.light
+package de.laser.workflow
 
 class WfCheckpoint {
 
@@ -37,14 +37,4 @@ class WfCheckpoint {
         comment     (nullable: true)
         date        (nullable: true)
     }
-
-//    def afterInsert() {
-//        super.afterUpdateHandler()
-//    }
-//    def afterUpdate() {
-//        super.afterUpdateHandler()
-//    }
-//    def afterDelete() {
-//        super.afterUpdateHandler()
-//    }
 }

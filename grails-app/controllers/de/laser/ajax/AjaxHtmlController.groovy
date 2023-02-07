@@ -67,8 +67,8 @@ import de.laser.workflow.WfWorkflow
 import de.laser.workflow.WfWorkflowPrototype
 import de.laser.workflow.WfTask
 import de.laser.workflow.WfTaskPrototype
-import de.laser.workflow.light.WfChecklist
-import de.laser.workflow.light.WfCheckpoint
+import de.laser.workflow.WfChecklist
+import de.laser.workflow.WfCheckpoint
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.poi.ss.usermodel.Workbook
 import org.mozilla.universalchardet.UniversalDetector
@@ -1083,6 +1083,31 @@ class AjaxHtmlController {
         render template: '/templates/workflow/forms/modalWrapper', model: result
     }
 
+
+    @Secured(['ROLE_USER'])
+    def workflowFlyout() {
+        Map<String, Object> result = [
+                tmplCmd:    'usage',
+                tmplFormUrl: createLink(controller: 'myInstitution', action: 'currentWorkflows')
+        ]
+
+        if (params.key) {
+            String[] key = (params.key as String).split(':')
+            println key
+
+            result.prefix = key[0]
+
+            if (result.prefix == WfChecklist.KEY) {
+                result.clist      = WfChecklist.get( key[1] )
+            }
+//            else if (result.prefix == WfCheckpoint.KEY) {
+//                result.checkpoint     = WfCheckpoint.get( key[1] )
+//                result.tmplModalTitle = g.message(code:'task.label') + ': ' +  result.checkpoint.title
+//            }
+        }
+        println result
+        render template: '/templates/workflow/checklist', model: result
+    }
 
     @Secured(['ROLE_USER'])
     def workflowModal() {

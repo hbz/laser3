@@ -2,8 +2,6 @@ package de.laser
 
 import de.laser.auth.User
 import de.laser.workflow.*
-import de.laser.workflow.light.WfChecklist
-import de.laser.workflow.light.WfCheckpoint
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.transaction.TransactionStatus
@@ -374,6 +372,7 @@ class WorkflowService {
     }
 
     List<WfChecklist> sortByLastUpdated(List<WfChecklist> wfList) {
+//        println wfList.collect{ it.id + '_' + it.getInfo().lastUpdated }.take(5)
         wfList.sort{ a,b -> b.getInfo().lastUpdated <=> a.getInfo().lastUpdated }
     }
 

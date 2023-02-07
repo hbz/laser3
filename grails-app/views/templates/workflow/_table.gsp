@@ -1,4 +1,4 @@
-<%@ page import="de.laser.WorkflowOldService; de.laser.workflow.light.WfCheckpoint; de.laser.workflow.light.WfChecklist; de.laser.utils.AppUtils; de.laser.WorkflowOldService; de.laser.workflow.*; de.laser.utils.DateUtils; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.WorkflowOldService; de.laser.workflow.WfCheckpoint; de.laser.workflow.WfChecklist; de.laser.utils.AppUtils; de.laser.WorkflowOldService; de.laser.utils.DateUtils; de.laser.storage.RDStore" %>
 <laser:serviceInjection />
 
 <g:if test="${status == WorkflowOldService.OP_STATUS_DONE}">
@@ -35,7 +35,7 @@
         <tr>
     </thead>
     <tbody>
-        <g:each in="${checklists}" var="clist">
+        <g:each in="${workflowService.sortByLastUpdated(checklists)}" var="clist">%{-- !? sorting--}%
             <g:set var="clistInfo" value="${clist.getInfo()}" />
             <tr>
                 <td class="center aligned">
@@ -54,7 +54,7 @@
                         </g:each>
                     </div>
                 <td>
-                    ${DateUtils.getLocalizedSDF_noTime().format(clistInfo.lastUpdated)}
+                    ${DateUtils.getLocalizedSDF_noZ().format(clistInfo.lastUpdated)}
                     <br />
                     ${DateUtils.getLocalizedSDF_noTime().format(clist.dateCreated)}
                 </td>
@@ -92,6 +92,7 @@
 </g:if>
 
 <div id="wfModal" class="ui modal"></div>
+<div id="wfFlyout" class="ui eight wide flyout" style="margin-top:50px;overflow:scroll"></div>
 
 <laser:script file="${this.getGroovyPageFileName()}">
     $('.wfModalLink').on('click', function(e) {
@@ -99,25 +100,38 @@
         var func = bb8.ajax4SimpleModalFunction("#wfModal", $(e.currentTarget).attr('href'), false);
         func();
     });
-    $('button[data-wfId]').on('click', function(e) {
+
+    $('button[data-wfId]').on ('click', function(e) {
+
         var trigger = $(this).hasClass('la-modern-button');
-        $('div.flyout.visible[data-wfId]').flyout('hide');
+        var wfId    = $(this).attr('data-wfId')
+        var key     = "${WfChecklist.KEY}:" + wfId
+
         $('button[data-wfId]').addClass('la-modern-button');
+        $('#wfFlyout').flyout({
+            onHide: function(e) {
+                $('button[data-wfId]').addClass('la-modern-button');
+            }
+        }).flyout('hide');
+
         if (trigger) {
-            $('div.flyout[data-wfId=' + $(this).removeClass('la-modern-button').attr('data-wfId') + ']').flyout('show');
+            $(this).removeClass('la-modern-button');
+
+            $.ajax ({
+                url: "<g:createLink controller="ajaxHtml" action="workflowFlyout"/>",
+                data: {
+                    key: key
+                }
+            }).done (function (response) {
+
+                $('#wfFlyout').html(response).flyout('show');
+                r2d2.initDynamicUiStuff('#wfFlyout');
+                r2d2.initDynamicXEditableStuff('#wfFlyout');
+            })
         }
     });
-    $('.flyout').flyout({
-        onHide: function(e) {
-            $('button[data-wfId=' + $(this).attr('data-wfId') + ']').addClass('la-modern-button');
-        }
-    });
+
     <g:if test="${info}">
         $('button[data-wfId=' + '${info}'.split(':')[3] + ']').trigger('click');
     </g:if>
-%{--    <g:else>--}%
-%{--        if ($('button[data-wfId]').length == 1) {--}%
-%{--            $('button[data-wfId]').trigger('click');--}%
-%{--        }--}%
-%{--    </g:else>--}%
 </laser:script>

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.workflow.light.WfCheckpoint; de.laser.workflow.light.WfChecklist; de.laser.License; de.laser.Subscription; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.storage.*; de.laser.RefdataCategory; de.laser.workflow.*; de.laser.WorkflowService" %>
+<%@ page import="de.laser.workflow.WfCheckpoint; de.laser.workflow.WfChecklist; de.laser.License; de.laser.Subscription; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.storage.*; de.laser.RefdataCategory; de.laser.WorkflowService" %>
 
 <laser:htmlStart message="menu.my.workflows" serviceInjection="true"/>
 

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.WorkflowOldService; de.laser.workflow.light.WfCheckpoint; de.laser.workflow.light.WfChecklist; de.laser.utils.AppUtils; de.laser.WorkflowOldService; de.laser.workflow.*; de.laser.utils.DateUtils; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.WorkflowOldService; de.laser.workflow.WfCheckpoint; de.laser.workflow.WfChecklist; de.laser.utils.AppUtils; de.laser.WorkflowOldService; de.laser.workflow.*; de.laser.utils.DateUtils; de.laser.storage.RDStore" %>
 <laser:serviceInjection />
 
 <g:if test="${status == WorkflowOldService.OP_STATUS_DONE}">

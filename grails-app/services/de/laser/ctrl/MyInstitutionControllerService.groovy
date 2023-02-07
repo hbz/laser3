@@ -8,8 +8,8 @@ import de.laser.storage.RDStore
 import de.laser.utils.SwissKnife
 import de.laser.survey.SurveyInfo
 import de.laser.system.SystemAnnouncement
-import de.laser.workflow.light.WfChecklist
-import de.laser.workflow.light.WfCheckpoint
+import de.laser.workflow.WfChecklist
+import de.laser.workflow.WfCheckpoint
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.web.servlet.mvc.GrailsParameterMap

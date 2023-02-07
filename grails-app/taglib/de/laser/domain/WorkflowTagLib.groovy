@@ -10,8 +10,8 @@ import de.laser.workflow.WfWorkflow
 import de.laser.workflow.WorkflowHelper
 import de.laser.workflow.WfCondition
 import de.laser.workflow.WfTask
-import de.laser.workflow.light.WfChecklist
-import de.laser.workflow.light.WfCheckpoint
+import de.laser.workflow.WfChecklist
+import de.laser.workflow.WfCheckpoint
 
 class WorkflowTagLib {
 

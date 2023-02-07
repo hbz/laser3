@@ -1,9 +1,7 @@
-package de.laser.workflow.light
+package de.laser.workflow
 
 import de.laser.*
-import de.laser.annotations.RefdataInfo
 import de.laser.storage.BeanStore
-import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.LocaleUtils
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
@@ -105,14 +103,6 @@ class WfChecklist {
                 targetTitle: '',
                 targetIcon: '',
                 targetController: '',
-                tasksOpen: 0,
-                tasksCanceled: 0,
-                tasksDone: 0,
-                tasksNormal: 0,
-                tasksOptional: 0,
-                tasksImportant: 0,
-                tasksNormalBlocking: 0,
-                tasksImportantBlocking: 0,
                 lastUpdated: lastUpdated,
                 status: RDStore.WF_WORKFLOW_STATUS_DONE
         ]

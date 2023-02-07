@@ -1,4 +1,4 @@
-<%@ page import="de.laser.workflow.light.WfCheckpoint; de.laser.workflow.light.WfChecklist; de.laser.storage.RDStore; de.laser.utils.DateUtils; de.laser.workflow.WorkflowHelper; de.laser.workflow.WfWorkflow; de.laser.UserSetting; de.laser.system.SystemAnnouncement; de.laser.storage.RDConstants; de.laser.AccessService; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DashboardDueDate" %>
+<%@ page import="de.laser.workflow.WfChecklist; de.laser.workflow.WfCheckpoint; de.laser.storage.RDStore; de.laser.utils.DateUtils; de.laser.workflow.WorkflowHelper; de.laser.workflow.WfWorkflow; de.laser.UserSetting; de.laser.system.SystemAnnouncement; de.laser.storage.RDConstants; de.laser.AccessService; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DashboardDueDate" %>
 
 <laser:htmlStart message="menu.institutions.dash" serviceInjection="true"/>
 
@@ -270,16 +270,17 @@
                         <thead>
                             <tr>
                                 <th class="four wide" rowspan="2">${message(code:'workflow.label')}</th>
-                                <th class="six wide" rowspan="2">${message(code:'default.relation.label')}</th>
-                                <th class="four wide"  rowspan="2">${message(code:'default.progress.label')}</th>
-                                <th class="two wide"  class="la-smaller-table-head">${message(code:'default.lastUpdated.label')}</th>
+                                <th class="five wide" rowspan="2">${message(code:'default.relation.label')}</th>
+                                <th class="four wide" rowspan="2">${message(code:'default.progress.label')}</th>
+                                <th class="two wide la-smaller-table-head">${message(code:'default.lastUpdated.label')}</th>
+                                <th class="one wide" rowspan="2">${message(code:'default.actions.label')}</th>
                             </tr>
                             <tr>
                                 <th class="la-smaller-table-head">${message(code:'default.dateCreated.label')}</th>
                             <tr>
                         </thead>
                         <tbody>
-                            <g:each in="${allChecklists}" var="clist">
+                            <g:each in="${workflowService.sortByLastUpdated(allChecklists)}" var="clist">%{-- !? sorting--}%
                                 <g:set var="clistInfo" value="${clist.getInfo()}" />
                                 <g:set var="clistLinkParamPart" value="${clistInfo.target.id + ':' + WfChecklist.KEY + ':' + clist.id}" />
                                 <tr>
@@ -315,9 +316,28 @@
                                         </div>
                                     </td>
                                     <td>
-                                        ${DateUtils.getLocalizedSDF_noTime().format(clistInfo.lastUpdated)}
+                                        ${DateUtils.getLocalizedSDF_noZ().format(clistInfo.lastUpdated)}
                                         <br />
                                         ${DateUtils.getLocalizedSDF_noTime().format(clist.dateCreated)}
+                                    </td>
+                                    <td class="center aligned">
+                                        <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
+                                        %{--                        <g:link class="ui icon button blue la-modern-button wfModalLink"--}%
+                                        %{--                                controller="ajaxHtml" action="useWfXModal" params="${[cmd:"usage:${WfChecklist.KEY}:${clist.id}"]}"--}%
+                                        %{--                                role="button"--}%
+                                        %{--                                aria-label="${message(code: 'ariaLabel.delete.universal')}">--}%
+                                        %{--                            <i class="pencil icon"></i>--}%
+                                        %{--                        </g:link>--}%
+
+                                            <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.workflow", args: [clist.title])}"
+                                                    data-confirm-term-how="delete"
+                                                    controller="myInstitution" action="dashboard" id="${clistInfo.target.id}" params="${[cmd:"delete:${WfChecklist.KEY}:${clist.id}", view:'Workflows']}"
+                                                    role="button"
+                                                    aria-label="${message(code: 'ariaLabel.delete.universal')}">
+                                                <i class="trash alternate outline icon"></i>
+                                            </g:link>
+                                        </g:if>
                                     </td>
                                 </tr>
                             </g:each>
