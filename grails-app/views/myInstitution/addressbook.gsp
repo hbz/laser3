@@ -132,7 +132,7 @@
                     <div class="ui checkbox">
                         <label for="showOnlyContactPersonForProviderAgency">${message(code: 'person.contactPersonForProviderAgency.label')}</label>
                         <input id="showOnlyContactPersonForProviderAgency" name="showOnlyContactPersonForProviderAgency" type="checkbox"
-                               <g:if test="${params.subRunTime}">checked=""</g:if>
+                               <g:if test="${params.showOnlyContactPersonForInstitution}">checked=""</g:if>
                                tabindex="0">
                     </div>
                 </div>

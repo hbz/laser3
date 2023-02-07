@@ -79,6 +79,6 @@
         </div>
         <ui:paginate total="${orgListTotal}" params="${params}" max="${max}" offset="${offset}" />
 
-        <laser:render template="/myInstitution/export/individuallyExportModalOrgs" model="[modalID: 'individuallyExportModal', orgType: 'provider']" />
+        <laser:render template="/myInstitution/export/individuallyExportModalOrgs" model="[modalID: 'individuallyExportModal', orgType: 'provider', contactSwitch: true]" />
 
 <laser:htmlEnd />
