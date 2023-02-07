@@ -599,7 +599,8 @@
                                                                         </div>
 
                                                                         <div class="description">
-                                                                            ${subscription.hasPerpetualAccess ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
+                                                                            <ui:xEditableBoolean owner="${subscription}"
+                                                                                                 field="hasPerpetualAccess"/>
                                                                         </div>
                                                                     </div>
                                                                 </div>
