@@ -9,6 +9,8 @@
 
 4758    07.02.2023  dev     3.1         Andreas Feature     Weiterbau des ClickMichExcels
 
+4779    06.02.2023  dev     3.1         Andreas Feature     Umstrukturierung der Organisationssicht
+
 4798    03.02.2023  rc-3.0  3.0.4       David   Feature     Allgemeine Merkmale für Organisationen entfernen
 
 4492    02.02.2023  dev     3.1         Andreas Feature     Adressen können nicht mehr zu Personen neu angelegt werden
