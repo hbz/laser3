@@ -14,6 +14,11 @@
         targetController = 'org'
         targetType_plural = message(code:'org.institution.plural')
     }
+    else if (cmd == RDStore.WF_WORKFLOW_TARGET_TYPE_PROVIDER) {
+        targetText = target.name
+        targetController = 'org'
+        targetType_plural = message(code:'subscriptionsManagement.providerAgency')
+    }
     else if (cmd == RDStore.WF_WORKFLOW_TARGET_TYPE_LICENSE) {
         targetText = target.reference
         targetController = 'license'
@@ -26,7 +31,7 @@
     }
 %>
 
-<ui:modal id="modalInstantiateWorkflowLight" text="Workflow für '${targetText}' erstellen">
+<ui:modal id="modalWorkflowInstantiate" text="Workflow für '${targetText}' erstellen">
 
     <g:form controller="${targetController}" action="workflows" id="${target.id}" method="POST" class="ui form">
         <div class="ui label red" style="float:right">Feature in Entwicklung</div><br /><br />
@@ -89,12 +94,12 @@
 
 <laser:script file="${this.getGroovyPageFileName()}">
     $('#modalTabMenu .item').tab({ onVisible : function () {
-        $('#modalInstantiateWorkflowLight .tab[data-tab=newWorkflow] input').addClass ('disabled').attr ('disabled', 'disabled')
-        $('#modalInstantiateWorkflowLight .tab[data-tab=copyWorkflow] input').addClass ('disabled').attr ('disabled', 'disabled')
+        $('#modalWorkflowInstantiate .tab[data-tab=newWorkflow] input').addClass ('disabled').attr ('disabled', 'disabled')
+        $('#modalWorkflowInstantiate .tab[data-tab=copyWorkflow] input').addClass ('disabled').attr ('disabled', 'disabled')
         $(this).find ('input').removeClass ('disabled').removeAttr ('disabled')
     } })
 
-    JSPC.callbacks.modal.show.modalInstantiateWorkflowLight = function () {
+    JSPC.callbacks.modal.show.modalWorkflowInstantiate = function () {
         $('#modalTabMenu .item').tab('change tab', 'copyWorkflow').tab('change tab', 'newWorkflow')
     }
 </laser:script>

@@ -50,7 +50,7 @@
                     <div class="ui buttons">
                         <g:set var="cpoints" value="${clist.getSequence()}" />
                         <g:each in="${cpoints}" var="cpoint" status="ci">
-                            <uiWorkflow:checkpoint checkpoint="${cpoint}" params="${[key: '' + clistInfo.target.class.name + ':' + clistInfo.target.id + ':' + WfCheckpoint.KEY + ':' + cpoint.id]}" />
+                            <uiWorkflow:checkpoint checkpoint="${cpoint}" params="${[key: '' + clistInfo.target.class.name + ':' + clistInfo.target.id + ':workflows:' + WfCheckpoint.KEY + ':' + cpoint.id]}" />
                         </g:each>
                     </div>
                 <td>
@@ -101,19 +101,23 @@
     });
     $('button[data-wfId]').on('click', function(e) {
         var trigger = $(this).hasClass('la-modern-button');
-        $('div[data-wfId]').flyout('hide');
+        $('div.flyout.visible[data-wfId]').flyout('hide');
         $('button[data-wfId]').addClass('la-modern-button');
         if (trigger) {
-            $('div[data-wfId=' + $(this).removeClass('la-modern-button').attr('data-wfId') + ']').flyout('show');
+            $('div.flyout[data-wfId=' + $(this).removeClass('la-modern-button').attr('data-wfId') + ']').flyout('show');
         }
     });
-
+    $('.flyout').flyout({
+        onHide: function(e) {
+            $('button[data-wfId=' + $(this).attr('data-wfId') + ']').addClass('la-modern-button');
+        }
+    });
     <g:if test="${info}">
         $('button[data-wfId=' + '${info}'.split(':')[3] + ']').trigger('click');
     </g:if>
-    <g:else>
-        if ($('button[data-wfId]').length == 1) {
-            $('button[data-wfId]').trigger('click');
-        }
-    </g:else>
+%{--    <g:else>--}%
+%{--        if ($('button[data-wfId]').length == 1) {--}%
+%{--            $('button[data-wfId]').trigger('click');--}%
+%{--        }--}%
+%{--    </g:else>--}%
 </laser:script>

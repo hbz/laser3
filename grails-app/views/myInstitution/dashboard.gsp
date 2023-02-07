@@ -1,4 +1,4 @@
-<%@ page import="de.laser.workflow.light.WfChecklist; de.laser.storage.RDStore; de.laser.utils.DateUtils; de.laser.workflow.WorkflowHelper; de.laser.workflow.WfWorkflow; de.laser.UserSetting; de.laser.system.SystemAnnouncement; de.laser.storage.RDConstants; de.laser.AccessService; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DashboardDueDate" %>
+<%@ page import="de.laser.workflow.light.WfCheckpoint; de.laser.workflow.light.WfChecklist; de.laser.storage.RDStore; de.laser.utils.DateUtils; de.laser.workflow.WorkflowHelper; de.laser.workflow.WfWorkflow; de.laser.UserSetting; de.laser.system.SystemAnnouncement; de.laser.storage.RDConstants; de.laser.AccessService; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DashboardDueDate" %>
 
 <laser:htmlStart message="menu.institutions.dash" serviceInjection="true"/>
 
@@ -49,12 +49,14 @@
         <br />
     <%
         RefdataValue us_dashboard_tab
-        switch(params.view) {
+        switch (params.view) {
             case "PendingChanges": us_dashboard_tab = RefdataValue.getByValueAndCategory('PendingChanges', RDConstants.USER_SETTING_DASHBOARD_TAB)
-            break
+                break
             case "AcceptedChanges": us_dashboard_tab = RefdataValue.getByValueAndCategory('AcceptedChanges', RDConstants.USER_SETTING_DASHBOARD_TAB)
-            break
+                break
             case "Surveys": us_dashboard_tab = RefdataValue.getByValueAndCategory('Surveys', RDConstants.USER_SETTING_DASHBOARD_TAB)
+                break
+            case "Workflows": us_dashboard_tab = RefdataValue.getByValueAndCategory('Workflows', RDConstants.USER_SETTING_DASHBOARD_TAB)
                 break
             default:
                 us_dashboard_tab = user.getSettingsValue(UserSetting.KEYS.DASHBOARD_TAB, RefdataValue.getByValueAndCategory('Due Dates', RDConstants.USER_SETTING_DASHBOARD_TAB))
@@ -95,7 +97,7 @@
             </a>
         </g:if>
 
-        <g:if test="${workflowOldService.hasUserPerm_read() || workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
+        <g:if test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
             <a class="${us_dashboard_tab.value == 'Workflows' ? 'active item':'item'}" data-tab="workflows">
                 <i class="tasks icon large"></i>
 %{--                ${myWorkflowsCount + allWorkflowsCount} ${message(code:'workflow.plural')}--}%
@@ -251,7 +253,7 @@
             </div>
         </div>
 
-        <g:if test="${workflowOldService.hasUserPerm_read() || workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
+        <g:if test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
             <div class="ui bottom attached tab ${us_dashboard_tab.value == 'Workflows' ? 'active':''}" data-tab="workflows">
 
                 <g:if test="${allChecklists}">
@@ -264,13 +266,12 @@
                         </ui:msg>
                     </g:if>
 
-
                     <table class="ui celled table la-js-responsive-table la-table">
                         <thead>
                             <tr>
-                                <th class="five wide" rowspan="2">${message(code:'workflow.label')}</th>
+                                <th class="four wide" rowspan="2">${message(code:'workflow.label')}</th>
                                 <th class="six wide" rowspan="2">${message(code:'default.relation.label')}</th>
-                                <th class="three wide"  rowspan="2">${message(code:'default.progress.label')}</th>
+                                <th class="four wide"  rowspan="2">${message(code:'default.progress.label')}</th>
                                 <th class="two wide"  class="la-smaller-table-head">${message(code:'default.lastUpdated.label')}</th>
                             </tr>
                             <tr>
@@ -306,15 +307,12 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <g:if test="${clistInfo.tasksOpen}">
-                                            <span class="ui label circular">${clistInfo.tasksOpen}</span>
-                                        </g:if>
-                                        <g:if test="${clistInfo.tasksCanceled}">
-                                            <span class="ui label circular orange">${clistInfo.tasksCanceled}</span>
-                                        </g:if>
-                                        <g:if test="${clistInfo.tasksDone}">
-                                            <span class="ui label circular green">${clistInfo.tasksDone}</span>
-                                        </g:if>
+                                        <div class="ui buttons">
+                                            <g:set var="cpoints" value="${clist.getSequence()}" />
+                                            <g:each in="${cpoints}" var="cpoint" status="cp">
+                                                <uiWorkflow:checkpoint checkpoint="${cpoint}" params="${[key: 'myInstitution::dashboard:' + WfCheckpoint.KEY + ':' + cpoint.id]}" />
+                                            </g:each>
+                                        </div>
                                     </td>
                                     <td>
                                         ${DateUtils.getLocalizedSDF_noTime().format(clistInfo.lastUpdated)}
@@ -338,75 +336,75 @@
 %{--                    </ui:msg>--}%
 %{--                </g:if>--}%
 
-                <g:each in="${[myWorkflows, allWorkflows]}" var="currentWorkflows">
+%{--                <g:each in="${[myWorkflows, allWorkflows]}" var="currentWorkflows">--}%
 
-                    <g:if test="${currentWorkflows}">
-                    <table class="ui celled table la-js-responsive-table la-table">
-                        <thead>
-                            <tr>
-                                <th class="five wide" rowspan="2">${message(code:'workflow.label')}</th>
-                                <th class="six wide" rowspan="2">${message(code:'default.relation.label')}</th>
-                                <th class="two wide"  rowspan="2">${message(code:'default.progress.label')}</th>
-                                <th class="two wide"  class="la-smaller-table-head">${message(code:'default.lastUpdated.label')}</th>
-                                <th class="one wide"  rowspan="2"></th>
-                            </tr>
-                            <tr>
-                                <th class="la-smaller-table-head">${message(code:'default.dateCreated.label')}</th>
-                            <tr>
-                        </thead>
-                        <tbody>
-                            <g:each in="${currentWorkflows}" var="wf">
-                                <g:set var="wfInfo" value="${wf.getInfo()}" />
-                                <g:set var="wfLinkParamPart" value="${wfInfo.target.id + ':' + WfWorkflow.KEY + ':' + wf.id}" />
+%{--                    <g:if test="${currentWorkflows}">--}%
+%{--                    <table class="ui celled table la-js-responsive-table la-table">--}%
+%{--                        <thead>--}%
+%{--                            <tr>--}%
+%{--                                <th class="five wide" rowspan="2">${message(code:'workflow.label')}</th>--}%
+%{--                                <th class="six wide" rowspan="2">${message(code:'default.relation.label')}</th>--}%
+%{--                                <th class="two wide"  rowspan="2">${message(code:'default.progress.label')}</th>--}%
+%{--                                <th class="two wide"  class="la-smaller-table-head">${message(code:'default.lastUpdated.label')}</th>--}%
+%{--                                <th class="one wide"  rowspan="2"></th>--}%
+%{--                            </tr>--}%
+%{--                            <tr>--}%
+%{--                                <th class="la-smaller-table-head">${message(code:'default.dateCreated.label')}</th>--}%
+%{--                            <tr>--}%
+%{--                        </thead>--}%
+%{--                        <tbody>--}%
+%{--                            <g:each in="${currentWorkflows}" var="wf">--}%
+%{--                                <g:set var="wfInfo" value="${wf.getInfo()}" />--}%
+%{--                                <g:set var="wfLinkParamPart" value="${wfInfo.target.id + ':' + WfWorkflow.KEY + ':' + wf.id}" />--}%
 
-                                <tr>
-                                    <td>
-                                        <div class="la-flexbox">
-                                            <i class="ui icon tasks la-list-icon"></i>
-                                            <g:link controller="${wfInfo.targetController}" action="workflows" id="${wfInfo.target.id}"
-                                                    params="${[info: '' + wfInfo.target.class.name + ':' + wfLinkParamPart]}">
-                                                <strong>${wf.title}</strong>
-                                            </g:link>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="la-flexbox">
-                                            <i class="ui icon ${wfInfo.targetIcon} la-list-icon"></i>
-                                            <g:link controller="${wfInfo.targetController}" action="show" params="${[id: wfInfo.target.id]}">
-                                                ${wfInfo.targetName}
-                                                <g:if test="${wfInfo.target instanceof Subscription || wfInfo.target instanceof License}">
-                                                    <g:if test="${wfInfo.target.startDate || wfInfo.target.endDate}">
-                                                        (${wfInfo.target.startDate ? DateUtils.getLocalizedSDF_noTime().format(wfInfo.target.startDate) : ''} -
-                                                        ${wfInfo.target.endDate ? DateUtils.getLocalizedSDF_noTime().format(wfInfo.target.endDate) : ''})
-                                                    </g:if>
-                                                </g:if>
-                                            </g:link>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <g:if test="${wfInfo.tasksOpen}">
-                                            <span class="ui label circular">${wfInfo.tasksOpen}</span>
-                                        </g:if>
-                                        <g:if test="${wfInfo.tasksCanceled}">
-                                            <span class="ui label circular orange">${wfInfo.tasksCanceled}</span>
-                                        </g:if>
-                                        <g:if test="${wfInfo.tasksDone}">
-                                            <span class="ui label circular green">${wfInfo.tasksDone}</span>
-                                        </g:if>
-                                    </td>
-                                    <td>
-                                        ${DateUtils.getLocalizedSDF_noTime().format(wfInfo.lastUpdated)}
-                                        <br />
-                                        ${DateUtils.getLocalizedSDF_noTime().format(wf.dateCreated)}
-                                    </td>
-                                    <td class="center aligned" style="position:relative;">
-                                        <g:if test="${workflowOldService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
-                                            <uiWorkflow:usageIconLinkButton workflow="${wf}" params="${[key: 'dashboard:' + wfLinkParamPart]}" />
-                                        </g:if>
-                                        <g:elseif test="${workflowOldService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
-                                            <uiWorkflow:usageIconLinkButton workflow="${wf}" params="${[key: 'dashboard:' + wfLinkParamPart]}" />
-                                        </g:elseif>
-                                        <g:if test="${workflowOldService.hasUserPerm_init()}"><!-- TODO: workflows-permissions -->
+%{--                                <tr>--}%
+%{--                                    <td>--}%
+%{--                                        <div class="la-flexbox">--}%
+%{--                                            <i class="ui icon tasks la-list-icon"></i>--}%
+%{--                                            <g:link controller="${wfInfo.targetController}" action="workflows" id="${wfInfo.target.id}"--}%
+%{--                                                    params="${[info: '' + wfInfo.target.class.name + ':' + wfLinkParamPart]}">--}%
+%{--                                                <strong>${wf.title}</strong>--}%
+%{--                                            </g:link>--}%
+%{--                                        </div>--}%
+%{--                                    </td>--}%
+%{--                                    <td>--}%
+%{--                                        <div class="la-flexbox">--}%
+%{--                                            <i class="ui icon ${wfInfo.targetIcon} la-list-icon"></i>--}%
+%{--                                            <g:link controller="${wfInfo.targetController}" action="show" params="${[id: wfInfo.target.id]}">--}%
+%{--                                                ${wfInfo.targetName}--}%
+%{--                                                <g:if test="${wfInfo.target instanceof Subscription || wfInfo.target instanceof License}">--}%
+%{--                                                    <g:if test="${wfInfo.target.startDate || wfInfo.target.endDate}">--}%
+%{--                                                        (${wfInfo.target.startDate ? DateUtils.getLocalizedSDF_noTime().format(wfInfo.target.startDate) : ''} ---}%
+%{--                                                        ${wfInfo.target.endDate ? DateUtils.getLocalizedSDF_noTime().format(wfInfo.target.endDate) : ''})--}%
+%{--                                                    </g:if>--}%
+%{--                                                </g:if>--}%
+%{--                                            </g:link>--}%
+%{--                                        </div>--}%
+%{--                                    </td>--}%
+%{--                                    <td>--}%
+%{--                                        <g:if test="${wfInfo.tasksOpen}">--}%
+%{--                                            <span class="ui label circular">${wfInfo.tasksOpen}</span>--}%
+%{--                                        </g:if>--}%
+%{--                                        <g:if test="${wfInfo.tasksCanceled}">--}%
+%{--                                            <span class="ui label circular orange">${wfInfo.tasksCanceled}</span>--}%
+%{--                                        </g:if>--}%
+%{--                                        <g:if test="${wfInfo.tasksDone}">--}%
+%{--                                            <span class="ui label circular green">${wfInfo.tasksDone}</span>--}%
+%{--                                        </g:if>--}%
+%{--                                    </td>--}%
+%{--                                    <td>--}%
+%{--                                        ${DateUtils.getLocalizedSDF_noTime().format(wfInfo.lastUpdated)}--}%
+%{--                                        <br />--}%
+%{--                                        ${DateUtils.getLocalizedSDF_noTime().format(wf.dateCreated)}--}%
+%{--                                    </td>--}%
+%{--                                    <td class="center aligned" style="position:relative;">--}%
+%{--                                        <g:if test="${workflowOldService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->--}%
+%{--                                            <uiWorkflow:usageIconLinkButton workflow="${wf}" params="${[key: 'dashboard:' + wfLinkParamPart]}" />--}%
+%{--                                        </g:if>--}%
+%{--                                        <g:elseif test="${workflowOldService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->--}%
+%{--                                            <uiWorkflow:usageIconLinkButton workflow="${wf}" params="${[key: 'dashboard:' + wfLinkParamPart]}" />--}%
+%{--                                        </g:elseif>--}%
+%{--                                        <g:if test="${workflowOldService.hasUserPerm_init()}"><!-- TODO: workflows-permissions -->--}%
 %{--                                            <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"--}%
 %{--                                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.workflow", args: [wfInfo.target.title])}"--}%
 %{--                                                    data-confirm-term-how="delete"--}%
@@ -415,18 +413,18 @@
 %{--                                                    aria-label="${message(code: 'ariaLabel.delete.universal')}">--}%
 %{--                                                <i class="trash alternate outline icon"></i>--}%
 %{--                                            </g:link>--}%
-                                        </g:if>
-                                        <g:if test="${wf.isFlaggedAsNew( user )}">
-                                            <div class="ui floating right aligned mini label yellow" style="top:0.5em;right:-1em;">${message(code:'default.new')}</div>
-                                        </g:if>
-                                    </td>
-                                </tr>
-                            </g:each>
-                        </tbody>
-                    </table>
-                    </g:if>
+%{--                                        </g:if>--}%
+%{--                                        <g:if test="${wf.isFlaggedAsNew( user )}">--}%
+%{--                                            <div class="ui floating right aligned mini label yellow" style="top:0.5em;right:-1em;">${message(code:'default.new')}</div>--}%
+%{--                                        </g:if>--}%
+%{--                                    </td>--}%
+%{--                                </tr>--}%
+%{--                            </g:each>--}%
+%{--                        </tbody>--}%
+%{--                    </table>--}%
+%{--                    </g:if>--}%
 
-                </g:each>
+%{--                </g:each>--}%
             </div>
 
             <div id="wfModal" class="ui modal"></div>

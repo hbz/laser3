@@ -29,7 +29,6 @@ import de.laser.config.ConfigMapper
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
-import de.laser.workflow.WfWorkflow
 import de.laser.workflow.light.WfChecklist
 import de.laser.workflow.light.WfCheckpoint
 import grails.converters.JSON
@@ -97,7 +96,6 @@ class SubscriptionControllerService {
     SurveyService surveyService
     TaskService taskService
     WorkflowService workflowService
-    WorkflowOldService workflowOldService
 
     //-------------------------------------- general or ungroupable section -------------------------------------------
 
@@ -3787,7 +3785,7 @@ class SubscriptionControllerService {
             result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
 
             result.notesCount       = docstoreService.getNotes(result.subscription, result.contextOrg).size()
-            result.workflowCount    = workflowOldService.getWorkflowCount(result.subscription, result.contextOrg)
+//            result.workflowCount    = workflowOldService.getWorkflowCount(result.subscription, result.contextOrg)
             result.checklistCount   = workflowService.getWorkflowCount(result.subscription, result.contextOrg)
 
             if (checkOption in [AccessService.CHECK_VIEW, AccessService.CHECK_VIEW_AND_EDIT]) {
@@ -3865,14 +3863,6 @@ class SubscriptionControllerService {
             if (cmd[1] in [WfChecklist.KEY, WfCheckpoint.KEY] ) { // light
                 result.putAll( workflowService.cmd(params) )
             }
-            else {
-                if (cmd[0] in ['edit']) {
-                    result.putAll( workflowOldService.cmd(params) ) // @ workflows
-                }
-                else {
-                    result.putAll( workflowOldService.usage(params) ) // @ workflows
-                }
-            }
         }
         if (params.info) {
             result.info = params.info // @ currentWorkflows @ dashboard
@@ -3880,9 +3870,6 @@ class SubscriptionControllerService {
 
         result.checklists = workflowService.sortByLastUpdated( WfChecklist.findAllBySubscriptionAndOwner(result.subscription as Subscription, result.contextOrg as Org) )
         result.checklistCount = result.checklists.size()
-
-        result.workflows = workflowOldService.sortByLastUpdated( WfWorkflow.findAllBySubscriptionAndOwner(result.subscription as Subscription, result.contextOrg as Org) )
-        result.workflowCount = result.workflows.size()
 
         [result: result, status: (result ? STATUS_OK : STATUS_ERROR)]
     }

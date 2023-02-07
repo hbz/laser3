@@ -107,12 +107,9 @@
 
                                 <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
 
-                                    <g:if test="${workflowOldService.hasUserPerm_read() || workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
+                                    <g:if test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
                                         <div class="divider"></div>
                                         <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentWorkflows" message="menu.my.workflows.light" />
-                                        <g:if test="${AppUtils.getCurrentServer() in [AppUtils.DEV, AppUtils.LOCAL]}">
-%{--                                            <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentWorkflows" message="menu.my.workflows" />--}%
-                                        </g:if>
                                     </g:if>
 
                                     <div class="divider"></div>

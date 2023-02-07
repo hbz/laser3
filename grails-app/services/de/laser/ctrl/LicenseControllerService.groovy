@@ -4,7 +4,6 @@ import de.laser.*
 import de.laser.auth.User
 import de.laser.utils.SwissKnife
 import de.laser.interfaces.CalculatedType
-import de.laser.workflow.WfWorkflow
 import de.laser.workflow.light.WfChecklist
 import de.laser.workflow.light.WfCheckpoint
 import grails.gorm.transactions.Transactional
@@ -26,7 +25,6 @@ class LicenseControllerService {
     LinksGenerationService linksGenerationService
     TaskService taskService
     WorkflowService workflowService
-    WorkflowOldService workflowOldService
 
 
     //--------------------------------------------- workflows -------------------------------------------------
@@ -40,14 +38,6 @@ class LicenseControllerService {
             if (cmd[1] in [WfChecklist.KEY, WfCheckpoint.KEY] ) { // light
                 result.putAll( workflowService.cmd(params) )
             }
-            else {
-                if (cmd[0] in ['edit']) {
-                    result.putAll( workflowOldService.cmd(params) ) // @ workflows
-                }
-                else {
-                    result.putAll( workflowOldService.usage(params) ) // @ workflows
-                }
-            }
         }
         if (params.info) {
             result.info = params.info // @ currentWorkflows @ dashboard
@@ -55,9 +45,6 @@ class LicenseControllerService {
 
         result.checklists = workflowService.sortByLastUpdated( WfChecklist.findAllByLicenseAndOwner(result.license as License, result.contextOrg as Org) )
         result.checklistCount = result.checklists.size()
-
-        result.workflows = workflowOldService.sortByLastUpdated( WfWorkflow.findAllByLicenseAndOwner(result.license as License, result.contextOrg as Org) )
-        result.workflowCount = result.workflows.size()
 
         [result: result, status: (result ? STATUS_OK : STATUS_ERROR)]
     }
@@ -117,7 +104,7 @@ class LicenseControllerService {
         result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
 
         result.notesCount       = docstoreService.getNotes(result.license, result.contextOrg).size()
-        result.workflowCount    = workflowOldService.getWorkflowCount(result.license, result.contextOrg)
+//        result.workflowCount    = workflowOldService.getWorkflowCount(result.license, result.contextOrg)
         result.checklistCount   = workflowService.getWorkflowCount(result.license, result.contextOrg)
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)

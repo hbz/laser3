@@ -80,12 +80,7 @@
         <g:if test="${editable}">
 
             <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
-                <ui:actionsDropdownItem message="workflow.light.instantiate" data-ui="modal" href="#modalInstantiateWorkflowLight" />
-            </g:if>
-            <g:if test="${workflowOldService.hasUserPerm_init()}"><!-- TODO: workflows-permissions -->
-                <g:if test="${AppUtils.getCurrentServer() in [AppUtils.DEV, AppUtils.LOCAL]}">
-                    <ui:actionsDropdownItem message="workflow.instantiate" data-ui="modal" href="#modalInstantiateWorkflow" />
-                </g:if>
+                <ui:actionsDropdownItem message="workflow.light.instantiate" data-ui="modal" href="#modalWorkflowInstantiate" />
             </g:if>
             <div class="divider"></div>
 
@@ -213,10 +208,5 @@
 </g:if>
 
 <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
-    <laser:render template="/templates/workflow/light/instantiate" model="${[cmd: RDStore.WF_WORKFLOW_TARGET_TYPE_SUBSCRIPTION, target: subscription]}"/>
-</g:if>
-<g:if test="${workflowOldService.hasUserPerm_init()}"><!-- TODO: workflows-permissions -->
-    <g:if test="${AppUtils.getCurrentServer() in [AppUtils.DEV, AppUtils.LOCAL]}">
-        <laser:render template="/templates/workflow/instantiate" model="${[cmd: RDStore.WF_WORKFLOW_TARGET_TYPE_SUBSCRIPTION, target: subscription]}"/>
-    </g:if>
+    <laser:render template="/templates/workflow/instantiate" model="${[cmd: RDStore.WF_WORKFLOW_TARGET_TYPE_SUBSCRIPTION, target: subscription]}"/>
 </g:if>

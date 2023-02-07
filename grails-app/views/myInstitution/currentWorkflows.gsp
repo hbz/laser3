@@ -117,7 +117,7 @@
                     <div class="ui buttons">
                         <g:set var="cpoints" value="${wf.getSequence()}" />
                         <g:each in="${cpoints}" var="cpoint" status="cp">
-                            <uiWorkflow:checkpoint checkpoint="${cpoint}" params="${[key: 'myInstitution:' + cpoint.id + ':' + WfCheckpoint.KEY + ':' + cpoint.id]}" />
+                            <uiWorkflow:checkpoint checkpoint="${cpoint}" params="${[key: 'myInstitution::currentWorkflows:' + WfCheckpoint.KEY + ':' + cpoint.id]}" />
                         </g:each>
                     </div>
                 </td>

@@ -49,7 +49,7 @@
                     <div class="ui buttons">
                         <g:set var="cpoints" value="${clist.getSequence()}" />
                         <g:each in="${cpoints}" var="cpoint" status="ci">
-                            <uiWorkflow:checkpoint checkpoint="${cpoint}" params="${[key: '' + clistInfo.target.class.name + ':' + clistInfo.target.id + ':' + WfCheckpoint.KEY + ':' + cpoint.id]}" />
+                            <uiWorkflow:checkpoint checkpoint="${cpoint}" params="${[key: '' + clistInfo.target.class.name + ':' + clistInfo.target.id + ':workflows:' + WfCheckpoint.KEY + ':' + cpoint.id]}" />
                         </g:each>
                     </div>
                 <td>

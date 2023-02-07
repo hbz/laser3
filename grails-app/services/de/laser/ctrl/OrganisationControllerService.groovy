@@ -7,7 +7,6 @@ import de.laser.remote.ApiSource
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.LocaleUtils
-import de.laser.workflow.WfWorkflow
 import de.laser.workflow.light.WfChecklist
 import de.laser.workflow.light.WfCheckpoint
 import grails.gorm.transactions.Transactional
@@ -35,7 +34,6 @@ class OrganisationControllerService {
     MessageSource messageSource
     TaskService taskService
     WorkflowService workflowService
-    WorkflowOldService workflowOldService
 
     //---------------------------------------- linking section -------------------------------------------------
 
@@ -165,14 +163,6 @@ class OrganisationControllerService {
             if (cmd[1] in [WfChecklist.KEY, WfCheckpoint.KEY] ) { // light
                 result.putAll( workflowService.cmd(params) )
             }
-            else {
-                if (cmd[0] in ['edit']) {
-                    result.putAll( workflowOldService.cmd(params) ) // @ workflows
-                }
-                else {
-                    result.putAll( workflowOldService.usage(params) ) // @ workflows
-                }
-            }
         }
         if (params.info) {
             result.info = params.info // @ currentWorkflows @ dashboard
@@ -180,9 +170,6 @@ class OrganisationControllerService {
 
         result.checklists = workflowService.sortByLastUpdated( WfChecklist.findAllByOrgAndOwner(result.orgInstance as Org, result.contextOrg as Org) )
         result.checklistCount = result.checklists.size()
-
-        result.workflows = workflowOldService.sortByLastUpdated( WfWorkflow.findAllByOrgAndOwner(result.orgInstance as Org, result.contextOrg as Org) )
-        result.workflowCount = result.workflows.size()
 
         [result: result, status: (result ? STATUS_OK : STATUS_ERROR)]
     }
@@ -293,7 +280,7 @@ class OrganisationControllerService {
         result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
 
         result.notesCount       = docstoreService.getNotes(result.orgInstance, result.contextOrg).size()
-        result.workflowCount    = workflowOldService.getWorkflowCount(result.orgInstance, result.contextOrg)
+//        result.workflowCount    = workflowOldService.getWorkflowCount(result.orgInstance, result.contextOrg)
         result.checklistCount   = workflowService.getWorkflowCount(result.orgInstance, result.contextOrg)
 
         result.links = linksGenerationService.getOrgLinks(result.orgInstance)

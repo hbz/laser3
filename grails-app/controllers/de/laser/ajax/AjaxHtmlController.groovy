@@ -1083,6 +1083,64 @@ class AjaxHtmlController {
         render template: '/templates/workflow/forms/modalWrapper', model: result
     }
 
+
+    @Secured(['ROLE_USER'])
+    def workflowModal() {
+        Map<String, Object> result = [
+                tmplCmd:    'usage',
+                tmplFormUrl: createLink(controller: 'myInstitution', action: 'currentWorkflows')
+        ]
+
+        String template = '/templates/workflow/forms/modalWrapper' // todo
+
+        if (params.key) {
+            String[] key = (params.key as String).split(':')
+            println key
+
+            result.prefix = key[3]
+
+            // myInstitution::action:WF_X:id
+            // subscription:id:action:WF_X:id
+            if (key[0] in [License.class.name, Subscription.class.name, Org.class.name]) {
+
+                if (key[0] == License.class.name) {
+                    result.targetObject = License.get( key[1] )
+                    result.tmplFormUrl  = createLink(controller: 'lic', action: key[2], id: key[1])
+                }
+                else if (key[0] == Subscription.class.name) {
+                    result.targetObject = Subscription.get( key[1] )
+                    result.tmplFormUrl  = createLink(controller: 'subscription', action: key[2], id: key[1])
+                }
+                else {
+                    result.targetObject = Org.get( key[1] )
+                    result.tmplFormUrl  = createLink(controller: 'org', action: key[2], id: key[1])
+                }
+            }
+            else if (key[0] == 'myInstitution') {
+//                result.workflow = WfWorkflow.get (key[1] ) // TODO
+                result.tmplFormUrl  = createLink(controller: 'myInstitution', action: key[2])
+                if (key[2] == 'dashboard') {
+                    result.tmplFormUrl = result.tmplFormUrl + '?view=Workflows'
+                }
+            }
+
+            if (result.prefix == WfChecklist.KEY) {
+                result.checklist      = WfChecklist.get( key[4] )
+                result.tmplModalTitle = g.message(code:'task.label') + ': ' +  result.checklist.title
+            }
+            else if (result.prefix == WfCheckpoint.KEY) {
+                result.checkpoint     = WfCheckpoint.get( key[4] )
+                result.tmplModalTitle = g.message(code:'task.label') + ': ' +  result.checkpoint.title
+            }
+        }
+
+        if (params.info) {
+            result.info = params.info
+        }
+
+        render template: template, model: result
+    }
+
     /**
      * Opens a modal to display workflow details
      */
@@ -1137,14 +1195,10 @@ class AjaxHtmlController {
             else if (result.prefix == WfChecklist.KEY) {
                 result.checklist      = WfChecklist.get( key[3] )
                 result.tmplModalTitle = g.message(code:'task.label') + ': ' +  result.checklist.title
-
-                template              = '/templates/workflow/light/modalWrapper' // todo
             }
             else if (result.prefix == WfCheckpoint.KEY) {
                 result.checkpoint     = WfCheckpoint.get( key[3] )
                 result.tmplModalTitle = g.message(code:'task.label') + ': ' +  result.checkpoint.title
-
-                template              = '/templates/workflow/light/modalWrapper' // todo
             }
         }
 
