@@ -9,6 +9,12 @@
 
 4812    08.02.2023  dev     3.1         Andreas Bug         Anbieter wurde nicht im Dropdown vorbelegt
 
+4808    08.02.2023  dev     3.1         Andreas Bug         500er bei der Teilnehmersicht
+
+4806    08.02.2023  dev     3.1         Andreas Bug         Funktionalität zum Löschen von nicht hart kodierten Merkmalen korrigiert
+
+3767    08.02.2023  dev     3.1         Andreas Feature     Bezeichner korrigiert
+
 4758    07.02.2023  dev     3.1         Andreas Feature     Weiterbau des ClickMichExcels
 
 4779    06.02.2023  dev     3.1         Andreas Feature     Umstrukturierung der Organisationssicht

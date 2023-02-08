@@ -313,7 +313,7 @@ class FilterService {
 
         if (params.orgIdentifier?.length() > 0) {
             query << " exists (select io from Identifier io join io.org ioorg " +
-                    " where ioorg = o and genfunc_filter_matcher(ioorg.value, :orgIdentifier) = true) "
+                    " where ioorg = o and genfunc_filter_matcher(io.value, :orgIdentifier) = true) "
             queryParams << [orgIdentifier: params.orgIdentifier]
         }
         if (params.identifierNamespace?.size() > 0) {
