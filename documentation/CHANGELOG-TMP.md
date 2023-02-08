@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4812    08.02.2023  dev     3.1         Andreas Bug         Anbieter wurde nicht im Dropdown vorbelegt
+
 4758    07.02.2023  dev     3.1         Andreas Feature     Weiterbau des ClickMichExcels
 
 4779    06.02.2023  dev     3.1         Andreas Feature     Umstrukturierung der Organisationssicht
