@@ -150,10 +150,12 @@ class ExportClickMeService {
                             'participant.funderType'        : [field: 'orgs.funderType', label: 'Funder Type', message: 'org.funderType.label'],
                             'participant.funderHskType'     : [field: 'orgs.funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
                             'participant.libraryType'       : [field: 'orgs.libraryType', label: 'Library Type', message: 'org.libraryType.label'],
+                            /*
                             'participant.generalContact'    : [field: null, label: 'General Contact Person', message: 'org.mainContact.label'],
                             'participant.billingContact'    : [field: null, label: 'Functional Contact Billing Adress', message: 'org.functionalContactBillingAdress.label'],
                             'participant.postAdress'        : [field: null, label: 'Post Adress', message: 'addressFormModalPostalAddress'],
                             'participant.billingAdress'     : [field: null, label: 'Billing Adress', message: 'addressFormModalBillingAddress'],
+                             */
                             'participant.eInvoice'          : [field: 'orgs.eInvoice', label: 'eInvoice', message: 'org.eInvoice.label'],
                             'participant.eInvoicePortal'    : [field: 'orgs.eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
                             'participant.linkResolverBaseURL'    : [field: 'orgs.linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
@@ -343,10 +345,12 @@ class ExportClickMeService {
                             'consortium.funderType'        : [field: 'funderType', label: 'Funder Type', message: 'org.funderType.label'],
                             'consortium.funderHskType'     : [field: 'funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
                             'consortium.libraryType'       : [field: 'libraryType', label: 'Library Type', message: 'org.libraryType.label'],
+                            /*
                             'consortium.generalContact'    : [field: null, label: 'General Contact Person', message: 'org.mainContact.label'],
                             'consortium.billingContact'    : [field: null, label: 'Functional Contact Billing Adress', message: 'org.functionalContactBillingAdress.label'],
                             'consortium.postAdress'        : [field: null, label: 'Post Adress', message: 'addressFormModalPostalAddress'],
                             'consortium.billingAdress'     : [field: null, label: 'Billing Adress', message: 'addressFormModalBillingAddress'],
+                            */
                             'consortium.eInvoice'          : [field: 'eInvoice', label: 'eInvoice', message: 'org.eInvoice.label'],
                             'consortium.eInvoicePortal'    : [field: 'eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
                             'consortium.linkResolverBaseURL'    : [field: 'linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
@@ -461,10 +465,12 @@ class ExportClickMeService {
                             'participant.funderType'        : [field: 'funderType', label: 'Funder Type', message: 'org.funderType.label'],
                             'participant.funderHskType'     : [field: 'funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
                             'participant.libraryType'       : [field: 'libraryType', label: 'Library Type', message: 'org.libraryType.label'],
+                            /*
                             'participant.generalContact'    : [field: null, label: 'General Contact Person', message: 'org.mainContact.label'],
                             'participant.billingContact'    : [field: null, label: 'Functional Contact Billing Adress', message: 'org.functionalContactBillingAdress.label'],
                             'participant.postAdress'        : [field: null, label: 'Post Adress', message: 'addressFormModalPostalAddress'],
                             'participant.billingAdress'     : [field: null, label: 'Billing Adress', message: 'addressFormModalBillingAddress'],
+                             */
                             'participant.eInvoice'          : [field: 'eInvoice', label: 'eInvoice', message: 'org.eInvoice.label'],
                             'participant.eInvoicePortal'    : [field: 'eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
                             'participant.linkResolverBaseURL'    : [field: 'linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
@@ -589,10 +595,12 @@ class ExportClickMeService {
                             'participant.funderType'        : [field: 'participant.funderType', label: 'Funder Type', message: 'org.funderType.label'],
                             'participant.funderHskType'     : [field: 'participant.funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
                             'participant.libraryType'       : [field: 'participant.libraryType', label: 'Library Type', message: 'org.libraryType.label'],
+                            /*
                             'participant.generalContact'    : [field: null, label: 'General Contact Person', message: 'org.mainContact.label'],
                             'participant.billingContact'    : [field: null, label: 'Functional Contact Billing Adress', message: 'org.functionalContactBillingAdress.label'],
                             'participant.postAdress'        : [field: null, label: 'Post Adress', message: 'addressFormModalPostalAddress'],
                             'participant.billingAdress'     : [field: null, label: 'Billing Adress', message: 'addressFormModalBillingAddress'],
+                             */
                             'participant.eInvoice'          : [field: 'participant.eInvoice', label: 'eInvoice', message: 'org.eInvoice.label'],
                             'participant.eInvoicePortal'    : [field: 'participant.eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
                             'participant.linkResolverBaseURL'    : [field: 'participant.linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
@@ -962,6 +970,13 @@ class ExportClickMeService {
         Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where plat = (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription) and ci.value != null', [subscription: subscription]).each { Platform plat ->
             exportFields.put("participantCustomerIdentifiers."+plat.id, [field: null, label: plat.name])
         }
+        SortedSet<RefdataValue> contactTypes = new TreeSet<RefdataValue>()
+        contactTypes.addAll(Person.executeQuery('select pr.functionType from Person p join p.roleLinks pr where p.tenant = :ctx', [ctx: institution]))
+        contactTypes.addAll(Person.executeQuery('select pr.positionType from Person p join p.roleLinks pr where p.tenant = :ctx', [ctx: institution]))
+        contactTypes.addAll(Person.executeQuery('select pr.responsibilityType from Person p join p.roleLinks pr where p.tenant = :ctx', [ctx: institution]))
+        contactTypes.each { RefdataValue contactType ->
+            exportFields.put("participantContact."+contactType.value, [field: null, label: contactType.getI10n('value')])
+        }
         List<Subscription> childSubs = subscription.getNonDeletedDerivedSubscriptions()
         if(childSubs) {
             String query = "select sp.type from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :context and sp.instanceOf = null order by sp.type.${localizedName} asc"
@@ -1013,6 +1028,15 @@ class ExportClickMeService {
             CostItem.findAllBySubInListAndCostItemStatusNotEqualAndCostItemElementIsNotNull(childSubs, RDStore.COST_ITEM_DELETED).groupBy {it.costItemElement.id}.each {
                 fields.participantSubCostItems.fields.costItemsElements << ["participantSubCostItem.${it.key}":[field: null, label: RefdataValue.get(it.key).getI10n('value')]]
             }
+        }
+
+        SortedSet<RefdataValue> contactTypes = new TreeSet<RefdataValue>()
+        contactTypes.addAll(Person.executeQuery('select pr.functionType from Person p join p.roleLinks pr where p.tenant = :ctx', [ctx: institution]))
+        contactTypes.addAll(Person.executeQuery('select pr.positionType from Person p join p.roleLinks pr where p.tenant = :ctx', [ctx: institution]))
+        contactTypes.addAll(Person.executeQuery('select pr.responsibilityType from Person p join p.roleLinks pr where p.tenant = :ctx', [ctx: institution]))
+
+        contactTypes.each { RefdataValue contactType ->
+            fields.participant.fields.put("participantContact.${contactType.value}", [field: null, label: contactType.getI10n('value')])
         }
 
         fields
@@ -1196,8 +1220,13 @@ class ExportClickMeService {
      */
     Map<String, Object> getExportOrgFields(String config) {
 
-        Map<String, Object> exportFields = [:], contextParams = [ctx: contextService.getOrg()]
+        Org contextOrg = contextService.getOrg()
+        Map<String, Object> exportFields = [:], contextParams = [ctx: contextOrg]
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
+        SortedSet<RefdataValue> contactTypes = new TreeSet<RefdataValue>()
+        contactTypes.addAll(Person.executeQuery('select pr.functionType from Person p join p.roleLinks pr where p.tenant = :ctx', [ctx: contextOrg]))
+        contactTypes.addAll(Person.executeQuery('select pr.positionType from Person p join p.roleLinks pr where p.tenant = :ctx', [ctx: contextOrg]))
+        contactTypes.addAll(Person.executeQuery('select pr.responsibilityType from Person p join p.roleLinks pr where p.tenant = :ctx', [ctx: contextOrg]))
 
         switch(config) {
             case 'consortium':
@@ -1213,6 +1242,9 @@ class ExportClickMeService {
 
                 PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg()).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
                     exportFields.put("consortiumProperty."+propertyDefinition.id, [field: null, label: propertyDefinition."${localizedName}"])
+                }
+                contactTypes.each { RefdataValue contactType ->
+                    exportFields.put("consortiumContact."+contactType.value, [field: null, label: contactType.getI10n('value')])
                 }
                 break
             case 'institution':
@@ -1234,6 +1266,9 @@ class ExportClickMeService {
                 PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg()).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
                     exportFields.put("participantProperty."+propertyDefinition.id, [field: null, label: propertyDefinition."${localizedName}"])
                 }
+                contactTypes.each { RefdataValue contactType ->
+                    exportFields.put("participantContact."+contactType.value, [field: null, label: contactType.getI10n('value')])
+                }
                 break
             case 'provider':
                 EXPORT_PROVIDER_CONFIG.keySet().each {
@@ -1253,6 +1288,9 @@ class ExportClickMeService {
                 PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg()).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
                     exportFields.put("providerProperty."+propertyDefinition.id, [field: null, label: propertyDefinition."${localizedName}"])
                 }
+                contactTypes.each { RefdataValue contactType ->
+                    exportFields.put("providerContact."+contactType.value, [field: null, label: contactType.getI10n('value')])
+                }
                 break
         }
 
@@ -1267,8 +1305,13 @@ class ExportClickMeService {
      */
     Map<String, Object> getExportOrgFieldsForUI(String orgType) {
 
-        Map<String, Object> fields, contextParams = [ctx: contextService.getOrg()]
+        Org contextOrg = contextService.getOrg()
+        Map<String, Object> fields, contextParams = [ctx: contextOrg]
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
+        SortedSet<RefdataValue> contactTypes = new TreeSet<RefdataValue>()
+        contactTypes.addAll(Person.executeQuery('select pr.functionType from Person p join p.roleLinks pr where p.tenant = :ctx', [ctx: contextOrg]))
+        contactTypes.addAll(Person.executeQuery('select pr.positionType from Person p join p.roleLinks pr where p.tenant = :ctx', [ctx: contextOrg]))
+        contactTypes.addAll(Person.executeQuery('select pr.responsibilityType from Person p join p.roleLinks pr where p.tenant = :ctx', [ctx: contextOrg]))
 
         switch(orgType) {
             case 'consortium': fields = EXPORT_CONSORTIA_CONFIG as Map
@@ -1277,8 +1320,11 @@ class ExportClickMeService {
                     fields.consortiumIdentifiers.fields << ["consortiumIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
                 }
                 fields.consortiumProperties.fields.clear()
-                PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg()).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
+                PropertyDefinition.findAllPublicAndPrivateOrgProp(contextOrg).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
                     fields.consortiumProperties.fields << ["consortiumProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant != null)]]
+                }
+                contactTypes.each { RefdataValue contactType ->
+                    fields.consortium.fields.put("consortiumContact.${contactType.value}", [field: null, label: contactType.getI10n('value')])
                 }
                 break
             case 'institution': fields = EXPORT_ORG_CONFIG as Map
@@ -1294,6 +1340,9 @@ class ExportClickMeService {
                 PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg()).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
                     fields.participantProperties.fields << ["participantProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant != null)]]
                 }
+                contactTypes.each { RefdataValue contactType ->
+                    fields.participant.fields.put("participantContact.${contactType.value}", [field: null, label: contactType.getI10n('value')])
+                }
                 break
             case 'provider': fields = EXPORT_PROVIDER_CONFIG as Map
                 fields.providerIdentifiers.fields.clear()
@@ -1305,8 +1354,11 @@ class ExportClickMeService {
                     fields.providerCustomerIdentifiers.fields << ["providerCustomerIdentifiers.${plat.id}":[field: null, label: plat.name]]
                 }
                 fields.providerProperties.fields.clear()
-                PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg()).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
+                PropertyDefinition.findAllPublicAndPrivateOrgProp(contextOrg).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
                     fields.providerProperties.fields << ["providerProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant != null)]]
+                }
+                contactTypes.each { RefdataValue contactType ->
+                    fields.provider.fields.put("providerContact.${contactType.value}",[field: null, label: contactType.getI10n('value')])
                 }
                 break
             default: fields = [:]
@@ -1424,6 +1476,7 @@ class ExportClickMeService {
 
         Map<String, Object> exportFields = [:]
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
+        Org contextOrg = contextService.getOrg()
 
         EXPORT_SURVEY_EVALUATION.keySet().each {
             EXPORT_SURVEY_EVALUATION.get(it).fields.each {
@@ -1444,6 +1497,13 @@ class ExportClickMeService {
         }
         Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where ci.value != null and ci.customer in (:participants) and plat in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription)', [participants: surveyConfig.orgs.org, subscription: surveyConfig.subscription]).each { Platform plat ->
             exportFields.put("participantCustomerIdentifiers."+plat.id, [field: null, label: plat.name])
+        }
+        SortedSet<RefdataValue> contactTypes = new TreeSet<RefdataValue>()
+        contactTypes.addAll(Person.executeQuery('select pr.functionType from Person p join p.roleLinks pr where p.tenant = :ctx', [ctx: contextOrg]))
+        contactTypes.addAll(Person.executeQuery('select pr.positionType from Person p join p.roleLinks pr where p.tenant = :ctx', [ctx: contextOrg]))
+        contactTypes.addAll(Person.executeQuery('select pr.responsibilityType from Person p join p.roleLinks pr where p.tenant = :ctx', [ctx: contextOrg]))
+        contactTypes.each { RefdataValue contactType ->
+            exportFields.put("participantContact."+contactType.value, [field: null, label: contactType.getI10n('value')])
         }
 
         def removeSurveyProperties = exportFields.keySet().findAll { it.startsWith('surveyProperty.') }
@@ -1471,12 +1531,20 @@ class ExportClickMeService {
         Map<String, Object> fields = EXPORT_SURVEY_EVALUATION as Map
         Locale locale = LocaleUtils.getCurrentLocale()
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
+        Org contextOrg = contextService.getOrg()
 
         IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
             fields.participantIdentifiers.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
         }
         Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where ci.value != null and ci.customer in (:participants) and plat in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription)', [participants: surveyConfig.orgs.org, subscription: surveyConfig.subscription]).each { Platform plat ->
             fields.participantCustomerIdentifiers.fields << ["participantCustomerIdentifiers.${plat.id}":[field: null, label: plat.name]]
+        }
+        SortedSet<RefdataValue> contactTypes = new TreeSet<RefdataValue>()
+        contactTypes.addAll(Person.executeQuery('select pr.functionType from Person p join p.roleLinks pr where p.tenant = :ctx', [ctx: contextOrg]))
+        contactTypes.addAll(Person.executeQuery('select pr.positionType from Person p join p.roleLinks pr where p.tenant = :ctx', [ctx: contextOrg]))
+        contactTypes.addAll(Person.executeQuery('select pr.responsibilityType from Person p join p.roleLinks pr where p.tenant = :ctx', [ctx: contextOrg]))
+        contactTypes.each { RefdataValue contactType ->
+            fields.participant.fields.put("participantContact.${contactType.value}", [field: null, label: contactType.getI10n('value')])
         }
 
         def removeSurveyProperties = fields.survey.fields.keySet().findAll { it.startsWith('surveyProperty.') }
@@ -1755,7 +1823,7 @@ class ExportClickMeService {
      * @param institution the institution as reference for the fields
      * @return an Excel worksheet containing the export
      */
-    def exportSubscriptionMembers(List result, Map<String, Object> selectedFields, Subscription subscription, Org institution) {
+    def exportSubscriptionMembers(List result, Map<String, Object> selectedFields, Subscription subscription, Org institution, Set<String> contactSwitch) {
        Locale locale = LocaleUtils.getCurrentLocale()
 
         Map<String, Object> selectedExportFields = [:]
@@ -1795,14 +1863,14 @@ class ExportClickMeService {
             maxCostItemsElements = CostItem.executeQuery('select count(id) as countCostItems from CostItem where sub in (:subs) group by costItemElement, sub order by countCostItems desc', [subs: childSubs])[0]
         }
 
-        List titles = _exportTitles(selectedExportFields, locale, selectedCostItemFields, maxCostItemsElements)
+        List titles = _exportTitles(selectedExportFields, locale, selectedCostItemFields, maxCostItemsElements, contactSwitch)
 
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
 
         List exportData = []
         List orgList = []
         result.each { memberResult ->
-            _setSubRow(memberResult, selectedExportFields, exportData, localizedName, selectedCostItemElements, selectedCostItemFields)
+            _setSubRow(memberResult, selectedExportFields, exportData, localizedName, selectedCostItemElements, selectedCostItemFields, contactSwitch)
             orgList << memberResult.orgs
         }
 
@@ -2379,7 +2447,7 @@ class ExportClickMeService {
      * @param selectedCostItemElements the cost item elements to export
      * @param selectedCostItemFields the fields which should appear in the cost item export
      */
-    private void _setSubRow(def result, Map<String, Object> selectedFields, List exportData, String localizedName, List<RefdataValue> selectedCostItemElements, Map selectedCostItemFields){
+    private void _setSubRow(def result, Map<String, Object> selectedFields, List exportData, String localizedName, List<RefdataValue> selectedCostItemElements, Map selectedCostItemFields, Set<String> contactSources = []){
         List row = []
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         Org org
@@ -2403,9 +2471,16 @@ class ExportClickMeService {
             Map mapSelecetedFields = selectedFields.get(fieldKey)
             String field = mapSelecetedFields.field
             if(!mapSelecetedFields.separateSheet) {
-                if (fieldKey == 'participant.generalContact') {
-                    _setOrgFurtherInformation(org, row, fieldKey)
-                }else if (fieldKey == 'participant.billingContact') {
+                if (fieldKey.contains('Contact.')) {
+                    if(contactSources) {
+                        contactSources.each { String contactSwitch ->
+                            _setOrgFurtherInformation(org, row, fieldKey, null, contactSwitch)
+                        }
+                    }
+                    else _setOrgFurtherInformation(org, row, fieldKey, null, 'public')
+                }
+                /*
+                else if (fieldKey == 'participant.billingContact') {
                     _setOrgFurtherInformation(org, row, fieldKey)
                 }
                 else if (fieldKey == 'participant.billingAdress') {
@@ -2414,6 +2489,7 @@ class ExportClickMeService {
                 else if (fieldKey == 'participant.postAdress') {
                     _setOrgFurtherInformation(org, row, fieldKey)
                 }
+                */
                 else if (fieldKey.startsWith('participantCustomerIdentifiers.')) {
                     _setOrgFurtherInformation(org, row, fieldKey, subscription)
                 }else if (fieldKey == 'participant.readerNumbers') {
@@ -2516,14 +2592,15 @@ class ExportClickMeService {
             Map mapSelecetedFields = selectedFields.get(fieldKey)
             String field = mapSelecetedFields.field
             if(!mapSelecetedFields.separateSheet) {
-                if (fieldKey.contains('generalContact')) {
+                if (fieldKey.contains('Contact.')) {
                     if(contactSources) {
                         contactSources.each { String contactSwitch ->
                             _setOrgFurtherInformation(result, row, fieldKey, null, contactSwitch)
                         }
                     }
                     else _setOrgFurtherInformation(result, row, fieldKey, null, 'public')
-                }else if (fieldKey.contains('billingContact')) {
+                }
+                /*else if (fieldKey.contains('billingContact')) {
                     if(contactSources) {
                         contactSources.each { String contactSwitch ->
                             _setOrgFurtherInformation(result, row, fieldKey, null, contactSwitch)
@@ -2548,7 +2625,7 @@ class ExportClickMeService {
                     }
                     else
                         _setOrgFurtherInformation(result, row, fieldKey, null)
-                }
+                }*/
                 else if (fieldKey.contains('altnames')) {
                     _setOrgFurtherInformation(result, row, fieldKey)
                 }
@@ -2601,14 +2678,16 @@ class ExportClickMeService {
                     SurveyResult participantResultProperty = SurveyResult.findBySurveyConfigAndParticipantAndType(participantResult.surveyConfig, participantResult.participant, PropertyDefinition.get(id))
                     row.add([field: participantResultProperty.getResult() ?: "", style: null])
                     row.add([field: participantResultProperty.comment ?: "", style: null])
-                } else if (fieldKey == 'participant.generalContact') {
+                } else if (fieldKey.contains('Contact.')) {
                     if(contactSources) {
                         contactSources.each { String contactSwitch ->
                             _setOrgFurtherInformation(participantResult.participant, row, fieldKey, null, contactSwitch)
                         }
                     }
                     else _setOrgFurtherInformation(participantResult.participant, row, fieldKey, null, 'public')
-                }else if (fieldKey == 'participant.billingContact') {
+                }
+                /*
+                else if (fieldKey == 'participant.billingContact') {
                     if(contactSources) {
                         contactSources.each { String contactSwitch ->
                             _setOrgFurtherInformation(participantResult.participant, row, fieldKey, null, contactSwitch)
@@ -2630,6 +2709,7 @@ class ExportClickMeService {
                     }
                     else _setOrgFurtherInformation(participantResult.participant, row, fieldKey, null, 'public')
                 }
+                */
                 else if (fieldKey.startsWith('participantCustomerIdentifiers.')) {
                     _setOrgFurtherInformation(participantResult.participant, row, fieldKey, participantResult.sub)
                 }else if (fieldKey == 'participant.readerNumbers') {
@@ -2973,15 +3053,27 @@ class ExportClickMeService {
     private void _setOrgFurtherInformation(Org org, List row, String fieldKey, Subscription subscription = null, String contactSwitch = 'public'){
 
         boolean isPublic = contactSwitch == 'public'
-        String tenantFilter = ''
-        if (fieldKey.endsWith('.generalContact')) {
+        String tenantFilter = '', contactTypeFilter = ''
+        if (fieldKey.contains('Contact.')) {
             if (org) {
-                Map<String, Object> queryParams = [org: org, functionTypes: [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS], type: RDStore.CCT_EMAIL, isPublic: isPublic]
+                Map<String, Object> queryParams = [org: org, type: RDStore.CCT_EMAIL, isPublic: isPublic]
                 if(!isPublic) {
                     tenantFilter = ' and p.tenant = :ctx'
                     queryParams.ctx = contextService.getOrg()
                 }
-                List<Contact> contactList = Contact.executeQuery("select c from PersonRole pr join pr.prs p join p.contacts c where pr.org = :org and pr.functionType in (:functionTypes) and c.contentType = :type and p.isPublic = :isPublic"+tenantFilter, queryParams)
+                RefdataValue contactType = RefdataValue.getByCategoriesDescAndValue([RDConstants.PERSON_POSITION, RDConstants.PERSON_FUNCTION, RDConstants.PERSON_RESPONSIBILITY], fieldKey.split('\\.')[1])
+                switch(contactType.owner.desc) {
+                    case RDConstants.PERSON_FUNCTION: contactTypeFilter = 'pr.functionType = :functionType'
+                        queryParams.functionType = contactType
+                        break
+                    case RDConstants.PERSON_POSITION: contactTypeFilter = 'pr.positionType = :positionType'
+                        queryParams.positionType = contactType
+                        break
+                    case RDConstants.PERSON_RESPONSIBILITY: contactTypeFilter = 'pr.responsibilityType = :responsibilityType'
+                        queryParams.responsibilityType = contactType
+                        break
+                }
+                List<Contact> contactList = Contact.executeQuery("select c from PersonRole pr join pr.prs p join p.contacts c where pr.org = :org and "+contactTypeFilter+" and c.contentType = :type and p.isPublic = :isPublic"+tenantFilter, queryParams)
 
                 if (contactList) {
                     row.add([field: contactList.content.join(";"), style: null])
@@ -2992,7 +3084,8 @@ class ExportClickMeService {
                 row.add([field: '', style: null])
             }
 
-        } else if (fieldKey.endsWith('.billingContact')) {
+        }
+        /*else if (fieldKey.endsWith('.billingContact')) {
             if (org) {
                 Map<String, Object> queryParams = [org: org, functionTypes: [RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS], type: RDStore.CCT_EMAIL, isPublic: isPublic]
                 if(!isPublic) {
@@ -3054,7 +3147,8 @@ class ExportClickMeService {
                 row.add([field: '', style: null])
             }
 
-        } else if (fieldKey.contains('altnames')) {
+        }*/
+        else if (fieldKey.contains('altnames')) {
             if (org) {
                 if(org.altnames)
                     row.add([field: org.altnames.collect { AlternativeName alt -> alt.name }.join('\n'), style: null])
@@ -3208,15 +3302,17 @@ class ExportClickMeService {
         selectedExportFields.keySet().each {String fieldKey ->
             Map fields = selectedExportFields.get(fieldKey)
             if(!fields.separateSheet) {
-                if (fieldKey.endsWith('.generalContact')) {
+                if (fieldKey.contains('Contact.')) {
+                    RefdataValue contactType = RefdataValue.findByValue(fieldKey.split('\\.')[1])
                     if(contactSources) {
                         contactSources.each { String contactSwitch ->
-                            titles << "${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS."${localizedValue}"} ${messageSource.getMessage("org.export.column.${contactSwitch}", null, locale)}"
+                            titles << "${contactType.getI10n('value')} ${messageSource.getMessage("org.export.column.${contactSwitch}", null, locale)}"
                         }
                     }
                     else
-                        titles << RDStore.PRS_FUNC_GENERAL_CONTACT_PRS."${localizedValue}"
-                }else if (fieldKey.endsWith('.billingContact')) {
+                        titles << contactType.getI10n('value')
+                }
+                /*else if (fieldKey.endsWith('.billingContact')) {
                     if(contactSources) {
                         contactSources.each { String contactSwitch ->
                             titles << "${RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS."${localizedValue}"} ${messageSource.getMessage("org.export.column.${contactSwitch}", null, locale)}"
@@ -3242,7 +3338,7 @@ class ExportClickMeService {
                     }
                     else
                         titles << RDStore.ADRESS_TYPE_POSTAL."${localizedValue}"
-                }
+                }*/
                 else if (fieldKey == 'participant.readerNumbers') {
                     titles << messageSource.getMessage('readerNumber.semester.label', null, locale)
                     titles << RDStore.READER_NUMBER_STUDENTS."${localizedValue}"

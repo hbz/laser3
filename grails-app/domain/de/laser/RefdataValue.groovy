@@ -213,6 +213,22 @@ class RefdataValue extends AbstractI10n implements Comparable<RefdataValue> {
     }
 
     /**
+     * This method gets a reference data value by the given list of category names and German value string
+     * @param categoryNames a {@link List} of category names to look
+     * @param value the value key string to look for
+     * @return the reference data value matching to the given query string and belonging to one of the given categories - if multiple results are found, the first result is being returned
+     */
+    static RefdataValue getByCategoriesDescAndValue(List categoryNames, String value) {
+        if (!categoryNames || !value) {
+            return null
+        }
+        String query = "select rdv from RefdataValue as rdv, RefdataCategory as rdc where rdv.owner = rdc and rdc.desc in (:categories) and rdv.value = :value"
+        List<RefdataValue> data = RefdataValue.executeQuery( query, [categories: categoryNames, value: value] )
+
+        return (data.size() > 0) ? data[0] : null
+    }
+
+    /**
      * Helper method: Determines for the reader number entry form the current semester and returns the appropriate reference data value
      * @return the reference data value representing the current semester
      */

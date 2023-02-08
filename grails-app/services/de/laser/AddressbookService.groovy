@@ -127,8 +127,8 @@ class AddressbookService {
         }
 
         if (params.showOnlyContactPersonForInstitution){
-            qParts << "(exists (select roletype from pr.org.orgType as roletype where roletype.id = :orgType ) and pr.org.sector.id = :orgSector )"
-            qParams << [orgSector: RDStore.O_SECTOR_HIGHER_EDU.id, orgType: RDStore.OT_INSTITUTION.id]
+            qParts << "(exists (select roletype from pr.org.orgType as roletype where roletype.id = :instType ) and pr.org.sector.id = :instSector )"
+            qParams << [instSector: RDStore.O_SECTOR_HIGHER_EDU.id, instType: RDStore.OT_INSTITUTION.id]
         }
 
         if (params.showOnlyContactPersonForProviderAgency){
