@@ -618,9 +618,9 @@ class FinanceService {
                         break
                     case "consAtSubscr":
                         prf.setBenchmark("before cons at subscr")
-                        Set<CostItem> consCostItems = CostItem.executeQuery('select ci from CostItem as ci right join ci.sub sub join sub.orgRelations oo where ci.owner = :owner and sub = :sub'+
+                        Set<CostItem> consCostItems = CostItem.executeQuery('select ci from CostItem as ci right join ci.sub sub join sub.orgRelations oo where ci.owner = :owner and sub = :sub and oo.roleType = :roleType'+
                             filterQuery.subFilter + genericExcludes + filterQuery.ciFilter,
-                            [owner:org,sub:sub]+genericExcludeParams+filterQuery.filterData,
+                            [owner:org,sub:sub,roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA]+genericExcludeParams+filterQuery.filterData,
                                 [max:configMap.max,offset:configMap.offsets.consOffset, sort: configMap.sortConfig.consSort, order: configMap.sortConfig.consOrder])
                         prf.setBenchmark("assembling map")
                         result.cons = [count:consCostItems.size()]
