@@ -1398,4 +1398,58 @@ SELECT * FROM (
 
         result
     }
+
+    /**
+     * Lists the current email templates in the app
+     */
+    @Secured(['ROLE_ADMIN'])
+    def listMailTemplates() {
+        Map<String, Object> result = [:]
+        result.mailTemplates = MailTemplate.getAll()
+        result
+    }
+
+    /**
+     * Creates a new email template with the given parameters
+     * @return the updated list view
+     */
+    @Transactional
+    @Secured(['ROLE_ADMIN'])
+    def createMailTemplate() {
+        MailTemplate mailTemplate = new MailTemplate(params)
+
+        if (mailTemplate.save()) {
+            flash.message = message(code: 'default.created.message', args: [message(code: 'mailTemplate.label'), mailTemplate.name]) as String
+        }
+        else {
+            flash.error = message(code: 'default.save.error.message', args: [message(code: 'mailTemplate.label')]) as String
+        }
+        redirect(action: 'listMailTemplates')
+    }
+
+    /**
+     * Updates the given email template
+     * @return
+     */
+    @Transactional
+    @Secured(['ROLE_ADMIN'])
+    def editMailTemplate() {
+        MailTemplate mailTemplate = (MailTemplate) genericOIDService.resolveOID(params.target)
+
+        if (mailTemplate) {
+            mailTemplate.name = params.name
+            mailTemplate.subject = params.subject
+            mailTemplate.text = params.text
+            mailTemplate.language = params.language ? RefdataValue.get(params.language) : mailTemplate.language
+            mailTemplate.type = params.type ? RefdataValue.get(params.type) : mailTemplate.type
+        }
+
+        if (mailTemplate.save()) {
+            flash.message = message(code: 'default.updated.message', args: [message(code: 'mailTemplate.label'), mailTemplate.name]) as String
+        }
+        else{
+            flash.error = message(code: 'default.not.updated.message', args: [message(code: 'mailTemplate.label'), mailTemplate.name]) as String
+        }
+        redirect(action: 'listMailTemplates')
+    }
 }

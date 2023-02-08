@@ -166,23 +166,11 @@
                             </a>
 
                             <div class="menu" role="menu">
-
                                     <ui:link generateElementId="true" class="item" role="menuitem" controller="dataManager" action="index">${message(code:'default.dashboard')}</ui:link>
-
                                     <div class="divider"></div>
-
                                     <ui:link generateElementId="true" class="item" role="menuitem" controller="package" action="list">${message(code:'menu.datamanager.searchPackages')}</ui:link>
-                                    <ui:link generateElementId="true" class="item" role="menuitem" controller="platform" action="list">${message(code:'menu.datamanager.searchPlatforms')}</ui:link>
-
                                     <div class="divider"></div>
-
                                     <ui:link generateElementId="true" class="item" role="menuitem" controller="subscription" action="compare">${message(code:'menu.datamanager.compareSubscriptions')}</ui:link>
-                                    <ui:link generateElementId="true" class="item" role="menuitem" controller="onixplLicenseCompare" action="index">${message(code:'menu.institutions.comp_onix')}</ui:link>
-                                    <div class="divider"></div>
-
-                                    <ui:link generateElementId="true" class="item" role="menuitem" controller="dataManager" action="checkPackageTIPPs">Tipps Check of we:kb and LAS:eR</ui:link>
-                                    <div class="divider"></div>
-                                    <ui:link generateElementId="true" class="item" role="menuitem" controller="dataManager" action="listMailTemplates">Mail Templates</ui:link>
                             </div>
                         </div>
                     </sec:ifAnyGranted>
@@ -255,6 +243,9 @@
                                 <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="manageRefdatas">${message(code:'menu.admin.manageRefdatas')}</ui:link>
                                 <!-- TODO: workflows-permissions -->
                                 <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="manageWorkflows">${message(code:'menu.admin.manageWorkflows')}</ui:link>
+                                <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="listMailTemplates">Mail Templates</ui:link>
+
+                                <div class="divider"></div>
                                 <ui:link generateElementId="true" class="item" role="menuitem" controller="usage">${message(code:'menu.admin.manageUsageStats')}</ui:link>
 
                                 <div class="divider"></div>
@@ -396,7 +387,6 @@
 
                                     <div class="menu" role="menu">
                                         <ui:link generateElementId="true" class="item" role="menuitem" controller="package" action="getDuplicatePackages">List Package Duplicates</ui:link>
-                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="dataManager" action="listDeletedTIPPS">List TIPP Duplicates and deleted TIPPs</ui:link>
                                         <%--<ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="userMerge">${message(code:'menu.admin.userMerge')}</ui:link>--%>
                                         <%--<ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="hardDeletePkgs">${message(code:'menu.admin.hardDeletePkgs')}</ui:link>--%>
 
