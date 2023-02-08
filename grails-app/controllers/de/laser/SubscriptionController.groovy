@@ -225,18 +225,6 @@ class SubscriptionController {
         }
     }
 
-    /*@DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
-    })*/
-    @Deprecated
-    @Secured(['ROLE_ADMIN'])
-    def compare() {
-        Map<String,Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
-
-        result
-    }
-
     /**
      * Call to unlink the given subscription from the given license
      * @return a redirect back to the referer

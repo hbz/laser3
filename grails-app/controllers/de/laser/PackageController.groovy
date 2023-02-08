@@ -3,7 +3,6 @@ package de.laser
 import de.laser.annotations.Check404
 import de.laser.auth.User
 import de.laser.properties.PropertyDefinition
-import de.laser.properties.SubscriptionProperty
 import de.laser.utils.DateUtils
 import de.laser.annotations.DebugInfo
 import de.laser.remote.ApiSource
@@ -38,7 +37,6 @@ class PackageController {
     FilterService filterService
     GenericOIDService genericOIDService
     GokbService gokbService
-    InstitutionsService institutionsService
     MessageSource messageSource
     SubscriptionService subscriptionService
     ExportClickMeService exportClickMeService
@@ -131,7 +129,7 @@ class PackageController {
     /**
      * Is a fallback to list packages which are in the local LAS:eR database
      */
-    @Secured(['ROLE_USER'])
+    @Secured(['ROLE_ADMIN'])
     def list() {
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
@@ -209,167 +207,6 @@ class PackageController {
                 out.close()
             }
         }
-    }
-
-    /**
-     * Compares two packages based on their holdings
-     */
-    @DebugInfo(perm = "ORG_INST,ORG_CONSORTIUM", affil = "INST_USER")
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
-    })
-    def compare() {
-        Map<String, Object> result = [:]
-        result.unionList = []
-
-        result.user = contextService.getUser()
-        SwissKnife.setPaginationParams(result, params, (User) result.user)
-
-        if (params.pkgA?.length() > 0 && params.pkgB?.length() > 0) {
-
-            result.pkgInsts = []
-            result.pkgDates = []
-            def listA
-            def listB
-            try {
-                listA = _createCompareList(params.pkgA, params.dateA, params, result)
-                listB = _createCompareList(params.pkgB, params.dateB, params, result)
-                if (!params.countA) {
-                    String countHQL = "select count(elements(pkg.tipps)) from Package pkg where pkg.id = :pid"
-                    params.countA = Package.executeQuery(countHQL, [pid: result.pkgInsts.get(0).id])
-                    log.debug("countA is ${params.countA}")
-                    params.countB = Package.executeQuery(countHQL, [pid: result.pkgInsts.get(1).id])
-                    log.debug("countB is ${params.countB}")
-                }
-            } catch (IllegalArgumentException e) {
-                request.message = e.getMessage()
-                return
-            }
-
-            Map groupedA = listA.groupBy({ it.name })
-            Map groupedB = listB.groupBy({ it.name })
-
-            Map mapA = listA.collectEntries { [it.name, it] }
-            Map mapB = listB.collectEntries { [it.name, it] }
-
-            result.listACount = [tipps: listA.size(), titles: mapA.size()]
-            result.listBCount = [tipps: listB.size(), titles: mapB.size()]
-
-            log.debug("mapA: ${mapA.size()}, mapB: ${mapB.size()}")
-
-            List unionList = groupedA.keySet().plus(groupedB.keySet()).toList() // heySet is hashSet
-            unionList = unionList.unique()
-            unionList.sort()
-
-            log.debug("UnionList has ${unionList.size()} entries.")
-
-            List<Boolean> filterRules = [params.insrt ? true : false, params.dlt ? true : false, params.updt ? true : false, params.nochng ? true : false]
-
-            result.unionListSize = institutionsService.generateComparisonMap(unionList, mapA, mapB, 0, unionList.size(), filterRules).size()
-
-            withFormat {
-                html {
-                    def toIndex = result.offset + result.max < unionList.size() ? result.offset + result.max : unionList.size()
-                    result.comparisonMap =
-                            institutionsService.generateComparisonMap(unionList, groupedA, groupedB, result.offset, toIndex.intValue(), filterRules)
-                    result
-                }
-                csv {
-                    try {
-
-                        def comparisonMap =
-                                institutionsService.generateComparisonMap(unionList, mapA, mapB, 0, unionList.size(), filterRules)
-                        log.debug("Create CSV Response")
-                        SimpleDateFormat dateFormatter = DateUtils.getLocalizedSDF_noTime()
-                        response.setHeader("Content-disposition", "attachment; filename=\"packageComparison.csv\"")
-                        response.contentType = "text/csv"
-                        ServletOutputStream out = response.outputStream
-                        out.withWriter { writer ->
-                            writer.write("${result.pkgInsts[0].name} on ${params.dateA}, ${result.pkgInsts[1].name} on ${params.dateB}\n")
-                            writer.write('Title, pISSN, eISSN, Start Date A, Start Date B, Start Volume A, Start Volume B, Start Issue A, Start Issue B, End Date A, End Date B, End Volume A,End  Volume B,End  Issue A,End  Issue B, Coverage Note A, Coverage Note B, ColorCode\n');
-                            // log.debug("UnionList size is ${unionList.size}")
-                            comparisonMap.each { title, values ->
-                                def tippA = values[0]
-                                def tippB = values[1]
-                                def colorCode = values[2]
-                                def pissn = tippA ? tippA.getIdentifierValue('issn') : tippB.getIdentifierValue('issn');
-                                def eissn = tippA ? tippA.getIdentifierValue('eISSN') : tippB.getIdentifierValue('eISSN');
-
-                                writer.write("\"${title}\",\"${pissn ?: ''}\",\"${eissn ?: ''}\",\"${_formatDateOrNull(dateFormatter, tippA?.startDate)}\",\"${_formatDateOrNull(dateFormatter, tippB?.startDate)}\",\"${tippA?.startVolume ?: ''}\",\"${tippB?.startVolume ?: ''}\",\"${tippA?.startIssue ?: ''}\",\"${tippB?.startIssue ?: ''}\",\"${_formatDateOrNull(dateFormatter, tippA?.endDate)}\",\"${_formatDateOrNull(dateFormatter, tippB?.endDate)}\",\"${tippA?.endVolume ?: ''}\",\"${tippB?.endVolume ?: ''}\",\"${tippA?.endIssue ?: ''}\",\"${tippB?.endIssue ?: ''}\",\"${tippA?.coverageNote ?: ''}\",\"${tippB?.coverageNote ?: ''}\",\"${colorCode}\"\n")
-                            }
-                            writer.write("END");
-                            writer.flush();
-                            writer.close();
-                        }
-                        out.close()
-
-                    } catch (Exception e) {
-                        log.error("An Exception was thrown here", e)
-                    }
-                }
-            }
-
-        } else {
-            SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
-            Date currentDate = sdf?.format(new Date())
-            params.dateA = currentDate
-            params.dateB = currentDate
-            params.insrt = "Y"
-            params.dlt = "Y"
-            params.updt = "Y"
-            flash.message = message(code: 'package.compare.flash') as String
-            result
-        }
-
-    }
-
-    /**
-     * Formats the given date with the given formatter
-     * @param formatter the formatter to use
-     * @param date the date to format
-     * @return the formatted date string or an empty string
-     */
-    private def _formatDateOrNull(formatter, date) {
-        return (date ? formatter.format(date) : '')
-    }
-
-    /**
-     * Builds a comparison list for the given package
-     * @param pkg the package whose data should be prepared
-     * @param dateStr the date from when the holding should be considered
-     * @param params eventual filter data
-     * @param result the result map to fill
-     * @return a filtered list of titles contained in the package
-     */
-    private def _createCompareList(pkg, dateStr, params, result) {
-
-        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
-        Date date = dateStr ? sdf.parse(dateStr) : new Date()
-        def packageId = pkg.substring(pkg.indexOf(":") + 1)
-
-        Package packageInstance = Package.get(packageId)
-
-        if (date < packageInstance.startDate) {
-            throw new IllegalArgumentException(
-                    "${packageInstance.name} start date is ${sdf.format(packageInstance.startDate)}. " +
-                            "Date to compare it on is ${sdf.format(date)}, this is before start date.")
-        }
-        if (packageInstance.endDate && date > packageInstance.endDate) {
-            throw new IllegalArgumentException(
-                    "${packageInstance.name} end date is ${sdf.format(packageInstance.endDate)}. " +
-                            "Date to compare it on is ${sdf.format(date)}, this is after end date.")
-        }
-
-        result.pkgInsts.add(packageInstance)
-
-        result.pkgDates.add(sdf.format(date))
-
-        def queryParams = [packageInstance]
-
-        Map<String, Object> query = filterService.generateBasePackageQuery(params, queryParams, true, date, "Platform")
-        def list = TitleInstancePackagePlatform.executeQuery("select tipp " + query.base_qry, query.qry_params)
-
-        return list
     }
 
     /**

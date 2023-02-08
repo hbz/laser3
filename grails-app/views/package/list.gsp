@@ -1,17 +1,17 @@
 <%@ page import="de.laser.Package" %>
-<laser:htmlStart message="myinst.packages" />
+<laser:htmlStart text="${message(code: 'myinst.packages')} - ${message(code: 'default.onlyDatabase')}" />
 
     <g:set var="entityName" value="${message(code: 'package.label')}" />
 
-  <ui:breadcrumbs>
-      <ui:crumb message="myinst.packages" class="active"/>
-  </ui:breadcrumbs>
+    <ui:breadcrumbs>
+        <ui:crumb text="${message(code: 'myinst.packages')} - ${message(code: 'default.onlyDatabase')}" class="active"/>
+    </ui:breadcrumbs>
 
   <ui:controlButtons>
       <laser:render template="actions"/>
   </ui:controlButtons>
 
-    <ui:h1HeaderWithIcon message="myinst.packages" total="${packageInstanceTotal}" floated="true" />
+    <ui:h1HeaderWithIcon text="${message(code: 'myinst.packages')} - ${message(code: 'default.onlyDatabase')}" total="${packageInstanceTotal}" floated="true" />
 
     <ui:messages data="${flash}" />
 
