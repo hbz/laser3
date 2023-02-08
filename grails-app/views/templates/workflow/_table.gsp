@@ -92,7 +92,7 @@
 </g:if>
 
 <div id="wfModal" class="ui modal"></div>
-<div id="wfFlyout" class="ui eight wide flyout" style="margin-top:50px;overflow:scroll"></div>
+<div id="wfFlyout" class="ui eight wide flyout" style="padding:50px 0;overflow:scroll"></div>
 
 <laser:script file="${this.getGroovyPageFileName()}">
     $('.wfModalLink').on('click', function(e) {

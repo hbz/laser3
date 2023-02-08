@@ -257,7 +257,7 @@ class WorkflowService {
         cpoint.date         = ph.getDate('date')
         cpoint.done         = Boolean.parseBoolean(ph.getString('done'))
         cpoint.checklist    = WfChecklist.get(ph.getLong('checklist'))
-        cpoint.position     = ph.getInt('position')
+        cpoint.position     = ph.getInt('position') ?: cpoint.checklist.getNextPosition()
 
         Map<String, Object> result = [ checkpoint: cpoint, cmd: cmd[0], key: cmd[1] ]
 

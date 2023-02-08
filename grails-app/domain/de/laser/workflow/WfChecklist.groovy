@@ -92,6 +92,11 @@ class WfChecklist {
         WfCheckpoint.executeQuery('select cp from WfCheckpoint cp where cp.checklist = :cl order by cp.position', [cl: this]) as Set<WfCheckpoint>
     }
 
+    int getNextPosition() {
+        int position = WfCheckpoint.executeQuery('select max(cp.position) from WfCheckpoint cp where cp.checklist = :cl', [cl: this])[0]
+        Math.max(position, 0) + 1
+    }
+
     Map<String, Object> getInfo() {
 
         MessageSource ms = BeanStore.getMessageSource()

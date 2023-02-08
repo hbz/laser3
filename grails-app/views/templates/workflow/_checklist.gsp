@@ -151,7 +151,8 @@
 
                             <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
                                 <g:if test="${ti > 0}">
-                                    <g:link class="ui icon button blue compact la-modern-button" controller="${clistInfo.targetController}" action="workflows" id="${clistInfo.target.id}" params="${[cmd:"moveUp:${WfCheckpoint.KEY}:${cpoint.id}"]}">
+                                    <g:link class="ui icon button blue compact la-modern-button" controller="${clistInfo.targetController}" action="workflows" id="${clistInfo.target.id}"
+                                            params="${[cmd:"moveUp:${WfCheckpoint.KEY}:${cpoint.id}", info:"${wfKey}"]}">
                                         <i class="icon arrow up"></i>
                                     </g:link>
                                 </g:if>
@@ -159,7 +160,8 @@
                                     <div class="ui icon button compact la-hidden"><i class="coffee icon"></i></div>
                                 </g:else>
                                 <g:if test="${ti < cpoints.size()-1}">
-                                    <g:link class="ui icon button blue compact la-modern-button" controller="${clistInfo.targetController}" action="workflows" id="${clistInfo.target.id}" params="${[cmd:"moveDown:${WfCheckpoint.KEY}:${cpoint.id}"]}">
+                                    <g:link class="ui icon button blue compact la-modern-button" controller="${clistInfo.targetController}" action="workflows" id="${clistInfo.target.id}"
+                                            params="${[cmd:"moveDown:${WfCheckpoint.KEY}:${cpoint.id}", info:"${wfKey}"]}">
                                         <i class="icon arrow down"></i>
                                     </g:link>
                                 </g:if>
@@ -172,7 +174,8 @@
                                 <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.checkpoint", args: [cpoint.title])}"
                                         data-confirm-term-how="delete"
-                                        controller="${clistInfo.targetController}" action="workflows" id="${clistInfo.target.id}" params="${[cmd:"delete:${WfCheckpoint.KEY}:${cpoint.id}"]}"
+                                        controller="${clistInfo.targetController}" action="workflows" id="${clistInfo.target.id}"
+                                        params="${[cmd:"delete:${WfCheckpoint.KEY}:${cpoint.id}", info:"${wfKey}"]}"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                     <i class="trash alternate outline icon"></i>
@@ -186,28 +189,68 @@
 
         </g:each>
 
-        <div class="ui vertical segment">
+        <!-- -->
+
+    <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
+
+        <div class="ui vertical segment" style="padding-top:3em">
+
             <div class="ui grid">
                 <div class="row">
-                    <div class="one wide column wf-centered"></div>
-                    <div class="ten wide column"></div>
-                    <div class="two wide column wf-centered"></div>
+                    <div class="thirteen wide column"> </div>
                     <div class="three wide column wf-centered">
-                        <g:link class="ui icon button blue compact la-modern-button" action="workflows" id="${clistInfo.target.id}" params="${[cmd:"add:${WfChecklist.KEY}:${clist.id}"]}">
-                            <i class="icon plus"></i>
-                        </g:link>
+                        <div class="ui icon button compact la-hidden"><i class="coffee icon"></i></div>
+                        <div class="ui icon button compact la-hidden"><i class="coffee icon"></i></div>
+
+                        <div class="ui icon blue button compact la-modern-button" id="cpFormToggle"><i class="icon plus"></i></div>
+%{--                        <g:link class="ui icon button blue compact la-modern-button" action="workflows" id="${clistInfo.target.id}"--}%
+%{--                                params="${[cmd:"add:${WfChecklist.KEY}:${clist.id}", info:"${wfKey}"]}">--}%
+%{--                            <i class="icon plus"></i>--}%
+%{--                        </g:link>--}%
                     </div>
                 </div>
             </div>
-        </div>
 
-    </div>
+            <g:form name="cpForm" controller="${clistInfo.targetController}" action="workflows" id="${clistInfo.target.id}" method="POST" class="ui form" style="margin:4em;display:none">
+
+                <div style="margin-top:2em;">
+                    <div class="field required">
+                        <g:set var="fieldName" value="${WfCheckpoint.KEY}_title" />
+                        <label for="${fieldName}">${message(code:'default.title.label')}</label>
+                        <input type="text" name="${fieldName}" id="${fieldName}" required="required" />
+                    </div>
+
+                    <div class="field">
+                        <g:set var="fieldName" value="${WfCheckpoint.KEY}_description" />
+                        <label for="${fieldName}">${message(code:'default.description.label')}</label>
+                        <input type="text" name="${fieldName}" id="${fieldName}" />
+                    </div>
+
+                    <input type="hidden" name="${WfCheckpoint.KEY}_checklist" value="${clist.id}" />
+
+                    <input type="hidden" name="cmd" value="create:${WfCheckpoint.KEY}" />
+                    <input type="hidden" name="target" value="${clistInfo.target.class.name}:${clistInfo.target.id}" />
+                </div>
+                <div class="field">
+                    <input type="submit" class="ui button green" name="save" value="Neue Aufgabe hinzufügen">
+                </div>
+            </g:form>
+
+        </div>
+    </g:if>
 
     <style>
         .ui.grid .row               { padding-top: 0.35rem; padding-bottom: 0.35rem; }
         .ui.grid .row:first-of-type { padding-top: 1.2rem; }
         .ui.grid .row:last-of-type  { padding-bottom: 1.2rem; }
     </style>
+
+    <laser:script file="${this.getGroovyPageFileName()}">
+        $('#cpFormToggle').on ('click', function () {
+            $(this).toggleClass('la-modern-button')
+            $('#cpForm').toggle()
+        })
+    </laser:script>
 </g:if>
 
 %{--<laser:script file="${this.getGroovyPageFileName()}">--}%
