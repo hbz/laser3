@@ -159,21 +159,16 @@
                         </div>
                     </g:if>
 
-                    <sec:ifAnyGranted roles="ROLE_ADMIN">
-                        <div class="ui dropdown item" role="menuitem" aria-haspopup="true">
-                            <a class="title">
-                                ${message(code:'menu.datamanager')} <i class="dropdown icon"></i>
-                            </a>
-
-                            <div class="menu" role="menu">
-                                    <ui:link generateElementId="true" class="item" role="menuitem" controller="dataManager" action="index">${message(code:'default.dashboard')}</ui:link>
-                                    <div class="divider"></div>
-                                    <ui:link generateElementId="true" class="item" role="menuitem" controller="package" action="list">${message(code:'menu.datamanager.searchPackages')}</ui:link>
-                                    <div class="divider"></div>
-                                    <ui:link generateElementId="true" class="item" role="menuitem" controller="subscription" action="compare">${message(code:'menu.datamanager.compareSubscriptions')}</ui:link>
-                            </div>
-                        </div>
-                    </sec:ifAnyGranted>
+%{--                    <sec:ifAnyGranted roles="ROLE_ADMIN">--}%
+%{--                        <div class="ui dropdown item" role="menuitem" aria-haspopup="true">--}%
+%{--                            <a class="title">--}%
+%{--                                ${message(code:'menu.datamanager')} <i class="dropdown icon"></i>--}%
+%{--                            </a>--}%
+%{--                            <div class="menu" role="menu">--}%
+%{--                                    <ui:link generateElementId="true" class="item" role="menuitem" controller="dataManager" action="index">${message(code:'default.dashboard')}</ui:link>--}%
+%{--                            </div>--}%
+%{--                        </div>--}%
+%{--                    </sec:ifAnyGranted>--}%
 
                     <sec:ifAnyGranted roles="ROLE_ADMIN">
                         <div class="ui dropdown item" role="menuitem" aria-haspopup="true">
@@ -220,6 +215,7 @@
                                 </div>
 
                                 <ui:link generateElementId="true" class="item" role="menuitem" controller="user" action="list">${message(code:'menu.institutions.users')}</ui:link>
+                                <ui:link generateElementId="true" class="item" role="menuitem" controller="package" action="list">${message(code: 'myinst.packages')} - ${message(code: 'default.onlyDatabase')}</ui:link>
                                 <ui:link generateElementId="true" class="item" role="menuitem" controller="stats" action="statsHome">${message(code:'menu.admin.statistics')}</ui:link>
 
                                 <div class="divider"></div>

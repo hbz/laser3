@@ -18,10 +18,9 @@
 
     <g:if test="${(editable || accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM', 'INST_EDITOR')) && !['list'].contains(actionName) && packageInstance}">
         <ui:actionsDropdownItem message="package.show.linkToSub" data-ui="modal" href="#linkToSubModal"/>
-        <div class="divider"></div>
     </g:if>
 
-    <ui:actionsDropdownItemDisabled controller="package" action="compare" message="menu.public.comp_pkg"/>
+%{--    <ui:actionsDropdownItemDisabled controller="package" action="compare" message="menu.public.comp_pkg"/>--}%
 
 </ui:actionsDropdown>
 
