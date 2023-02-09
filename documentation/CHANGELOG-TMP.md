@@ -9,6 +9,8 @@
 
 4823    09.02.2023  dev     3.1         David   Feature     Menü und Funktionen aufräumen: Data Manager
 
+4819    09.02.2023  dev     3.1         Andreas Feature     Anmerkungsfeld für Zugangskonfigurationen angelegt
+
 4817    09.02.2023  dev     3.1         Andreas Feature     verbesserte Anzeige der Alternativnamen bei Anbieter
 
 4812    08.02.2023  dev     3.1         Andreas Bug         Anbieter wurde nicht im Dropdown vorbelegt
