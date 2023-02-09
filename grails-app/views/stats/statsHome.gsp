@@ -5,7 +5,7 @@
             <ui:crumb message="menu.admin.statistics" class="active"/>
         </ui:breadcrumbs>
 
-        <ui:h1HeaderWithIcon message="menu.admin.statistics" />
+        <ui:h1HeaderWithIcon message="menu.admin.statistics" type="admin" />
 
         <table class="ui celled la-js-responsive-table la-table compact table">
             <thead>

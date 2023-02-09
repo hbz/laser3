@@ -1,9 +1,9 @@
 <%@ page import="de.laser.MailTemplate; de.laser.storage.RDConstants;de.laser.RefdataCategory" %>
-<laser:htmlStart message="mailTemplate.plural.label" />
+<laser:htmlStart message="menu.admin.manageMailTemplates" />
 
 <ui:breadcrumbs>
-    <ui:crumb controller="dataManager" action="index" message="menu.datamanager" />
-    <ui:crumb message="mailTemplate.plural.label" class="active"/>
+    <ui:crumb message="menu.admin" controller="admin" action="index"/>
+    <ui:crumb message="menu.admin.manageMailTemplates" class="active"/>
 </ui:breadcrumbs>
 
 <ui:controlButtons>
@@ -12,7 +12,7 @@
     </ui:actionsDropdown>
 </ui:controlButtons>
 
-<ui:h1HeaderWithIcon message="mailTemplate.plural.label" type="datamanager"/>
+<ui:h1HeaderWithIcon message="menu.admin.manageMailTemplates" type="admin"/>
 
 <ui:messages data="${flash}"/>
 <ui:greySegment>
@@ -67,7 +67,7 @@
 
 <ui:modal id="editMailTemplate" message="mailTemplate.label" isEditModal="isEditModal">
 
-    <g:form class="ui form" url="[controller: 'dataManager', action: 'editMailTemplate']">
+    <g:form class="ui form" url="[controller: 'admin', action: 'editMailTemplate']">
         <input type="hidden" name="target" value="" />
         <div class="field required">
             <label for="mailTemplateName">${message(code:'default.name.label')} <g:message code="messageRequiredField" /></label>
@@ -122,7 +122,7 @@
 
 <ui:modal id="modalCreateMailTemplate" text="${message(code:'mailTemplate.create.label')}">
 
-    <g:form id="create_mail_template" class="ui form" url="[controller:'dataManager', action:'createMailTemplate']" method="post">
+    <g:form id="create_mail_template" class="ui form" url="[controller:'admin', action:'createMailTemplate']" method="post">
 
         <div class="field required">
             <label for="mailTemplateName">${message(code:'default.name.label')} <g:message code="messageRequiredField" /></label>
