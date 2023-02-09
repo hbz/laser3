@@ -1,4 +1,4 @@
-<%@ page import="java.time.temporal.ChronoUnit; de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.survey.SurveyResult; de.laser.Subscription; de.laser.PersonRole; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.ReaderNumber; de.laser.Contact; de.laser.auth.User; de.laser.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.SubscriptionsQueryService; de.laser.storage.RDConstants; de.laser.storage.RDStore; java.text.SimpleDateFormat; de.laser.License; de.laser.Org; de.laser.OrgRole; de.laser.OrgSetting; de.laser.remote.ApiSource" %>
+<%@ page import="java.time.temporal.ChronoUnit; de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.survey.SurveyResult; de.laser.Subscription; de.laser.PersonRole; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.ReaderNumber; de.laser.Contact; de.laser.auth.User; de.laser.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.SubscriptionsQueryService; de.laser.storage.RDConstants; de.laser.storage.RDStore; java.text.SimpleDateFormat; de.laser.License; de.laser.Org; de.laser.OrgRole; de.laser.OrgSetting; de.laser.remote.ApiSource; de.laser.AlternativeName" %>
 <laser:serviceInjection/>
 <g:if test="${'surveySubCostItem' in tmplConfigShow}">
     <g:set var="oldCostItem" value="${0.0}"/>
@@ -291,19 +291,48 @@
                 </th>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('altname')}">
+                <%
+                    SortedSet<String> altnames = new TreeSet<String>()
+                    if(params.orgNameContains) {
+                        altnames.addAll(org.altnames.findAll { AlternativeName altname -> altname.name.toLowerCase().contains(params.orgNameContains.toLowerCase()) }.name)
+                    }
+                    else altnames.addAll(org.altnames.name)
+                %>
                 <td>
                     <ul>
-                        <g:each in="${org.altnames}" var="altname">
-                            <li>
-                                <g:if test="${org.gokbId}">
-                                    <g:link url="${apiSource.baseUrl}/public/orgContent/${org.gokbId}#altnames">${altname.name}</g:link>
-                                </g:if>
-                                <g:else>
-                                    ${altname.name}
-                                </g:else>
-                            </li>
+                        <g:each in="${altnames}" var="altname" status="a">
+                            <g:if test="${a < 10}">
+                                <li>
+                                    <g:if test="${org.gokbId}">
+                                        <g:link url="${apiSource.baseUrl}/public/orgContent/${org.gokbId}#altnames">${altname}</g:link>
+                                    </g:if>
+                                    <g:else>
+                                        ${altname}
+                                    </g:else>
+                                </li>
+                            </g:if>
                         </g:each>
                     </ul>
+                    <g:if test="${altnames.size() > 10}">
+                        <div class="ui accordion">
+                            <%-- TODO translation string if this solution is going to be accepted --%>
+                            <div class="title">Weitere ...<i class="ui dropdown icon"></i></div>
+                            <div class="content">
+                                <ul>
+                                    <g:each in="${altnames.drop(10)}" var="altname">
+                                        <li>
+                                            <g:if test="${org.gokbId}">
+                                                <g:link url="${apiSource.baseUrl}/public/orgContent/${org.gokbId}#altnames">${altname}</g:link>
+                                            </g:if>
+                                            <g:else>
+                                                ${altname}
+                                            </g:else>
+                                        </li>
+                                    </g:each>
+                                </ul>
+                            </div>
+                        </div>
+                    </g:if>
                 </td>
             </g:if>
 
