@@ -45,6 +45,10 @@
                     <dd><ui:xEditable owner="${accessPoint}" field="name"/></dd>
                 </dl>
                 <dl>
+                    <dt><g:message code="default.note.label" /></dt>
+                    <dd><ui:xEditable owner="${accessPoint}" field="note"/></dd>
+                </dl>
+                <dl>
                     <dt><g:message code="accessMethod.label" /></dt>
                     <dd>
                         ${accessPoint.accessMethod.getI10n('value')}
