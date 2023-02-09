@@ -165,9 +165,10 @@ class RDStore {
     public final static RefdataValue SUBSCRIPTION_CURRENT           = getRefdataValue('Current', RDConstants.SUBSCRIPTION_STATUS)
     public final static RefdataValue SUBSCRIPTION_INTENDED          = getRefdataValue('Intended', RDConstants.SUBSCRIPTION_STATUS)
     public final static RefdataValue SUBSCRIPTION_EXPIRED           = getRefdataValue('Expired', RDConstants.SUBSCRIPTION_STATUS)
-    public final static RefdataValue SUBSCRIPTION_NO_STATUS         = getRefdataValue('Status not defined', RDConstants.SUBSCRIPTION_STATUS)
-    public final static RefdataValue SUBSCRIPTION_UNDER_PROCESS_OF_SELECTION     = getRefdataValue('Under Process Of Selection', RDConstants.SUBSCRIPTION_STATUS)
     public final static RefdataValue SUBSCRIPTION_ORDERED           = getRefdataValue('Ordered', RDConstants.SUBSCRIPTION_STATUS)
+    public final static RefdataValue SUBSCRIPTION_NO_STATUS         = getRefdataValue('Status not defined', RDConstants.SUBSCRIPTION_STATUS)
+    public final static RefdataValue SUBSCRIPTION_TEST_ACCESS       = getRefdataValue('Test Access', RDConstants.SUBSCRIPTION_STATUS)
+    public final static RefdataValue SUBSCRIPTION_UNDER_PROCESS_OF_SELECTION     = getRefdataValue('Under Process Of Selection', RDConstants.SUBSCRIPTION_STATUS)
 
     public final static RefdataValue SURVEY_READY                   = getRefdataValue('Ready', RDConstants.SURVEY_STATUS)
     public final static RefdataValue SURVEY_IN_PROCESSING           = getRefdataValue('In Processing', RDConstants.SURVEY_STATUS)

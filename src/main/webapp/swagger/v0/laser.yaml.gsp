@@ -107,6 +107,14 @@ components:
       description: Concrete globalUID of context organisation
 </g:else>
 
+    ezbOrgId:
+      name: ezbOrgId
+      in: query
+      schema:
+        type: string
+      required: false
+      description: Concrete EZB identifier of institution whose subscriptions should be requested
+
     debug:
       name: x-debug
       in: header
