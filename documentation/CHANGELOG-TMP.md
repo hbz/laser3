@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4823    09.02.2023  dev     3.1         David   Feature     Menü und Funktionen aufräumen: Data Manager
+
 4812    08.02.2023  dev     3.1         Andreas Bug         Anbieter wurde nicht im Dropdown vorbelegt
 
 4808    08.02.2023  dev     3.1         Andreas Bug         500er bei der Teilnehmersicht

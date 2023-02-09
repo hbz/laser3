@@ -57,7 +57,6 @@
                                 ${message(code:'menu.public')} <i class="dropdown icon"></i>
                             </a>
                             <div class="menu" role="menu">
-
                                     <ui:link generateElementId="true" class="item" role="menuitem" controller="package" action="index">${message(code:'menu.public.all_pkg')}</ui:link>
                                     <ui:link generateElementId="true" class="item" role="menuitem" controller="title" action="index">${message(code:'menu.public.all_titles')}</ui:link>
 
@@ -79,7 +78,6 @@
                                     <ui:link generateElementId="true" class="item" role="menuitem" controller="gasco">${message(code:'menu.public.gasco_monitor')}</ui:link>
 
                                     <a id="wekb" href="${message(code:'url.wekb.' + currentServer)}" class="item" role="menuitem"><i class="ui icon la-gokb"></i> we:kb</a>
-
                             </div>
                         </div>
 
@@ -88,7 +86,6 @@
                                 ${message(code:'menu.my')} <i class="dropdown icon"></i>
                             </a>
                             <div class="menu" role="menu">
-
                                 <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentSubscriptions" message="menu.my.subscriptions" />
                                 <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentLicenses" message="menu.my.licenses" />
                                 <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentProviders" message="menu.my.providers" />
@@ -129,7 +126,6 @@
 
                                 <div class="divider"></div>
                                 <ui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="compare" action="compareLicenses" message="menu.my.comp_lic" />
-
                             </div>
                         </div>
 
@@ -188,13 +184,9 @@
 
                                         <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="appInfo">${message(code:'menu.admin.appInfo')}</ui:link>
                                         <ui:link generateElementId="true" class="item" controller="admin" action="systemEvents">${message(code:'menu.admin.systemEvents')}</ui:link>
-                                        <ui:link generateElementId="true" class="item" controller="admin" action="testMailSending">Test Mail Sending</ui:link>
 
                                         <div class="divider"></div>
-
-                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="triggerHousekeeping" onclick="return confirm('${message(code:'confirm.start.HouseKeeping')}')">${message(code:'menu.admin.triggerHousekeeping')}</ui:link>
-                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="initiateCoreMigration" onclick="return confirm('${message(code:'confirm.start.CoreMigration')}')">${message(code:'menu.admin.coreMigration')}</ui:link>
-                                        %{--<ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="dataCleanse" onclick="return confirm('${message(code:'confirm.start.DataCleaningNominalPlatforms')}')">Run Data Cleaning (Nominal Platforms)</ui:link>--}%
+                                        <ui:link generateElementId="true" class="item" controller="admin" action="testMailSending">Test Mail Sending</ui:link>
                                     </div>
                                 </div>
 
@@ -215,34 +207,18 @@
                                 </div>
 
                                 <ui:link generateElementId="true" class="item" role="menuitem" controller="user" action="list">${message(code:'menu.institutions.users')}</ui:link>
-                                <ui:link generateElementId="true" class="item" role="menuitem" controller="package" action="list">${message(code: 'myinst.packages')} - ${message(code: 'default.onlyDatabase')}</ui:link>
-                                <ui:link generateElementId="true" class="item" role="menuitem" controller="stats" action="statsHome">${message(code:'menu.admin.statistics')}</ui:link>
-
-                                <div class="divider"></div>
-
-                                <div class="item" role="menuitem" aria-haspopup="true">
-                                    <div class="title">
-                                        ${message(code:'menu.admin.bulkOps')} <i class="dropdown icon"></i>
-                                    </div>
-
-                                   <div class="menu" role="menu">
-                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="titleEnrichment">Title Enrichment</ui:link>
-                                    </div>
-                                </div>
-                                <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="forceSendNotifications">${message(code:'menu.admin.sendNotifications')}</ui:link>
-
                                 <div class="divider"></div>
 
                                 <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="manageNamespaces">${message(code:'menu.admin.manageIdentifierNamespaces')}</ui:link>
                                 <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="managePropertyDefinitions">${message(code:'menu.admin.managePropertyDefinitions')}</ui:link>
                                 <%--<ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="managePropertyGroups">${message(code:'menu.institutions.manage_prop_groups')}</ui:link>--%> <%-- property groups are always private?? --%>
                                 <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="manageRefdatas">${message(code:'menu.admin.manageRefdatas')}</ui:link>
-                                <!-- TODO: workflows-permissions -->
-                                <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="manageWorkflows">${message(code:'menu.admin.manageWorkflows')}</ui:link>
-                                <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="listMailTemplates">Mail Templates</ui:link>
 
                                 <div class="divider"></div>
+                                <!-- TODO: workflows-permissions -->
+%{--                                <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="manageWorkflows">${message(code:'menu.admin.manageWorkflows')}</ui:link>--}%
                                 <ui:link generateElementId="true" class="item" role="menuitem" controller="usage">${message(code:'menu.admin.manageUsageStats')}</ui:link>
+                                <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="listMailTemplates">${message(code:'menu.admin.manageMailTemplates')}</ui:link>
 
                                 <div class="divider"></div>
 
@@ -256,7 +232,6 @@
                                         <ui:link generateElementId="true" class="item" role="menuitem" controller="dev" action="klodav">klodav</ui:link>
                                     </div>
                                 </div>
-
                             </div>
                         </div>
                     </sec:ifAnyGranted>
@@ -268,7 +243,6 @@
                             </a>
 
                             <div class="menu" role="menu">
-
                                 <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="index">${message(code:'default.dashboard')}</ui:link>
 
                                 <div class="item " role="menuitem" aria-haspopup="true">
@@ -277,7 +251,6 @@
                                     </div>
 
                                     <div class="menu" role="menu">
-
                                         <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="systemSettings"><i class="icon toggle on"></i>${message(code:'menu.yoda.systemSettings')}</ui:link>
                                         <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="systemEvents">${message(code:'menu.admin.systemEvents')}</ui:link>
                                         <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="systemConfiguration">${message(code:'menu.yoda.systemConfiguration')}</ui:link>
@@ -285,13 +258,20 @@
                                         <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="systemQuartz">${message(code:'menu.yoda.systemQuartz')}</ui:link>
                                         <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="systemCache">${message(code:'menu.yoda.systemCache')}</ui:link>
 
-                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="profilerLoadtime"><i class="stopwatch icon"></i>${message(code:'menu.yoda.profilerLoadtime')}</ui:link>
-                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="profilerActivity"><i class="stopwatch icon"></i>${message(code:'menu.yoda.profilerActivity')}</ui:link>
-                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="profilerTimeline"><i class="stopwatch icon"></i>${message(code:'menu.yoda.profilerTimeline')}</ui:link>
-
+                                        <div class="divider"></div>
                                         <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="appControllers">${message(code:'menu.yoda.appControllers')}</ui:link>
                                         <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="userRoleMatrix">${message(code:'menu.yoda.userRoleMatrix')}</ui:link>
+                                    </div>
+                                </div>
 
+                                <div class="item" role="menuitem" aria-haspopup="true">
+                                    <div class="title">
+                                        <i class="stopwatch icon"></i> Profiler <i class="dropdown icon"></i>
+                                    </div>
+                                    <div class="menu" role="menu">
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="profilerLoadtime">${message(code:'menu.yoda.profilerLoadtime')}</ui:link>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="profilerActivity">${message(code:'menu.yoda.profilerActivity')}</ui:link>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="profilerTimeline">${message(code:'menu.yoda.profilerTimeline')}</ui:link>
                                     </div>
                                 </div>
 
@@ -314,7 +294,6 @@
                                         Statistik <i class="dropdown icon"></i>
                                     </div>
                                     <div class="menu" role="menu">
-
                                         <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="statsSync">${message(code:'menu.admin.stats.sync')}</ui:link>
                                         <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="manageStatsSources">Übersicht der Statistik-Cursor</ui:link>
                                         <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="fetchStats" params="[(FormService.FORM_SERVICE_TOKEN): formService.getNewToken(), incremental: true]">${message(code:'menu.admin.stats.fetch.incremental')}</ui:link>
@@ -378,19 +357,34 @@
 
                                 <div class="item" role="menuitem" aria-haspopup="true">
                                     <div class="title">
+                                        ${message(code:'menu.admin.bulkOps')} <i class="dropdown icon"></i>
+                                    </div>
+                                    <div class="menu" role="menu">
+                                        <div class="item" role="menuitem">..</div>
+                                    </div>
+                                </div>
+
+                                <div class="divider"></div>
+
+                                <div class="item" role="menuitem" aria-haspopup="true">
+                                    <div class="title">
                                         ${message(code:'menu.admin.dataManagement')} <i class="dropdown icon"></i>
                                     </div>
 
                                     <div class="menu" role="menu">
                                         <ui:link generateElementId="true" class="item" role="menuitem" controller="package" action="getDuplicatePackages">List Package Duplicates</ui:link>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="package" action="list">${message(code: 'myinst.packages')} - ${message(code: 'default.onlyDatabase')}</ui:link>
                                         <%--<ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="userMerge">${message(code:'menu.admin.userMerge')}</ui:link>--%>
                                         <%--<ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="hardDeletePkgs">${message(code:'menu.admin.hardDeletePkgs')}</ui:link>--%>
-
                                         <div class="divider"></div>
 
                                         <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="databaseInfo">${message(code: "menu.admin.databaseInfo")}</ui:link>
                                         <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="databaseCollations">${message(code: "menu.admin.databaseCollations")}</ui:link>
                                         <div class="divider"></div>
+
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="stats" action="statsHome">${message(code:'menu.admin.statistics')}</ui:link>
+                                        <div class="divider"></div>
+
                                         <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="dataConsistency">${message(code: "menu.admin.dataConsistency")}</ui:link>
                                         <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="fileConsistency">${message(code: "menu.admin.fileConsistency")}</ui:link>
                                         <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="manageDeletedObjects">${message(code: "menu.admin.deletedObjects")}</ui:link>
@@ -413,11 +407,9 @@
                                                 data-confirm-tokenMsg = "${message(code: 'confirmation.content.correctCostsInLocalCurrency')}"
                                                 data-confirm-term-how="ok"
                                                 controller="yoda" action="correctCostsInLocalCurrency" params="[dryRun: false]">${message(code:'menu.admin.correctCostsInLocalCurrencyDoIt')}</ui:link>--%>
-
                                     </div>
                                 </div>
                             </div>
-
                         </div>
                     </sec:ifAnyGranted>
 

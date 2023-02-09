@@ -1,12 +1,12 @@
 <%@ page import="de.laser.config.ConfigMapper" %>
-<laser:htmlStart text="Manage Usage Stats" />
+<laser:htmlStart message="default.usage.adminPage.mainHeader" />
 
 <ui:breadcrumbs>
     <ui:crumb message="menu.admin" controller="admin" action="index"/>
-    <ui:crumb text="Stats" class="active"/>
+    <ui:crumb message="default.usage.adminPage.mainHeader" class="active"/>
 </ui:breadcrumbs>
 
-<ui:h1HeaderWithIcon message="default.usage.adminPage.mainHeader" />
+<ui:h1HeaderWithIcon message="default.usage.adminPage.mainHeader" type="admin"/>
 
 <ui:messages data="${flash}" />
 

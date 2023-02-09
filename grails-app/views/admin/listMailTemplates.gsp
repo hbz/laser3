@@ -1,9 +1,9 @@
 <%@ page import="de.laser.MailTemplate; de.laser.storage.RDConstants;de.laser.RefdataCategory" %>
-<laser:htmlStart message="mailTemplate.plural.label" />
+<laser:htmlStart message="menu.admin.manageMailTemplates" />
 
 <ui:breadcrumbs>
     <ui:crumb message="menu.admin" controller="admin" action="index"/>
-    <ui:crumb message="mailTemplate.plural.label" class="active"/>
+    <ui:crumb message="menu.admin.manageMailTemplates" class="active"/>
 </ui:breadcrumbs>
 
 <ui:controlButtons>
@@ -12,7 +12,7 @@
     </ui:actionsDropdown>
 </ui:controlButtons>
 
-<ui:h1HeaderWithIcon message="mailTemplate.plural.label" type="admin"/>
+<ui:h1HeaderWithIcon message="menu.admin.manageMailTemplates" type="admin"/>
 
 <ui:messages data="${flash}"/>
 <ui:greySegment>
