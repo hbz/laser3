@@ -1,8 +1,6 @@
 <ui:modal id="modalCreateNote" text="${message(code:'template.addNote')}">
 
     <g:form id="create_note" class="ui form" url="[controller:'doc', action:'createNote']" method="post">
-        <div class="ui label red" style="float:right">Feature in Entwicklung</div><br />
-
         <input type="hidden" name="ownerid" value="${ownobj.id}"/>
         <input type="hidden" name="ownerclass" value="${ownobj.class.name}"/>
         <input type="hidden" name="ownertp" value="${owntp}"/>

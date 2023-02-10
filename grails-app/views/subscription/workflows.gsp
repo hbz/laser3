@@ -15,9 +15,9 @@
     <laser:render template="nav" />
     <laser:render template="message"/>
 
-    <laser:render template="/templates/workflow/table" model="${[target: subscription, workflows: workflows]}"/>
+    <laser:render template="/templates/workflow/table" model="${[target:subscription, workflows:workflows, checklists:checklists]}"/>
 
-    <laser:render template="/templates/workflow/details" model="${[target: subscription, workflows: workflows]}"/>
+%{--    <laser:render template="/templates/workflow/details" model="${[target:subscription, workflows:workflows, checklists:checklists]}"/>--}%
 
 %{--    <div id="wfModal" class="ui modal"></div>--}%
 

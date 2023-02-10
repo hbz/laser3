@@ -1,4 +1,4 @@
-<%@ page import="de.laser.License; de.laser.interfaces.CalculatedType; de.laser.storage.RDStore; de.laser.Org" %>
+<%@ page import="de.laser.utils.AppUtils; de.laser.License; de.laser.interfaces.CalculatedType; de.laser.storage.RDStore; de.laser.Org" %>
 <laser:serviceInjection />
 
 <g:if test="${actionName == 'show'}">
@@ -32,8 +32,10 @@
                 </g:if>
             </g:if>
 
-            <g:if test="${workflowService.hasUserPerm_init()}"><!-- TODO: workflows-permissions -->
-                <ui:actionsDropdownItem message="workflow.instantiate" data-ui="modal" href="#modalInstantiateWorkflow" />
+            <div class="divider"></div>
+
+            <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
+                <ui:actionsDropdownItem message="workflow.light.instantiate" data-ui="modal" href="#modalWorkflowInstantiate" />
             </g:if>
 
             <div class="divider"></div>
@@ -83,6 +85,6 @@
     <laser:render template="/templates/notes/modal_create" model="${[ownobj: license, owntp: 'license']}"/>
 </g:if>
 
-<g:if test="${workflowService.hasUserPerm_init()}"><!-- TODO: workflows-permissions -->
-    <laser:render template="/templates/workflow/instantiate" model="${[cmd: RDStore.WF_WORKFLOW_TARGET_TYPE_LICENSE, target: license]}"/>
+<g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
+    <laser:render template="/templates/workflow/instantiate" model="${[target: license]}"/>
 </g:if>

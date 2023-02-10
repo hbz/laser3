@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Subscription; de.laser.Links; de.laser.interfaces.CalculatedType; de.laser.OrgRole; de.laser.Org; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.SubscriptionPackage" %>
+<%@ page import="de.laser.utils.AppUtils; de.laser.Subscription; de.laser.Links; de.laser.interfaces.CalculatedType; de.laser.OrgRole; de.laser.Org; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.SubscriptionPackage" %>
 
 <laser:serviceInjection />
 <g:set var="actionStart" value="${System.currentTimeMillis()}"/>
@@ -78,10 +78,12 @@
         <ui:actionsDropdownItem message="template.addNote" data-ui="modal" href="#modalCreateNote" />
         <div class="divider"></div>
         <g:if test="${editable}">
-            <g:if test="${workflowService.hasUserPerm_init()}"><!-- TODO: workflows-permissions -->
-                <ui:actionsDropdownItem message="workflow.instantiate" data-ui="modal" href="#modalInstantiateWorkflow" />
-                <div class="divider"></div>
+
+            <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
+                <ui:actionsDropdownItem message="workflow.light.instantiate" data-ui="modal" href="#modalWorkflowInstantiate" />
             </g:if>
+            <div class="divider"></div>
+
         <g:if test="${(contextCustomerType == 'ORG_INST' && subscription._getCalculatedType() == Subscription.TYPE_LOCAL) || (contextCustomerType == "ORG_CONSORTIUM" && subscription._getCalculatedType() == Subscription.TYPE_CONSORTIAL)}">
                 <ui:actionsDropdownItem controller="subscription" action="copySubscription" params="${[sourceObjectId: genericOIDService.getOID(subscription), copyObject: true]}" message="myinst.copySubscription" />
             </g:if>
@@ -204,6 +206,7 @@
 <g:if test="${accessService.checkMinUserOrgRole(user,contextOrg,'INST_EDITOR')}">
     <laser:render template="/templates/notes/modal_create" model="${[ownobj: subscription, owntp: 'subscription']}"/>
 </g:if>
-<g:if test="${workflowService.hasUserPerm_init()}"><!-- TODO: workflows-permissions -->
-    <laser:render template="/templates/workflow/instantiate" model="${[cmd: RDStore.WF_WORKFLOW_TARGET_TYPE_SUBSCRIPTION, target: subscription]}"/>
+
+<g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
+    <laser:render template="/templates/workflow/instantiate" model="${[target: subscription]}"/>
 </g:if>

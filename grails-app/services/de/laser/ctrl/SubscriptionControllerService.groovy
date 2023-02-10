@@ -29,7 +29,8 @@ import de.laser.config.ConfigMapper
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
-import de.laser.workflow.WfWorkflow
+import de.laser.workflow.WfChecklist
+import de.laser.workflow.WfCheckpoint
 import grails.converters.JSON
 import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5Report
@@ -43,7 +44,6 @@ import org.apache.commons.lang3.StringEscapeUtils
 import org.apache.commons.lang3.RandomStringUtils
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
-import org.hibernate.SessionFactory
 import org.grails.orm.hibernate.cfg.GrailsDomainBinder
 import org.grails.orm.hibernate.cfg.PropertyConfig
 import org.springframework.context.MessageSource
@@ -59,7 +59,6 @@ import java.time.LocalDate
 import java.time.Year
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.time.temporal.TemporalAdjusters
 import java.util.concurrent.ExecutorService
 
 /**
@@ -93,7 +92,6 @@ class SubscriptionControllerService {
     PackageService packageService
     PendingChangeService pendingChangeService
     PropertyService propertyService
-    SessionFactory sessionFactory
     SubscriptionService subscriptionService
     SurveyService surveyService
     TaskService taskService
@@ -3786,13 +3784,9 @@ class SubscriptionControllerService {
             int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.subscription).size()
             result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
 
-
-            result.notesCount = docstoreService.getNotes(result.subscription, result.contextOrg).size()
-
-            result.workflowCount = WfWorkflow.executeQuery(
-                    'select count(wf) from WfWorkflow wf where wf.subscription = :sub and wf.owner = :ctxOrg',
-                    [sub: result.subscription, ctxOrg: result.contextOrg]
-            )[0]
+            result.notesCount       = docstoreService.getNotes(result.subscription, result.contextOrg).size()
+//            result.workflowCount    = workflowOldService.getWorkflowCount(result.subscription, result.contextOrg)
+            result.checklistCount   = workflowService.getWorkflowCount(result.subscription, result.contextOrg)
 
             if (checkOption in [AccessService.CHECK_VIEW, AccessService.CHECK_VIEW_AND_EDIT]) {
                 if (!result.subscription.isVisibleBy(result.user)) {
@@ -3865,19 +3859,17 @@ class SubscriptionControllerService {
 
         if (params.cmd) {
             String[] cmd = params.cmd.split(':')
-            if (cmd[0] in ['edit']) {
-                result.putAll( workflowService.cmd(params) ) // @ workflows
-            }
-            else {
-                result.putAll( workflowService.usage(params) ) // @ workflows
+
+            if (cmd[1] in [WfChecklist.KEY, WfCheckpoint.KEY] ) { // light
+                result.putAll( workflowService.cmd(params) )
             }
         }
         if (params.info) {
             result.info = params.info // @ currentWorkflows @ dashboard
         }
 
-        result.workflows = workflowService.sortByLastUpdated( WfWorkflow.findAllBySubscriptionAndOwner(result.subscription as Subscription, result.contextOrg as Org) )
-        result.workflowCount = result.workflows.size()
+        result.checklists = workflowService.sortByLastUpdated( WfChecklist.findAllBySubscriptionAndOwner(result.subscription as Subscription, result.contextOrg as Org) )
+        result.checklistCount = result.checklists.size()
 
         [result: result, status: (result ? STATUS_OK : STATUS_ERROR)]
     }

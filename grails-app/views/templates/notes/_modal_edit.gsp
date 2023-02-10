@@ -1,8 +1,6 @@
 <ui:modal id="modalEditNote" text="${message(code:'template.editNote')}" isEditModal="true">
 
     <g:form id="edit_note" class="ui form"  url="[controller:'doc', action:'editNote', id:noteInstance?.id]" method="post">
-        <div class="ui label red" style="float:right">Feature in Entwicklung</div><br />
-
         <div class="field">
             <label for="title">${message(code:'default.title.label')}:</label>
             <input type="text" id="title" name="title" value="${noteInstance?.title}"/>

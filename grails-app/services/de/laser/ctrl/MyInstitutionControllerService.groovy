@@ -8,7 +8,8 @@ import de.laser.storage.RDStore
 import de.laser.utils.SwissKnife
 import de.laser.survey.SurveyInfo
 import de.laser.system.SystemAnnouncement
-import de.laser.workflow.WfWorkflow
+import de.laser.workflow.WfChecklist
+import de.laser.workflow.WfCheckpoint
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -100,30 +101,43 @@ class MyInstitutionControllerService {
                  status: RDStore.SURVEY_SURVEY_STARTED])
         */
 
-        if (workflowService.hasUserPerm_read()){
-            /*activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where surConfig.surveyInfo.status = :status  and surConfig.surveyInfo.owner = :org " +
-                    " order by surConfig.surveyInfo.endDate",
-                    [org: result.institution,
-                     status: RDStore.SURVEY_SURVEY_STARTED])*/
-
-            if (params.cmd && params.cmd.contains(WfWorkflow.KEY)) {
-                workflowService.usage(params)
-            }
-
-            List<WfWorkflow> workflows = workflowService.sortByLastUpdated(
-                    WfWorkflow.findAllByOwnerAndStatus(result.institution as Org, RDStore.WF_WORKFLOW_STATUS_OPEN)
-            )
-
-            List<WfWorkflow> myWfList  = workflows.findAll { it.user != null && it.user.id == result.user.id }
-            List<WfWorkflow> allWfList = workflows.findAll { it.user == null }
-
-            result.myWorkflowsCount  = myWfList.size()
-            result.allWorkflowsCount = allWfList.size()
-            result.myWorkflows  = myWfList.take(contextService.getUser().getPageSizeOrDefault())
-            result.allWorkflows = allWfList.take(contextService.getUser().getPageSizeOrDefault())
+//            List<WfWorkflow> myWfList  = workflows.findAll { it.user != null && it.user.id == result.user.id }
+//            List<WfWorkflow> allWfList = workflows.findAll { it.user == null }
+//
+//            result.myWorkflowsCount  = myWfList.size()
+//            result.allWorkflowsCount = allWfList.size()
+//            result.myWorkflows  = myWfList.take(contextService.getUser().getPageSizeOrDefault())
+//            result.allWorkflows = allWfList.take(contextService.getUser().getPageSizeOrDefault())
 
 //            result.currentWorkflowsCount = result.myCurrentWorkflows.size() + result.allCurrentWorkflows.size()
 //            result.currentWorkflows      = workflows.take(contextService.getUser().getPageSizeOrDefault())
+
+        if (workflowService.hasUserPerm_edit()) {
+            if (params.cmd) {
+                String[] cmd = params.cmd.split(':')
+
+                if (cmd[1] in [WfChecklist.KEY, WfCheckpoint.KEY]) { // light
+                    workflowService.cmd(params)
+//                    result.putAll(workflowService.cmd(params))
+                }
+            }
+//            if (params.info) {
+//                result.info = params.info // @ currentWorkflows @ dashboard
+//            }
+        }
+
+        if (workflowService.hasUserPerm_read()){
+            List<WfChecklist> workflows = []
+
+            workflowService.sortByLastUpdated( WfChecklist.findAllByOwner(result.institution) ).each { clist ->
+                Map info = clist.getInfo()
+
+                if (info.status == RDStore.WF_WORKFLOW_STATUS_OPEN) {
+                    workflows.add(clist)
+                }
+            }
+            result.allChecklistsCount = workflows.size()
+            result.allChecklists = workflows.take(contextService.getUser().getPageSizeOrDefault())
         }
         /*
         result.surveys = activeSurveyConfigs.groupBy {it?.id}

@@ -8,7 +8,6 @@ import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.ctrl.UserControllerService
 import de.laser.custom.CustomWkhtmltoxService
 import de.laser.finance.PriceItem
-import de.laser.interfaces.CalculatedType
 import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.auth.Role
@@ -36,6 +35,7 @@ import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
 import de.laser.workflow.WfWorkflow
+import de.laser.workflow.WfChecklist
 import grails.gsp.PageRenderer
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
@@ -100,6 +100,7 @@ class MyInstitutionController  {
     UserService userService
     CustomWkhtmltoxService wkhtmltoxService
     WorkflowService workflowService
+    WorkflowOldService workflowOldService
 
     /**
      * The landing page after login; this is also the call when the home button is clicked
@@ -2608,13 +2609,124 @@ join sub.orgRelations or_sub where
         }
     }
 
+    @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_USER", ctrlService = DebugInfo.IN_BETWEEN)
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER") })
+    def currentWorkflows() {
+
+        SessionCacheWrapper cache = contextService.getSessionCache()
+        String urlKey = 'myInstitution/currentWorkflows'
+        String fmKey  = urlKey + '/_filterMap'
+
+        Map<String, Object> result = [
+                offset: params.offset ? params.int('offset') : 0,
+                max:    params.max    ? params.int('max') : contextService.getUser().getPageSizeOrDefault()
+        ]
+
+        // filter
+
+        Map<String, Object> filter = params.findAll{ it.key.startsWith('filter') } as Map
+
+        if (filter.get('filter') == 'reset') {
+            cache.remove(fmKey)
+        }
+        else if (filter.get('filter') == 'true') {
+            filter.remove('filter') // remove control flag
+            cache.put(fmKey, filter)   // store filter settings
+        }
+        else if (params.size() == 2 && params.containsKey('controller') && params.containsKey('action')) { // first visit
+            cache.remove(fmKey)
+        }
+
+        if (cache.get(fmKey)) {
+            result.putAll(cache.get(fmKey) as Map) // restore filter settings
+        }
+
+        if (params.cmd) {
+            result.putAll(workflowService.cmd(params))
+            params.clear()
+        }
+
+        String idQuery = 'select wf.id from WfChecklist wf where wf.owner = :ctxOrg'
+        Map<String, Object> queryParams = [ctxOrg: contextService.getOrg()]
+
+        if (result.filterTargetType) {
+            if (result.filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_AGENCY.id.toString()) {
+                idQuery = idQuery + ' and wf.org is not null'
+                idQuery = idQuery + ' and exists (select ot from wf.org.orgType as ot where ot = :orgType )'
+                queryParams.put('orgType', RDStore.OT_AGENCY)
+            }
+            if (result.filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_INSTITUTION.id.toString()) {
+                idQuery = idQuery + ' and wf.org is not null'
+                idQuery = idQuery + ' and exists (select ot from wf.org.orgType as ot where ot = :orgType )'
+                queryParams.put('orgType', RDStore.OT_INSTITUTION)
+            }
+            else if (result.filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_LICENSE.id.toString()) {
+                idQuery = idQuery + ' and wf.license is not null'
+            }
+            else if (result.filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_OWNER.id.toString()) {
+                idQuery = idQuery + ' and wf.org = :ctxOrg'
+            }
+            else if (result.filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_PROVIDER.id.toString()) {
+                idQuery = idQuery + ' and wf.org is not null'
+                idQuery = idQuery + ' and exists (select ot from wf.org.orgType as ot where ot = :orgType )'
+                queryParams.put('orgType', RDStore.OT_PROVIDER)
+            }
+            if (result.filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_SUBSCRIPTION.id.toString()) {
+                idQuery = idQuery + ' and wf.subscription is not null'
+            }
+        }
+        if (result.filterTemplates) {
+            if (result.filterTemplates == 'yes') {
+                idQuery = idQuery + ' and wf.template = true'
+            }
+            else if (result.filterTemplates == 'no') {
+                idQuery = idQuery + ' and wf.template = false'
+            }
+        }
+
+        // result
+
+        List<Long> checklistIds = WfChecklist.executeQuery(idQuery + ' order by wf.id desc', queryParams)
+
+        result.openWorkflows = []
+        result.doneWorkflows = []
+
+        String resultQuery = 'select wf from WfChecklist wf where wf.id in (:idList)'
+
+        WfChecklist.executeQuery(resultQuery, [idList: checklistIds]).each{ clist ->
+            Map info = clist.getInfo()
+
+            if (info.status == RDStore.WF_WORKFLOW_STATUS_OPEN) {
+                result.openWorkflows << clist
+            }
+            else if (info.status == RDStore.WF_WORKFLOW_STATUS_DONE) {
+                result.doneWorkflows << clist
+            }
+        }
+        result.currentWorkflows = WfChecklist.executeQuery(resultQuery, [idList: checklistIds])
+
+        if (result.filterStatus) {
+            if (result.filterStatus == RDStore.WF_WORKFLOW_STATUS_OPEN.id.toString()) {
+                result.currentWorkflows = result.openWorkflows
+            }
+            else if (result.filterStatus == RDStore.WF_WORKFLOW_STATUS_DONE.id.toString()) {
+                result.currentWorkflows = result.doneWorkflows
+            }
+        }
+
+        result.total = result.currentWorkflows.size()
+        result.currentWorkflows = workflowService.sortByLastUpdated(result.currentWorkflows) // todo - .drop(result.offset).take(result.max)
+
+        result
+    }
+
     /**
      * Call for the overview of current workflows for the context institution
      * @return the entry view for the workflows, loading current cache settings
      */
     @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_USER", ctrlService = DebugInfo.IN_BETWEEN)
     @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER") })
-    def currentWorkflows() {
+    def currentWorkflowsOld() {
         Map<String, Object> result = [:]
 
         SessionCacheWrapper cache = contextService.getSessionCache()
@@ -2627,7 +2739,7 @@ join sub.orgRelations or_sub where
             cache.remove(pmKey)
         }
         else if (params.cmd) { // modal,delete, etc. - process and remove form params
-            result.putAll( workflowService.usage(params) )
+            result.putAll( workflowOldService.usage(params) )
             params.clear()
         }
 
@@ -2735,13 +2847,13 @@ join sub.orgRelations or_sub where
         result.currentWorkflowIds_done     = WfWorkflow.executeQuery(statusQuery, [idList: workflowIds, status: RDStore.WF_WORKFLOW_STATUS_DONE])
 
         if (result.tab == 'open') {
-            result.currentWorkflows = workflowService.sortByLastUpdated( WfWorkflow.executeQuery(resultQuery, [idList: result.currentWorkflowIds_open])).drop(result.offset).take(result.max)
+            result.currentWorkflows = workflowOldService.sortByLastUpdated( WfWorkflow.executeQuery(resultQuery, [idList: result.currentWorkflowIds_open])).drop(result.offset).take(result.max)
         }
         else if (result.tab == 'canceled') {
-            result.currentWorkflows = workflowService.sortByLastUpdated( WfWorkflow.executeQuery(resultQuery, [idList: result.currentWorkflowIds_canceled])).drop(result.offset).take(result.max)
+            result.currentWorkflows = workflowOldService.sortByLastUpdated( WfWorkflow.executeQuery(resultQuery, [idList: result.currentWorkflowIds_canceled])).drop(result.offset).take(result.max)
         }
         else if (result.tab == 'done') {
-            result.currentWorkflows = workflowService.sortByLastUpdated( WfWorkflow.executeQuery(resultQuery, [idList: result.currentWorkflowIds_done])).drop(result.offset).take(result.max)
+            result.currentWorkflows = workflowOldService.sortByLastUpdated( WfWorkflow.executeQuery(resultQuery, [idList: result.currentWorkflowIds_done])).drop(result.offset).take(result.max)
         }
         result.total = workflowIds.size()
 

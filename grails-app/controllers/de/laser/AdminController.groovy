@@ -31,7 +31,6 @@ import grails.plugins.mail.MailService
 import groovy.sql.Sql
 import org.hibernate.SessionFactory
 import org.hibernate.query.NativeQuery
-import org.springframework.web.multipart.commons.CommonsMultipartFile
 import de.laser.config.ConfigMapper
 
 import java.nio.file.Files
@@ -59,7 +58,7 @@ class AdminController  {
     RefdataService refdataService
     SessionFactory sessionFactory
     StatsSyncService statsSyncService
-    WorkflowService workflowService
+    WorkflowOldService workflowOldService
 
     /**
      * Empty call, loads empty admin dashboard
@@ -468,7 +467,7 @@ class AdminController  {
         Map<String, Object> result = [:]
 
         if (params.cmd) {
-            result = workflowService.cmd(params)
+            result = workflowOldService.cmd(params)
         }
         if (params.tab) {
             result.tab = params.tab

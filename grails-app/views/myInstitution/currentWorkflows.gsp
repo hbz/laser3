@@ -1,4 +1,4 @@
-<%@ page import="de.laser.License; de.laser.Subscription; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.storage.*; de.laser.RefdataCategory; de.laser.workflow.*; de.laser.WorkflowService" %>
+<%@ page import="de.laser.workflow.WfCheckpoint; de.laser.workflow.WfChecklist; de.laser.License; de.laser.Subscription; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.storage.*; de.laser.RefdataCategory; de.laser.WorkflowService" %>
 
 <laser:htmlStart message="menu.my.workflows" serviceInjection="true"/>
 
@@ -10,20 +10,7 @@
 
 <ui:filter>
     <form id="wfFilterForm" class="ui form">
-        <div class="three fields">
-            <div class="field">
-                <g:set var="filterUserList" value="${ WfWorkflow.executeQuery('select distinct(wf.user) from WfWorkflow wf where wf.owner = :ctxOrg order by wf.user.display', [ctxOrg: contextService.getOrg()]) }" />
-                <label>${message(code:'task.responsible.label')}</label>
-                <g:select id="filterUser"
-                          name="filterUser"
-                          from="${ filterUserList + [id:'all', display:message(code:'workflow.user.noCurrentUser')] }"
-                          optionKey="id"
-                          optionValue="display"
-                          value="${filterUser}"
-                          class="ui dropdown search"
-                          noSelection="${['' : message(code:'default.select.choose.label')]}"
-                />
-            </div>
+        <div class="two fields">
             <div class="field">
                 <label>${message(code:'default.relation.label')}</label>
                 <ui:select class="ui dropdown la-not-clearable" name="filterTargetType"
@@ -36,79 +23,34 @@
 
             </div>
             <div class="field">
-                <label>Basierend auf ${message(code: 'workflow.label')}</label>
-                <g:select class="ui dropdown" name="filterPrototypeMeta"
-                          from="${ currentPrototypes }"
-                          optionKey="${{it.hash}}"
-                          optionValue="${{it.title + ' - ' + it.variant}}"
-                          value="${filterPrototypeMeta}"
+                <label>${message(code: 'default.status.label')}</label>
+                <ui:select class="ui dropdown" name="filterStatus"
+                          from="${[RDStore.WF_WORKFLOW_STATUS_OPEN, RDStore.WF_WORKFLOW_STATUS_DONE]}"
+                          optionKey="id"
+                          optionValue="value"
+                          value="${filterStatus}"
                           noSelection="${['' : message(code:'default.select.choose.label')]}"/>
             </div>
-%{--            <div class="field">--}%
-%{--                <label>${message(code: 'default.status.label')}</label>--}%
-%{--                <ui:select class="ui dropdown" name="filterStatus"--}%
-%{--                  from="${ RefdataCategory.getAllRefdataValues(RDConstants.WF_WORKFLOW_STATUS) }"--}%
-%{--                  optionKey="id"--}%
-%{--                  optionValue="value"--}%
-%{--                  value="${filterStatus}"--}%
-%{--                  noSelection="${['' : message(code:'default.select.choose.label')]}"/>--}%
-%{--            </div>--}%
-
+            <div class="field">
+                <label>${message(code: 'workflow.template.plural')}</label>
+                <g:select class="ui dropdown" name="filterTemplates"
+                          from="${ ['yes':'Nur Vorlagen', 'no':'Keine Vorlagen'] }"
+                          optionKey="${{it.key}}"
+                          optionValue="${{it.value}}"
+                          value="${filterTemplates}"
+                          noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+            </div>
         </div>
-%{--        <div class="three fields">
-            <div class="field">
-                <label>${message(code:'default.relation.label')}</label>
-                <ui:select class="ui dropdown la-not-clearable" name="filterTargetType"
-                           required="required"
-                           noSelection="${['' : message(code:'default.select.choose.label')]}"
-                           from="${RefdataCategory.getAllRefdataValues( RDConstants.WF_WORKFLOW_TARGET_TYPE )}"
-                           value="${filterTargetType}"
-                           optionKey="id"
-                           optionValue="value" />
-
-            </div>
-            <div class="field">
-                <label>${RefdataCategory.findByDesc(RDConstants.WF_WORKFLOW_TARGET_ROLE).getI10n('desc')}</label>
-                <ui:select class="ui dropdown la-not-clearable" name="filterTargetRole"
-                           required="required"
-                           noSelection="${['' : message(code:'default.select.choose.label')]}"
-                           from="${RefdataCategory.getAllRefdataValues( RDConstants.WF_WORKFLOW_TARGET_ROLE )}"
-                           value="${filterTargetRole}"
-                           optionKey="id"
-                           optionValue="value" />
-            </div>
-        </div>--}%
-
-%{--        <div class="three fields">
-            <div class="field">
-                <label>${message(code: 'default.provider.label')}</label>
-                <g:select class="ui dropdown" name="filterProvider"
-                          from="${ currentProviders }"
-                          optionKey="id"
-                          optionValue="name"
-                          value="${filterProvider}"
-                          noSelection="${['' : message(code:'default.select.choose.label')]}"/>
-            </div>
-            <div class="field">
-                <label>${message(code: 'default.subscription.label')}</label>
-                <g:select class="ui dropdown" name="filterSubscription"
-                          from="${ currentSubscriptions }"
-                          optionKey="id"
-                          optionValue="name"
-                          value="${filterSubscription}"
-                          noSelection="${['' : message(code:'default.select.choose.label')]}"/>
-            </div>
-        </div>--}%
         <div class="field la-field-right-aligned">
             <g:link controller="myInstitution" action="currentWorkflows" params="${[filter: 'reset']}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</g:link>
             <input type="submit" class="ui primary button" value="${message(code:'default.button.filter.label')}" />
         </div>
         <input type="hidden" name="filter" value="true" />
-        <input type="hidden" name="tab" value="${tab}" />
+%{--        <input type="hidden" name="tab" value="${tab}" />--}%
     </form>
 </ui:filter>
 
-<g:if test="${status == WorkflowService.OP_STATUS_DONE}">
+<g:if test="${status == workflowService.OP_STATUS_DONE}">
     <g:if test="${cmd == 'delete'}">
         <ui:msg class="positive" message="workflow.delete.ok" />
     </g:if>
@@ -116,7 +58,7 @@
         <ui:msg class="positive" message="workflow.edit.ok" />
     </g:else>
 </g:if>
-<g:elseif test="${status == WorkflowService.OP_STATUS_ERROR}">
+<g:elseif test="${status == workflowService.OP_STATUS_ERROR}">
     <g:if test="${cmd == 'delete'}">
         <ui:msg class="negative" message="workflow.delete.error" />
     </g:if>
@@ -125,65 +67,48 @@
     </g:else>
 </g:elseif>
 
-<div id="wfTabs" class="ui secondary stackable pointing tabular la-tab-with-js menu" style="margin-top:2em;">
-    <a class="${tab == 'open' ? 'active item':'item'}" data-tab="open">
-        ${RDStore.WF_WORKFLOW_STATUS_OPEN.getI10n('value')} <div class="ui  circular label">${currentWorkflowIds_open.size()}</div>
-    </a>
-    <a class="${tab == 'canceled'  ? 'active item':'item'}" data-tab="canceled">
-        ${RDStore.WF_WORKFLOW_STATUS_CANCELED.getI10n('value')} <div class="ui  circular label">${currentWorkflowIds_canceled.size()}</div>
-    </a>
-    <a class="${tab == 'done'  ? 'active item':'item'}" data-tab="done">
-        ${RDStore.WF_WORKFLOW_STATUS_DONE.getI10n('value')} <div class="ui  circular label">${currentWorkflowIds_done.size()}</div>
-    </a>
-</div>
-
-<g:each in="${['open', 'canceled', 'done']}" var="currentTab">
-
-    <div class="ui bottom attached tab ${tab == currentTab ? 'active':''}" data-tab="${currentTab}">
-    <g:if test="${tab == currentTab}">
-
-        <div>
-
 <table class="ui celled table la-js-responsive-table la-table">
     <thead>
         <tr>
             <th class="one wide" rowspan="2">${message(code:'sidewide.number')}</th>
+            <th class="one wide" rowspan="2"></th>
             <th class="three wide" rowspan="2">${message(code:'workflow.label')}</th>
             <th class="four wide" rowspan="2">${message(code:'default.relation.label')}</th>
             <th class="four wide" rowspan="2">${message(code:'default.progress.label')}</th>
             <th class="two wide la-smaller-table-head">${message(code:'default.lastUpdated.label')}</th>
-            <th class="two wide" rowspan="2">${message(code:'default.actions.label')}</th>
+            <th class="one wide" rowspan="2">${message(code:'default.actions.label')}</th>
         </tr>
         <tr>
             <th class="two wide la-smaller-table-head">${message(code:'default.dateCreated.label')}</th>
         <tr>
     </thead>
     <tbody>
-        <g:each in="${currentWorkflows}" var="wf" status="wfi">
-            <g:set var="wfInfo" value="${wf.getInfo()}" />
+        <g:each in="${currentWorkflows}" var="clist" status="ci">
+            <g:set var="clistInfo" value="${clist.getInfo()}" />
 
             <tr>
                 <td class="center aligned">
-                    ${wfi + 1 + offset}
+                    ${ci + 1 + offset}
+                </td>
+                <td class="center aligned">
+                    <uiWorkflow:statusIcon checklist="${wf}" size="normal" />
                 </td>
                 <td>
-                    <g:if test="${currentTab != 'open'}">
-                        <uiWorkflow:statusIcon workflow="${wf}" size="normal" />
-                    </g:if>
-                    <g:link controller="${wfInfo.targetController}" action="workflows" id="${wfInfo.target.id}" params="${[info: '' + wfInfo.target.class.name + ':' + wfInfo.target.id + ':' + WfWorkflow.KEY + ':' + wf.id]}">
-                        <strong>${wf.title}</strong>
+                    <g:link controller="${clistInfo.targetController}" action="workflows" id="${clistInfo.target.id}" params="${[info: '' + clistInfo.target.class.name + ':' + clistInfo.target.id + ':' + WfChecklist.KEY + ':' + clist.id]}">
+                        <strong>${clist.title}</strong>
                     </g:link>
+                    <g:if test="${clist.template}">&nbsp;&nbsp;<span class="ui label tiny">Vorlage</span></g:if>
                 </td>
                 <td>
                     <div class="la-flexbox">
-                        <i class="ui icon ${wfInfo.targetIcon} la-list-icon"></i>
-                        <g:link controller="${wfInfo.targetController}" action="show" params="${[id: wfInfo.target.id]}">
-                            ${wfInfo.targetName}
+                        <i class="ui icon ${clistInfo.targetIcon} la-list-icon"></i>
+                        <g:link controller="${clistInfo.targetController}" action="show" params="${[id: clistInfo.target.id]}">
+                            ${clistInfo.targetName}
                             <br/>
-                            <g:if test="${wfInfo.target instanceof Subscription || wfInfo.target instanceof License}">
-                                <g:if test="${wfInfo.target.startDate || wfInfo.target.endDate}">
-                                    (${wfInfo.target.startDate ? DateUtils.getLocalizedSDF_noTime().format(wfInfo.target.startDate) : ''} -
-                                    ${wfInfo.target.endDate ? DateUtils.getLocalizedSDF_noTime().format(wfInfo.target.endDate) : ''})
+                            <g:if test="${clistInfo.target instanceof Subscription || clistInfo.target instanceof License}">
+                                <g:if test="${clistInfo.target.startDate || clistInfo.target.endDate}">
+                                    (${clistInfo.target.startDate ? DateUtils.getLocalizedSDF_noTime().format(clistInfo.target.startDate) : ''} -
+                                    ${clistInfo.target.endDate ? DateUtils.getLocalizedSDF_noTime().format(clistInfo.target.endDate) : ''})
                                 </g:if>
                             </g:if>
                         </g:link>
@@ -191,29 +116,31 @@
                 </td>
                 <td>
                     <div class="ui buttons">
-                        <g:set var="tasks" value="${wf.getSequence()}" />
-                        <g:each in="${tasks}" var="task" status="ti">
-                            <uiWorkflow:task task="${task}" params="${[key: 'myInstitution:' + wf.id + ':' + WfTask.KEY + ':' + task.id]}" />
+                        <g:set var="cpoints" value="${clist.getSequence()}" />
+                        <g:each in="${cpoints}" var="cpoint" status="cp">
+                            <uiWorkflow:checkpoint checkpoint="${cpoint}" params="${[key: 'myInstitution::currentWorkflows:' + WfCheckpoint.KEY + ':' + cpoint.id]}" />
                         </g:each>
                     </div>
                 </td>
                 <td>
-                    ${DateUtils.getLocalizedSDF_noTime().format(wfInfo.lastUpdated)}
+                    ${DateUtils.getLocalizedSDF_noTime().format(clistInfo.lastUpdated)}
                     <br />
-                    ${DateUtils.getLocalizedSDF_noTime().format(wf.dateCreated)}
+                    ${DateUtils.getLocalizedSDF_noTime().format(clist.dateCreated)}
                 </td>
                 <td class="center aligned">
                     <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
-                        <uiWorkflow:usageIconLinkButton workflow="${wf}" params="${[key: 'myInstitution:' + wf.id + ':' + WfWorkflow.KEY + ':' + wf.id]}" />
+%{--                        <uiWorkflow:usageIconLinkButton workflow="${wf}" params="${[key: 'myInstitution:' + clist.id + ':' + WfChecklist.KEY + ':' + clist.id]}" />--}%
+%{--                        <button class="ui icon button blue la-modern-button" data-wfId="${clist.id}"><i class="icon pencil"></i></button>--}%
                     </g:if>
                     <g:elseif test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
-                        <uiWorkflow:usageIconLinkButton workflow="${wf}" params="${[key: 'myInstitution:' + wf.id + ':' + WfWorkflow.KEY + ':' + wf.id]}" />
+%{--                        <uiWorkflow:usageIconLinkButton workflow="${wf}" params="${[key: 'myInstitution:' + clist.id + ':' + WfChecklist.KEY + ':' + clist.id]}" />--}%
+%{--                        <button class="ui icon button blue la-modern-button" data-wfId="${clist.id}"><i class="icon pencil"></i></button>--}%
                     </g:elseif>
-                    <g:if test="${workflowService.hasUserPerm_init()}"><!-- TODO: workflows-permissions -->
+                    <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
                         <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
-                                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.workflow", args: [wf.title])}"
+                                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.workflow", args: [clist.title])}"
                                 data-confirm-term-how="delete"
-                                controller="myInstitution" action="currentWorkflows" params="${[cmd:"delete:${WfWorkflow.KEY}:${wf.id}"]}"
+                                controller="myInstitution" action="currentWorkflows" params="${[cmd:"delete:${WfChecklist.KEY}:${clist.id}"]}"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
                             <i class="trash alternate outline icon"></i>
@@ -225,18 +152,6 @@
     </tbody>
 </table>
 
-        </div>
-
-        <ui:paginate action="currentWorkflows" controller="myInstitution"
-                     max="${max}" offset="${offset}"
-                     total="${(currentTab == 'open' ? currentWorkflowIds_open.size() : currentTab == 'canceled' ? currentWorkflowIds_canceled.size() : currentWorkflowIds_done.size())}"
-                     params="${params + [tab: currentTab]}" />
-
-    </g:if>
-    </div>
-
-</g:each>
-
 <div id="wfModal" class="ui modal"></div>
 
 <laser:script file="${this.getGroovyPageFileName()}">
@@ -245,12 +160,6 @@
         var func = bb8.ajax4SimpleModalFunction("#wfModal", $(e.currentTarget).attr('href'), false);
         func();
     });
-    $('#wfTabs .item').off('click').on('click', function(e) {
-        $(this).addClass('active');
-        $('#wfFilterForm input[name=tab]').attr('value', $(this).attr('data-tab'));
-        $('#wfFilterForm').submit();
-    })
 </laser:script>
-
 
 <laser:htmlEnd />

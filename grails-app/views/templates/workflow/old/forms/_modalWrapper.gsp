@@ -1,8 +1,7 @@
 <laser:serviceInjection />
-%{-- AjaxHtmlController.useWfXModal --}%
 
 <g:if test="${tmplCmd == 'usage'}">
-    <g:set var="wfEditPerm" value="${workflowService.hasUserPerm_edit()}" />
+    <g:set var="wfEditPerm" value="${workflowOldService.hasUserPerm_edit()}" />
 
     <g:if test="${wfEditPerm}">
         <ui:modal id="wfModal" text="${tmplModalTitle}" msgSave="${message(code:'default.button.save')}">

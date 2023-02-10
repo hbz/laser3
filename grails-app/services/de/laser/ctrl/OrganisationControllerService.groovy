@@ -7,7 +7,8 @@ import de.laser.remote.ApiSource
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.LocaleUtils
-import de.laser.workflow.WfWorkflow
+import de.laser.workflow.WfChecklist
+import de.laser.workflow.WfCheckpoint
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -158,19 +159,17 @@ class OrganisationControllerService {
 
         if (params.cmd) {
             String[] cmd = params.cmd.split(':')
-            if (cmd[0] in ['edit']) {
-                result.putAll( workflowService.cmd(params) ) // @ workflows
-            }
-            else {
-                result.putAll( workflowService.usage(params) ) // @ workflows
+
+            if (cmd[1] in [WfChecklist.KEY, WfCheckpoint.KEY] ) { // light
+                result.putAll( workflowService.cmd(params) )
             }
         }
         if (params.info) {
             result.info = params.info // @ currentWorkflows @ dashboard
         }
 
-        result.workflows = workflowService.sortByLastUpdated( WfWorkflow.findAllByOrgAndOwner(result.orgInstance as Org, result.contextOrg as Org) )
-        result.workflowCount = result.workflows.size()
+        result.checklists = workflowService.sortByLastUpdated( WfChecklist.findAllByOrgAndOwner(result.orgInstance as Org, result.contextOrg as Org) )
+        result.checklistCount = result.checklists.size()
 
         [result: result, status: (result ? STATUS_OK : STATUS_ERROR)]
     }
@@ -280,12 +279,9 @@ class OrganisationControllerService {
         int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.orgInstance).size()
         result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
 
-        result.notesCount = docstoreService.getNotes(result.orgInstance, result.contextOrg).size()
-
-        result.workflowCount = WfWorkflow.executeQuery(
-                'select count(wf) from WfWorkflow wf where wf.org = :org and wf.owner = :ctxOrg',
-                [org: result.orgInstance, ctxOrg: result.contextOrg]
-        )[0]
+        result.notesCount       = docstoreService.getNotes(result.orgInstance, result.contextOrg).size()
+//        result.workflowCount    = workflowOldService.getWorkflowCount(result.orgInstance, result.contextOrg)
+        result.checklistCount   = workflowService.getWorkflowCount(result.orgInstance, result.contextOrg)
 
         result.links = linksGenerationService.getOrgLinks(result.orgInstance)
         result.targetCustomerType = result.orgInstance.getCustomerType()
