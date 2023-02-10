@@ -85,7 +85,7 @@
                     ${message(code: 'tipp.embargo')}
                 </div>
                 <div class="description">
-                    <ui:xEditable owner="${covStmt}" field="embargo" overwriteEditable="true"/>
+                    <ui:xEditable owner="${covStmt}" field="embargo" overwriteEditable="${overwriteEditable}"/>
                 </div>
             </div>
         </div>

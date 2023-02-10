@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4824    09.02.2023  rc-3.0  3.0.4       Andreas Feature     EZB-Lizenzlistenendpunkt um Einrichtungsfilter erweitert
+
 4823    09.02.2023  dev     3.1         David   Feature     Menü und Funktionen aufräumen: Data Manager
 
 4819    09.02.2023  dev     3.1         Andreas Feature     Anmerkungsfeld für Zugangskonfigurationen angelegt
@@ -20,6 +22,8 @@
 4806    08.02.2023  dev     3.1         Andreas Bug         Funktionalität zum Löschen von nicht hart kodierten Merkmalen korrigiert
 
 3767    08.02.2023  dev     3.1         Andreas Feature     Bezeichner korrigiert
+
+4820    07.02.2023  rc-3.0  3.0.4       Andreas Feature     seltsamer Bug unterschlug Kosten
 
 4758    07.02.2023  dev     3.1         Andreas Feature     Weiterbau des ClickMichExcels
 

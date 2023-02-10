@@ -2,6 +2,7 @@ package de.laser.api.v0.entities
 
 import de.laser.Combo
 import de.laser.Identifier
+import de.laser.IdentifierNamespace
 import de.laser.Org
 import de.laser.OrgSubjectGroup
 import de.laser.api.v0.*
@@ -26,6 +27,9 @@ class ApiOrg {
         ApiBox result = ApiBox.get()
 
         switch(query) {
+            case 'ezbId':
+                result.obj = Org.executeQuery('select id.org from Identifier id where id.value = :id and id.ns.ns = :ezb', [id: value, ezb: IdentifierNamespace.EZB_ORG_ID])
+                break
             case 'id':
                 result.obj = Org.findAllWhere(id: Long.parseLong(value))
                 break
