@@ -142,18 +142,24 @@ class ApiEZB {
     /**
      * Retrieves a list of all accessible subscriptions for the EZB harvester
      * @param changedFrom a timestamp from which recent subscriptions should be retrieved
-     * @param contextOrg the institution (the EZB service organisation) requesting access
+     * @param targetInstitution the institution for which data should be requested
      * @return JSON | FORBIDDEN
      */
-    static JSON getAllSubscriptions(Date changedFrom = null, Org contextOrg) {
+    static JSON getAllSubscriptions(Date changedFrom = null, Org targetInstitution = null) {
         Collection<Object> result = []
 
-        List<Org> orgs = getAccessibleOrgs()
+        List<Org> orgs = []
+        if(targetInstitution) {
+            orgs << targetInstitution
+        }
+        else {
+            orgs = getAccessibleOrgs()
+        }
         orgs.each { Org org ->
             Map<String, Object> orgStubMap = ApiUnsecuredMapReader.getOrganisationStubMap(org)
             orgStubMap.subscriptions = []
-            String queryString = 'SELECT DISTINCT(sub) FROM Subscription sub JOIN sub.orgRelations oo WHERE oo.org = :owner AND oo.roleType in (:roles) AND sub.isPublicForApi = true AND sub.status = :current' //as of November 24th, '22, per Miriam's suggestion, only current subscriptions should be made available for EZB yello switch
-            Map<String, Object> queryParams = [owner: org, roles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA], current: RDStore.SUBSCRIPTION_CURRENT] //set to OR_SUBSCRIBER_CONS
+            String queryString = 'SELECT DISTINCT(sub) FROM Subscription sub JOIN sub.orgRelations oo WHERE oo.org = :owner AND oo.roleType in (:roles) AND sub.isPublicForApi = true AND (sub.status = :current OR (sub.status in (:otherAccessible) AND sub.hasPerpetualAccess = true))' //as of November 24th, '22, per Miriam's suggestion, only current subscriptions should be made available for EZB yellow switch
+            Map<String, Object> queryParams = [owner: org, roles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA], current: RDStore.SUBSCRIPTION_CURRENT, otherAccessible: [RDStore.SUBSCRIPTION_EXPIRED, RDStore.SUBSCRIPTION_TEST_ACCESS]] //set to OR_SUBSCRIBER_CONS
             if(changedFrom) {
                 queryString += ' AND sub.lastUpdatedCascading >= :changedFrom'
                 queryParams.changedFrom = changedFrom

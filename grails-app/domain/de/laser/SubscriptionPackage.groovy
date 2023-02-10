@@ -157,7 +157,7 @@ class SubscriptionPackage implements Comparable {
    * @return a concatenated string of the {@link Package} name and the count of current {@link TitleInstancePackagePlatform}s
    */
   String getPackageNameWithCurrentTippsCount() {
-    return this.pkg.name + ' ('+ TitleInstancePackagePlatform.countByPkgAndStatus(this.pkg, RDStore.TIPP_STATUS_CURRENT) +')'
+    return this.pkg.name + ' ('+ IssueEntitlement.executeQuery('select count(ie.id) from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscription and tipp.pkg = :pkg and ie.status = :current', [subscription: this.subscription, pkg: this.pkg, current: RDStore.TIPP_STATUS_CURRENT])[0] +' / '+ TitleInstancePackagePlatform.countByPkgAndStatus(this.pkg, RDStore.TIPP_STATUS_CURRENT) +')'
   }
 
   /**
