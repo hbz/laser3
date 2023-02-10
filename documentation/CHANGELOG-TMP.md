@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4824    09.02.2023  rc-3.0  3.0.4       Andreas Feature     EZB-Lizenzlistenendpunkt um Einrichtungsfilter erweitert
+
 4820    07.02.2023  rc-3.0  3.0.4       Andreas Feature     seltsamer Bug unterschlug Kosten
 
 4798    03.02.2023  rc-3.0  3.0.4       David   Feature     Allgemeine Merkmale für Organisationen entfernen

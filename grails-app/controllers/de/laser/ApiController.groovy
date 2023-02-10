@@ -119,6 +119,7 @@ class ApiController {
         String obj     = params.get('obj')
         String query   = params.get('q', '')
         String value   = params.get('v', '')
+        String ezbOrgId   = params.get('ezbOrgId', '')
         String changedFrom = params.get('changedFrom', '')
         String context = params.get('context')
         String format
@@ -196,6 +197,7 @@ class ApiController {
                             (String) obj,
                             (String) query,
                             (String) value,
+                            (String) ezbOrgId,
                             (Org) contextOrg,
                             format,
                             changedDate
