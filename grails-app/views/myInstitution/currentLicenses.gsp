@@ -1,3 +1,4 @@
+
 <%@ page import="de.laser.License;de.laser.RefdataCategory;de.laser.interfaces.CalculatedType;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.RefdataValue;de.laser.Links;de.laser.Org" %>
 
 <laser:htmlStart message="license.current" serviceInjection="true" />
@@ -122,7 +123,7 @@
           </div>
           <div class="three fields">
           <%-- TODO [ticket=2276] provisoric, name check is in order to prevent id mismatch --%>
-              <g:if test="${!accessService.checkPerm("ORG_CONSORTIUM") || institution.globalUID == Org.findByName('LAS:eR Backoffice').globalUID}">
+              <g:if test="${accessService.checkPerm("ORG_INST") || institution.globalUID == Org.findByName('LAS:eR Backoffice').globalUID}">
                   <div class="field">
                       <fieldset id="licenseType">
                           <div class="inline fields la-filter-inline">

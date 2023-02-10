@@ -1064,10 +1064,10 @@ SELECT * FROM (
                         if (! pd.isHardData) {
                             try {
                                 pd.delete()
-                                flash.message = message(code:'propertyDefinition.delete.success',[pd.name_de]) as String
+                                flash.message = message(code:'propertyDefinition.delete.success') as String
                             }
                             catch(Exception e) {
-                                flash.error = message(code:'propertyDefinition.delete.failure.default',[pd.name_de]) as String
+                                flash.error = message(code:'propertyDefinition.delete.failure.default') as String
                             }
                         }
                     }

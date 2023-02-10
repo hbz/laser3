@@ -8,7 +8,7 @@
 
     <g:form action="members" controller="subscription" params="${params+[id:params.id, exportClickMeExcel: true]}">
 
-        <laser:render template="/templates/export/individuallyExportForm" model="${[formFields: formFields, exportFileName: escapeService.escapeString(subscription.name) + "_" + message(code:'subscriptionDetails.members.members')]}"/>
+        <laser:render template="/templates/export/individuallyExportForm" model="${[formFields: formFields, exportFileName: escapeService.escapeString(subscription.name) + "_" + message(code:'subscriptionDetails.members.members'), contactSwitch: true]}"/>
 
     </g:form>
 

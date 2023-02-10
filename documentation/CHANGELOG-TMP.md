@@ -7,6 +7,22 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4823    09.02.2023  dev     3.1         David   Feature     Menü und Funktionen aufräumen: Data Manager
+
+4819    09.02.2023  dev     3.1         Andreas Feature     Anmerkungsfeld für Zugangskonfigurationen angelegt
+
+4817    09.02.2023  dev     3.1         Andreas Feature     verbesserte Anzeige der Alternativnamen bei Anbieter
+
+4812    08.02.2023  dev     3.1         Andreas Bug         Anbieter wurde nicht im Dropdown vorbelegt
+
+4808    08.02.2023  dev     3.1         Andreas Bug         500er bei der Teilnehmersicht
+
+4806    08.02.2023  dev     3.1         Andreas Bug         Funktionalität zum Löschen von nicht hart kodierten Merkmalen korrigiert
+
+3767    08.02.2023  dev     3.1         Andreas Feature     Bezeichner korrigiert
+
+4758    07.02.2023  dev     3.1         Andreas Feature     Weiterbau des ClickMichExcels
+
 4779    06.02.2023  dev     3.1         Andreas Feature     Umstrukturierung der Organisationssicht
 
 4798    03.02.2023  rc-3.0  3.0.4       David   Feature     Allgemeine Merkmale für Organisationen entfernen

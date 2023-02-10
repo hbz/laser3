@@ -214,7 +214,7 @@
             </div>
             <% /* 4-2 */ %>
         <%-- TODO [ticket=2276] provisoric, name check is in order to prevent id mismatch --%>
-            <g:if test="${!accessService.checkPerm("ORG_CONSORTIUM") || institution.globalUID == Org.findByName('LAS:eR Backoffice').globalUID}">
+            <g:if test="${accessService.checkPerm("ORG_INST") || institution.globalUID == Org.findByName('LAS:eR Backoffice').globalUID}">
                 <div class="field">
                     <fieldset id="subscritionType">
                         <label>${message(code: 'myinst.currentSubscriptions.subscription_type')}</label>

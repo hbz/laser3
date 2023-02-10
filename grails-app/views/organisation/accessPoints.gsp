@@ -52,17 +52,18 @@
                         <tr>
                             <th class="four wide">${message(code: 'default.name.label')}</th>
                             <g:if test="${accessPointListItem.key in ['ip', 'proxy']}">
-                                <th class="five wide">IPv4</th>
-                                <th class="five wide">IPv6</th>
+                                <th class="four wide">IPv4</th>
+                                <th class="four wide">IPv6</th>
                             </g:if>
                             <g:elseif test="${accessPointListItem.key == 'ezproxy'}">
-                                <th class="three wide">IPv4</th>
+                                <th class="two wide">IPv4</th>
                                 <th class="three wide">IPv6</th>
-                                <th class="four wide"><g:message code="accessPoint.url"/></th>
+                                <th class="three wide"><g:message code="accessPoint.url"/></th>
                             </g:elseif>
                             <g:else>
-                                <th class="ten wide">${message(code: 'accessRule.plural')}</th>
+                                <th class="eight wide">${message(code: 'accessRule.plural')}</th>
                             </g:else>
+                            <th class="two wide">${message(code: 'default.notes.label')}</th>
                             <g:if test="${editable}">
                                 <th class="la-action-info two wide">${message(code: 'default.actions.label')}</th>
                             </g:if>
@@ -128,6 +129,9 @@
                                     </g:if>
                                 </td>
                             </g:else>
+                            <td>
+                                ${accessPoint.note}
+                            </td>
                             <g:if test="${editable}">
                                 <td class="center aligned">
                                     <g:if test="${accessPointItem['platformLinkCount'] == 0 && accessPointItem['subscriptionLinkCount'] == 0}">

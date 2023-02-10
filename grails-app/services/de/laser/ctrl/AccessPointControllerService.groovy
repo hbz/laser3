@@ -172,6 +172,7 @@ class AccessPointControllerService {
                 }
                 accessPoint.org = orgInstance
                 accessPoint.name = params.name
+                accessPoint.note = params.note
                 accessPoint.accessMethod = accessMethod
                 accessPoint.save()
                 result.accessPoint = accessPoint

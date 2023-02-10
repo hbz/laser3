@@ -67,7 +67,7 @@
         <laser:render template="/templates/filter/orgFilterTable"
                   model="[orgList: orgList,
                           tmplShowCheckbox: false,
-                          tmplConfigShow: ['lineNumber', 'shortname', 'name', 'isWekbCurated', 'numberOfSubscriptions']
+                          tmplConfigShow: ['lineNumber', 'shortname', 'name', 'isWekbCurated', 'altname', 'numberOfSubscriptions']
                   ]"/>
         </g:if>
         <g:else>
@@ -88,6 +88,6 @@
         <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
     </ui:debugInfo>
 
-    <laser:render template="export/individuallyExportModalOrgs" model="[modalID: 'individuallyExportModal', orgType: 'provider']" />
+    <laser:render template="export/individuallyExportModalOrgs" model="[modalID: 'individuallyExportModal', orgType: 'provider', contactSwitch: true]" />
 
 <laser:htmlEnd />
