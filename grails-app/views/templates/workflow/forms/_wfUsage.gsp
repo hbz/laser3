@@ -416,12 +416,21 @@
         <g:set var="prefixOverride" value="${WfCheckpoint.KEY}" />
         <g:set var="wfInfo" value="${checkpoint.checklist.getInfo()}" />
 
+        <div class="fields two">
+            <div class="field">
+                <label for="cpTitle">Aufgabe</label>
+                <p id="cpTitle">${checkpoint.title}</p>
+            </div>
+            <div class="field">
+                <label for="clTitle">Workflow</label>
+                <p id="clTitle">${checkpoint.checklist.title}</p>
+            </div>
+        </div>
+
         <g:if test="${checkpoint.description}">
-            <div class="field" style="margin-bottom:1.5em;">
-            %{--            <p><strong>${checkpoint.title}</strong></p>--}%
-                    <p>${checkpoint.description}</p>
-    %{--                <i class="icon ${WorkflowHelper.getCssIconByTaskPriority(task.priority)} sc_darkgrey"></i>--}%
-    %{--                ${task.priority.getI10n('value')}--}%
+            <div class="field">
+                <label for="cpDescription">Beschreibung</label>
+                <p id="cpDescription">${checkpoint.description}</p>
             </div>
         </g:if>
 

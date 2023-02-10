@@ -7,147 +7,135 @@
     <g:set var="overEdit" value="${workflowService.hasUserPerm_edit()}" />
 
     <div class="ui header center aligned">
-        ${clist.title}
+        Bearbeitung von: ${clist.title}
     </div>
     <div class="content">
 
-        <div class="ui vertical segment">
-            <div class="ui grid">
+            <div class="ui vertically divided grid">
+
                 <div class="row">
-                    <div class="one wide column wf-centered">
+                    <div class="two wide column wf-centered">
                         <uiWorkflow:statusIcon checklist="${clist}" size="big" />
                     </div>
                     <div class="ten wide column">
 
-                        <div class="ui grid">
-                            <div class="row">
-                                <div class="four wide column">
-                                    <strong>${message(code: 'workflow.label')}</strong>
-                                </div>
-                                <div class="twelve wide column">
+                        <div class="la-inline-lists">
+                            <dl>
+                                <dt>${message(code: 'workflow.label')}</dt>
+                                <dd>
                                     <div class="ui header">
                                         <ui:xEditable overwriteEditable="${overEdit}" owner="${clist}" field="title" type="text" />
                                     </div>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="four wide column">
-                                    <strong>${message(code: 'default.description.label')}</strong>
-                                </div>
-                                <div class="twelve wide column">
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt>${message(code: 'default.description.label')}</dt>
+                                <dd>
                                     <ui:xEditable overwriteEditable="${overEdit}" owner="${clist}" field="description" type="textarea" />
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="four wide column">
-                                    <strong>${message(code: 'default.comment.label')}</strong>
-                                </div>
-                                <div class="twelve wide column">
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt>${message(code: 'default.comment.label')}</dt>
+                                <dd>
                                     <ui:xEditable overwriteEditable="${overEdit}" owner="${clist}" field="comment" type="textarea" />
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="four wide column">
-                                    <strong>${message(code: 'workflow.template')}</strong>
-                                </div>
-                                <div class="twelve wide column">
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt>${message(code: 'workflow.template')}</dt>
+                                <dd>
                                     <ui:xEditableBoolean overwriteEditable="${overEdit}" owner="${clist}" field="template" />
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="four wide column">
-                                    <strong>Objekt</strong>
-                                </div>
-                                <div class="twelve wide column">
+                                </dd>
+                            </dl>
+                            <dl>
+                                <dt>${message(code: 'default.relation.label')}</dt>
+                                <dd>
                                     <i class="icon ${clistInfo.targetIcon} la-list-icon"></i>
                                     <g:link controller="${clistInfo.targetController}" action="show" params="${[id: clistInfo.target.id]}">
                                         ${clistInfo.targetName}
                                     </g:link>
-                                </div>
-                            </div>
+                                </dd>
+                            </dl>
 
-                        </div>
-                    </div>
-                    <div class="two wide column wf-centered">
-                        <div class="${DateUtils.isDateToday(clist.lastUpdated) ? '' : 'sc_darkgrey'}" style="text-align: right">
-                            ${DateUtils.getLocalizedSDF_noTime().format(clist.lastUpdated)}<br />
-                            ${DateUtils.getLocalizedSDF_noTime().format(clist.dateCreated)}
-                        </div>
+                            <dl>
+                                <dt>${message(code:'default.lastUpdated.label')} / ${message(code:'default.dateCreated.label')}</dt>
+                                <dd>
+                                    <span class="${DateUtils.isDateToday(clist.lastUpdated) ? '' : 'sc_darkgrey'}">
+                                        ${DateUtils.getLocalizedSDF_noTime().format(clist.lastUpdated)}
+                                    </span> /
+                                    <span class="${DateUtils.isDateToday(clist.dateCreated) ? '' : 'sc_darkgrey'}">
+                                        ${DateUtils.getLocalizedSDF_noTime().format(clist.dateCreated)}
+                                    </span>
+                                </dd>
+                            </dl>
+                        </div><!-- .la-inline-lists -->
+
                     </div>
 
                     <g:set var="wfKey" value="${clistInfo.target.class.name}:${clistInfo.target.id}:${WfChecklist.KEY}:${clist.id}" />
-                    <div class="three wide column wf-centered">
+
+                    <div class="four wide column wf-centered">
                     </div>
-                </div>
-            </div>
-        </div>
+                </div><!-- .row -->
 
-        <g:set var="cpoints" value="${clist.getSequence()}" />
-        <g:each in="${cpoints}" var="cpoint" status="ti">
 
-            <div class="ui vertical segment">
-                <div class="ui grid">
+                <g:set var="cpoints" value="${clist.getSequence()}" />
+                <g:each in="${cpoints}" var="cpoint" status="ti">
+
                     <div class="row">
-                        <div class="one wide column wf-centered">
+                        <div class="two wide column wf-centered">
                             <i class="icon large ${WorkflowHelper.getCssIconAndColorByStatus(cpoint.done ? RDStore.WF_TASK_STATUS_DONE : RDStore.WF_TASK_STATUS_OPEN)}"></i>
                         </div>
                         <div class="ten wide column">
 
-                            <div class="ui grid">
-                                <div class="row">
-                                    <div class="four wide column">
-                                        <strong>${message(code: 'workflow.task.label')}</strong>
-                                    </div>
-                                    <div class="twelve wide column">
+                            <div class="la-inline-lists">
+                                <dl>
+                                    <dt>${message(code: 'workflow.task.label')}</dt>
+                                    <dd>
                                         <div class="ui header">
                                             <ui:xEditable overwriteEditable="${overEdit}" owner="${cpoint}" field="title" type="text" />
                                         </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="four wide column">
-                                        <strong>${message(code: 'default.description.label')}</strong>
-                                    </div>
-                                    <div class="twelve wide column">
+                                    </dd>
+                                </dl>
+                                <dl>
+                                    <dt>${message(code: 'default.description.label')}</dt>
+                                    <dd>
                                         <ui:xEditable overwriteEditable="${overEdit}" owner="${cpoint}" field="description" type="textarea" />
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="four wide column">
-                                        <strong>${message(code: 'default.comment.label')}</strong>
-                                    </div>
-                                    <div class="twelve wide column">
+                                    </dd>
+                                </dl>
+                                <dl>
+                                    <dt>${message(code: 'default.comment.label')}</dt>
+                                    <dd>
                                         <ui:xEditable overwriteEditable="${overEdit}" owner="${cpoint}" field="comment" type="textarea" />
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="four wide column">
-                                        <strong>${message(code: 'workflow.checkpoint.done')}</strong>
-                                    </div>
-                                    <div class="twelve wide column">
+                                    </dd>
+                                </dl>
+                                <dl>
+                                    <dt>${message(code: 'workflow.checkpoint.done')}</dt>
+                                    <dd>
                                         <ui:xEditableBoolean overwriteEditable="${overEdit}" owner="${cpoint}" field="done" />
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="four wide column">
-                                        <strong>${message(code: 'workflow.checkpoint.date')}</strong>
-                                    </div>
-                                    <div class="twelve wide column">
+                                    </dd>
+                                </dl>
+                                <dl>
+                                    <dt>${message(code: 'workflow.checkpoint.date')}</dt>
+                                    <dd>
                                         <ui:xEditable overwriteEditable="${overEdit}" owner="${cpoint}" field="date" type="date" />
-                                    </div>
-                                </div>
-                            </div>
+                                    </dd>
+                                </dl>
 
-                        </div>
-                        <div class="two wide column wf-centered">
-                            <div class="${DateUtils.isDateToday(cpoint.lastUpdated) ? '' : 'sc_darkgrey'}" style="text-align: right">
-                                ${DateUtils.getLocalizedSDF_noTime().format(cpoint.lastUpdated)}
-                            </div>
+                                <dl>
+                                    <dt>${message(code:'default.lastUpdated.label')}</dt>
+                                    <dd>
+                                        <span class="${DateUtils.isDateToday(cpoint.lastUpdated) ? '' : 'sc_darkgrey'}">
+                                            ${DateUtils.getLocalizedSDF_noTime().format(cpoint.lastUpdated)}
+                                        </span>
+                                    </dd>
+                                </dl>
+                            </div><!-- .la-inline-lists -->
+
                         </div>
 
                         <g:set var="tKey" value="${clistInfo.target.class.name}:${clistInfo.target.id}:${WfCheckpoint.KEY}:${cpoint.id}" />%{-- todo --}%
 
-                        <div class="three wide column wf-centered">
+                        <div class="four wide column wf-centered">
 
                             <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
                                 <g:if test="${ti > 0}">
@@ -183,66 +171,68 @@
                             </g:if>
 
                         </div>
-                    </div>
-                </div>
-            </div>
+                    </div><!-- .row -->
 
-        </g:each>
+                </g:each>
 
-        <!-- -->
+                <!-- -->
 
-    <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
+                <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
 
-        <div class="ui vertical segment" style="padding-top:3em">
+                    <div class="row">
+                        <div class="two wide column"></div>
 
-            <div class="ui grid">
-                <div class="row">
-                    <div class="thirteen wide column"> </div>
-                    <div class="three wide column wf-centered">
-                        <div class="ui icon button compact la-hidden"><i class="coffee icon"></i></div>
-                        <div class="ui icon button compact la-hidden"><i class="coffee icon"></i></div>
+                        <div class="ten wide column">
+                            <g:form name="cpForm" controller="${clistInfo.targetController}" action="workflows" id="${clistInfo.target.id}" method="POST" class="ui form" style="display:none">
 
-                        <div class="ui icon blue button compact la-modern-button" id="cpFormToggle"><i class="icon plus"></i></div>
-%{--                        <g:link class="ui icon button blue compact la-modern-button" action="workflows" id="${clistInfo.target.id}"--}%
-%{--                                params="${[cmd:"add:${WfChecklist.KEY}:${clist.id}", info:"${wfKey}"]}">--}%
-%{--                            <i class="icon plus"></i>--}%
-%{--                        </g:link>--}%
-                    </div>
-                </div>
-            </div>
+                                <div style="margin-top:2em;">
+                                    <div class="field required">
+                                        <g:set var="fieldName" value="${WfCheckpoint.KEY}_title" />
+                                        <label for="${fieldName}">${message(code:'default.title.label')}</label>
+                                        <input type="text" name="${fieldName}" id="${fieldName}" required="required" />
+                                    </div>
 
-            <g:form name="cpForm" controller="${clistInfo.targetController}" action="workflows" id="${clistInfo.target.id}" method="POST" class="ui form" style="margin:4em;display:none">
+                                    <div class="field">
+                                        <g:set var="fieldName" value="${WfCheckpoint.KEY}_description" />
+                                        <label for="${fieldName}">${message(code:'default.description.label')}</label>
+                                        <input type="text" name="${fieldName}" id="${fieldName}" />
+                                    </div>
 
-                <div style="margin-top:2em;">
-                    <div class="field required">
-                        <g:set var="fieldName" value="${WfCheckpoint.KEY}_title" />
-                        <label for="${fieldName}">${message(code:'default.title.label')}</label>
-                        <input type="text" name="${fieldName}" id="${fieldName}" required="required" />
-                    </div>
+                                    <input type="hidden" name="${WfCheckpoint.KEY}_checklist" value="${clist.id}" />
 
-                    <div class="field">
-                        <g:set var="fieldName" value="${WfCheckpoint.KEY}_description" />
-                        <label for="${fieldName}">${message(code:'default.description.label')}</label>
-                        <input type="text" name="${fieldName}" id="${fieldName}" />
-                    </div>
+                                    <input type="hidden" name="cmd" value="create:${WfCheckpoint.KEY}" />
+                                    <input type="hidden" name="target" value="${clistInfo.target.class.name}:${clistInfo.target.id}" />
+                                </div>
+                                <div class="field">
+                                    <input type="submit" class="ui button green" name="save" value="Neue Aufgabe hinzufügen">
+                                </div>
+                            </g:form>
+                        </div>
 
-                    <input type="hidden" name="${WfCheckpoint.KEY}_checklist" value="${clist.id}" />
+                        <div class="four wide column wf-centered">
+                            <div class="ui icon button compact la-hidden"><i class="coffee icon"></i></div>
+                            <div class="ui icon button compact la-hidden"><i class="coffee icon"></i></div>
 
-                    <input type="hidden" name="cmd" value="create:${WfCheckpoint.KEY}" />
-                    <input type="hidden" name="target" value="${clistInfo.target.class.name}:${clistInfo.target.id}" />
-                </div>
-                <div class="field">
-                    <input type="submit" class="ui button green" name="save" value="Neue Aufgabe hinzufügen">
-                </div>
-            </g:form>
+                            <div class="ui icon blue button compact la-modern-button" id="cpFormToggle"><i class="icon plus"></i></div>
+    %{--                        <g:link class="ui icon button blue compact la-modern-button" action="workflows" id="${clistInfo.target.id}"--}%
+    %{--                                params="${[cmd:"add:${WfChecklist.KEY}:${clist.id}", info:"${wfKey}"]}">--}%
+    %{--                            <i class="icon plus"></i>--}%
+    %{--                        </g:link>--}%
+                        </div>
+                    </div><!-- .row -->
 
-        </div>
-    </g:if>
+                </g:if>
+
+            </div><!-- .grid -->
+    </div>
 
     <style>
         .ui.grid .row               { padding-top: 0.35rem; padding-bottom: 0.35rem; }
         .ui.grid .row:first-of-type { padding-top: 1.2rem; }
         .ui.grid .row:last-of-type  { padding-bottom: 1.2rem; }
+
+        .la-inline-lists dl dt { padding: 0.35rem 0 0.35rem 0;}
+        .la-inline-lists dl dd { padding: 0.35rem 0 0.35rem 1rem;}
     </style>
 
     <laser:script file="${this.getGroovyPageFileName()}">

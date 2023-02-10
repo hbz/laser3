@@ -1,4 +1,4 @@
-<%@ page import="de.laser.workflow.*; de.laser.storage.RDStore; de.laser.workflow.*; de.laser.WorkflowOldService" %>
+<%@ page import="de.laser.Subscription; de.laser.workflow.*; de.laser.storage.RDStore; de.laser.workflow.*; de.laser.WorkflowOldService" %>
 
 <%
     // TODO
@@ -7,27 +7,18 @@
 
     String targetText = '?'
     String targetController = '?'
-    String targetType_plural = '?'
 
-    if (cmd == RDStore.WF_WORKFLOW_TARGET_TYPE_INSTITUTION) {
+    if (target instanceof de.laser.Org) { // TODO
         targetText = target.name
         targetController = 'org'
-        targetType_plural = message(code:'org.institution.plural')
     }
-    else if (cmd == RDStore.WF_WORKFLOW_TARGET_TYPE_PROVIDER) {
-        targetText = target.name
-        targetController = 'org'
-        targetType_plural = message(code:'subscriptionsManagement.providerAgency')
-    }
-    else if (cmd == RDStore.WF_WORKFLOW_TARGET_TYPE_LICENSE) {
+    else if (target instanceof de.laser.License) {
         targetText = target.reference
         targetController = 'license'
-        targetType_plural = message(code:'license.plural')
     }
-    else if (cmd == RDStore.WF_WORKFLOW_TARGET_TYPE_SUBSCRIPTION) {
+    else if (taget instanceof de.laser.Subscription) {
         targetText = target.name
         targetController = 'subscription'
-        targetType_plural = message(code:'subscription.plural')
     }
 %>
 

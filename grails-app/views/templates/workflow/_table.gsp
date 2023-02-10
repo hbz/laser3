@@ -27,11 +27,11 @@
             <th class="one wide" scope="col" rowspan="2">${message(code:'default.status.label')}</th>
             <th class="six wide" scope="col" rowspan="2">${message(code:'workflow.label')}</th>
             <th class="five wide" scope="col" rowspan="2">${message(code:'default.progress.label')}</th>
-            <th class="two wide la-smaller-table-head" scope="col" >${message(code:'default.lastUpdated.label')}</th>
+            <th class="two wide la-smaller-table-head" scope="col">${message(code:'default.lastUpdated.label')}</th>
             <th class="two wide" scope="col" rowspan="2">${message(code:'default.actions.label')}</th>
         </tr>
         <tr>
-            <th class="two wide la-smaller-table-head" scope="col" >${message(code:'default.dateCreated.label')}</th>
+            <th class="two wide la-smaller-table-head" scope="col">${message(code:'default.dateCreated.label')}</th>
         <tr>
     </thead>
     <tbody>

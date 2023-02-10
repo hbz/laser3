@@ -270,8 +270,10 @@ class RDStore {
     public final static RefdataValue WF_WORKFLOW_TARGET_ROLE_CONSORTIUM     = getRefdataValue('consortium', RDConstants.WF_WORKFLOW_TARGET_ROLE)
     public final static RefdataValue WF_WORKFLOW_TARGET_ROLE_INSTITUTION    = getRefdataValue('institution', RDConstants.WF_WORKFLOW_TARGET_ROLE)
 
+    public final static RefdataValue WF_WORKFLOW_TARGET_TYPE_AGENCY         = getRefdataValue('agency', RDConstants.WF_WORKFLOW_TARGET_TYPE)
     public final static RefdataValue WF_WORKFLOW_TARGET_TYPE_INSTITUTION    = getRefdataValue('institution', RDConstants.WF_WORKFLOW_TARGET_TYPE)
     public final static RefdataValue WF_WORKFLOW_TARGET_TYPE_LICENSE        = getRefdataValue('license', RDConstants.WF_WORKFLOW_TARGET_TYPE)
+    public final static RefdataValue WF_WORKFLOW_TARGET_TYPE_OWNER          = getRefdataValue('owner', RDConstants.WF_WORKFLOW_TARGET_TYPE)
     public final static RefdataValue WF_WORKFLOW_TARGET_TYPE_PROVIDER       = getRefdataValue('provider', RDConstants.WF_WORKFLOW_TARGET_TYPE)
     public final static RefdataValue WF_WORKFLOW_TARGET_TYPE_SUBSCRIPTION   = getRefdataValue('subscription', RDConstants.WF_WORKFLOW_TARGET_TYPE)
 

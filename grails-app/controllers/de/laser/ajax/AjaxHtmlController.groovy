@@ -69,6 +69,7 @@ import de.laser.workflow.WfTask
 import de.laser.workflow.WfTaskPrototype
 import de.laser.workflow.WfChecklist
 import de.laser.workflow.WfCheckpoint
+import de.laser.workflow.WorkflowHelper
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.poi.ss.usermodel.Workbook
 import org.mozilla.universalchardet.UniversalDetector
@@ -1151,11 +1152,19 @@ class AjaxHtmlController {
 
             if (result.prefix == WfChecklist.KEY) {
                 result.checklist      = WfChecklist.get( key[4] )
-                result.tmplModalTitle = g.message(code:'task.label') + ': ' +  result.checklist.title
+                result.tmplModalTitle = g.message(code:'workflow.label')
             }
             else if (result.prefix == WfCheckpoint.KEY) {
                 result.checkpoint     = WfCheckpoint.get( key[4] )
-                result.tmplModalTitle = g.message(code:'task.label') + ': ' +  result.checkpoint.title
+
+                if (result.checkpoint.done) {
+                    result.tmplModalTitle = '<i class="icon ' + WorkflowHelper.getCssIconAndColorByStatus( RDStore.WF_TASK_STATUS_DONE ) + '"></i>&nbsp;' +
+                            g.message(code:'workflow.checkpoint.done')
+                }
+                else {
+                    result.tmplModalTitle = '<i class="icon ' + WorkflowHelper.getCssIconAndColorByStatus( RDStore.WF_TASK_STATUS_OPEN ) + '"></i>&nbsp;' +
+                            g.message(code:'workflow.checkpoint.open')
+                }
             }
         }
 

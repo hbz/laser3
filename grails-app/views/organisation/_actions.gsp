@@ -137,15 +137,18 @@
     </g:if>
 </g:if>
 
-<g:if test="${inContextOrg}">
-    <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
-        <laser:render template="/templates/workflow/instantiate" model="${[cmd: RDStore.WF_WORKFLOW_TARGET_TYPE_INSTITUTION, target: orgInstance]}"/>
+<g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
+    <g:if test="${inContextOrg || isProviderOrAgency}">
+        <laser:render template="/templates/workflow/instantiate" model="${[target: orgInstance]}"/>
     </g:if>
-</g:if>
-<g:if test="${isProviderOrAgency}">
-    <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
-        <laser:render template="/templates/workflow/instantiate" model="${[cmd: RDStore.WF_WORKFLOW_TARGET_TYPE_PROVIDER, target: orgInstance]}"/>
-    </g:if>
+    %{--(RDStore.OT_PROVIDER.id in result.allOrgTypeIds) || (RDStore.OT_AGENCY.id in result.allOrgTypeIds)--}%
+    %{--<g:if test="${isProviderOrAgency}">--}%
+%{--    <g:if test="${RDStore.OT_AGENCY.id in allOrgTypeIds}">--}%
+%{--        <laser:render template="/templates/workflow/instantiate" model="${[cmd: RDStore.WF_WORKFLOW_TARGET_TYPE_AGENCY, target: orgInstance]}"/>--}%
+%{--    </g:if>--}%
+%{--    <g:if test="${RDStore.OT_PROVIDER.id in allOrgTypeIds}">--}%
+%{--        <laser:render template="/templates/workflow/instantiate" model="${[cmd: RDStore.WF_WORKFLOW_TARGET_TYPE_PROVIDER, target: orgInstance]}"/>--}%
+%{--    </g:if>--}%
 </g:if>
 
 

@@ -2648,14 +2648,26 @@ join sub.orgRelations or_sub where
         Map<String, Object> queryParams = [ctxOrg: contextService.getOrg()]
 
         if (result.filterTargetType) {
+            if (result.filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_AGENCY.id.toString()) {
+                idQuery = idQuery + ' and wf.org is not null'
+                idQuery = idQuery + ' and exists (select ot from wf.org.orgType as ot where ot = :orgType )'
+                queryParams.put('orgType', RDStore.OT_AGENCY)
+            }
             if (result.filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_INSTITUTION.id.toString()) {
                 idQuery = idQuery + ' and wf.org is not null'
+                idQuery = idQuery + ' and exists (select ot from wf.org.orgType as ot where ot = :orgType )'
+                queryParams.put('orgType', RDStore.OT_INSTITUTION)
             }
             else if (result.filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_LICENSE.id.toString()) {
                 idQuery = idQuery + ' and wf.license is not null'
             }
+            else if (result.filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_OWNER.id.toString()) {
+                idQuery = idQuery + ' and wf.org = :ctxOrg'
+            }
             else if (result.filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_PROVIDER.id.toString()) {
                 idQuery = idQuery + ' and wf.org is not null'
+                idQuery = idQuery + ' and exists (select ot from wf.org.orgType as ot where ot = :orgType )'
+                queryParams.put('orgType', RDStore.OT_PROVIDER)
             }
             if (result.filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_SUBSCRIPTION.id.toString()) {
                 idQuery = idQuery + ' and wf.subscription is not null'

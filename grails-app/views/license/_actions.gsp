@@ -86,5 +86,5 @@
 </g:if>
 
 <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
-    <laser:render template="/templates/workflow/instantiate" model="${[cmd: RDStore.WF_WORKFLOW_TARGET_TYPE_LICENSE, target: license]}"/>
+    <laser:render template="/templates/workflow/instantiate" model="${[target: license]}"/>
 </g:if>
