@@ -32,7 +32,7 @@ class ApiManager {
     /**
      * The current version of the API. To be updated on every change which affects the output
      */
-    static final VERSION = '1.5'
+    static final VERSION = '1.6'
 
     /**
      * Checks if the request is valid and if, whether the permissions are granted for the context institution making
@@ -52,7 +52,7 @@ class ApiManager {
      *     <li>NOT_IMPLEMENTED: if requested method(object type) is not supported</li>
      * </ul>
      */
-    static read(String obj, String query, String value, Org contextOrg, String format, Date changedFrom = null) {
+    static read(String obj, String query, String value, String ezbOrgId, Org contextOrg, String format, Date changedFrom = null) {
         def result
 
         boolean isDatamanager = ApiToolkit.hasApiLevel(contextOrg, ApiToolkit.API_LEVEL_DATAMANAGER)
@@ -172,8 +172,17 @@ class ApiManager {
             if (! (isEZB || isDatamanager)) {
                 return Constants.HTTP_FORBIDDEN
             }
+            if(ezbOrgId) {
+                ApiBox tmp = ApiOrg.findOrganisationBy('ezbId', ezbOrgId)
+                result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
 
-            result = ApiEZB.getAllSubscriptions(changedFrom, contextOrg)
+                if (tmp.checkFailureCodes_3()) {
+                    result = ApiEZB.getAllSubscriptions(changedFrom, (Org) tmp.obj)
+                }
+            }
+            else {
+                result = ApiEZB.getAllSubscriptions(changedFrom)
+            }
         }
         else if (checkValidRequest('license')) {
 

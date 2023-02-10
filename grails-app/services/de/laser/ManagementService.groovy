@@ -351,7 +351,12 @@ class ManagementService {
                         SubscriptionPackage sp = SubscriptionPackage.findBySubscriptionAndPkg(selectedSub, pkg)
                         if(params.processOption =~ /^link/) {
                             if(!sp) {
-                                subscriptionService.addToSubscription(selectedSub, pkg, params.processOption == 'linkwithIE')
+                                if(result.subscription) {
+                                    subscriptionService.addToSubscriptionCurrentStock(selectedSub, result.subscription, pkg, params.processOption == 'linkwithIE')
+                                }
+                                else {
+                                    subscriptionService.addToSubscription(selectedSub, pkg, params.processOption == 'linkwithIE')
+                                }
                             }
                         }
                         else if(params.processOption =~ /^unlink/) {
