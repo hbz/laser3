@@ -134,7 +134,7 @@ dependencies {
 
     runtimeOnly 'org.apache.tomcat:tomcat-jdbc'
     runtimeOnly 'javax.xml.bind:jaxb-api:2.3.1'                             // 2018 : [?]
-    runtimeOnly 'org.postgresql:postgresql:42.5.1'                          // 2022
+    runtimeOnly 'org.postgresql:postgresql:42.5.3'                          // 2023
 }
 
 springBoot {
