@@ -16,7 +16,7 @@
         targetText = target.reference
         targetController = 'license'
     }
-    else if (taget instanceof de.laser.Subscription) {
+    else if (target instanceof de.laser.Subscription) {
         targetText = target.name
         targetController = 'subscription'
     }

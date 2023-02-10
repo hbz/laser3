@@ -1094,7 +1094,7 @@ class AjaxHtmlController {
 
         if (params.key) {
             String[] key = (params.key as String).split(':')
-            println key
+            //println key
 
             result.prefix = key[0]
 
@@ -1106,7 +1106,7 @@ class AjaxHtmlController {
 //                result.tmplModalTitle = g.message(code:'task.label') + ': ' +  result.checkpoint.title
 //            }
         }
-        println result
+        //println result
         render template: '/templates/workflow/checklist', model: result
     }
 
@@ -1121,7 +1121,7 @@ class AjaxHtmlController {
 
         if (params.key) {
             String[] key = (params.key as String).split(':')
-            println key
+            //println key
 
             result.prefix = key[3]
 
@@ -1187,7 +1187,7 @@ class AjaxHtmlController {
 
         String template = '/templates/workflow/forms/modalWrapper' // todo
 
-        println params
+        //println params
         if (params.key) {
             String[] key = (params.key as String).split(':')
 
