@@ -6,6 +6,7 @@ import de.laser.GenericOIDService
 import de.laser.PendingChangeService
 import de.laser.AccessService
 import de.laser.AddressbookService
+import de.laser.WorkflowService
 import de.laser.config.ConfigDefaults
 import de.laser.config.ConfigMapper
 import de.laser.ctrl.SubscriptionControllerService
@@ -87,22 +88,23 @@ import java.nio.charset.Charset
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AjaxHtmlController {
 
+    AccessService accessService
     AddressbookService addressbookService
     CacheService cacheService
     ContextService contextService
+    CustomWkhtmltoxService wkhtmltoxService // custom
+    GenericOIDService genericOIDService
+    GokbService gokbService
+    LicenseControllerService licenseControllerService
+    LinksGenerationService linksGenerationService
     MyInstitutionControllerService myInstitutionControllerService
     PendingChangeService pendingChangeService
-    GenericOIDService genericOIDService
-    TaskService taskService
-    LinksGenerationService linksGenerationService
-    AccessService accessService
     ReportingGlobalService reportingGlobalService
     ReportingLocalService reportingLocalService
     SubscriptionService subscriptionService
     SubscriptionControllerService subscriptionControllerService
-    LicenseControllerService licenseControllerService
-    CustomWkhtmltoxService wkhtmltoxService // custom
-    GokbService gokbService
+    TaskService taskService
+    WorkflowService workflowService
 
     /**
      * Test render call
@@ -1092,10 +1094,19 @@ class AjaxHtmlController {
                 tmplFormUrl: createLink(controller: 'myInstitution', action: 'currentWorkflows')
         ]
 
+        if (params.cmd) {
+            String[] cmd = params.cmd.split(':')
+
+            if (cmd[1] in [WfChecklist.KEY, WfCheckpoint.KEY] ) {
+                result.putAll( workflowService.cmd(params) )
+            }
+        }
+//        if (params.info) {
+//            result.info = params.info // @ currentWorkflows @ dashboard
+//        }
+
         if (params.key) {
             String[] key = (params.key as String).split(':')
-            //println key
-
             result.prefix = key[0]
 
             if (result.prefix == WfChecklist.KEY) {
