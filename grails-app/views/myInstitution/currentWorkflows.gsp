@@ -3,10 +3,10 @@
 <laser:htmlStart message="menu.my.workflows" serviceInjection="true"/>
 
 <ui:breadcrumbs>
-    <ui:crumb message="menu.my.workflows.light" class="active"/>
+    <ui:crumb message="menu.my.workflows" class="active"/>
 </ui:breadcrumbs>
 
-<ui:h1HeaderWithIcon message="menu.my.workflows.light" type="Workflow" total="${total}" floated="true" />
+<ui:h1HeaderWithIcon message="menu.my.workflows" type="Workflow" total="${total}" floated="true" />
 
 <ui:filter>
     <form id="wfFilterForm" class="ui form">

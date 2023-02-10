@@ -24,6 +24,8 @@
 
 <ui:modal id="modalWorkflowInstantiate" text="Workflow für '${targetText}' erstellen">
 
+    <g:if test="${false}"> %{-- BLOCKED --}%
+
     <g:form controller="${targetController}" action="workflows" id="${target.id}" method="POST" class="ui form">
         <div class="ui label red" style="float:right">Feature in Entwicklung</div><br /><br />
 
@@ -80,7 +82,10 @@
             </g:else>
         </div>
     </g:form>
-
+    </g:if>
+    <g:else>
+        <p>Derzeit sind keine Workflows verfügar.</p>
+    </g:else>
 </ui:modal>
 
 <laser:script file="${this.getGroovyPageFileName()}">
