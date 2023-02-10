@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4826    10.02.2023  dev     3.1         Andreas Bug         verschiedene Bugs und Ausbesserungen bei der Paketverwaltung der Teilnehmer
+
 4824    09.02.2023  rc-3.0  3.0.4       Andreas Feature     EZB-Lizenzlistenendpunkt um Einrichtungsfilter erweitert
 
 4823    09.02.2023  dev     3.1         David   Feature     Menü und Funktionen aufräumen: Data Manager
