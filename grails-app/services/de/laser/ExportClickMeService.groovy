@@ -2076,10 +2076,10 @@ class ExportClickMeService {
             addressesContacts.put(p, contactData)
         }
         addressesContacts.each { Person p, Map<String, Map<String, String>> contactData ->
-            for(int addressRow = 0; addressRow < Math.max(contactData.size(), p.addresses.size()); addressRow++) {
+            for(int addressRow = 0; addressRow < contactData.size(); addressRow++) {
                 List row = []
                 Map.Entry<String, Map<String, String>> contact = contactData.entrySet()[addressRow]
-                Address a = p.addresses[addressRow]
+                //Address a = p.addresses[addressRow]
                 selectedExportFields.each { String fieldKey, Map mapSelectedFields ->
                     String field = mapSelectedFields.field
                     if (field == 'organisation') {
@@ -2092,13 +2092,13 @@ class ExportClickMeService {
                         contact?.key == Contact.PRIMARY ? row.add([field: ' ', style: null]) : row.add([field: contact.key, style: null])
                     else if (field in ['email', 'fax', 'phone', 'url'])
                         row.add([field: contact?.value?.get(fieldKey), style: null])
-                    else {
+                    /*else {
                         if (a && a.hasProperty(field)) {
                             if (a[field] instanceof RefdataValue)
                                 row.add([field: a[field].getI10n("value"), style: null])
                             else row.add([field: a[field], style: null])
                         }
-                    }
+                    }*/
                 }
                 exportData << row
             }

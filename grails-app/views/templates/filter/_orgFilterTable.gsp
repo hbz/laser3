@@ -404,10 +404,12 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('isWekbCurated')}">
                 <td>
                     <g:if test="${org.gokbId != null && RDStore.OT_PROVIDER.id in org.getAllOrgTypeIds()}">
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                              data-content="${message(code:'org.isWekbCurated.header.label')}">
-                            <i class="grey la-gokb la-list-icon icon"></i>
-                        </span>
+                        <g:link url="${apiSource.baseUrl}/public/orgContent/${org.gokbId}">
+                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
+                                  data-content="${message(code:'org.isWekbCurated.header.label')}">
+                                <i class="la-gokb la-list-icon icon"></i>
+                            </span>
+                        </g:link>
                     </g:if>
                 </td>
             </g:if>
@@ -514,7 +516,7 @@
                                             tmplShowDeleteButton   : true,
                                             tmplShowAddPersonRoles : false,
                                             tmplShowAddContacts    : false,
-                                            tmplShowAddAddresses   : false,
+                                            //tmplShowAddAddresses   : false,
                                             tmplShowFunctions      : true,
                                             tmplShowPositions      : true,
                                             tmplShowResponsiblities: false,
@@ -539,7 +541,7 @@
                                             tmplShowDeleteButton   : true,
                                             tmplShowAddPersonRoles : false,
                                             tmplShowAddContacts    : false,
-                                            tmplShowAddAddresses   : false,
+                                            //tmplShowAddAddresses   : false,
                                             tmplShowFunctions      : true,
                                             tmplShowPositions      : true,
                                             tmplShowResponsiblities: false,

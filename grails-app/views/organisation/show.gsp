@@ -608,8 +608,8 @@
                         <div class="ui accordion">
                             <div class="title">
                                 <i class="dropdown icon la-dropdown-accordion"></i>
-                                <div class="ui blue circular label">${orgInstance.platforms.size()}</div>
                                 <g:message code="org.platforms.label" />
+                                <div class="ui blue circular label">${orgInstance.platforms.size()}</div>
                             </div>
                             <div class="content">
                                 <div class="ui divided middle aligned selection list la-flex-list">
@@ -635,8 +635,8 @@
                             <div class="ui accordion">
                                 <div class="title">
                                     <i class="dropdown icon la-dropdown-accordion"></i>
-                                    <div class="ui blue circular label">${packages.size()}</div>
                                     <g:message code="package.plural" />
+                                    <div class="ui blue circular label">${packages.size()}</div>
                                 </div>
                                 <div class="content">
                                     <div class="ui divided middle aligned selection list la-flex-list">
@@ -661,14 +661,18 @@
                             <dd>
                                 <div class="ui divided middle aligned selection list la-flex-list">
                                     <div class="ui item">
-                                        <div class="content la-space-right">
-                                            <g:link controller="myInstitution" action="currentSubscriptions" params="[identifier: orgInstance.globalUID, status: RDStore.SUBSCRIPTION_CURRENT.id]"><div class="ui blue circular label">${currentSubscriptionsCount}</div></g:link> <g:message code="subscription.plural.current" />
-                                        </div>
+                                        <g:link controller="myInstitution" action="currentSubscriptions" params="[identifier: orgInstance.globalUID, status: RDStore.SUBSCRIPTION_CURRENT.id]">
+                                            <div class="content la-space-right">
+                                                <g:message code="subscription.plural.current" /> <div class="ui blue circular label">${currentSubscriptionsCount}</div>
+                                            </div>
+                                        </g:link>
                                     </div>
                                     <div class="ui item">
-                                        <div class="content la-space-right">
-                                            <g:link controller="myInstitution" action="currentSubscriptions" params="[identifier: orgInstance.globalUID, status: 'FETCH_ALL']"><div class="ui blue circular label">${subLinks.size()}</div></g:link> <g:message code="subscription.plural.total" />
-                                        </div>
+                                        <g:link controller="myInstitution" action="currentSubscriptions" params="[identifier: orgInstance.globalUID, status: 'FETCH_ALL']">
+                                            <div class="content la-space-right">
+                                                <g:message code="subscription.plural.total" /> <div class="ui blue circular label">${subLinks.size()}</div>
+                                            </div>
+                                        </g:link>
                                     </div>
                                 </div>
                             </dd>
@@ -682,12 +686,12 @@
                                 <div class="ui divided middle aligned selection list la-flex-list">
                                     <div class="ui item">
                                         <div class="content la-space-right">
-                                            <g:link controller="myInstitution" action="currentLicenses" params="[licensor: orgInstance.id, status: RDStore.LICENSE_CURRENT.id, subStatus: RDStore.SUBSCRIPTION_CURRENT.id, filterSubmit: 'Filtern']"><div class="ui blue circular label">${currentLicensesCount}</div></g:link> <g:message code="license.plural.current" />
+                                            <g:link controller="myInstitution" action="currentLicenses" params="[licensor: orgInstance.id, status: RDStore.LICENSE_CURRENT.id, subStatus: RDStore.SUBSCRIPTION_CURRENT.id, filterSubmit: 'Filtern']"><g:message code="license.plural.current" /> <div class="ui blue circular label">${currentLicensesCount}</div></g:link>
                                         </div>
                                     </div>
                                     <div class="ui item">
                                         <div class="content la-space-right">
-                                            <g:link controller="myInstitution" action="currentLicenses" params="[licensor: orgInstance.id, filterSubmit: 'Filtern']"><div class="ui blue circular label">${licLinks.size()}</div></g:link> <g:message code="license.plural.total" />
+                                            <g:link controller="myInstitution" action="currentLicenses" params="[licensor: orgInstance.id, filterSubmit: 'Filtern']"><g:message code="license.plural.total" /> <div class="ui blue circular label">${licLinks.size()}</div></g:link>
                                         </div>
                                     </div>
                                 </div>
@@ -742,7 +746,7 @@
                                                             tmplShowFunctions       : true,
                                                             tmplShowPositions       : true,
                                                             tmplShowResponsiblities : true,
-                                                            tmplConfigShow      : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax', 'address'],
+                                                            tmplConfigShow      : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax'],
                                                             editable            : false
                                                     ]}"/>
                                                 </g:each>
@@ -767,7 +771,7 @@
                                                             tmplShowFunctions       : true,
                                                             tmplShowPositions       : true,
                                                             tmplShowResponsiblities : true,
-                                                            tmplConfigShow      : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax', 'address'],
+                                                            tmplConfigShow      : ['E-Mail', 'Mail', 'Url', 'Phone', 'Fax'],
                                                             editable            : false
                                                     ]}"/>
                                                 </g:each>
@@ -800,6 +804,9 @@
                         <g:if test="${orgInstance.getCustomerType() in ['ORG_INST', 'ORG_BASIC_MEMBER']}">
                             <h2 class="ui header"><g:message code="org.contactpersons.and.addresses.label"/></h2>
                         </g:if>
+                        <g:else>
+                            <h2 class="ui header"><g:message code="org.contacts.label"/></h2>
+                        </g:else>
 
                         <g:if test="${(orgInstance.id == institution.id && user.hasAffiliation('INST_EDITOR'))}">
                             <g:link action="myPublicContacts" controller="organisation" params="[id: orgInstance.id, tab: 'contacts']"
@@ -848,10 +855,10 @@
                                                                         </g:if>
                                                                     </g:each>
                                                                 </g:if>
-                                                                <g:each in="${prs.addresses.sort { it.type.each{it?.getI10n('value') }}}" var="address">
+                                                                <%--<g:each in="${prs.addresses.sort { it.type.each{it?.getI10n('value') }}}" var="address">
                                                                     <laser:render template="/templates/cpa/address"
                                                                                   model="${[address: address, tmplShowDeleteButton: false, editable: false]}"/>
-                                                                </g:each>
+                                                                </g:each>--%>
                                                             </div>
                                                         </div>
                                                     </g:each>
@@ -888,10 +895,10 @@
                                                                         </g:if>
                                                                     </g:each>
                                                                 </g:if>
-                                                                <g:each in="${prs.addresses.sort { it.type.each{it?.getI10n('value') }}}" var="address">
+                                                                <%--<g:each in="${prs.addresses.sort { it.type.each{it?.getI10n('value') }}}" var="address">
                                                                     <laser:render template="/templates/cpa/address"
                                                                                   model="${[address: address, tmplShowDeleteButton: false, editable: false]}"/>
-                                                                </g:each>
+                                                                </g:each>--%>
                                                             </div>
                                                         </div>
                                                     </g:each>
@@ -974,114 +981,120 @@
                             <g:if test="${techSupports || serviceSupports || metadataContacts}">
                                 <tr>
                                     <td>
-                                        <div class="ui segment la-timeLineSegment-contact">
-                                            <div class="la-timeLineGrid">
-                                                <div class="ui grid">
-                                                    <g:each in="${techSupports}" var="prs">
-                                                        <div class="row">
-                                                            <div class="two wide column">
-                                                                <g:if test="${orgInstanceRecord}">
-                                                                    <a target="_blank" href="${wekbAPI.editUrl ? wekbAPI.editUrl + '/public/orgContent/' + orgInstance.gokbId : '#'}"><i class="circular large la-gokb icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'org.isWekbCurated.header.label')} (we:kb Link)"></i></a>
-                                                                </g:if>
-                                                                <g:elseif test="${prs.isPublic}">
-                                                                    <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
-                                                                </g:elseif>
-                                                                <g:else>
-                                                                    <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
-                                                                </g:else>
+                                        <g:if test="${techSupports}">
+                                            <div class="ui segment la-timeLineSegment-contact">
+                                                <div class="la-timeLineGrid">
+                                                    <div class="ui grid">
+                                                        <g:each in="${techSupports}" var="prs">
+                                                            <div class="row">
+                                                                <div class="two wide column">
+                                                                    <g:if test="${orgInstanceRecord}">
+                                                                        <a target="_blank" href="${wekbAPI.editUrl ? wekbAPI.editUrl + '/public/orgContent/' + orgInstance.gokbId : '#'}"><i class="circular large la-gokb icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'org.isWekbCurated.header.label')} (we:kb Link)"></i></a>
+                                                                    </g:if>
+                                                                    <g:elseif test="${prs.isPublic}">
+                                                                        <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
+                                                                    </g:elseif>
+                                                                    <g:else>
+                                                                        <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
+                                                                    </g:else>
+                                                                </div>
+                                                                <div class="fourteen wide column">
+                                                                    <div class="ui label">${RDStore.PRS_FUNC_TECHNICAL_SUPPORT.getI10n('value')}</div>
+                                                                    <g:if test="${prs.last_name != RDStore.PRS_FUNC_TECHNICAL_SUPPORT.getI10n('value')}"><div class="ui header">${prs}</div></g:if>
+                                                                    <g:if test="${prs.contacts}">
+                                                                        <g:each in="${prs.contacts.toSorted()}" var="contact">
+                                                                            <g:if test="${contact.contentType && contact.contentType.value in ['E-Mail', 'Mail', 'Url', 'Phone', 'Mobil', 'Fax']}">
+                                                                                <laser:render template="/templates/cpa/contact" model="${[
+                                                                                        overwriteEditable   : (isProviderOrAgency && orgInstanceRecord == null && accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN')),
+                                                                                        contact             : contact,
+                                                                                        tmplShowDeleteButton: (isProviderOrAgency && orgInstanceRecord == null && accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN'))
+                                                                                ]}"/>
+                                                                            </g:if>
+                                                                        </g:each>
+                                                                    </g:if>
+                                                                </div>
                                                             </div>
-                                                            <div class="fourteen wide column">
-                                                                <div class="ui label">${RDStore.PRS_FUNC_TECHNICAL_SUPPORT.getI10n('value')}</div>
-                                                                <g:if test="${prs.last_name != RDStore.PRS_FUNC_TECHNICAL_SUPPORT.getI10n('value')}"><div class="ui header">${prs}</div></g:if>
-                                                                <g:if test="${prs.contacts}">
-                                                                    <g:each in="${prs.contacts.toSorted()}" var="contact">
-                                                                        <g:if test="${contact.contentType && contact.contentType.value in ['E-Mail', 'Mail', 'Url', 'Phone', 'Mobil', 'Fax']}">
-                                                                            <laser:render template="/templates/cpa/contact" model="${[
-                                                                                    overwriteEditable   : (isProviderOrAgency && orgInstanceRecord == null && accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN')),
-                                                                                    contact             : contact,
-                                                                                    tmplShowDeleteButton: (isProviderOrAgency && orgInstanceRecord == null && accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN'))
-                                                                            ]}"/>
-                                                                        </g:if>
-                                                                    </g:each>
-                                                                </g:if>
-                                                            </div>
-                                                        </div>
-                                                    </g:each>
+                                                        </g:each>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="ui segment la-timeLineSegment-contact">
-                                            <div class="la-timeLineGrid">
-                                                <div class="ui grid">
-                                                    <g:each in="${serviceSupports}" var="prs">
-                                                        <div class="row">
-                                                            <div class="two wide column">
-                                                                <g:if test="${orgInstanceRecord}">
-                                                                    <a target="_blank" href="${wekbAPI.editUrl ? wekbAPI.editUrl + '/public/orgContent/' + orgInstance.gokbId : '#'}"><i class="circular large la-gokb icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'org.isWekbCurated.header.label')} (we:kb Link)"></i></a>
-                                                                </g:if>
-                                                                <g:elseif test="${prs.isPublic}">
-                                                                    <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
-                                                                </g:elseif>
-                                                                <g:else>
-                                                                    <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
-                                                                </g:else>
+                                        </g:if>
+                                        <g:if test="${serviceSupports}">
+                                            <div class="ui segment la-timeLineSegment-contact">
+                                                <div class="la-timeLineGrid">
+                                                    <div class="ui grid">
+                                                        <g:each in="${serviceSupports}" var="prs">
+                                                            <div class="row">
+                                                                <div class="two wide column">
+                                                                    <g:if test="${orgInstanceRecord}">
+                                                                        <a target="_blank" href="${wekbAPI.editUrl ? wekbAPI.editUrl + '/public/orgContent/' + orgInstance.gokbId : '#'}"><i class="circular large la-gokb icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'org.isWekbCurated.header.label')} (we:kb Link)"></i></a>
+                                                                    </g:if>
+                                                                    <g:elseif test="${prs.isPublic}">
+                                                                        <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
+                                                                    </g:elseif>
+                                                                    <g:else>
+                                                                        <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
+                                                                    </g:else>
+                                                                </div>
+                                                                <div class="fourteen wide column">
+                                                                    <div class="ui label">${RDStore.PRS_FUNC_SERVICE_SUPPORT.getI10n('value')}</div>
+                                                                    <g:if test="${prs.last_name != RDStore.PRS_FUNC_SERVICE_SUPPORT.getI10n('value')}"><div class="ui header">${prs}</div></g:if>
+                                                                    <g:if test="${prs.contacts}">
+                                                                        <g:each in="${prs.contacts.toSorted()}" var="contact">
+                                                                            <g:if test="${contact.contentType && contact.contentType.value in ['E-Mail', 'Mail', 'Url', 'Phone', 'Mobil', 'Fax']}">
+                                                                                <laser:render template="/templates/cpa/contact" model="${[
+                                                                                        overwriteEditable   : (isProviderOrAgency && orgInstanceRecord == null && accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN')),
+                                                                                        contact             : contact,
+                                                                                        tmplShowDeleteButton: (isProviderOrAgency && orgInstanceRecord == null && accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN'))
+                                                                                ]}"/>
+                                                                            </g:if>
+                                                                        </g:each>
+                                                                    </g:if>
+                                                                </div>
                                                             </div>
-                                                            <div class="fourteen wide column">
-                                                                <div class="ui label">${RDStore.PRS_FUNC_SERVICE_SUPPORT.getI10n('value')}</div>
-                                                                <g:if test="${prs.last_name != RDStore.PRS_FUNC_SERVICE_SUPPORT.getI10n('value')}"><div class="ui header">${prs}</div></g:if>
-                                                                <g:if test="${prs.contacts}">
-                                                                    <g:each in="${prs.contacts.toSorted()}" var="contact">
-                                                                        <g:if test="${contact.contentType && contact.contentType.value in ['E-Mail', 'Mail', 'Url', 'Phone', 'Mobil', 'Fax']}">
-                                                                            <laser:render template="/templates/cpa/contact" model="${[
-                                                                                    overwriteEditable   : (isProviderOrAgency && orgInstanceRecord == null && accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN')),
-                                                                                    contact             : contact,
-                                                                                    tmplShowDeleteButton: (isProviderOrAgency && orgInstanceRecord == null && accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN'))
-                                                                            ]}"/>
-                                                                        </g:if>
-                                                                    </g:each>
-                                                                </g:if>
-                                                            </div>
-                                                        </div>
-                                                    </g:each>
+                                                        </g:each>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="ui segment la-timeLineSegment-contact">
-                                            <div class="la-timeLineGrid">
-                                                <div class="ui grid">
-                                                    <g:each in="${metadataContacts}" var="prs">
-                                                        <div class="row">
-                                                            <div class="two wide column">
-                                                                <g:if test="${orgInstanceRecord}">
-                                                                    <a target="_blank" href="${wekbAPI.editUrl ? wekbAPI.editUrl + '/public/orgContent/' + orgInstance.gokbId : '#'}"><i class="circular large la-gokb icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'org.isWekbCurated.header.label')} (we:kb Link)"></i></a>
-                                                                </g:if>
-                                                                <g:elseif test="${prs.isPublic}">
-                                                                    <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
-                                                                </g:elseif>
-                                                                <g:else>
-                                                                    <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
-                                                                </g:else>
+                                        </g:if>
+                                        <g:if test="${metadataContacts}">
+                                            <div class="ui segment la-timeLineSegment-contact">
+                                                <div class="la-timeLineGrid">
+                                                    <div class="ui grid">
+                                                        <g:each in="${metadataContacts}" var="prs">
+                                                            <div class="row">
+                                                                <div class="two wide column">
+                                                                    <g:if test="${orgInstanceRecord}">
+                                                                        <a target="_blank" href="${wekbAPI.editUrl ? wekbAPI.editUrl + '/public/orgContent/' + orgInstance.gokbId : '#'}"><i class="circular large la-gokb icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'org.isWekbCurated.header.label')} (we:kb Link)"></i></a>
+                                                                    </g:if>
+                                                                    <g:elseif test="${prs.isPublic}">
+                                                                        <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
+                                                                    </g:elseif>
+                                                                    <g:else>
+                                                                        <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
+                                                                    </g:else>
+                                                                </div>
+                                                                <div class="fourteen wide column">
+                                                                    <div class="ui label">${RDStore.PRS_FUNC_METADATA.getI10n('value')}</div>
+                                                                    <g:if test="${prs.last_name != RDStore.PRS_FUNC_METADATA.getI10n('value')}"><div class="ui header">${prs}</div></g:if>
+                                                                    <g:if test="${prs.contacts}">
+                                                                        <g:each in="${prs.contacts.toSorted()}" var="contact">
+                                                                            <g:if test="${contact.contentType && contact.contentType.value in ['E-Mail', 'Mail', 'Url', 'Phone', 'Mobil', 'Fax']}">
+                                                                                <laser:render template="/templates/cpa/contact" model="${[
+                                                                                        overwriteEditable   : (isProviderOrAgency && orgInstanceRecord == null && accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN')),
+                                                                                        contact             : contact,
+                                                                                        tmplShowDeleteButton: (isProviderOrAgency && orgInstanceRecord == null && accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN'))
+                                                                                ]}"/>
+                                                                            </g:if>
+                                                                        </g:each>
+                                                                    </g:if>
+                                                                </div>
                                                             </div>
-                                                            <div class="fourteen wide column">
-                                                                <div class="ui label">${RDStore.PRS_FUNC_METADATA.getI10n('value')}</div>
-                                                                <g:if test="${prs.last_name != RDStore.PRS_FUNC_METADATA.getI10n('value')}"><div class="ui header">${prs}</div></g:if>
-                                                                <g:if test="${prs.contacts}">
-                                                                    <g:each in="${prs.contacts.toSorted()}" var="contact">
-                                                                        <g:if test="${contact.contentType && contact.contentType.value in ['E-Mail', 'Mail', 'Url', 'Phone', 'Mobil', 'Fax']}">
-                                                                            <laser:render template="/templates/cpa/contact" model="${[
-                                                                                    overwriteEditable   : (isProviderOrAgency && orgInstanceRecord == null && accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN')),
-                                                                                    contact             : contact,
-                                                                                    tmplShowDeleteButton: (isProviderOrAgency && orgInstanceRecord == null && accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN'))
-                                                                            ]}"/>
-                                                                        </g:if>
-                                                                    </g:each>
-                                                                </g:if>
-                                                            </div>
-                                                        </div>
-                                                    </g:each>
+                                                        </g:each>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </g:if>
                                     </td>
                                 </tr>
                             </g:if>
@@ -1131,11 +1144,11 @@
                                                                         </g:if>
                                                                     </g:each>
                                                                 </g:if>
-                                                                <g:each in="${person.addresses.sort { it.type.each{it?.getI10n('value') }}}" var="address">
+                                                                <%--<g:each in="${person.addresses.sort { it.type.each{it?.getI10n('value') }}}" var="address">
                                                                     <laser:render template="/templates/cpa/address"
                                                                                   model="${[address: address, tmplShowDeleteButton: false, editable: false]}"/>
                                                                 </g:each>
-                                                                <%--<laser:render template="/templates/cpa/person_full_details" model="${[
+                                                                <laser:render template="/templates/cpa/person_full_details" model="${[
                                                                             person                 : person,
                                                                             personContext          : orgInstance,
                                                                             tmplShowDeleteButton   : true,
@@ -1194,11 +1207,11 @@
         func();
     }
 
-    JSPC.app.addresscreate_prs = function (prsId, typeId, redirect, hideType) {
+    <%--JSPC.app.addresscreate_prs = function (prsId, typeId, redirect, hideType) {
         var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>?prsId=' + prsId + '&typeId=' + typeId + '&redirect=' + redirect + '&hideType=' + hideType;
         var func = bb8.ajax4SimpleModalFunction("#addressFormModal", url, false);
         func();
-    }
+    }--%>
 
     <g:if test="${orgInstance.getCustomerType() in ['ORG_INST', 'ORG_BASIC_MEMBER']}">
         JSPC.app.showRegionsdropdown( $("#country").editable('getValue', true) );

@@ -46,9 +46,9 @@
         ${message(code: 'org.prsLinks.label')}
     </a>
 
-    <a class="${params.tab == 'personAddresses' ? 'active' : ''} item" data-tab="personAddresses">
+    <%--<a class="${params.tab == 'personAddresses' ? 'active' : ''} item" data-tab="personAddresses">
         ${message(code: 'org.prsLinks.adresses.label')}
-    </a>
+    </a>--%>
 
     <a class="${params.tab == 'addresses' ? 'active' : ''} item" data-tab="addresses">
         ${message(code: 'org.addresses.label')}
@@ -118,7 +118,7 @@
 </div>
 
 %{--------------------}%
-<div class="ui bottom attached tab segment ${params.tab == 'personAddresses' ? 'active' : ''}"
+<%--<div class="ui bottom attached tab segment ${params.tab == 'personAddresses' ? 'active' : ''}"
      data-tab="personAddresses">
 
     <ui:filter simple="true">
@@ -178,7 +178,7 @@
                     max="${max}"
                     total="${num_visiblePersons}"/>
 
-</div>
+</div>--%>
 
 %{--------------------}%
 

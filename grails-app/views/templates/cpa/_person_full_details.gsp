@@ -70,7 +70,7 @@
                         <laser:render template="/contact/formModal" model="['prsId': person.id, prId: personRole.id, modalId: 'contactFormModal' + personRole.id]"/>
                     </g:if>
 
-                    <g:if test="${tmplShowAddAddresses}">
+                    <%--<g:if test="${tmplShowAddAddresses}">
                         <% Map model = [:]
                         model.prsId = person?.id
                         model.typeId = RDStore.ADRESS_TYPE_LIBRARY
@@ -79,7 +79,7 @@
                         <input class="ui icon button" type="button"
                                value="${message(code: 'person.addresses.label')}"
                                onclick="JSPC.app.addresscreate_prs('${model.prsId}', '${model.typeId}', '${model.redirect}', '${model.modalId}', '${model.hideType}');" >
-                    </g:if>
+                    </g:if>--%>
 
                 </g:if>
             </div>
@@ -98,14 +98,14 @@
             </g:each>
 
         </g:if>
-        <g:if test="${tmplConfigShow.contains('address') && person.addresses}">
+        <%--<g:if test="${tmplConfigShow.contains('address') && person.addresses}">
 
             <g:each in="${person.addresses.sort { it.type.each{it?.getI10n('value') }}}" var="address">
                 <laser:render template="/templates/cpa/address"
                           model="${[address: address, tmplShowDeleteButton: tmplShowDeleteButton, editable: editable]}"/>
             </g:each>
 
-        </g:if>
+        </g:if>--%>
         <g:if test="${tmplShowFunctions}">
             <g:each in="${person.roleLinks.toSorted()}" var="personRoleLink">
                 <g:if test="${personRoleLink.org.id == personContext.id && personRoleLink.functionType}">

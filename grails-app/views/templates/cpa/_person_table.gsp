@@ -27,9 +27,9 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('showContacts') && showContacts}">
                 <col style="width: 277px;">
             </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('showAddresses') && showAddresses}">
+            <%--<g:if test="${tmplConfigItem.equalsIgnoreCase('showAddresses') && showAddresses}">
                 <col style="width: 332px;">
-            </g:if>
+            </g:if>--%>
         </g:each>
         <col style="width:  82px;">
     </colgroup>
@@ -65,9 +65,9 @@
     <g:if test="${tmplConfigItem.equalsIgnoreCase('showContacts') && showContacts}">
             <th>${message(code: 'person.contacts.label')}</th>
     </g:if>
-    <g:if test="${tmplConfigItem.equalsIgnoreCase('showAddresses') && showAddresses}">
+    <%--<g:if test="${tmplConfigItem.equalsIgnoreCase('showAddresses') && showAddresses}">
             <th>${message(code: 'person.addresses.label')}</th>
-    </g:if>
+    </g:if>--%>
 </g:each>
         <th class="la-action-info">${message(code: 'default.actions.label')}</th>
     </tr>
@@ -178,7 +178,7 @@
                     </div>
                 </td>
             </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('showAddresses') && showAddresses}">
+            <%--<g:if test="${tmplConfigItem.equalsIgnoreCase('showAddresses') && showAddresses}">
                 <td>
                     <div class="ui divided middle aligned list la-flex-list ">
                         <g:each in="${person.addresses.sort { it.type.each{it?.getI10n('value') }}}" var="address">
@@ -190,7 +190,7 @@
                         </g:each>
                     </div>
                 </td>
-            </g:if>
+            </g:if>--%>
         </g:each>
             <td class="x">
                 <g:if test="${editable}">
