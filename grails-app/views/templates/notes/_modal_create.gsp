@@ -11,7 +11,7 @@
         </div>
         <div class="field">
             <label for="noteContent">${message(code:'default.content.label')}:</label>
-            <div id="noteContent" placeholder="Tipp: Formatierung beim Kopieren verloren? Einfach erneut mit STRG+A, dann STRG+V einfügen"></div>
+            <div tabindex="0" id="noteContent" placeholder="Tipp: Formatierung beim Kopieren verloren? Einfach erneut mit STRG+A, dann STRG+V einfügen"></div>
 
             <laser:script file="${this.getGroovyPageFileName()}">
                 wysiwyg.initEditor ('#modalCreateNote #noteContent');
