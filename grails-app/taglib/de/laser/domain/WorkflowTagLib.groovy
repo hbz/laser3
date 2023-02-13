@@ -210,7 +210,7 @@ class WorkflowTagLib {
                         out << pTitle + ': [ <span class="sc_red">' + message(code:'workflow.condition.file.deleted') + '</span> ]'
                     }
                     else {
-                        out << pTitle + ': <a data-documentKey="' + docctx.owner.uuid + ':' + docctx.id + '">' + linkBody + '</a>'
+                        out << pTitle + ': <a href="#documentPreview" data-documentKey="' + docctx.owner.uuid + ':' + docctx.id + '">' + linkBody + '</a>'
                         if (docctx.getDocType()) {
                             out << ' (' + docctx.getDocType().getI10n('value') + ')'
                         }

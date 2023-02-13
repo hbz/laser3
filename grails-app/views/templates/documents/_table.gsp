@@ -123,7 +123,7 @@
                             <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}" />
                             <strong>
                                 <g:if test="${docctx.isDocAFile() && visible && supportedMimeType}">
-                                    <a data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">${docctx.owner.title}</a>
+                                    <a href="#documentPreview" data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">${docctx.owner.title}</a>
                                 </g:if>
                                 <g:else>
                                     ${docctx.owner.title}
