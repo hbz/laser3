@@ -80,7 +80,7 @@
         <g:if test="${editable}">
 
             <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
-                <ui:actionsDropdownItem message="workflow.light.instantiate" data-ui="modal" href="#modalWorkflowInstantiate" />
+                <ui:actionsDropdownItem message="workflow.instantiate" data-ui="modal" href="#modalCreateWorkflow" />
             </g:if>
             <div class="divider"></div>
 

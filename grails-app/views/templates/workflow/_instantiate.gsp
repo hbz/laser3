@@ -22,7 +22,7 @@
     }
 %>
 
-<ui:modal id="modalWorkflowInstantiate" text="Workflow für '${targetText}' erstellen">
+<ui:modal id="modalCreateWorkflow" text="Workflow für '${targetText}' erstellen">
 
     <g:if test="${false}"> %{-- BLOCKED --}%
 
@@ -90,12 +90,12 @@
 
 <laser:script file="${this.getGroovyPageFileName()}">
     $('#modalTabMenu .item').tab({ onVisible : function () {
-        $('#modalWorkflowInstantiate .tab[data-tab=newWorkflow] input').addClass ('disabled').attr ('disabled', 'disabled')
-        $('#modalWorkflowInstantiate .tab[data-tab=copyWorkflow] input').addClass ('disabled').attr ('disabled', 'disabled')
+        $('#modalCreateWorkflow .tab[data-tab=newWorkflow] input').addClass ('disabled').attr ('disabled', 'disabled')
+        $('#modalCreateWorkflow .tab[data-tab=copyWorkflow] input').addClass ('disabled').attr ('disabled', 'disabled')
         $(this).find ('input').removeClass ('disabled').removeAttr ('disabled')
     } })
 
-    JSPC.callbacks.modal.show.modalWorkflowInstantiate = function () {
+    JSPC.callbacks.modal.show.modalCreateWorkflow = function () {
         $('#modalTabMenu .item').tab('change tab', 'copyWorkflow').tab('change tab', 'newWorkflow')
     }
 </laser:script>

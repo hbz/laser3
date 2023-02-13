@@ -376,6 +376,21 @@ class WorkflowService {
         wfList.sort{ a,b -> b.getInfo().lastUpdated <=> a.getInfo().lastUpdated }
     }
 
+    List<WfChecklist> getWorkflows(def obj, Org owner) {
+        if (obj instanceof Subscription) {
+            WfChecklist.executeQuery('select wf from WfChecklist wf where wf.subscription = :sub and wf.owner = :ctxOrg', [sub: obj, ctxOrg: owner])
+        }
+        else if (obj instanceof License) {
+            WfChecklist.executeQuery('select wf from WfChecklist wf where wf.license = :lic and wf.owner = :ctxOrg', [lic: obj, ctxOrg: owner])
+        }
+        else if (obj instanceof Org) {
+            WfChecklist.executeQuery('select wf from WfChecklist wf where wf.org = :org and wf.owner = :ctxOrg', [org: obj, ctxOrg: owner])
+        }
+        else {
+            return []
+        }
+    }
+
     int getWorkflowCount(def obj, Org owner) {
         if (obj instanceof Subscription) {
             WfChecklist.executeQuery('select count(wf) from WfChecklist wf where wf.subscription = :sub and wf.owner = :ctxOrg', [sub: obj, ctxOrg: owner])[0]
