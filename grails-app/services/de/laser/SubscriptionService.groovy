@@ -2596,7 +2596,7 @@ class SubscriptionService {
         Map<String, Object> selectedIEs = [:]
         Org contextOrg = contextService.getOrg()
 
-        List<Long> subscriptionIDs = surveyService.subscriptionsOfOrg(contextOrg)
+        List<Long> subscriptionIDs = surveyService.subscriptionsOfOrg(newSub.getSubscriber())
 
         ArrayList<String> rows = stream.text.split('\n')
         Map<String, Integer> colMap = [zdbCol: -1, onlineIdentifierCol: -1, printIdentifierCol: -1, pick: -1]
