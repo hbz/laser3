@@ -22,7 +22,7 @@
 
                 <g:if test="${inContextOrg || isProviderOrAgency}">
                     <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
-                        <ui:actionsDropdownItem message="workflow.light.instantiate" data-ui="modal" href="#modalWorkflowInstantiate" />
+                        <ui:actionsDropdownItem message="workflow.instantiate" data-ui="modal" href="#modalCreateWorkflow" />
                     </g:if>
                 </g:if>
 
@@ -51,7 +51,7 @@
             <g:if test="${actionName == 'workflows'}">
                 <g:if test="${inContextOrg || isProviderOrAgency}">
                     <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
-                        <ui:actionsDropdownItem message="workflow.light.instantiate" data-ui="modal" href="#modalWorkflowInstantiate" />
+                        <ui:actionsDropdownItem message="workflow.instantiate" data-ui="modal" href="#modalCreateWorkflow" />
                     </g:if>
                 </g:if>
             </g:if>

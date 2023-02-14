@@ -57,20 +57,8 @@
                             <g:formatDate format="${message(code:'default.date.format.notime')}" date="${docctx.owner.lastUpdated}"/>
                         </div>
                         <div class="right aligned six wide column la-column-left-lessPadding">
-                            <%-- START First Button --%>
-                            <g:if test="${!docctx.isShared}">
-                                <g:link controller="${ajaxCallController ?: controllerName}" action="deleteDocuments" class="ui icon negative button la-modern-button js-open-confirm-modal"
-                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.notes", args: [docctx.owner.title])}"
-                                        data-confirm-term-how="delete"
-                                        params='[instanceId:"${ownobj.id}", deleteId:"${docctx.id}", redirectAction:"${ajaxCallAction ?: actionName}"]'
-                                        role="button"
-                                        aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                    <i class="trash alternate outline icon"></i>
-                                </g:link>
-                            </g:if>
-                            <%-- STOP First Button --%>
+                            <%-- 1 --%>
                             <g:if test="${ownobj.respondsTo('showUIShareButton') && ownobj.showUIShareButton()}">
-                            <%-- START Second Button --%>
                                 <g:if test="${docctx?.isShared}">
                                     <ui:remoteLink class="ui icon green button la-modern-button js-no-wait-wheel la-popup-tooltip la-delay"
                                                       controller="ajax"
@@ -79,8 +67,7 @@
                                                       data-content="${message(code:'property.share.tooltip.on')}"
                                                       data-done=""
                                                       data-update="container-notes"
-                                                      role="button"
-                                    >
+                                                      role="button">
                                         <i class="icon la-share la-js-editmode-icon"></i>
                                     </ui:remoteLink>
                                 </g:if>
@@ -94,22 +81,33 @@
                                                       data-confirm-term-how="share"
                                                       data-done=""
                                                       data-update="container-notes"
-                                                      role="button"
-                                    >
+                                                      role="button">
                                         <i class="la-share slash icon la-js-editmode-icon"></i>
                                     </ui:remoteLink>
                                 </g:else>
-
+                            </g:if>
+%{--                            <g:else>--}%
+%{--                                    <!-- Hidden Fake Button To hold the other Botton in Place -->--}%
+%{--                                    <div class="ui icon mini button la-hidden">--}%
+%{--                                        <i class="coffe icon"></i>--}%
+%{--                                    </div>--}%
+%{--                            </g:else>--}%
+                            <%-- 2 --%>
+                            <g:if test="${!docctx.isShared}">
+                                <g:link controller="${ajaxCallController ?: controllerName}" action="deleteDocuments" class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.notes", args: [docctx.owner.title])}"
+                                        data-confirm-term-how="delete"
+                                        params='[instanceId:"${ownobj.id}", deleteId:"${docctx.id}", redirectAction:"${ajaxCallAction ?: actionName}"]'
+                                        role="button"
+                                        aria-label="${message(code: 'ariaLabel.delete.universal')}">
+                                    <i class="trash alternate outline icon"></i>
+                                </g:link>
                             </g:if>
                             <g:else>
-
-                                    <!-- Hidden Fake Button To hold the other Botton in Place -->
-                                    <div class="ui icon mini button la-hidden">
-                                        <i class="coffe icon"></i>
-                                    </div>
-
+                                <div class="ui icon button la-hidden">
+                                    <i class="coffe icon"></i><%-- Hidden Fake Button --%>
+                                </div>
                             </g:else>
-                            <%-- START Second Button --%>
                         </div>
                     </div>
                 </div>

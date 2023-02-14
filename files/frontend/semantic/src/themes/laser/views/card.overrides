@@ -153,8 +153,8 @@
 #container-notes,
 #container-provider,
 #container-billing,
-#container-links
-{
+#container-links,
+#container-workflows {
   width: 100%;
 }
 

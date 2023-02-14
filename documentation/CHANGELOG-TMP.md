@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4831    13.02.2023  dev     3.1         David   Feature     Darstellung: Seitenkacheln
+
 4828    13.02.2023  rc-3.0  3.0.4       Andreas Bug         Merkmalswertfilter schaut bei Konsortialstellen nur noch auf die Elternebene
 
 4826    10.02.2023  dev     3.1         Andreas Bug         verschiedene Bugs und Ausbesserungen bei der Paketverwaltung der Teilnehmer

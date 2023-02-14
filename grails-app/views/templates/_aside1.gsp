@@ -2,14 +2,14 @@
 <%
     boolean parentAtChild = false
 
-    if(ownobj instanceof Subscription) {
+    if (ownobj instanceof Subscription) {
         //array is created and should be extended to collective view; not yet done because collective view is not merged yet
         if(contextOrg.id == ownobj.getConsortia()?.id && ownobj.instanceOf) {
             if(ownobj._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION)
                 parentAtChild = true
         }
     }
-    else if(ownobj instanceof License) {
+    else if (ownobj instanceof License) {
         if(institution.id == ownobj.getLicensingConsortium()?.id && ownobj.instanceOf) {
             parentAtChild = true
         }
@@ -27,4 +27,8 @@
 
 <div id="container-notes">
     <laser:render template="/templates/notes/card" model="${[ownobj:ownobj, owntp:owntp, css_class:'', parentAtChild: parentAtChild]}" />
+</div>
+
+<div id="container-workflows">
+    <laser:render template="/templates/workflow/card" model="${[ownobj:ownobj, owntp:owntp, css_class:'', parentAtChild: parentAtChild]}" />
 </div>

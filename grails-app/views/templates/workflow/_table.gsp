@@ -95,27 +95,26 @@
 <div id="wfFlyout" class="ui eight wide flyout" style="padding:50px 0;overflow:scroll"></div>
 
 <laser:script file="${this.getGroovyPageFileName()}">
-    $('.wfModalLink').on('click', function(e) {
+    $('.wfModalLink').on ('click', function(e) {
         e.preventDefault();
-        var func = bb8.ajax4SimpleModalFunction("#wfModal", $(e.currentTarget).attr('href'), false);
+        var func = bb8.ajax4SimpleModalFunction ("#wfModal", $(e.currentTarget).attr ('href'), false);
         func();
     });
 
     $('button[data-wfId]').on ('click', function(e) {
+        var trigger = $(this).hasClass ('la-modern-button');
+        var key     = "${WfChecklist.KEY}:" + $(this).attr ('data-wfId')
 
-        var trigger = $(this).hasClass('la-modern-button');
-        var wfId    = $(this).attr('data-wfId')
-        var key     = "${WfChecklist.KEY}:" + wfId
-
-        $('button[data-wfId]').addClass('la-modern-button');
-        $('#wfFlyout').flyout({
-            onHide: function(e) {
-                $('button[data-wfId]').addClass('la-modern-button');
+        $('button[data-wfId]').addClass ('la-modern-button');
+        $('#wfFlyout').flyout ({
+            onHide: function (e) {
+                $('button[data-wfId]').addClass ('la-modern-button');
+                document.location = document.location;
             }
-        }).flyout('hide');
+        });
 
         if (trigger) {
-            $(this).removeClass('la-modern-button');
+            $(this).removeClass ('la-modern-button');
 
             $.ajax ({
                 url: "<g:createLink controller="ajaxHtml" action="workflowFlyout"/>",
@@ -123,15 +122,14 @@
                     key: key
                 }
             }).done (function (response) {
-
-                $('#wfFlyout').html(response).flyout('show');
-                r2d2.initDynamicUiStuff('#wfFlyout');
-                r2d2.initDynamicXEditableStuff('#wfFlyout');
+                $('#wfFlyout').html (response).flyout ('show');
+                r2d2.initDynamicUiStuff ('#wfFlyout');
+                r2d2.initDynamicXEditableStuff ('#wfFlyout');
             })
         }
     });
 
     <g:if test="${info}">
-        $('button[data-wfId=' + '${info}'.split(':')[3] + ']').trigger('click');
+        $('button[data-wfId=' + '${info}'.split(':')[3] + ']').trigger ('click');
     </g:if>
 </laser:script>
