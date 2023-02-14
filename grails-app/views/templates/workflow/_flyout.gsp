@@ -2,7 +2,6 @@
 <laser:serviceInjection />
 
 <g:if test="${clist}">
-
     <%
         boolean checkedEditable = workflowService.hasUserPerm_edit()
 
@@ -148,10 +147,6 @@
 
                             <g:if test="${checkedEditable}"><!-- TODO: workflows-permissions -->
                                 <g:if test="${ti > 0}">
-%{--                                    <g:link class="ui icon button blue compact la-modern-button" controller="${clistInfo.targetController}" action="workflows" id="${clistInfo.target.id}"--}%
-%{--                                            params="${[cmd:"moveUp:${WfCheckpoint.KEY}:${cpoint.id}", info:"${wfKey}"]}">--}%
-%{--                                        <i class="icon arrow up"></i>--}%
-%{--                                    </g:link>--}%
                                     <div class="ui icon blue button compact la-modern-button"
                                          data-cmd="moveUp:${WfCheckpoint.KEY}:${cpoint.id}" data-key="${WfChecklist.KEY}:${clist.id}"><i class="icon arrow up"></i>
                                     </div>
@@ -160,10 +155,6 @@
                                     <div class="ui icon button compact la-hidden"><i class="coffee icon"></i></div>
                                 </g:else>
                                 <g:if test="${ti < cpoints.size()-1}">
-%{--                                    <g:link class="ui icon button blue compact la-modern-button" controller="${clistInfo.targetController}" action="workflows" id="${clistInfo.target.id}"--}%
-%{--                                            params="${[cmd:"moveDown:${WfCheckpoint.KEY}:${cpoint.id}", info:"${wfKey}"]}">--}%
-%{--                                        <i class="icon arrow down"></i>--}%
-%{--                                    </g:link>--}%
                                     <div class="ui icon blue button compact la-modern-button"
                                          data-cmd="moveDown:${WfCheckpoint.KEY}:${cpoint.id}" data-key="${WfChecklist.KEY}:${clist.id}"><i class="icon arrow down"></i>
                                     </div>
@@ -237,10 +228,6 @@
                             <div class="ui icon button compact la-hidden"><i class="coffee icon"></i></div>
 
                             <div class="ui icon blue button compact la-modern-button" id="cpFormToggle"><i class="icon plus"></i></div>
-    %{--                        <g:link class="ui icon button blue compact la-modern-button" action="workflows" id="${clistInfo.target.id}"--}%
-    %{--                                params="${[cmd:"add:${WfChecklist.KEY}:${clist.id}", info:"${wfKey}"]}">--}%
-    %{--                            <i class="icon plus"></i>--}%
-    %{--                        </g:link>--}%
                         </div>
                     </div><!-- .row -->
 

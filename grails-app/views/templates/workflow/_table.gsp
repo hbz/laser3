@@ -35,7 +35,7 @@
         <tr>
     </thead>
     <tbody>
-        <g:each in="${workflowService.sortByLastUpdated(checklists)}" var="clist">%{-- !? sorting--}%
+        <g:each in="${workflowService.sortByLastUpdated(checklists)}" var="clist">%{-- !? sortBy bug --}%
             <g:set var="clistInfo" value="${clist.getInfo()}" />
             <tr>
                 <td class="center aligned">
@@ -60,21 +60,12 @@
                 </td>
                 <td class="center aligned">
                     <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
-%{--                        <uiWorkflow:usageIconLinkButton workflow="${clist}" params="${[key: wfLinkParam]}" />--}%
                         <button class="ui icon button blue la-modern-button" data-wfId="${clist.id}"><i class="icon pencil"></i></button>
                     </g:if>
                     <g:elseif test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
-%{--                        <uiWorkflow:usageIconLinkButton workflow="${clist}" params="${[key: wfLinkParam]}" />--}%
                         <button class="ui icon button blue la-modern-button" data-wfId="${clist.id}"><i class="icon pencil"></i></button>
                     </g:elseif>
                     <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
-%{--                        <g:link class="ui icon button blue la-modern-button wfModalLink"--}%
-%{--                                controller="ajaxHtml" action="useWfXModal" params="${[cmd:"usage:${WfChecklist.KEY}:${clist.id}"]}"--}%
-%{--                                role="button"--}%
-%{--                                aria-label="${message(code: 'ariaLabel.delete.universal')}">--}%
-%{--                            <i class="pencil icon"></i>--}%
-%{--                        </g:link>--}%
-
                         <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.workflow", args: [clist.title])}"
                                 data-confirm-term-how="delete"
@@ -92,7 +83,7 @@
 </g:if>
 
 <div id="wfModal" class="ui modal"></div>
-<div id="wfFlyout" class="ui eight wide flyout" style="padding:50px 0;overflow:scroll"></div>
+<div id="wfFlyout" class="ui eight wide flyout" style="padding:50px 0 10px 0;overflow:scroll"></div>
 
 <laser:script file="${this.getGroovyPageFileName()}">
     $('.wfModalLink').on ('click', function(e) {
@@ -107,9 +98,9 @@
 
         $('button[data-wfId]').addClass ('la-modern-button');
         $('#wfFlyout').flyout ({
-            onHide: function (e) {
+            onHidden: function (e) { %{-- after animation --}%
                 $('button[data-wfId]').addClass ('la-modern-button');
-                document.location = document.location;
+                document.location = document.location.origin + document.location.pathname;
             }
         });
 
