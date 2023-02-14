@@ -576,6 +576,19 @@ class ExportClickMeService {
             ]
     ]
 
+    static Map<String, Object> EXPORT_ADDRESS_FILTER = [
+            function : [
+                    label: 'Function',
+                    message: 'person.function.label',
+                    fields: [:]
+            ],
+            position : [
+                    label: 'Position',
+                    message: 'person.position.label',
+                    fields: [:]
+            ]
+    ]
+
     static Map<String, Object> EXPORT_SURVEY_EVALUATION = [
             //Wichtig: Hier bei dieser Config bitte drauf achten, welche Feld Bezeichnung gesetzt ist,
             // weil die Felder von einer zusammengesetzten Map kommen. siehe ExportClickMeService -> exportSurveyEvaluation
@@ -1428,10 +1441,20 @@ class ExportClickMeService {
 
     Map<String, Object> getExportAddressFieldsForUI() {
 
-        Map<String, Object> fields = EXPORT_ADDRESS_CONFIG as Map
+        Map<String, Object> fields = EXPORT_ADDRESS_CONFIG as Map, filterFields = EXPORT_ADDRESS_FILTER as Map
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
 
+        Org institution = contextService.getOrg()
+        String i10nAttr = LocaleUtils.getLocalizedAttributeName('value')
+        Set<RefdataValue> functionTypes = PersonRole.executeQuery('select ft from PersonRole pr join pr.functionType ft join pr.prs p where p.tenant = :contextOrg order by ft.'+i10nAttr, [contextOrg: institution])
+        Set<RefdataValue> positionTypes = PersonRole.executeQuery('select pt from PersonRole pr join pr.positionType pt join pr.prs p where p.tenant = :contextOrg order by pt.'+i10nAttr, [contextOrg: institution])
 
+        functionTypes.each { RefdataValue functionType ->
+            filterFields.function.fields.put('function.'+functionType.id, [field: null, label: functionType.getI10n('value')])
+        }
+        positionTypes.each { RefdataValue positionType ->
+            filterFields.position.fields.put('position.'+positionType.id, [field: null, label: positionType.getI10n('value')])
+        }
 
         /*
         switch(orgType) {
@@ -1464,7 +1487,7 @@ class ExportClickMeService {
         }
         */
 
-        fields
+        [exportFields: fields, filterFields: filterFields]
     }
 
     /**
@@ -2038,14 +2061,17 @@ class ExportClickMeService {
         return exportService.generateXLSXWorkbook(sheetData)
     }
 
-    SXSSFWorkbook exportAddresses(List visiblePersons, Map<String, Object> selectedFields) {
+    SXSSFWorkbook exportAddresses(List visiblePersons, Map<String, Object> selectedFields, withInstData, withProvData) {
         Locale locale = LocaleUtils.getCurrentLocale()
         Map<String, Object> configFields = getExportAddressFields(), selectedExportFields = [:], sheetData = [:]
-        List exportData = []
+        List instData = [], provData = []
 
         selectedFields.keySet().each { String key ->
             selectedExportFields.put(key, configFields.get(key))
         }
+
+        List titleRow = [messageSource.getMessage('contact.contentType.label', null, locale)]
+        titleRow.addAll(_exportTitles(selectedExportFields, locale))
 
         Map<Person, Map<String, Map<String, String>>> addressesContacts = [:]
         visiblePersons.each { Person p ->
@@ -2077,13 +2103,19 @@ class ExportClickMeService {
         }
         addressesContacts.each { Person p, Map<String, Map<String, String>> contactData ->
             for(int addressRow = 0; addressRow < contactData.size(); addressRow++) {
-                List row = []
+                String contactType = ''
+                PersonRole orgLink = p.roleLinks.find { PersonRole pr -> pr.org != null }
+                if(orgLink.functionType)
+                    contactType = orgLink.functionType.getI10n('value')
+                else if(orgLink.positionType)
+                    contactType = orgLink.positionType.getI10n('value')
+                List row = [[field: contactType, style: null]]
                 Map.Entry<String, Map<String, String>> contact = contactData.entrySet()[addressRow]
                 //Address a = p.addresses[addressRow]
                 selectedExportFields.each { String fieldKey, Map mapSelectedFields ->
                     String field = mapSelectedFields.field
                     if (field == 'organisation') {
-                        row.add([field: p.roleLinks.find { PersonRole pr -> pr.org != null }.org.name, style: null])
+                        row.add([field: orgLink.org.name, style: null])
                     }
                     else if (field == 'receiver') {
                         row.add([field: p.toString(), style: null])
@@ -2100,11 +2132,18 @@ class ExportClickMeService {
                         }
                     }*/
                 }
-                exportData << row
+                if(orgLink.org.getCustomerType())
+                    instData << row
+                else provData << row
             }
         }
 
-        sheetData[messageSource.getMessage('menu.institutions.myAddressbook', null, locale)] = [titleRow: _exportTitles(selectedExportFields, locale), columnData: exportData]
+        if(withInstData)
+            sheetData[messageSource.getMessage('org.institution.plural', null, locale)] = [titleRow: titleRow, columnData: instData]
+        if(withProvData)
+            sheetData[messageSource.getMessage('default.agency.provider.plural.label', null, locale)] = [titleRow: titleRow, columnData: provData]
+        if(sheetData.size() == 0)
+            sheetData[messageSource.getMessage('org.institution.plural', null, locale)] = [titleRow: titleRow, columnData: []]
         return exportService.generateXLSXWorkbook(sheetData)
     }
 
