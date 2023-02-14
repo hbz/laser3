@@ -438,10 +438,10 @@ class AjaxHtmlController {
             model.modalId = 'addressFormModal'
             String messageCode = 'person.address.label'
             model.typeId = model.addressInstance.type.id
-            if(model.addressInstance.prs) {
+            /*if(model.addressInstance.prs) {
                 model.modalText = message(code: 'default.edit.label', args: [message(code: messageCode)]) + ' (' + model.addressInstance.prs.toString() + ')'
-            }
-            else if(model.addressInstance.org) {
+            }*/
+            if(model.addressInstance.org) {
                 model.modalText = message(code: 'default.edit.label', args: [message(code: messageCode)]) + ' (' + model.addressInstance.org.toString() + ')'
             }
             else{

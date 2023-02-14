@@ -39,7 +39,7 @@ class Address {
     String additionFirst
     String additionSecond
 
-    Person prs              // person related contact; exclusive with org
+    //Person prs              // person related contact; exclusive with org, deprecated and to be removed as of ERMS-4492
     Org    org              // org related contact; exclusive with prs
 
     @RefdataInfo(cat = RDConstants.ADDRESS_TYPE)
@@ -62,7 +62,7 @@ class Address {
         name     column:'adr_name'
         additionFirst   column:'adr_addition_first'
         additionSecond  column:'adr_addition_second'
-        prs      column:'adr_prs_fk', index: 'adr_prs_idx'
+        //prs      column:'adr_prs_fk', index: 'adr_prs_idx'
         org      column:'adr_org_fk', index: 'adr_org_idx'
 
         lastUpdated     column: 'adr_last_updated'
@@ -88,7 +88,7 @@ class Address {
         name            (nullable:true,  blank:false)
         additionFirst   (nullable:true,  blank:false)
         additionSecond  (nullable:true,  blank:false)
-        prs      (nullable:true)
+        //prs      (nullable:true)
         org      (nullable:true)
         lastUpdated (nullable: true)
     }

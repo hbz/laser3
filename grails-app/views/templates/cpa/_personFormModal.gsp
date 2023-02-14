@@ -292,7 +292,7 @@
 
         </g:if>
 
-        <g:if test="${showAddresses}">
+        <%--<g:if test="${showAddresses}">
             <div class="field">
                 <br />
                 <label>
@@ -329,7 +329,7 @@
                 <div id="addressElements"></div>
             </g:if>
 
-        </g:if>
+        </g:if>--%>
 
     </g:form>
 

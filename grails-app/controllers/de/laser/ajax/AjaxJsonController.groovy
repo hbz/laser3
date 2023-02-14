@@ -413,7 +413,6 @@ class AjaxJsonController {
             PropertyDefinition propDef = (PropertyDefinition) genericOIDService.resolveOID(params.oid)
             if (propDef) {
                 List<AbstractPropertyWithCalculatedLastUpdated> values
-
                 if (propDef.tenant) {
                     switch (propDef.descr) {
                         case PropertyDefinition.SUB_PROP: values = SubscriptionProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.getOrg(),false)
@@ -430,7 +429,9 @@ class AjaxJsonController {
                 }
                 else {
                     switch (propDef.descr) {
-                        case PropertyDefinition.SUB_PROP: values = SubscriptionProperty.executeQuery('select sp from SubscriptionProperty sp left join sp.owner.orgRelations oo where sp.type = :propDef and (sp.tenant = :tenant or ((sp.tenant != :tenant and sp.isPublic = true) or sp.instanceOf != null) and :tenant in oo.org)',[propDef:propDef, tenant:contextService.getOrg()])
+                        case PropertyDefinition.SUB_PROP:
+                            String consortialFilter = contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM' ? ' and sp.owner.instanceOf = null' : ''
+                            values = SubscriptionProperty.executeQuery('select sp from SubscriptionProperty sp left join sp.owner.orgRelations oo where sp.type = :propDef and ((sp.tenant = :tenant or ((sp.tenant != :tenant and sp.isPublic = true) or sp.instanceOf != null) and :tenant in oo.org))'+consortialFilter,[propDef:propDef, tenant:contextService.getOrg()])
                             break
                         case PropertyDefinition.ORG_PROP: values = OrgProperty.executeQuery('select op from OrgProperty op where op.type = :propDef and ((op.tenant = :tenant and op.isPublic = true) or op.tenant = null)',[propDef:propDef,tenant:contextService.getOrg()])
                             break
@@ -438,7 +439,9 @@ class AjaxJsonController {
                         break
                     case PropertyDefinition.PRS_PROP: values = PersonProperty.findAllByType(propDef)
                         break*/
-                        case PropertyDefinition.LIC_PROP: values = LicenseProperty.executeQuery('select lp from LicenseProperty lp left join lp.owner.orgRelations oo where lp.type = :propDef and (lp.tenant = :tenant or ((lp.tenant != :tenant and lp.isPublic = true) or lp.instanceOf != null) and :tenant in oo.org)',[propDef:propDef, tenant:contextService.getOrg()])
+                        case PropertyDefinition.LIC_PROP:
+                            String consortialFilter = contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM' ? ' and lp.owner.instanceOf = null' : ''
+                            values = LicenseProperty.executeQuery('select lp from LicenseProperty lp left join lp.owner.orgRelations oo where lp.type = :propDef and ((lp.tenant = :tenant or ((lp.tenant != :tenant and lp.isPublic = true) or lp.instanceOf != null) and :tenant in oo.org))'+consortialFilter,[propDef:propDef, tenant:contextService.getOrg()])
                             break
                     }
                 }
