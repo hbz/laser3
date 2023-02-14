@@ -18,6 +18,7 @@ class AddressbookService {
 
     AccessService accessService
     ContextService contextService
+    FilterService filterService
     PropertyService propertyService
 
     /**
@@ -116,22 +117,26 @@ class AddressbookService {
             qParams << [name: "${params.org}"]
         }
 
-        if (params.function){
-            qParts << "pr.functionType.id in (:selectedFunctions) "
-            qParams << [selectedFunctions: params.list('function').collect{Long.parseLong(it)}]
+        if (params.function || params.position) {
+            List<String> posParts = []
+            if (params.function){
+                posParts << "pr.functionType.id in (:selectedFunctions) "
+                qParams << [selectedFunctions: filterService.listReaderWrapper(params, 'function').collect{Long.parseLong(it)}]
+            }
+
+            if (params.position){
+                posParts << "pr.positionType.id in (:selectedPositions) "
+                qParams << [selectedPositions: filterService.listReaderWrapper(params, 'position').collect{Long.parseLong(it)}]
+            }
+            qParts << '('+posParts.join(' OR ')+')'
         }
 
-        if (params.position){
-            qParts << "pr.positionType.id in (:selectedPositions) "
-            qParams << [selectedPositions: params.list('position').collect{Long.parseLong(it)}]
-        }
-
-        if (params.showOnlyContactPersonForInstitution){
+        if (params.showOnlyContactPersonForInstitution || params.exportOnlyContactPersonForInstitution){
             qParts << "(exists (select roletype from pr.org.orgType as roletype where roletype.id = :instType ) and pr.org.sector.id = :instSector )"
             qParams << [instSector: RDStore.O_SECTOR_HIGHER_EDU.id, instType: RDStore.OT_INSTITUTION.id]
         }
 
-        if (params.showOnlyContactPersonForProviderAgency){
+        if (params.showOnlyContactPersonForProviderAgency || params.exportOnlyContactPersonForProviderAgency){
             qParts << "(exists (select roletype from pr.org.orgType as roletype where roletype.id in (:orgType)) and pr.org.sector.id = :orgSector )"
             qParams << [orgSector: RDStore.O_SECTOR_PUBLISHER.id, orgType: [RDStore.OT_PROVIDER.id, RDStore.OT_AGENCY.id]]
         }
