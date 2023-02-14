@@ -92,6 +92,8 @@ deckSaver = {
             // ***************************
             // show Contoll Elements
             // ***************************
+            $('body').removeClass('la-decksaver-active');
+
             $('.button').removeClass('hidden');
             deckSaver.removeClone();
             deckSaver.removePopupFromClone();
@@ -115,11 +117,13 @@ deckSaver = {
 
             $('.la-js-toggle-hideThis').addClass('hidden');    // generic toggle selector - erms-4688
             $('.la-js-toggle-showThis').removeClass('hidden'); // generic toggle selector - erms-4688
-        } else {
-
+        }
+        else {
             // ***************************
             // hide Contoll Elements
             // ***************************
+            $('body').addClass('la-decksaver-active');
+
             deckSaver.configs.icon = $(".la-js-editmode-icon");
             deckSaver.configs.icon.each(function () {
                 var container = $(this).closest('.la-js-editmode-container');

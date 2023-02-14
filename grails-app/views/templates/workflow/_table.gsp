@@ -109,8 +109,9 @@
         $('#wfFlyout').flyout ({
             onHide: function (e) {
                 $('button[data-wfId]').addClass ('la-modern-button');
+                document.location = document.location;
             }
-        }).flyout('hide');
+        });
 
         if (trigger) {
             $(this).removeClass ('la-modern-button');

@@ -624,6 +624,13 @@
 
         <div id="dynamicModalContainer"></div>
 
+        %{-- global page dimmer --}%
+
+        <div id="pageDimmer" class="ui page dimmer"></div>
+        <style>
+            #pageDimmer { background-color: rgba(0,0,0, 0.40)}  %{-- TMP --}%
+        </style>
+
         %{-- global loading indicator --}%
 
         <div id="loadingIndicator" style="display: none">

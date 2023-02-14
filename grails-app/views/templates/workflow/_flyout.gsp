@@ -1,10 +1,19 @@
-<%@ page import="de.laser.workflow.WorkflowHelper; de.laser.workflow.WfCheckpoint; de.laser.workflow.WfChecklist; de.laser.WorkflowOldService; de.laser.utils.DateUtils; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.UserSetting; de.laser.workflow.WorkflowHelper; de.laser.workflow.WfCheckpoint; de.laser.workflow.WfChecklist; de.laser.WorkflowOldService; de.laser.utils.DateUtils; de.laser.storage.RDStore" %>
 <laser:serviceInjection />
 
 <g:if test="${clist}">
 
+    <%
+        boolean checkedEditable = workflowService.hasUserPerm_edit()
+
+        if (referer) {
+            if (referer.contains('license/show') || referer.contains('lic/show') || referer.contains('subscription/show') || referer.contains('sub/show')) {
+                checkedEditable = checkedEditable && (contextService.getUser().getSetting(UserSetting.KEYS.SHOW_EDIT_MODE, RDStore.YN_YES).getValue() == RDStore.YN_YES)
+            }
+        }
+    %>
+
     <g:set var="clistInfo" value="${clist.getInfo()}" />
-    <g:set var="overEdit" value="${workflowService.hasUserPerm_edit()}" />
 
     <div class="ui header center aligned">
         Bearbeitung von: ${clist.title}
@@ -24,26 +33,26 @@
                                 <dt>${message(code: 'workflow.label')}</dt>
                                 <dd>
                                     <div class="ui header">
-                                        <ui:xEditable overwriteEditable="${overEdit}" owner="${clist}" field="title" type="text" />
+                                        <ui:xEditable overwriteEditable="${checkedEditable}" owner="${clist}" field="title" type="text" />
                                     </div>
                                 </dd>
                             </dl>
                             <dl>
                                 <dt>${message(code: 'default.description.label')}</dt>
                                 <dd>
-                                    <ui:xEditable overwriteEditable="${overEdit}" owner="${clist}" field="description" type="textarea" />
+                                    <ui:xEditable overwriteEditable="${checkedEditable}" owner="${clist}" field="description" type="textarea" />
                                 </dd>
                             </dl>
                             <dl>
                                 <dt>${message(code: 'default.comment.label')}</dt>
                                 <dd>
-                                    <ui:xEditable overwriteEditable="${overEdit}" owner="${clist}" field="comment" type="textarea" />
+                                    <ui:xEditable overwriteEditable="${checkedEditable}" owner="${clist}" field="comment" type="textarea" />
                                 </dd>
                             </dl>
                             <dl>
                                 <dt>${message(code: 'workflow.template')}</dt>
                                 <dd>
-                                    <ui:xEditableBoolean overwriteEditable="${overEdit}" owner="${clist}" field="template" />
+                                    <ui:xEditableBoolean overwriteEditable="${checkedEditable}" owner="${clist}" field="template" />
                                 </dd>
                             </dl>
                             <dl>
@@ -92,32 +101,32 @@
                                     <dt>${message(code: 'workflow.task.label')}</dt>
                                     <dd>
                                         <div class="ui header">
-                                            <ui:xEditable overwriteEditable="${overEdit}" owner="${cpoint}" field="title" type="text" />
+                                            <ui:xEditable overwriteEditable="${checkedEditable}" owner="${cpoint}" field="title" type="text" />
                                         </div>
                                     </dd>
                                 </dl>
                                 <dl>
                                     <dt>${message(code: 'default.description.label')}</dt>
                                     <dd>
-                                        <ui:xEditable overwriteEditable="${overEdit}" owner="${cpoint}" field="description" type="textarea" />
+                                        <ui:xEditable overwriteEditable="${checkedEditable}" owner="${cpoint}" field="description" type="textarea" />
                                     </dd>
                                 </dl>
                                 <dl>
                                     <dt>${message(code: 'default.comment.label')}</dt>
                                     <dd>
-                                        <ui:xEditable overwriteEditable="${overEdit}" owner="${cpoint}" field="comment" type="textarea" />
+                                        <ui:xEditable overwriteEditable="${checkedEditable}" owner="${cpoint}" field="comment" type="textarea" />
                                     </dd>
                                 </dl>
                                 <dl>
                                     <dt>${message(code: 'workflow.checkpoint.done')}</dt>
                                     <dd>
-                                        <ui:xEditableBoolean overwriteEditable="${overEdit}" owner="${cpoint}" field="done" />
+                                        <ui:xEditableBoolean overwriteEditable="${checkedEditable}" owner="${cpoint}" field="done" />
                                     </dd>
                                 </dl>
                                 <dl>
                                     <dt>${message(code: 'workflow.checkpoint.date')}</dt>
                                     <dd>
-                                        <ui:xEditable overwriteEditable="${overEdit}" owner="${cpoint}" field="date" type="date" />
+                                        <ui:xEditable overwriteEditable="${checkedEditable}" owner="${cpoint}" field="date" type="date" />
                                     </dd>
                                 </dl>
 
@@ -137,7 +146,7 @@
 
                         <div class="four wide column wf-centered">
 
-                            <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
+                            <g:if test="${checkedEditable}"><!-- TODO: workflows-permissions -->
                                 <g:if test="${ti > 0}">
 %{--                                    <g:link class="ui icon button blue compact la-modern-button" controller="${clistInfo.targetController}" action="workflows" id="${clistInfo.target.id}"--}%
 %{--                                            params="${[cmd:"moveUp:${WfCheckpoint.KEY}:${cpoint.id}", info:"${wfKey}"]}">--}%
@@ -164,7 +173,7 @@
                                 </g:else>
                             </g:if>
 
-                            <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
+                            <g:if test="${checkedEditable}"><!-- TODO: workflows-permissions -->
 %{--                                <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"--}%
 %{--                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.checkpoint", args: [cpoint.title])}"--}%
 %{--                                        data-confirm-term-how="delete"--}%
@@ -190,7 +199,7 @@
 
                 <!-- -->
 
-                <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
+                <g:if test="${checkedEditable}"><!-- TODO: workflows-permissions -->
 
                     <div class="row">
                         <div class="two wide column"></div>
@@ -258,13 +267,13 @@
             $.ajax ({
                 url: "<g:createLink controller="ajaxHtml" action="workflowFlyout"/>",
                 data: {
-                    cmd: $(this).attr('data-cmd'),
-                    key: $(this).attr('data-key'),
+                    cmd: $(this).attr ('data-cmd'),
+                    key: $(this).attr ('data-key'),
                 }
             }).done (function (response) {
-                $('#wfFlyout').html(response);
-                r2d2.initDynamicUiStuff('#wfFlyout');
-                r2d2.initDynamicXEditableStuff('#wfFlyout');
+                $('#wfFlyout').html (response);
+                r2d2.initDynamicUiStuff ('#wfFlyout');
+                r2d2.initDynamicXEditableStuff ('#wfFlyout');
             })
         })
         $('#cpForm input[type=submit]').on ('click', function(e) {
@@ -273,9 +282,9 @@
                 url: "<g:createLink controller="ajaxHtml" action="workflowFlyout"/>",
                 data: $('#cpForm').serialize()
             }).done (function (response) {
-                $('#wfFlyout').html(response);
-                r2d2.initDynamicUiStuff('#wfFlyout');
-                r2d2.initDynamicXEditableStuff('#wfFlyout');
+                $('#wfFlyout').html (response);
+                r2d2.initDynamicUiStuff ('#wfFlyout');
+                r2d2.initDynamicXEditableStuff ('#wfFlyout');
             })
         })
     </laser:script>

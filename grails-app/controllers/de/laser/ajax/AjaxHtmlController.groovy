@@ -1117,8 +1117,10 @@ class AjaxHtmlController {
 //                result.tmplModalTitle = g.message(code:'task.label') + ': ' +  result.checkpoint.title
 //            }
         }
-        //println result
-        render template: '/templates/workflow/checklist', model: result
+        // todo
+        result.referer = request.getHeader('referer')
+
+        render template: '/templates/workflow/flyout', model: result
     }
 
     @Secured(['ROLE_USER'])

@@ -41,9 +41,16 @@
 <laser:script file="${this.getGroovyPageFileName()}">
 
     $('a[data-wfId]').on ('click', function(e) {
-        var key = '${WfChecklist.KEY}:' + $(this).attr ('data-wfId')
+        var key = '${WfChecklist.KEY}:' + $(this).attr ('data-wfId');
 
-        $('#wfFlyout').flyout('hide');
+        if (! $('body').hasClass ('la-decksaver-active')) {
+            $('#wfFlyout').flyout ({
+                onHide: function (e) {
+                    $('.ui.page.dimmer').dimmer ('show');
+                    document.location = document.location;
+                }
+            });
+        }
 
         $.ajax ({
             url: "<g:createLink controller="ajaxHtml" action="workflowFlyout"/>",
