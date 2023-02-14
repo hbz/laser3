@@ -9,4 +9,7 @@
 @zIndex: auto;
 
 @headerFontSize: 1rem;
-@headerColor: @grey;
+@headerColor:  @linkColor;
+
+@boxShadow: none;
+
