@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4818    14.02.2023  rc-3.0  3.0.4       Moe     Bug         Individuelle Umfrage Mails erstellen: Nachbesserung/Bug
+
 4824    09.02.2023  rc-3.0  3.0.4       Andreas Feature     EZB-Lizenzlistenendpunkt um Einrichtungsfilter erweitert
 
 4820    07.02.2023  rc-3.0  3.0.4       Andreas Feature     seltsamer Bug unterschlug Kosten
