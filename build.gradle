@@ -115,8 +115,8 @@ dependencies {
     implementation 'org.grails.plugins:quartz:2.0.13'                       // 2019
     implementation 'org.grails.plugins:wkhtmltopdf:1.0.0.RC9'               // 2018
 
-    implementation 'org.hibernate:hibernate-core:5.6.14.Final'              // 2022
-    implementation 'org.hibernate:hibernate-ehcache:5.6.14.Final'           // 2022 : + org.hibernate:hibernate-core:5.6.14.Final
+    implementation 'org.hibernate:hibernate-core:5.6.15.Final'              // 2023
+    implementation 'org.hibernate:hibernate-ehcache:5.6.15.Final'           // 2023 : + org.hibernate:hibernate-core:5.6.15.Final
     implementation 'net.sf.ehcache:ehcache:2.10.9.2'                        // 2021
 //    implementation 'org.hibernate:hibernate-jcache:5.4.33.Final'          //        replacement for hibernate-ehcache:5.6.14.Final
 //    implementation 'org.ehcache:ehcache:3.9.9'                            //        replacement for net.sf.ehcache:ehcache:2.10.9.2
