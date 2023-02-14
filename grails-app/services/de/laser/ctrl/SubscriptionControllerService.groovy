@@ -1362,7 +1362,7 @@ class SubscriptionControllerService {
             if(result.surveyConfig.pickAndChoosePerpetualAccess) {
                 subscriptions = linksGenerationService.getSuccessionChain(newSub, 'sourceSubscription')
                 subscriptions << newSub
-                result.subscriptionIDs = surveyService.subscriptionsOfOrg(result.institution)
+                result.subscriptionIDs = surveyService.subscriptionsOfOrg(result.subscriber)
             }else {
                 subscriptions << previousSubscription
             }
@@ -2228,7 +2228,7 @@ class SubscriptionControllerService {
             }*/
             // We need all issue entitlements from the parent subscription where no row exists in the current subscription for that item.
 
-            result.subscriptionIDs = surveyService.subscriptionsOfOrg(result.institution)
+            result.subscriptionIDs = surveyService.subscriptionsOfOrg(result.subscription.getSubscriber())
 
             String basequery
             Map<String,Object> qry_params = [subscription:result.subscription,tippStatus:tipp_current,issueEntitlementStatus:ie_current]
