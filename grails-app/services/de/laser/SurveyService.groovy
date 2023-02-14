@@ -1715,10 +1715,6 @@ class SurveyService {
                      acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED])[0]
 
             if(countIes > 0){
-                println(tipp.id)
-                println(tipp.name)
-                println(tipp.hostPlatformURL)
-                println(subscriptionIDs)
                 return true
             }else {
                 return false
