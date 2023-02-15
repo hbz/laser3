@@ -2734,7 +2734,7 @@ join sub.orgRelations or_sub where
         }
 
         result.total = result.currentWorkflows.size()
-        result.currentWorkflows = workflowService.sortByLastUpdated(result.currentWorkflows) // todo - .drop(result.offset).take(result.max)
+        result.currentWorkflows = workflowService.sortByLastUpdated(result.currentWorkflows).drop(result.offset).take(result.max) // pagination
 
         result
     }

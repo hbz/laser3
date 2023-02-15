@@ -152,6 +152,8 @@
     </tbody>
 </table>
 
+<ui:paginate action="currentWorkflows" controller="myInstitution" max="${max}" offset="${offset}" total="${total}" />
+
 <div id="wfModal" class="ui modal"></div>
 
 <laser:script file="${this.getGroovyPageFileName()}">

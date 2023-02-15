@@ -4,7 +4,6 @@ import de.laser.auth.User
 import de.laser.config.ConfigDefaults
 import de.laser.config.ConfigMapper
 import de.laser.utils.AppUtils
-import de.laser.utils.DateUtils
 import de.laser.workflow.*
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap

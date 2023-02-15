@@ -1117,7 +1117,6 @@ class AjaxHtmlController {
 //                result.tmplModalTitle = g.message(code:'task.label') + ': ' +  result.checkpoint.title
 //            }
         }
-        // todo
         result.referer = request.getHeader('referer')
 
         render template: '/templates/workflow/flyout', model: result
@@ -1165,7 +1164,7 @@ class AjaxHtmlController {
 
             if (result.prefix == WfChecklist.KEY) {
                 result.checklist      = WfChecklist.get( key[4] )
-                result.tmplModalTitle = g.message(code:'workflow.label')
+                result.tmplModalTitle = g.message(code:'workflow.label') as String
             }
             else if (result.prefix == WfCheckpoint.KEY) {
                 result.checkpoint     = WfCheckpoint.get( key[4] )
