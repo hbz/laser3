@@ -524,6 +524,7 @@
         for incremental harvesting
 
       parameters:
+        - $ref: "#/components/parameters/ezbOrgId"
         - $ref: "#/components/parameters/changedFrom"
         - $ref: "#/components/parameters/authorization"
 

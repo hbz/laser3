@@ -164,6 +164,7 @@ console.log('(http-header) x-authorization: ' + authorization)
             var selectors = {
                 query_q:       'tr[data-param-name="q"] input',
                 query_v:       'tr[data-param-name="v"] input',
+                query_ezbOrgId: 'tr[data-param-name="ezbOrgId"] input',
                 query_changedFrom: 'tr[data-param-name="changedFrom"] input',
                 query_context: 'tr[data-param-name="context"] input',
 
@@ -244,13 +245,15 @@ console.log('(http-header) x-authorization: ' + authorization)
                 if(method == "GET") {
                     var q = jQuery(div).find(selectors.query_q)
                     var v = jQuery(div).find(selectors.query_v)
+                    var ezbOrgId = jQuery(div).find(selectors.query_ezbOrgId)
                     var changedFrom = jQuery(div).find(selectors.query_changedFrom)
 
                     q = (q.length && q.val().trim().length) ? "q=" + q.val().trim() : ''
                     v = (v.length && v.val().trim().length) ? "v=" + v.val().trim() : ''
+                    ezbOrgId = (ezbOrgId.length && ezbOrgId.val().trim().length) ? "ezbOrgId=" + ezbOrgId.val().trim() : ''
                     changedFrom = (changedFrom.length && changedFrom.val().trim().length) ? "changedFrom=" + changedFrom.val().trim() : ''
 
-                    query = q + ( q ? '&' : '') + v + (context ? (q || v ? '&' : '') + "context=" + context : '') + ( changedFrom ? (q || v || context ? '&' : '') : '' ) + changedFrom
+                    query = q + ( q ? '&' : '') + v + (context ? (q || v ? '&' : '') + "context=" + context : '') + ( changedFrom ? (q || v || context ? '&' : '') : '' ) + changedFrom + ( ezbOrgId ? (q || v || context || changedFrom ? '&' : '') : '' ) + ezbOrgId
                 }
                 else if(method == "POST") {
                     query = (context ? "&context=" + context : '')

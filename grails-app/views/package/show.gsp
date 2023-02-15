@@ -146,7 +146,7 @@
                             </dl>
                             <dl>
                                 <dt>${message(code: 'package.paymentType.label')}</dt>
-                                <dd>${RefdataValue.getByValueAndCategory(packageInstanceRecord.paymentType, RDConstants.PAYMENT_TYPE) ? RefdataValue.getByValueAndCategory(packageInstanceRecord.paymentType,RDConstants.PAYMENT_TYPE).getI10n("value") : packageInstanceRecord.paymentType}</dd>
+                                <dd>${packageInstanceRecord.paymentType ? RefdataValue.getByValueAndCategory(packageInstanceRecord.paymentType,RDConstants.PAYMENT_TYPE).getI10n("value") : message(code: 'default.not.available')}</dd>
                             </dl>
                             <dl>
                                 <dt>${message(code: 'package.openAccess.label')}</dt>

@@ -7,6 +7,20 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      15.02.2023  rc-3.0  3.0.4       Andreas Bug         Synchronisationsfehler behoben
+
+4838    15.02.2023  rc-3.0  3.0.4       Moe     Feature     Bestandsfilter: "Aktuell" + "Abgelaufen" nur bei dauerhaftem Zugriff
+
+4818    14.02.2023  rc-3.0  3.0.4       Moe     Bug         Individuelle Umfrage Mails erstellen: Nachbesserung/Bug
+
+4828    13.02.2023  rc-3.0  3.0.4       Andreas Bug         Merkmalswertfilter schaut bei Konsortialstellen nur noch auf die Elternebene
+
+4824    09.02.2023  rc-3.0  3.0.4       Andreas Feature     EZB-Lizenzlistenendpunkt um Einrichtungsfilter erweitert
+
+4820    07.02.2023  rc-3.0  3.0.4       Andreas Feature     seltsamer Bug unterschlug Kosten
+
+4798    03.02.2023  rc-3.0  3.0.4       David   Feature     Allgemeine Merkmale für Organisationen entfernen
+
 --      02.02.2023  rc-3.0  3.0.3       Andreas Bug         Meine Lizenzen pro Einrichtung lieferte unvollständige Daten
 
 --      02.02.2023  rc-3.0  3.0.3       Andreas Bug         inkorrekte Rundung der Rechnungssumme behoben

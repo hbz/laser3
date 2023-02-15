@@ -1362,7 +1362,7 @@ class SubscriptionControllerService {
             if(result.surveyConfig.pickAndChoosePerpetualAccess) {
                 subscriptions = linksGenerationService.getSuccessionChain(newSub, 'sourceSubscription')
                 subscriptions << newSub
-                result.subscriptionIDs = surveyService.subscriptionsOfOrg(result.institution)
+                result.subscriptionIDs = surveyService.subscriptionsOfOrg(result.subscriber)
             }else {
                 subscriptions << previousSubscription
             }
@@ -1984,7 +1984,7 @@ class SubscriptionControllerService {
             result.pendingChanges = pendingChanges*/
 
             params.ieAcceptStatusFixed = true
-            params.status = params.status ?: [RDStore.TIPP_STATUS_CURRENT.id.toString(), RDStore.TIPP_STATUS_RETIRED.id.toString()]
+            params.status = params.status ?: (result.subscription.hasPerpetualAccess ? [RDStore.TIPP_STATUS_CURRENT.id.toString(), RDStore.TIPP_STATUS_RETIRED.id.toString()] : [RDStore.TIPP_STATUS_CURRENT.id.toString()])
             Map query = filterService.getIssueEntitlementQuery(params, result.subscription)
             result.filterSet = query.filterSet
             Set entitlements = IssueEntitlement.executeQuery("select new map(ie.id as id, ie.sortname as sortname) " + query.query, query.queryParams)
@@ -2228,7 +2228,7 @@ class SubscriptionControllerService {
             }*/
             // We need all issue entitlements from the parent subscription where no row exists in the current subscription for that item.
 
-            result.subscriptionIDs = surveyService.subscriptionsOfOrg(result.institution)
+            result.subscriptionIDs = surveyService.subscriptionsOfOrg(result.subscription.getSubscriber())
 
             String basequery
             Map<String,Object> qry_params = [subscription:result.subscription,tippStatus:tipp_current,issueEntitlementStatus:ie_current]
@@ -3654,7 +3654,7 @@ class SubscriptionControllerService {
 
             if(result.contextCustomerType == "ORG_CONSORTIUM") {
                 if(result.subscription.instanceOf){
-                    List subscrCostCounts = CostItem.executeQuery('select count(ci.id) from CostItem ci where ci.sub = :sub and ci.owner = :ctx and ci.costItemStatus != :deleted', [sub: result.subscription, ctx: result.contextOrg, deleted: RDStore.COST_ITEM_DELETED])
+                    List subscrCostCounts = CostItem.executeQuery('select count(ci.id) from CostItem ci where ci.sub = :sub and ci.owner = :ctx and ci.surveyOrg = null and ci.costItemStatus != :deleted', [sub: result.subscription, ctx: result.contextOrg, deleted: RDStore.COST_ITEM_DELETED])
                     result.currentCostItemCounts = subscrCostCounts ? subscrCostCounts[0] : 0
                     result.currentSurveysCounts = SurveyConfig.executeQuery("from SurveyConfig as surConfig where surConfig.subscription = :sub and surConfig.surveyInfo.status not in (:invalidStatuses) and (exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org))",
                             [sub: result.subscription.instanceOf,

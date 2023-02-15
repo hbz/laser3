@@ -1535,19 +1535,17 @@ class SubscriptionService {
                                     coverageOverwriteMapSet << coverageMap
                                 }
                             }
-                            if(withPriceData) {
-                                if(overwrite.listPrice || overwrite.localPrice) {
-                                    priceMap.listPrice = overwrite.listPrice
-                                    priceMap.listCurrency = overwrite.listCurrency ? RefdataValue.getByValueAndCategory(overwrite.listCurrency, RDConstants.CURRENCY)?.id : null
-                                    priceMap.localPrice = overwrite.localPrice
-                                    priceMap.localCurrency = overwrite.localCurrency ? RefdataValue.getByValueAndCategory(overwrite.localCurrency, RDConstants.CURRENCY)?.id : null
+                            if(overwrite.listPrice || overwrite.localPrice) {
+                                priceMap.listPrice = overwrite.listPrice
+                                priceMap.listCurrency = overwrite.listCurrency ? RefdataValue.getByValueAndCategory(overwrite.listCurrency, RDConstants.CURRENCY)?.id : null
+                                priceMap.localPrice = overwrite.localPrice
+                                priceMap.localCurrency = overwrite.localCurrency ? RefdataValue.getByValueAndCategory(overwrite.localCurrency, RDConstants.CURRENCY)?.id : null
+                                priceItemOverwriteSet << priceMap
+                            }
+                            else if(fallbackMap.get(wekbId)?.priceItems) {
+                                fallbackMap.get(wekbId).priceItems.each { Map priceStmt ->
+                                    priceMap.putAll(priceStmt)
                                     priceItemOverwriteSet << priceMap
-                                }
-                                else if(fallbackMap.get(wekbId)?.priceItems) {
-                                    fallbackMap.get(wekbId).priceItems.each { Map priceStmt ->
-                                        priceMap.putAll(priceStmt)
-                                        priceItemOverwriteSet << priceMap
-                                    }
                                 }
                             }
                             ieOverwriteMapSet << configMap
@@ -2598,7 +2596,7 @@ class SubscriptionService {
         Map<String, Object> selectedIEs = [:]
         Org contextOrg = contextService.getOrg()
 
-        List<Long> subscriptionIDs = surveyService.subscriptionsOfOrg(contextOrg)
+        List<Long> subscriptionIDs = surveyService.subscriptionsOfOrg(newSub.getSubscriber())
 
         ArrayList<String> rows = stream.text.split('\n')
         Map<String, Integer> colMap = [zdbCol: -1, onlineIdentifierCol: -1, printIdentifierCol: -1, pick: -1]
