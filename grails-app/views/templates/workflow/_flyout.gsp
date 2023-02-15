@@ -15,11 +15,21 @@
     <g:set var="clistInfo" value="${clist.getInfo()}" />
 
     <div class="ui header center aligned">
-        Bearbeitung von: ${clist.title}
+        ${clist.title}
     </div>
+
     <div class="content">
 
             <div class="ui vertically divided grid">
+
+                <div class="row">
+                    <div class="two wide column"></div>
+                    <div class="twelve wide column">
+                        Sie bearbeiten den Workflow <strong>${clist.title}</strong>.
+                        Ihre Änderungen werden direkt (ohne explizites Speichern) wirksam.
+                    </div>
+                    <div class="two wide column"></div>
+                </div>
 
                 <div class="row">
                     <div class="two wide column wf-centered">

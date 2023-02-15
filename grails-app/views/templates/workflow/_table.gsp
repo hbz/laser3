@@ -54,7 +54,7 @@
                         </g:each>
                     </div>
                 <td>
-                    ${DateUtils.getLocalizedSDF_noZ().format(clistInfo.lastUpdated)}
+                    ${DateUtils.getLocalizedSDF_noTime().format(clistInfo.lastUpdated)}
                     <br />
                     ${DateUtils.getLocalizedSDF_noTime().format(clist.dateCreated)}
                 </td>
@@ -94,7 +94,7 @@
 
     $('button[data-wfId]').on ('click', function(e) {
         var trigger = $(this).hasClass ('la-modern-button');
-        var key     = "${WfChecklist.KEY}:" + $(this).attr ('data-wfId')
+        var key     = "${WfChecklist.KEY}:" + $(this).attr ('data-wfId');
 
         $('button[data-wfId]').addClass ('la-modern-button');
         $('#wfFlyout').flyout ({
