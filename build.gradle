@@ -14,7 +14,7 @@ buildscript {
         classpath 'org.grails:grails-gradle-plugin:' + grailsGradlePluginVersion
         classpath 'org.grails.plugins:hibernate5:7.3.1'                                     // 2022
         classpath 'org.grails.plugins:database-migration:4.1.0'                             // 2022
-        classpath 'com.bertramlabs.plugins:asset-pipeline-gradle:3.4.7'                     // 2022 : [freeze] : 4.0.0 available
+        classpath 'com.bertramlabs.plugins:asset-pipeline-gradle:4.0.0'                     // 2023
         classpath 'com.gorylenko.gradle-git-properties:gradle-git-properties:2.4.1'         // 2022
         classpath 'com.github.ben-manes:gradle-versions-plugin:0.44.0'                      // 2022
 
@@ -61,7 +61,7 @@ configurations {
         resolutionStrategy.eachDependency { DependencyResolveDetails details ->
             if (details.requested.name in ['asset-pipeline-core', 'asset-pipeline-grails']) {
                 // override dependency from org.grails.plugins:cache
-                details.useVersion '3.4.7' // upgrade from 3.0.7
+                details.useVersion '4.0.0' // upgrade from 3.x
             }
         }
     }
