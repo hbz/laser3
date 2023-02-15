@@ -1311,37 +1311,43 @@ class GlobalSourceSyncService extends AbstractLockableService {
             if(platform) {
                 platform.name = platformRecord.name
             }
-            else {
+            else if(platformRecord.status != PERMANENTLY_DELETED){
                 platform = new Platform(name: platformRecord.name, gokbId: platformRecord.uuid)
             }
-            platform.status = RefdataValue.getByValueAndCategory(platformRecord.status, RDConstants.PLATFORM_STATUS)
-            platform.normname = platformRecord.name.toLowerCase()
-            if(platformRecord.primaryUrl)
-                platform.primaryUrl = new URL(platformRecord.primaryUrl)
-            /*
-            TEST: create linking from provider to platform, not from platform to provider! Platforms should exist also without titles!
-            if(platformRecord.providerUuid) {
-                Map<String, Object> providerData = fetchRecordJSON(false,[uuid: platformRecord.providerUuid])
-                if(providerData && !providerData.error)
-                    platform.org = createOrUpdateOrgJSON(providerData)
-                else if(providerData && providerData.error == 404) {
-                    throw new SyncException("we:kb server is currently down")
+            if(platform) {
+                //line 1311 is then true
+                platform.status = RefdataValue.getByValueAndCategory(platformRecord.status, RDConstants.PLATFORM_STATUS)
+                if(platformRecord.status in ['Removed', PERMANENTLY_DELETED])
+                    platform.status = RDStore.PLATFORM_STATUS_DELETED
+                platform.normname = platformRecord.name.toLowerCase()
+                if(platformRecord.primaryUrl)
+                    platform.primaryUrl = new URL(platformRecord.primaryUrl)
+                /*
+                TEST: create linking from provider to platform, not from platform to provider! Platforms should exist also without titles!
+                if(platformRecord.providerUuid) {
+                    Map<String, Object> providerData = fetchRecordJSON(false,[uuid: platformRecord.providerUuid])
+                    if(providerData && !providerData.error)
+                        platform.org = createOrUpdateOrgJSON(providerData)
+                    else if(providerData && providerData.error == 404) {
+                        throw new SyncException("we:kb server is currently down")
+                    }
+                    else {
+                        throw new SyncException("Provider loading failed for ${platformRecord.providerUuid}")
+                    }
                 }
-                else {
-                    throw new SyncException("Provider loading failed for ${platformRecord.providerUuid}")
+                */
+                if(platform.save()) {
+                    //update platforms
+                    Map<String, Object> packagesOfPlatform = fetchRecordJSON(false, [componentType: 'Package', platform: platformRecord.uuid])
+                    if(packagesOfPlatform && packagesOfPlatform.count > 0) {
+                        Package.executeUpdate('update Package pkg set pkg.nominalPlatform = :plat where pkg.gokbId in (:uuids)', [uuids: packagesOfPlatform.records.uuid, plat: platform])
+                    }
+                    platform
                 }
+                else throw new SyncException("Error on saving platform: ${platform.errors}")
+                //}
             }
-            */
-            if(platform.save()) {
-                //update platforms
-                Map<String, Object> packagesOfPlatform = fetchRecordJSON(false, [componentType: 'Package', platform: platformRecord.uuid])
-                if(packagesOfPlatform && packagesOfPlatform.count > 0) {
-                    Package.executeUpdate('update Package pkg set pkg.nominalPlatform = :plat where pkg.gokbId in (:uuids)', [uuids: packagesOfPlatform.records.uuid, plat: platform])
-                }
-                platform
-            }
-            else throw new SyncException("Error on saving platform: ${platform.errors}")
-            //}
+
         }
         else if(platformJSON && platformJSON.error == 404) {
             throw new SyncException("we:kb server is down")
