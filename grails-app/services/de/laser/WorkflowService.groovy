@@ -106,21 +106,19 @@ class WorkflowService {
                     if (done != cpoint.done) {
                         cpoint.done = done
                         tChanged = true
-                        println tChanged
                     }
                     Date date = ph.getDate('date')
                     if (date != cpoint.date) {
                         cpoint.date = date
                         tChanged = true
-                        println tChanged
                     }
                     String comment = ph.getString('comment')
                     if (comment != cpoint.comment) {
                         cpoint.comment = comment
                         tChanged = true
-                        println tChanged
                     }
                     if (tChanged) {
+//                        println 'tChanged'
                         result.status = cpoint.save() ? OP_STATUS_DONE : OP_STATUS_ERROR
                     }
                 }
