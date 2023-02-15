@@ -2400,7 +2400,26 @@ join sub.orgRelations or_sub where
         SwissKnife.setPaginationParams(result, params, (User) result.user)
         params.sort = params.sort ?: 'pr.org.name'
 
-        List visiblePersons = addressbookService.getVisiblePersons("addressbook",params)
+        List visiblePersons = []
+        if(params.exportClickMeExcel) {
+            Map<String, Object> configMap = [function:[], position: [], sort: 'pr.org.name'], selectedFields = [:]
+            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('ief:') }
+            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('ief:', ''), it.value ) }
+            selectedFields.each { String key, value ->
+                List<String> field = key.split('\\.')
+                if(field.size() > 1) {
+                    if(field[0] == 'function') {
+                        configMap.function << field[1]
+                    }
+                    else if(field[0] == 'position') {
+                        configMap.position << field[1]
+                    }
+                }
+            }
+            visiblePersons.addAll(addressbookService.getVisiblePersons("addressbook", configMap))
+        }
+        else
+            visiblePersons.addAll(addressbookService.getVisiblePersons("addressbook",params))
 
         Set<String> filterFields = ['org', 'prs', 'filterPropDef', 'filterProp', 'function', 'position', 'showOnlyContactPersonForInstitution', 'showOnlyContactPersonForProviderAgency']
         result.filterSet = params.keySet().any { String selField -> selField in filterFields }
@@ -2440,7 +2459,7 @@ join sub.orgRelations or_sub where
             Map<String, Object> selectedFields = [:]
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
 
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportAddresses(visiblePersons, selectedFields)
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportAddresses(visiblePersons, selectedFields, params.exportOnlyContactPersonForInstitution == 'true', params.exportOnlyContactPersonForProviderAgency == 'true')
 
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
