@@ -1,4 +1,35 @@
 
+/*--------------
+      Card
+---------------*/
+
+.ui.cards > .card,
+.ui.card {
+
+  width: @width;
+  min-height: @minHeight;
+  background: @background;
+  padding: @padding;
+
+  border: @border;
+  border-radius: @borderRadius;
+  box-shadow: none;
+  transition: @transition;
+  z-index: @zIndex;
+}
+.ui.cards > .card > .content > .header,
+.ui.card > .content  .header {
+  color: @headerColor;
+  font-size: @headerFontSize;
+}
+/* Default Header Size */
+.ui.cards > .card > .content > .header:not(.ui),
+.ui.card > .content > .header:not(.ui) {
+  font-weight: @headerFontWeight;
+  font-size: @headerFontSize;
+  margin-top: @headerLineHeightOffset;
+  line-height: @headerLineHeight;
+}
 .ui.cards > .card > .content > .header:not(.ui).la-primary-header ,
 .ui.card > .content > .header:not(.ui).la-primary-header {
   text-transform: uppercase;
@@ -73,7 +104,15 @@
   width: 70%;
   word-wrap: break-word;
 }
-
+.ui.card>.extra a:not(.ui), .ui.cards>.card>.extra a:not(.ui) {
+   color: @linkColor;
+}
+.ui.card>.content>a.header, .ui.cards>.card>.content>a.header {
+  color: @linkColor;
+}
+.ui.card:last-child {
+  margin-bottom: 1em;
+}
 
 .la-sidekick {
   margin-top: 1rem;
