@@ -1,11 +1,8 @@
 <%@ page import="de.laser.workflow.WfChecklist; de.laser.storage.RDStore" %>
 <laser:serviceInjection />
 
-<%
-    List<WfChecklist> checklists = workflowService.sortByLastUpdated( workflowService.getWorkflows(ownobj, contextService.getOrg()) )
-%>
+<% List<WfChecklist> checklists = workflowService.sortByLastUpdated( workflowService.getWorkflows(ownobj, contextService.getOrg()) ) %>
 
-<!-- TODO la-js-hideable @ flyout -->
     <ui:card message="workflow.plural" class="notes la-js-hideable ${css_class}" href="#modalCreateWorkflow" editable="${editable}">
         <g:each in="${checklists}" var="clist">
             <g:set var="clistInfo" value="${clist.getInfo()}" />
@@ -47,7 +44,7 @@
             $('#wfFlyout').flyout ({
                 onHide: function (e) {
                     $('.ui.page.dimmer').dimmer ('show');
-                    document.location = document.location;
+                    document.location = document.location.origin + document.location.pathname;
                 }
             });
         }

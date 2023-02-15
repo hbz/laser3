@@ -132,7 +132,7 @@
                     <div class="ui checkbox">
                         <label for="showOnlyContactPersonForProviderAgency">${message(code: 'person.contactPersonForProviderAgency.label')}</label>
                         <input id="showOnlyContactPersonForProviderAgency" name="showOnlyContactPersonForProviderAgency" type="checkbox"
-                               <g:if test="${params.showOnlyContactPersonForInstitution}">checked=""</g:if>
+                               <g:if test="${params.showOnlyContactPersonForProviderAgency}">checked=""</g:if>
                                tabindex="0">
                     </div>
                 </div>
@@ -185,13 +185,16 @@
 </laser:script>
 
 <!-- _individuallyExportModal.gsp -->
-<g:set var="formFields" value="${exportClickMeService.getExportAddressFieldsForUI()}"/>
+<%
+    Map<String, Object> fields = exportClickMeService.getExportAddressFieldsForUI()
+    Map<String, Object> formFields = fields.exportFields as Map, filterFields = fields.filterFields as Map
+%>
 
 <ui:modal modalSize="large" id="individuallyExportModal" text="Excel-Export" refreshModal="true" hideSubmitButton="true">
 
     <g:form action="addressbook" controller="myInstitution" params="${params+[exportClickMeExcel: true]}">
 
-        <laser:render template="/templates/export/individuallyExportForm" model="${[formFields: formFields, exportFileName: escapeService.escapeString("${message(code: 'menu.institutions.myAddressbook')}_${DateUtils.getSDF_yyyyMMdd().format(new Date())}")]}"/>
+        <laser:render template="/templates/export/individuallyExportForm" model="${[formFields: formFields, filterFields: filterFields, exportFileName: escapeService.escapeString("${message(code: 'menu.institutions.myAddressbook')}_${DateUtils.getSDF_yyyyMMdd().format(new Date())}"), orgSwitch: true]}"/>
 
     </g:form>
 

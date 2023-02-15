@@ -121,9 +121,6 @@ class MyInstitutionControllerService {
 //                    result.putAll(workflowService.cmd(params))
                 }
             }
-//            if (params.info) {
-//                result.info = params.info // @ currentWorkflows @ dashboard
-//            }
         }
 
         if (workflowService.hasUserPerm_read()){

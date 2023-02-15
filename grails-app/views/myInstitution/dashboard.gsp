@@ -254,6 +254,8 @@
         </div>
 
         <g:if test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
+            <div id="wfFlyout" class="ui eight wide flyout" style="padding:50px 0 10px 0;overflow:scroll"></div>
+
             <div class="ui bottom attached tab ${us_dashboard_tab.value == 'Workflows' ? 'active':''}" data-tab="workflows">
 
                 <g:if test="${allChecklists}">
@@ -270,10 +272,10 @@
                         <thead>
                             <tr>
                                 <th class="four wide" rowspan="2">${message(code:'workflow.label')}</th>
-                                <th class="five wide" rowspan="2">${message(code:'default.relation.label')}</th>
+                                <th class="four wide" rowspan="2">${message(code:'default.relation.label')}</th>
                                 <th class="four wide" rowspan="2">${message(code:'default.progress.label')}</th>
                                 <th class="two wide la-smaller-table-head">${message(code:'default.lastUpdated.label')}</th>
-                                <th class="one wide" rowspan="2">${message(code:'default.actions.label')}</th>
+                                <th class="two wide" rowspan="2">${message(code:'default.actions.label')}</th>
                             </tr>
                             <tr>
                                 <th class="la-smaller-table-head">${message(code:'default.dateCreated.label')}</th>
@@ -316,18 +318,13 @@
                                         </div>
                                     </td>
                                     <td>
-                                        ${DateUtils.getLocalizedSDF_noZ().format(clistInfo.lastUpdated)}
+                                        ${DateUtils.getLocalizedSDF_noTime().format(clistInfo.lastUpdated)}
                                         <br />
                                         ${DateUtils.getLocalizedSDF_noTime().format(clist.dateCreated)}
                                     </td>
                                     <td class="center aligned">
                                         <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
-                                        %{--                        <g:link class="ui icon button blue la-modern-button wfModalLink"--}%
-                                        %{--                                controller="ajaxHtml" action="useWfXModal" params="${[cmd:"usage:${WfChecklist.KEY}:${clist.id}"]}"--}%
-                                        %{--                                role="button"--}%
-                                        %{--                                aria-label="${message(code: 'ariaLabel.delete.universal')}">--}%
-                                        %{--                            <i class="pencil icon"></i>--}%
-                                        %{--                        </g:link>--}%
+                                            <button class="ui icon button blue la-modern-button" data-wfId="${clist.id}"><i class="icon pencil"></i></button>
 
                                             <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
                                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.workflow", args: [clist.title])}"
@@ -456,6 +453,34 @@
             e.preventDefault();
             var func = bb8.ajax4SimpleModalFunction("#wfModal", $(e.currentTarget).attr('href'), false);
             func();
+        });
+
+        $('button[data-wfId]').on ('click', function(e) {
+            var trigger = $(this).hasClass ('la-modern-button');
+            var key     = "${WfChecklist.KEY}:" + $(this).attr ('data-wfId');
+
+            $('button[data-wfId]').addClass ('la-modern-button');
+            $('#wfFlyout').flyout ({
+                onHidden: function (e) { %{-- after animation --}%
+                    $('button[data-wfId]').addClass ('la-modern-button');
+                    document.location = document.location.origin + document.location.pathname + '?view=Workflows';
+                }
+            });
+
+            if (trigger) {
+                $(this).removeClass ('la-modern-button');
+
+                $.ajax ({
+                    url: "<g:createLink controller="ajaxHtml" action="workflowFlyout"/>",
+                    data: {
+                        key: key
+                    }
+                }).done (function (response) {
+                    $('#wfFlyout').html (response).flyout ('show');
+                    r2d2.initDynamicUiStuff ('#wfFlyout');
+                    r2d2.initDynamicXEditableStuff ('#wfFlyout');
+                })
+            }
         });
 
         JSPC.app.createTask = bb8.ajax4SimpleModalFunction("#modalCreateTask", "<g:createLink controller="ajaxHtml" action="createTask"/>", true);
