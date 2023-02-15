@@ -1984,7 +1984,7 @@ class SubscriptionControllerService {
             result.pendingChanges = pendingChanges*/
 
             params.ieAcceptStatusFixed = true
-            params.status = params.status ?: [RDStore.TIPP_STATUS_CURRENT.id.toString(), RDStore.TIPP_STATUS_RETIRED.id.toString()]
+            params.status = params.status ?: (result.subscription.hasPerpetualAccess ? [RDStore.TIPP_STATUS_CURRENT.id.toString(), RDStore.TIPP_STATUS_RETIRED.id.toString()] : [RDStore.TIPP_STATUS_CURRENT.id.toString()])
             Map query = filterService.getIssueEntitlementQuery(params, result.subscription)
             result.filterSet = query.filterSet
             Set entitlements = IssueEntitlement.executeQuery("select new map(ie.id as id, ie.sortname as sortname) " + query.query, query.queryParams)
