@@ -13,7 +13,7 @@ buildscript {
     dependencies {
         classpath 'org.grails:grails-gradle-plugin:' + grailsGradlePluginVersion
         classpath 'org.grails.plugins:hibernate5:7.3.1'                                     // 2022
-        classpath 'org.grails.plugins:database-migration:4.1.0'                             // 2022
+        classpath 'org.grails.plugins:database-migration:4.2.0'                             // 2023
         classpath 'com.bertramlabs.plugins:asset-pipeline-gradle:4.0.0'                     // 2023
         classpath 'com.gorylenko.gradle-git-properties:gradle-git-properties:2.4.1'         // 2022
         classpath 'com.github.ben-manes:gradle-versions-plugin:0.44.0'                      // 2022
@@ -107,7 +107,7 @@ dependencies {
 
     implementation 'org.grails.plugins:spring-security-core:5.2.1'          // 2023
     implementation 'org.grails.plugins:audit-logging:4.0.3'                 // 2021
-    implementation 'org.grails.plugins:database-migration:4.1.0', {         // 2022
+    implementation 'org.grails.plugins:database-migration:4.2.0', {         // 2023
         exclude module: 'spring-boot-cli'
     }
     implementation 'org.grails.plugins:grails-executor:0.4'                 // 2016 : [deprecated]
@@ -127,7 +127,7 @@ dependencies {
     implementation 'org.apache.poi:poi-ooxml:3.17'                          // 2017 : [freeze] : 5.x available
     implementation 'org.codehaus.gpars:gpars:1.2.1'                         // 2014
     implementation 'org.codehaus.janino:janino:3.1.9'                       // 2022 : logback
-    implementation 'org.liquibase:liquibase-core:4.11.0'                    // 2022 : + org.grails.plugins:database-migration
+    implementation 'org.liquibase:liquibase-core:4.19.0'                    // 2023 : + org.grails.plugins:database-migration
     implementation 'org.quartz-scheduler:quartz:2.3.2'                      // 2019
 
     // --------------------------------------------------
