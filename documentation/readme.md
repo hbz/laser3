@@ -8,7 +8,7 @@
 - Micronaut 3.8.4 / for Spring 4.5.0
 - Hibernate 5.6.15.Final / GORM 7.3.2
 - Logback 1.2.11
-- Gradle 7.5.1
+- Gradle 7.6
 - Groovy 3.0.11
 - Java 11
 - PostgreSQL 12+
