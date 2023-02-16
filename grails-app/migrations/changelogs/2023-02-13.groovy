@@ -19,4 +19,12 @@ databaseChangeLog = {
         dropColumn(columnName: "adr_prs_fk", tableName: "address")
     }
 
+    changeSet(author: "klober (modified)", id: "1676287970555-4") {
+        grailsChange {
+            change {
+                sql.execute("delete from system_profiler where sp_archive = '2.3';")
+            }
+            rollback {}
+        }
+    }
 }

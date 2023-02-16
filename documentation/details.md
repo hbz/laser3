@@ -75,7 +75,9 @@ Localization dependent logic should be managed by *de.laser.utils.LocaleUtils* t
 
 ### Opencsv
 
-*com.opencsv.** has been removed. New code has to use *liquibase.repackaged.com.opencsv.**
+~~*com.opencsv* has been removed. New code has to use **liquibase.repackaged.com.opencsv.**~~
+Due to the upgrade of the Database Migration plugin (4.2.0), *com.opencsv* has been integrated *again* by Liquibase.
+New code has to use **com.opencsv.**
 
 ### Passwords
 

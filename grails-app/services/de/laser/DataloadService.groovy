@@ -1139,7 +1139,7 @@ class DataloadService {
                             int countDB = domainClass.count()
 
                             if (countDB != countIndex) {
-                                log.debug("Element comparison: DB <-> ES ( ${ftControl.domainClassName} / ${indexName} ) : +++++ DB = ${countDB}, ES = ${countIndex} +++++")
+                                //log.debug("Element comparison: DB <-> ES ( ${ftControl.domainClassName} / ${indexName} ) : +++++ DB = ${countDB}, ES = ${countIndex} +++++")
                                 //ft.lastTimestamp = 0
                             }
                             else {
