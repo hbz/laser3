@@ -75,11 +75,17 @@
                             </dl>
 
                             <dl>
-                                <dt>${message(code:'default.lastUpdated.label')} / ${message(code:'default.dateCreated.label')}</dt>
+                                <dt>${message(code:'default.lastUpdated.label')}</dt>
                                 <dd>
                                     <span class="${DateUtils.isDateToday(clist.lastUpdated) ? '' : 'sc_darkgrey'}">
                                         ${DateUtils.getLocalizedSDF_noTime().format(clist.lastUpdated)}
-                                    </span> /
+                                    </span>
+                                </dd>
+                            </dl>
+
+                            <dl>
+                                <dt>${message(code:'default.dateCreated.label')}</dt>
+                                <dd>
                                     <span class="${DateUtils.isDateToday(clist.dateCreated) ? '' : 'sc_darkgrey'}">
                                         ${DateUtils.getLocalizedSDF_noTime().format(clist.dateCreated)}
                                     </span>

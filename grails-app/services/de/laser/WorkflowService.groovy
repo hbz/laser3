@@ -267,6 +267,8 @@ class WorkflowService {
         log.debug('instantiateCompleteChecklist() ' + params)
         String[] cmd = (params.cmd as String).split(':')
 
+        ParamsHelper ph = getNewParamsHelper( cmd[1], params )
+
         Map<String, Object> result = [ cmd: cmd[0], key: cmd[1] ]
 
         WfChecklist.withTransaction { TransactionStatus ts ->
@@ -275,8 +277,8 @@ class WorkflowService {
                 result.source = WfChecklist.get( cmd[2] )
 
                 result.checklist               = new WfChecklist()
-                result.checklist.title         = result.source.title
-                result.checklist.description   = result.source.description
+                result.checklist.title         = ph.getString('title') ?: result.source.title
+                result.checklist.description   = ph.getString('description') ?: result.source.description
                 result.checklist.owner         = result.source.owner
 
                 def target = genericOIDService.resolveOID(params.target)
