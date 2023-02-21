@@ -1175,7 +1175,6 @@ class AjaxHtmlController {
                 }
             }
         }
-
         if (params.info) {
             result.info = params.info
         }

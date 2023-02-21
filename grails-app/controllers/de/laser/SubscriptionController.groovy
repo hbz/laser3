@@ -96,21 +96,6 @@ class SubscriptionController {
             }
     }
 
-    @Deprecated
-    @DebugInfo(test = 'hasAffiliation("INST_USER")', ctrlService = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
-    @Check404()
-    def changes() {
-        Map<String,Object> ctrlResult = subscriptionControllerService.changes(this,params)
-        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            if (!ctrlResult.result) {
-                response.sendError(401)
-                return
-            }
-        }
-        else ctrlResult.result
-    }
-
     /**
      * Call to prepare the usage data form for the given subscription
      * @return the filter for the given subscription
