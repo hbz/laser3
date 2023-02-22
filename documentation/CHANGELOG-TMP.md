@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4859    22.02.2023  dev     3.1         Andreas Bug         Umwandlungsvorschrift bei Tausender/Dezimaltrenner korrigiert
+
 4843    16.02.2023  dev     3.0.5       David   Feature     Database Migration Plugin aktualisieren
 
 --      15.02.2023  dev     3.0.4       David   Feature     Grails 5.3.2

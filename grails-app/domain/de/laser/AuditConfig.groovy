@@ -80,6 +80,7 @@ class AuditConfig {
     static void addConfig(Object obj, String field) {
         AuditConfig.withTransaction {
             if (obj) {
+                obj = GrailsHibernateUtil.unwrapIfProxy(obj)
                 AuditConfig config = new AuditConfig(
                         referenceId: obj.getId(),
                         referenceClass: obj.getClass().name,
