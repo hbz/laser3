@@ -24,9 +24,9 @@
 
 <ui:modal id="modalCreateWorkflow" text="Workflow für '${targetText}' erstellen">
 
-    <g:if test="${false}"> %{-- BLOCKED --}%
+    <g:if test="${true}"> %{-- DEV-BLOCKER --}%
 
-    <g:form controller="${targetController}" action="workflows" id="${target.id}" method="POST" class="ui form">
+    <g:form controller="${controllerName}" action="${actionName}" id="${target.id}" method="POST" class="ui form">
         <div class="ui grid">
             <div class="four wide column">
                 <div id="modalTabMenu" class="ui pointing secondary vertical la-tab-with-js menu">

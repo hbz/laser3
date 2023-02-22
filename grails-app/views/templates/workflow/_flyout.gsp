@@ -16,20 +16,15 @@
 
     <div class="ui header center aligned">
         ${clist.title}
+
+        <div class="ui message info" style="margin-top:1em;text-align:left;font-size:14px;font-weight:normal;">
+            Ihre Änderungen werden direkt (ohne explizites Speichern) wirksam.
+        </div>
     </div>
 
     <div class="content">
 
             <div class="ui vertically divided grid">
-
-                <div class="row">
-                    <div class="two wide column"></div>
-                    <div class="twelve wide column">
-                        Sie bearbeiten den Workflow <strong>${clist.title}</strong>.
-                        Ihre Änderungen werden direkt (ohne explizites Speichern) wirksam.
-                    </div>
-                    <div class="two wide column"></div>
-                </div>
 
                 <div class="row">
                     <div class="two wide column wf-centered">

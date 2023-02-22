@@ -1098,7 +1098,7 @@ class AjaxHtmlController {
             String[] cmd = params.cmd.split(':')
 
             if (cmd[1] in [WfChecklist.KEY, WfCheckpoint.KEY] ) {
-                result.putAll( workflowService.cmd(params) )
+                result.putAll( workflowService.executeCmd(params) )
             }
         }
 //        if (params.info) {
