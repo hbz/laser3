@@ -143,7 +143,7 @@ class SubscriptionController {
                 if(allAvailableReports.size() > 0) {
                     Set<String> reportTypes = [], metricTypes = [], accessTypes = [], accessMethods = []
                     allAvailableReports.each { row ->
-                        if(!params.loadFor || (params.loadFor && !(row.reportType in Counter5Report.COUNTER_5_PLATFORM_REPORTS))) {
+                        if(!params.loadFor || (params.loadFor && row.reportType in Counter5Report.COUNTER_5_TITLE_REPORTS)) {
                             if (row.reportType)
                                 reportTypes << row.reportType
                             if (row.metricType)

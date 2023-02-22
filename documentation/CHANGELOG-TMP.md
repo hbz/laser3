@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      22.02.2023  rc-3.0  3.0.5       Andreas Bug         Umstrukturierungen für Database Reports
+
 4843    16.02.2023  dev     3.0.5       David   Feature     Database Migration Plugin aktualisieren
 
 --      15.02.2023  dev     3.0.4       David   Feature     Grails 5.3.2
