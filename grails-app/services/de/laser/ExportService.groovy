@@ -917,7 +917,7 @@ class ExportService {
                         case Counter4Report.BOOK_REPORT_4:
 							int totalCount = 0
 							Counter4Report.withNewSession {
-                                Counter4Report.executeQuery('select new map(r.reportFrom as reportMonth, r.metricType as metricType, r.platformUID as platformUID, r.publisher as publisher, r.category as category, sum(r.reportCount) as count) from Counter4Report r where r.reportType = :reportType and r.metricType = :metricType and r.reportInstitutionUID = :customer and r.platformUID in (:platforms)' + dateRangeParams.dateRange + 'group by r.platformUID, r.publisher, r.category, r.reportFrom, r.metricType', queryParams+[titleKeys: subList])
+                                Counter4Report.executeQuery('select new map(r.reportFrom as reportMonth, r.metricType as metricType, r.platformUID as platformUID, r.publisher as publisher, r.category as category, sum(r.reportCount) as count) from Counter4Report r where r.reportType = :reportType and r.metricType = :metricType and r.reportInstitutionUID = :customer and r.platformUID in (:platforms)' + dateRangeParams.dateRange + 'group by r.platformUID, r.publisher, r.category, r.reportFrom, r.metricType', queryParams)
                                 sumRows.eachWithIndex { sumRow, int i ->
 									cell = row.createCell(0)
 									cell.setCellValue(sumRow.category)
@@ -977,6 +977,75 @@ class ExportService {
 							titleRows = data.titleRows
                             break
                         case Counter4Report.DATABASE_REPORT_1:
+							rowno = 9
+							Map<String, Map<String, Object>> data = prepareDataWithDatabases(counter4Reports)
+							data.each { String databaseName, Map<String, Object> databaseMetrics ->
+								databaseMetrics.each { String databaseMetricType, Map<String, Object> metricRow ->
+									columnHeaders.eachWithIndex { String colHeader, int c ->
+										cell = row.createCell(c)
+										cell.setCellValue(metricRow.get(colHeader))
+									}
+								}
+								row = sheet.createRow(rowno)
+								rowno++
+							}
+							break
+						case Counter4Report.DATABASE_REPORT_2:
+							rowno = 9
+							Map<String, Object> data = prepareDataWithDatabases(counter4Reports)
+							int totalSum = 0
+							Counter4Report.withNewSession {
+								Map<String, Object> categoryRows = [:]
+								Counter4Report.executeQuery('select new map(r.reportFrom as reportFrom, r.metricType as accessDeniedCategory, sum(r.reportCount) as count) from Counter4Report r where r.reportType = :reportType and r.metricType = :metricType and r.reportInstitutionUID = :customer and r.platformUID in (:platforms)'+dateRangeParams.dateRange+'group by r.metricType, r.reportFrom order by r.metricType, r.reportFrom', queryParams).each { countPerCategory ->
+									Map<String, Object> categoryRow = categoryRows.get(countPerCategory.accessDeniedCategory)
+									if(!categoryRow)
+										categoryRow = ['Reporting Period Total': totalSum]
+									else totalSum = categoryRow.get('Reporting Period Total')
+									totalSum += countPerCategory.count
+									categoryRow.put(DateUtils.getSDF_yyyyMM().format(countPerCategory.reportFrom), countPerCategory.count)
+									categoryRow.put('Reporting Period Total', totalSum)
+									categoryRows.put(countPerCategory.accessDeniedCategory, categoryRow)
+								}
+								categoryRows.eachWithIndex { String accessDeniedCategory, Map countsPerCategory, int r ->
+									cell = row.createCell(0)
+									cell.setCellValue('Total for all databases')
+									cell = row.createCell(3)
+									switch(accessDeniedCategory) {
+										case 'no_license': cell.setCellValue('Access denied: content item not licenced')
+											break
+										case 'turnaway': cell.setCellValue('Access denied: concurrent/simultaneous user licence limit exceeded')
+											break
+										case 'ft_html': cell.setCellValue('Record Views HTML')
+											break
+										case 'ft_total': cell.setCellValue('Record Views Total')
+											break
+										default: cell.setCellValue(accessDeniedCategory)
+											break
+									}
+									cell = row.createCell(4)
+									cell.setCellValue(countsPerCategory.get('Reporting Period Total'))
+									monthHeaders.eachWithIndex { String month, int i ->
+										cell = row.createCell(i+5)
+										if(countsPerCategory.containsKey(month))
+											cell.setCellValue(countsPerCategory.get(month))
+										else cell.setCellValue(0)
+									}
+									row = sheet.createRow(rowno)
+									rowno += r
+								}
+							}
+							row = sheet.createRow(rowno)
+							data.each { String databaseName, Map<String, Object> databaseMetrics ->
+								databaseMetrics.each { String databaseMetricType, Map<String, Object> metricRow ->
+									columnHeaders.eachWithIndex { String colHeader, int c ->
+										cell = row.createCell(c)
+										cell.setCellValue(metricRow.get(colHeader))
+									}
+								}
+								rowno++
+								row = sheet.createRow(rowno)
+							}
+							break
                         case Counter4Report.PLATFORM_REPORT_1:
                             rowno = 9
 							int totalCount = 0
@@ -1018,8 +1087,6 @@ class ExportService {
 							rowno++
 							row = sheet.createRow(rowno)
                             break
-						case Counter4Report.DATABASE_REPORT_2: log.warn("no use case yet; this would be the first!")
-							break
                     }
 					int i = 0
 					prf.setBenchmark('loop through assembled rows')
@@ -1207,6 +1274,38 @@ class ExportService {
 								periodTotal += reportRow.count
 								metricRow.put('Reporting_Period_Total', periodTotal)
 								metricRow.put('Access_Method', reportRow.accessMethod)
+								metricRows.put(reportRow.metricType, metricRow)
+							}
+							metricRows.eachWithIndex { String metricType, Map<String, Object> metricRow, int i ->
+								row = sheet.createRow(i + rowno)
+								for (int c = 0; c < columnHeaders.size(); c++) {
+									cell = row.createCell(c)
+									cell.setCellValue(metricRow.get(columnHeaders[c]) ?: "")
+								}
+							}
+						}
+						break
+					case Counter5Report.DATABASE_MASTER_REPORT:
+					case Counter5Report.DATABASE_ACCESS_DENIED:
+					case Counter5Report.DATABASE_SEARCH_AND_ITEM_USAGE:
+						Counter5Report.withNewSession {
+							Map<String, Object> metricRows = [:]
+							Counter5Report.executeQuery('select new map(r.platformUID as platformUID, r.databaseName as databaseName, r.accessMethod as accessMethod, r.dataType as dataType, r.metricType as metricType, r.reportFrom as reportMonth, sum(r.reportCount) as count) from Counter5Report r where lower(r.reportType) = :reportType and r.metricType in (:metricTypes) and r.reportInstitutionUID = :customer and r.platformUID in (:platforms)'+dateRangeParams.dateRange+'group by r.metricType, r.databaseName, r.platformUID, r.reportFrom, r.accessMethod, r.dataType order by r.reportFrom',queryParams).each { reportRow ->
+								Map<String, Object> metricRow = metricRows.get(reportRow.metricType)
+								Integer periodTotal
+								if(!metricRow) {
+									metricRow = [:]
+									periodTotal = 0
+								}
+								else periodTotal = metricRow.get('Reporting_Period_Total') as Integer
+								metricRow.put('Platform', Platform.findByGlobalUID(reportRow.platformUID).name)
+								metricRow.put('Database', reportRow.databaseName ?: '')
+								metricRow.put('Metric_Type', reportRow.metricType)
+								metricRow.put(DateUtils.getLocalizedSDF_MMMyyyy(LocaleUtils.getLocaleEN()).format(reportRow.reportMonth), reportRow.count)
+								periodTotal += reportRow.count
+								metricRow.put('Reporting_Period_Total', periodTotal)
+								metricRow.put('Access_Method', reportRow.accessMethod)
+								metricRow.put('Data_Type', reportRow.dataType)
 								metricRows.put(reportRow.metricType, metricRow)
 							}
 							metricRows.eachWithIndex { String metricType, Map<String, Object> metricRow, int i ->
@@ -1517,6 +1616,73 @@ class ExportService {
 			}
 		}
 		[titleRows: titleRows, sumRows: countsPerMonth]
+	}
+
+	Map<String, Object> prepareDataWithDatabases(Set<AbstractReport> reports) {
+		/*
+		generates structure
+		[
+			databaseName: {
+				metric1: [date1: count, date2: count ... dateN: count]
+				metric2: [date1: count, date2: count ... dateN: count]
+				...
+				metricN: [date1: count, date2: count ... dateN: count]
+			}
+		]
+		 */
+		Map<String, Object> databaseRows = [:]
+		for(AbstractReport report: reports) {
+			int periodTotal = 0
+			Map<String, Object> databaseRow = databaseRows.get(report.databaseName) as Map<String, Object>
+			if(!databaseRow)
+				databaseRow = [:]
+			Map<String, Object> metricRow = databaseRow.get(report.metricType) as Map<String, Object>
+			String metricHumanReadable
+			if(report instanceof Counter4Report) {
+				switch(report.metricType) {
+					case 'search_reg': metricHumanReadable = 'Regular Searches'
+						break
+					case 'search_fed': metricHumanReadable = 'Searches-federated and automated'
+						break
+					case 'record_view': metricHumanReadable = 'Record Views'
+						break
+					case 'ft_html': metricHumanReadable = 'Record Views HTML'
+						break
+					case 'ft_total': metricHumanReadable = 'Record Views Total'
+						break
+					case 'result_click': metricHumanReadable = 'Result Clicks'
+						break
+					default: metricHumanReadable = report.metricType
+						break
+				}
+				if(!metricRow) {
+					metricRow = ['Database': report.databaseName, 'Publisher': report.publisher, 'Platform': Platform.findByGlobalUID(report.platformUID).name]
+				}
+				else periodTotal = metricRow.get('Reporting Period Total')
+				if(report.reportType == Counter4Report.DATABASE_REPORT_1)
+					metricRow.put('User Activity', metricHumanReadable)
+				else if(report.reportType == Counter4Report.DATABASE_REPORT_2)
+					metricRow.put('Access denied category', metricHumanReadable)
+				periodTotal += report.reportCount
+				metricRow.put('Reporting Period Total', periodTotal)
+			}
+			else if(report instanceof Counter5Report) {
+				switch(report.metricType) {
+					default: metricHumanReadable = report.metricType
+						break
+				}
+				if(!metricRow) {
+					metricRow = ['Database': report.databaseName, 'Publisher': report.publisher, 'Platform': Platform.findByGlobalUID(report.platformUID).name, 'Metric_Type': metricHumanReadable]
+				}
+				else periodTotal = metricRow.get('Reporting_Period_Total')
+				periodTotal += report.reportCount
+				metricRow.put('Reporting_Period_Total', periodTotal)
+			}
+			metricRow.put(DateUtils.getSDF_yyyyMM().format(report.reportFrom), report.reportCount)
+			databaseRow.put(report.metricType, metricRow)
+			databaseRows.put(report.databaseName, databaseRow)
+		}
+		databaseRows
 	}
 
 	/**
