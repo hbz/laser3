@@ -1211,10 +1211,12 @@ class PendingChangeService extends AbstractLockableService {
                 else if(target instanceof Subscription) {
                     JSONObject oldMap = JSON.parse(pc.oldValue) as JSONObject
                     ie = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.subscription = :target and ie.tipp.id = :tipp and ie.status != :ieStatus',[target:target,tipp:oldMap.tipp.id as Long,ieStatus:RDStore.TIPP_STATUS_REMOVED])[0]
-                    for (String k : AbstractCoverage.equivalencyProperties) {
-                        targetCov = ie.coverages.find { IssueEntitlementCoverage iec -> iec[k] == oldMap[k] }
-                        if(targetCov) {
-                            break
+                    if(ie) {
+                        for (String k : AbstractCoverage.equivalencyProperties) {
+                            targetCov = ie.coverages.find { IssueEntitlementCoverage iec -> iec[k] == oldMap[k] }
+                            if(targetCov) {
+                                break
+                            }
                         }
                     }
                 }
