@@ -31,8 +31,9 @@ class Counter5Report extends AbstractReport {
      */
     static List<String> COUNTER_5_TITLE_REPORTS         = [TITLE_MASTER_REPORT, BOOK_REQUESTS, BOOK_ACCESS_DENIED, BOOK_USAGE_BY_ACCESS_TYPE, JOURNAL_REQUESTS, JOURNAL_ACCESS_DENIED, JOURNAL_USAGE_BY_ACCESS_TYPE, JOURNAL_REQUESTS_BY_YOP,
                                                            ITEM_MASTER_REPORT, JOURNAL_ARTICLE_REQUESTS, MULTIMEDIA_ITEM_REQUESTS]
-    static List<String> COUNTER_5_PLATFORM_REPORTS      = [PLATFORM_MASTER_REPORT, PLATFORM_USAGE, DATABASE_MASTER_REPORT, DATABASE_SEARCH_AND_ITEM_USAGE, DATABASE_ACCESS_DENIED]
-    static List<String> COUNTER_5_REPORTS               = COUNTER_5_TITLE_REPORTS+COUNTER_5_PLATFORM_REPORTS
+    static List<String> COUNTER_5_PLATFORM_REPORTS      = [PLATFORM_MASTER_REPORT, PLATFORM_USAGE]
+    static List<String> COUNTER_5_DATABASE_REPORTS      = [DATABASE_MASTER_REPORT, DATABASE_SEARCH_AND_ITEM_USAGE, DATABASE_ACCESS_DENIED]
+    static List<String> COUNTER_5_REPORTS               = COUNTER_5_TITLE_REPORTS+COUNTER_5_PLATFORM_REPORTS+COUNTER_5_DATABASE_REPORTS
 
 
     /**
@@ -137,6 +138,7 @@ class Counter5Report extends AbstractReport {
         isbn                    column: 'c5r_isbn', index: 'c5r_isbn_idx'
         proprietaryIdentifier   column: 'c5r_proprietary_identifier', index: 'c5r_prop_ident_idx'
         identifierHash          column: 'c5r_identifier_hash', type: 'text', index: 'c5r_idhash_idx'
+        databaseName            column: 'c5r_database_name', type: 'text'
         publisher               column: 'c5r_publisher', type: 'text'
         platformUID             column: 'c5r_platform_guid', index: 'c5r_plat_idx'
         reportInstitutionUID    column: 'c5r_report_institution_guid', index: 'c5r_ri_idx'
@@ -159,6 +161,7 @@ class Counter5Report extends AbstractReport {
         proprietaryIdentifier   (nullable: true) //because of platform reports!
         identifierHash          (nullable: true) //because of platform reports!
         publisher               (nullable: true, blank: false) //because of platform reports!
+        databaseName            (nullable: true) //because used only for database reports!
         dataType                (nullable: true, blank: false)
         accessType              (nullable: true, blank: false)
         accessMethod            (nullable: true, blank: false)

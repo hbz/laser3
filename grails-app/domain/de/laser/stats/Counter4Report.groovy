@@ -14,8 +14,8 @@ class Counter4Report extends AbstractReport {
     static final String JOURNAL_REPORT_2        = "JR2"
     //JR3-4 are optional
     static final String JOURNAL_REPORT_5        = "JR5"
-    static final String DATABASE_REPORT_1       = "DR1"
-    static final String DATABASE_REPORT_2       = "DR2"
+    static final String DATABASE_REPORT_1       = "DB1"
+    static final String DATABASE_REPORT_2       = "DB2"
     static final String PLATFORM_REPORT_1       = "PR1"
     static final String BOOK_REPORT_1           = "BR1"
     static final String BOOK_REPORT_2           = "BR2"
@@ -28,8 +28,9 @@ class Counter4Report extends AbstractReport {
      */
     static List<String> COUNTER_4_TITLE_REPORTS = [JOURNAL_REPORT_1, JOURNAL_REPORT_1_GOA, JOURNAL_REPORT_2, JOURNAL_REPORT_5,
                                                    BOOK_REPORT_1, BOOK_REPORT_2, BOOK_REPORT_3, BOOK_REPORT_4, BOOK_REPORT_5]
-    static List<String> COUNTER_4_PLATFORM_REPORTS = [DATABASE_REPORT_1, DATABASE_REPORT_2,PLATFORM_REPORT_1]
-    static List<String> COUNTER_4_REPORTS       = COUNTER_4_TITLE_REPORTS+COUNTER_4_PLATFORM_REPORTS
+    static List<String> COUNTER_4_DATABASE_REPORTS = [DATABASE_REPORT_1, DATABASE_REPORT_2]
+    static List<String> COUNTER_4_PLATFORM_REPORTS = [PLATFORM_REPORT_1]
+    static List<String> COUNTER_4_REPORTS       = COUNTER_4_TITLE_REPORTS+COUNTER_4_PLATFORM_REPORTS+COUNTER_4_DATABASE_REPORTS
 
     /**
      * These are the header parameters for each COUNTER 4 report
@@ -41,8 +42,8 @@ class Counter4Report extends AbstractReport {
         JR3 (['Journal Report 3 (R4)', 'Number of Successful Item Requests by Month, Journal and Page-type'] as LinkedHashSet<String>),
         JR4 (['Journal Report 4 (R4)', 'Total Searches Run By Month and Collection'] as LinkedHashSet<String>),
         JR5 (['Journal Report 5 (R4)', 'Number of Successful Full-Text Article Requests by Year-of-Publication (YOP) and Journal'] as LinkedHashSet<String>),
-        DR1 (['Database Report 1 (R4)', 'Total Searches, Result Clicks and Record Views by Month and Database'] as LinkedHashSet<String>),
-        DR2 (['Database Report 2 (R4)', 'Access Denied by Month, Database and Category'] as LinkedHashSet<String>),
+        DB1 (['Database Report 1 (R4)', 'Total Searches, Result Clicks and Record Views by Month and Database'] as LinkedHashSet<String>),
+        DB2 (['Database Report 2 (R4)', 'Access Denied by Month, Database and Category'] as LinkedHashSet<String>),
         PR1 (['Platform Report 1 (R4)', 'Total Searches, Result Clicks and Record Views by Month and Platform'] as LinkedHashSet<String>),
         BR1 (['Book Report 1 (R4)', 'Number of Successful Title Requests by Month and Title'] as LinkedHashSet<String>),
         BR2 (['Book Report 2 (R4)', 'Number of Successful Section Requests by Month and Title'] as LinkedHashSet<String>),
@@ -67,8 +68,8 @@ class Counter4Report extends AbstractReport {
         JR3 (['Journal', 'Publisher', 'Platform', 'Journal DOI', 'Proprietary Identifier', 'Print ISSN', 'Online ISSN', 'Page type', 'Reporting Period Total'] as LinkedHashSet<String>),
         JR4 ([' ', ' ', 'Reporting Period Total'] as LinkedHashSet<String>),
         JR5 (['Journal', 'Publisher', 'Platform', 'Journal DOI', 'Proprietary Identifier', 'Print ISSN', 'Online ISSN', 'Articles in Press'] as LinkedHashSet<String>),
-        DR1 (['Database', 'Publisher', 'Platform', 'User Activity', 'Reporting Period Total'] as LinkedHashSet<String>),
-        DR2 (['Database', 'Publisher', 'Platform', 'Access denied category', 'Reporting Period Total'] as LinkedHashSet<String>),
+        DB1 (['Database', 'Publisher', 'Platform', 'User Activity', 'Reporting Period Total'] as LinkedHashSet<String>),
+        DB2 (['Database', 'Publisher', 'Platform', 'Access denied category', 'Reporting Period Total'] as LinkedHashSet<String>),
         PR1 (['Platform', 'Publisher', 'User Activity', 'Reporting Period Total'] as LinkedHashSet<String>),
         BR1 ([' ', 'Publisher', 'Platform', 'Book DOI', 'Proprietary Identifier', 'ISBN', 'ISSN', 'Reporting Period Total'] as LinkedHashSet<String>),
         BR2 ([' ', 'Publisher', 'Platform', 'Book DOI', 'Proprietary Identifier', 'ISBN', 'ISSN', 'Reporting Period Total'] as LinkedHashSet<String>),
@@ -95,6 +96,7 @@ class Counter4Report extends AbstractReport {
         isbn                    column: 'c4r_isbn', index: 'c4r_isbn_idx'
         proprietaryIdentifier   column: 'c4r_proprietary_identifier', index: 'c4r_prop_ident_idx'
         identifierHash          column: 'c4r_identifier_hash', type: 'text', index: 'c4r_idhash_idx'
+        databaseName            column: 'c4r_database_name', type: 'text'
         publisher               column: 'c4r_publisher', type: 'text'
         platformUID             column: 'c4r_platform_guid', index: 'c4r_plat_idx'
         reportInstitutionUID    column: 'c4r_report_institution_guid', index: 'c4r_ri_idx,'
@@ -115,6 +117,7 @@ class Counter4Report extends AbstractReport {
         proprietaryIdentifier   (nullable: true) //because of platform reports!
         identifierHash          (nullable: true) //because of platform reports!
         publisher               (nullable: true) //because of platform reports!
+        databaseName            (nullable: true) //because used only for database reports!
         yop                     (nullable: true) //YOP is used only for JR5
         //unique constraints need to be defined manually per dbm changeset because of partial null values
     }
