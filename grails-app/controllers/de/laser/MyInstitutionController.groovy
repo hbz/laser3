@@ -2661,7 +2661,7 @@ join sub.orgRelations or_sub where
         }
 
         if (params.cmd) {
-            result.putAll(workflowService.cmd(params))
+            result.putAll(workflowService.executeCmd(params))
             params.clear()
         }
 

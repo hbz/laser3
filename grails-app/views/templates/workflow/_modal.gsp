@@ -1,8 +1,11 @@
 <%@ page import="de.laser.workflow.WfChecklist; de.laser.workflow.WfCheckpoint; de.laser.utils.DateUtils; de.laser.storage.RDStore; de.laser.workflow.WorkflowHelper; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.workflow.*;" %>
 <laser:serviceInjection />
-%{--via model: <g:set var="wfEditPerm" value="${workflowOldService.hasUserPerm_edit() || workflowService.hasUserPerm_edit()}" />--}%
 
-<g:form name="wfForm" url="${formUrl}" method="POST" class="ui form" style="margin-bottom:0">
+<g:set var="wfEditPerm" value="${workflowService.hasUserPerm_edit()}" />
+
+<ui:modal id="wfModal" text="${tmplModalTitle}" msgSave="${message(code:'default.button.save')}" hideSubmitButton="${!wfEditPerm}">
+
+<g:form name="wfForm" url="${tmplFormUrl}" method="POST" class="ui form" style="margin-bottom:0">
 
     %{-- CHECKLIST -- usage --}%
     %{-- CHECKLIST -- usage --}%
@@ -22,23 +25,23 @@
         <g:set var="prefixOverride" value="${WfCheckpoint.KEY}" />
         <g:set var="wfInfo" value="${checkpoint.checklist.getInfo()}" />
 
-        <div class="fields two">
-            <div class="field">
-                <label for="cpTitle">Aufgabe</label>
-                <p id="cpTitle">${checkpoint.title}</p>
-            </div>
+    %{--        <g:if test="${checkpoint.description}">--}%
+        <div class="field">
+            <label for="cpDescription">Beschreibung</label>
+            <p id="cpDescription">${checkpoint.description}</p>
+        </div>
+    %{--        </g:if>--}%
+
+%{--        <div class="fields two">--}%
+%{--            <div class="field">--}%
+%{--                <label for="cpTitle">Aufgabe</label>--}%
+%{--                <p id="cpTitle">${checkpoint.title}</p>--}%
+%{--            </div>--}%
             <div class="field">
                 <label for="clTitle">Workflow</label>
                 <p id="clTitle">${checkpoint.checklist.title}</p>
             </div>
-        </div>
-
-        <g:if test="${checkpoint.description}">
-            <div class="field">
-                <label for="cpDescription">Beschreibung</label>
-                <p id="cpDescription">${checkpoint.description}</p>
-            </div>
-        </g:if>
+%{--        </div>--}%
 
         <div class="field">
             <label for="${prefixOverride}_comment">${message(code:'default.comment.label')}</label>
@@ -83,5 +86,15 @@
 
 </g:form>
 
+    <laser:script file="${this.getGroovyPageFileName()}">
+        $('#wfModal .wfModalLink').on('click', function(e) {
+            e.preventDefault();
+            $('#wfModal').modal('hide');
+            var func = bb8.ajax4SimpleModalFunction("#wfModal", $(e.currentTarget).attr('href'), false);
+            func();
+        });
+    </laser:script>
+
+</ui:modal>
 
 

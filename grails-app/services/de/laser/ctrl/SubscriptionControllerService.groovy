@@ -29,8 +29,6 @@ import de.laser.config.ConfigMapper
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
-import de.laser.workflow.WfChecklist
-import de.laser.workflow.WfCheckpoint
 import grails.converters.JSON
 import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5Report
@@ -302,6 +300,10 @@ class SubscriptionControllerService {
                     result.memberProperties = memberProperties
                 }
             }
+
+            // subscriptionControllerService.workflows(this, params)
+            workflowService.executeCmdAndUpdateResult(result, params)
+
             List bm = prf.stopBenchmark()
             result.benchMark = bm
 
@@ -3857,19 +3859,7 @@ class SubscriptionControllerService {
     Map<String,Object> workflows(GrailsParameterMap params) {
         Map<String, Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
 
-        if (params.cmd) {
-            String[] cmd = params.cmd.split(':')
-
-            if (cmd[1] in [WfChecklist.KEY, WfCheckpoint.KEY] ) { // light
-                result.putAll( workflowService.cmd(params) )
-            }
-        }
-        if (params.info) {
-            result.info = params.info // @ currentWorkflows @ dashboard
-        }
-
-        result.checklists = workflowService.sortByLastUpdated( WfChecklist.findAllBySubscriptionAndOwner(result.subscription as Subscription, result.contextOrg as Org) )
-        result.checklistCount = result.checklists.size()
+        workflowService.executeCmdAndUpdateResult(result, params)
 
         [result: result, status: (result ? STATUS_OK : STATUS_ERROR)]
     }

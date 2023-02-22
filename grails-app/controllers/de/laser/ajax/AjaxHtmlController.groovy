@@ -1098,7 +1098,7 @@ class AjaxHtmlController {
             String[] cmd = params.cmd.split(':')
 
             if (cmd[1] in [WfChecklist.KEY, WfCheckpoint.KEY] ) {
-                result.putAll( workflowService.cmd(params) )
+                result.putAll( workflowService.executeCmd(params) )
             }
         }
 //        if (params.info) {
@@ -1128,8 +1128,6 @@ class AjaxHtmlController {
                 tmplCmd:    'usage',
                 tmplFormUrl: createLink(controller: 'myInstitution', action: 'currentWorkflows')
         ]
-
-        String template = '/templates/workflow/forms/modalWrapper' // todo
 
         if (params.key) {
             String[] key = (params.key as String).split(':')
@@ -1170,21 +1168,18 @@ class AjaxHtmlController {
                 result.checkpoint     = WfCheckpoint.get( key[4] )
 
                 if (result.checkpoint.done) {
-                    result.tmplModalTitle = '<i class="icon ' + WorkflowHelper.getCssIconAndColorByStatus( RDStore.WF_TASK_STATUS_DONE ) + '"></i>&nbsp;' +
-                            g.message(code:'workflow.checkpoint.done')
+                    result.tmplModalTitle = '<i class="icon ' + WorkflowHelper.getCssIconAndColorByStatus( RDStore.WF_TASK_STATUS_DONE ) + '"></i>&nbsp;' + result.checkpoint.title
                 }
                 else {
-                    result.tmplModalTitle = '<i class="icon ' + WorkflowHelper.getCssIconAndColorByStatus( RDStore.WF_TASK_STATUS_OPEN ) + '"></i>&nbsp;' +
-                            g.message(code:'workflow.checkpoint.open')
+                    result.tmplModalTitle = '<i class="icon ' + WorkflowHelper.getCssIconAndColorByStatus( RDStore.WF_TASK_STATUS_OPEN ) + '"></i>&nbsp;' + result.checkpoint.title
                 }
             }
         }
-
         if (params.info) {
             result.info = params.info
         }
 
-        render template: template, model: result
+        render template: '/templates/workflow/modal', model: result
     }
 
     /**

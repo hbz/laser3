@@ -19,8 +19,39 @@ class WorkflowService {
         new ParamsHelper(cmpKey, params)
     }
 
-    Map<String, Object> cmd(GrailsParameterMap params) {
-        log.debug('cmd() ' + params)
+    def executeCmdAndUpdateResult(Map<String, Object> result, GrailsParameterMap params) {
+        log.debug('executeCmdAndUpdateResult() ' + params)
+
+        if (params.cmd) {
+            String[] cmd = params.cmd.split(':')
+
+            if (cmd[1] in [WfChecklist.KEY, WfCheckpoint.KEY] ) {
+                result.putAll( executeCmd(params) )
+            }
+        }
+        if (params.info) {
+            result.info = params.info // @ flyout
+        }
+
+        result.checklist = []
+
+        if (result.contextOrg) {
+            if (result.orgInstance) {
+                result.checklists = sortByLastUpdated(WfChecklist.findAllByOrgAndOwner(result.orgInstance as Org, result.contextOrg as Org))
+            }
+            else if (result.license) {
+                result.checklists = sortByLastUpdated( WfChecklist.findAllByLicenseAndOwner(result.license as License, result.contextOrg as Org))
+            }
+            else if (result.subscription) {
+                result.checklists = sortByLastUpdated(WfChecklist.findAllBySubscriptionAndOwner(result.subscription as Subscription, result.contextOrg as Org))
+            }
+        }
+
+        result.checklistCount = result.checklists.size()
+    }
+
+    Map<String, Object> executeCmd(GrailsParameterMap params) {
+        log.debug('executeCmd() ' + params)
 
         Map<String, Object> result = [:]
 
@@ -267,6 +298,8 @@ class WorkflowService {
         log.debug('instantiateCompleteChecklist() ' + params)
         String[] cmd = (params.cmd as String).split(':')
 
+        ParamsHelper ph = getNewParamsHelper( cmd[1], params )
+
         Map<String, Object> result = [ cmd: cmd[0], key: cmd[1] ]
 
         WfChecklist.withTransaction { TransactionStatus ts ->
@@ -275,8 +308,8 @@ class WorkflowService {
                 result.source = WfChecklist.get( cmd[2] )
 
                 result.checklist               = new WfChecklist()
-                result.checklist.title         = result.source.title
-                result.checklist.description   = result.source.description
+                result.checklist.title         = ph.getString('title') ?: result.source.title
+                result.checklist.description   = ph.getString('description') ?: result.source.description
                 result.checklist.owner         = result.source.owner
 
                 def target = genericOIDService.resolveOID(params.target)
