@@ -1,4 +1,4 @@
-<%@ page import="de.laser.UserSetting; de.laser.workflow.WorkflowHelper; de.laser.workflow.WfCheckpoint; de.laser.workflow.WfChecklist; de.laser.WorkflowOldService; de.laser.utils.DateUtils; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.RefdataValue; de.laser.UserSetting; de.laser.workflow.WorkflowHelper; de.laser.workflow.WfCheckpoint; de.laser.workflow.WfChecklist; de.laser.WorkflowService; de.laser.utils.DateUtils; de.laser.storage.RDStore" %>
 <laser:serviceInjection />
 
 <g:if test="${clist}">
@@ -17,9 +17,24 @@
     <div class="ui header center aligned">
         ${clist.title}
 
-        <div class="ui message info" style="margin-top:1em;text-align:left;font-size:14px;font-weight:normal;">
-            Ihre Änderungen werden direkt (ohne explizites Speichern) wirksam.
-        </div>
+        <g:if test="${checkedEditable}">
+            <g:if test="${status == WorkflowService.OP_STATUS_DONE}">
+                <div class="ui message positive" style="margin-top:1em;text-align:left;font-size:14px;font-weight:normal;">
+                    ${message(code: 'workflow.edit.ok')} (${cmd})
+                </div>
+            </g:if>
+            <g:elseif test="${status == WorkflowService.OP_STATUS_ERROR}">
+                <div class="ui message negative" style="margin-top:1em;text-align:left;font-size:14px;font-weight:normal;">
+                    ${message(code: 'workflow.edit.error')} (${cmd})
+                </div>
+            </g:elseif>
+            <g:else>
+                <div class="ui message info" style="margin-top:1em;text-align:left;font-size:14px;font-weight:normal;">
+                    <i class="hand point right outline icon"></i>
+                    <div class="content">Ihre Änderungen werden direkt wirksam - ohne explizites Speichern.</div>
+                </div>
+            </g:else>
+        </g:if>
     </div>
 
     <div class="content">
@@ -176,22 +191,18 @@
                             </g:if>
 
                             <g:if test="${checkedEditable}"><!-- TODO: workflows-permissions -->
-%{--                                <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"--}%
+                                <div class="ui icon negative button la-modern-button"
+                                     data-cmd="delete:${WfCheckpoint.KEY}:${cpoint.id}" data-key="${WfChecklist.KEY}:${clist.id}"><i class="trash alternate outline icon"></i>
+                                </div>
+%{--                                <div class="ui icon negative button la-modern-button js-open-confirm-modal"--}%
 %{--                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.checkpoint", args: [cpoint.title])}"--}%
 %{--                                        data-confirm-term-how="delete"--}%
-%{--                                        controller="${clistInfo.targetController}" action="workflows" id="${clistInfo.target.id}"--}%
-%{--                                        params="${[cmd:"delete:${WfCheckpoint.KEY}:${cpoint.id}", info:"${wfKey}"]}"--}%
+%{--                                        data-cmd="delete:${WfCheckpoint.KEY}:${cpoint.id}"--}%
+%{--                                        data-key="${WfChecklist.KEY}:${clist.id}"--}%
 %{--                                        role="button"--}%
 %{--                                        aria-label="${message(code: 'ariaLabel.delete.universal')}">--}%
 %{--                                    <i class="trash alternate outline icon"></i>--}%
-%{--                                </g:link>--}%
-                                <div class="ui icon negative button la-modern-button"
-%{--                                <div class="ui icon negative button la-modern-button js-open-confirm-modal"--}%
-%{--                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.checkpoint", args: [cpoint.title])}"--}%
-%{--                                     data-confirm-term-how="delete"--}%
-%{--                                     role="button" aria-label="${message(code: 'ariaLabel.delete.universal')}"--}%
-                                     data-cmd="delete:${WfCheckpoint.KEY}:${cpoint.id}" data-key="${WfChecklist.KEY}:${clist.id}"><i class="trash alternate outline icon"></i>
-                                </div>
+%{--                                </div>--}%
                             </g:if>
 
                         </div>

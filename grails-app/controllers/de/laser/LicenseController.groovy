@@ -166,8 +166,6 @@ class LicenseController {
         result.availableLicensorList = orgTypeService.getOrgsForTypeLicensor().minus(result.visibleOrgRelations.collect { OrgRole oo -> oo.org })
         result.existingLicensorIdList = []
 
-
-        // licenseControllerService.workflows(this, params)
         workflowService.executeCmdAndUpdateResult(result, params)
 
         List bm = prf.stopBenchmark()

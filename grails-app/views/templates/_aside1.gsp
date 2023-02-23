@@ -30,5 +30,5 @@
 </div>
 
 <div id="container-workflows">
-    <laser:render template="/templates/workflow/card" model="${[ownobj:ownobj, owntp:owntp, css_class:'', parentAtChild: parentAtChild]}" />
+    <laser:render template="/templates/workflow/card" model="${[checklists: checklists, parentAtChild: parentAtChild]}" />
 </div>

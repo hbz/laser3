@@ -1,7 +1,7 @@
-<%@ page import="de.laser.WorkflowOldService; de.laser.workflow.WfCheckpoint; de.laser.workflow.WfChecklist; de.laser.utils.AppUtils; de.laser.WorkflowOldService; de.laser.utils.DateUtils; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.workflow.WfCheckpoint; de.laser.workflow.WfChecklist; de.laser.WorkflowService; de.laser.utils.AppUtils; de.laser.utils.DateUtils; de.laser.storage.RDStore" %>
 <laser:serviceInjection />
 
-<g:if test="${status == WorkflowOldService.OP_STATUS_DONE}">
+<g:if test="${status == WorkflowService.OP_STATUS_DONE}">
     <g:if test="${cmd == 'delete'}">
         <ui:msg class="positive" message="workflow.delete.ok" />
     </g:if>
@@ -9,7 +9,7 @@
         <ui:msg class="positive" message="workflow.edit.ok" />
     </g:else>
 </g:if>
-<g:elseif test="${status == WorkflowOldService.OP_STATUS_ERROR}">
+<g:elseif test="${status == WorkflowService.OP_STATUS_ERROR}">
     <g:if test="${cmd == 'delete'}">
         <ui:msg class="negative" message="workflow.delete.error" />
     </g:if>
