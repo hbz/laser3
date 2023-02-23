@@ -261,42 +261,6 @@ class AjaxJsonController {
     }
 
     /**
-     * Updates the list of selectable metrics for the given report types in the statistics filter
-     * @return a {@link List} of available metric types
-     */
-    @Secured(['ROLE_USER'])
-    def adjustMetricList() {
-        Map<String, Object> queryParams = [reportType: params.reportType, platforms: params.list("platforms[]"), customer: params.customer]
-        Subscription refSub = Subscription.get(params.subscription)
-        String dateFilter = ''
-        if(refSub.startDate) {
-            dateFilter += ' and r.reportFrom >= :startDate'
-            queryParams.startDate = refSub.startDate
-        }
-        if(refSub.endDate) {
-            dateFilter += ' and r.reportTo <= :endDate'
-            queryParams.endDate = refSub.endDate
-        }
-        List<Map<String, Object>> result = []
-        SortedSet metricTypes = new TreeSet<String>()
-        //will the missing of title keys affect the choice?
-        if(queryParams.reportType in Counter4Report.COUNTER_4_REPORTS) {
-            Counter4Report.withTransaction {
-                metricTypes.addAll(Counter4Report.executeQuery('select r.metricType from Counter4Report r where r.reportType = :reportType and r.platformUID in (:platforms) and r.reportInstitutionUID = :customer'+dateFilter, queryParams))
-            }
-        }
-        else if(queryParams.reportType in Counter5Report.COUNTER_5_REPORTS) {
-            Counter5Report.withTransaction {
-                metricTypes.addAll(Counter5Report.executeQuery('select r.metricType from Counter5Report r where lower(r.reportType) = :reportType and r.platformUID in (:platforms) and r.reportInstitutionUID = :customer'+dateFilter, queryParams))
-            }
-        }
-        metricTypes.each { String metricType ->
-            result.add([name: metricType, value: metricType])
-        }
-        render result as JSON
-    }
-
-    /**
      * Performs a query among the given domain objects matching the given key to find inconsistent entries
      * @return a {@link List} of entries matching the domain key, field key and value
      */
