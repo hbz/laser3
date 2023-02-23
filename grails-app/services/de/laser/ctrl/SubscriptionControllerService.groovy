@@ -783,7 +783,7 @@ class SubscriptionControllerService {
         result
     }
 
-    TitleInstancePackagePlatform matchReport(Map<String, Map<String, TitleInstancePackagePlatform>> titles, Set<IdentifierNamespace> propIdNamespaces, AbstractReport report) {
+    TitleInstancePackagePlatform matchReport(Map<String, Map<String, TitleInstancePackagePlatform>> titles, IdentifierNamespace propIdNamespace, Map report) {
         TitleInstancePackagePlatform tipp = null
         if(report.onlineIdentifier || report.isbn) {
             tipp = titles[IdentifierNamespace.EISSN]?.get(report.onlineIdentifier)
@@ -803,10 +803,8 @@ class SubscriptionControllerService {
             tipp = titles[IdentifierNamespace.DOI]?.get(report.doi)
         }
         if(!tipp && report.proprietaryIdentifier) {
-            propIdNamespaces.each { String propIdNs ->
-                if(!tipp)
-                    tipp = titles[propIdNs]?.get(report.proprietaryIdentifier)
-            }
+            if(!tipp)
+                tipp = titles[propIdNamespace]?.get(report.proprietaryIdentifier)
         }
         GrailsHibernateUtil.unwrapIfProxy(tipp)
     }

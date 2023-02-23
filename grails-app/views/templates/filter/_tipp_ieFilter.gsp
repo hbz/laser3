@@ -316,7 +316,7 @@
                                 </option>
                             </g:each>
                             <g:if test="${accessTypes.size() == 0}">
-                                <option value="<g:message code="default.stats.noAccess" />"><g:message code="default.stats.noAccess" /></option>
+                                <option value="<g:message code="default.stats.noAccessType" />"><g:message code="default.stats.noAccessType" /></option>
                             </g:if>
                         </select>
                     </div>
