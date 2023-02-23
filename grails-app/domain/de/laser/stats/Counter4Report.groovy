@@ -84,7 +84,35 @@ class Counter4Report extends AbstractReport {
         public LinkedHashSet<String> headers
     }
 
+    static enum METRIC_TYPES {
+        JR1 (['ft_ps', 'ft_pdf', 'ft_html', 'ft_total', 'toc', 'abstract', 'reference', 'data_set', 'audio', 'video', 'image', 'podcast', 'multimedia', 'record_view', 'result_click', 'turnaway', 'no_license'] as LinkedHashSet<String>),
+        JR1GOA (['ft_ps', 'ft_pdf', 'ft_html', 'ft_total', 'toc', 'abstract', 'reference', 'data_set', 'audio', 'video', 'image', 'podcast', 'multimedia', 'record_view', 'result_click', 'turnaway', 'no_license'] as LinkedHashSet<String>),
+        JR2 (['ft_ps', 'ft_pdf', 'ft_html', 'ft_total', 'toc', 'abstract', 'reference', 'data_set', 'audio', 'video', 'image', 'podcast', 'multimedia', 'record_view', 'result_click', 'turnaway', 'no_license'] as LinkedHashSet<String>),
+        JR3 (['ft_ps', 'ft_pdf', 'ft_html', 'ft_epub', 'ft_total', 'toc', 'abstract', 'reference', 'data_set', 'audio', 'video', 'image', 'podcast', 'multimedia', 'record_view', 'result_click', 'turnaway', 'no_license'] as LinkedHashSet<String>),
+        JR4 (['search_reg', 'search_fed', 'turnaway', 'no_license'] as LinkedHashSet<String>),
+        JR5 (['ft_ps', 'ft_pdf', 'ft_html', 'ft_total', 'toc', 'abstract', 'reference', 'data_set', 'audio', 'video', 'image', 'podcast', 'multimedia', 'record_view', 'result_click', 'turnaway', 'no_license'] as LinkedHashSet<String>),
+        DB1 (['search_reg', 'search_fed', 'turnaway', 'no_license'] as LinkedHashSet<String>),
+        DB2 (['search_reg', 'search_fed', 'turnaway', 'no_license'] as LinkedHashSet<String>),
+        PR1 (['search_reg', 'search_fed', 'turnaway', 'no_license'] as LinkedHashSet<String>),
+        BR1 (['ft_ps', 'ft_pdf', 'ft_html', 'ft_total', 'toc', 'abstract', 'reference', 'data_set', 'audio', 'video', 'image', 'podcast', 'multimedia', 'record_view', 'result_click', 'turnaway', 'no_license'] as LinkedHashSet<String>),
+        BR2 (['ft_ps', 'ft_pdf', 'ft_html', 'ft_total', 'sectioned_html', 'toc', 'abstract', 'reference', 'data_set', 'audio', 'video', 'image', 'podcast', 'multimedia', 'record_view', 'result_click', 'turnaway', 'no_license'] as LinkedHashSet<String>),
+        BR3 (['ft_ps', 'ft_pdf', 'ft_html', 'ft_total', 'toc', 'abstract', 'reference', 'data_set', 'audio', 'video', 'image', 'podcast', 'multimedia', 'record_view', 'result_click', 'turnaway', 'no_license'] as LinkedHashSet<String>),
+        BR4 (['search_reg', 'search_fed', 'turnaway', 'no_license'] as LinkedHashSet<String>),
+        BR5 (['ft_ps', 'ft_pdf', 'ft_html', 'ft_total', 'toc', 'abstract', 'reference', 'data_set', 'audio', 'video', 'image', 'podcast', 'multimedia', 'record_view', 'result_click', 'turnaway', 'no_license'] as LinkedHashSet<String>)
+
+        METRIC_TYPES(LinkedHashSet<String> metricTypes) {
+            this.metricTypes = metricTypes
+        }
+
+        public LinkedHashSet<String> metricTypes
+    }
+
     String category
+
+    static mapWith = "none"
+
+    /*
+    domain mapping unused as usage data is being fetched on-the-fly
 
     static mapping = {
         datasource           'storage'
@@ -124,5 +152,5 @@ class Counter4Report extends AbstractReport {
 
     static transients = ['platform', 'reportInstitution']
 
-
+    */
 }

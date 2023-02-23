@@ -2,6 +2,7 @@ package de.laser
 
 import de.laser.annotations.Check404
 import de.laser.annotations.DebugInfo
+import de.laser.base.AbstractReport
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.interfaces.CalculatedType
@@ -42,6 +43,7 @@ class SubscriptionController {
     GokbService gokbService
     LinksGenerationService linksGenerationService
     ManagementService managementService
+    StatsSyncService statsSyncService
     SubscriptionControllerService subscriptionControllerService
     SubscriptionService subscriptionService
     SurveyService surveyService
@@ -137,6 +139,33 @@ class SubscriptionController {
                 queryParamsBound.startDate = dateRangeParams.startDate
                 queryParamsBound.endDate = dateRangeParams.endDate
             }
+            result.reportTypes = []
+            Set allAvailableReports = []
+
+            subscribedPlatforms.each { Platform platform ->
+                Map<String, Object> platformRecord = result.platformInstanceRecords.get(platform.gokbId)
+                CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(result.subscription.getSubscriber(), platform)
+                result.putAll(exportService.prepareSushiCall(platformRecord))
+                if(result.revision && result.statsUrl) {
+                    if(result.revision == AbstractReport.COUNTER_5) {
+                        String apiKey = platform.centralApiKey ?: ci.requestorKey
+                        String queryArguments = "?customer_id=${ci.value}"
+                        if(ci.requestorKey || apiKey)
+                            queryArguments += "&requestor_id=${ci.requestorKey}&api_key=${apiKey}"
+                        Map<String, Object> availableReports = statsSyncService.fetchJSONData(result.statsUrl + queryArguments, true)
+                        if(availableReports && availableReports.list) {
+                            allAvailableReports.addAll(availableReports.list.collect { listEntry -> listEntry["Report_ID"].toLowerCase() })
+                        }
+                    }
+                    else if(result.revision == AbstractReport.COUNTER_4) {
+                        //unfortunately! I need to alert that there is no possibility to check whether the API supports the report!
+                        allAvailableReports.addAll(Counter4Report.COUNTER_4_REPORTS)
+                    }
+                }
+            }
+            result.reportTypes = allAvailableReports
+            //detach from here!
+            /*
             Counter5Report.withTransaction {
                 Set allAvailableReports = []
                 allAvailableReports.addAll(Counter5Report.executeQuery('select new map(lower(r.reportType) as reportType, r.accessType as accessType, r.metricType as metricType, r.accessMethod as accessMethod) from Counter5Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms) '+dateRangeParams.dateRange+' group by r.reportType, r.accessType, r.metricType, r.accessMethod', queryParamsBound))
@@ -176,6 +205,7 @@ class SubscriptionController {
                     result.revision = 'counter4'
                 }
             }
+            */
         }
         result
     }
