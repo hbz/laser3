@@ -2,6 +2,10 @@
 
 Source: ${de.laser.config.ConfigMapper.getGrailsServerURL()} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
+#### 1.7
+
+- bugfix for changedSince argument
+
 #### 1.6
 
 - added request parameter ezbOrgId for __/ezb/subscription/list/__
