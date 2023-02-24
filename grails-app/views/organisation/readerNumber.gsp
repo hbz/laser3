@@ -3,15 +3,8 @@
 
         <g:set var="entityName" value="${message(code: 'org.label')}"/>
 
-        <ui:breadcrumbs>
-            <g:if test="${institutionalView}">
-                <ui:crumb message="menu.my.insts" controller="myInstitution" action="manageMembers" params="[comboType:RDStore.COMBO_TYPE_CONSORTIUM]"/>
-                <ui:crumb text="${orgInstance.sortname}" class="active"/>
-            </g:if>
-            <g:else>
-                <ui:crumb text="${orgInstance.sortname}" class="active"/>
-            </g:else>
-        </ui:breadcrumbs>
+        <laser:render template="breadcrumb"
+                      model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView]}"/>
 
         <g:if test="${editable}">
             <ui:controlButtons>

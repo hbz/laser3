@@ -364,7 +364,7 @@ class ExportClickMeService {
             ],
             consortiumProperties : [
                     label: 'Properties',
-                    message: 'propertyDefinition.plural',
+                    message: 'default.properties.my',
                     fields: [:]
             ]
             //customer identifiers: sense for consortia?
@@ -500,7 +500,7 @@ class ExportClickMeService {
             ],
             participantProperties : [
                     label: 'Properties',
-                    message: 'propertyDefinition.plural',
+                    message: 'default.properties.my',
                     fields: [:]
             ],
 
@@ -509,18 +509,18 @@ class ExportClickMeService {
     static Map<String, Object> EXPORT_PROVIDER_CONFIG = [
             provider : [
                     label: 'Provider',
-                    message: 'default.provider.label',
+                    message: 'default.ProviderAgency.singular',
                     fields: [
-                            'provider.sortname'            : [field: 'sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
                             'provider.name'                : [field: 'name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
+                            'provider.shortname'           : [field: 'shortname', label: 'Shortname', message: 'org.shortname.label', defaultChecked: 'true'],
                             'provider.altnames'            : [field: 'altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true' ],
-                            'provider.funderType'          : [field: 'funderType', label: 'Funder Type', message: 'org.funderType.label'],
-                            'provider.funderHskType'       : [field: 'funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
-                            'provider.generalContact'      : [field: null, label: 'General Contact Person', message: 'org.mainContact.label'],
-                            'provider.billingContact'      : [field: null, label: 'Functional Contact Billing Adress', message: 'org.functionalContactBillingAdress.label'],
-                            'provider.postAdress'          : [field: null, label: 'Post Adress', message: 'addressFormModalPostalAddress'],
-                            'provider.billingAdress'       : [field: null, label: 'Billing Adress', message: 'addressFormModalBillingAddress'],
-                            'provider.linkResolverBaseURL' : [field: 'linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label']
+//                            'provider.funderType'          : [field: 'funderType', label: 'Funder Type', message: 'org.funderType.label'],
+//                            'provider.funderHskType'       : [field: 'funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
+//                            'provider.generalContact'      : [field: null, label: 'General Contact Person', message: 'org.mainContact.label'],
+//                            'provider.billingContact'      : [field: null, label: 'Functional Contact Billing Adress', message: 'org.functionalContactBillingAdress.label'],
+//                            'provider.postAdress'          : [field: null, label: 'Post Adress', message: 'addressFormModalPostalAddress'],
+//                            'provider.billingAdress'       : [field: null, label: 'Billing Adress', message: 'addressFormModalBillingAddress'],
+//                            'provider.linkResolverBaseURL' : [field: 'linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label']
                     ]
             ],
             providerIdentifiers : [
@@ -535,7 +535,7 @@ class ExportClickMeService {
             ],
             providerProperties : [
                     label: 'Properties',
-                    message: 'propertyDefinition.plural',
+                    message: 'default.properties.my',
                     fields: [:]
             ]
 

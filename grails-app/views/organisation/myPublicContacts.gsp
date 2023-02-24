@@ -3,13 +3,8 @@
 
 <laser:htmlStart message="menu.institutions.publicContacts" serviceInjection="true" />
 
-<ui:breadcrumbs>
-    <g:if test="${inContextOrg}">
-        <ui:crumb text="${orgInstance.getDesignation()}" controller="organisation" show="show"
-                     params="[id: orgInstance.id]"/>
-    </g:if>
-    <ui:crumb message="menu.institutions.publicContacts" class="active"/>
-</ui:breadcrumbs>
+<laser:render template="breadcrumb"
+              model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView]}"/>
 
 <ui:h1HeaderWithIcon text="${orgInstance.name}" />
 

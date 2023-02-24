@@ -72,9 +72,9 @@
         <tr>
             <th class="one wide" rowspan="2">${message(code:'sidewide.number')}</th>
             <th class="one wide" rowspan="2"></th>
-            <th class="three wide" rowspan="2">${message(code:'workflow.label')}</th>
+            <th class="four wide" rowspan="2">${message(code:'workflow.label')}</th>
             <th class="four wide" rowspan="2">${message(code:'default.relation.label')}</th>
-            <th class="four wide" rowspan="2">${message(code:'default.progress.label')}</th>
+            <th class="three wide" rowspan="2">${message(code:'default.progress.label')}</th>
             <th class="two wide la-smaller-table-head">${message(code:'default.lastUpdated.label')}</th>
             <th class="one wide" rowspan="2">${message(code:'default.actions.label')}</th>
         </tr>
@@ -91,13 +91,14 @@
                     ${ci + 1 + offset}
                 </td>
                 <td class="center aligned">
-                    <uiWorkflow:statusIcon checklist="${wf}" size="normal" />
+                    <uiWorkflow:statusIcon checklist="${clist}" size="normal" />
                 </td>
-                <td>
+                <td style="position:relative">
                     <g:link controller="${clistInfo.targetController}" action="workflows" id="${clistInfo.target.id}" params="${[info: '' + clistInfo.target.class.name + ':' + clistInfo.target.id + ':' + WfChecklist.KEY + ':' + clist.id]}">
                         <strong>${clist.title}</strong>
                     </g:link>
                     <g:if test="${clist.template}">&nbsp;&nbsp;<span class="ui label tiny">Vorlage</span></g:if>
+                    <g:if test="${clist.description}"><br /> ${clist.description}</g:if>
                 </td>
                 <td>
                     <div class="la-flexbox">

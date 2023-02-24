@@ -463,6 +463,7 @@ class AdminController  {
      * Gets the current workflows and returns a dashboard-like overview of the outstanding tasks
      */
     @Secured(['ROLE_ADMIN'])
+    @Deprecated
     def manageWorkflows() {
         Map<String, Object> result = [:]
 

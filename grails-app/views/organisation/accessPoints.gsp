@@ -25,11 +25,8 @@
         </g:if>
     </ui:controlButtons>
 
-    <ui:breadcrumbs>
-        <g:if test="${!inContextOrg}">
-            <ui:crumb text="${orgInstance.getDesignation()}" class="active"/>
-        </g:if>
-    </ui:breadcrumbs>
+    <laser:render template="breadcrumb"
+                model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView]}"/>
 
     <ui:h1HeaderWithIcon text="${orgInstance.name}" />
 

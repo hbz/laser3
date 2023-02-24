@@ -971,7 +971,6 @@ class OrganisationController  {
 			)
 		}
 
-        // organisationControllerService.workflows(this, params)
         workflowService.executeCmdAndUpdateResult(result, params)
 
         List bm = prf.stopBenchmark()

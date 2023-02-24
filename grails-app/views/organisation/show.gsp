@@ -1,7 +1,7 @@
 <%@ page import="de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.OrgSubjectGroup; de.laser.OrgRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Org; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting;de.laser.Combo; de.laser.Contact; de.laser.remote.ApiSource" %>
 
-<laser:htmlStart message="menu.institutions.org_info" serviceInjection="true" />
 <g:set var="wekbAPI" value="${ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"/>
+
     <g:if test="${isProviderOrAgency}">
         <g:set var="entityName" value="${message(code: 'default.provider.label')}"/>
     </g:if>
@@ -12,6 +12,7 @@
         <g:set var="entityName" value="${message(code: 'org.label')}"/>
     </g:else>
 
+<laser:htmlStart message="${isProviderOrAgency ? 'menu.institutions.provider_info' : 'menu.institutions.org_info'}" serviceInjection="true" />
 
 <laser:render template="breadcrumb"
           model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView, consortialView: consortialView]}"/>

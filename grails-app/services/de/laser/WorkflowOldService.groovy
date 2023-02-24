@@ -14,6 +14,7 @@ import org.springframework.transaction.TransactionStatus
  * This service contains methods for workflow handling
  */
 @Transactional
+@Deprecated
 class WorkflowOldService {
 
     ContextService contextService

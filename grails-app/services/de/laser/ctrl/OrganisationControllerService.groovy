@@ -266,7 +266,6 @@ class OrganisationControllerService {
         result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
 
         result.notesCount       = docstoreService.getNotes(result.orgInstance, result.contextOrg).size()
-//        result.workflowCount    = workflowOldService.getWorkflowCount(result.orgInstance, result.contextOrg)
         result.checklistCount   = workflowService.getWorkflowCount(result.orgInstance, result.contextOrg)
 
         result.links = linksGenerationService.getOrgLinks(result.orgInstance)

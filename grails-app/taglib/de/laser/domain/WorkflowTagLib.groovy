@@ -32,13 +32,11 @@ class WorkflowTagLib {
         if (attrs.workflow) {
             workflow = attrs.workflow as WfWorkflow
             info = workflow.getInfo()
-
             out << '<i class="icon ' + iconSize + ' ' + WorkflowHelper.getCssIconAndColorByStatus(workflow.status) + '"></i>'
         }
         else if (attrs.checklist) {
             checklist = attrs.checklist as WfChecklist
             info = checklist.getInfo()
-
             out << '<i class="icon ' + iconSize + ' ' + WorkflowHelper.getCssIconAndColorByStatus(info.status as RefdataValue) + '"></i>'
         }
 
