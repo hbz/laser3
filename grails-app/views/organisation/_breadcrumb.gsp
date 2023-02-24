@@ -9,7 +9,7 @@
             <g:else>
                 <ui:crumb message="menu.public.all_providers" controller="organisation" action="listProvider"/>
             </g:else>
-            <ui:crumb text="${orgInstance.name}" class="active"/>
+            <ui:crumb text="${orgInstance.getDesignation()}" class="active"/>
         </g:if>
         <g:else>
             <g:if test="${institutionalView}">
@@ -19,18 +19,18 @@
                 <g:else>
                     <ui:crumb message="menu.public.all_insts" controller="org" action="listInstitution"/>
                 </g:else>
-                <ui:crumb text="${orgInstance.sortname}" class="active"/>
+                <ui:crumb text="${orgInstance.getDesignation()}" class="active"/>
             </g:if>
             <g:elseif test="${consortialView}">
                 <ui:crumb message="menu.my.consortia" controller="myInstitution" action="currentConsortia"/>
-                <ui:crumb text="${orgInstance.sortname}" class="active"/>
+                <ui:crumb text="${orgInstance.getDesignation()}" class="active"/>
             </g:elseif>
             <g:else>
-                <ui:crumb text="${orgInstance.sortname}" class="active"/>
+                <ui:crumb text="${orgInstance.getDesignation()}" class="active"/>
             </g:else>
         </g:else>
     </g:if>
     <g:else>
-        <ui:crumb text="${institution.name}" class="active"/>
+        <ui:crumb text="${institution.getDesignation()}" class="active"/>
     </g:else>
 </ui:breadcrumbs>

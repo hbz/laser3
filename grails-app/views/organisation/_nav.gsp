@@ -5,13 +5,14 @@
         if(params.my)
             breadcrumbParams.my = true
     %>
+
     <ui:subNavItem controller="organisation" action="show" params="${breadcrumbParams}" message="org.nav.details"/>
-    <ui:subNavItem controller="organisation" action="ids" params="${breadcrumbParams}" message="org.nav.ids"/>
+    <ui:subNavItem controller="organisation" action="ids" params="${breadcrumbParams}" message="${isProviderOrAgency ? 'org.nav.ids' : 'org.nav.idsCidsHyphen'}"/>
     <g:if test="${inContextOrg}">
         <ui:subNavItem controller="organisation" action="myPublicContacts" params="${[id: institution.id]}" message="menu.institutions.publicContactsHyphen" />
     </g:if>
     <g:elseif test="${(contextCustomerType == 'ORG_CONSORTIUM' && !isProviderOrAgency)}">
-        <ui:subNavItem controller="organisation" action="myPublicContacts" params="${[id: orgInstance.id]}" message="menu.institutions.publicContactsHyphen" />
+        <ui:subNavItem controller="organisation" action="myPublicContacts" params="${breadcrumbParams}" message="menu.institutions.publicContactsHyphen" />
     </g:elseif>
     <g:else>
         <g:if test="${!isProviderOrAgency}">
@@ -19,17 +20,17 @@
         </g:if>
     </g:else>
     <g:if test="${!isProviderOrAgency}">
-        <ui:securedSubNavItem affiliation="INST_USER" controller="organisation" action="readerNumber" params="${[id: orgInstance.id]}" message="menu.institutions.readerNumbers"/>
+        <ui:securedSubNavItem affiliation="INST_USER" controller="organisation" action="readerNumber" params="${breadcrumbParams}" message="menu.institutions.readerNumbers"/>
 
         <g:if test="${tmplAccessPointsActive}">
-            <ui:securedSubNavItem affiliation="INST_USER" controller="organisation" action="accessPoints" class="active" params="${[id: orgInstance.id]}" message="org.nav.accessPoints"/>
+            <ui:securedSubNavItem affiliation="INST_USER" controller="organisation" action="accessPoints" class="active" params="${breadcrumbParams}" message="org.nav.accessPoints"/>
         </g:if>
         <g:else>
-            <ui:securedSubNavItem affiliation="INST_USER" controller="organisation" action="accessPoints" params="${[id: orgInstance.id]}" message="org.nav.accessPoints"/>
+            <ui:securedSubNavItem affiliation="INST_USER" controller="organisation" action="accessPoints" params="${breadcrumbParams}" message="org.nav.accessPoints"/>
         </g:else>
     </g:if>
     <g:if test="${(inContextOrg || isProviderOrAgency) && workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
-        <ui:subNavItem controller="organisation" action="workflows" counts="${checklistCount}" params="${[id:params.id]}" message="workflow.plural" />
+        <ui:subNavItem controller="organisation" action="workflows" counts="${checklistCount}" params="${breadcrumbParams}" message="workflow.plural" />
     </g:if>
 
     <ui:securedSubNavItem controller="organisation" action="tasks" params="${breadcrumbParams}" counts="${tasksCount}" affiliation="INST_USER" orgPerm="ORG_INST,ORG_CONSORTIUM" message="menu.institutions.tasks"/>
@@ -53,11 +54,11 @@
         <g:else>
             <%-- this kind of check is necessary because it should not be displayed at all if user has no specRoles --%>
             <sec:ifAnyGranted roles="ROLE_ADMIN">
-                <ui:subNavItem controller="organisation" action="users" params="${[id: orgInstance.id]}" message="org.nav.users"/>
+                <ui:subNavItem controller="organisation" action="users" params="${breadcrumbParams}" message="org.nav.users"/>
             </sec:ifAnyGranted>
         </g:else>
         <g:if test="${inContextOrg}">
-            <ui:securedSubNavItem controller="organisation" action="settings" params="${[id: orgInstance.id]}"
+            <ui:securedSubNavItem controller="organisation" action="settings" params="${breadcrumbParams}"
                                      message="org.nav.options" affiliation="INST_ADM" affiliationOrg="${orgInstance}"/>
         </g:if>
         <g:elseif test="${accessService.checkForeignOrgComboPermAffiliationX([
@@ -66,7 +67,7 @@
                     comboAffiliation: "INST_ADM",
                     specRoles: "ROLE_ADMIN"
         ])}">
-            <ui:subNavItem controller="organisation" action="settings" params="${[id: orgInstance.id]}" message="org.nav.options"/>
+            <ui:subNavItem controller="organisation" action="settings" params="${breadcrumbParams}" message="org.nav.options"/>
         </g:elseif>
         <g:else>
             <ui:subNavItem disabled="disabled" message="org.nav.options"/>
