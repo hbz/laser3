@@ -1464,6 +1464,7 @@ class ExportService {
 							titleRow = [:]
 						}
 						else periodTotal = titleRow.get("Reporting_Period_Total") as int
+						//continue here: fine tuning - the counts are not correct; there are counts mixed up (tested for DUZ)
 						int reportCount = instance.Count as int
 						Integer countPerMonth = countsPerMonth.get(reportFrom)
 						if(!countPerMonth) {
