@@ -5,6 +5,7 @@
 <laser:htmlStart message="menu.institutions.myAddressbook" />
 
 <ui:breadcrumbs>
+    <ui:crumb controller="org" action="show" id="${institution.id}" text="${institution.getDesignation()}"/>
     <ui:crumb message="menu.institutions.myAddressbook" class="active"/>
 </ui:breadcrumbs>
 

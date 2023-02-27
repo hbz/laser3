@@ -1,9 +1,10 @@
 <%@ page import="de.laser.RefdataCategory;de.laser.storage.RDConstants"%>
 <laser:htmlStart message="task.plural" />
 
-        <ui:breadcrumbs>
-            <ui:crumb message="menu.institutions.tasks" class="active"/>
-        </ui:breadcrumbs>
+    <ui:breadcrumbs>
+        <ui:crumb controller="org" action="show" id="${institution.id}" text="${institution.getDesignation()}"/>
+        <ui:crumb message="menu.institutions.tasks" class="active"/>
+    </ui:breadcrumbs>
 
         <ui:controlButtons>
             <laser:render template="actions"/>

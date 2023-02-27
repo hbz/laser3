@@ -2,11 +2,12 @@
 
 <laser:htmlStart message="menu.institutions.budgetCodes" />
 
-        <ui:breadcrumbs>
-            <ui:crumb message="menu.institutions.budgetCodes" class="active"/>
-        </ui:breadcrumbs>
+    <ui:breadcrumbs>
+        <ui:crumb controller="org" action="show" id="${institution.id}" text="${institution.getDesignation()}"/>
+        <ui:crumb message="menu.institutions.budgetCodes" class="active"/>
+    </ui:breadcrumbs>
 
-        <ui:h1HeaderWithIcon message="menu.institutions.budgetCodes" />
+    <ui:h1HeaderWithIcon message="menu.institutions.budgetCodes" />
 
         <ui:messages data="${flash}" />
 
