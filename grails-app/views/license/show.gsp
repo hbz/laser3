@@ -34,6 +34,7 @@
         <laser:render template="/templates/meta/identifier" model="${[object: license, editable: editable]}" />
 
         <ui:messages data="${flash}" />
+        <g:render template="/templates/workflow/status" model="${[cmd: cmd, status: status]}" />
 
         <div class="ui stackable grid">
 

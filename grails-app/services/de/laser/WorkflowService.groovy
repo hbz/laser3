@@ -195,24 +195,32 @@ class WorkflowService {
         WfChecklist.withTransaction { TransactionStatus ts ->
 
             try {
-                result.status = clist.save() ? OP_STATUS_DONE : OP_STATUS_ERROR
+                result.status = OP_STATUS_ERROR
 
-                // todo
-                if (cmd[0] == 'create' && ph.getInt('numberOfPoints')) {
-                    for (int i = 1; i <= ph.getInt('numberOfPoints'); i++) {
+                if (! clist.validate()) {
+                    log.debug( 'createChecklist() : ' + clist.getErrors().toString() )
+                }
+                else {
+                    boolean saved = clist.save()
 
-                        if (result.status == OP_STATUS_DONE) {
-                            GrailsParameterMap tmp = params.clone() as GrailsParameterMap
-                            tmp.clear()
-                            tmp.WF_CHECKPOINT_title = 'Aufgabe ' + i
-                            tmp.WF_CHECKPOINT_position = i
-                            tmp.WF_CHECKPOINT_checklist = clist.id
-                            tmp.cmd = 'create:WF_CHECKPOINT'
+                    // todo
+                    if (cmd[0] == 'create' && ph.getInt('numberOfPoints')) {
+                        for (int i = 1; i <= ph.getInt('numberOfPoints'); i++) {
 
-                            Map<String, Object> tmpResult = createCheckpoint(tmp)
-                            result.status = tmpResult.status
+                            if (saved) {
+                                GrailsParameterMap tmp = params.clone() as GrailsParameterMap
+                                tmp.clear()
+                                tmp.WF_CHECKPOINT_title = 'Aufgabe ' + i
+                                tmp.WF_CHECKPOINT_position = i
+                                tmp.WF_CHECKPOINT_checklist = clist.id
+                                tmp.cmd = 'create:WF_CHECKPOINT'
+
+                                Map<String, Object> tmpResult = createCheckpoint(tmp)
+                                saved = saved && (tmpResult.status == OP_STATUS_DONE)
+                            }
                         }
                     }
+                    result.status = saved ? OP_STATUS_DONE : OP_STATUS_ERROR
                 }
             }
             catch (Exception e) {
@@ -222,7 +230,7 @@ class WorkflowService {
                 e.printStackTrace()
             }
             finally {
-                if (result.status == OP_STATUS_ERROR) {
+                if (result.status == OP_STATUS_ERROR && clist.validate()) {
                     log.debug( 'TransactionStatus.setRollbackOnly(!)' )
                     ts.setRollbackOnly()
                 }
@@ -277,34 +285,35 @@ class WorkflowService {
                 else if (target instanceof License)      { result.checklist.license = target }
                 else if (target instanceof Subscription) { result.checklist.subscription = target }
 
+                result.status = OP_STATUS_ERROR
+
                 if (! result.checklist.validate()) {
                     log.debug( '[ ' + result.source.id + ' ].instantiate(' + target + ') : ' + result.checklist.getErrors().toString() )
                 }
-
-                boolean saved = result.checklist.save()
-
-                result.source.getSequence().each { cpoint ->
-                    WfCheckpoint checkpoint = new WfCheckpoint()
-                    checkpoint.title        = cpoint.title
-                    checkpoint.description  = cpoint.description
-                    checkpoint.checklist    = result.checklist as WfChecklist
-                    checkpoint.position     = cpoint.position
-
-                    if (! checkpoint.validate()) {
-                        log.debug( '[ ' + checkpoint.id + ' ].instantiate() : ' + checkpoint.getErrors().toString() )
-                    }
-                    saved = saved && checkpoint.save()
-                }
-
-                if (! saved) {
-                    result.status = OP_STATUS_ERROR
-
-                    log.debug( 'instantiateCompleteChecklist() -> ' + result.checklist.getErrors().toString() )
-                    log.debug( 'TransactionStatus.setRollbackOnly()' )
-                    ts.setRollbackOnly()
-                }
                 else {
-                    result.status = OP_STATUS_DONE
+                    boolean saved = result.checklist.save()
+
+                    result.source.getSequence().each { cpoint ->
+                        WfCheckpoint checkpoint = new WfCheckpoint()
+                        checkpoint.title        = cpoint.title
+                        checkpoint.description  = cpoint.description
+                        checkpoint.checklist    = result.checklist as WfChecklist
+                        checkpoint.position     = cpoint.position
+
+                        if (! checkpoint.validate()) {
+                            log.debug( '[ ' + checkpoint.id + ' ].instantiate() : ' + checkpoint.getErrors().toString() )
+                        }
+                        saved = saved && checkpoint.save()
+                    }
+
+                    if (! saved) {
+                        log.debug( 'instantiateCompleteChecklist() -> ' + result.checklist.getErrors().toString() )
+                        log.debug( 'TransactionStatus.setRollbackOnly()' )
+                        ts.setRollbackOnly()
+                    }
+                    else {
+                        result.status = OP_STATUS_DONE
+                    }
                 }
             }
             catch (Exception e) {
@@ -334,17 +343,8 @@ class WorkflowService {
                 WfCheckpoint.executeUpdate('delete from WfCheckpoint cp where cp.checklist = :cl', [cl: result.checklist])
                 result.checklist.delete()
 
-//                if (result.checklist) {
-//                    result.status = OP_STATUS_ERROR
-//
-//                    log.debug( 'removeCompleteChecklist() -> ' + result.checklist.getErrors().toString() )
-//                    log.debug( 'TransactionStatus.setRollbackOnly(A)' )
-//                    ts.setRollbackOnly()
-//                }
-//                else {
-                    result.status = OP_STATUS_DONE
-                    ts.flush() // TODO
-//                }
+                result.status = OP_STATUS_DONE
+                ts.flush() // TODO
             }
             catch (Exception e) {
                 result.status = OP_STATUS_ERROR

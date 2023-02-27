@@ -47,6 +47,7 @@
 <ui:objectStatus object="${orgInstance}" status="${orgInstance.status}"/>
 
 <ui:messages data="${flash}"/>
+<g:render template="/templates/workflow/status" model="${[cmd: cmd, status: status]}" />
 
 <div class="ui stackable grid">
     <div class="eleven wide column">

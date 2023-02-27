@@ -40,6 +40,7 @@
 
 
 <ui:messages data="${flash}"/>
+<g:render template="/templates/workflow/status" model="${[cmd: cmd, status: status]}" />
 
 <div id="collapseableSubDetails" class="ui stackable grid">
     <div class="eleven wide column">
