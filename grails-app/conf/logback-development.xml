@@ -15,9 +15,7 @@
                     if (message.contains("HHH90000022")) return true;
                     if (message.contains("HHH90001005")) return true;
                     <!-- warn -->
-                    if (message.contains("Use 'config.getProperty(key, targetClass)' instead.")) return true;
                     if (message.contains("Replaced rule for '")) return true;
-                    if (message.contains("299 Elasticsearch-7.15.1-83c34f456ae29d60e94d886e455e6a3409bba9ed")) return true;
                     if (message.contains("299 Elasticsearch-7.16.3-4e6e4eab2297e949ec994e688dad46290d018022")) return true;
                     <!-- info -->
                     if (message.contains("(for example: not eligible for auto-proxying)")) return true;
@@ -58,12 +56,8 @@
                     if (message.contains("HHH90000022")) return true;
                     <!-- INFO: Cache[..] Key[..] A soft-locked cache entry was expired by the underlying cache. If this happens regularly you should consider increasing the cache timeouts and/or capacity limits -->
                     if (message.contains("HHH90001005")) return true;
-                    <!-- WARN: Accessing config key '[..]' through dot notation is deprecated, and it will be removed in a future release. Use 'config.getProperty(key, targetClass)' instead. -->
-                    if (message.contains("Use 'config.getProperty(key, targetClass)' instead.")) return true;
                     <!-- WARN: Replaced rule for '[..]' and ConfigAttributes [..] with ConfigAttributes [..] -->
                     if (message.contains("Replaced rule for '")) return true;
-                    <!-- WARN: request [..] returned 1 warnings: [299 Elasticsearch-7.15.1 ..] -->
-                    if (message.contains("299 Elasticsearch-7.15.1-83c34f456ae29d60e94d886e455e6a3409bba9ed")) return true;
                     <!-- WARN: request [..] returned 1 warnings: [299 Elasticsearch-7.16.3 ..] -->
                     if (message.contains("299 Elasticsearch-7.16.3-4e6e4eab2297e949ec994e688dad46290d018022")) return true;
                     <!-- INFO: Bean '[..]' of type [..] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying) -->

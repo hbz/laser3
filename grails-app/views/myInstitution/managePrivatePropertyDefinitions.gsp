@@ -5,6 +5,7 @@
     <g:set var="entityName" value="${message(code: 'org.label')}" />
 
     <ui:breadcrumbs>
+        <ui:crumb controller="org" action="show" id="${institution.id}" text="${institution.getDesignation()}"/>
         <ui:crumb message="menu.institutions.manage_props" class="active" />
     </ui:breadcrumbs>
 

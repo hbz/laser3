@@ -1,10 +1,8 @@
 <laser:htmlStart message="workflow.plural" serviceInjection="true" />
 
-    <ui:breadcrumbs>
-        <g:if test="${!inContextOrg}">
-            <ui:crumb text="${orgInstance.getDesignation()}" class="active"/>
-        </g:if>
-    </ui:breadcrumbs>
+    <laser:render template="breadcrumb"
+              model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView]}"/>
+
     <ui:controlButtons>
         <g:if test="${inContextOrg || isProviderOrAgency}">
             <laser:render template="actions" model="${[org:org]}"/>

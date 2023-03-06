@@ -15,9 +15,9 @@ import de.laser.api.v0.entities.*
 import de.laser.api.v0.special.ApiOAMonitor
 import de.laser.api.v0.special.ApiStatistic
 import de.laser.storage.Constants
+import de.laser.utils.DateUtils
 import grails.converters.JSON
 import groovy.util.logging.Slf4j
-import org.apache.tools.ant.util.DateUtils
 import org.springframework.http.HttpStatus
 
 import javax.servlet.http.HttpServletRequest
@@ -32,7 +32,7 @@ class ApiManager {
     /**
      * The current version of the API. To be updated on every change which affects the output
      */
-    static final VERSION = '1.6'
+    static final VERSION = '1.7'
 
     /**
      * Checks if the request is valid and if, whether the permissions are granted for the context institution making
@@ -61,7 +61,7 @@ class ApiManager {
         boolean isNatStat     = ApiToolkit.hasApiLevel(contextOrg, ApiToolkit.API_LEVEL_NATSTAT)
         boolean isInvoiceTool = ApiToolkit.hasApiLevel(contextOrg, ApiToolkit.API_LEVEL_INVOICETOOL)
 
-        log.debug("API-READ (" + VERSION + "): ${obj} (${format}) -> ${query}:${value} ${changedFrom ? changedFrom.format(DateUtils.ISO8601_DATE_PATTERN) : ''}")
+        log.debug("API-READ (" + VERSION + "): ${obj} (${format}) -> ${query}:${value} ${changedFrom ? DateUtils.getSDF_yyyyMMdd().format(changedFrom) : ''}")
 
         Closure checkValidRequest = { endpoint ->
             if (! endpoint.equalsIgnoreCase(obj)) {

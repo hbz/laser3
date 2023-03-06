@@ -1,10 +1,8 @@
 <%@ page import="de.laser.workflow.WfChecklist; de.laser.storage.RDStore" %>
 <laser:serviceInjection />
 
-<% List<WfChecklist> checklists = workflowService.sortByLastUpdated( workflowService.getWorkflows(ownobj, contextService.getOrg()) ) %>
-
-    <ui:card message="workflow.plural" class="notes la-js-hideable ${css_class}" href="#modalCreateWorkflow" editable="${editable}">
-        <g:each in="${checklists}" var="clist">
+    <ui:card message="workflow.open.plural" class="notes la-js-hideable" href="#modalCreateWorkflow" editable="${editable}">
+        <g:each in="${checklists.findAll{ it.getInfo().status != RDStore.WF_WORKFLOW_STATUS_DONE }}" var="clist">
             <g:set var="clistInfo" value="${clist.getInfo()}" />
             <div class="ui small feed content la-js-dont-hide-this-card">
                     <div class="ui grid summary">
@@ -18,7 +16,7 @@
                             <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.workflow", args: [clist.title])}"
                                     data-confirm-term-how="delete"
-                                    controller="${clistInfo.targetController}" action="workflows" id="${clistInfo.target.id}" params="${[cmd:"delete:${WfChecklist.KEY}:${clist.id}"]}"
+                                    controller="${clistInfo.targetController}" action="${actionName}" id="${clistInfo.target.id}" params="${[cmd:"delete:${WfChecklist.KEY}:${clist.id}"]}"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                 <i class="trash alternate outline icon"></i>

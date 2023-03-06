@@ -102,7 +102,9 @@ class ModalTagLib {
             out << '"/>'
         }
 
-        if (attrs.hideSubmitButton == null) {
+        if (attrs.hideSubmitButton == true || attrs.hideSubmitButton == 'true') {
+        }
+        else {
             if (attrs.formID) {
                 out << '<input type="submit" class="ui button green" name="save" value="' + msgSave + '" onclick="event.preventDefault(); $(\'#' + attrs.id + '\').find(\'#' + attrs.formID + '\').submit()"/>'
             } else {

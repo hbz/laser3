@@ -117,7 +117,7 @@ class MyInstitutionControllerService {
                 String[] cmd = params.cmd.split(':')
 
                 if (cmd[1] in [WfChecklist.KEY, WfCheckpoint.KEY]) { // light
-                    workflowService.cmd(params)
+                    workflowService.executeCmd(params)
 //                    result.putAll(workflowService.cmd(params))
                 }
             }

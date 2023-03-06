@@ -9,7 +9,6 @@ import groovy.util.logging.Slf4j
 @Slf4j
 class Counter5Report extends AbstractReport {
 
-
     static final String PLATFORM_MASTER_REPORT          = "pr"
     static final String PLATFORM_USAGE                  = "pr_p1"
     static final String DATABASE_MASTER_REPORT          = "dr"
@@ -31,8 +30,9 @@ class Counter5Report extends AbstractReport {
      */
     static List<String> COUNTER_5_TITLE_REPORTS         = [TITLE_MASTER_REPORT, BOOK_REQUESTS, BOOK_ACCESS_DENIED, BOOK_USAGE_BY_ACCESS_TYPE, JOURNAL_REQUESTS, JOURNAL_ACCESS_DENIED, JOURNAL_USAGE_BY_ACCESS_TYPE, JOURNAL_REQUESTS_BY_YOP,
                                                            ITEM_MASTER_REPORT, JOURNAL_ARTICLE_REQUESTS, MULTIMEDIA_ITEM_REQUESTS]
-    static List<String> COUNTER_5_PLATFORM_REPORTS      = [PLATFORM_MASTER_REPORT, PLATFORM_USAGE, DATABASE_MASTER_REPORT, DATABASE_SEARCH_AND_ITEM_USAGE, DATABASE_ACCESS_DENIED]
-    static List<String> COUNTER_5_REPORTS               = COUNTER_5_TITLE_REPORTS+COUNTER_5_PLATFORM_REPORTS
+    static List<String> COUNTER_5_PLATFORM_REPORTS      = [PLATFORM_MASTER_REPORT, PLATFORM_USAGE]
+    static List<String> COUNTER_5_DATABASE_REPORTS      = [DATABASE_MASTER_REPORT, DATABASE_SEARCH_AND_ITEM_USAGE, DATABASE_ACCESS_DENIED]
+    static List<String> COUNTER_5_REPORTS               = COUNTER_5_TITLE_REPORTS+COUNTER_5_PLATFORM_REPORTS+COUNTER_5_DATABASE_REPORTS
 
 
     /**
@@ -123,9 +123,96 @@ class Counter5Report extends AbstractReport {
         public LinkedHashSet<String> headers
     }
 
+    static enum METRIC_TYPES {
+        PR (['Searches_Platform', 'Total_Item_Investigations', 'Total_Item_Requests', 'Unique_Item_Investigations', 'Unique_Item_Requests', 'Unique_Title_Investigations', 'Unique_Title_Requests'] as LinkedHashSet<String>),
+        //PR_P1 (['Searches_Platform', 'Total_Item_Requests', 'Unique_Item_Requests', 'Unique_Title_Requests'] as LinkedHashSet<String>),
+        DR (['Searches_Automated', 'Searches_Federated', 'Searches_Regular', 'Total_Item_Investigations', 'Total_Item_Requests', 'Unique_Item_Investigations', 'Unique_Item_Requests', 'Unique_Title_Investigations', 'Unique_Title_Requests', 'Limit_Exceeded', 'No_License'] as LinkedHashSet<String>),
+        /*
+        DR_D1 (['Searches_Automated', 'Searches_Federated', 'Searches_Regular', 'Total_Item_Investigations', 'Total_Item_Requests'] as LinkedHashSet<String>),
+        DR_D2 (['Limit_Exceeded', 'No_License'] as LinkedHashSet<String>),
+        */
+        TR (['Total_Item_Investigations', 'Total_Item_Requests', 'Unique_Item_Investigations', 'Unique_Item_Requests', 'Unique_Title_Investigations', 'Unique_Title_Requests', 'Limit_Exceeded', 'No_License'] as LinkedHashSet<String>),
+        /*
+        TR_B1 (['Total_Item_Requests', 'Unique_Item_Requests'] as LinkedHashSet<String>),
+        TR_B2 (['Limit_Exceeded', 'No_License'] as LinkedHashSet<String>),
+        TR_B3 (['Total_Item_Investigations', 'Total_Item_Requests', 'Unique_Item_Investigations', 'Unique_Item_Requests', 'Unique_Title_Investigations', 'Unique_Title_Requests'] as LinkedHashSet<String>),
+        TR_J1 (['Total_Item_Requests', 'Unique_Item_Requests'] as LinkedHashSet<String>),
+        TR_J2 (['Limit_Exceeded', 'No_License'] as LinkedHashSet<String>),
+        TR_J3 (['Total_Item_Investigations', 'Total_Item_Requests', 'Unique_Item_Investigations', 'Unique_Item_Requests'] as LinkedHashSet<String>),
+        TR_J4 (['Total_Item_Requests', 'Unique_Item_Requests'] as LinkedHashSet<String>),
+        */
+        IR (['Total_Item_Investigations', 'Total_Item_Requests', 'Unique_Item_Investigations', 'Unique_Item_Requests', 'Limit_Exceeded', 'No_License'] as LinkedHashSet<String>)
+        /*
+        IR_A1 (['Total_Item_Requests', 'Unique_Item_Requests'] as LinkedHashSet<String>),
+        IR_M1 (['Total_Item_Requests'] as LinkedHashSet<String>)
+        */
+
+        METRIC_TYPES(LinkedHashSet<String> metricTypes) {
+            this.metricTypes = metricTypes
+        }
+
+        public LinkedHashSet<String> metricTypes
+    }
+
+    static enum ACCESS_METHODS {
+        PR (['Regular', 'TDM'] as LinkedHashSet<String>),
+        //PR_P1 (['Regular'] as LinkedHashSet<String>),
+        DR (['Regular', 'TDM'] as LinkedHashSet<String>),
+        /*
+        DR_D1 (['Regular'] as LinkedHashSet<String>),
+        DR_D2 (['Regular'] as LinkedHashSet<String>),
+        */
+        TR (['Regular', 'TDM'] as LinkedHashSet<String>),
+        /*
+        TR_B1 (['Regular'] as LinkedHashSet<String>),
+        TR_B2 (['Regular'] as LinkedHashSet<String>),
+        TR_B3 (['Regular'] as LinkedHashSet<String>),
+        TR_J1 (['Regular'] as LinkedHashSet<String>),
+        TR_J2 (['Regular'] as LinkedHashSet<String>),
+        TR_J3 (['Regular'] as LinkedHashSet<String>),
+        TR_J4 (['Regular'] as LinkedHashSet<String>),
+        */
+        IR (['Regular', 'TDM'] as LinkedHashSet<String>)
+        /*
+        IR_A1 (['Regular'] as LinkedHashSet<String>),
+        IR_M1 (['Regular'] as LinkedHashSet<String>)
+        */
+
+        ACCESS_METHODS(LinkedHashSet<String> accessMethods) {
+            this.accessMethods = accessMethods
+        }
+
+        public LinkedHashSet<String> accessMethods
+    }
+
+    static enum ACCESS_TYPES {
+        TR (['Controlled', 'OA_Gold'] as LinkedHashSet<String>),
+        /*
+        TR_B1 (['Controlled'] as LinkedHashSet<String>),
+        TR_J1 (['Controlled'] as LinkedHashSet<String>),
+        TR_J4 (['Controlled'] as LinkedHashSet<String>),
+        */
+        IR (['Controlled', 'OA_Gold', 'Other_Free_To_Read'] as LinkedHashSet<String>)
+        /*
+        IR_A1 (['Total_Item_Requests', 'Unique_Item_Requests'] as LinkedHashSet<String>),
+        IR_M1 (['Total_Item_Requests'] as LinkedHashSet<String>)
+        */
+
+        ACCESS_TYPES(LinkedHashSet<String> accessTypes) {
+            this.accessTypes = accessTypes
+        }
+
+        public LinkedHashSet<String> accessTypes
+    }
+
     String accessType
     String accessMethod
     String dataType
+
+    static mapWith = "none"
+
+    /*
+    domain mapping unused as usage data is being fetched on-the-fly
 
     static mapping = {
         datasource           'storage'
@@ -137,6 +224,7 @@ class Counter5Report extends AbstractReport {
         isbn                    column: 'c5r_isbn', index: 'c5r_isbn_idx'
         proprietaryIdentifier   column: 'c5r_proprietary_identifier', index: 'c5r_prop_ident_idx'
         identifierHash          column: 'c5r_identifier_hash', type: 'text', index: 'c5r_idhash_idx'
+        databaseName            column: 'c5r_database_name', type: 'text'
         publisher               column: 'c5r_publisher', type: 'text'
         platformUID             column: 'c5r_platform_guid', index: 'c5r_plat_idx'
         reportInstitutionUID    column: 'c5r_report_institution_guid', index: 'c5r_ri_idx'
@@ -159,6 +247,7 @@ class Counter5Report extends AbstractReport {
         proprietaryIdentifier   (nullable: true) //because of platform reports!
         identifierHash          (nullable: true) //because of platform reports!
         publisher               (nullable: true, blank: false) //because of platform reports!
+        databaseName            (nullable: true) //because used only for database reports!
         dataType                (nullable: true, blank: false)
         accessType              (nullable: true, blank: false)
         accessMethod            (nullable: true, blank: false)
@@ -167,5 +256,5 @@ class Counter5Report extends AbstractReport {
     }
 
     static transients = ['platform', 'reportInstitution']
-
+    */
 }

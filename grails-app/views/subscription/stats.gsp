@@ -1,4 +1,4 @@
-<%@ page import="grails.converters.JSON; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.utils.DateUtils; de.laser.Subscription; de.laser.Platform; de.laser.stats.Counter4Report; de.laser.stats.Counter5Report; de.laser.interfaces.CalculatedType" %>
+<%@ page import="grails.converters.JSON; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.utils.DateUtils; de.laser.Subscription; de.laser.Platform; de.laser.stats.Counter4Report; de.laser.stats.Counter5Report; de.laser.interfaces.CalculatedType; de.laser.base.AbstractReport" %>
 <laser:htmlStart message="subscription.details.stats.label" serviceInjection="true"/>
 
         <ui:debugInfo>
@@ -183,10 +183,22 @@
         </g:if>
         <g:else>
             <ui:filter>
+                <g:if test="${revision == AbstractReport.COUNTER_4}">
+                    <ui:msg icon="ui info icon" class="info" header="${message(code: 'default.usage.counter4reportInfo.header')}" message="default.usage.counter4reportInfo.text" noClose="true"/>
+                </g:if>
                 <g:form action="generateReport" name="stats" class="ui form" method="get">
                     <g:hiddenField name="id" value="${subscription.id}"/>
                     <g:hiddenField name="revision" value="${revision}"/>
-                    <div class="four fields">
+                    <div class="five fields" id="filterDropdownWrapper">
+                        <g:if test="${platformInstanceRecords.size() > 1}">
+                            <div class="field">
+                                <label for="platform"><g:message code="platform"/></label>
+                                <ui:select class="ui search selection dropdown" from="${platformInstanceRecords}" name="platform"/>
+                            </div>
+                        </g:if>
+                        <g:elseif test="${platformInstanceRecords.size() == 1}">
+                            <g:hiddenField name="platform" value="${platformInstanceRecords.values()[0].id}"/>
+                        </g:elseif>
                         <div class="field">
                             <label for="reportType"><g:message code="default.usage.reportType"/></label>
                             <select name="reportType" id="reportType" class="ui search selection dropdown">
@@ -203,29 +215,11 @@
                             </select>
                         </div>
 
-                        <div class="field">
-                            <label for="metricType"><g:message code="default.usage.metricType"/></label>
-                            <div id="metricType" class="ui multiple search selection dropdown">
-                                <input type="hidden" name="metricType"/>
-                                <div class="text"></div>
-                                <i class="dropdown icon"></i>
-                            </div>
-                            <%--<select name="metricType" id="metricType" multiple="multiple" class="ui search selection dropdown">
-                                <option value=""><g:message code="default.select.choose.label"/></option>
-                                <g:each in="${metricTypes}" var="metricType">
-                                    <option <%=(params.list('metricType')?.contains(metricType)) ? 'selected="selected"' : ''%>
-                                            value="${metricType}">
-                                        ${metricType}
-                                    </option>
-                                </g:each>
-                                <g:if test="${metricTypes.size() == 0}">
-                                    <option value="<g:message code="default.stats.noMetric" />"><g:message code="default.stats.noMetric" /></option>
-                                </g:if>
-                            </select>--%>
-                        </div>
-
-                        <%-- postponed for 3.1
-                        --%>
+                        <%-- reports filters in COUNTER 5 count only for master reports (tr, pr, dr, ir)! COUNTER 4 has no restriction on filter usage afaik --%>
+                    </div>
+                    <div class="four fields">
+                        <div class="field"></div>
+                        <div class="field"></div>
                         <div class="field la-field-right-aligned">
                             <input id="generateCostPerUse" type="button" class="ui secondary button" value="${message(code: 'default.stats.generateCostPerUse')}"/>
                         </div>
@@ -243,17 +237,17 @@
                     let platforms = ${platformsJSON};
                 </g:applyCodec>
                 $.ajax({
-                    url: "<g:createLink controller="ajaxJson" action="adjustMetricList"/>",
+                    url: "<g:createLink controller="ajaxHtml" action="loadFilterList"/>",
                     data: {
                         reportType: $(this).val(),
                         platforms: platforms,
                         customer: '${subscription.getSubscriber().globalUID}',
                         subscription: ${subscription.id}
                     }
-                }).done(function(response){
-                    $('#metricType').dropdown({
-                        values: response
-                    });
+                }).done(function(response) {
+                    $('.dynFilter').remove();
+                    $('#filterDropdownWrapper').append(response);
+                    r2d2.initDynamicUiStuff('#filterDropdownWrapper');
                 });
             });
             $("#generateCostPerUse").on('click', function() {

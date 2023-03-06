@@ -6,7 +6,7 @@
 
 <%-- modal --%>
 <g:if test="${false}"> %{-- erms-4798 --}%
-<ui:modal id="propDefGroupBindings" message="propertyDefinitionGroup.config.label" hideSubmitButton="hideSubmitButton">
+<ui:modal id="propDefGroupBindings" message="propertyDefinitionGroup.config.label" hideSubmitButton="true">
 
     <laser:render template="/templates/properties/groupBindings" model="${[
             propDefGroup: propDefGroup,

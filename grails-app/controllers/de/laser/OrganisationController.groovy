@@ -55,6 +55,7 @@ class OrganisationController  {
     TaskService taskService
     UserControllerService userControllerService
     UserService userService
+    WorkflowService workflowService
 
     //-----
 
@@ -969,6 +970,9 @@ class OrganisationController  {
 					[org: result.orgInstance.legallyObligedBy, ft: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]
 			)
 		}
+
+        workflowService.executeCmdAndUpdateResult(result, params)
+
         List bm = prf.stopBenchmark()
         result.benchMark = bm
 

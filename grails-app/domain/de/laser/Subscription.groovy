@@ -155,7 +155,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
                       ]
 
     static transients = [
-            'nameConcatenated', 'isSlavedAsString', 'provider', 'multiYearSubscription',
+            'isSlavedAsString', 'provider', 'multiYearSubscription',
             'currentMultiYearSubscription', 'currentMultiYearSubscriptionNew', 'renewalDate',
             'commaSeperatedPackagesIsilList', 'calculatedPropDefGroups', 'allocationTerm',
             'subscriber', 'providers', 'agencies', 'consortia'
@@ -458,22 +458,6 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     List<Org> getAgencies() {
         Org.executeQuery("select og.org from OrgRole og where og.sub =:sub and og.roleType = :agency",
                 [sub: this, agency: RDStore.OR_AGENCY])
-    }
-
-    // used for views and dropdowns
-    @Deprecated
-    String getNameConcatenated() {
-        Org cons = getConsortia()
-        List<Org> subscr = getAllSubscribers()
-        if (subscr) {
-            "${name} (" + subscr.join(', ') + ")"
-        }
-        else if (cons){
-            "${name} (${cons})"
-        }
-        else {
-            name
-        }
     }
 
     /**

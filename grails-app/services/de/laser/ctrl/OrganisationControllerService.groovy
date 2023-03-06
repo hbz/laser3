@@ -7,8 +7,6 @@ import de.laser.remote.ApiSource
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.LocaleUtils
-import de.laser.workflow.WfChecklist
-import de.laser.workflow.WfCheckpoint
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -157,19 +155,7 @@ class OrganisationControllerService {
     Map<String,Object> workflows(OrganisationController controller, GrailsParameterMap params) {
         Map<String, Object> result = getResultGenericsAndCheckAccess(controller, params)
 
-        if (params.cmd) {
-            String[] cmd = params.cmd.split(':')
-
-            if (cmd[1] in [WfChecklist.KEY, WfCheckpoint.KEY] ) { // light
-                result.putAll( workflowService.cmd(params) )
-            }
-        }
-        if (params.info) {
-            result.info = params.info // @ currentWorkflows @ dashboard
-        }
-
-        result.checklists = workflowService.sortByLastUpdated( WfChecklist.findAllByOrgAndOwner(result.orgInstance as Org, result.contextOrg as Org) )
-        result.checklistCount = result.checklists.size()
+        workflowService.executeCmdAndUpdateResult(result, params)
 
         [result: result, status: (result ? STATUS_OK : STATUS_ERROR)]
     }
@@ -280,7 +266,6 @@ class OrganisationControllerService {
         result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
 
         result.notesCount       = docstoreService.getNotes(result.orgInstance, result.contextOrg).size()
-//        result.workflowCount    = workflowOldService.getWorkflowCount(result.orgInstance, result.contextOrg)
         result.checklistCount   = workflowService.getWorkflowCount(result.orgInstance, result.contextOrg)
 
         result.links = linksGenerationService.getOrgLinks(result.orgInstance)

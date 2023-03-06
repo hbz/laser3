@@ -4,8 +4,6 @@ import de.laser.*
 import de.laser.auth.User
 import de.laser.utils.SwissKnife
 import de.laser.interfaces.CalculatedType
-import de.laser.workflow.WfChecklist
-import de.laser.workflow.WfCheckpoint
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 
@@ -32,19 +30,7 @@ class LicenseControllerService {
     Map<String,Object> workflows(LicenseController controller, GrailsParameterMap params) {
         Map<String, Object> result = getResultGenericsAndCheckAccess(controller, params, AccessService.CHECK_VIEW)
 
-        if (params.cmd) {
-            String[] cmd = params.cmd.split(':')
-
-            if (cmd[1] in [WfChecklist.KEY, WfCheckpoint.KEY] ) { // light
-                result.putAll( workflowService.cmd(params) )
-            }
-        }
-        if (params.info) {
-            result.info = params.info // @ currentWorkflows @ dashboard
-        }
-
-        result.checklists = workflowService.sortByLastUpdated( WfChecklist.findAllByLicenseAndOwner(result.license as License, result.contextOrg as Org) )
-        result.checklistCount = result.checklists.size()
+        workflowService.executeCmdAndUpdateResult(result, params)
 
         [result: result, status: (result ? STATUS_OK : STATUS_ERROR)]
     }
@@ -104,7 +90,6 @@ class LicenseControllerService {
         result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
 
         result.notesCount       = docstoreService.getNotes(result.license, result.contextOrg).size()
-//        result.workflowCount    = workflowOldService.getWorkflowCount(result.license, result.contextOrg)
         result.checklistCount   = workflowService.getWorkflowCount(result.license, result.contextOrg)
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)

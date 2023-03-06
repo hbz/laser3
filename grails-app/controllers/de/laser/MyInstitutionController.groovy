@@ -2661,7 +2661,7 @@ join sub.orgRelations or_sub where
         }
 
         if (params.cmd) {
-            result.putAll(workflowService.cmd(params))
+            result.putAll(workflowService.executeCmd(params))
             params.clear()
         }
 
@@ -2745,6 +2745,7 @@ join sub.orgRelations or_sub where
      */
     @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_USER", ctrlService = DebugInfo.IN_BETWEEN)
     @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER") })
+    @Deprecated
     def currentWorkflowsOld() {
         Map<String, Object> result = [:]
 

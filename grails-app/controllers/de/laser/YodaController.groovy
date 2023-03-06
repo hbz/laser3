@@ -606,7 +606,7 @@ class YodaController {
                 flagContentGokb : true // gokbService.queryElasticsearch
         ]
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
-        Map allPlatforms = gokbService.queryElasticsearch(apiSource.baseUrl+apiSource.fixToken+"/find?componentType=Platform&max=10000")
+        Map allPlatforms = gokbService.queryElasticsearch(apiSource.baseUrl+apiSource.fixToken+"/find?componentType=Platform&max=10000&status=Current")
         if (allPlatforms.error && allPlatforms.error == 404) {
             result.wekbServerUnavailable = message(code: 'wekb.error.404')
         }
@@ -1118,77 +1118,6 @@ class YodaController {
         }
 
         redirect action:'systemSettings'
-    }
-
-    @Deprecated
-    @Secured(['ROLE_YODA'])
-    def costItemsApi(String owner) {
-        def result = []
-
-        if(owner) {
-            def costItems
-
-            //Für später zur besseren Absicherung
-            //costItems = CostItem.findAllByOwner(contextService.getOrg())
-            if(owner == 'all')
-            {
-                costItems = CostItem.getAll()
-            }
-            else{
-                costItems = CostItem.findAllByOwnerAndCostItemStatusNotEqual(Org.get(owner), RDStore.COST_ITEM_DELETED)
-            }
-
-            costItems.each {
-                Map costItem = [:]
-                costItem.globalUID = it.globalUID
-
-                costItem.costItemStatus = it.costItemStatus?.value
-                costItem.costItemTyp = it.costItemCategory?.value
-                costItem.billingCurrency = it.billingCurrency?.value
-                costItem.costItemElement = it.costItemElement?.value
-                costItem.taxCode = it.taxCode?.value
-
-                costItem.costInBillingCurrency = it.costInBillingCurrency
-                costItem.costInLocalCurrency = it.costInLocalCurrency
-                costItem.currencyRate = it.currencyRate
-
-                costItem.costTitle = it.costTitle
-                costItem.costDescription = it.costDescription
-                costItem.reference = it.reference
-
-                costItem.startDate = it.startDate
-                costItem.endDate = it.endDate
-
-                costItem.owner = [:]
-                it.owner?.each{
-                    costItem.owner.globalUID = it.globalUID ?:''
-                    costItem.owner.name = it.name
-                    costItem.owner.shortname = it.shortname
-                    costItem.owner.sortname = it.sortname
-                    costItem.owner.libraryType = it.libraryType?.value
-                }
-
-                costItem.sub = [:]
-                it.sub?.each {
-                    costItem.sub.name = it.name
-                    costItem.sub.globalUID = it.globalUID ?: ''
-                    costItem.sub.startDate = it.startDate
-                    costItem.sub.endDate = it.endDate
-                }
-
-                costItem.subPkg = it.subPkg
-                costItem.issueEntitlement = it.issueEntitlement
-                costItem.order = it.order
-                costItem.invoice = it.invoice
-
-                result.add(costItem)
-
-            }
-        }else {
-            result=[result:'You must enter an organization!']
-        }
-
-        render result as JSON
     }
 
     /**

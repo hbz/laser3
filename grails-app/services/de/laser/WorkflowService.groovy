@@ -19,88 +19,80 @@ class WorkflowService {
         new ParamsHelper(cmpKey, params)
     }
 
-    Map<String, Object> cmd(GrailsParameterMap params) {
-        log.debug('cmd() ' + params)
+    def executeCmdAndUpdateResult(Map<String, Object> result, GrailsParameterMap params) {
+        log.debug('executeCmdAndUpdateResult() ' + params)
+
+        if (params.cmd) {
+            String[] cmd = (params.cmd as String).split(':')
+
+            if (cmd[1] in [WfChecklist.KEY, WfCheckpoint.KEY] ) {
+                result.putAll( executeCmd(params) )
+            }
+        }
+        if (params.info) {
+            result.info = params.info // @ flyout
+        }
+
+        result.checklist = []
+
+        if (result.contextOrg) {
+            if (result.orgInstance) {
+                result.checklists = sortByLastUpdated(WfChecklist.findAllByOrgAndOwner(result.orgInstance as Org, result.contextOrg as Org))
+            }
+            else if (result.license) {
+                result.checklists = sortByLastUpdated( WfChecklist.findAllByLicenseAndOwner(result.license as License, result.contextOrg as Org))
+            }
+            else if (result.subscription) {
+                result.checklists = sortByLastUpdated(WfChecklist.findAllBySubscriptionAndOwner(result.subscription as Subscription, result.contextOrg as Org))
+            }
+        }
+
+        result.checklistCount = result.checklists.size()
+    }
+
+    Map<String, Object> executeCmd(GrailsParameterMap params) {
+        log.debug('executeCmd() ' + params)
 
         Map<String, Object> result = [:]
 
         if (params.cmd) {
             String[] cmd = (params.cmd as String).split(':')
-            String wfObjKey = cmd[1]
 
-            if (cmd[0] == 'create') { // actions
-                if (wfObjKey == WfChecklist.KEY) {
-                    result = internalEditChecklist(new WfChecklist(), params)
-                }
-                else if (wfObjKey == WfCheckpoint.KEY) {
-                    result = internalEditCheckpoint(new WfCheckpoint(), params)
-                }
-            }
-            else if (cmd[0] == 'instantiate') { // actions
-                result.status = OP_STATUS_ERROR
+            if (cmd[1] == WfChecklist.KEY) {
 
-                if (wfObjKey == WfChecklist.KEY) {
+                if (cmd[0] == 'create') { // actions > modal
+                    result = createChecklist(params)
+                }
+                else if (cmd[0] == 'instantiate') { // actions > modal
+                    result.status = OP_STATUS_ERROR
+
                     if (params.target && params.sourceId) {
                         GrailsParameterMap clone = params.clone() as GrailsParameterMap
                         clone.setProperty('cmd', params.cmd + ':' + params.sourceId)
 
-                        result = instantiateCompleteChecklist(clone)
+                        result = instantiateChecklist(clone)
                     }
                 }
+                else if (cmd[0] == 'delete') { // table
+                    result = deleteChecklist( cmd )
+                }
             }
-            else if (cmd[0] == 'edit') { // todo
-                Long wfObjId = cmd[2] as Long
+            else if (cmd[1] == WfCheckpoint.KEY) {
 
-                if (wfObjKey == WfChecklist.KEY) {
-                    result = internalEditChecklist(WfChecklist.get(wfObjId), params)
+                if (cmd[0] == 'create') { // flyout
+                    result = createCheckpoint(params)
                 }
-                else if (wfObjKey == WfCheckpoint.KEY) {
-                    result = internalEditCheckpoint(WfCheckpoint.get(wfObjId), params)
+                else if (cmd[0] == 'delete') {  // flyout
+                    result = deleteCheckpoint( cmd )
                 }
-            }
-            else if (cmd[0] == 'delete') { // table
-                if (wfObjKey == WfChecklist.KEY ) {
-                    result = removeCompleteChecklist(params)
+                else if (cmd[0] in ['moveUp', 'moveDown']) { // flyout
+                    result = moveCheckpoint( cmd )
                 }
-                else if (wfObjKey == WfCheckpoint.KEY)  {
-                    result = deleteCheckpoint(params)
-                }
-            }
-            else if (cmd[0] in ['moveUp', 'moveDown']) { // details
-                if (wfObjKey == WfCheckpoint.KEY)  {
-                    result = moveCheckpoint(params)
-                }
-            }
-            else if (cmd[0] == 'usage') { // table
-                ParamsHelper ph = getNewParamsHelper( cmd[1], params )
+                else if (cmd[0] == 'modal') { // table
+                    ParamsHelper ph = getNewParamsHelper( cmd[1], params )
 
-                if (cmd[1] == WfChecklist.KEY) {
-//                WfWorkflow workflow = WfWorkflow.get( cmd[2] )
-//                boolean wChanged
-//
-//                String comment = ph.getString('comment')
-//                if (comment != workflow.comment) {
-//                    workflow.comment = comment
-//                    wChanged = true
-//                }
-//                RefdataValue status = ph.getRefdataValue('status')
-//                if (status != workflow.status) {
-//                    workflow.status = status
-//                    wChanged = true
-//                }
-//                User user = User.get(ph.getLong('user'))
-//                if (user != workflow.user) {
-//                    workflow.user = user
-//                    workflow.userLastUpdated = new Date()
-//                    wChanged = true
-//                }
-//                if (wChanged) {
-//                    result.status = workflow.save() ? OP_STATUS_DONE : OP_STATUS_ERROR
-//                }
-                }
-                else if (cmd[1] == WfCheckpoint.KEY) {
                     WfCheckpoint cpoint = WfCheckpoint.get( cmd[2] )
-                    boolean tChanged
+                    boolean tChanged = false
 
                     boolean done = ph.getChecked('done')
                     if (done != cpoint.done) {
@@ -118,21 +110,19 @@ class WorkflowService {
                         tChanged = true
                     }
                     if (tChanged) {
-//                        println 'tChanged'
                         result.status = cpoint.save() ? OP_STATUS_DONE : OP_STATUS_ERROR
                     }
+
                 }
             }
         }
         result
     }
 
-    Map<String, Object> deleteCheckpoint(GrailsParameterMap params) {
-        log.debug('deleteCheckpoint() ' + params)
-        String[] cmd = (params.cmd as String).split(':')
+    Map<String, Object> deleteCheckpoint(String[] cmd) {
+        log.debug('deleteCheckpoint() ' + cmd)
 
         Map<String, Object> result = [ cmd: cmd[0], key: cmd[1] ]
-
         WfCheckpoint cpoint = WfCheckpoint.get( cmd[2] )
         result.checkpoint = cpoint
 
@@ -143,17 +133,15 @@ class WorkflowService {
         }
         catch (Exception e) {
             result.status = OP_STATUS_ERROR
-            log.error e.getMessage()
+            log.error(e.getMessage())
         }
         result
     }
 
-    Map<String, Object> moveCheckpoint(GrailsParameterMap params) {
-        log.debug('moveCheckpoint() ' + params)
-        String[] cmd = (params.cmd as String).split(':')
+    Map<String, Object> moveCheckpoint(String[] cmd) {
+        log.debug('moveCheckpoint() ' + cmd)
 
         Map<String, Object> result = [ cmd: cmd[0], key: cmd[1] ]
-
         WfCheckpoint cpoint = WfCheckpoint.get( cmd[2] )
         result.checkpoint = cpoint
 
@@ -177,17 +165,18 @@ class WorkflowService {
         }
         catch (Exception e) {
             result.status = OP_STATUS_ERROR
-            log.error e.getMessage()
+            log.error(e.getMessage())
         }
         result
     }
 
-    Map<String, Object> internalEditChecklist(WfChecklist clist, GrailsParameterMap params) {
-        log.debug( 'internalEditChecklist() ' + clist.toString() )
-        String[] cmd = (params.cmd as String).split(':')
+    Map<String, Object> createChecklist(GrailsParameterMap params) {
+        log.debug( 'createChecklist() ' + params )
 
+        String[] cmd = (params.cmd as String).split(':')
         ParamsHelper ph = getNewParamsHelper( cmd[1], params )
 
+        WfChecklist clist   = new WfChecklist()
         clist.title         = ph.getString('title')
         clist.description   = ph.getString('description')
         clist.comment       = ph.getString('comment')
@@ -220,7 +209,7 @@ class WorkflowService {
                             tmp.WF_CHECKPOINT_checklist = clist.id
                             tmp.cmd = 'create:WF_CHECKPOINT'
 
-                            Map<String, Object> tmpResult = internalEditCheckpoint(new WfCheckpoint(), tmp)
+                            Map<String, Object> tmpResult = createCheckpoint(tmp)
                             result.status = tmpResult.status
                         }
                     }
@@ -242,12 +231,13 @@ class WorkflowService {
         result
     }
 
-    Map<String, Object> internalEditCheckpoint(WfCheckpoint cpoint, GrailsParameterMap params) {
-        log.debug( 'internalEditCheckpoint() ' + cpoint.toString() )
-        String[] cmd = (params.cmd as String).split(':')
+    Map<String, Object> createCheckpoint(GrailsParameterMap params) {
+        log.debug( 'createCheckpoint() ' + params )
 
+        String[] cmd = (params.cmd as String).split(':')
         ParamsHelper ph = getNewParamsHelper( cmd[1], params )
 
+        WfCheckpoint cpoint = new WfCheckpoint()
         cpoint.title        = ph.getString('title')
         cpoint.description  = ph.getString('description')
         cpoint.comment      = ph.getString('comment')
@@ -263,9 +253,11 @@ class WorkflowService {
         result
     }
 
-    Map<String, Object> instantiateCompleteChecklist(GrailsParameterMap params) {
-        log.debug('instantiateCompleteChecklist() ' + params)
+    Map<String, Object> instantiateChecklist(GrailsParameterMap params) {
+        log.debug('instantiateChecklist() ' + params)
+
         String[] cmd = (params.cmd as String).split(':')
+        ParamsHelper ph = getNewParamsHelper( cmd[1], params )
 
         Map<String, Object> result = [ cmd: cmd[0], key: cmd[1] ]
 
@@ -275,8 +267,8 @@ class WorkflowService {
                 result.source = WfChecklist.get( cmd[2] )
 
                 result.checklist               = new WfChecklist()
-                result.checklist.title         = result.source.title
-                result.checklist.description   = result.source.description
+                result.checklist.title         = ph.getString('title') ?: result.source.title
+                result.checklist.description   = ph.getString('description') ?: result.source.description
                 result.checklist.owner         = result.source.owner
 
                 def target = genericOIDService.resolveOID(params.target)
@@ -329,9 +321,8 @@ class WorkflowService {
         result
     }
 
-    Map<String, Object> removeCompleteChecklist(GrailsParameterMap params) {
-        log.debug('removeCompleteChecklist() ' + params)
-        String[] cmd = (params.cmd as String).split(':')
+    Map<String, Object> deleteChecklist(String[] cmd) {
+        log.debug('deleteChecklist() ' + cmd)
 
         Map<String, Object> result = [ cmd: cmd[0], key: cmd[1] ]
 

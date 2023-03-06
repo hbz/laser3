@@ -3,6 +3,7 @@
 <laser:htmlStart message="myinst.financeImport.pageTitle" />
 
   <ui:breadcrumbs>
+      <ui:crumb controller="org" action="show" id="${institution.id}" text="${institution.getDesignation()}"/>
     <ui:crumb message="menu.institutions.financeImport" class="active"/>
   </ui:breadcrumbs>
 

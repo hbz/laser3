@@ -1,5 +1,9 @@
 package de.laser
 
+import com.opencsv.CSVParser
+import com.opencsv.CSVReader
+import com.opencsv.CSVReaderBuilder
+import com.opencsv.ICSVParser
 import de.laser.auth.*
 import de.laser.config.ConfigDefaults
 import de.laser.config.ConfigMapper
@@ -15,10 +19,6 @@ import grails.core.GrailsApplication
 import grails.gorm.transactions.Transactional
 import grails.util.Environment
 import groovy.sql.Sql
-import liquibase.repackaged.com.opencsv.CSVParser
-import liquibase.repackaged.com.opencsv.CSVReader
-import liquibase.repackaged.com.opencsv.CSVReaderBuilder
-import liquibase.repackaged.com.opencsv.ICSVParser
 import org.hibernate.SessionFactory
 import org.hibernate.query.NativeQuery
 import org.hibernate.type.TextType
