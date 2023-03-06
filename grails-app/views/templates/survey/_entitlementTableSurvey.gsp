@@ -5,7 +5,7 @@
     <g:set var="sumlocalPrice" value="${0}"/>
 
 
-                                                                                                                <div class="ui accordion la-accordion-showMore">
+     <div class="ui accordion la-accordion-showMore">
                 <g:each in="${ies.sourceIEs}" var="ie">
 
                     <g:set var="tipp" value="${ie.tipp}"/>
