@@ -115,6 +115,7 @@ class FinanceControllerService {
         switch(result.institution.getCustomerType()) {
         //cases one to three
             case 'ORG_CONSORTIUM':
+            case 'ORG_CONSORTIUM_PRO':
                 if (result.subscription) {
                     //cases two and three: child subscription
                     if (result.subscription.instanceOf) {

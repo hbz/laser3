@@ -60,7 +60,7 @@
                                 </a>
                             </th>
                         </g:if>
-                        <g:if test="${!(institution.getCustomerType()  == 'ORG_CONSORTIUM')}">
+                        <g:if test="${!(institution.getCustomerType()  in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO'])}">
                             <th class="la-no-uppercase" scope="col" rowspan="2" >
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                                       data-content="${message(code: 'subscription.isMultiYear.label')}">
@@ -217,7 +217,7 @@
                             </td>
                             <td>
                                 <g:link mapping="subfinance" controller="finance" action="index" params="${[sub:s.id]}">
-                                    <g:if test="${institution.getCustomerType()  == 'ORG_CONSORTIUM'}">
+                                    <g:if test="${institution.getCustomerType()  in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO']}">
                                         <div class="ui blue circular label">
                                             ${childSubIds.isEmpty() ? 0 : CostItem.executeQuery('select count(ci.id) from CostItem ci where ci.sub.id in (:subs) and ci.owner = :context and ci.costItemStatus != :deleted',[subs:childSubIds, context:institution, deleted:RDStore.COST_ITEM_DELETED])[0]}
                                         </div>
@@ -225,7 +225,7 @@
                                 </g:link>
                             </td>
                         </g:if>
-                        <g:if test="${!(institution.getCustomerType()  == 'ORG_CONSORTIUM')}">
+                        <g:if test="${!(institution.getCustomerType()  in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO'])}">
                             <td>
                                 <g:if test="${s.isMultiYear}">
                                     <g:if test="${(s.type == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL &&
@@ -258,7 +258,7 @@
                                         </g:link>
                                     </g:if>
                                 </g:if>
-                                <g:if test="${institution.getCustomerType()  == 'ORG_CONSORTIUM'}">
+                                <g:if test="${institution.getCustomerType()  in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO']}">
                                     <g:set var="surveysConsortiaSub" value="${SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(s ,true)}" />
                                     <g:if test="${surveysConsortiaSub}">
 

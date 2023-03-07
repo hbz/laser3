@@ -440,7 +440,7 @@ class ProfileController {
                 "N",
                 'profile.updateProfile.token.systemMessages' )
 
-        String messageToken = ((contextService.getOrg().getCustomerType()  == 'ORG_CONSORTIUM') ? 'profile.notification.for.SurveysParticipationFinish' : 'profile.notification.for.SurveysParticipationFinish2')
+        String messageToken = ((contextService.getOrg().getCustomerType()  in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO']) ? 'profile.notification.for.SurveysParticipationFinish' : 'profile.notification.for.SurveysParticipationFinish2')
 
         _changeValue( user.getSetting(KEYS.IS_NOTIFICATION_FOR_SURVEYS_PARTICIPATION_FINISH, RDStore.YN_NO),
                 'isNotificationForSurveysParticipationFinish',

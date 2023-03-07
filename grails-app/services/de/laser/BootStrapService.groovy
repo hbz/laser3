@@ -315,12 +315,14 @@ class BootStrapService {
         Role fakeRole                = updateRole('FAKE',                   'fake', [en: 'Fake', de: 'Fake'])
         Role orgMemberRole           = updateRole('ORG_BASIC_MEMBER',       'org', [en: 'Institution consortium member', de: 'Konsorte'])
         Role orgSingleRole           = updateRole('ORG_INST',               'org', [en: 'Institution basic', de: 'Vollnutzer'])
-        Role orgConsortiumRole       = updateRole('ORG_CONSORTIUM',         'org', [en: 'Consortium basic', de: 'Konsortium mit Umfragefunktion'])
+        Role orgConsortiumRole       = updateRole('ORG_CONSORTIUM',         'org', [en: 'Consortium basic', de: 'Konsortium Basic'])
+        Role orgConsortiumProRole       = updateRole('ORG_CONSORTIUM_PRO',         'org', [en: 'Consortium pro', de: 'Konsortium Pro'])
 
         updateOrgRolePerms(fakeRole,                    ['FAKE'])
         updateOrgRolePerms(orgMemberRole,               ['ORG_BASIC_MEMBER'])
         updateOrgRolePerms(orgSingleRole,               ['ORG_INST', 'ORG_BASIC_MEMBER'])
         updateOrgRolePerms(orgConsortiumRole,           ['ORG_CONSORTIUM'])
+        updateOrgRolePerms(orgConsortiumProRole,           ['ORG_CONSORTIUM_PRO', 'ORG_CONSORTIUM'])
     }
 
     void setupSystemSettings() {

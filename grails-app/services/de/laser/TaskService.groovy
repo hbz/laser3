@@ -332,7 +332,7 @@ class TaskService {
         Set validOrgs = [], validOrgsDropdown = []
         if (contextOrg) {
             boolean isInstitution = (contextOrg.getCustomerType() in ['ORG_BASIC_MEMBER','ORG_INST'])
-            boolean isConsortium  = (contextOrg.getCustomerType() == 'ORG_CONSORTIUM')
+            boolean isConsortium  = (contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO'])
 
             GrailsParameterMap params = new GrailsParameterMap(WebUtils.retrieveGrailsWebRequest().getCurrentRequest())
             params.sort      = isInstitution ? " LOWER(o.name), LOWER(o.shortname)" : " LOWER(o.sortname), LOWER(o.name)"
@@ -369,7 +369,7 @@ class TaskService {
         List validSubscriptionsWithInstanceOf = []
         List validSubscriptionsWithoutInstanceOf = []
         List<Map> validSubscriptionsDropdown = []
-        boolean isConsortium = contextOrg.getCustomerType()  == 'ORG_CONSORTIUM'
+        boolean isConsortium = contextOrg.getCustomerType()  in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO']
 
         if (contextOrg) {
             if (isConsortium) {
