@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4871    07.03.2023  dev     3.1         Moe     Bug         Aufgaben-Erinnerungsmail: Fälligkeitsdatum wird nicht aktualisiert
+
 4738    07.03.2023  dev     3.1         Moe     Feature     Neue Kunden-Typen -> Konsortialstelle Basis
 
 --      22.02.2023  rc-3.0  3.0.5       Andreas Bug         Umstrukturierungen für Database Reports
