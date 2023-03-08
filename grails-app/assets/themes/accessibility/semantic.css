@@ -42515,6 +42515,10 @@ i.icon.la-phone.open {
   font-family: Icons;
 }
 
+i.icon.la-basket-shopping.slash {
+  font-family: 'icomoon';
+}
+
 i.icon.hand.pointer.outline.slash:before {
   content: "\e901";
 }
@@ -42656,6 +42660,10 @@ i.icon.la-phone.open:before {
 
 i.icon.la-phone:before {
   content: "\f095";
+}
+
+i.icon.la-basket-shopping.slash:before {
+  content: "\e91d";
 }
 
 /*******************************

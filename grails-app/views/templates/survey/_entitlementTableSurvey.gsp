@@ -205,7 +205,7 @@
                                     </div>
                                 </div>
                                 <%-- My Area START--%>
-                                <div class="seven wide column">
+%{--                                <div class="seven wide column">
                                     <i class="grey icon circular inverted fingerprint la-icon-absolute la-popup-tooltip la-delay"
                                        data-content="${message(code: 'tipp.tooltip.myArea')}"></i>
 
@@ -312,7 +312,8 @@
                                         <%-- GROUPS END--%>
                                         </div>
                                     </div>
-                                </div><%-- My Area END --%>
+                                </div>--}%
+                                <%-- My Area END --%>
                             </div><%-- .grid --%>
                         </div><%-- .segment --%>
                     </div><%--.segments --%>
