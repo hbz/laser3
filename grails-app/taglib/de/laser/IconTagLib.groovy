@@ -171,28 +171,41 @@ class IconTagLib {
         boolean hideTooltip = attrs.hideTooltip ? false : true
 
         switch (attrs.status) {
+
             case 'Fixed':
+                out << '<div class="ui large label">'
                 out << '<div class="la-inline-flexbox la-popup-tooltip la-delay" '
                 if (hideTooltip) {
-                    out << 'data-content="' + message(code: 'issueEntitlement.acceptStatus.fixed') + '" data-position="left center" data-variation="tiny"'
+                    out << 'data-content="' + message(code: 'issueEntitlement.acceptStatus.fixed') + '" data-position="left center" data-variation="tiny">'
                 }
-                out << '><i aria-hidden="true" class="icon certificate green"></i>'
+                out << '<i class="icon certificate green"></i>'
+                out << '<i class="icon hourglass end disabled "></i>'
+                out << '<i class="icon hourglass start disabled"></i>'
+                out << '</div>'
                 out << '</div>'
                 break
             case 'Under Negotiation':
+                out << '<div class="ui large label">'
                 out << '<div class="la-inline-flexbox la-popup-tooltip la-delay" '
                 if (hideTooltip) {
-                    out << 'data-content="' + message(code: 'issueEntitlement.acceptStatus.underNegotiation') + '" data-position="left center" data-variation="tiny"'
+                    out << 'data-content="' + message(code: 'issueEntitlement.acceptStatus.underNegotiation') + '" data-position="left center" data-variation="tiny">'
                 }
-                out << '><i aria-hidden="true" class="icon hourglass end yellow"></i>'
+                out << '<i class="icon certificate disabled"></i>'
+                out << '<i class="icon hourglass end yellow "></i>'
+                out << '<i class="icon hourglass start disabled"></i>'
+                out << '</div>'
                 out << '</div>'
                 break
             case 'Under Consideration':
+                out << '<div class="ui large label">'
                 out << '<div class="la-inline-flexbox la-popup-tooltip la-delay" '
                 if (hideTooltip) {
-                    out << 'data-content="' + message(code: 'issueEntitlement.acceptStatus.underConsideration') + '" data-position="left center" data-variation="tiny"'
+                    out << 'data-content="' + message(code: 'issueEntitlement.acceptStatus.underConsideration') + '" data-position="left center" data-variation="tiny">'
                 }
-                out << '><i aria-hidden="true" class="icon hourglass start red"></i>'
+                out << '<i class="icon certificate disabled"></i>'
+                out << '<i class="icon hourglass end disabled"></i>'
+                out << '<i class="icon hourglass start red"></i>'
+                out << '</div>'
                 out << '</div>'
                 break
             default:

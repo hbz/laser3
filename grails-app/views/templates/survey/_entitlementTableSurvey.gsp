@@ -38,6 +38,27 @@
                                 <div class="column">
                                     <div class="ui list">
 
+                                        <g:if test="${params.tab != 'currentIEs' && ieInNewSub && ieInNewSub.acceptStatus == RDStore.IE_ACCEPT_STATUS_FIXED}">
+                                            <div class="la-inline-flexbox la-popup-tooltip la-delay" data-content="${message(code: 'renewEntitlementsWithSurvey.ie.existsInSub')}" data-position="left center" data-variation="tiny">
+                                                <i class="icon redo alternate yellow"></i>
+                                            </div>
+                                        </g:if>
+
+                                        <g:if test="${participantPerpetualAccessToTitle}">
+                                            <div class="la-inline-flexbox la-popup-tooltip la-delay" data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')}" data-position="left center" data-variation="tiny">
+                                                <i class="icon redo alternate red"></i>
+                                            </div>
+                                        </g:if>
+
+                                        <g:if test="${!participantPerpetualAccessToTitle && previousSubscription && surveyService.titleContainedBySubscription(previousSubscription, tipp)?.acceptStatus == RDStore.IE_ACCEPT_STATUS_FIXED}">
+                                            <div class="la-inline-flexbox la-popup-tooltip la-delay" data-content="${message(code: 'renewEntitlementsWithSurvey.ie.existsInPreviousSubscription')}" data-position="left center" data-variation="tiny">
+                                                <i class="icon redo alternate orange"></i>
+                                            </div>
+                                        </g:if>
+
+                                        <g:if test="${ieInNewSub}">
+                                            <ui:ieAcceptStatusIcon status="${ieInNewSub.acceptStatus}"/>
+                                        </g:if>
                                         <!-- START TEMPLATE -->
                                         <laser:render
                                                 template="/templates/title_short_accordion"
