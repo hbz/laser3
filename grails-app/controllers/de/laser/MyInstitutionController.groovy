@@ -1831,9 +1831,9 @@ join sub.orgRelations or_sub where
 
         params.tab = params.tab ?: 'new'
 
-        if(params.tab != 'new'){
+        //if(params.tab != 'new'){
             params.sort = 'surInfo.endDate DESC, LOWER(surInfo.name)'
-        }
+        //}
 
         if (params.validOnYear == null || params.validOnYear == '') {
             SimpleDateFormat sdfyear = DateUtils.getSDF_yyyy()

@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4751    10.03.2023  dev     3.1         Moe     Feature     Umfrage-Kategorie "neu"
+
 4696    10.03.2023  dev     3.1         Moe     Feature     Überprüfung: Titel-Umfrage - Bestand verknüpft?
 
 4684    10.03.2023  dev     3.1         Moe     Feature     Titel-Umfrage: Paket-Verknüpfung bei Teilnehmer 
