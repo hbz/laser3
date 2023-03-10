@@ -1985,39 +1985,43 @@ class SurveyController {
 
 
         if(params.process == "preliminary" && params.list('selectedIEs')) {
-            IssueEntitlementGroup issueEntitlementGroup
-            if (params.issueEntitlementGroupNew) {
+            if(participantSub.packages.size() == 0){
+                flash.error = message(code: 'renewEntitlementsWithSurvey.noPackagesYetAdded')
+            }else {
+                IssueEntitlementGroup issueEntitlementGroup
+                if (params.issueEntitlementGroupNew) {
 
-                IssueEntitlementGroup.withTransaction {
-                    issueEntitlementGroup = IssueEntitlementGroup.findBySubAndName(participantSub, params.issueEntitlementGroupNew) ?: new IssueEntitlementGroup(sub: participantSub, name: params.issueEntitlementGroupNew).save()
+                    IssueEntitlementGroup.withTransaction {
+                        issueEntitlementGroup = IssueEntitlementGroup.findBySubAndName(participantSub, params.issueEntitlementGroupNew) ?: new IssueEntitlementGroup(sub: participantSub, name: params.issueEntitlementGroupNew).save()
+                    }
                 }
-            }
 
 
-            if (params.issueEntitlementGroupID && params.issueEntitlementGroupID != '') {
-                issueEntitlementGroup = IssueEntitlementGroup.findById(Long.parseLong(params.issueEntitlementGroupID))
-            }
+                if (params.issueEntitlementGroupID && params.issueEntitlementGroupID != '') {
+                    issueEntitlementGroup = IssueEntitlementGroup.findById(Long.parseLong(params.issueEntitlementGroupID))
+                }
 
-            params.list('selectedIEs').each { String ieID ->
-                IssueEntitlement.withTransaction { TransactionStatus ts ->
-                    IssueEntitlement ie = IssueEntitlement.findById(Long.parseLong(ieID))
-                    ie.acceptStatus = RDStore.IE_ACCEPT_STATUS_FIXED
-                    ie.save()
+                params.list('selectedIEs').each { String ieID ->
+                    IssueEntitlement.withTransaction { TransactionStatus ts ->
+                        IssueEntitlement ie = IssueEntitlement.findById(Long.parseLong(ieID))
+                        ie.acceptStatus = RDStore.IE_ACCEPT_STATUS_FIXED
+                        ie.save()
 
-                    if (issueEntitlementGroup && !IssueEntitlementGroupItem.findByIe(ie)) {
-                        //println(issueEntitlementGroup)
-                        IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
-                                ie: ie,
-                                ieGroup: issueEntitlementGroup)
+                        if (issueEntitlementGroup && !IssueEntitlementGroupItem.findByIe(ie)) {
+                            //println(issueEntitlementGroup)
+                            IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
+                                    ie: ie,
+                                    ieGroup: issueEntitlementGroup)
 
-                        if (!issueEntitlementGroupItem.save()) {
-                            log.error("Problem saving IssueEntitlementGroupItem by Survey ${issueEntitlementGroupItem.errors}")
+                            if (!issueEntitlementGroupItem.save()) {
+                                log.error("Problem saving IssueEntitlementGroupItem by Survey ${issueEntitlementGroupItem.errors}")
+                            }
                         }
                     }
                 }
-            }
 
-            flash.message = message(code: 'completeIssueEntitlementsSurvey.forParticipant.accept', args: [params.list('selectedIEs').size()]) as String
+                flash.message = message(code: 'completeIssueEntitlementsSurvey.forParticipant.accept', args: [params.list('selectedIEs').size()]) as String
+            }
         }
 
         if(params.process == "reject" && params.list('selectedIEs')) {
