@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4778    10.03.2023  dev     3.1         Moe     Feature     GRID-ID löschen und neue ROR-ID
+
 4871    07.03.2023  dev     3.1         Moe     Bug         Aufgaben-Erinnerungsmail: Fälligkeitsdatum wird nicht aktualisiert
 
 4738    07.03.2023  dev     3.1         Moe     Feature     Neue Kunden-Typen -> Konsortialstelle Basis

@@ -20,4 +20,22 @@ databaseChangeLog = {
         }
     }
 
+    changeSet(author: "djebeniani (hand-coded)", id: "1678181832490-3") {
+        grailsChange {
+            change {
+                sql.execute('''DELETE from identifier where id_ns_fk = (SELECT idns_id from identifier_namespace where idns_ns = 'GRID ID');''')
+            }
+            rollback {}
+        }
+    }
+
+    changeSet(author: "djebeniani (hand-coded)", id: "1678181832490-4") {
+        grailsChange {
+            change {
+                sql.execute('''DELETE from identifier_namespace where idns_ns = 'GRID ID';''')
+            }
+            rollback {}
+        }
+    }
+
 }
