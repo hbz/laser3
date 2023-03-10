@@ -2584,34 +2584,60 @@ class SurveyController {
 
         result.editable = (result.surveyInfo && result.surveyInfo.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
 
+        boolean openFailByTitleSelection = false
+
+        Date startDate = params.startNow ? new Date() : result.surveyInfo.startDate
+
         if (result.editable) {
 
             result.surveyConfigs = result.surveyInfo.surveyConfigs.sort { it.configOrder }
             SurveyConfig.withTransaction { TransactionStatus ts ->
                 result.surveyConfigs.each { config ->
                     config.orgs.org.each { org ->
-                        config.surveyProperties.each { property ->
-                            if (!SurveyResult.findWhere(owner: result.institution, participant: org, type: property.surveyProperty, surveyConfig: config)) {
-                                SurveyResult surveyResult = new SurveyResult(
-                                        owner: result.institution,
-                                        participant: org,
-                                        startDate: result.surveyInfo.startDate,
-                                        endDate: result.surveyInfo.endDate ?: null,
-                                        type: property.surveyProperty,
-                                        surveyConfig: config
-                                )
-                                if (surveyResult.save()) {
-                                    log.debug(surveyResult.toString())
-                                } else {
-                                    log.error("Not create surveyResult: " + surveyResult)
+                        if(result.surveyInfo.type == RDStore.SURVEY_TYPE_TITLE_SELECTION){
+                            Subscription subscription = config.subscription.getDerivedSubscriptionBySubscribers(result.participant)
+
+                            if(subscription.packages.size() == 0){
+                                openFailByTitleSelection = true
+                            }
+                        }
+
+                        if(!openFailByTitleSelection) {
+                            config.surveyProperties.each { property ->
+                                if (!SurveyResult.findWhere(owner: result.institution, participant: org, type: property.surveyProperty, surveyConfig: config)) {
+                                    SurveyResult surveyResult = new SurveyResult(
+                                            owner: result.institution,
+                                            participant: org,
+                                            startDate: startDate,
+                                            endDate: result.surveyInfo.endDate ?: null,
+                                            type: property.surveyProperty,
+                                            surveyConfig: config
+                                    )
+                                    if (surveyResult.save()) {
+                                        log.debug(surveyResult.toString())
+                                    } else {
+                                        log.error("Not create surveyResult: " + surveyResult)
+                                    }
                                 }
                             }
                         }
                     }
                 }
-                result.surveyInfo.status = RDStore.SURVEY_READY
-                result.surveyInfo.save()
-                flash.message = g.message(code: "openSurvey.successfully")
+
+                if(!openFailByTitleSelection) {
+                    result.surveyInfo.status = params.startNow ? RDStore.SURVEY_SURVEY_STARTED : RDStore.SURVEY_READY
+                    result.surveyInfo.save()
+                    flash.message = params.startNow ? g.message(code: "openSurveyNow.successfully") : g.message(code: "openSurvey.successfully")
+                }else {
+                    flash.error = g.message(code: "openSurvey.openFailByTitleSelection.noPackagesYetAdded")
+                }
+            }
+
+            if(!openFailByTitleSelection) {
+                executorService.execute({
+                    Thread.currentThread().setName('EmailsToSurveyUsers' + result.surveyInfo.id)
+                    surveyService.emailsToSurveyUsers([result.surveyInfo.id])
+                })
             }
 
         }
@@ -2672,72 +2698,6 @@ class SurveyController {
         }
 
         redirect(uri: request.getHeader('referer'))
-    }
-
-    /**
-     * Starts and opens the survey immediately for completion
-     * @return the survey details view
-     */
-    @DebugInfo(perm = "ORG_CONSORTIUM_PRO", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.IN_BETWEEN)
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_PRO", "INST_EDITOR", "ROLE_ADMIN")
-    })
-     Map<String,Object> processOpenSurveyNow() {
-        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
-        if (!result.editable) {
-            response.sendError(HttpStatus.SC_FORBIDDEN); return
-        }
-
-        result.editable = (result.surveyInfo && result.surveyInfo.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
-
-        Date currentDate = new Date()
-
-        if (result.editable) {
-
-            result.surveyConfigs = result.surveyInfo.surveyConfigs.sort { it.configOrder }
-
-            SurveyResult.withTransaction { TransactionStatus ts ->
-                result.surveyConfigs.each { config ->
-                    config.orgs.org.each { org ->
-
-                        config.surveyProperties.each { property ->
-
-                            if (!SurveyResult.findWhere(owner: result.institution, participant: org, type: property.surveyProperty, surveyConfig: config)) {
-                                SurveyResult surveyResult = new SurveyResult(
-                                        owner: result.institution,
-                                        participant: org,
-                                        startDate: currentDate,
-                                        endDate: result.surveyInfo.endDate,
-                                        type: property.surveyProperty,
-                                        surveyConfig: config
-                                )
-
-                                if (surveyResult.save()) {
-                                    log.debug(surveyResult.toString())
-                                } else {
-                                    log.debug(surveyResult.toString())
-                                }
-                            }
-                        }
-                    }
-                }
-
-                result.surveyInfo.status = RDStore.SURVEY_SURVEY_STARTED
-                result.surveyInfo.startDate = currentDate
-                result.surveyInfo.save()
-            }
-
-            flash.message = g.message(code: "openSurveyNow.successfully")
-
-            executorService.execute({
-                Thread.currentThread().setName('EmailsToSurveyUsers' + result.surveyInfo.id)
-                surveyService.emailsToSurveyUsers([result.surveyInfo.id])
-            })
-            //executorService.shutdown()
-
-        }
-
-        redirect action: 'show', id: params.id
     }
 
     /**
