@@ -1611,6 +1611,9 @@ class SubscriptionControllerService {
                 params.tab = oldTab
             }else {
 
+                result.iesListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
+                        'where p.listPrice is not null and ie.id in (:ieIDs)', [ieIDs: sourceIEs])[0] ?: 0
+
                 params.sort = params.sort ?: 'sortname'
                 params.order = params.order ?: 'asc'
                 result.sourceIEs = sourceIEs ? IssueEntitlement.findAllByIdInList(sourceIEs, [sort: params.sort, order: params.order, offset: result.offset, max: result.max]) : []
