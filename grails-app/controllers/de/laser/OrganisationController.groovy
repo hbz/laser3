@@ -19,6 +19,7 @@ import de.laser.utils.SwissKnife
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
+import grails.web.servlet.mvc.GrailsParameterMap
 import org.apache.http.HttpStatus
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.springframework.validation.FieldError
@@ -318,8 +319,17 @@ class OrganisationController  {
         // Write the output to a file
         String file = "${sdf.format(new Date())}_"+exportHeader
 
-        if ( params.exportXLS ) {
+        // ? --- copied from myInstitutionController.currentConsortia()
+        GrailsParameterMap queryParams = params.clone() as GrailsParameterMap
+        queryParams.clear()
+        queryParams.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
+        queryParams.subStatus = RDStore.SUBSCRIPTION_CURRENT.id.toString()
+        queryParams.invertDirection = true
+        Map<String, Object> currentConsortiaQMap = filterService.getOrgComboQuery(queryParams, result.contextOrg as Org)
+        result.consortiaIds = Org.executeQuery(currentConsortiaQMap.query, currentConsortiaQMap.queryParams).collect{ it.id }
+        // ---
 
+        if ( params.exportXLS ) {
             SXSSFWorkbook wb = (SXSSFWorkbook) organisationService.exportOrg(availableOrgs, header, false, 'xls')
             response.setHeader "Content-disposition", "attachment; filename=\"${file}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"

@@ -62,8 +62,7 @@
         <laser:render template="/templates/filter/orgFilterTable"
               model="[orgList: orgList,
                       tmplShowCheckbox: false,
-                      tmplConfigShow: ['lineNumber', 'sortname', 'name', 'status', 'wibid', 'isil', 'type', 'sector', 'region',
-                                       'libraryNetwork', 'libraryType']
+                      tmplConfigShow: ['lineNumber', 'sortname', 'name', 'wibid', 'isil', 'type', 'sector', 'region', 'libraryNetwork', 'libraryType', 'status']
               ]"/>
 
         <ui:paginate total="${orgListTotal}" params="${params}" max="${max}" offset="${offset}" />

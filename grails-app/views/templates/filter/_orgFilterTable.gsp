@@ -981,7 +981,6 @@
                         </g:if>
                     </g:if>
                     <g:if test="${actionName == 'listConsortia'}">
-                        TODO ! ${consortiaIds}
                         <g:if test="${consortiaIds && (org.id in consortiaIds)}">
                             <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.consortia')}"><i class="icon yellow star"></i></span>
                         </g:if>

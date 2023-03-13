@@ -2898,25 +2898,8 @@ class MyInstitutionController  {
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         params.subStatus = RDStore.SUBSCRIPTION_CURRENT.id.toString()
-        Map queryParams = params.clone()
-        //queryParams.subPerpetual = "on"
-        //result.propList     = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
-        /*
-        if(!params.subStatus) {
-            if(!params.filterSet) {
-                params.subStatus = RDStore.SUBSCRIPTION_CURRENT.id.toString()
-                result.filterSet = true
-            }
-        }
-        else result.filterSet    = params.filterSet ? true : false
-        if(!params.subPerpetual) {
-            if(!params.filterSet) {
-                params.subPerpetual = "on"
-                result.filterSet = true
-            }
-        }
-        else result.filterSet    = params.filterSet ? true : false
-        */
+        GrailsParameterMap queryParams = params.clone() as GrailsParameterMap
+
         result.filterSet    = params.filterSet ? true : false
 
         queryParams.comboType = result.comboType.value
@@ -2939,7 +2922,6 @@ class MyInstitutionController  {
 
 		List bm = prf.stopBenchmark()
 		result.benchMark = bm
-
 
         if ( params.exportXLS ) {
 
