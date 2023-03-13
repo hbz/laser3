@@ -887,11 +887,8 @@ class OrganisationController  {
     @Secured(['ROLE_USER'])
     @Check404(domain=Org)
     def show() {
-
-        Profiler prf = new Profiler()
-        prf.setBenchmark('this-n-that')
-
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
+
         if (! result) {
             response.sendError(401)
             return
@@ -911,13 +908,7 @@ class OrganisationController  {
                 result.missing.leitID = message(code: 'org.eInvoice.info.missing.leitID')
         }
 
-        prf.setBenchmark('orgRoles & editable')
-
-        prf.setBenchmark('tasks')
-
         result.tasks = taskService.getTasksByResponsiblesAndObject(result.user,result.institution,result.orgInstance)
-
-        prf.setBenchmark('properties')
 
         result.authorizedOrgs = result.user?.getAffiliationOrgs()
 
@@ -937,8 +928,6 @@ class OrganisationController  {
                 }
             }
         }
-
-        prf.setBenchmark('identifier')
 
         if(!result.isProviderOrAgency){
             result.orgInstance.createCoreIdentifiersIfNotExist()
@@ -964,8 +953,6 @@ class OrganisationController  {
             result.currentLicensesCount = OrgRole.executeQuery('select distinct(oo.lic) from OrgRole oo join oo.lic l where l.status = :current and oo.org = :org and exists(select li from Links li where li.sourceLicense = l and li.destinationSubscription in (select s from OrgRole oos join oos.sub s where oos.org = :ctx and s.status = :subCurrent'+subConsortialFilter+')) and exists(select ooo from OrgRole ooo where l = ooo.lic and ooo.org = :ctx)'+licConsortialFilter+' order by l.reference, l.startDate, l.endDate',[org: result.orgInstance, ctx: result.institution, subCurrent: RDStore.SUBSCRIPTION_CURRENT, current: RDStore.LICENSE_CURRENT]).size()
         }
 
-        prf.setBenchmark('createdBy and legallyObligedBy')
-
         if (result.orgInstance.createdBy) {
 			result.createdByOrgGeneralContacts = PersonRole.executeQuery(
 					"select distinct(prs) from PersonRole pr join pr.prs prs join pr.org oo " +
@@ -982,10 +969,6 @@ class OrganisationController  {
 		}
 
         workflowService.executeCmdAndUpdateResult(result, params)
-
-        List bm = prf.stopBenchmark()
-        result.benchMark = bm
-
         result
     }
 
@@ -999,10 +982,8 @@ class OrganisationController  {
     @Secured(['ROLE_USER'])
     @Check404(domain=Org)
     def ids() {
-        Profiler prf = new Profiler()
-        prf.setBenchmark('this-n-that')
-
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
+
         if(!result) {
             response.sendError(401)
             return
@@ -1014,16 +995,12 @@ class OrganisationController  {
         if(!params.tab)
             params.tab = 'identifier'
 
-        prf.setBenchmark('editable_identifier')
-
         //IF ORG is a Provider and is NOT ex we:kb
         if(!result.orgInstance.gokbId && (result.orgInstance.sector == RDStore.O_SECTOR_PUBLISHER || RDStore.OT_PROVIDER.id in result.allOrgTypeIds)) {
-            prf.setBenchmark('editable_identifier2')
             result.editable_identifier = accessService.checkMinUserOrgRole(result.user, result.orgInstance, 'INST_EDITOR') ||
                     accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
         }
         else if(!result.orgInstance.gokbId) {
-            prf.setBenchmark('editable_identifier2')
             if(accessService.checkPerm("ORG_CONSORTIUM")) {
                 List<Long> consortia = Combo.executeQuery('select c.id from Combo c where c.type = :type and c.fromOrg = :target and c.toOrg = :context',[type:RDStore.COMBO_TYPE_CONSORTIUM,target:result.orgInstance,context:result.institution])
                 if(consortia.size() == 1 && accessService.checkMinUserOrgRole(result.user,result.institution,'INST_EDITOR'))
@@ -1032,9 +1009,6 @@ class OrganisationController  {
             else
                 result.editable_identifier = accessService.checkMinUserOrgRole(result.user, result.orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
         }
-
-        prf.setBenchmark('create Identifiers if necessary')
-
         // TODO: experimental asynchronous task
         //waitAll(task_orgRoles, task_properties)
 
@@ -1042,7 +1016,6 @@ class OrganisationController  {
             result.orgInstance.createCoreIdentifiersIfNotExist()
         }
 
-        prf.setBenchmark('orgsettings')
         Boolean inContextOrg = result.inContextOrg
         Boolean isComboRelated = Combo.findByFromOrgAndToOrg(result.orgInstance, result.institution)
         result.isComboRelated = isComboRelated
@@ -1099,8 +1072,6 @@ class OrganisationController  {
             }
 
         }
-        List bm = prf.stopBenchmark()
-        result.benchMark = bm
         result
     }
 

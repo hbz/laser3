@@ -20,9 +20,10 @@ class WorkflowService {
     }
 
     def executeCmdAndUpdateResult(Map<String, Object> result, GrailsParameterMap params) {
-        log.debug('executeCmdAndUpdateResult() ' + params)
 
         if (params.cmd) {
+            log.debug('executeCmdAndUpdateResult() ' + params)
+
             String[] cmd = (params.cmd as String).split(':')
 
             if (cmd[1] in [WfChecklist.KEY, WfCheckpoint.KEY] ) {

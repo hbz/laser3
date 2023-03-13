@@ -5,10 +5,6 @@
 
     <g:set var="isGrantedOrgRoleAdminOrOrgEditor" value="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}" />
 
-<ui:debugInfo>
-    <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]"/>
-</ui:debugInfo>
-
 <laser:render template="breadcrumb"
           model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView]}"/>
 
