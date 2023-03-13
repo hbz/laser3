@@ -37,29 +37,29 @@
 
                                 <div class="column">
                                     <div class="ui list">
-                                        <div class="ui large label">
+                                        <div class="ui label la-iconStrip">
                                             <g:if test="${params.tab != 'currentIEs' && ieInNewSub && ieInNewSub.acceptStatus == RDStore.IE_ACCEPT_STATUS_FIXED}">
-                                                <div class="la-inline-flexbox la-popup-tooltip la-delay" data-content="${message(code: 'renewEntitlementsWithSurvey.ie.existsInSub')}" data-position="left center" data-variation="tiny">
+                                                <span class="la-popup-tooltip la-delay" data-content="${message(code: 'renewEntitlementsWithSurvey.ie.existsInSub')}" data-position="left center" data-variation="tiny">
                                                     <i class="shopping basket icon blue"></i>
-                                                </div>
+                                                </span>
                                             </g:if>
                                             <g:else>
                                                 <i class="shopping basket icon disabled"></i>
                                             </g:else>
 
                                             <g:if test="${participantPerpetualAccessToTitle}">
-                                                <div class="la-inline-flexbox la-popup-tooltip la-delay" data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')}" data-position="left center" data-variation="tiny">
+                                                <span class="la-popup-tooltip la-delay" data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')}" data-position="left center" data-variation="tiny">
                                                     <i class="shopping basket icon violet"></i>
-                                                </div>
+                                                </span>
                                             </g:if>
                                             <g:else>
                                                 <i class="shopping basket icon disabled"></i>
                                             </g:else>
 
                                             <g:if test="${!participantPerpetualAccessToTitle && previousSubscription && surveyService.titleContainedBySubscription(previousSubscription, tipp)?.acceptStatus == RDStore.IE_ACCEPT_STATUS_FIXED}">
-                                                <div class="la-inline-flexbox la-popup-tooltip la-delay" data-content="${message(code: 'renewEntitlementsWithSurvey.ie.existsInPreviousSubscription')}" data-position="left center" data-variation="tiny">
+                                                <span class="la-popup-tooltip la-delay" data-content="${message(code: 'renewEntitlementsWithSurvey.ie.existsInPreviousSubscription')}" data-position="left center" data-variation="tiny">
                                                     <i class="shopping basket icon brown"></i>
-                                                </div>
+                                                </span>
                                             </g:if>
                                             <g:else>
                                                 <i class="shopping basket icon disabled"></i>
@@ -460,7 +460,7 @@
                                                                                            overwriteEditable="${false}"/> <ui:xEditableRefData
                                     field="listCurrency" owner="${priceItem}"
                                     config="Currency"
-                                    overwriteEditable="${false}"/>--}% <g:formatNumber number="${priceItem.listPrice}" type="currency" currencyCode="${priceItem.listCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/><br/>
+                                    overwriteEditable="${false}"/>--}% <g:formatNumber number="${priceItem.listPrice}" type="currency" currencyCode="${priceItem.listCurrency?.value}" currencySymbol="${priceItem.listCurrency?.value}"/><br/>
 
                                 <g:if test="${priceItem.localCurrency}">
                                     <g:message code="tipp.price.localPrice"/>: %{--<ui:xEditable field="localPrice"

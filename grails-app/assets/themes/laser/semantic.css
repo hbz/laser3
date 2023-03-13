@@ -47297,7 +47297,6 @@ a.ui.ui.ui.inverted.basic.black.label:hover {
 .ui.label.la-annual-rings .icon {
   font-size: 1.3em;
   width: auto;
-  margin: 0em 0.75em 0em 0.75em;
   vertical-align: sub;
 }
 
@@ -47348,6 +47347,10 @@ a.ui.ui.ui.inverted.basic.black.label:hover {
   border: none;
   vertical-align: super;
   align-items: center;
+}
+
+.ui.la-annual-rings-modern .icon {
+  margin: 0em 0.75em 0em 0.75em;
 }
 
 .ui.la-annual-rings-modern > a {
@@ -47595,6 +47598,12 @@ a .ui.circular.label:focus {
 
 .ui.list > .item.js-copyTriggerParent .js-copyTrigger {
   display: inline-flex !important;
+}
+
+/* Label with Icon Strip */
+
+.ui.label.la-iconStrip > .icon {
+  margin: 0 0.25rem 0 0;
 }
 /*!
  * # Fomantic-UI ^2.9.1 - List
