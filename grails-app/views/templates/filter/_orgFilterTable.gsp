@@ -65,8 +65,7 @@
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('legalInformation')}">
                 <th class="la-no-uppercase">
-                    <span class="la-popup-tooltip la-delay"
-                          data-content="${message(code: 'org.legalInformation.tooltip')}">
+                    <span class="la-popup-tooltip la-delay" data-content="${message(code: 'org.legalInformation.tooltip')}">
                         <i class="handshake outline icon"></i>
                     </span>
                 </th>
@@ -192,6 +191,20 @@
                 <th></th>
             </g:if>
 
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('isMyX')}">
+                <th class="center aligned">
+                    <g:if test="${actionName == 'listProvider'}">
+                        <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.providers')}"><i class="icon star"></i></span>
+                    </g:if>
+                    <g:if test="${actionName == 'listInstitution'}">
+                        <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.insts')}"><i class="icon star"></i></span>
+                    </g:if>
+                    <g:if test="${actionName == 'listConsortia'}">
+                        <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.consortia')}"><i class="icon star"></i></span>
+                    </g:if>
+                </th>
+            </g:if>
+
         </g:each>
     </tr>
     </thead>
@@ -248,7 +261,7 @@
                         </g:if>
                     </g:if>
                     <g:else>
-                        <g:link controller="organisation" action="show" id="${org.id}" params="${actionName in ["currentProviders", "manageMembers"] ? [my: true] : [:]}">
+                        <g:link controller="organisation" action="show" id="${org.id}">
                             <g:if test="${org.shortname}">
                                 ${fieldValue(bean: org, field: "shortname")}
                             </g:if>
@@ -272,7 +285,7 @@
                             </g:if>
                         </g:if>
                         <g:else>
-                            <g:link controller="organisation" action="show" id="${org.id}" params="${actionName in ["currentProviders", "manageMembers"] ? [my: true] : [:]}">
+                            <g:link controller="organisation" action="show" id="${org.id}">
                                 ${fieldValue(bean: org, field: "name")}
                                 <g:if test="${org.shortname && !tmplConfigItem.equalsIgnoreCase('shortname')}">
                                     <br />
@@ -385,7 +398,7 @@
                 </td>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('hasInstAdmin')}">
-                <td>
+                <td class="center aligned">
                     <%
                         String instAdminIcon = '<i class="large red times icon"></i>'
                         List<User> users = User.executeQuery('select uo.user from UserOrg uo where uo.org = :org and uo.formalRole = :instAdmin', [org: org, instAdmin: Role.findByAuthority('INST_ADM')])
@@ -402,7 +415,7 @@
                 </td>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('isWekbCurated')}">
-                <td>
+                <td class="center aligned">
                     <g:if test="${org.gokbId != null && RDStore.OT_PROVIDER.id in org.getAllOrgTypeIds()}">
                         <g:link url="${apiSource.baseUrl}/public/orgContent/${org.gokbId}">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
@@ -414,7 +427,7 @@
                 </td>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('status')}">
-                <td>
+                <td class="center aligned">
                     <g:if test="${org.status == RDStore.ORG_STATUS_CURRENT}">
                         <g:set var="precedents" value="${Org.executeQuery('select c.toOrg from Combo c where c.fromOrg = :org and c.type = :follows',[org: org, follows: RDStore.COMBO_TYPE_FOLLOWS])}"/>
                         <g:each in="${precedents}" var="precedent">
@@ -952,6 +965,26 @@
                         </div>
                     </g:if>
 
+                </td>
+            </g:if>
+
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('isMyX')}">
+                <td class="center aligned">
+                    <g:if test="${actionName == 'listProvider'}">
+                        <g:if test="${currentProviderIdList && (org.id in currentProviderIdList)}">
+                            <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.providers')}"><i class="icon yellow star"></i></span>
+                        </g:if>
+                    </g:if>
+                    <g:if test="${actionName == 'listInstitution'}">
+                        <g:if test="${consortiaMemberIds && (org.id in consortiaMemberIds)}">
+                            <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.insts')}"><i class="icon yellow star"></i></span>
+                        </g:if>
+                    </g:if>
+                    <g:if test="${actionName == 'listConsortia'}">
+                        <g:if test="${consortiaIds && (org.id in consortiaIds)}">
+                            <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.consortia')}"><i class="icon yellow star"></i></span>
+                        </g:if>
+                    </g:if>
                 </td>
             </g:if>
 

@@ -2,8 +2,6 @@
 <ui:subNav actionName="${actionName}">
     <%
         Map<String, Object> breadcrumbParams = [id: orgInstance.id]
-        if(params.my)
-            breadcrumbParams.my = true
     %>
 
     <ui:subNavItem controller="organisation" action="show" params="${breadcrumbParams}" message="org.nav.details"/>

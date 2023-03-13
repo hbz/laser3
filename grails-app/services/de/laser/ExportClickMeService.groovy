@@ -498,6 +498,11 @@ class ExportClickMeService {
                     message: 'exportClickMe.participantCustomerIdentifiers',
                     fields: [:]
             ],
+            participantContacts : [
+                    label: 'Contacts',
+                    message: 'org.contacts.label',
+                    fields: [:]
+            ],
             participantProperties : [
                     label: 'Properties',
                     message: 'default.properties.my',
@@ -533,12 +538,16 @@ class ExportClickMeService {
                     message: 'exportClickMe.participantCustomerIdentifiers',
                     fields: [:]
             ],
+            providerContacts : [
+                    label: 'Contacts',
+                    message: 'org.contacts.label',
+                    fields: [:]
+            ],
             providerProperties : [
                     label: 'Properties',
                     message: 'default.properties.my',
                     fields: [:]
             ]
-
     ]
 
     static Map<String, Object> EXPORT_ADDRESS_CONFIG = [
@@ -1353,8 +1362,9 @@ class ExportClickMeService {
                 PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg()).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
                     fields.participantProperties.fields << ["participantProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant != null)]]
                 }
+                fields.participantContacts.fields.clear()
                 contactTypes.each { RefdataValue contactType ->
-                    fields.participant.fields.put("participantContact.${contactType.value}", [field: null, label: contactType.getI10n('value')])
+                    fields.participantContacts.fields.put("participantContact.${contactType.value}", [field: null, label: contactType.getI10n('value')])
                 }
                 break
             case 'provider': fields = EXPORT_PROVIDER_CONFIG as Map
@@ -1370,8 +1380,9 @@ class ExportClickMeService {
                 PropertyDefinition.findAllPublicAndPrivateOrgProp(contextOrg).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
                     fields.providerProperties.fields << ["providerProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant != null)]]
                 }
+                fields.providerContacts.fields.clear()
                 contactTypes.each { RefdataValue contactType ->
-                    fields.provider.fields.put("providerContact.${contactType.value}",[field: null, label: contactType.getI10n('value')])
+                    fields.providerContacts.fields.put("providerContact.${contactType.value}",[field: null, label: contactType.getI10n('value')])
                 }
                 break
             default: fields = [:]

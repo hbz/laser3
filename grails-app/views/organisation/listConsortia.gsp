@@ -66,7 +66,7 @@
                       consortiaIds: consortiaIds,
                       tmplShowCheckbox: false,
                       tmplConfigShow: [
-                              'sortname', 'name'
+                              'sortname', 'name', 'isMyX'
                       ]
               ]"/>
 

@@ -194,7 +194,6 @@ class MyInstitutionController  {
             instanceFilter += " and s.instanceOf = null "
         Set<Long> idsCurrentSubscriptions = Subscription.executeQuery('select s.id from OrgRole oo join oo.sub s where oo.org = :contextOrg and oo.roleType in (:roleTypes) and (s.status = :current or (s.status = :expired and s.hasPerpetualAccess = true))'+instanceFilter,subscriptionParams)
 
-
         result.subscriptionMap = [:]
         result.platformInstanceList = []
 
@@ -798,7 +797,7 @@ class MyInstitutionController  {
 		prf.setBenchmark('init')
 
         EhcacheWrapper cache = contextService.getSharedOrgCache('MyInstitutionController/currentProviders')
-        List orgIds = []
+        List<Long> orgIds = []
 
         if (cache.get('orgIds')) {
             orgIds = cache.get('orgIds')
@@ -806,19 +805,21 @@ class MyInstitutionController  {
         }
         else {
 
-            List<Org> matches = Org.executeQuery("""
-select distinct(or_pa.org) from OrgRole or_pa 
-join or_pa.sub sub 
-join sub.orgRelations or_sub where
-    ( sub = or_sub.sub and or_sub.org = :subOrg ) and
-    ( or_sub.roleType in (:subRoleTypes) ) and
-        ( or_pa.roleType in (:paRoleTypes) )
-""", [
-        subOrg:       result.institution,
-        subRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA],
-        paRoleTypes:  [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]
-    ])
-            orgIds = matches.collect{ it.id }
+//            List<Org> matches = Org.executeQuery("""
+//select distinct(or_pa.org) from OrgRole or_pa
+//join or_pa.sub sub
+//join sub.orgRelations or_sub where
+//    ( sub = or_sub.sub and or_sub.org = :subOrg ) and
+//    ( or_sub.roleType in (:subRoleTypes) ) and
+//        ( or_pa.roleType in (:paRoleTypes) )
+//""", [
+//        subOrg:       result.institution,
+//        subRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA],
+//        paRoleTypes:  [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]
+//    ])
+//            orgIds = matches.collect{ it.id }
+
+            orgIds = (orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( result.institution )).toList()
             cache.put('orgIds', orgIds)
         }
 
@@ -2897,25 +2898,8 @@ join sub.orgRelations or_sub where
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         params.subStatus = RDStore.SUBSCRIPTION_CURRENT.id.toString()
-        Map queryParams = params.clone()
-        //queryParams.subPerpetual = "on"
-        //result.propList     = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
-        /*
-        if(!params.subStatus) {
-            if(!params.filterSet) {
-                params.subStatus = RDStore.SUBSCRIPTION_CURRENT.id.toString()
-                result.filterSet = true
-            }
-        }
-        else result.filterSet    = params.filterSet ? true : false
-        if(!params.subPerpetual) {
-            if(!params.filterSet) {
-                params.subPerpetual = "on"
-                result.filterSet = true
-            }
-        }
-        else result.filterSet    = params.filterSet ? true : false
-        */
+        GrailsParameterMap queryParams = params.clone() as GrailsParameterMap
+
         result.filterSet    = params.filterSet ? true : false
 
         queryParams.comboType = result.comboType.value
@@ -2938,7 +2922,6 @@ join sub.orgRelations or_sub where
 
 		List bm = prf.stopBenchmark()
 		result.benchMark = bm
-
 
         if ( params.exportXLS ) {
 

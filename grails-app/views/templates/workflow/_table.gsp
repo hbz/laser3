@@ -1,22 +1,7 @@
 <%@ page import="de.laser.workflow.WfCheckpoint; de.laser.workflow.WfChecklist; de.laser.WorkflowService; de.laser.utils.AppUtils; de.laser.utils.DateUtils; de.laser.storage.RDStore" %>
 <laser:serviceInjection />
 
-<g:if test="${status == WorkflowService.OP_STATUS_DONE}">
-    <g:if test="${cmd == 'delete'}">
-        <ui:msg class="positive" message="workflow.delete.ok" />
-    </g:if>
-    <g:else>
-        <ui:msg class="positive" message="workflow.edit.ok" />
-    </g:else>
-</g:if>
-<g:elseif test="${status == WorkflowService.OP_STATUS_ERROR}">
-    <g:if test="${cmd == 'delete'}">
-        <ui:msg class="negative" message="workflow.delete.error" />
-    </g:if>
-    <g:else>
-        <ui:msg class="negative" message="workflow.edit.error" />
-    </g:else>
-</g:elseif>
+<g:render template="/templates/workflow/status" model="${[cmd: cmd, status: status]}" />
 
 %{-- CHECKLISTS --}%
 <g:if test="${checklists}">

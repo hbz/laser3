@@ -34,14 +34,25 @@
         </g:form>
     </ui:filter>
 
+    <g:if test="${consortiaMemberIds}">%{-- --}%
+        <laser:render template="/templates/filter/orgFilterTable"
+                  model="[orgList: availableOrgs,
+                          consortiaMemberIds: consortiaMemberIds,
+                          tmplShowCheckbox: false,
+                          tmplConfigShow: [
+                                  'sortname', 'name', 'wibid', 'isil', 'region', 'libraryNetwork', 'libraryType', 'status', 'legalInformation', 'isMyX'
+                          ]
+                  ]"/>
+    </g:if>
+    <g:else>%{-- --}%
     <laser:render template="/templates/filter/orgFilterTable"
               model="[orgList: availableOrgs,
-                      consortiaMemberIds: consortiaMemberIds,
                       tmplShowCheckbox: false,
                       tmplConfigShow: [
                               'sortname', 'name', 'wibid', 'isil', 'region', 'libraryNetwork', 'libraryType', 'status', 'legalInformation'
                       ]
               ]"/>
+    </g:else>
 
     <ui:paginate action="listInstitution" params="${params}" max="${max}" total="${consortiaMemberTotal}" />
 
