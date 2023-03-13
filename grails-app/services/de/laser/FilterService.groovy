@@ -895,14 +895,15 @@ class FilterService {
         }
 
         if(params.tab == "new"){
-            query << "((surOrg.org = :org and surOrg.finishDate is null and surConfig.pickAndChoose = true and surConfig.surveyInfo.status = :status) " +
-                    "or exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surConfig.surveyInfo.status = :status and surResult.dateCreated = surResult.lastUpdated and surOrg.finishDate is null and surOrg.org = :org))"
+            query << "((surOrg.org = :org and surOrg.finishDate is null and surConfig.pickAndChoose = true and surConfig.surveyInfo.status = :status and" +
+                    " exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surConfig.surveyInfo.status = :status and surResult.dateCreated = surResult.lastUpdated and surOrg.finishDate is null and surConfig.pickAndChoose = true and surResult.participant = :org)) " +
+                    "or (surOrg.org = :org and exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surConfig.surveyInfo.status = :status and surResult.dateCreated = surResult.lastUpdated and surOrg.finishDate is null and surConfig.pickAndChoose = false and surResult.participant = :org)))"
             queryParams << [status: RDStore.SURVEY_SURVEY_STARTED]
             queryParams << [org : org]
         }
 
         if(params.tab == "processed"){
-            query << "(surInfo.status = :status and exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surResult.dateCreated < surResult.lastUpdated and surOrg.finishDate is null and surOrg.org = :org))"
+            query << "(surInfo.status = :status and surOrg.org = :org and exists (select surResult from SurveyResult surResult where surResult.surveyConfig = surConfig and surResult.dateCreated != surResult.lastUpdated and surOrg.finishDate is null and surResult.participant = :org))"
             queryParams << [status: RDStore.SURVEY_SURVEY_STARTED]
             queryParams << [org : org]
         }

@@ -237,7 +237,7 @@ class AccessService {
                 isOrgBasicMemberView = RequestContextHolder.currentRequestAttributes().params.orgBasicMemberView
             } catch (IllegalStateException e) {}
 
-            if(isOrgBasicMemberView && (oss.getValue() == Role.findAllByAuthority('ORG_CONSORTIUM'))){
+            if(isOrgBasicMemberView && (oss.getValue() == Role.findAllByAuthority('ORG_CONSORTIUM') || oss.getValue() == Role.findAllByAuthority('ORG_CONSORTIUM_PRO'))){
                 fakeRole = Role.findByAuthority('ORG_BASIC_MEMBER')
             }
 

@@ -116,9 +116,9 @@ class MyInstitutionController  {
      * Call for the reporting module
      * @return the reporting entry view
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM_PRO", affil="INST_USER")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM_PRO", "INST_USER")
     })
     def reporting() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -190,10 +190,9 @@ class MyInstitutionController  {
 
         String instanceFilter = ""
         Map<String, Object> subscriptionParams = [contextOrg:result.contextOrg, roleTypes:[RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA], current:RDStore.SUBSCRIPTION_CURRENT, expired:RDStore.SUBSCRIPTION_EXPIRED]
-        if(result.contextOrg.getCustomerType() == "ORG_CONSORTIUM")
+        if(result.contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO'])
             instanceFilter += " and s.instanceOf = null "
         Set<Long> idsCurrentSubscriptions = Subscription.executeQuery('select s.id from OrgRole oo join oo.sub s where oo.org = :contextOrg and oo.roleType in (:roleTypes) and (s.status = :current or (s.status = :expired and s.hasPerpetualAccess = true))'+instanceFilter,subscriptionParams)
-
 
         result.subscriptionMap = [:]
         result.platformInstanceList = []
@@ -798,7 +797,7 @@ class MyInstitutionController  {
 		prf.setBenchmark('init')
 
         EhcacheWrapper cache = contextService.getSharedOrgCache('MyInstitutionController/currentProviders')
-        List orgIds = []
+        List<Long> orgIds = []
 
         if (cache.get('orgIds')) {
             orgIds = cache.get('orgIds')
@@ -806,19 +805,21 @@ class MyInstitutionController  {
         }
         else {
 
-            List<Org> matches = Org.executeQuery("""
-select distinct(or_pa.org) from OrgRole or_pa 
-join or_pa.sub sub 
-join sub.orgRelations or_sub where
-    ( sub = or_sub.sub and or_sub.org = :subOrg ) and
-    ( or_sub.roleType in (:subRoleTypes) ) and
-        ( or_pa.roleType in (:paRoleTypes) )
-""", [
-        subOrg:       result.institution,
-        subRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA],
-        paRoleTypes:  [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]
-    ])
-            orgIds = matches.collect{ it.id }
+//            List<Org> matches = Org.executeQuery("""
+//select distinct(or_pa.org) from OrgRole or_pa
+//join or_pa.sub sub
+//join sub.orgRelations or_sub where
+//    ( sub = or_sub.sub and or_sub.org = :subOrg ) and
+//    ( or_sub.roleType in (:subRoleTypes) ) and
+//        ( or_pa.roleType in (:paRoleTypes) )
+//""", [
+//        subOrg:       result.institution,
+//        subRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA],
+//        paRoleTypes:  [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]
+//    ])
+//            orgIds = matches.collect{ it.id }
+
+            orgIds = (orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( result.institution )).toList()
             cache.put('orgIds', orgIds)
         }
 
@@ -1449,7 +1450,7 @@ join sub.orgRelations or_sub where
             Map<String, Object> configMap = [:]
             configMap.putAll(params)
             configMap.validOn = checkedDate.getTime()
-            String consFilter = result.institution.getCustomerType() == 'ORG_CONSORTIUM' ? ' and s.instanceOf is null' : ''
+            String consFilter = result.institution.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO'] ? ' and s.instanceOf is null' : ''
             configMap.pkgIds = SubscriptionPackage.executeQuery('select sp.pkg.id from SubscriptionPackage sp join sp.subscription s join s.orgRelations oo where oo.org = :context and oo.roleType in (:subscrTypes)'+consFilter, [context: result.institution, subscrTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS]])
             ServletOutputStream out = response.outputStream
             Map<String,List> tableData = exportService.generateTitleExportKBART(configMap, IssueEntitlement.class.name)
@@ -1465,7 +1466,7 @@ join sub.orgRelations or_sub where
             Map<String, Object> configMap = [:]
             configMap.putAll(params)
             configMap.validOn = checkedDate.getTime()
-            String consFilter = result.institution.getCustomerType() == 'ORG_CONSORTIUM' ? ' and s.instanceOf is null' : ''
+            String consFilter = result.institution.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO'] ? ' and s.instanceOf is null' : ''
             configMap.pkgIds = SubscriptionPackage.executeQuery('select sp.pkg.id from SubscriptionPackage sp join sp.subscription s join s.orgRelations oo where oo.org = :context and oo.roleType in (:subscrTypes)'+consFilter, [context: result.institution, subscrTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS]])
             Map<String,List> export = exportService.generateTitleExportCustom(configMap, IssueEntitlement.class.name) //all subscriptions, all packages
             Map sheetData = [:]
@@ -1831,9 +1832,9 @@ join sub.orgRelations or_sub where
 
         params.tab = params.tab ?: 'new'
 
-        if(params.tab != 'new'){
+        //if(params.tab != 'new'){
             params.sort = 'surInfo.endDate DESC, LOWER(surInfo.name)'
-        }
+        //}
 
         if (params.validOnYear == null || params.validOnYear == '') {
             SimpleDateFormat sdfyear = DateUtils.getSDF_yyyy()
@@ -2628,8 +2629,8 @@ join sub.orgRelations or_sub where
         }
     }
 
-    @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_USER", ctrlService = DebugInfo.IN_BETWEEN)
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER") })
+    @DebugInfo(perm="ORG_CONSORTIUM_PRO", affil="INST_USER", ctrlService = DebugInfo.IN_BETWEEN)
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM_PRO", "INST_USER") })
     def currentWorkflows() {
 
         SessionCacheWrapper cache = contextService.getSessionCache()
@@ -2743,8 +2744,8 @@ join sub.orgRelations or_sub where
      * Call for the overview of current workflows for the context institution
      * @return the entry view for the workflows, loading current cache settings
      */
-    @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_USER", ctrlService = DebugInfo.IN_BETWEEN)
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER") })
+    @DebugInfo(perm="ORG_CONSORTIUM_PRO", affil="INST_USER", ctrlService = DebugInfo.IN_BETWEEN)
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM_PRO", "INST_USER") })
     @Deprecated
     def currentWorkflowsOld() {
         Map<String, Object> result = [:]
@@ -2897,25 +2898,8 @@ join sub.orgRelations or_sub where
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         params.subStatus = RDStore.SUBSCRIPTION_CURRENT.id.toString()
-        Map queryParams = params.clone()
-        //queryParams.subPerpetual = "on"
-        //result.propList     = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
-        /*
-        if(!params.subStatus) {
-            if(!params.filterSet) {
-                params.subStatus = RDStore.SUBSCRIPTION_CURRENT.id.toString()
-                result.filterSet = true
-            }
-        }
-        else result.filterSet    = params.filterSet ? true : false
-        if(!params.subPerpetual) {
-            if(!params.filterSet) {
-                params.subPerpetual = "on"
-                result.filterSet = true
-            }
-        }
-        else result.filterSet    = params.filterSet ? true : false
-        */
+        GrailsParameterMap queryParams = params.clone() as GrailsParameterMap
+
         result.filterSet    = params.filterSet ? true : false
 
         queryParams.comboType = result.comboType.value
@@ -2938,7 +2922,6 @@ join sub.orgRelations or_sub where
 
 		List bm = prf.stopBenchmark()
 		result.benchMark = bm
-
 
         if ( params.exportXLS ) {
 
@@ -3595,8 +3578,8 @@ join sub.orgRelations or_sub where
      * The result may be displayed as HTML or exported as Excel worksheet
      * @return a list of surveys the context consortium set up and the given institution is participating at
      */
-    @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN")
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN") })
+    @DebugInfo(perm="ORG_CONSORTIUM_PRO", affil="INST_USER", specRole="ROLE_ADMIN")
+    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_PRO", "INST_USER", "ROLE_ADMIN") })
     def manageParticipantSurveys() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 

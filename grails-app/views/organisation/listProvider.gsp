@@ -64,8 +64,9 @@
             <g:if test="${orgList}">
                 <laser:render template="/templates/filter/orgFilterTable"
                       model="[orgList: orgList,
+                              currentProviderIdList: orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies(contextService.getOrg()).toList(),
                               tmplShowCheckbox: false,
-                              tmplConfigShow: ['lineNumber', 'shortname', 'name', 'isWekbCurated', 'altname', 'platform']
+                              tmplConfigShow: ['lineNumber', 'shortname', 'name', 'isWekbCurated', 'altname', 'platform', 'isMyX']
                       ]"/>
             </g:if>
             <g:else>

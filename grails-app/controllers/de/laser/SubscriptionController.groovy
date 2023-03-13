@@ -607,8 +607,8 @@ class SubscriptionController {
      * Call to list surveys linked to a consortial subscription
      * @return a table view of surveys from the consortium's point of view
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_USER", ctrlService = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER") })
+    @DebugInfo(perm = "ORG_CONSORTIUM_PRO", affil = "INST_USER", ctrlService = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM_PRO", "INST_USER") })
     @Check404()
     def surveysConsortia() {
         Map<String,Object> ctrlResult = subscriptionControllerService.surveysConsortia(this, params)
@@ -1873,8 +1873,8 @@ class SubscriptionController {
      * Call for the reporting view for the given subscription
      * @return the reporting index for the subscription
      */
-    @DebugInfo(perm="ORG_CONSORTIUM,ORG_INST", affil="INST_USER")
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM,ORG_INST", "INST_USER") })
+    @DebugInfo(perm="ORG_CONSORTIUM_PRO,ORG_INST", affil="INST_USER")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM_PRO,ORG_INST", "INST_USER") })
     @Check404()
     def reporting() {
         if (! params.token) {
@@ -1897,8 +1897,8 @@ class SubscriptionController {
      * Call for the workflows related to this subscription
      * @return the workflow landing page for the given subscription
      */
-    @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_USER")
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER") })
+    @DebugInfo(perm="ORG_CONSORTIUM_PRO", affil="INST_USER")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM_PRO", "INST_USER") })
     @Check404()
     def workflows() {
         Map<String,Object> ctrlResult = subscriptionControllerService.workflows( params )

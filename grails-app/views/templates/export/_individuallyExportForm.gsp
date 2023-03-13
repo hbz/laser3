@@ -156,23 +156,43 @@
 
                 </g:each>
             </div>
+
+                <g:if test="${fields.key == 'providerContacts' && contactSwitch == true}">
+
+                    <div class="inline fields" style="border-top:1px solid lightgrey; padding-top:1em;">%{-- tmp --}%
+                        <div class="field">
+                            <div class="ui checkbox">
+                                <label for="public"><g:message code="org.publicContacts.label"/></label>
+                                <input type="checkbox" name="contactSwitch" id="public" value="public" checked="checked"/>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="ui checkbox">
+                                <label for="private"><g:message code="org.privateContacts.exports.label"/></label>
+                                <input type=checkbox name="contactSwitch" id="private" value="private"/>
+                            </div>
+                        </div>
+                    </div>
+
+                </g:if>
+
             </div>
         </g:each>
 
-        <g:if test="${contactSwitch == true}">
-            <div class="fields">
-                <div class="wide eight field">
-                    <div class="ui checkbox">
-                        <label for="public"><g:message code="org.publicContacts.label"/></label>
-                        <input type="checkbox" name="contactSwitch" id="public" value="public" checked="checked"/>
-                    </div>
-                    <div class="ui checkbox">
-                        <label for="private"><g:message code="org.privateContacts.exports.label"/></label>
-                        <input type=checkbox name="contactSwitch" id="private" value="private"/>
-                    </div>
-                </div>
-            </div>
-        </g:if>
+%{--        <g:if test="${contactSwitch == true}">--}%
+%{--            <div class="fields">--}%
+%{--                <div class="wide eight field">--}%
+%{--                    <div class="ui checkbox">--}%
+%{--                        <label for="public"><g:message code="org.publicContacts.label"/></label>--}%
+%{--                        <input type="checkbox" name="contactSwitch" id="public" value="public" checked="checked"/>--}%
+%{--                    </div>--}%
+%{--                    <div class="ui checkbox">--}%
+%{--                        <label for="private"><g:message code="org.privateContacts.exports.label"/></label>--}%
+%{--                        <input type=checkbox name="contactSwitch" id="private" value="private"/>--}%
+%{--                    </div>--}%
+%{--                </div>--}%
+%{--            </div>--}%
+%{--        </g:if>--}%
         <g:if test="${orgSwitch == true}">
             <div class="fields">
                 <div class="wide eight field">

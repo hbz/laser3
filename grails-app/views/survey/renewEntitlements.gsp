@@ -191,22 +191,24 @@
 
                 <g:if test="${editable}">
                     <div class="ui two fields">
-                    <g:if test="${subscriptionParticipant.ieGroups}">
                         <div class="field">
-                            <label for="issueEntitlementGroup">${message(code: 'issueEntitlementGroup.entitlementsRenew.selected.add')}:</label>
+                            <g:if test="${subscriptionParticipant.ieGroups}">
 
-                            <select name="issueEntitlementGroupID" id="issueEntitlementGroup"
-                                    class="ui search dropdown">
-                                <option value="">${message(code: 'default.select.choose.label')}</option>
+                                <label for="issueEntitlementGroup">${message(code: 'issueEntitlementGroup.entitlementsRenew.selected.add')}:</label>
 
-                                <g:each in="${subscriptionParticipant.ieGroups.sort { it.name }}" var="titleGroup">
-                                    <option value="${titleGroup.id}">
-                                        ${titleGroup.name} (${titleGroup.countCurrentTitles()})
-                                    </option>
-                                </g:each>
-                            </select>
+                                <select name="issueEntitlementGroupID" id="issueEntitlementGroup"
+                                        class="ui search dropdown">
+                                    <option value="">${message(code: 'default.select.choose.label')}</option>
+
+                                    <g:each in="${subscriptionParticipant.ieGroups.sort { it.name }}" var="titleGroup">
+                                        <option value="${titleGroup.id}">
+                                            ${titleGroup.name} (${titleGroup.countCurrentTitles()})
+                                        </option>
+                                    </g:each>
+                                </select>
+
+                            </g:if>
                         </div>
-                    </g:if>
 
                         <div class="field">
                             <label for="issueEntitlementGroup">${message(code: 'issueEntitlementGroup.entitlementsRenew.selected.new')}:</label>
@@ -219,8 +221,17 @@
 
                     <div class="ui two fields">
                         <div class="field">
-                            <button type="submit" name="process" value="preliminary" class="ui green button"><g:message
-                                    code="renewEntitlementsWithSurvey.preliminary"/></button>
+                            <g:if test="${subscriptionParticipant.packages.size() > 0}">
+                                <button type="submit" name="process" value="preliminary"
+                                        class="ui green button"><g:message
+                                        code="renewEntitlementsWithSurvey.preliminary"/></button>
+                            </g:if><g:else>
+                            <div class="ui green button"
+                                 data-tooltip="${message(code: 'renewEntitlementsWithSurvey.noPackagesYetAdded')}"><g:message
+                                    code="renewEntitlementsWithSurvey.preliminary"/>
+                            </div>
+                        </g:else>
+
                         </div>
 
                         <div class="field" style="text-align: right;">

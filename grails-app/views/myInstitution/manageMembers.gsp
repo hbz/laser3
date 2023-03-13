@@ -1,7 +1,7 @@
 <%@ page import="de.laser.storage.RDStore" %>
 
     <g:set var="entityName" value="${message(code: 'org.label')}"/>
-    <g:set var="title" value="${message(code: 'menu.institutions.manage_consortia')}"/>
+    <g:set var="title" value="${message(code: 'menu.my.insts')}"/>
     <g:set var="memberPlural" value="${message(code: 'consortium.member.plural')}"/>
 
 <laser:htmlStart text="${title}" serviceInjection="true" />
@@ -52,7 +52,7 @@
 <ui:messages data="${flash}"/>
     <%
         List configShowFilter = [['name', 'identifier'], ['identifierNamespace', 'customerIDNamespace'], ['country&region', 'libraryNetwork', 'libraryType', 'subjectGroup'], ['property&value', 'subStatus', 'subValidOn'], ['subPerpetualAccess'], ['providers']]
-        List configShowTable = ['sortname', 'name', 'status', 'mainContact', 'libraryType', 'legalInformation', 'numberOfSubscriptions', 'numberOfSurveys']
+        List configShowTable = ['sortname', 'name', 'mainContact', 'libraryType', 'status', 'legalInformation', 'numberOfSubscriptions', 'numberOfSurveys']
     %>
 
     <ui:filter>

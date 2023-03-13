@@ -47,6 +47,7 @@
 <ui:objectStatus object="${orgInstance}" status="${orgInstance.status}"/>
 
 <ui:messages data="${flash}"/>
+<g:render template="/templates/workflow/status" model="${[cmd: cmd, status: status]}" />
 
 <div class="ui stackable grid">
     <div class="eleven wide column">
@@ -726,7 +727,7 @@
                         --%>
             </g:if>
 
-                <g:if test="${(user.isAdmin() || institution.getCustomerType()  == 'ORG_CONSORTIUM') && (institution != orgInstance)}">
+                <g:if test="${(user.isAdmin() || institution.getCustomerType()  in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO']) && (institution != orgInstance)}">
                     <g:if test="${orgInstance.createdBy || orgInstance.legallyObligedBy}">
                         <div class="ui card">
                             <div class="content">

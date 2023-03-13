@@ -424,23 +424,23 @@
                 <td>
                     <g:if test="${ieInNewSub?.priceItems}">
                             <g:each in="${ieInNewSub.priceItems}" var="priceItem" status="i">
-                                <g:message code="tipp.price.listPrice"/>: <ui:xEditable field="listPrice"
+                                <g:message code="tipp.price.listPrice"/>:%{-- <ui:xEditable field="listPrice"
                                                                                            owner="${priceItem}"
                                                                                            format=""
                                                                                            overwriteEditable="${false}"/>
                                 <ui:xEditableRefData
                                         field="listCurrency" owner="${priceItem}"
                                         config="Currency"
-                                        overwriteEditable="${false}"/> <g:formatNumber number="${priceItem.listPrice}" type="currency" currencyCode="${priceItem.listCurrency?.value}" currencySymbol="${priceItem.listCurrency?.value}"/><br/>
+                                        overwriteEditable="${false}"/>--}% <g:formatNumber number="${priceItem.listPrice}" type="currency" currencyCode="${priceItem.listCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/><br/>
 
                                 <g:if test="${priceItem.localCurrency}">
-                                    <g:message code="tipp.price.localPrice"/>: <ui:xEditable field="localPrice"
+                                    <g:message code="tipp.price.localPrice"/>: %{--<ui:xEditable field="localPrice"
                                                                                                 owner="${priceItem}"
                                                                                                 overwriteEditable="${false}"/>
                                     <ui:xEditableRefData
                                             field="localCurrency" owner="${priceItem}"
                                             config="Currency"
-                                            overwriteEditable="${false}"/> <g:formatNumber number="${priceItem.localPrice}" type="currency" currencyCode="${priceItem.localCurrency?.value}" currencySymbol="${priceItem.listCurrency?.value}"/>
+                                            overwriteEditable="${false}"/>--}% <g:formatNumber number="${priceItem.localPrice}" type="currency" currencyCode="${priceItem.localCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>
                                 <%--<ui:xEditable field="startDate" type="date"
                                                  owner="${priceItem}"/><ui:dateDevider/><ui:xEditable
                                     field="endDate" type="date"
@@ -454,21 +454,21 @@
                     <g:else>
                         <g:if test="${ie?.priceItems}">
                             <g:each in="${ie.priceItems}" var="priceItem" status="i">
-                                <g:message code="tipp.price.listPrice"/>: <ui:xEditable field="listPrice"
+                                <g:message code="tipp.price.listPrice"/>: %{--<ui:xEditable field="listPrice"
                                                                                            owner="${priceItem}"
                                                                                            format=""
                                                                                            overwriteEditable="${false}"/> <ui:xEditableRefData
                                     field="listCurrency" owner="${priceItem}"
                                     config="Currency"
-                                    overwriteEditable="${false}"/> <g:formatNumber number="${priceItem.listPrice}" type="currency" currencyCode="${priceItem.localCurrency?.value}" currencySymbol="${priceItem.listCurrency?.value}"/><br/>
+                                    overwriteEditable="${false}"/>--}% <g:formatNumber number="${priceItem.listPrice}" type="currency" currencyCode="${priceItem.listCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/><br/>
 
                                 <g:if test="${priceItem.localCurrency}">
-                                    <g:message code="tipp.price.localPrice"/>: <ui:xEditable field="localPrice"
+                                    <g:message code="tipp.price.localPrice"/>: %{--<ui:xEditable field="localPrice"
                                                                                                 owner="${priceItem}"
                                                                                                 overwriteEditable="${false}"/> <ui:xEditableRefData
                                         field="localCurrency" owner="${priceItem}"
                                         config="Currency"
-                                        overwriteEditable="${false}"/> <g:formatNumber number="${priceItem.localPrice}" type="currency" currencyCode="${priceItem.localCurrency?.value}" currencySymbol="${priceItem.listCurrency?.value}"/>
+                                        overwriteEditable="${false}"/>--}% <g:formatNumber number="${priceItem.localPrice}" type="currency" currencyCode="${priceItem.localCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>
                                 <%--<ui:xEditable field="startDate" type="date"
                                                  owner="${priceItem}"/><ui:dateDevider/><ui:xEditable
                                     field="endDate" type="date"
@@ -510,9 +510,10 @@
             <th></th>
             <th></th>
             <th></th>
-            <th><g:message code="financials.export.sums"/> <br />
-                <g:message code="tipp.price.listPrice"/>: <g:formatNumber number="${sumlistPrice}" type="currency"/><br />
-                <g:message code="tipp.price.localPrice"/>: <g:formatNumber number="${sumlocalPrice}" type="currency"/>
+            <th><g:message code="tipp.price.listPrice"/> <br />
+                <g:message code="financials.totalCostOnPage"/>: <g:formatNumber number="${sumlistPrice}" type="currency"/><br />
+                %{--<g:message code="tipp.price.localPrice"/>: <g:formatNumber number="${sumlocalPrice}" type="currency"/>--}%
+                <g:message code="financials.totalCost"/>: <g:formatNumber number="${iesListPriceSum}" type="currency"/>
             </th>
             <th></th>
         </tr>

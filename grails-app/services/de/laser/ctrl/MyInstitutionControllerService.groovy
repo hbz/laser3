@@ -173,7 +173,7 @@ class MyInstitutionControllerService {
         result.institution = org
         result.contextOrg = org
         result.contextCustomerType = org.getCustomerType()
-        result.showConsortiaFunctions = result.contextCustomerType == "ORG_CONSORTIUM"
+        result.showConsortiaFunctions = result.contextCustomerType in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO']
         switch (params.action) {
             case [ 'processEmptyLicense', 'currentLicenses', 'currentSurveys', 'dashboard', 'getChanges', 'getSurveys', 'emptyLicense', 'surveyInfoFinish' ]:
                 result.editable = accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR')

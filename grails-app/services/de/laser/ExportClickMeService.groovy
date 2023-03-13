@@ -498,6 +498,11 @@ class ExportClickMeService {
                     message: 'exportClickMe.participantCustomerIdentifiers',
                     fields: [:]
             ],
+            participantContacts : [
+                    label: 'Contacts',
+                    message: 'org.contacts.label',
+                    fields: [:]
+            ],
             participantProperties : [
                     label: 'Properties',
                     message: 'default.properties.my',
@@ -533,12 +538,16 @@ class ExportClickMeService {
                     message: 'exportClickMe.participantCustomerIdentifiers',
                     fields: [:]
             ],
+            providerContacts : [
+                    label: 'Contacts',
+                    message: 'org.contacts.label',
+                    fields: [:]
+            ],
             providerProperties : [
                     label: 'Properties',
                     message: 'default.properties.my',
                     fields: [:]
             ]
-
     ]
 
     static Map<String, Object> EXPORT_ADDRESS_CONFIG = [
@@ -1086,7 +1095,7 @@ class ExportClickMeService {
             exportFields.put("participantIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
         }
         String consortiaFilter = ''
-        if(institution.getCustomerType() == 'ORG_CONSORTIUM')
+        if(institution.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO'])
             consortiaFilter = ' and s.instanceOf = null '
         Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where plat in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg join sp.subscription s join s.orgRelations oo where oo.org = :ctx '+consortiaFilter+')', [ctx: institution]).each { Platform plat ->
             exportFields.put("participantCustomerIdentifiers."+plat.id, [field: null, label: plat.name])
@@ -1137,7 +1146,7 @@ class ExportClickMeService {
             fields.participantIdentifiers.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
         }
         String consortiaFilter = ''
-        if(institution.getCustomerType() == 'ORG_CONSORTIUM')
+        if(institution.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO'])
             consortiaFilter = ' and s.instanceOf = null '
         Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where plat in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg join sp.subscription s join s.orgRelations oo where oo.org = :ctx '+consortiaFilter+') order by plat.name', [ctx:institution]).each { Platform plat ->
             fields.participantCustomerIdentifiers.fields << ["participantCustomerIdentifiers.${plat.id}":[field: null, label: plat.name]]
@@ -1353,8 +1362,9 @@ class ExportClickMeService {
                 PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg()).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
                     fields.participantProperties.fields << ["participantProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant != null)]]
                 }
+                fields.participantContacts.fields.clear()
                 contactTypes.each { RefdataValue contactType ->
-                    fields.participant.fields.put("participantContact.${contactType.value}", [field: null, label: contactType.getI10n('value')])
+                    fields.participantContacts.fields.put("participantContact.${contactType.value}", [field: null, label: contactType.getI10n('value')])
                 }
                 break
             case 'provider': fields = EXPORT_PROVIDER_CONFIG as Map
@@ -1370,8 +1380,9 @@ class ExportClickMeService {
                 PropertyDefinition.findAllPublicAndPrivateOrgProp(contextOrg).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
                     fields.providerProperties.fields << ["providerProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant != null)]]
                 }
+                fields.providerContacts.fields.clear()
                 contactTypes.each { RefdataValue contactType ->
-                    fields.provider.fields.put("providerContact.${contactType.value}",[field: null, label: contactType.getI10n('value')])
+                    fields.providerContacts.fields.put("providerContact.${contactType.value}",[field: null, label: contactType.getI10n('value')])
                 }
                 break
             default: fields = [:]
