@@ -303,7 +303,7 @@ class OrganisationController  {
     @Secured(['ROLE_USER'])
     Map listConsortia() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
-        params.customerType   = Role.findByAuthority('ORG_CONSORTIUM').id.toString()
+        params.customerType   = Role.findByAuthority('ORG_CONSORTIUM_PRO').id.toString()
         if(!params.sort)
             params.sort = " LOWER(o.sortname)"
         Map<String, Object> fsq = filterService.getOrgQuery(params)
@@ -954,7 +954,7 @@ class OrganisationController  {
             result.packages = packages.sort { Package pkg -> pkg.sortname }
             //may become a performance bottleneck - SUBJECT OF OBSERVATION!
             String subConsortialFilter = '', licConsortialFilter = ''
-            if (result.institution.getCustomerType() == 'ORG_CONSORTIUM') {
+            if (result.institution.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO']) {
                 subConsortialFilter = " and s.instanceOf is null"
                 licConsortialFilter = " and l.instanceOf is null"
             }
@@ -1128,8 +1128,8 @@ class OrganisationController  {
         result
     }
 
-    @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_USER")
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER") })
+    @DebugInfo(perm="ORG_CONSORTIUM_PRO", affil="INST_USER")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM_PRO", "INST_USER") })
     @Check404()
     def workflows() {
         Map<String,Object> ctrlResult = organisationControllerService.workflows( this, params )
@@ -1780,7 +1780,7 @@ class OrganisationController  {
         result.rdvAllPersonFunctions = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_CONTACT_PRS, RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN]
         result.rdvAllPersonPositions = PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION) - [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS]
 
-        if(result.institution.getCustomerType() == 'ORG_CONSORTIUM' && result.orgInstance)
+        if(result.institution.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO'] && result.orgInstance)
         {
             params.org = result.orgInstance
             result.rdvAllPersonFunctions << RDStore.PRS_FUNC_GASCO_CONTACT
@@ -1858,6 +1858,7 @@ class OrganisationController  {
                                 case 'ORG_BASIC_MEMBER':    isEditable = user.hasRole('ROLE_YODA'); break
                                 case 'ORG_INST':            isEditable = user.hasRole('ROLE_YODA'); break
                                 case 'ORG_CONSORTIUM':      isEditable = user.hasRole('ROLE_YODA'); break
+                                case 'ORG_CONSORTIUM_PRO':  isEditable = user.hasRole('ROLE_YODA'); break
                                 default:                    isEditable = user.hasRole('ROLE_YODA'); break
                             }
                             break
@@ -1866,6 +1867,7 @@ class OrganisationController  {
                                 case 'ORG_BASIC_MEMBER':    isEditable = user.hasRole('ROLE_YODA'); break
                                 case 'ORG_INST':            isEditable = user.hasRole('ROLE_YODA'); break
                                 case 'ORG_CONSORTIUM':      isEditable = user.hasRole('ROLE_YODA'); break
+                                case 'ORG_CONSORTIUM_PRO':  isEditable = user.hasRole('ROLE_YODA'); break
                                 default:                    isEditable = userHasEditableRights; break //means providers and agencies
                             }
                             break
@@ -1874,6 +1876,7 @@ class OrganisationController  {
                                 case 'ORG_BASIC_MEMBER':    isEditable = userHasEditableRights; break
                                 case 'ORG_INST':            isEditable = userHasEditableRights; break
                                 case 'ORG_CONSORTIUM':      isEditable = user.hasRole('ROLE_YODA'); break
+                                case 'ORG_CONSORTIUM_PRO':  isEditable = user.hasRole('ROLE_YODA'); break
                                 default:                    isEditable = userHasEditableRights; break //means providers and agencies
                             }
                             break

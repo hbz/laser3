@@ -7,6 +7,20 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4751    10.03.2023  dev     3.1         Moe     Feature     Umfrage-Kategorie "neu"
+
+4696    10.03.2023  dev     3.1         Moe     Feature     Überprüfung: Titel-Umfrage - Bestand verknüpft?
+
+4684    10.03.2023  dev     3.1         Moe     Feature     Titel-Umfrage: Paket-Verknüpfung bei Teilnehmer 
+
+4888    10.03.2023  dev     3.1         Moe     Feature     Titelauswahl: Summe des Gesamtbestandes
+
+4778    10.03.2023  dev     3.1         Moe     Feature     GRID-ID löschen und neue ROR-ID
+
+4871    07.03.2023  dev     3.1         Moe     Bug         Aufgaben-Erinnerungsmail: Fälligkeitsdatum wird nicht aktualisiert
+
+4738    07.03.2023  dev     3.1         Moe     Feature     Neue Kunden-Typen -> Konsortialstelle Basis
+
 --      22.02.2023  rc-3.0  3.0.5       Andreas Bug         Umstrukturierungen für Database Reports
 
 4843    16.02.2023  dev     3.0.5       David   Feature     Database Migration Plugin aktualisieren

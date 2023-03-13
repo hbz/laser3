@@ -31,7 +31,7 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
     public static final String WIBID       = "wibid"
     public static final String GND_ORG_NR  = "gnd_org_nr"
     public static final String EZB_ORG_ID  = "ezb_org_id"
-    public static final String GRID_ID     = "GRID ID"
+    public static final String ROR_ID     = "ROR ID"
     public static final String DBS_ID      = "DBS-ID"
     public static final String DBIS_ORG_ID = "dbis_org_id"
     public static final String VAT         = "VAT"
@@ -67,7 +67,7 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
             WIBID,
             GND_ORG_NR,
             EZB_ORG_ID,
-            GRID_ID,
+            ROR_ID,
             DBS_ID,
             DBIS_ORG_ID,
             VAT,

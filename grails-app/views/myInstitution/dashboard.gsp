@@ -31,7 +31,7 @@
                             <g:link controller="org" action="show" id="${institution.id}">${message(code: 'menu.institutions.org_info')}</g:link>
                         </div>
                         <ui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="finance" message="menu.institutions.finance" />
-                        <ui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="reporting" message="myinst.reporting" />
+                        <ui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM_PRO" affiliation="INST_USER" controller="myInstitution" action="reporting" message="myinst.reporting" />
                     </div>
                 </div>
 
@@ -69,7 +69,7 @@
             ${dueDatesCount} ${message(code:'myinst.dash.due_dates.label')}
         </a>
 
-        <g:if test="${institution.getCustomerType() in ['ORG_INST', 'ORG_CONSORTIUM']}">
+        <g:if test="${institution.getCustomerType() in ['ORG_INST', 'ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO']}">
             <a class="${us_dashboard_tab.value == 'PendingChanges' ? 'active item':'item'}" data-tab="pendingchanges">
                 <i class="history icon large"></i>
                 <span id="pendingCount">${message(code:'myinst.pendingChanges.label', args: [message(code:'myinst.loadPending')])}</span>
@@ -85,10 +85,12 @@
             ${systemAnnouncements.size()} ${message(code:'announcement.plural')}
         </a>
 
-        <a class="${us_dashboard_tab.value == 'Surveys' ? 'active item':'item'}" data-tab="surveys">
-            <i class="chart pie icon large"></i>
-            <span id="surveyCount">${message(code:'myinst.dash.survey.label', args: [message(code: 'myinst.loadPending')])}</span>
-        </a>
+        <g:if test="${accessService.checkPerm('ORG_BASIC_MEMBER,ORG_CONSORTIUM_PRO')}">
+            <a class="${us_dashboard_tab.value == 'Surveys' ? 'active item' : 'item'}" data-tab="surveys">
+                <i class="chart pie icon large"></i>
+                <span id="surveyCount">${message(code: 'myinst.dash.survey.label', args: [message(code: 'myinst.loadPending')])}</span>
+            </a>
+        </g:if>
 
         <g:if test="${accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')}">
             <a class="${us_dashboard_tab.value == 'Tasks' ? 'active item':'item'}" data-tab="tasks">
@@ -113,7 +115,7 @@
             </div>
         </div>
 
-        <g:if test="${institution.getCustomerType() in ['ORG_INST', 'ORG_CONSORTIUM']}">
+        <g:if test="${institution.getCustomerType() in ['ORG_INST', 'ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO']}">
             <div class="ui bottom attached tab ${us_dashboard_tab.value == 'PendingChanges' ? 'active':''}" data-tab="pendingchanges" id="pendingChanges">
             </div>
         </g:if>
@@ -238,20 +240,25 @@
 
         </g:if>
 
-        <div class="ui bottom attached tab segment ${us_dashboard_tab.value == 'Surveys' ? 'active':''}" data-tab="surveys" style="border-top: 1px solid #d4d4d5; ">
+        <g:if test="${accessService.checkPerm('ORG_BASIC_MEMBER,ORG_CONSORTIUM_PRO')}">
+            <div class="ui bottom attached tab segment ${us_dashboard_tab.value == 'Surveys' ? 'active' : ''}"
+                 data-tab="surveys" style="border-top: 1px solid #d4d4d5; ">
                 <div class="la-float-right">
-                    <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
-                        <g:link controller="survey" action="workflowsSurveysConsortia" class="ui button">${message(code:'menu.my.surveys')}</g:link>
+                    <g:if test="${accessService.checkPerm('ORG_CONSORTIUM_PRO')}">
+                        <g:link controller="survey" action="workflowsSurveysConsortia"
+                                class="ui button">${message(code: 'menu.my.surveys')}</g:link>
                     </g:if>
                     <g:else>
-                        <g:link action="currentSurveys" class="ui button">${message(code:'menu.my.surveys')}</g:link>
+                        <g:link action="currentSurveys" class="ui button">${message(code: 'menu.my.surveys')}</g:link>
                     </g:else>
 
                 </div>
-            <div id="surveyWrapper">
-                <%--<laser:render template="surveys"/>--%>
+
+                <div id="surveyWrapper">
+                    <%--<laser:render template="surveys"/>--%>
+                </div>
             </div>
-        </div>
+        </g:if>
 
         <g:if test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
             <div id="wfFlyout" class="ui eight wide flyout" style="padding:50px 0 10px 0;overflow:scroll"></div>

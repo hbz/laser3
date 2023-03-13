@@ -76,7 +76,7 @@ class SubscriptionService {
         prf.setBenchmark('consortia')
         result.availableConsortia = Combo.executeQuery("select c.toOrg from Combo as c where c.fromOrg = :fromOrg", [fromOrg: contextOrg])
 
-        List<Role> consRoles = Role.findAll { authority == 'ORG_CONSORTIUM' }
+        List<Role> consRoles = Role.findAll { authority in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO'] }
         prf.setBenchmark('all consortia')
         result.allConsortia = Org.executeQuery(
                 """select o from Org o, OrgSetting os_ct, OrgSetting os_gs where 
@@ -97,7 +97,7 @@ class SubscriptionService {
         viableOrgs.add(contextOrg)
 
         String consortiaFilter = ''
-        if(contextOrg.getCustomerType() == 'ORG_CONSORTIUM')
+        if(contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO'])
             consortiaFilter = 'and s.instanceOf = null'
 
         Set<Year> availableReferenceYears = Subscription.executeQuery('select s.referenceYear from OrgRole oo join oo.sub s where s.referenceYear != null and oo.org = :contextOrg '+consortiaFilter+' order by s.referenceYear', [contextOrg: contextOrg])
@@ -2310,7 +2310,7 @@ class SubscriptionService {
                         kind: genericOIDService.resolveOID(entry.kind),
                         form: genericOIDService.resolveOID(entry.form),
                         resource: genericOIDService.resolveOID(entry.resource),
-                        type: contextOrg.getCustomerType() == "ORG_CONSORTIUM" ? RDStore.SUBSCRIPTION_TYPE_CONSORTIAL : RDStore.SUBSCRIPTION_TYPE_LOCAL,
+                        type: (contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO']) ? RDStore.SUBSCRIPTION_TYPE_CONSORTIAL : RDStore.SUBSCRIPTION_TYPE_LOCAL,
                         isPublicForApi: entry.isPublicForApi,
                         hasPerpetualAccess: entry.hasPerpetualAccess,
                         hasPublishComponent: entry.hasPublishComponent,

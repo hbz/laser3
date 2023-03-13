@@ -165,9 +165,10 @@
             <th></th>
             <th></th>
             <th></th>
-            <th><g:message code="financials.export.sums"/> <br />
-                <g:message code="tipp.price.listPrice"/>: <g:formatNumber number="${sumlistPrice}" type="currency"/><br />
+            <th><g:message code="tipp.price.listPrice"/> <br />
+                <g:message code="financials.totalCostOnPage"/>: <g:formatNumber number="${sumlistPrice}" type="currency"/><br />
                 %{--<g:message code="tipp.price.localPrice"/>: <g:formatNumber number="${sumlocalPrice}" type="currency"/>--}%
+                <g:message code="financials.totalCost"/>: <g:formatNumber number="${iesListPriceSum}" type="currency"/>
             </th>
             <th></th>
         </tr>

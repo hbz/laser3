@@ -80,7 +80,7 @@ class SurveyService {
      */
     boolean isEditableSurvey(Org org, SurveyInfo surveyInfo) {
 
-        if (accessService.checkPermAffiliationX('ORG_CONSORTIUM', 'INST_EDITOR', 'ROLE_ADMIN') && surveyInfo.owner?.id == contextService.getOrg().id) {
+        if (accessService.checkPermAffiliationX('ORG_CONSORTIUM_PRO', 'INST_EDITOR', 'ROLE_ADMIN') && surveyInfo.owner?.id == contextService.getOrg().id) {
             return true
         }
 
@@ -104,7 +104,7 @@ class SurveyService {
     @Deprecated
     boolean isEditableIssueEntitlementsSurvey(Org org, SurveyConfig surveyConfig) {
 
-        if (accessService.checkPermAffiliationX('ORG_CONSORTIUM', 'INST_EDITOR', 'ROLE_ADMIN') && surveyConfig.surveyInfo.owner?.id == contextService.getOrg().id) {
+        if (accessService.checkPermAffiliationX('ORG_CONSORTIUM_PRO', 'INST_EDITOR', 'ROLE_ADMIN') && surveyConfig.surveyInfo.owner?.id == contextService.getOrg().id) {
             return true
         }
 
@@ -487,7 +487,7 @@ class SurveyService {
 
         Map sheetData = [:]
 
-        if (contextOrg.getCustomerType()  == 'ORG_CONSORTIUM') {
+        if (contextOrg.getCustomerType()  == 'ORG_CONSORTIUM_PRO') {
             surveyConfigs.each { surveyConfig ->
                 List titles = []
                 List surveyData = []
@@ -1377,7 +1377,7 @@ class SurveyService {
         Org contextOrg = contextService.getOrg()
 
         GrailsParameterMap tmpParams = (GrailsParameterMap) parameterMap.clone()
-        if (contextOrg.getCustomerType()  == 'ORG_CONSORTIUM') {
+        if (contextOrg.getCustomerType()  == 'ORG_CONSORTIUM_PRO') {
 
             result = _setSurveyParticipantCounts(result, 'new', tmpParams, participant, contextOrg)
 
@@ -1743,7 +1743,7 @@ class SurveyService {
         RefdataValue role_subCons = RDStore.OR_SUBSCRIBER_CONS
         RefdataValue role_sub_consortia = RDStore.OR_SUBSCRIPTION_CONSORTIA
 
-        if (accessService.checkPerm(org, 'ORG_CONSORTIUM')) {
+        if (accessService.checkPerm(org, 'ORG_CONSORTIUM_PRO')) {
             //nur Parents
             base_qry = " from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
                     " AND s.instanceOf is null "
