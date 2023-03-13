@@ -182,6 +182,7 @@ class MyInstitutionController  {
 		Profiler prf = new Profiler()
 		prf.setBenchmark('init')
 
+        result.flagContentGokb = true // gokbService.doQuery
         result.user = contextService.getUser()
         result.contextOrg = contextService.getOrg()
         SwissKnife.setPaginationParams(result, params, (User) result.user)

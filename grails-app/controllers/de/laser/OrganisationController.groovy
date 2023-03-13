@@ -327,7 +327,7 @@ class OrganisationController  {
         queryParams.invertDirection = true
         Map<String, Object> currentConsortiaQMap = filterService.getOrgComboQuery(queryParams, result.contextOrg as Org)
         result.consortiaIds = Org.executeQuery(currentConsortiaQMap.query, currentConsortiaQMap.queryParams).collect{ it.id }
-        // ---
+        // ? ---
 
         if ( params.exportXLS ) {
             SXSSFWorkbook wb = (SXSSFWorkbook) organisationService.exportOrg(availableOrgs, header, false, 'xls')

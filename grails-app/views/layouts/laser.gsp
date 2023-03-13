@@ -136,6 +136,7 @@
 
                             <div class="menu" role="menu">
                                 <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="dashboard" message="menu.institutions.dash" />
+                                <div class="divider"></div>
 
                                 <ui:link generateElementId="true" class="item" role="menuitem" controller="organisation" action="show" params="[id: contextOrg?.id]">${message(code:'menu.institutions.org_info')}</ui:link>
 
@@ -174,6 +175,7 @@
 
                             <div class="menu" role="menu">
                                 <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="index">${message(code:'default.dashboard')}</ui:link>
+                                <div class="divider"></div>
 
                                 <div class="item" role="menuitem" aria-haspopup="true">
                                     <div class="title">
@@ -244,6 +246,7 @@
 
                             <div class="menu" role="menu">
                                 <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="index">${message(code:'default.dashboard')}</ui:link>
+                                <div class="divider"></div>
 
                                 <div class="item " role="menuitem" aria-haspopup="true">
                                     <div class="title">
