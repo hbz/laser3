@@ -102,7 +102,7 @@
                                     <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentSurveys" message="menu.my.surveys" />
                                 </g:if>
 
-                                <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
+                                <g:if test="${accessService.checkPerm('ORG_CONSORTIUM_PRO')}">
 
                                     <g:if test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
                                         <div class="divider"></div>
@@ -111,7 +111,9 @@
 
                                     <div class="divider"></div>
                                     <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="survey" action="workflowsSurveysConsortia" message="menu.my.surveys" />
+                                </g:if>
 
+                                <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
                                     <div class="divider"></div>
                                     <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" specRole="ROLE_ADMIN" action="manageMembers" message="menu.my.insts" />
                                     <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" specRole="ROLE_ADMIN" action="manageConsortiaSubscriptions" message="menu.my.consortiaSubscriptions" />
@@ -150,7 +152,7 @@
 
                                 <div class="divider"></div>
                                 <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_ADM" controller="myInstitution" action="users" message="menu.institutions.users" />
-                                <ui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="reporting" message="menu.institutions.reporting" />
+                                <ui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM_PRO" affiliation="INST_USER" controller="myInstitution" action="reporting" message="menu.institutions.reporting" />
                             </div>
                         </div>
                     </g:if>

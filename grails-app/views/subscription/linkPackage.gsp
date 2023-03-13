@@ -204,7 +204,7 @@
             <input type="text" id="pkgName" name="pkgName" value="" readonly/>
         </div>
         <div class="ui divided grid">
-            <g:set var="colCount" value="${institution.getCustomerType() == 'ORG_CONSORTIUM' ? 'eight' : 'sixteen'}"/>
+            <g:set var="colCount" value="${institution.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO'] ? 'eight' : 'sixteen'}"/>
             <div class="${colCount} wide column">
                 <div class="grouped required fields">
                     <label for="With">${message(code: 'subscription.details.linkPackage.label')}</label>
@@ -283,7 +283,7 @@
                     <g:checkBox class="ui checkbox" name="freezeHolding" checked="${false}"/>
                 </div>
             </div>
-            <g:if test="${institution.getCustomerType() == 'ORG_CONSORTIUM'}">
+            <g:if test="${institution.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO']}">
                 <div class="${colCount} wide column">
                     <div class="grouped fields">
                         <label for="WithForChildren">${message(code: 'subscription.details.linkPackage.children.label')}</label>

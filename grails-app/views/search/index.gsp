@@ -115,7 +115,7 @@
         </div>
 
         <div class="field">
-            <g:if test="${contextOrg.getCustomerType()  == 'ORG_CONSORTIUM'}">
+            <g:if test="${contextOrg.getCustomerType()  in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO']}">
                 <div class="ui checkbox">
                     <input type="checkbox" name="showMembersObjects" tabindex="0" ${params.showMembersObjects ? 'checked' : ''}>
                     <label><g:message code="search.advancedSearch.showMembersObjects"/></label>
@@ -500,12 +500,12 @@
                                     <br />
                                     <strong>${message(code: 'subscription.periodOfValidity.label')}</strong>: ${period}
                                     <br />
-                                    <g:if test="${object.membersCount && contextOrg.getCustomerType()  == 'ORG_CONSORTIUM'}">
+                                    <g:if test="${object.membersCount && contextOrg.getCustomerType()  in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO']}">
                                         <strong>${message(code: 'subscription.details.consortiaMembers.label')}</strong>:
                                         <g:link controller="subscription" action="members"
                                                 id="${object.dbId}">${object.membersCount}</g:link>
                                     </g:if>
-                                    <g:if test="${object.members && contextOrg.getCustomerType()  == 'ORG_CONSORTIUM'}">
+                                    <g:if test="${object.members && contextOrg.getCustomerType()  in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO']}">
                                         <strong>${message(code: 'subscription.details.consortiaMembers.label')}</strong>:
                                         <article class="la-readmore">
                                         <g:each in="${object.members}" var="member">
@@ -515,7 +515,7 @@
                                         </article>
                                     </g:if>
                                     <br />
-                                    <g:if test="${RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.value in object.type?.value && !(contextOrg.getCustomerType()  == 'ORG_CONSORTIUM')}">
+                                    <g:if test="${RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.value in object.type?.value && !(contextOrg.getCustomerType()  in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO'])}">
                                     <strong>${message(code: 'facet.so.consortiaName')}</strong>: ${object.consortiaName}
                                     </g:if>
 
@@ -572,12 +572,12 @@
                                     <br />
                                     <strong>${message(code: 'subscription.periodOfValidity.label')}</strong>: ${period}
                                     <br />
-                                    <g:if test="${object.membersCount && contextOrg.getCustomerType()  == 'ORG_CONSORTIUM'}">
+                                    <g:if test="${object.membersCount && contextOrg.getCustomerType()  in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO']}">
                                         <strong>${message(code: 'subscription.details.consortiaMembers.label')}</strong>:
                                         <g:link controller="license" action="members"
                                                 id="${object.dbId}">${object.membersCount}</g:link>
                                     </g:if>
-                                    <g:if test="${object.members && contextOrg.getCustomerType()  == 'ORG_CONSORTIUM'}">
+                                    <g:if test="${object.members && contextOrg.getCustomerType()  in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO']}">
                                         <strong>${message(code: 'subscription.details.consortiaMembers.label')}</strong>:
                                         <g:link controller="subscription" action="members" id="${object.dbId}"> ${object.members.size()}</g:link>
                                         <article class="la-readmore">
@@ -587,7 +587,7 @@
                                         </article>
                                     </g:if>
                                     <br />
-                                    <g:if test="${!(contextOrg.getCustomerType()  == 'ORG_CONSORTIUM')}">
+                                    <g:if test="${!(contextOrg.getCustomerType()  in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO'])}">
                                         <strong>${message(code: 'facet.so.consortiaName')}</strong>: ${object.consortiaName}
                                     </g:if>
                                 </td>
@@ -628,7 +628,7 @@
                                     <br />
                                     <strong>${message(code: 'renewalEvaluation.period')}</strong>: ${period}
                                     <br />
-                                    <g:if test="${contextOrg.getCustomerType()  == 'ORG_CONSORTIUM'}">
+                                    <g:if test="${contextOrg.getCustomerType()  in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO']}">
                                         <strong>${message(code: 'surveyParticipants.label')}</strong>: ${object.membersCount}
                                     </g:if>
                                 </td>

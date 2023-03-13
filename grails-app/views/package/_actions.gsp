@@ -81,7 +81,7 @@
                             data-content="${message(code: "subscription.packages.notification.label")}">
                             <i class="ui large icon bullhorn"></i>
                         </th>
-                        <g:if test="${contextCustomerType == 'ORG_CONSORTIUM'}">
+                        <g:if test="${contextCustomerType in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO']}">
                             <th class="control-label la-popup-tooltip la-delay"
                                 data-content="${message(code: 'subscription.packages.auditable')}">
                                 <i class="ui large icon thumbtack"></i>
@@ -119,7 +119,7 @@
                                     ${RDStore.YN_NO.getI10n("value")}
                                 </g:else>
                             </td>
-                            <g:if test="${contextCustomerType == 'ORG_CONSORTIUM'}">
+                            <g:if test="${contextCustomerType in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO']}">
                                 <td>
                                     <g:if test="${!(settingKey in excludes)}">
                                         <g:if test="${true}">

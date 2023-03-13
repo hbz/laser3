@@ -11,7 +11,7 @@
     <g:if test="${inContextOrg}">
         <ui:subNavItem controller="organisation" action="myPublicContacts" params="${[id: institution.id]}" message="menu.institutions.publicContactsHyphen" />
     </g:if>
-    <g:elseif test="${(contextCustomerType == 'ORG_CONSORTIUM' && !isProviderOrAgency)}">
+    <g:elseif test="${(contextCustomerType in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO'] && !isProviderOrAgency)}">
         <ui:subNavItem controller="organisation" action="myPublicContacts" params="${breadcrumbParams}" message="menu.institutions.publicContactsHyphen" />
     </g:elseif>
     <g:else>
@@ -36,7 +36,7 @@
     <ui:securedSubNavItem controller="organisation" action="tasks" params="${breadcrumbParams}" counts="${tasksCount}" affiliation="INST_USER" orgPerm="ORG_INST,ORG_CONSORTIUM" message="menu.institutions.tasks"/>
     <ui:securedSubNavItem controller="organisation" action="documents" params="${breadcrumbParams}" affiliation="INST_USER" orgPerm="ORG_INST,ORG_CONSORTIUM" message="menu.my.documents" />
     <ui:subNavItem controller="organisation" action="notes" params="${breadcrumbParams}" counts="${notesCount}" message="default.notes.label"/>
-    <g:if test="${!inContextOrg && contextCustomerType in ['ORG_INST','ORG_CONSORTIUM']}">
+    <g:if test="${!inContextOrg && contextCustomerType in ['ORG_INST','ORG_CONSORTIUM','ORG_CONSORTIUM_PRO']}">
         <ui:subNavItem controller="organisation" action="addressbook" params="${breadcrumbParams}" message="menu.institutions.myAddressbook"/>
     </g:if>
     <g:if test="${!isProviderOrAgency}">
