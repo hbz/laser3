@@ -32,9 +32,8 @@
                 </g:if>
             </g:if>
 
-            <div class="divider"></div>
-
             <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
+                <div class="divider"></div>
                 <ui:actionsDropdownItem message="workflow.instantiate" data-ui="modal" href="#modalCreateWorkflow" />
             </g:if>
 

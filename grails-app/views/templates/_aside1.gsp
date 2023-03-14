@@ -1,4 +1,6 @@
 <%@page import="de.laser.interfaces.CalculatedType; de.laser.*" %>
+<laser:serviceInjection />
+
 <%
     boolean parentAtChild = false
 
@@ -29,6 +31,8 @@
     <laser:render template="/templates/notes/card" model="${[ownobj:ownobj, owntp:owntp, css_class:'', parentAtChild: parentAtChild]}" />
 </div>
 
-<div id="container-workflows">
-    <laser:render template="/templates/workflow/card" model="${[checklists: checklists, parentAtChild: parentAtChild]}" />
-</div>
+<g:if test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
+    <div id="container-workflows">
+        <laser:render template="/templates/workflow/card" model="${[checklists: checklists, parentAtChild: parentAtChild]}" />
+    </div>
+</g:if>

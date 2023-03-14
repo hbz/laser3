@@ -2620,8 +2620,8 @@ class MyInstitutionController  {
         }
     }
 
-    @DebugInfo(perm="ORG_CONSORTIUM_PRO", affil="INST_USER", ctrlService = DebugInfo.IN_BETWEEN)
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM_PRO", "INST_USER") })
+    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM_PRO", affil="INST_USER", ctrlService = DebugInfo.IN_BETWEEN)
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM_PRO", "INST_USER") })
     def currentWorkflows() {
 
         SessionCacheWrapper cache = contextService.getSessionCache()

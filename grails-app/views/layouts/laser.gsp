@@ -112,13 +112,10 @@
                                     <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentSurveys" message="menu.my.surveys" />
                                 </g:if>
 
+                                <div class="divider"></div>
+                                <ui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM_PRO" affiliation="INST_USER" controller="myInstitution" action="currentWorkflows" message="menu.my.workflows" />
+
                                 <g:if test="${accessService.checkPerm('ORG_CONSORTIUM_PRO')}">
-
-                                    <g:if test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
-                                        <div class="divider"></div>
-                                        <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentWorkflows" message="menu.my.workflows" />
-                                    </g:if>
-
                                     <div class="divider"></div>
                                     <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="survey" action="workflowsSurveysConsortia" message="menu.my.surveys" />
                                 </g:if>

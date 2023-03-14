@@ -18,10 +18,9 @@
                 <ui:actionsDropdownItem data-ui="modal" href="#modalCreateDocument" message="template.documents.add"/>
                 <ui:actionsDropdownItem data-ui="modal" href="#modalCreateNote" message="template.notes.add"/>
 
-                <div class="divider"></div>
-
                 <g:if test="${inContextOrg || isProviderOrAgency}">
                     <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
+                        <div class="divider"></div>
                         <ui:actionsDropdownItem message="workflow.instantiate" data-ui="modal" href="#modalCreateWorkflow" />
                     </g:if>
                 </g:if>
