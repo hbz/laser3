@@ -107,7 +107,7 @@
                         <g:form controller="subscription" action="setupPendingChangeConfiguration" params="[id:sp.subscription.id,pkg:sp.pkg.id]">
                             <table class="ui table stackable la-noSticky">
                                 <thead>
-                                <g:if test="${contextCustomerType in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO']}">
+                                <g:if test="${contextCustomerType in ['ORG_CONSORTIUM_BASIC', 'ORG_CONSORTIUM_PRO']}">
                                     <tr>
                                         <th></th>
                                         <th></th>
@@ -127,7 +127,7 @@
                                             <i class="ui large icon bullhorn"></i>
                                         </span>
                                     </th>
-                                    <g:if test="${contextCustomerType in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO']}">
+                                    <g:if test="${contextCustomerType in ['ORG_CONSORTIUM_BASIC', 'ORG_CONSORTIUM_PRO']}">
                                         <th class="control-label la-border-left" >
                                             <span class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.packages.auditable')}">
                                                 <i class="ui large icon thumbtack"></i>
@@ -172,7 +172,7 @@
                                                 ${(pcc && pcc.withNotification) ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")}
                                             </g:else>
                                         </td>
-                                        <g:if test="${contextCustomerType in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO']}">
+                                        <g:if test="${contextCustomerType in ['ORG_CONSORTIUM_BASIC', 'ORG_CONSORTIUM_PRO']}">
                                             <td class="la-border-left">
                                                 <g:if test="${!(settingKey in excludes)}">
                                                     <g:if test="${editmode}">
@@ -209,7 +209,7 @@
                                         </g:else>
                                     </td>
                                     <td></td>
-                                    <g:if test="${contextCustomerType in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO']}">
+                                    <g:if test="${contextCustomerType in ['ORG_CONSORTIUM_BASIC', 'ORG_CONSORTIUM_PRO']}">
                                         <td class="la-border-left">
                                             <g:if test="${editmode}">
                                                 <g:checkBox class="ui checkbox" name="freezeHoldingAudit" checked="${auditService.getAuditConfig(subscription, SubscriptionPackage.FREEZE_HOLDING)}"/>

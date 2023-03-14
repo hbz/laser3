@@ -18,7 +18,7 @@ class LicenseExport extends BaseDetailsExport {
 
     static String KEY = BaseConfig.KEY_LICENSE
 
-    static Map<String, Object> CONFIG_ORG_CONSORTIUM = [
+    static Map<String, Object> CONFIG_ORG_CONSORTIUM_BASIC = [
 
             base : [
                     meta : [

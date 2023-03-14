@@ -13,7 +13,7 @@
         </ui:exportDropdown>
 
         <%
-            editable = (editable && accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')) || contextService.getUser()?.hasRole('ROLE_ADMIN') || accessService.checkConstraint_ORG_COM_EDITOR()
+            editable = (editable && accessService.checkPerm('ORG_INST,ORG_CONSORTIUM_BASIC')) || contextService.getUser()?.hasRole('ROLE_ADMIN') || accessService.checkConstraint_ORG_COM_EDITOR()
         %>
         <g:if test="${editable}">
             <laser:render template="actions" />

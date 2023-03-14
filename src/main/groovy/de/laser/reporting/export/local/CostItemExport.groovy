@@ -16,7 +16,7 @@ class CostItemExport extends BaseDetailsExport {
 
     static String KEY = 'cost'
 
-    static Map<String, Object> CONFIG_ORG_CONSORTIUM = [
+    static Map<String, Object> CONFIG_ORG_CONSORTIUM_BASIC = [
 
             base : [
                     meta : [

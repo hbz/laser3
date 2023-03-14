@@ -9,7 +9,7 @@
     <g:if test="${inContextOrg}">
         <ui:subNavItem controller="organisation" action="myPublicContacts" params="${[id: institution.id]}" message="menu.institutions.publicContactsHyphen" />
     </g:if>
-    <g:elseif test="${(contextCustomerType in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO'] && !isProviderOrAgency)}">
+    <g:elseif test="${(contextCustomerType in ['ORG_CONSORTIUM_BASIC', 'ORG_CONSORTIUM_PRO'] && !isProviderOrAgency)}">
         <ui:subNavItem controller="organisation" action="myPublicContacts" params="${breadcrumbParams}" message="menu.institutions.publicContactsHyphen" />
     </g:elseif>
     <g:else>
@@ -31,10 +31,10 @@
         <ui:subNavItem controller="organisation" action="workflows" counts="${checklistCount}" params="${breadcrumbParams}" message="workflow.plural" />
     </g:if>
 
-    <ui:securedSubNavItem controller="organisation" action="tasks" params="${breadcrumbParams}" counts="${tasksCount}" affiliation="INST_USER" orgPerm="ORG_INST,ORG_CONSORTIUM" message="menu.institutions.tasks"/>
-    <ui:securedSubNavItem controller="organisation" action="documents" params="${breadcrumbParams}" affiliation="INST_USER" orgPerm="ORG_INST,ORG_CONSORTIUM" message="menu.my.documents" />
+    <ui:securedSubNavItem controller="organisation" action="tasks" params="${breadcrumbParams}" counts="${tasksCount}" affiliation="INST_USER" orgPerm="ORG_INST,ORG_CONSORTIUM_BASIC" message="menu.institutions.tasks"/>
+    <ui:securedSubNavItem controller="organisation" action="documents" params="${breadcrumbParams}" affiliation="INST_USER" orgPerm="ORG_INST,ORG_CONSORTIUM_BASIC" message="menu.my.documents" />
     <ui:subNavItem controller="organisation" action="notes" params="${breadcrumbParams}" counts="${notesCount}" message="default.notes.label"/>
-    <g:if test="${!inContextOrg && contextCustomerType in ['ORG_INST','ORG_CONSORTIUM','ORG_CONSORTIUM_PRO']}">
+    <g:if test="${!inContextOrg && contextCustomerType in ['ORG_INST','ORG_CONSORTIUM_BASIC','ORG_CONSORTIUM_PRO']}">
         <ui:subNavItem controller="organisation" action="addressbook" params="${breadcrumbParams}" message="menu.institutions.myAddressbook"/>
     </g:if>
     <g:if test="${!isProviderOrAgency}">
@@ -44,7 +44,7 @@
         <%-- deactivated as of ERMS-2934
         <g:elseif test="${ accessService.checkForeignOrgComboPermAffiliation([
                 org: orgInstance,
-                comboPerm: "ORG_CONSORTIUM",
+                comboPerm: "ORG_CONSORTIUM_BASIC",
                 comboAffiliation: "INST_ADM"
         ]) && !instAdmService.hasInstAdmin(orgInstance) }">
             <ui:subNavItem controller="organisation" action="users" params="${[id: orgInstance.id]}" message="org.nav.users"/>
@@ -61,7 +61,7 @@
         </g:if>
         <g:elseif test="${accessService.checkForeignOrgComboPermAffiliationX([
                     org: orgInstance,
-                    comboPerm: "ORG_CONSORTIUM",
+                    comboPerm: "ORG_CONSORTIUM_BASIC",
                     comboAffiliation: "INST_ADM",
                     specRoles: "ROLE_ADMIN"
         ])}">

@@ -312,17 +312,17 @@ class BootStrapService {
             }
         }
 
-        Role fakeRole                = updateRole('FAKE',                   'fake', [en: 'Fake', de: 'Fake'])
+        Role fakeRole                = updateRole('FAKE',                  'fake', [en: 'Fake', de: 'Fake'])
         Role orgMemberRole           = updateRole('ORG_MEMBER_BASIC',       'org', [en: 'Institution consortium member', de: 'Konsorte'])
         Role orgInstRole             = updateRole('ORG_INST',               'org', [en: 'Institution basic', de: 'Vollnutzer'])
-        Role orgConsortiumRole       = updateRole('ORG_CONSORTIUM',         'org', [en: 'Consortium basic', de: 'Konsortium Basic'])
+        Role orgConsortiumRole       = updateRole('ORG_CONSORTIUM_BASIC',   'org', [en: 'Consortium basic', de: 'Konsortium Basic'])
         Role orgConsortiumProRole    = updateRole('ORG_CONSORTIUM_PRO',     'org', [en: 'Consortium pro', de: 'Konsortium Pro'])
 
         updateOrgRolePerms(fakeRole,                    ['FAKE'])
         updateOrgRolePerms(orgMemberRole,               ['ORG_MEMBER_BASIC'])
         updateOrgRolePerms(orgInstRole,                 ['ORG_INST', 'ORG_MEMBER_BASIC'])
-        updateOrgRolePerms(orgConsortiumRole,           ['ORG_CONSORTIUM'])
-        updateOrgRolePerms(orgConsortiumProRole,        ['ORG_CONSORTIUM_PRO', 'ORG_CONSORTIUM'])
+        updateOrgRolePerms(orgConsortiumRole,           ['ORG_CONSORTIUM_BASIC'])
+        updateOrgRolePerms(orgConsortiumProRole,        ['ORG_CONSORTIUM_PRO', 'ORG_CONSORTIUM_BASIC'])
     }
 
     void setupSystemSettings() {

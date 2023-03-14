@@ -294,7 +294,7 @@ class PropertyService {
         if(obj instanceof Subscription) {
             Subscription s = (Subscription) obj
             objMap.name = s.dropdownNamingConvention(contextOrg)
-            if(contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO']) {
+            if(contextOrg.getCustomerType() in ['ORG_CONSORTIUM_BASIC', 'ORG_CONSORTIUM_PRO']) {
                 objMap.manageChildren = "membersSubscriptionsManagement"
                 objMap.manageChildrenParams = [id:s.id,propertiesFilterPropDef:genericOIDService.getOID(propDef), tab: 'properties']
             }
@@ -603,7 +603,7 @@ class PropertyService {
              parameterMap.status = RefdataValue.get(params.objStatus)
          String subFilterClause = '', licFilterClause = '', spOwnerFilterClause = '', lpOwnerFilterClause = '', orgFilterClause = ''
 
-         if(accessService.checkPerm('ORG_CONSORTIUM')) {
+         if(accessService.checkPerm('ORG_CONSORTIUM_BASIC')) {
              subFilterClause += 'and oo.sub.instanceOf = null'
              spOwnerFilterClause += 'and sp.owner.instanceOf = null'
              licFilterClause += 'and oo.lic.instanceOf = null'
@@ -653,7 +653,7 @@ class PropertyService {
                      orgFilterMap.myProvidersIds = myProvidersIds
                  }
 
-                 if (accessService.checkPerm('ORG_CONSORTIUM')) {
+                 if (accessService.checkPerm('ORG_CONSORTIUM_BASIC')) {
 
                      if (params.myInsts) {
                          List<Long> myInstsIds = Org.executeQuery("select o.id from Org as o, Combo as c where c.fromOrg = o and c.toOrg = :context and c.type.id = :comboType " +

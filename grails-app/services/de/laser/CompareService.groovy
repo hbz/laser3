@@ -138,7 +138,7 @@ class CompareService {
             )"""
             qry_params = [roleType1: RDStore.OR_LICENSEE, roleType2: RDStore.OR_LICENSEE_CONS, lic_org: result.institution]
 
-        } else if (accessService.checkPerm("ORG_CONSORTIUM")) {
+        } else if (accessService.checkPerm("ORG_CONSORTIUM_BASIC")) {
             base_qry = """from License as l where (
                     exists ( select o from l.orgRelations as o where ( 
                     ( o.roleType = :roleTypeC 
@@ -190,7 +190,7 @@ class CompareService {
         String base_qry
         Map qry_params = [:]
 
-        if (accessService.checkPerm(result.institution, 'ORG_CONSORTIUM')) {
+        if (accessService.checkPerm(result.institution, 'ORG_CONSORTIUM_BASIC')) {
             base_qry = " from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
                     " AND s.instanceOf is null "
             qry_params << ['roleType': RDStore.OR_SUBSCRIPTION_CONSORTIA, 'activeInst': result.institution]

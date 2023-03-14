@@ -19,9 +19,9 @@ class CompareController  {
     /**
      * Compares licenses against each other
      */
-    @DebugInfo(perm = "ORG_INST,ORG_CONSORTIUM", affil = "INST_USER")
+    @DebugInfo(perm = "ORG_INST,ORG_CONSORTIUM_BASIC", affil = "INST_USER")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM_BASIC", "INST_USER")
     })
     def compareLicenses() {
         Map<String, Object> result = [:]
@@ -48,9 +48,9 @@ class CompareController  {
     /**
      * Compares subscriptions against each other
      */
-    @DebugInfo(perm = "ORG_INST,ORG_CONSORTIUM", affil = "INST_USER")
+    @DebugInfo(perm = "ORG_INST,ORG_CONSORTIUM_BASIC", affil = "INST_USER")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM_BASIC", "INST_USER")
     })
     def compareSubscriptions() {
         Map<String, Object> result = [:]
@@ -85,9 +85,9 @@ class CompareController  {
      * As the list of titles per subscription may get very long, this is an AJAX-called method to load the next batch of entitlements
      * @return the issue entitlement table, starting with the entities from the given offset
      */
-    @DebugInfo(perm = "ORG_INST,ORG_CONSORTIUM", affil = "INST_USER")
+    @DebugInfo(perm = "ORG_INST,ORG_CONSORTIUM_BASIC", affil = "INST_USER")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
+        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM_BASIC", "INST_USER")
     })
     def loadNextBatch() {
         Map<String, Object> result = [:]

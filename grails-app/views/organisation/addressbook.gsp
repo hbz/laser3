@@ -11,7 +11,7 @@
 <ui:controlButtons>
     <ui:actionsDropdown>
     <g:if test="${editable}">
-        <g:if test="${(institution.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO']) && !isProviderOrAgency}">
+        <g:if test="${(institution.getCustomerType() in ['ORG_CONSORTIUM_BASIC', 'ORG_CONSORTIUM_PRO']) && !isProviderOrAgency}">
             <a href="#createPersonModal" class="item" data-ui="modal"
                onclick="JSPC.app.personCreate('contactPersonForInstitution', ${orgInstance.id});"><g:message
                     code="person.create_new.contactPersonForInstitution.label"/></a>

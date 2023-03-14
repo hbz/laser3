@@ -332,7 +332,7 @@ class TaskService {
         Set validOrgs = [], validOrgsDropdown = []
         if (contextOrg) {
             boolean isInstitution = (contextOrg.getCustomerType() in ['ORG_MEMBER_BASIC','ORG_INST'])
-            boolean isConsortium  = (contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO'])
+            boolean isConsortium  = (contextOrg.getCustomerType() in ['ORG_CONSORTIUM_BASIC', 'ORG_CONSORTIUM_PRO'])
 
             GrailsParameterMap params = new GrailsParameterMap(WebUtils.retrieveGrailsWebRequest().getCurrentRequest())
             params.sort      = isInstitution ? " LOWER(o.name), LOWER(o.shortname)" : " LOWER(o.sortname), LOWER(o.name)"
@@ -369,7 +369,7 @@ class TaskService {
         List validSubscriptionsWithInstanceOf = []
         List validSubscriptionsWithoutInstanceOf = []
         List<Map> validSubscriptionsDropdown = []
-        boolean isConsortium = contextOrg.getCustomerType()  in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO']
+        boolean isConsortium = contextOrg.getCustomerType()  in ['ORG_CONSORTIUM_BASIC', 'ORG_CONSORTIUM_PRO']
 
         if (contextOrg) {
             if (isConsortium) {
@@ -466,7 +466,7 @@ class TaskService {
             String licensesQueryOhneInstanceOf =
                     'SELECT lic.id, lic.reference, o.roleType, lic.startDate, lic.endDate from License lic left join lic.orgRelations o WHERE  o.org = :lic_org AND o.roleType.id IN (:org_roles) and lic.instanceOf is null order by lic.sortableReference asc'
 
-            if(accessService.checkPerm("ORG_CONSORTIUM")){
+            if(accessService.checkPerm("ORG_CONSORTIUM_BASIC")){
                 Map<String, Object> qry_params_for_lic = [
                     lic_org:    contextOrg,
                     org_roles:  [

@@ -927,7 +927,7 @@ class AdminController  {
         result.orgListTotal = result.orgList.size()
 
         result.allConsortia = Org.executeQuery(
-                "select o from OrgSetting os join os.org o where os.key = 'CUSTOMER_TYPE' and (os.roleValue.authority  = 'ORG_CONSORTIUM' or os.roleValue.authority  = 'ORG_CONSORTIUM_PRO') order by o.sortname, o.name"
+                "select o from OrgSetting os join os.org o where os.key = 'CUSTOMER_TYPE' and (os.roleValue.authority  = 'ORG_CONSORTIUM_BASIC' or os.roleValue.authority  = 'ORG_CONSORTIUM_PRO') order by o.sortname, o.name"
         )
         result
     }

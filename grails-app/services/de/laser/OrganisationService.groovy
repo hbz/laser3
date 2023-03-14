@@ -225,7 +225,7 @@ class OrganisationService {
         String currentServer = AppUtils.getCurrentServer()
         Map<String,Role> customerTypes = [konsorte:Role.findByAuthority('ORG_MEMBER_BASIC'),
                                           vollnutzer:Role.findByAuthority('ORG_INST'),
-                                          konsortium:Role.findByAuthority('ORG_CONSORTIUM')]
+                                          konsortium:Role.findByAuthority('ORG_CONSORTIUM_BASIC')]
         RefdataValue institution = RefdataValue.getByValueAndCategory('Institution', RDConstants.ORG_TYPE)
         RefdataValue consortium = RefdataValue.getByValueAndCategory('Consortium', RDConstants.ORG_TYPE)
         //create home org

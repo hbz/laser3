@@ -113,7 +113,7 @@
                                                    value="Y" ${isNotificationForSurveysParticipationFinish ? 'checked' : ''}/>
                                         </div>
                                     </td>
-                                    <td>${contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO'] ? message(code: 'profile.notification.for.SurveysParticipationFinish') : message(code: 'profile.notification.for.SurveysParticipationFinish2')}</td>
+                                    <td>${contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM_BASIC', 'ORG_CONSORTIUM_PRO'] ? message(code: 'profile.notification.for.SurveysParticipationFinish') : message(code: 'profile.notification.for.SurveysParticipationFinish2')}</td>
                                 </tr>
 
                                 <tr>

@@ -39,9 +39,9 @@ class AccessPointController  {
      * Adds a new IP range with the given parameters. The distinction between v4 and v6 just as the validation is done in the service
      * @see AccessPointControllerService#addIpRange(grails.web.servlet.mvc.GrailsParameterMap)
      */
-    @DebugInfo(perm="ORG_MEMBER_BASIC,ORG_CONSORTIUM", affil="INST_EDITOR", ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(perm="ORG_MEMBER_BASIC,ORG_CONSORTIUM_BASIC", affil="INST_EDITOR", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_MEMBER_BASIC,ORG_CONSORTIUM", "INST_EDITOR")
+        ctx.accessService.checkPermAffiliation("ORG_MEMBER_BASIC,ORG_CONSORTIUM_BASIC", "INST_EDITOR")
     })
     def addIpRange() {
         Map<String,Object> ctrlResult = accessPointControllerService.addIpRange(params)
@@ -59,9 +59,9 @@ class AccessPointController  {
      * Adds a new Mail Domain with the given parameters.
      * @see AccessPointControllerService#addMailDomain(grails.web.servlet.mvc.GrailsParameterMap)
      */
-    @DebugInfo(perm="ORG_MEMBER_BASIC,ORG_CONSORTIUM", affil="INST_EDITOR", ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(perm="ORG_MEMBER_BASIC,ORG_CONSORTIUM_BASIC", affil="INST_EDITOR", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_MEMBER_BASIC,ORG_CONSORTIUM", "INST_EDITOR")
+        ctx.accessService.checkPermAffiliation("ORG_MEMBER_BASIC,ORG_CONSORTIUM_BASIC", "INST_EDITOR")
     })
     def addMailDomain() {
         Map<String,Object> ctrlResult = accessPointControllerService.addMailDomain(params)
@@ -132,14 +132,14 @@ class AccessPointController  {
      * @return the access point creation view which in turn outputs the fragment with the fields which need to be filled out
      * @see OrgAccessPoint
      */
-    @DebugInfo(perm="ORG_MEMBER_BASIC,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugInfo(perm="ORG_MEMBER_BASIC,ORG_CONSORTIUM_BASIC", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_MEMBER_BASIC,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_MEMBER_BASIC,ORG_CONSORTIUM_BASIC", "INST_EDITOR", "ROLE_ADMIN")
     })
     def create() {
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
-        Org organisation = accessService.checkPerm("ORG_CONSORTIUM") ? Org.get(params.id) : contextService.getOrg()
+        Org organisation = accessService.checkPerm("ORG_CONSORTIUM_BASIC") ? Org.get(params.id) : contextService.getOrg()
         result.institution = contextService.getOrg()
         result.contextCustomerType = result.institution.getCustomerType()
         result.orgInstance = organisation
@@ -159,9 +159,9 @@ class AccessPointController  {
      * Takes the given input parameters and builds a new access point for the institution
      * @return the edit view in case of success, the creation form page otherwise
      */
-    @DebugInfo(perm="ORG_MEMBER_BASIC,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(perm="ORG_MEMBER_BASIC,ORG_CONSORTIUM_BASIC", affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_MEMBER_BASIC,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_MEMBER_BASIC,ORG_CONSORTIUM_BASIC", "INST_EDITOR", "ROLE_ADMIN")
     })
     def processCreate() {
         RefdataValue accessMethod = (RefdataValue) genericOIDService.resolveOID(params.accessMethod)
@@ -181,9 +181,9 @@ class AccessPointController  {
      * Handles the deletion call of the given access point to the service
      * @return the list of institution's access points in case of success
      */
-    @DebugInfo(perm="ORG_MEMBER_BASIC,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(perm="ORG_MEMBER_BASIC,ORG_CONSORTIUM_BASIC", affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_MEMBER_BASIC,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_MEMBER_BASIC,ORG_CONSORTIUM_BASIC", "INST_EDITOR", "ROLE_ADMIN")
     })
     def delete() {
         Map<String,Object> ctrlResult = accessPointControllerService.delete(params)
@@ -352,7 +352,7 @@ class AccessPointController  {
                     linkedPlatforms                   : linkedPlatforms,
                     linkedPlatformSubscriptionPackages: linkedPlatformSubscriptionPackages,
                     ip                                : params.ip,
-                    editable                          : ((accessService.checkPermAffiliation('ORG_MEMBER_BASIC', 'INST_EDITOR') && inContextOrg) || (accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR'))),
+                    editable                          : ((accessService.checkPermAffiliation('ORG_MEMBER_BASIC', 'INST_EDITOR') && inContextOrg) || (accessService.checkPermAffiliation('ORG_CONSORTIUM_BASIC', 'INST_EDITOR'))),
                     autofocus                         : autofocus,
                     orgInstance                       : orgAccessPoint.org,
                     inContextOrg                      : inContextOrg,
@@ -367,15 +367,15 @@ class AccessPointController  {
     /**
      * Handles the deletion call for the given IP range to the service
      */
-    @DebugInfo(perm="ORG_MEMBER_BASIC,ORG_CONSORTIUM", affil="INST_EDITOR", ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(perm="ORG_MEMBER_BASIC,ORG_CONSORTIUM_BASIC", affil="INST_EDITOR", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_MEMBER_BASIC,ORG_CONSORTIUM", "INST_EDITOR")
+        ctx.accessService.checkPermAffiliation("ORG_MEMBER_BASIC,ORG_CONSORTIUM_BASIC", "INST_EDITOR")
     })
     def deleteAccessPointData() {
-        Org organisation = accessService.checkPerm("ORG_CONSORTIUM") ? Org.get(params.id) : contextService.getOrg()
+        Org organisation = accessService.checkPerm("ORG_CONSORTIUM_BASIC") ? Org.get(params.id) : contextService.getOrg()
         boolean inContextOrg = organisation.id == contextService.getOrg().id
 
-        if(((accessService.checkPermAffiliation('ORG_MEMBER_BASIC', 'INST_EDITOR') && inContextOrg) || (accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')))){
+        if(((accessService.checkPermAffiliation('ORG_MEMBER_BASIC', 'INST_EDITOR') && inContextOrg) || (accessService.checkPermAffiliation('ORG_CONSORTIUM_BASIC', 'INST_EDITOR')))){
             accessPointService.deleteAccessPointData(AccessPointData.get(params.id))
         }else {
             flash.error = message(code: 'default.noPermissions') as String
@@ -387,9 +387,9 @@ class AccessPointController  {
     /**
      * Controller call to link an access point to a given platform
      */
-    @DebugInfo(perm="ORG_MEMBER_BASIC,ORG_CONSORTIUM", affil="INST_EDITOR", ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(perm="ORG_MEMBER_BASIC,ORG_CONSORTIUM_BASIC", affil="INST_EDITOR", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_MEMBER_BASIC,ORG_CONSORTIUM", "INST_EDITOR")
+        ctx.accessService.checkPermAffiliation("ORG_MEMBER_BASIC,ORG_CONSORTIUM_BASIC", "INST_EDITOR")
     })
     def linkPlatform() {
         Map<String,Object> result = accessPointService.linkPlatform(params)
@@ -401,9 +401,9 @@ class AccessPointController  {
     /**
      * Controller call to unlink an access point from a given platform
      */
-    @DebugInfo(perm="ORG_MEMBER_BASIC,ORG_CONSORTIUM", affil="INST_EDITOR", ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(perm="ORG_MEMBER_BASIC,ORG_CONSORTIUM_BASIC", affil="INST_EDITOR", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_MEMBER_BASIC,ORG_CONSORTIUM", "INST_EDITOR")
+        ctx.accessService.checkPermAffiliation("ORG_MEMBER_BASIC,ORG_CONSORTIUM_BASIC", "INST_EDITOR")
     })
     def unlinkPlatform() {
         Map<String,Object> result = accessPointService.unlinkPlatform(OrgAccessPointLink.get(params.id))

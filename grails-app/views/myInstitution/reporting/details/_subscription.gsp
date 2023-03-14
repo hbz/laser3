@@ -13,7 +13,7 @@
                 <th>${message(code:'subscription.details.consortiaMembers.label')}</th>
             </g:if>
             <g:else>
-                <g:if test="${contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO']}">
+                <g:if test="${contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM_BASIC', 'ORG_CONSORTIUM_PRO']}">
                     <th>${message(code:'subscription.details.consortiaMembers.label')}</th>
                 </g:if>
                 <g:elseif test="${contextService.getOrg().getCustomerType() == 'ORG_INST'}">
@@ -55,7 +55,7 @@
                         </td>
                     </g:if>
                     <g:else>
-                        <g:if test="${contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO']}">
+                        <g:if test="${contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM_BASIC', 'ORG_CONSORTIUM_PRO']}">
                             <td>
                                 <%
                                     println Subscription.executeQuery('select count(s) from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscriberRoleTypes',

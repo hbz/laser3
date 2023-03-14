@@ -71,7 +71,7 @@
                 <g:sortableColumn property="ci.startDate" title="${message(code:'financials.dateFrom')}" params="${sorting}"/>
                 <g:sortableColumn property="ci.costItemElement" title="${message(code:'financials.costItemElement')}" params="${sorting}"/>
                 <%-- editable must be checked here as well because of the consortia preview! --%>
-                <g:if test="${editable && accessService.checkPermAffiliation("ORG_CONSORTIUM,ORG_INST","INST_EDITOR")}">
+                <g:if test="${editable && accessService.checkPermAffiliation("ORG_CONSORTIUM_BASIC,ORG_INST","INST_EDITOR")}">
                     <th class="la-action-info"><g:message code="default.actions.label"/></th>
                 </g:if>
             </g:if>
@@ -89,7 +89,7 @@
                 <g:sortableColumn property="costInLocalCurrency" title="${message(code:'financials.newCosts.value')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance"/>
                 <g:sortableColumn property="startDate" title="${message(code:'financials.dateFrom')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance"/>
                 <g:sortableColumn property="costItemElement" title="${message(code:'financials.costItemElement')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance"/>
-                <g:if test="${accessService.checkPermAffiliation("ORG_CONSORTIUM,ORG_INST","INST_EDITOR") && !params.orgBasicMemberView}">
+                <g:if test="${accessService.checkPermAffiliation("ORG_CONSORTIUM_BASIC,ORG_INST","INST_EDITOR") && !params.orgBasicMemberView}">
                     <th class="la-action-info"><g:message code="default.actions.label"/></th>
                 </g:if>
             </g:else>
@@ -267,7 +267,7 @@
                         ${ci.costItemElement?.getI10n("value")}
                     </td>
                     <g:if test="${!params.orgBasicMemberView}">
-                        <g:if test="${accessService.checkPermAffiliation("ORG_CONSORTIUM","INST_EDITOR")}">
+                        <g:if test="${accessService.checkPermAffiliation("ORG_CONSORTIUM_BASIC","INST_EDITOR")}">
                             <td class="x">
                                 <g:if test="${fixedSubscription}">
                                     <g:link mapping="subfinanceEditCI" params='[sub:"${fixedSubscription.id}", id:"${ci.id}", showView:"cons", offset: params.offset]' class="ui icon button blue la-modern-button trigger-modal" data-id_suffix="edit_${ci.id}"

@@ -27,7 +27,7 @@
             <span class="IS_AUTHENTICATED_FULLY">ORG_INST</span> &rArr;
             <span class="ROLE_USER">ORG_MEMBER_BASIC</span> |
             <span class="ROLE_DATAMANAGER">ORG_CONSORTIUM_PRO</span> &rArr;
-            <span class="ROLE_DATAMANAGER">ORG_CONSORTIUM</span>
+            <span class="ROLE_DATAMANAGER">ORG_CONSORTIUM_BASIC</span>
         </div>
     </div>
 

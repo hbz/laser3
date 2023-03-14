@@ -124,7 +124,7 @@ class ControlledListService {
                 break
         }
         if(params.restrictLevel) {
-            if(org.hasPerm("ORG_CONSORTIUM") && !params.member) {
+            if(org.hasPerm("ORG_CONSORTIUM_BASIC") && !params.member) {
                 queryString += " and s.instanceOf = null "
             }
         }
@@ -383,7 +383,7 @@ class ControlledListService {
         if(params.ctx) {
             Subscription ctx = (Subscription) genericOIDService.resolveOID(params.ctx)
             filter.ctx = ctx
-            if(org.hasPerm("ORG_CONSORTIUM"))
+            if(org.hasPerm("ORG_CONSORTIUM_BASIC"))
                 queryString += " and (s = :ctx or s.instanceOf = :ctx)"
             else
                 queryString += " and s = :ctx"

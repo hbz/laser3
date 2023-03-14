@@ -1,9 +1,9 @@
 <%@ page import="de.laser.utils.AppUtils; de.laser.storage.RDStore" %>
 <laser:serviceInjection/>
 
-<g:if test="${accessService.checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN')}">
+<g:if test="${accessService.checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM_BASIC','INST_EDITOR','ROLE_ADMIN')}">
     <ui:actionsDropdown>
-        <g:if test="${editable || accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM','INST_EDITOR')}">
+        <g:if test="${editable || accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM_BASIC','INST_EDITOR')}">
             <g:if test="${actionName == 'list'}">
                 <ui:actionsDropdownItem controller="organisation" action="create" message="org.create_new.label"/>
             </g:if>
@@ -127,7 +127,7 @@
 </g:elseif>
 <%-- secure against listInstitution, where no orgId is given --%>
 <g:if test="${createModal}">
-    <g:if test="${editable || accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM','INST_EDITOR')}">
+    <g:if test="${editable || accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM_BASIC','INST_EDITOR')}">
         <laser:render template="/templates/tasks/modal_create" model="${[ownobj: orgInstance, owntp: 'org']}"/>
         <laser:render template="/templates/documents/modal" model="${[ownobj: orgInstance, institution: institution, owntp: 'org']}"/>
     </g:if>
