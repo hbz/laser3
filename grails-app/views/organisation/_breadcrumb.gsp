@@ -7,7 +7,7 @@
     </g:if>
     <g:else>
         <g:if test="${isProviderOrAgency}">
-            <g:if test="${params.my}">
+            <g:if test="${orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies(institution).toList().contains(orgInstance.id)}">
                 <ui:crumb message="menu.my.providers" controller="myInstitution" action="currentProviders"/>
             </g:if>
             <g:else>
@@ -15,19 +15,19 @@
             </g:else>
         </g:if>
         <g:else>
-            <g:if test="${institutionalView}">
-                <g:if test="${params.my}">
-                    <ui:crumb message="menu.my.insts" controller="myInstitution" action="manageMembers" params="[comboType:RDStore.COMBO_TYPE_CONSORTIUM]"/>
-                </g:if>
-                <g:else>
-                    <ui:crumb message="menu.public.all_insts" controller="org" action="listInstitution"/> %{-- todo!? --}%
-                </g:else>
-            </g:if>
-            <g:elseif test="${consortialView}">
+            <g:if test="${consortialView}">
                 <ui:crumb message="menu.my.consortia" controller="myInstitution" action="currentConsortia"/>
+            </g:if>
+            <g:elseif test="${institutionalView}">
+                <ui:crumb message="menu.my.insts" controller="myInstitution" action="manageMembers" params="[comboType:RDStore.COMBO_TYPE_CONSORTIUM]"/>
             </g:elseif>
             <g:else>
-                <ui:crumb message="menu.public.all_insts" controller="org" action="listInstitution"/>
+                <g:if test="${orgInstance.getAllOrgTypeIds().contains(RDStore.OT_CONSORTIUM.id)}">
+                    <ui:crumb message="menu.public.all_cons" controller="org" action="listConsortia"/>
+                </g:if>
+                <g:else>
+                    <ui:crumb message="menu.public.all_insts" controller="org" action="listInstitution"/>
+                </g:else>
             </g:else>
         </g:else>
 

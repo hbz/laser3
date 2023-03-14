@@ -177,17 +177,12 @@ class MyInstitutionController  {
      */
     @Secured(['ROLE_USER'])
     def currentPlatforms() {
-
         Map<String, Object> result = [:]
-		Profiler prf = new Profiler()
-		prf.setBenchmark('init')
 
         result.flagContentGokb = true // gokbService.doQuery
         result.user = contextService.getUser()
         result.contextOrg = contextService.getOrg()
         SwissKnife.setPaginationParams(result, params, (User) result.user)
-
-        prf.setBenchmark("before loading subscription ids")
 
         String instanceFilter = ""
         Map<String, Object> subscriptionParams = [contextOrg:result.contextOrg, roleTypes:[RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA], current:RDStore.SUBSCRIPTION_CURRENT, expired:RDStore.SUBSCRIPTION_EXPIRED]
@@ -275,14 +270,13 @@ class MyInstitutionController  {
                 qry3 += " order by ${params.sort} ${params.order}"
             else qry3 += " order by p.normname asc"
 
-            prf.setBenchmark("before loading platforms")
             List platformSubscriptionList = []
             if(wekbIds)
                 platformSubscriptionList.addAll(Platform.executeQuery(qry3, qryParams3))
 
             log.debug("found ${platformSubscriptionList.size()} in list ..")
             /*, [max:result.max, offset:result.offset])) */
-            prf.setBenchmark("before platform subscription list loop")
+
             platformSubscriptionList.each { entry ->
                 Platform pl = (Platform) entry[0]
                 Subscription s = (Subscription) entry[1]
@@ -300,11 +294,7 @@ class MyInstitutionController  {
             }
         }
         result.platformInstanceTotal    = result.platformInstanceList.size()
-
         result.cachedContent = true
-
-		List bm = prf.stopBenchmark()
-		result.benchMark = bm
 
         result
     }
@@ -3007,7 +2997,7 @@ class MyInstitutionController  {
         //params.orgSector    = RDStore.O_SECTOR_HIGHER_EDU?.id?.toString()
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        result.propList     = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
+        result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
         if(!params.subStatus) {
             if(!params.filterSet) {
                 params.subStatus = RDStore.SUBSCRIPTION_CURRENT.id.toString()
@@ -3027,7 +3017,6 @@ class MyInstitutionController  {
         Map<String, Object> fsq = filterService.getOrgComboQuery(params, result.institution)
         String tmpQuery = "select o.id " + fsq.query.minus("select o ")
         List memberIds = Org.executeQuery(tmpQuery, fsq.queryParams)
-
 
         Map queryParamsProviders = [
                 subOrg      : result.institution,
@@ -3100,7 +3089,7 @@ join sub.orgRelations or_sub where
 		prf.setBenchmark('query')
 
         if (params.filterPropDef && memberIds) {
-            fsq                      = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids) order by o.sortname asc", 'o', [oids: memberIds])
+            fsq = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids) order by o.sortname asc", 'o', [oids: memberIds])
         }
 
         List totalMembers      = Org.executeQuery(fsq.query, fsq.queryParams)
@@ -3118,7 +3107,6 @@ join sub.orgRelations or_sub where
 		result.benchMark = bm
 
         if ( params.exportXLS ) {
-
             SXSSFWorkbook wb = (SXSSFWorkbook) organisationService.exportOrg(totalMembers, header, true, 'xls')
             response.setHeader "Content-disposition", "attachment; filename=\"${file}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
