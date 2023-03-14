@@ -10,7 +10,7 @@
 
     <laser:render template="breadcrumb" model="${[accessPoint: accessPoint, params: params]}"/>
 
-    <g:if test="${(accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') && inContextOrg)
+    <g:if test="${(accessService.checkPermAffiliation('ORG_MEMBER_BASIC','INST_EDITOR') && inContextOrg)
             || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR'))}">
         <ui:controlButtons>
             <ui:exportDropdown>

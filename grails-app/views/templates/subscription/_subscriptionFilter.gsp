@@ -244,7 +244,7 @@
                 <div class="field"></div>
             </g:else>
 
-            <g:if test="${accessService.checkPerm("ORG_BASIC_MEMBER")}">
+            <g:if test="${accessService.checkPerm("ORG_MEMBER_BASIC")}">
                 <div class="field">
                     <fieldset>
                         <legend id="la-legend-searchDropdown">${message(code: 'gasco.filter.consortialAuthority')}</legend>

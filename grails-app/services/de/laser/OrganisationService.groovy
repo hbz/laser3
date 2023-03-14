@@ -223,7 +223,7 @@ class OrganisationService {
      */
     void createOrgsFromScratch() {
         String currentServer = AppUtils.getCurrentServer()
-        Map<String,Role> customerTypes = [konsorte:Role.findByAuthority('ORG_BASIC_MEMBER'),
+        Map<String,Role> customerTypes = [konsorte:Role.findByAuthority('ORG_MEMBER_BASIC'),
                                           vollnutzer:Role.findByAuthority('ORG_INST'),
                                           konsortium:Role.findByAuthority('ORG_CONSORTIUM')]
         RefdataValue institution = RefdataValue.getByValueAndCategory('Institution', RDConstants.ORG_TYPE)

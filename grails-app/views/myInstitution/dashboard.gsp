@@ -85,7 +85,7 @@
             ${systemAnnouncements.size()} ${message(code:'announcement.plural')}
         </a>
 
-        <g:if test="${accessService.checkPerm('ORG_BASIC_MEMBER,ORG_CONSORTIUM_PRO')}">
+        <g:if test="${accessService.checkPerm('ORG_MEMBER_BASIC,ORG_CONSORTIUM_PRO')}">
             <a class="${us_dashboard_tab.value == 'Surveys' ? 'active item' : 'item'}" data-tab="surveys">
                 <i class="chart pie icon large"></i>
                 <span id="surveyCount">${message(code: 'myinst.dash.survey.label', args: [message(code: 'myinst.loadPending')])}</span>
@@ -240,7 +240,7 @@
 
         </g:if>
 
-        <g:if test="${accessService.checkPerm('ORG_BASIC_MEMBER,ORG_CONSORTIUM_PRO')}">
+        <g:if test="${accessService.checkPerm('ORG_MEMBER_BASIC,ORG_CONSORTIUM_PRO')}">
             <div class="ui bottom attached tab segment ${us_dashboard_tab.value == 'Surveys' ? 'active' : ''}"
                  data-tab="surveys" style="border-top: 1px solid #d4d4d5; ">
                 <div class="la-float-right">

@@ -238,7 +238,7 @@ class AccessService {
             } catch (IllegalStateException e) {}
 
             if(isOrgBasicMemberView && (oss.getValue() == Role.findAllByAuthority('ORG_CONSORTIUM') || oss.getValue() == Role.findAllByAuthority('ORG_CONSORTIUM_PRO'))){
-                fakeRole = Role.findByAuthority('ORG_BASIC_MEMBER')
+                fakeRole = Role.findByAuthority('ORG_MEMBER_BASIC')
             }
 
             if (oss != OrgSetting.SETTING_NOT_FOUND) {

@@ -195,7 +195,7 @@
                 </div>
             </div><!-- .card -->
 
-            <g:if test="${orgInstance.getCustomerType() in ['ORG_BASIC_MEMBER','ORG_INST']}">
+            <g:if test="${orgInstance.getCustomerType() in ['ORG_MEMBER_BASIC','ORG_INST']}">
                 <div class="ui card">
                     <div class="content">
                         <dl>
@@ -368,7 +368,7 @@
                 </div>
             </g:if>
 
-            <g:if test="${orgInstance.getCustomerType() in ['ORG_INST', 'ORG_BASIC_MEMBER']}">
+            <g:if test="${orgInstance.getCustomerType() in ['ORG_INST', 'ORG_MEMBER_BASIC']}">
                 <div class="ui card">
                     <div class="content">
                         <dl>
@@ -474,7 +474,7 @@
             <%--
             <div class="ui card">
                 <div class="content">
-                    <g:if test="${orgInstance.getCustomerType() in ['ORG_INST', 'ORG_BASIC_MEMBER']}">
+                    <g:if test="${orgInstance.getCustomerType() in ['ORG_INST', 'ORG_MEMBER_BASIC']}">
                         <h2 class="ui header"><g:message code="org.contactpersons.and.addresses.label"/></h2>
                     </g:if>
 
@@ -803,7 +803,7 @@
             <div id="container-contacts">
                 <div class="ui card">
                     <div class="content">
-                        <g:if test="${orgInstance.getCustomerType() in ['ORG_INST', 'ORG_BASIC_MEMBER']}">
+                        <g:if test="${orgInstance.getCustomerType() in ['ORG_INST', 'ORG_MEMBER_BASIC']}">
                             <h2 class="ui header"><g:message code="org.contactpersons.and.addresses.label"/></h2>
                         </g:if>
                         <g:else>
@@ -1211,7 +1211,7 @@
         func();
     }--%>
 
-    <g:if test="${orgInstance.getCustomerType() in ['ORG_INST', 'ORG_BASIC_MEMBER']}">
+    <g:if test="${orgInstance.getCustomerType() in ['ORG_INST', 'ORG_MEMBER_BASIC']}">
         JSPC.app.showRegionsdropdown( $("#country").editable('getValue', true) );
     </g:if>
     $('#addAltname').click(function() {

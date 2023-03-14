@@ -191,7 +191,7 @@ class FinanceControllerService {
                 }
                 break
         //cases six: basic member
-            case 'ORG_BASIC_MEMBER':
+            case 'ORG_MEMBER_BASIC':
                 dataToDisplay << 'subscr'
                 result.showView = 'subscr'
                 break

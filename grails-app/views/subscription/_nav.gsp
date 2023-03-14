@@ -29,8 +29,8 @@
     <g:if test="${((contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM_PRO']) && subscription.instanceOf)}">
         <ui:securedSubNavItem orgPerm="ORG_CONSORTIUM_PRO" controller="subscription" action="surveys" counts="${currentSurveysCounts}" params="${[id:params.id]}" message="subscription.details.surveys.label" />
     </g:if>
-    <g:if test="${((contextService.getOrg().getCustomerType() in ['ORG_INST', 'ORG_BASIC_MEMBER']) || params.orgBasicMemberView)&& subscription?.type == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL}">
-        <ui:securedSubNavItem orgPerm="ORG_BASIC_MEMBER" controller="subscription" action="surveys" counts="${currentSurveysCounts}" params="${[id:params.id]}" message="subscription.details.surveys.label" />
+    <g:if test="${((contextService.getOrg().getCustomerType() in ['ORG_INST', 'ORG_MEMBER_BASIC']) || params.orgBasicMemberView)&& subscription?.type == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL}">
+        <ui:securedSubNavItem orgPerm="ORG_MEMBER_BASIC" controller="subscription" action="surveys" counts="${currentSurveysCounts}" params="${[id:params.id]}" message="subscription.details.surveys.label" />
     </g:if>
     <g:if test="${subscription.packages}">
         <%

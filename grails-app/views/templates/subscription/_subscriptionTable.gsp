@@ -34,7 +34,7 @@
                             ${message(code: 'myinst.currentSubscriptions.subscription_type', default: RDConstants.SUBSCRIPTION_TYPE)}
                         </th>
                         */ %>
-                        <g:if test="${params.orgRole in ['Subscriber'] && accessService.checkPerm("ORG_BASIC_MEMBER")}">
+                        <g:if test="${params.orgRole in ['Subscriber'] && accessService.checkPerm("ORG_MEMBER_BASIC")}">
                             <th scope="col" rowspan="2" >${message(code: 'consortium')}</th>
                         </g:if>
                         <g:elseif test="${params.orgRole == 'Subscriber'}">
@@ -161,7 +161,7 @@
                         </td>--%>
                         <g:if test="${params.orgRole == 'Subscriber'}">
                             <td>
-                                <g:if test="${accessService.checkPerm("ORG_BASIC_MEMBER")}">
+                                <g:if test="${accessService.checkPerm("ORG_MEMBER_BASIC")}">
                                     ${s.getConsortia()?.name}
                                 </g:if>
                             </td>
@@ -246,7 +246,7 @@
                         </g:if>
                         <td class="x">
                             <g:if test="${'showActions' in tableConfig}">
-                                <g:if test="${institution.getCustomerType() in ['ORG_INST', 'ORG_BASIC_MEMBER'] && s.instanceOf}">
+                                <g:if test="${institution.getCustomerType() in ['ORG_INST', 'ORG_MEMBER_BASIC'] && s.instanceOf}">
                                     <g:set var="surveysSub" value="${SurveyConfig.executeQuery("select surConfig.id from SurveyConfig as surConfig where surConfig.subscription = :sub and surConfig.surveyInfo.status not in (:invalidStatuses) and surConfig.surveyInfo.type = :type and (exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org))",
                                             [sub: s.instanceOf, org: institution, invalidStatuses: [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY], type: [RDStore.SURVEY_TYPE_RENEWAL]])}" />
                                     <g:if test="${surveysSub}">

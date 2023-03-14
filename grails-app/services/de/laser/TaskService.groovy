@@ -331,7 +331,7 @@ class TaskService {
     private Set<Map> _getOrgsDropdown(Org contextOrg) {
         Set validOrgs = [], validOrgsDropdown = []
         if (contextOrg) {
-            boolean isInstitution = (contextOrg.getCustomerType() in ['ORG_BASIC_MEMBER','ORG_INST'])
+            boolean isInstitution = (contextOrg.getCustomerType() in ['ORG_MEMBER_BASIC','ORG_INST'])
             boolean isConsortium  = (contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO'])
 
             GrailsParameterMap params = new GrailsParameterMap(WebUtils.retrieveGrailsWebRequest().getCurrentRequest())

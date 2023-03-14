@@ -88,9 +88,9 @@ class OrganisationController  {
      *     <li>oamonitor: permissions to the Open Access harvest access</li>
      * </ul>
      */
-    @DebugInfo(perm="FAKE,ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_ADM", specRole="ROLE_ADMIN")
+    @DebugInfo(perm="FAKE,ORG_MEMBER_BASIC,ORG_CONSORTIUM", affil="INST_ADM", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("FAKE,ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("FAKE,ORG_MEMBER_BASIC,ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN")
     })
     @Check404(domain=Org)
     def settings() {
@@ -167,7 +167,7 @@ class OrganisationController  {
                 result.settings.addAll(allSettings.findAll { it.key in accessSet })
                 result.settings.addAll(allSettings.findAll { it.key in credentialsSet })
             }
-            else if (['ORG_BASIC_MEMBER'].contains(result.institution.getCustomerType())) {
+            else if (['ORG_MEMBER_BASIC'].contains(result.institution.getCustomerType())) {
                 result.settings.addAll(allSettings.findAll { it.key == OrgSetting.KEYS.NATSTAT_SERVER_ACCESS })
             }
             else if (['FAKE'].contains(result.institution.getCustomerType())) {
@@ -1062,7 +1062,7 @@ class OrganisationController  {
 
                     if (result.institution.hasPerm('ORG_CONSORTIUM,ORG_INST')) {
                         result.customerIdentifier = CustomerIdentifier.executeQuery(query+sort, queryParams)
-                    } else if (['ORG_BASIC_MEMBER'].contains(result.institution.getCustomerType())) {
+                    } else if (['ORG_MEMBER_BASIC'].contains(result.institution.getCustomerType())) {
                         result.customerIdentifier = CustomerIdentifier.executeQuery(query+sort, queryParams)
                     }
                 } else if (isComboRelated) {
@@ -1195,9 +1195,9 @@ class OrganisationController  {
      * Call to delete the given customer identifier
      * @return the customer identifier table view
      */
-    @DebugInfo(perm="FAKE,ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(perm="FAKE,ORG_MEMBER_BASIC,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("FAKE,ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("FAKE,ORG_MEMBER_BASIC,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def deleteCustomerIdentifier() {
         Map<String,Object> ctrlResult = organisationControllerService.deleteCustomerIdentifier(this,params)
@@ -1468,8 +1468,8 @@ class OrganisationController  {
      * @return a table view of the reader numbers, grouped by semesters on the one hand, due dates on the other
      * @see ReaderNumber
      */
-    @DebugInfo(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_USER")
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_USER") })
+    @DebugInfo(perm="ORG_MEMBER_BASIC,ORG_CONSORTIUM", affil="INST_USER")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_MEMBER_BASIC,ORG_CONSORTIUM", "INST_USER") })
     @Check404(domain=Org)
     def readerNumber() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
@@ -1550,8 +1550,8 @@ class OrganisationController  {
      * @return a list view of access points
      * @see de.laser.oap.OrgAccessPoint
      */
-    @DebugInfo(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_USER")
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_USER") })
+    @DebugInfo(perm="ORG_MEMBER_BASIC,ORG_CONSORTIUM", affil="INST_USER")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_MEMBER_BASIC,ORG_CONSORTIUM", "INST_USER") })
     @Check404(domain=Org)
     def accessPoints() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
@@ -1824,9 +1824,9 @@ class OrganisationController  {
                     isEditable = userHasEditableRights
                 } else {
                     switch (contextOrg.getCustomerType()){
-                        case 'ORG_BASIC_MEMBER':
+                        case 'ORG_MEMBER_BASIC':
                             switch (orgInstance.getCustomerType()){
-                                case 'ORG_BASIC_MEMBER':    isEditable = user.hasRole('ROLE_YODA'); break
+                                case 'ORG_MEMBER_BASIC':    isEditable = user.hasRole('ROLE_YODA'); break
                                 case 'ORG_INST':            isEditable = user.hasRole('ROLE_YODA'); break
                                 case 'ORG_CONSORTIUM':      isEditable = user.hasRole('ROLE_YODA'); break
                                 case 'ORG_CONSORTIUM_PRO':  isEditable = user.hasRole('ROLE_YODA'); break
@@ -1835,7 +1835,7 @@ class OrganisationController  {
                             break
                         case 'ORG_INST':
                             switch (orgInstance.getCustomerType()){
-                                case 'ORG_BASIC_MEMBER':    isEditable = user.hasRole('ROLE_YODA'); break
+                                case 'ORG_MEMBER_BASIC':    isEditable = user.hasRole('ROLE_YODA'); break
                                 case 'ORG_INST':            isEditable = user.hasRole('ROLE_YODA'); break
                                 case 'ORG_CONSORTIUM':      isEditable = user.hasRole('ROLE_YODA'); break
                                 case 'ORG_CONSORTIUM_PRO':  isEditable = user.hasRole('ROLE_YODA'); break
@@ -1844,7 +1844,7 @@ class OrganisationController  {
                             break
                         case 'ORG_CONSORTIUM':
                             switch (orgInstance.getCustomerType()){
-                                case 'ORG_BASIC_MEMBER':    isEditable = userHasEditableRights; break
+                                case 'ORG_MEMBER_BASIC':    isEditable = userHasEditableRights; break
                                 case 'ORG_INST':            isEditable = userHasEditableRights; break
                                 case 'ORG_CONSORTIUM':      isEditable = user.hasRole('ROLE_YODA'); break
                                 case 'ORG_CONSORTIUM_PRO':  isEditable = user.hasRole('ROLE_YODA'); break

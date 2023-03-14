@@ -290,7 +290,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     }
 
     /**
-     * Sets for an institution the default customer type, that is ORG_BASIC_MEMBER for consortium members with a basic set of permissions
+     * Sets for an institution the default customer type, that is ORG_MEMBER_BASIC for consortium members with a basic set of permissions
      * @return true if the setup was successful, false otherwise
      */
     boolean setDefaultCustomerType() {
@@ -298,7 +298,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
 
         if (oss == OrgSetting.SETTING_NOT_FOUND) {
             log.debug ('Setting default customer type for org: ' + this.id)
-            OrgSetting.add(this, OrgSetting.KEYS.CUSTOMER_TYPE, Role.findByAuthorityAndRoleType('ORG_BASIC_MEMBER', 'org'))
+            OrgSetting.add(this, OrgSetting.KEYS.CUSTOMER_TYPE, Role.findByAuthorityAndRoleType('ORG_MEMBER_BASIC', 'org'))
             return true
         }
 
@@ -762,7 +762,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      */
     String dropdownNamingConvention(Org contextOrg){
         String result = ''
-        if (contextOrg.getCustomerType() in ['ORG_BASIC_MEMBER','ORG_INST']){
+        if (contextOrg.getCustomerType() in ['ORG_MEMBER_BASIC','ORG_INST']){
             if (name) {
                 result += name
             }

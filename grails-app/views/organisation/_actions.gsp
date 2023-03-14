@@ -83,7 +83,7 @@
         </g:if>
     </ui:actionsDropdown>
 </g:if>
-<g:elseif test="${accessService.checkPermAffiliationX('ORG_BASIC_MEMBER','INST_EDITOR','ROLE_ADMIN')}">
+<g:elseif test="${accessService.checkPermAffiliationX('ORG_MEMBER_BASIC','INST_EDITOR','ROLE_ADMIN')}">
     <g:if test="${actionName in ['show','notes']}">
         <ui:actionsDropdown>
             <ui:actionsDropdownItem message="template.notes.add" data-ui="modal" href="#modalCreateNote"/>
