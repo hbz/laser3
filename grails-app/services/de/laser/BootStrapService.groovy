@@ -313,10 +313,10 @@ class BootStrapService {
         }
 
         Role fakeRole                = updateRole('FAKE',                  'fake', [en: 'Fake', de: 'Fake'])
-        Role orgMemberRole           = updateRole('ORG_MEMBER_BASIC',       'org', [en: 'Institution consortium member', de: 'Konsorte'])
-        Role orgInstRole             = updateRole('ORG_INST',               'org', [en: 'Institution basic', de: 'Vollnutzer'])
-        Role orgConsortiumRole       = updateRole('ORG_CONSORTIUM_BASIC',   'org', [en: 'Consortium basic', de: 'Konsortium Basic'])
-        Role orgConsortiumProRole    = updateRole('ORG_CONSORTIUM_PRO',     'org', [en: 'Consortium pro', de: 'Konsortium Pro'])
+        Role orgMemberRole           = updateRole('ORG_MEMBER_BASIC',       'org', [en: 'Institution (consortium member)', de: 'Konsorte'])
+        Role orgInstRole             = updateRole('ORG_INST',               'org', [en: 'Institution', de: 'Vollnutzer'])
+        Role orgConsortiumRole       = updateRole('ORG_CONSORTIUM_BASIC',   'org', [en: 'Consortium (basic)', de: 'Konsortium Basic'])
+        Role orgConsortiumProRole    = updateRole('ORG_CONSORTIUM_PRO',     'org', [en: 'Consortium', de: 'Konsortium Pro'])
 
         updateOrgRolePerms(fakeRole,                    ['FAKE'])
         updateOrgRolePerms(orgMemberRole,               ['ORG_MEMBER_BASIC'])
