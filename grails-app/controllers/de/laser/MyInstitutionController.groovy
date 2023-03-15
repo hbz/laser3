@@ -3840,8 +3840,6 @@ join sub.orgRelations or_sub where
         params.withoutPropOffset = result.withoutPropOffset
         params.withPropOffset = result.withPropOffset
 
-        println(result)
-
         result
     }
 
