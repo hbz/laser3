@@ -105,7 +105,8 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
 
     static transients = [
             'deleted', 'customerType', 'customerTypeI10n', 'designation',
-            'calculatedPropDefGroups', 'empty', 'consortiaMember'
+            'calculatedPropDefGroups', 'empty', 'consortiaMember',
+            'customerType_Basic', 'customerType_Pro', 'customerType_Inst', 'customerType_Consortium',
     ] // mark read-only accessor methods
 
     static mappedBy = [
@@ -311,7 +312,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      */
     String getCustomerType() {
         String result
-
         def oss = OrgSetting.get(this, OrgSetting.KEYS.CUSTOMER_TYPE)
 
         if (oss != OrgSetting.SETTING_NOT_FOUND) {
@@ -326,7 +326,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      */
     String getCustomerTypeI10n() {
         String result
-
         def oss = OrgSetting.get(this, OrgSetting.KEYS.CUSTOMER_TYPE)
 
         if (oss != OrgSetting.SETTING_NOT_FOUND) {

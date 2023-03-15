@@ -123,7 +123,7 @@ class InstAdmService {
 
 		boolean roleAdmin = editor.hasRole('ROLE_ADMIN')
 		boolean instAdmin = editor.hasAffiliation('INST_ADM') // check @ contextService.getOrg()
-		boolean orgMatch  = accessService.checkUserIsMember(user, contextService.getOrg())
+		boolean orgMatch  = user.isMemberOf(contextService.getOrg())
 
 		roleAdmin || (instAdmin && orgMatch)
 	}

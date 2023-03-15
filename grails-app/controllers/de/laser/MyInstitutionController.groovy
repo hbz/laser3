@@ -645,7 +645,7 @@ class MyInstitutionController  {
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        if (! accessService.checkUserIsMember(result.user, result.institution)) {
+        if (! (result.user as User).isMemberOf(result.institution as Org)) {
             flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]) as String
             response.sendError(HttpStatus.SC_FORBIDDEN)
             return;
@@ -1627,7 +1627,7 @@ class MyInstitutionController  {
     def modal_create() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
-        if (! accessService.checkUserIsMember(result.user, result.institution)) {
+        if (! (result.user as User).isMemberOf(result.institution as Org)) {
             flash.error = "You do not have permission to access ${result.institution.name} pages. Please request access on the profile page";
             response.sendError(HttpStatus.SC_FORBIDDEN)
             return;

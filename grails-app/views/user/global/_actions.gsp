@@ -20,7 +20,7 @@
             </ui:actionsDropdown>
         </g:if>
     </g:if>
-    <g:elseif test="${controllerName == 'organisation'}">%{-- organisation/users - TODO: hasComboInstAdminAffiliation --}%
+    <g:elseif test="${controllerName == 'organisation'}">%{-- organisation/users - TODO: isComboInstAdminOf --}%
         <g:if test="${contextService.getUser().hasRole('ROLE_ADMIN')}">
             <ui:actionsDropdown>
                 <ui:actionsDropdownItem controller="organisation" action="createUser" message="user.create_new.label" params="${[id:params.id]}"/>
@@ -36,7 +36,7 @@
             </ui:actionsDropdown>
         </g:if>
     </g:if>
-    <g:elseif test="${controllerName == 'organisation'}">%{-- /organisation/editUser - TODO: hasComboInstAdminAffiliation --}%
+    <g:elseif test="${controllerName == 'organisation'}">%{-- /organisation/editUser - TODO: isComboInstAdminOf --}%
         <g:if test="${contextService.getUser().hasRole('ROLE_ADMIN')}">
             <ui:actionsDropdown>
                 <g:link class="item" action="deleteUser" params="${[id:params.id, uoid: params.uoid]}"><i class="trash alternate outline icon"></i> ${message(code:'deletion.user')}</g:link>
