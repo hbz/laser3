@@ -145,7 +145,7 @@
                             </span>
                         </g:if>
 
-                        <g:if test="${subscr.getCustomerType() in ['ORG_INST']}">
+                        <g:if test="${subscr.getCustomerType() in ['ORG_PRO']}">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                                   data-content="${subscr.getCustomerTypeI10n()}">
                                 <i class="chess rook grey icon"></i>

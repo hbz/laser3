@@ -4,7 +4,7 @@
   <thead>
   <tr>
     <th>${message(code: "platform.label")}</th>
-    <g:if test="${ (accessService.checkPermAffiliation('ORG_MEMBER_BASIC','INST_EDITOR') && inContextOrg ) || (accessService.checkPermAffiliation('ORG_CONSORTIUM_BASIC','INST_EDITOR') )}">
+    <g:if test="${ (accessService.checkPermAffiliation('ORG_BASIC','INST_EDITOR') && inContextOrg ) || (accessService.checkPermAffiliation('ORG_CONSORTIUM_BASIC','INST_EDITOR') )}">
       <th>${message(code: "accessPoint.subscriptions.label")}</th>
       <th>${message(code: 'default.action.label')}</th>
     </g:if>
@@ -19,7 +19,7 @@
           <g:link controller="Subscription" action="show" id="${linkedSub.id}">${linkedSub.name} ${(linkedSub.status != RDStore.SUBSCRIPTION_CURRENT) ? '('+ RefdataValue.getByValueAndCategory(linkedSub.status.value, RDConstants.SUBSCRIPTION_STATUS).getI10n('value') +')': ''}</g:link><br />
         </g:each>
       </td>
-      <g:if test="${ (accessService.checkPermAffiliation('ORG_MEMBER_BASIC','INST_EDITOR') && inContextOrg ) || (accessService.checkPermAffiliation('ORG_CONSORTIUM_BASIC','INST_EDITOR'))}">
+      <g:if test="${ (accessService.checkPermAffiliation('ORG_BASIC','INST_EDITOR') && inContextOrg ) || (accessService.checkPermAffiliation('ORG_CONSORTIUM_BASIC','INST_EDITOR'))}">
         <td class="center aligned">
           <g:link class="ui negative icon button la-modern-button js-open-confirm-modal" id="${linkedPlatform.aplink.id}"
                   controller="accessPoint" action="unlinkPlatform"

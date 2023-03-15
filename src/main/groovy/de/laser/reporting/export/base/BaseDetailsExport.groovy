@@ -169,7 +169,7 @@ abstract class BaseDetailsExport {
     }
     static boolean ctxInst() {
         ContextService contextService = BeanStore.getContextService()
-        contextService.getOrg().getCustomerType() == 'ORG_INST'
+        contextService.getOrg().getCustomerType() == 'ORG_PRO'
     }
 
     // -----

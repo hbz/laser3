@@ -203,7 +203,7 @@ class AccessService {
             } catch (IllegalStateException e) {}
 
             if(isOrgBasicMemberView && (oss.getValue() == Role.findAllByAuthority('ORG_CONSORTIUM_BASIC') || oss.getValue() == Role.findAllByAuthority('ORG_CONSORTIUM_PRO'))){
-                fakeRole = Role.findByAuthority('ORG_MEMBER_BASIC')
+                fakeRole = Role.findByAuthority('ORG_BASIC')
             }
 
             if (oss != OrgSetting.SETTING_NOT_FOUND) {
@@ -294,10 +294,10 @@ class AccessService {
 
     /**
      * Replacement call for the abandoned ROLE_ORG_COM_EDITOR
-     * @return the result of {@link #checkPermAffiliation(java.lang.String, java.lang.String)} for [ORG_INST, ORG_CONSORTIUM_BASIC] and INST_EDTOR as arguments
+     * @return the result of {@link #checkPermAffiliation(java.lang.String, java.lang.String)} for [ORG_PRO, ORG_CONSORTIUM_BASIC] and INST_EDTOR as arguments
      */
     boolean checkConstraint_ORG_COM_EDITOR() {
-        checkPermAffiliation('ORG_INST,ORG_CONSORTIUM_BASIC', 'INST_EDITOR')
+        checkPermAffiliation('ORG_PRO,ORG_CONSORTIUM_BASIC', 'INST_EDITOR')
     }
 
     // ----- REFACTORING -----

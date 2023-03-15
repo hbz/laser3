@@ -189,7 +189,7 @@
                                     </span>
                                 </g:if>
 
-                                <g:if test="${subscr.getCustomerType() == 'ORG_INST'}">
+                                <g:if test="${subscr.getCustomerType() == 'ORG_PRO'}">
                                     <span class="la-long-tooltip la-popup-tooltip la-delay"
                                           data-position="bottom center"
                                           data-content="${subscr.getCustomerTypeI10n()}">

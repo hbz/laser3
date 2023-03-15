@@ -30,7 +30,7 @@
         <ui:securedSubNavItem orgPerm="ORG_CONSORTIUM_PRO" controller="subscription" action="surveys" counts="${currentSurveysCounts}" params="${[id:params.id]}" message="subscription.details.surveys.label" />
     </g:if>
     <g:if test="${(contextService.getOrg().isCustomerType_Inst() || params.orgBasicMemberView) && subscription?.type == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL}">
-        <ui:securedSubNavItem orgPerm="ORG_MEMBER_BASIC" controller="subscription" action="surveys" counts="${currentSurveysCounts}" params="${[id:params.id]}" message="subscription.details.surveys.label" />
+        <ui:securedSubNavItem orgPerm="ORG_BASIC" controller="subscription" action="surveys" counts="${currentSurveysCounts}" params="${[id:params.id]}" message="subscription.details.surveys.label" />
     </g:if>
     <g:if test="${subscription.packages}">
         <%
@@ -59,8 +59,8 @@
         <ui:subNavItem controller="subscription" action="workflows" counts="${checklistCount}" params="${[id:params.id]}" message="workflow.plural" />
     </g:if>
 
-    <ui:securedSubNavItem orgPerm="ORG_INST,ORG_CONSORTIUM_BASIC" controller="subscription" action="tasks" params="${[id:params.id]}" counts="${tasksCount}" message="task.plural" />
-    <ui:securedSubNavItem orgPerm="ORG_INST,ORG_CONSORTIUM_BASIC" controller="subscription" action="documents" params="${[id:params.id]}" message="default.documents.label" />
+    <ui:securedSubNavItem orgPerm="ORG_PRO,ORG_CONSORTIUM_BASIC" controller="subscription" action="tasks" params="${[id:params.id]}" counts="${tasksCount}" message="task.plural" />
+    <ui:securedSubNavItem orgPerm="ORG_PRO,ORG_CONSORTIUM_BASIC" controller="subscription" action="documents" params="${[id:params.id]}" message="default.documents.label" />
     <ui:subNavItem controller="subscription" action="notes" params="${[id:params.id]}" counts="${notesCount}" message="default.notes.label" />
 
 </ui:subNav>

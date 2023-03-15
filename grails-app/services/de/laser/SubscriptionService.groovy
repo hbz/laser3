@@ -517,7 +517,7 @@ class SubscriptionService {
         List result = []
         List tmpQ
 
-        if(accessService.checkPerm("ORG_INST")) {
+        if(accessService.checkPerm("ORG_PRO")) {
 
             tmpQ = _getSubscriptionsConsortialLicenseQuery(params)
             result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
@@ -538,7 +538,7 @@ class SubscriptionService {
         List result = []
         List tmpQ
 
-        if(accessService.checkPerm("ORG_INST")) {
+        if(accessService.checkPerm("ORG_PRO")) {
 
             tmpQ = _getSubscriptionsConsortialLicenseQuery(params)
             result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))

@@ -31,10 +31,10 @@
         <ui:subNavItem controller="organisation" action="workflows" counts="${checklistCount}" params="${breadcrumbParams}" message="workflow.plural" />
     </g:if>
 
-    <ui:securedSubNavItem controller="organisation" action="tasks" params="${breadcrumbParams}" counts="${tasksCount}" affiliation="INST_USER" orgPerm="ORG_INST,ORG_CONSORTIUM_BASIC" message="menu.institutions.tasks"/>
-    <ui:securedSubNavItem controller="organisation" action="documents" params="${breadcrumbParams}" affiliation="INST_USER" orgPerm="ORG_INST,ORG_CONSORTIUM_BASIC" message="menu.my.documents" />
+    <ui:securedSubNavItem controller="organisation" action="tasks" params="${breadcrumbParams}" counts="${tasksCount}" affiliation="INST_USER" orgPerm="ORG_PRO,ORG_CONSORTIUM_BASIC" message="menu.institutions.tasks"/>
+    <ui:securedSubNavItem controller="organisation" action="documents" params="${breadcrumbParams}" affiliation="INST_USER" orgPerm="ORG_PRO,ORG_CONSORTIUM_BASIC" message="menu.my.documents" />
     <ui:subNavItem controller="organisation" action="notes" params="${breadcrumbParams}" counts="${notesCount}" message="default.notes.label"/>
-    <g:if test="${!inContextOrg && contextCustomerType in ['ORG_INST','ORG_CONSORTIUM_BASIC','ORG_CONSORTIUM_PRO']}">
+    <g:if test="${!inContextOrg && contextCustomerType in ['ORG_PRO','ORG_CONSORTIUM_BASIC','ORG_CONSORTIUM_PRO']}">
         <ui:subNavItem controller="organisation" action="addressbook" params="${breadcrumbParams}" message="menu.institutions.myAddressbook"/>
     </g:if>
     <g:if test="${!isProviderOrAgency}">

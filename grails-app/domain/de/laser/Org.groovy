@@ -291,7 +291,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     }
 
     /**
-     * Sets for an institution the default customer type, that is ORG_MEMBER_BASIC for consortium members with a basic set of permissions
+     * Sets for an institution the default customer type, that is ORG_BASIC for consortium members with a basic set of permissions
      * @return true if the setup was successful, false otherwise
      */
     boolean setDefaultCustomerType() {
@@ -299,7 +299,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
 
         if (oss == OrgSetting.SETTING_NOT_FOUND) {
             log.debug ('Setting default customer type for org: ' + this.id)
-            OrgSetting.add(this, OrgSetting.KEYS.CUSTOMER_TYPE, Role.findByAuthorityAndRoleType('ORG_MEMBER_BASIC', 'org'))
+            OrgSetting.add(this, OrgSetting.KEYS.CUSTOMER_TYPE, Role.findByAuthorityAndRoleType('ORG_BASIC', 'org'))
             return true
         }
 
@@ -335,14 +335,14 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     }
 
     boolean isCustomerType_Basic() {
-        this.getCustomerType() in ['ORG_MEMBER_BASIC', 'ORG_CONSORTIUM_BASIC']
+        this.getCustomerType() in ['ORG_BASIC', 'ORG_CONSORTIUM_BASIC']
     }
     boolean isCustomerType_Pro() {
-        this.getCustomerType() in ['ORG_INST', 'ORG_CONSORTIUM_PRO']
+        this.getCustomerType() in ['ORG_PRO', 'ORG_CONSORTIUM_PRO']
     }
 
     boolean isCustomerType_Inst() {
-        this.getCustomerType() in ['ORG_MEMBER_BASIC', 'ORG_INST']
+        this.getCustomerType() in ['ORG_BASIC', 'ORG_PRO']
     }
     boolean isCustomerType_Consortium() {
         this.getCustomerType() in ['ORG_CONSORTIUM_BASIC', 'ORG_CONSORTIUM_PRO']

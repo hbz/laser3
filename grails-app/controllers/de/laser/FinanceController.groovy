@@ -101,7 +101,7 @@ class FinanceController  {
                         [sub: result.subscription.instanceOf,
                          org: result.subscription.getSubscriber(),
                          invalidStatuses: [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY]]).size()
-                if(result.institution.getCustomerType() == "ORG_INST") {
+                if(result.institution.getCustomerType() == "ORG_PRO") {
                     if(result.subscription.instanceOf)
                         result.currentCostItemCounts = "${result.financialData.own.count}/${result.financialData.subscr.count}"
                     else
@@ -498,7 +498,7 @@ class FinanceController  {
         result.modalText = message(code: 'financials.costItem.copy.tooltip')
         result.submitButtonLabel = message(code:'default.button.copy.label')
         result.copyCostsFromConsortia = result.costItem.owner == result.costItem.sub?.getConsortia() && result.institution.id != result.costItem.sub?.getConsortia().id
-        result.copyToOtherSub =  !result.copyCostsFromConsortia && result.costItem.owner.id == result.institution.id && result.institution.getCustomerType() == 'ORG_INST'
+        result.copyToOtherSub =  !result.copyCostsFromConsortia && result.costItem.owner.id == result.institution.id && result.institution.getCustomerType() == 'ORG_PRO'
         result.taxKey = result.costItem.taxKey
         result.formUrl = createLink(controller:"finance",action:"createOrUpdateCostItem",params:[showView:params.showView, mode:"copy", offset: params.offset])
         result.mode = "copy"
@@ -537,9 +537,9 @@ class FinanceController  {
     /**
      * Call to import cost items submitted from the import post processing view
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM_BASIC", affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(perm="ORG_PRO,ORG_CONSORTIUM_BASIC", affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM_BASIC", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_PRO,ORG_CONSORTIUM_BASIC", "INST_EDITOR", "ROLE_ADMIN")
     })
     def importCostItems() {
         Map<String,Object> ctrlResult = financeService.importCostItems(params)
@@ -556,8 +556,8 @@ class FinanceController  {
     /**
      * Marks a change done by the consortium as acknowledged by the single user who copied the given cost item
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM_BASIC", affil="INST_EDITOR", ctrlService = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM_BASIC", "INST_EDITOR") })
+    @DebugInfo(perm="ORG_PRO,ORG_CONSORTIUM_BASIC", affil="INST_EDITOR", ctrlService = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_PRO,ORG_CONSORTIUM_BASIC", "INST_EDITOR") })
     def acknowledgeChange() {
         PendingChange changeAccepted = PendingChange.get(params.id)
         if(changeAccepted)

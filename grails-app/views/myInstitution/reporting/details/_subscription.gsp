@@ -16,7 +16,7 @@
                 <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                     <th>${message(code:'subscription.details.consortiaMembers.label')}</th>
                 </g:if>
-                <g:elseif test="${contextService.getOrg().getCustomerType() == 'ORG_INST'}">
+                <g:elseif test="${contextService.getOrg().getCustomerType() == 'ORG_PRO'}">
                 </g:elseif>
             </g:else>
             <g:if test="${query in [ 'subscription-x-property', 'subscription-x-memberSubscriptionProperty' ]}">
@@ -64,7 +64,7 @@
                                 %>
                             </td>
                         </g:if>
-                        <g:elseif test="${contextService.getOrg().getCustomerType() == 'ORG_INST'}">
+                        <g:elseif test="${contextService.getOrg().getCustomerType() == 'ORG_PRO'}">
                         </g:elseif>
                     </g:else>
 

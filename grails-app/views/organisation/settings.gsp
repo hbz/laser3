@@ -16,12 +16,12 @@
 
         <ui:tabs actionName="settings">
             <ui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'general']" tab="general" text="${message(code: 'org.setting.tab.general')}"/>
-            <g:if test="${accessService.checkPermX('FAKE,ORG_INST,ORG_CONSORTIUM_BASIC', 'ROLE_ADMIN')}">
+            <g:if test="${accessService.checkPermX('FAKE,ORG_PRO,ORG_CONSORTIUM_BASIC', 'ROLE_ADMIN')}">
                 <ui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'api']" tab="api" text="${message(code: 'org.setting.tab.api')}"/>
             </g:if>
             <ui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'ezb']" tab="ezb" text="${message(code: 'org.setting.tab.ezb')}"/>
             <ui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'natstat']" tab="natstat" text="${message(code: 'org.setting.tab.natstat')}"/>
-            <g:if test="${accessService.checkPermX('ORG_INST,ORG_CONSORTIUM_BASIC', 'ROLE_ADMIN')}">
+            <g:if test="${accessService.checkPermX('ORG_PRO,ORG_CONSORTIUM_BASIC', 'ROLE_ADMIN')}">
                 <ui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'oamonitor']" tab="oamonitor" text="${message(code: 'org.setting.tab.oamonitor')}"/>
             </g:if>
         </ui:tabs>

@@ -213,7 +213,7 @@ class ManagementService {
                 String base_qry
                 Map qry_params
 
-                if (accessService.checkPerm("ORG_INST")) {
+                if (accessService.checkPerm("ORG_PRO")) {
                     base_qry = "from License as l where ( exists ( select o from l.orgRelations as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :lic_org ) ) )"
                     qry_params = [roleType1:RDStore.OR_LICENSEE, roleType2:RDStore.OR_LICENSEE_CONS, lic_org:result.institution]
                 }
@@ -532,7 +532,7 @@ class ManagementService {
                         if(params.filterPropValue) {
                             Set<Subscription> subscriptions = Subscription.findAllByIdInList(selectedSubs)
                             subscriptions.each { Subscription subscription ->
-                                if (subscription.isEditableBy(result.user) || (subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && result.institution.getCustomerType() == 'ORG_INST')) {
+                                if (subscription.isEditableBy(result.user) || (subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && result.institution.getCustomerType() == 'ORG_PRO')) {
                                     List<SubscriptionProperty> existingProps = []
                                     String propDefFlag
                                     if (propertiesFilterPropDef.tenant == result.institution) {
@@ -796,7 +796,7 @@ class ManagementService {
                 if(params.noteTitle && params.noteContent) {
                     if(params.processOption == 'newNote') {
                         subscriptions.each { Subscription subscription ->
-                            if (subscription.isEditableBy(result.user) || (subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && result.institution.getCustomerType() == 'ORG_INST')) {
+                            if (subscription.isEditableBy(result.user) || (subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && result.institution.getCustomerType() == 'ORG_PRO')) {
 
                                 Doc doc_content = new Doc(contentType: Doc.CONTENT_TYPE_STRING,
                                         title: params.noteTitle,
@@ -843,7 +843,7 @@ class ManagementService {
                 Set<Subscription> subscriptions = Subscription.findAllByIdInList(selectedSubs)
                     if(params.processOption == 'newDoc') {
                         subscriptions.eachWithIndex { Subscription subscription, int status ->
-                            if (subscription.isEditableBy(result.user) || (subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && result.institution.getCustomerType() == 'ORG_INST')) {
+                            if (subscription.isEditableBy(result.user) || (subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && result.institution.getCustomerType() == 'ORG_PRO')) {
                                 if (input_stream) {
                                     Doc doc_content = new Doc(
                                             contentType: Doc.CONTENT_TYPE_FILE,

@@ -577,8 +577,8 @@ class LicenseController {
      * @see Doc
      * @see DocContext
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM_BASIC", affil="INST_USER")
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM_BASIC", "INST_USER") })
+    @DebugInfo(perm="ORG_PRO,ORG_CONSORTIUM_BASIC", affil="INST_USER")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_PRO,ORG_CONSORTIUM_BASIC", "INST_USER") })
     @Check404()
     def documents() {
         Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW)
@@ -605,8 +605,8 @@ class LicenseController {
         redirect controller: 'license', action:params.redirectAction, id:params.instanceId /*, fragment:'docstab' */
     }
 
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM_PRO", affil="INST_USER")
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM_PRO", "INST_USER") })
+    @DebugInfo(perm="ORG_PRO,ORG_CONSORTIUM_PRO", affil="INST_USER")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_PRO,ORG_CONSORTIUM_PRO", "INST_USER") })
     @Check404()
     def workflows() {
         Map<String,Object> ctrlResult = licenseControllerService.workflows( this, params )
@@ -617,9 +617,9 @@ class LicenseController {
     /**
      * Entry point for copying a license
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM_BASIC", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugInfo(perm="ORG_PRO,ORG_CONSORTIUM_BASIC", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM_BASIC", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_PRO,ORG_CONSORTIUM_BASIC", "INST_EDITOR", "ROLE_ADMIN")
     })
     def copyLicense() {
         Map<String,Object> result = [:]

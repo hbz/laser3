@@ -65,7 +65,7 @@
                                     owner="${orgInstance}" field="name"
                                     overwriteEditable="${editable && orgInstanceRecord == null}"/>
 
-                            <g:if test="${orgInstance.getCustomerType() == 'ORG_INST'}">
+                            <g:if test="${orgInstance.getCustomerType() == 'ORG_PRO'}">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                                       data-content="${orgInstance.getCustomerTypeI10n()}">
                                     <i class="chess rook grey icon"></i>
@@ -150,7 +150,7 @@
                             <br />&nbsp<br />&nbsp<br />
                         </dd>
                     </dl>
-                    <g:if test="${orgInstance.getCustomerType() == 'ORG_INST'}">
+                    <g:if test="${orgInstance.getCustomerType() == 'ORG_PRO'}">
                         <dl>
                             <dt>
                                 <g:message code="org.linkResolverBase.label"/>
@@ -786,7 +786,7 @@
                     </g:if>
                 </g:if>
 
-            <g:if test="${accessService.checkPerm("ORG_INST,ORG_CONSORTIUM_BASIC")}">
+            <g:if test="${accessService.checkPerm("ORG_PRO,ORG_CONSORTIUM_BASIC")}">
                 <div id="new-dynamic-properties-block">
                     <laser:render template="properties" model="${[
                             orgInstance   : orgInstance,

@@ -168,7 +168,7 @@ class FinanceControllerService {
                 }
                 break
         //cases four and five
-            case 'ORG_INST':
+            case 'ORG_PRO':
                 if (result.subscription) {
                     //case four: child subscription
                     if(result.subscription.instanceOf) {
@@ -191,13 +191,13 @@ class FinanceControllerService {
                 }
                 break
         //cases six: basic member
-            case 'ORG_MEMBER_BASIC':
+            case 'ORG_BASIC':
                 dataToDisplay << 'subscr'
                 result.showView = 'subscr'
                 break
         }
         if (editable)
-            result.editable = accessService.checkPermAffiliationX("ORG_INST, ORG_CONSORTIUM_BASIC","INST_EDITOR","ROLE_ADMIN")
+            result.editable = accessService.checkPermAffiliationX("ORG_PRO, ORG_CONSORTIUM_BASIC","INST_EDITOR","ROLE_ADMIN")
         result.dataToDisplay = dataToDisplay
         //override default view to show if checked by pagination or from elsewhere
         if (params.showView){

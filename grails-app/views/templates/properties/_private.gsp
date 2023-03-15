@@ -8,7 +8,7 @@
 
 
 <%-- OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')} --%>
-<g:set var="overwriteEditable" value="${editable || accessService.checkPermAffiliationX('ORG_INST','INST_EDITOR','ROLE_ADMIN')}" />
+<g:set var="overwriteEditable" value="${editable || accessService.checkPermAffiliationX('ORG_PRO','INST_EDITOR','ROLE_ADMIN')}" />
 
 <g:if test="${newProp}">
     <ui:errors bean="${newProp}" />
