@@ -335,11 +335,18 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         result
     }
 
-    boolean isCustomerTypeBasic() {
+    boolean isCustomerType_Basic() {
         this.getCustomerType() in ['ORG_MEMBER_BASIC', 'ORG_CONSORTIUM_BASIC']
     }
-    boolean isCustomerTypeConsortium() {
-        this.isCustomerTypeConsortium()
+    boolean isCustomerType_Pro() {
+        this.getCustomerType() in ['ORG_INST', 'ORG_CONSORTIUM_PRO']
+    }
+
+    boolean isCustomerType_Inst() {
+        this.getCustomerType() in ['ORG_MEMBER_BASIC', 'ORG_INST']
+    }
+    boolean isCustomerType_Consortium() {
+        this.getCustomerType() in ['ORG_CONSORTIUM_BASIC', 'ORG_CONSORTIUM_PRO']
     }
 
     /**
@@ -769,7 +776,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      */
     String dropdownNamingConvention(Org contextOrg){
         String result = ''
-        if (contextOrg.getCustomerType() in ['ORG_MEMBER_BASIC','ORG_INST']){
+        if (contextOrg.isCustomerType_Inst()){
             if (name) {
                 result += name
             }

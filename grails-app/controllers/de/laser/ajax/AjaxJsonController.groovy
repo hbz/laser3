@@ -42,8 +42,6 @@ import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinition
 import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.report.myInstitution.base.BaseConfig
-import de.laser.stats.Counter4Report
-import de.laser.stats.Counter5Report
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
@@ -394,7 +392,7 @@ class AjaxJsonController {
                 else {
                     switch (propDef.descr) {
                         case PropertyDefinition.SUB_PROP:
-                            String consortialFilter = contextService.getOrg().isCustomerTypeConsortium() ? ' and sp.owner.instanceOf = null' : ''
+                            String consortialFilter = contextService.getOrg().isCustomerType_Consortium() ? ' and sp.owner.instanceOf = null' : ''
                             values = SubscriptionProperty.executeQuery('select sp from SubscriptionProperty sp left join sp.owner.orgRelations oo where sp.type = :propDef and ((sp.tenant = :tenant or ((sp.tenant != :tenant and sp.isPublic = true) or sp.instanceOf != null) and :tenant in oo.org))'+consortialFilter,[propDef:propDef, tenant:contextService.getOrg()])
                             break
                         case PropertyDefinition.ORG_PROP: values = OrgProperty.executeQuery('select op from OrgProperty op where op.type = :propDef and ((op.tenant = :tenant and op.isPublic = true) or op.tenant = null)',[propDef:propDef,tenant:contextService.getOrg()])
@@ -404,7 +402,7 @@ class AjaxJsonController {
                     case PropertyDefinition.PRS_PROP: values = PersonProperty.findAllByType(propDef)
                         break*/
                         case PropertyDefinition.LIC_PROP:
-                            String consortialFilter = contextService.getOrg().isCustomerTypeConsortium() ? ' and lp.owner.instanceOf = null' : ''
+                            String consortialFilter = contextService.getOrg().isCustomerType_Consortium() ? ' and lp.owner.instanceOf = null' : ''
                             values = LicenseProperty.executeQuery('select lp from LicenseProperty lp left join lp.owner.orgRelations oo where lp.type = :propDef and ((lp.tenant = :tenant or ((lp.tenant != :tenant and lp.isPublic = true) or lp.instanceOf != null) and :tenant in oo.org))'+consortialFilter,[propDef:propDef, tenant:contextService.getOrg()])
                             break
                     }

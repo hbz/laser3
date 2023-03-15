@@ -165,7 +165,7 @@ abstract class BaseDetailsExport {
     }
     static boolean ctxConsortium() {
         ContextService contextService = BeanStore.getContextService()
-        contextService.getOrg().isCustomerTypeConsortium()
+        contextService.getOrg().isCustomerType_Consortium()
     }
     static boolean ctxInst() {
         ContextService contextService = BeanStore.getContextService()

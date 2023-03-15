@@ -782,7 +782,7 @@
                             alert("${message(code:'financials.newCosts.entitlementError')}");
                         else {
                             if(JSPC.app.finance${idSuffix}.newLicenseeTarget.length === 1 && JSPC.app.finance${idSuffix}.newLicenseeTarget.val().length === 0) {
-                                let alertText = "${institution.isCustomerTypeConsortium() ? message(code:'financials.newCosts.noSubscriptionErrorConsortia') : message(code:'financials.newCosts.noSubscriptionError')}"
+                                let alertText = "${institution.isCustomerType_Consortium() ? message(code:'financials.newCosts.noSubscriptionErrorConsortia') : message(code:'financials.newCosts.noSubscriptionError')}"
                                 alert(alertText);
                             }
                             else {

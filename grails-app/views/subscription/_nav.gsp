@@ -29,7 +29,7 @@
     <g:if test="${((contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM_PRO']) && subscription.instanceOf)}">
         <ui:securedSubNavItem orgPerm="ORG_CONSORTIUM_PRO" controller="subscription" action="surveys" counts="${currentSurveysCounts}" params="${[id:params.id]}" message="subscription.details.surveys.label" />
     </g:if>
-    <g:if test="${((contextService.getOrg().getCustomerType() in ['ORG_INST', 'ORG_MEMBER_BASIC']) || params.orgBasicMemberView)&& subscription?.type == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL}">
+    <g:if test="${(contextService.getOrg().isCustomerType_Inst() || params.orgBasicMemberView) && subscription?.type == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL}">
         <ui:securedSubNavItem orgPerm="ORG_MEMBER_BASIC" controller="subscription" action="surveys" counts="${currentSurveysCounts}" params="${[id:params.id]}" message="subscription.details.surveys.label" />
     </g:if>
     <g:if test="${subscription.packages}">
@@ -52,7 +52,7 @@
     </g:else>
 
 
-    <g:if test="${contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM_PRO', 'ORG_INST']}">
+    <g:if test="${contextService.getOrg().isCustomerType_Pro()}">
         <ui:subNavItem controller="subscription" action="reporting" params="${[id:params.id]}" message="myinst.reporting" />
     </g:if>
     <g:if test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->

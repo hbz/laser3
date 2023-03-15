@@ -45,7 +45,7 @@ class UserService {
             else if (! uss.getValue()) {
                 uss.setValue(firstOrg)
             }
-            if(firstOrg.getCustomerType() in ['ORG_MEMBER_BASIC','ORG_INST'])
+            if(firstOrg.isCustomerType_Inst())
                 user.getSetting(UserSetting.KEYS.IS_NOTIFICATION_FOR_SURVEYS_PARTICIPATION_FINISH, RDStore.YN_YES)
         }
 

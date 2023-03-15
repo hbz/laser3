@@ -116,7 +116,7 @@ class PlatformController  {
                 current:    RDStore.SUBSCRIPTION_CURRENT,
                 expired:    RDStore.SUBSCRIPTION_EXPIRED
         ]
-        if (contextService.getOrg().isCustomerTypeConsortium()) {
+        if (contextService.getOrg().isCustomerType_Consortium()) {
             instanceFilter += " and s.instanceOf = null "
         }
 
@@ -228,7 +228,7 @@ class PlatformController  {
                 current:    RDStore.SUBSCRIPTION_CURRENT,
                 expired:    RDStore.SUBSCRIPTION_EXPIRED
         ]
-        if (contextService.getOrg().isCustomerTypeConsortium()) {
+        if (contextService.getOrg().isCustomerType_Consortium()) {
             instanceFilter += " and s.instanceOf = null "
         }
 

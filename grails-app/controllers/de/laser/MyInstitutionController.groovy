@@ -186,7 +186,7 @@ class MyInstitutionController  {
 
         String instanceFilter = ""
         Map<String, Object> subscriptionParams = [contextOrg:result.contextOrg, roleTypes:[RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA], current:RDStore.SUBSCRIPTION_CURRENT, expired:RDStore.SUBSCRIPTION_EXPIRED]
-        if(result.contextOrg.isCustomerTypeConsortium())
+        if(result.contextOrg.isCustomerType_Consortium())
             instanceFilter += " and s.instanceOf = null "
         Set<Long> idsCurrentSubscriptions = Subscription.executeQuery('select s.id from OrgRole oo join oo.sub s where oo.org = :contextOrg and oo.roleType in (:roleTypes) and (s.status = :current or (s.status = :expired and s.hasPerpetualAccess = true))'+instanceFilter,subscriptionParams)
 
@@ -1441,7 +1441,7 @@ class MyInstitutionController  {
             Map<String, Object> configMap = [:]
             configMap.putAll(params)
             configMap.validOn = checkedDate.getTime()
-            String consFilter = result.institution.isCustomerTypeConsortium() ? ' and s.instanceOf is null' : ''
+            String consFilter = result.institution.isCustomerType_Consortium() ? ' and s.instanceOf is null' : ''
             configMap.pkgIds = SubscriptionPackage.executeQuery('select sp.pkg.id from SubscriptionPackage sp join sp.subscription s join s.orgRelations oo where oo.org = :context and oo.roleType in (:subscrTypes)'+consFilter, [context: result.institution, subscrTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS]])
             ServletOutputStream out = response.outputStream
             Map<String,List> tableData = exportService.generateTitleExportKBART(configMap, IssueEntitlement.class.name)
@@ -1457,7 +1457,7 @@ class MyInstitutionController  {
             Map<String, Object> configMap = [:]
             configMap.putAll(params)
             configMap.validOn = checkedDate.getTime()
-            String consFilter = result.institution.isCustomerTypeConsortium() ? ' and s.instanceOf is null' : ''
+            String consFilter = result.institution.isCustomerType_Consortium() ? ' and s.instanceOf is null' : ''
             configMap.pkgIds = SubscriptionPackage.executeQuery('select sp.pkg.id from SubscriptionPackage sp join sp.subscription s join s.orgRelations oo where oo.org = :context and oo.roleType in (:subscrTypes)'+consFilter, [context: result.institution, subscrTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS]])
             Map<String,List> export = exportService.generateTitleExportCustom(configMap, IssueEntitlement.class.name) //all subscriptions, all packages
             Map sheetData = [:]

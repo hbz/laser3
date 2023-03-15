@@ -1095,7 +1095,7 @@ class ExportClickMeService {
             exportFields.put("participantIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
         }
         String consortiaFilter = ''
-        if(institution.isCustomerTypeConsortium())
+        if(institution.isCustomerType_Consortium())
             consortiaFilter = ' and s.instanceOf = null '
         Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where plat in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg join sp.subscription s join s.orgRelations oo where oo.org = :ctx '+consortiaFilter+')', [ctx: institution]).each { Platform plat ->
             exportFields.put("participantCustomerIdentifiers."+plat.id, [field: null, label: plat.name])
@@ -1146,7 +1146,7 @@ class ExportClickMeService {
             fields.participantIdentifiers.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
         }
         String consortiaFilter = ''
-        if(institution.isCustomerTypeConsortium())
+        if(institution.isCustomerType_Consortium())
             consortiaFilter = ' and s.instanceOf = null '
         Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where plat in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg join sp.subscription s join s.orgRelations oo where oo.org = :ctx '+consortiaFilter+') order by plat.name', [ctx:institution]).each { Platform plat ->
             fields.participantCustomerIdentifiers.fields << ["participantCustomerIdentifiers.${plat.id}":[field: null, label: plat.name]]

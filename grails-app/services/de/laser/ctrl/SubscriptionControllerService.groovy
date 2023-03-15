@@ -152,7 +152,7 @@ class SubscriptionControllerService {
             result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.contextOrg, result.subscription)
 
             Set<Long> excludes = [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id]
-            if(result.institution.isCustomerTypeConsortium())
+            if(result.institution.isCustomerType_Consortium())
                 excludes << RDStore.OR_SUBSCRIPTION_CONSORTIA.id
             // restrict visible for templates/links/orgLinksAsList
             result.visibleOrgRelations = result.subscription.orgRelations.findAll { OrgRole oo -> !(oo.roleType.id in excludes) }
@@ -3813,7 +3813,7 @@ class SubscriptionControllerService {
                 result.editable = accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM_BASIC","INST_EDITOR")
             }
         }
-        result.consortialView = result.showConsortiaFunctions ?: result.contextOrg.isCustomerTypeConsortium()
+        result.consortialView = result.showConsortiaFunctions ?: result.contextOrg.isCustomerType_Consortium()
 
         Map args = [:]
         if (result.consortialView) {

@@ -59,7 +59,7 @@ class SearchController  {
                 params.q = "( ${params.q} )"
             }
 
-            if(params.showMembersObjects && result.contextOrg.getCustomerType()  in ['ORG_CONSORTIUM_BASIC', 'ORG_CONSORTIUM_PRO']){
+            if(params.showMembersObjects && result.contextOrg.isCustomerType_Consortium()){
                 params.consortiaID = result.contextOrg.id
             }
 
