@@ -631,7 +631,7 @@
                         </div>
                     </div>
                 </div>
-                <g:if test="${params.my}">
+                <g:if test="${isProviderOrAgency}">
                     <div class="ui card">
                         <div class="content">
                             <div class="ui accordion">
@@ -1184,10 +1184,6 @@
         </div>
     </aside>
 </div>
-
-<ui:debugInfo>
-    <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]"/>
-</ui:debugInfo>
 
 <laser:script file="${this.getGroovyPageFileName()}">
     $('#country').on('save', function(e, params) {

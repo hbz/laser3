@@ -81,8 +81,8 @@
 
             <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
                 <ui:actionsDropdownItem message="workflow.instantiate" data-ui="modal" href="#modalCreateWorkflow" />
+                <div class="divider"></div>
             </g:if>
-            <div class="divider"></div>
 
         <g:if test="${(contextCustomerType == 'ORG_INST' && subscription._getCalculatedType() == Subscription.TYPE_LOCAL) || (contextCustomerType in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO'] && subscription._getCalculatedType() == Subscription.TYPE_CONSORTIAL)}">
                 <ui:actionsDropdownItem controller="subscription" action="copySubscription" params="${[sourceObjectId: genericOIDService.getOID(subscription), copyObject: true]}" message="myinst.copySubscription" />

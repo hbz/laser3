@@ -112,13 +112,10 @@
                                     <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentSurveys" message="menu.my.surveys" />
                                 </g:if>
 
+                                <div class="divider"></div>
+                                <ui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM_PRO" affiliation="INST_USER" controller="myInstitution" action="currentWorkflows" message="menu.my.workflows" />
+
                                 <g:if test="${accessService.checkPerm('ORG_CONSORTIUM_PRO')}">
-
-                                    <g:if test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
-                                        <div class="divider"></div>
-                                        <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentWorkflows" message="menu.my.workflows" />
-                                    </g:if>
-
                                     <div class="divider"></div>
                                     <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="survey" action="workflowsSurveysConsortia" message="menu.my.surveys" />
                                 </g:if>
@@ -136,6 +133,7 @@
 
                             <div class="menu" role="menu">
                                 <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="dashboard" message="menu.institutions.dash" />
+                                <div class="divider"></div>
 
                                 <ui:link generateElementId="true" class="item" role="menuitem" controller="organisation" action="show" params="[id: contextOrg?.id]">${message(code:'menu.institutions.org_info')}</ui:link>
 
@@ -174,6 +172,7 @@
 
                             <div class="menu" role="menu">
                                 <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="index">${message(code:'default.dashboard')}</ui:link>
+                                <div class="divider"></div>
 
                                 <div class="item" role="menuitem" aria-haspopup="true">
                                     <div class="title">
@@ -244,6 +243,7 @@
 
                             <div class="menu" role="menu">
                                 <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="index">${message(code:'default.dashboard')}</ui:link>
+                                <div class="divider"></div>
 
                                 <div class="item " role="menuitem" aria-haspopup="true">
                                     <div class="title">

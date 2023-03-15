@@ -6,7 +6,12 @@
 <ui:modeSwitch controller="platform" action="show" params="${params}"/>
 
 <ui:breadcrumbs>
-    <ui:crumb controller="platform" action="index" message="platform.show.all"/>
+    <g:if test="${isMyPlatform}">
+        <ui:crumb controller="myInstitution" action="currentPlatforms" message="menu.my.platforms"/>
+    </g:if>
+    <g:else>
+        <ui:crumb controller="platform" action="list" message="platform.show.all"/>
+    </g:else>
     <ui:crumb class="active" id="${platformInstance.id}" text="${platformInstance.name}"/>
 </ui:breadcrumbs>
 

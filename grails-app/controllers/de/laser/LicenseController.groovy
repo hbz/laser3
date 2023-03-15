@@ -605,8 +605,8 @@ class LicenseController {
         redirect controller: 'license', action:params.redirectAction, id:params.instanceId /*, fragment:'docstab' */
     }
 
-    @DebugInfo(perm="ORG_CONSORTIUM_PRO", affil="INST_USER")
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM_PRO", "INST_USER") })
+    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM_PRO", affil="INST_USER")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM_PRO", "INST_USER") })
     @Check404()
     def workflows() {
         Map<String,Object> ctrlResult = licenseControllerService.workflows( this, params )

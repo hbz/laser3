@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4875    14.03.2023  dev     3.1         David   Feature     Breadcumb / Seitentitel für Orgs aufräumen
+
+4879    13.03.2023  dev     3.1         David   Feature     Kennzeichnung von 'Meine'-Objekten
+
 4751    10.03.2023  dev     3.1         Moe     Feature     Umfrage-Kategorie "neu"
 
 4696    10.03.2023  dev     3.1         Moe     Feature     Überprüfung: Titel-Umfrage - Bestand verknüpft?
@@ -23,9 +27,9 @@
 
 --      22.02.2023  rc-3.0  3.0.5       Andreas Bug         Umstrukturierungen für Database Reports
 
-4843    16.02.2023  dev     3.0.5       David   Feature     Database Migration Plugin aktualisieren
+4843    16.02.2023  dev     3.1         David   Feature     Database Migration Plugin aktualisieren
 
---      15.02.2023  dev     3.0.4       David   Feature     Grails 5.3.2
+--      15.02.2023  dev     3.1         David   Feature     Grails 5.3.2
 
 --      15.02.2023  rc-3.0  3.0.4       Andreas Bug         Synchronisationsfehler behoben
 
