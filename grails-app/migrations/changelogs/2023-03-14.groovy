@@ -19,4 +19,22 @@ databaseChangeLog = {
             rollback {}
         }
     }
+
+    changeSet(author: "klober (modified)", id: "1678798160478-3") {
+        grailsChange {
+            change {
+                sql.execute("UPDATE role set r_authority = 'ORG_PRO' WHERE r_authority = 'ORG_INST'")
+            }
+            rollback {}
+        }
+    }
+
+    changeSet(author: "klober (modified)", id: "1678798160478-4") {
+        grailsChange {
+            change {
+                sql.execute("UPDATE role set r_authority = 'ORG_BASIC' WHERE r_authority = 'ORG_MEMBER_BASIC'")
+            }
+            rollback {}
+        }
+    }
 }
