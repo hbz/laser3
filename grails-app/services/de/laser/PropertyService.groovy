@@ -294,7 +294,7 @@ class PropertyService {
         if(obj instanceof Subscription) {
             Subscription s = (Subscription) obj
             objMap.name = s.dropdownNamingConvention(contextOrg)
-            if(contextOrg.getCustomerType() in ['ORG_CONSORTIUM_BASIC', 'ORG_CONSORTIUM_PRO']) {
+            if(contextOrg.isCustomerTypeConsortium()) {
                 objMap.manageChildren = "membersSubscriptionsManagement"
                 objMap.manageChildrenParams = [id:s.id,propertiesFilterPropDef:genericOIDService.getOID(propDef), tab: 'properties']
             }

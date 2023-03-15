@@ -335,6 +335,13 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         result
     }
 
+    boolean isCustomerTypeBasic() {
+        this.getCustomerType() in ['ORG_MEMBER_BASIC', 'ORG_CONSORTIUM_BASIC']
+    }
+    boolean isCustomerTypeConsortium() {
+        this.isCustomerTypeConsortium()
+    }
+
     /**
      * Gets the given OrgSetting enum key, creating new one (with the given default value) if not existing
      * @param key the enum key to look for

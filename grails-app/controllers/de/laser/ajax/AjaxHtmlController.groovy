@@ -527,7 +527,7 @@ class AjaxHtmlController {
         result.addAddresses = params.showAddresses == "true" ? true : ''
         result.org = params.org ? Org.get(Long.parseLong(params.org)) : null
         result.functions = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_CONTACT_PRS, RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_OA_CONTACT]
-        if(result.contextOrg.getCustomerType() in ['ORG_CONSORTIUM_BASIC', 'ORG_CONSORTIUM_PRO']){
+        if(result.contextOrg.isCustomerTypeConsortium()){
             result.functions << RDStore.PRS_FUNC_GASCO_CONTACT
         }
         result.positions = PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION) - [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS]
@@ -590,7 +590,7 @@ class AjaxHtmlController {
         if (result.personInstance){
             result.org = result.personInstance.getBelongsToOrg()
             result.functions = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_CONTACT_PRS, RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_OA_CONTACT]
-            if(contextOrg.getCustomerType() in ['ORG_CONSORTIUM_BASIC', 'ORG_CONSORTIUM_PRO']){
+            if(contextOrg.isCustomerTypeConsortium()){
                 result.functions << RDStore.PRS_FUNC_GASCO_CONTACT
             }
             result.positions = PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION) - [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS]

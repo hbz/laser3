@@ -39,7 +39,7 @@
     </ui:exportDropdown>
     <ui:actionsDropdown>
         <g:if test="${editable}">
-            <g:if test="${institution.getCustomerType() in ['ORG_CONSORTIUM_BASIC', 'ORG_CONSORTIUM_PRO']}">
+            <g:if test="${institution.isCustomerTypeConsortium()}">
 
                 <a href="#createPersonModal" class="item" data-ui="modal"
                    onclick="JSPC.app.personCreate('contactPersonForInstitution');"><g:message

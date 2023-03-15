@@ -97,7 +97,7 @@ class SubscriptionService {
         viableOrgs.add(contextOrg)
 
         String consortiaFilter = ''
-        if(contextOrg.getCustomerType() in ['ORG_CONSORTIUM_BASIC', 'ORG_CONSORTIUM_PRO'])
+        if(contextOrg.isCustomerTypeConsortium())
             consortiaFilter = 'and s.instanceOf = null'
 
         Set<Year> availableReferenceYears = Subscription.executeQuery('select s.referenceYear from OrgRole oo join oo.sub s where s.referenceYear != null and oo.org = :contextOrg '+consortiaFilter+' order by s.referenceYear', [contextOrg: contextOrg])
@@ -2310,7 +2310,7 @@ class SubscriptionService {
                         kind: genericOIDService.resolveOID(entry.kind),
                         form: genericOIDService.resolveOID(entry.form),
                         resource: genericOIDService.resolveOID(entry.resource),
-                        type: (contextOrg.getCustomerType() in ['ORG_CONSORTIUM_BASIC', 'ORG_CONSORTIUM_PRO']) ? RDStore.SUBSCRIPTION_TYPE_CONSORTIAL : RDStore.SUBSCRIPTION_TYPE_LOCAL,
+                        type: (contextOrg.isCustomerTypeConsortium()) ? RDStore.SUBSCRIPTION_TYPE_CONSORTIAL : RDStore.SUBSCRIPTION_TYPE_LOCAL,
                         isPublicForApi: entry.isPublicForApi,
                         hasPerpetualAccess: entry.hasPerpetualAccess,
                         hasPublishComponent: entry.hasPublishComponent,
