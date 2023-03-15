@@ -1583,7 +1583,7 @@ class AjaxController {
         result.institution = contextService.getOrg()
         flash.error = ''
 
-        if (! r(result.user as User).isMemberOf(result.institution as Org)) {
+        if (! (result.user as User).isMemberOf(result.institution as Org)) {
             flash.error = "You do not have permission to access ${contextService.getOrg().name} pages. Please request access on the profile page"
             response.sendError(HttpStatus.SC_FORBIDDEN)
             return
