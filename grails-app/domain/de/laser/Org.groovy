@@ -725,7 +725,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      * @return a {@link List} of {@link User}s associated to this institution; grouped by administrators, editors and users (with reading permissions only)
      */
     Map<String, Object> hasAccessOrgListUser(){
-
         Map<String, Object> result = [:]
 
         result.instAdms = UserOrg.findAllByOrgAndFormalRole(this, Role.findByAuthority('INST_ADM'))

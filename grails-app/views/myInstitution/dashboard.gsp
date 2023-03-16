@@ -8,6 +8,15 @@
 
         <ui:h1HeaderWithIcon text="${institution.name}" />
 
+%{--<pre>--}%
+%{--    ORG_CONSORTIUM_BASIC: ${accessService.checkPerm("ORG_CONSORTIUM_BASIC")}--}%
+%{--    ORG_CONSORTIUM_PRO: ${accessService.checkPerm("ORG_CONSORTIUM_PRO")}--}%
+%{--    ORG_BASIC: ${accessService.checkPerm("ORG_BASIC")}--}%
+%{--    ORG_PRO: ${accessService.checkPerm("ORG_PRO")}--}%
+
+%{--    getCustomerType: ${institution.getCustomerType()}--}%
+%{--</pre>--}%
+
         <div class="ui equal width grid la-clear-before">
             <div class="row">
 
@@ -69,7 +78,7 @@
             ${dueDatesCount} ${message(code:'myinst.dash.due_dates.label')}
         </a>
 
-        <g:if test="${institution.getCustomerType() in ['ORG_PRO', 'ORG_CONSORTIUM_BASIC', 'ORG_CONSORTIUM_PRO']}">
+        <g:if test="${institution.isCustomerType_Consortium() || institution.getCustomerType() == 'ORG_PRO'}">
             <a class="${us_dashboard_tab.value == 'PendingChanges' ? 'active item':'item'}" data-tab="pendingchanges">
                 <i class="history icon large"></i>
                 <span id="pendingCount">${message(code:'myinst.pendingChanges.label', args: [message(code:'myinst.loadPending')])}</span>
@@ -85,7 +94,7 @@
             ${systemAnnouncements.size()} ${message(code:'announcement.plural')}
         </a>
 
-        <g:if test="${accessService.checkPerm('ORG_BASIC,ORG_CONSORTIUM_PRO')}">
+        <g:if test="${accessService.checkPerm(CustomerTypeService.PERMS_ORG_BASIC_CONSORTIUM_PRO)}">
             <a class="${us_dashboard_tab.value == 'Surveys' ? 'active item' : 'item'}" data-tab="surveys">
                 <i class="chart pie icon large"></i>
                 <span id="surveyCount">${message(code: 'myinst.dash.survey.label', args: [message(code: 'myinst.loadPending')])}</span>
@@ -115,7 +124,7 @@
             </div>
         </div>
 
-        <g:if test="${institution.getCustomerType() in ['ORG_PRO', 'ORG_CONSORTIUM_BASIC', 'ORG_CONSORTIUM_PRO']}">
+        <g:if test="${institution.isCustomerType_Consortium() || institution.getCustomerType() == 'ORG_PRO'}">
             <div class="ui bottom attached tab ${us_dashboard_tab.value == 'PendingChanges' ? 'active':''}" data-tab="pendingchanges" id="pendingChanges">
             </div>
         </g:if>
@@ -240,7 +249,7 @@
 
         </g:if>
 
-        <g:if test="${accessService.checkPerm('ORG_BASIC,ORG_CONSORTIUM_PRO')}">
+        <g:if test="${accessService.checkPerm(CustomerTypeService.PERMS_ORG_BASIC_CONSORTIUM_PRO)}">
             <div class="ui bottom attached tab segment ${us_dashboard_tab.value == 'Surveys' ? 'active' : ''}"
                  data-tab="surveys" style="border-top: 1px solid #d4d4d5; ">
                 <div class="la-float-right">

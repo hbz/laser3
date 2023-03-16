@@ -1,4 +1,3 @@
-
 <%@ page import="de.laser.License;de.laser.RefdataCategory;de.laser.interfaces.CalculatedType;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.RefdataValue;de.laser.Links;de.laser.Org" %>
 
 <laser:htmlStart message="license.current" serviceInjection="true" />
@@ -245,7 +244,7 @@
                           </td>
                           <g:if test="${'action' in licenseFilterTable}">
                               <td class="x">
-                              <g:if test="${(contextCustomerType == "ORG_PRO" && l._getCalculatedType() == License.TYPE_LOCAL) || (contextCustomerType in ['ORG_CONSORTIUM_BASIC', 'ORG_CONSORTIUM_PRO'] && l._getCalculatedType() == License.TYPE_CONSORTIAL)}">
+                              <g:if test="${(contextCustomerType == "ORG_PRO" && l._getCalculatedType() == License.TYPE_LOCAL) || (customerTypeService.isConsortium( contextCustomerType ) && l._getCalculatedType() == License.TYPE_CONSORTIAL)}">
                                   <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'license.details.copy.tooltip')}">
                                       <g:link controller="license" action="copyLicense" params="${[sourceObjectId: genericOIDService.getOID(l), copyObject: true]}" class="ui icon button blue la-modern-button">
                                           <i class="copy icon"></i>
