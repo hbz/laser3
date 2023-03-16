@@ -16,7 +16,8 @@ class CustomerTypeService {
     public static final String PERMS_ORG_BASIC_CONSORTIUM_PRO   = 'ORG_BASIC,ORG_CONSORTIUM_PRO'
     public static final String PERMS_ORG_PRO_CONSORTIUM_BASIC   = 'ORG_PRO,ORG_CONSORTIUM_BASIC'
 
-    //
+    // -- string parsing --
+
     boolean isConsortium(String customerType) {
         customerType == ORG_CONSORTIUM_BASIC || customerType == ORG_CONSORTIUM_PRO
     }
@@ -26,6 +27,8 @@ class CustomerTypeService {
 //    boolean isOrgProOrConsortiumBasic(String customerType) {
 //        customerType == ORG_PRO || customerType == ORG_CONSORTIUM_BASIC
 //    }
+
+    // -- oss customer type --
 
 //    boolean isCustomerType_Basic(Org org) {
 //        org.getCustomerType() in [ ORG_BASIC, ORG_CONSORTIUM_BASIC ]

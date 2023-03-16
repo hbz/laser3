@@ -302,7 +302,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
             OrgSetting.add(this, OrgSetting.KEYS.CUSTOMER_TYPE, Role.findByAuthorityAndRoleType('ORG_BASIC', 'org'))
             return true
         }
-
         false
     }
 
@@ -346,6 +345,19 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     }
     boolean isCustomerType_Consortium() {
         this.getCustomerType() in [ CustomerTypeService.ORG_CONSORTIUM_BASIC, CustomerTypeService.ORG_CONSORTIUM_PRO ]
+    }
+
+    boolean isCustomerType_Inst_Basic() {
+        this.getCustomerType() == CustomerTypeService.ORG_BASIC
+    }
+    boolean isCustomerType_Inst_Pro() {
+        this.getCustomerType() == CustomerTypeService.ORG_PRO
+    }
+    boolean isCustomerType_Consortium_Basic() {
+        this.getCustomerType() == CustomerTypeService.ORG_CONSORTIUM_BASIC
+    }
+    boolean isCustomerType_Consortium_Pro() {
+        this.getCustomerType() == CustomerTypeService.ORG_CONSORTIUM_PRO
     }
 
     /**
@@ -457,8 +469,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      */
     List<User> getAllValidInstAdmins() {
         List<User> admins = User.executeQuery(
-                "select u from User u join u.affiliations uo where " +
-                        "uo.org = :org and uo.formalRole = :role and u.enabled = true",
+                "select u from User u join u.affiliations uo where uo.org = :org and uo.formalRole = :role and u.enabled = true",
                 [
                         org: this, role: Role.findByAuthority('INST_ADM')
                 ]

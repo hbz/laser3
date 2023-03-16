@@ -318,7 +318,7 @@ class AjaxHtmlController {
         ctrlResult.result.costPerUse = [:]
         if(ctrlResult.result.subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION) {
             ctrlResult.result.costPerUse.consortialData = subscriptionControllerService.calculateCostPerUse(ctrlResult.result, "consortial")
-            if(ctrlResult.result.institution.getCustomerType() == "ORG_PRO") {
+            if (ctrlResult.result.institution.isCustomerType_Inst_Pro()) {
                 ctrlResult.result.costPerUse.ownData = subscriptionControllerService.calculateCostPerUse(ctrlResult.result, "own")
             }
         }

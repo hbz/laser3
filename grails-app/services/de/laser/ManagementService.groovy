@@ -532,7 +532,7 @@ class ManagementService {
                         if(params.filterPropValue) {
                             Set<Subscription> subscriptions = Subscription.findAllByIdInList(selectedSubs)
                             subscriptions.each { Subscription subscription ->
-                                if (subscription.isEditableBy(result.user) || (subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && result.institution.getCustomerType() == 'ORG_PRO')) {
+                                if (subscription.isEditableBy(result.user) || (subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && result.institution.isCustomerType_Inst_Pro())) {
                                     List<SubscriptionProperty> existingProps = []
                                     String propDefFlag
                                     if (propertiesFilterPropDef.tenant == result.institution) {
@@ -796,7 +796,7 @@ class ManagementService {
                 if(params.noteTitle && params.noteContent) {
                     if(params.processOption == 'newNote') {
                         subscriptions.each { Subscription subscription ->
-                            if (subscription.isEditableBy(result.user) || (subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && result.institution.getCustomerType() == 'ORG_PRO')) {
+                            if (subscription.isEditableBy(result.user) || (subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && result.institution.isCustomerType_Inst_Pro())) {
 
                                 Doc doc_content = new Doc(contentType: Doc.CONTENT_TYPE_STRING,
                                         title: params.noteTitle,
@@ -843,7 +843,7 @@ class ManagementService {
                 Set<Subscription> subscriptions = Subscription.findAllByIdInList(selectedSubs)
                     if(params.processOption == 'newDoc') {
                         subscriptions.eachWithIndex { Subscription subscription, int status ->
-                            if (subscription.isEditableBy(result.user) || (subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && result.institution.getCustomerType() == 'ORG_PRO')) {
+                            if (subscription.isEditableBy(result.user) || (subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && result.institution.isCustomerType_Inst_Pro())) {
                                 if (input_stream) {
                                     Doc doc_content = new Doc(
                                             contentType: Doc.CONTENT_TYPE_FILE,
