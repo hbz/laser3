@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.AppUtils; de.laser.Subscription; de.laser.Links; de.laser.interfaces.CalculatedType; de.laser.OrgRole; de.laser.Org; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.SubscriptionPackage" %>
+<%@ page import="de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.Subscription; de.laser.Links; de.laser.interfaces.CalculatedType; de.laser.OrgRole; de.laser.Org; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.SubscriptionPackage" %>
 
 <laser:serviceInjection />
 <g:set var="actionStart" value="${System.currentTimeMillis()}"/>
@@ -69,7 +69,7 @@
             </ui:exportDropdownItem>--%>
         </ui:exportDropdown>
 </g:if>
-<g:if test="${accessService.checkPermAffiliation('ORG_PRO,ORG_CONSORTIUM_BASIC','INST_EDITOR')}">
+<g:if test="${accessService.checkPermAffiliation(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC,'INST_EDITOR')}">
     <ui:actionsDropdown>
         <%--<g:if test="${editable}">--%>
             <ui:actionsDropdownItem message="task.create.new" data-ui="modal" href="#modalCreateTask" />
@@ -199,7 +199,7 @@
         </g:if>
     </ui:actionsDropdown>
 </g:if>
-<g:if test="${editable || accessService.checkPermAffiliation('ORG_PRO,ORG_CONSORTIUM_BASIC','INST_EDITOR')}">
+<g:if test="${editable || accessService.checkPermAffiliation(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC,'INST_EDITOR')}">
     <laser:render template="/templates/documents/modal" model="${[ownobj: subscription, owntp: 'subscription']}"/>
     <laser:render template="/templates/tasks/modal_create" model="${[ownobj: subscription, owntp: 'subscription']}"/>
 </g:if>

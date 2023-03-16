@@ -161,7 +161,7 @@ class OrganisationController  {
             log.debug( 'settings for own org')
             result.settings.addAll(allSettings.findAll { it.key in ownerSet })
 
-            if (result.institution.hasPerm(CustomerTypeService.PERMS_PRO_CONS_BASIC)) {
+            if (result.institution.hasPerm(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC)) {
                 result.settings.addAll(allSettings.findAll { it.key in accessSet })
                 result.settings.addAll(allSettings.findAll { it.key in credentialsSet })
             }

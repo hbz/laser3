@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyConfig; de.laser.Subscription; de.laser.finance.CostItem; de.laser.interfaces.CalculatedType;de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.License;de.laser.Links" %>
+<%@ page import="de.laser.CustomerTypeService; de.laser.survey.SurveyConfig; de.laser.Subscription; de.laser.finance.CostItem; de.laser.interfaces.CalculatedType;de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.License;de.laser.Links" %>
 <laser:serviceInjection />
 
 <g:form action="compareSubscriptions" controller="compare" method="post">
@@ -144,7 +144,7 @@
                             </g:if>
                             <g:if test="${s.isEditableBy(user) && (s.packages == null || s.packages.size() == 0)}">
                                 <i>
-                                    <g:if test="${accessService.checkPermAffiliationX("ORG_PRO,ORG_CONSORTIUM_BASIC","INST_EDITOR","ROLE_ADMIN")}">
+                                    <g:if test="${accessService.checkPermAffiliationX(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC,"INST_EDITOR","ROLE_ADMIN")}">
                                         <g:message code="myinst.currentSubscriptions.no_links" />
                                         <g:link controller="subscription" action="linkPackage"
                                                 id="${s.id}">${message(code: 'subscription.details.linkPackage.label')}</g:link>

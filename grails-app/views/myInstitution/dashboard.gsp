@@ -37,9 +37,9 @@
 
                 <div class="column">
                     <div class="ui divided relaxed list">
-                        <ui:securedMainNavItem orgPerm="ORG_PRO,ORG_CONSORTIUM_BASIC" controller="myInstitution" action="tasks" message="task.plural" />
-                        <ui:securedMainNavItem orgPerm="ORG_PRO,ORG_CONSORTIUM_BASIC" controller="myInstitution" action="addressbook" message="menu.institutions.myAddressbook" />
-                        <ui:securedMainNavItem orgPerm="ORG_PRO,ORG_CONSORTIUM_BASIC" controller="myInstitution" action="managePrivatePropertyDefinitions" message="menu.institutions.manage_props" />
+                        <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="tasks" message="task.plural" />
+                        <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="addressbook" message="menu.institutions.myAddressbook" />
+                        <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="managePrivatePropertyDefinitions" message="menu.institutions.manage_props" />
                     </div>
                 </div>
             </div>
@@ -92,7 +92,7 @@
             </a>
         </g:if>
 
-        <g:if test="${accessService.checkPerm('ORG_PRO,ORG_CONSORTIUM_BASIC')}">
+        <g:if test="${accessService.checkPerm(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC)}">
             <a class="${us_dashboard_tab.value == 'Tasks' ? 'active item':'item'}" data-tab="tasks">
                 <i class="calendar check outline icon large"></i>
                 ${tasksCount} ${message(code:'myinst.dash.task.label')}
@@ -160,7 +160,7 @@
             </g:if>
         </div>
 
-        <g:if test="${accessService.checkPerm('ORG_PRO,ORG_CONSORTIUM_BASIC')}">
+        <g:if test="${accessService.checkPerm(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC)}">
         <div class="ui bottom attached tab ${us_dashboard_tab.value == 'Tasks' ? 'active':''}" data-tab="tasks">
 
             <g:if test="${editable}">

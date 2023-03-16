@@ -1,5 +1,5 @@
 <%@ page import="de.laser.OrgSetting; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.Org; de.laser.auth.Role; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
-<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
+<%@ page import="de.laser.CustomerTypeService; grails.plugin.springsecurity.SpringSecurityUtils" %>
 
 <laser:htmlStart message="org.nav.options" serviceInjection="true" />
 
@@ -21,7 +21,7 @@
             </g:if>
             <ui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'ezb']" tab="ezb" text="${message(code: 'org.setting.tab.ezb')}"/>
             <ui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'natstat']" tab="natstat" text="${message(code: 'org.setting.tab.natstat')}"/>
-            <g:if test="${accessService.checkPermX('ORG_PRO,ORG_CONSORTIUM_BASIC', 'ROLE_ADMIN')}">
+            <g:if test="${accessService.checkPermX(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC, 'ROLE_ADMIN')}">
                 <ui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'oamonitor']" tab="oamonitor" text="${message(code: 'org.setting.tab.oamonitor')}"/>
             </g:if>
         </ui:tabs>

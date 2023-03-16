@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.OrgSubjectGroup; de.laser.OrgRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Org; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting;de.laser.Combo; de.laser.Contact; de.laser.remote.ApiSource" %>
+<%@ page import="de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.OrgSubjectGroup; de.laser.OrgRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Org; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting;de.laser.Combo; de.laser.Contact; de.laser.remote.ApiSource" %>
 
 <g:set var="wekbAPI" value="${ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"/>
 
@@ -786,7 +786,7 @@
                     </g:if>
                 </g:if>
 
-            <g:if test="${accessService.checkPerm("ORG_PRO,ORG_CONSORTIUM_BASIC")}">
+            <g:if test="${accessService.checkPerm(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC)}">
                 <div id="new-dynamic-properties-block">
                     <laser:render template="properties" model="${[
                             orgInstance   : orgInstance,

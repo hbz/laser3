@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.AppUtils; de.laser.License; de.laser.interfaces.CalculatedType; de.laser.storage.RDStore; de.laser.Org" %>
+<%@ page import="de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.License; de.laser.interfaces.CalculatedType; de.laser.storage.RDStore; de.laser.Org" %>
 <laser:serviceInjection />
 
 <g:if test="${actionName == 'show'}">
@@ -50,7 +50,7 @@
         </g:if>
         <g:if test="${actionName == 'show'}">
             <%-- the second clause is to prevent the menu display for consortia at member subscriptions --%>
-            <g:if test="${accessService.checkPermAffiliation('ORG_PRO, ORG_CONSORTIUM_BASIC','INST_EDITOR') && !(institution.id == license.getLicensingConsortium()?.id && license.instanceOf)}">
+            <g:if test="${accessService.checkPermAffiliation(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC,'INST_EDITOR') && !(institution.id == license.getLicensingConsortium()?.id && license.instanceOf)}">
                 <div class="divider"></div>
                 <ui:actionsDropdownItem data-ui="modal" href="#propDefGroupBindings" message="menu.institutions.configure_prop_groups" />
             </g:if>
@@ -76,7 +76,7 @@
     </ui:actionsDropdown>
 </g:if>
 
-<g:if test="${editable || accessService.checkPermAffiliation('ORG_PRO,ORG_CONSORTIUM_BASIC','INST_EDITOR')}">
+<g:if test="${editable || accessService.checkPermAffiliation(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC,'INST_EDITOR')}">
     <laser:render template="/templates/tasks/modal_create" model="${[ownobj:license, owntp:'license']}"/>
     <laser:render template="/templates/documents/modal" model="${[ownobj:license, owntp:'license']}"/>
 </g:if>
