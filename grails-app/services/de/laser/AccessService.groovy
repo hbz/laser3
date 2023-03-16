@@ -297,7 +297,7 @@ class AccessService {
      * @return the result of {@link #checkPermAffiliation(java.lang.String, java.lang.String)} for [ORG_PRO, ORG_CONSORTIUM_BASIC] and INST_EDTOR as arguments
      */
     boolean checkConstraint_ORG_COM_EDITOR() {
-        checkPermAffiliation('ORG_PRO,ORG_CONSORTIUM_BASIC', 'INST_EDITOR')
+        checkPermAffiliation(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')
     }
 
     // ----- REFACTORING -----

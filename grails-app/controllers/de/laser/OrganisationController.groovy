@@ -9,8 +9,6 @@ import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.auth.UserOrg
 import de.laser.properties.PropertyDefinition
- 
-import de.laser.helper.*
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
@@ -163,7 +161,7 @@ class OrganisationController  {
             log.debug( 'settings for own org')
             result.settings.addAll(allSettings.findAll { it.key in ownerSet })
 
-            if (result.institution.hasPerm('ORG_CONSORTIUM_BASIC,ORG_PRO')) {
+            if (result.institution.hasPerm(CustomerTypeService.PERMS_PRO_CONS_BASIC)) {
                 result.settings.addAll(allSettings.findAll { it.key in accessSet })
                 result.settings.addAll(allSettings.findAll { it.key in credentialsSet })
             }
@@ -783,9 +781,9 @@ class OrganisationController  {
      * Creates a new provider organisation with the given parameters
      * @return the details view of the provider or the creation view in case of an error
      */
-    @DebugInfo(perm="ORG_PRO,ORG_CONSORTIUM_BASIC", affil="INST_EDITOR", specRole="ROLE_ADMIN", wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(perm=CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN", wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_PRO,ORG_CONSORTIUM_BASIC", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC, "INST_EDITOR", "ROLE_ADMIN")
     })
     def createProvider() {
         Org.withTransaction {
@@ -813,9 +811,9 @@ class OrganisationController  {
      * Call to create a new provider; offers first a query for the new name to insert in order to exclude duplicates
      * @return the empty form (with a submit to proceed with the new organisation) or a list of eventual name matches
      */
-    @DebugInfo(perm="ORG_PRO,ORG_CONSORTIUM_BASIC", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugInfo(perm=CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_PRO,ORG_CONSORTIUM_BASIC", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC, "INST_EDITOR", "ROLE_ADMIN")
     })
     def findProviderMatches() {
 
@@ -998,7 +996,7 @@ class OrganisationController  {
         //IF ORG is a Provider and is NOT ex we:kb
         if(!result.orgInstance.gokbId && (result.orgInstance.sector == RDStore.O_SECTOR_PUBLISHER || RDStore.OT_PROVIDER.id in result.allOrgTypeIds)) {
             result.editable_identifier = accessService.checkMinUserOrgRole(result.user, result.orgInstance, 'INST_EDITOR') ||
-                    accessService.checkPermAffiliationX("ORG_PRO,ORG_CONSORTIUM_BASIC", "INST_EDITOR", "ROLE_ADMIN")
+                    accessService.checkPermAffiliationX(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC, "INST_EDITOR", "ROLE_ADMIN")
         }
         else if(!result.orgInstance.gokbId) {
             if(accessService.checkPerm("ORG_CONSORTIUM_BASIC")) {
@@ -1060,7 +1058,7 @@ class OrganisationController  {
                     result.customerIdentifier = CustomerIdentifier.executeQuery(query+sort, queryParams)
                 } else if (inContextOrg) {
 
-                    if (result.institution.hasPerm('ORG_CONSORTIUM_BASIC,ORG_PRO')) {
+                    if (result.institution.hasPerm(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC)) {
                         result.customerIdentifier = CustomerIdentifier.executeQuery(query+sort, queryParams)
                     } else if (['ORG_BASIC'].contains(result.institution.getCustomerType())) {
                         result.customerIdentifier = CustomerIdentifier.executeQuery(query+sort, queryParams)
@@ -1084,8 +1082,8 @@ class OrganisationController  {
      * @return the task table view
      * @see Task
      */
-    @DebugInfo(perm="ORG_PRO,ORG_CONSORTIUM_BASIC", affil="INST_USER")
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_PRO,ORG_CONSORTIUM_BASIC", "INST_USER") })
+    @DebugInfo(perm=CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC, affil="INST_USER")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC, "INST_USER") })
     @Check404(domain=Org)
     def tasks() {
         Map<String,Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
@@ -1117,8 +1115,8 @@ class OrganisationController  {
      * @see Doc
      * @see DocContext
      */
-    @DebugInfo(perm="ORG_PRO,ORG_CONSORTIUM_BASIC", affil="INST_USER")
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_PRO,ORG_CONSORTIUM_BASIC", "INST_USER") })
+    @DebugInfo(perm=CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC, affil="INST_USER")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC, "INST_USER") })
     @Check404(domain=Org)
     def documents() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
@@ -1429,8 +1427,8 @@ class OrganisationController  {
      * Call to list the public contacts of the given organisation
      * @return a table view of public contacts
      */
-    @DebugInfo(perm="ORG_PRO,ORG_CONSORTIUM_BASIC", affil="INST_USER")
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_PRO,ORG_CONSORTIUM_BASIC", "INST_USER") })
+    @DebugInfo(perm=CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC, affil="INST_USER")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC, "INST_USER") })
     @Check404(domain=Org)
     def addressbook() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)

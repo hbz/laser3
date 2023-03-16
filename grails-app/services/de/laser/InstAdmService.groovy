@@ -85,7 +85,7 @@ class InstAdmService {
             return result
         }
         else {
-            return accessService.checkPermAffiliation("ORG_PRO,ORG_CONSORTIUM_BASIC", "INST_ADM")
+            return accessService.checkPermAffiliation(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC, "INST_ADM")
         }
     }
 
