@@ -405,9 +405,9 @@ class WorkflowService {
 
     private boolean _innerPermissionCheck(String userRoleName) {
         User user = contextService.getUser()
-        if (user.isAdmin() || user.isYoda()) {
-            return true
-        }
+//        if (user.isAdmin() || user.isYoda()) {
+//            return true
+//        }
         Org ctxOrg = contextService.getOrg()
         if (userRoleName && ctxOrg.isCustomerType_Pro() && user.hasAffiliationForForeignOrg(userRoleName, ctxOrg)) {
             return true
