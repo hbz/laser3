@@ -262,7 +262,7 @@ class LicenseController {
         result.institution = contextService.getOrg()
 
         License licenseCopy
-            if (accessService.checkPerm(" ORG_CONSORTIUM_BASIC")) {
+            if (accessService.checkPerm("ORG_CONSORTIUM_BASIC")) {
 
                 if (params.cmd == 'generate') {
                     licenseCopy = institutionsService.copyLicense(
