@@ -99,7 +99,7 @@
                 </td>
                 <td class="x">
 
-                    <g:if test="${(contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO'])}">
+                    <g:if test="${(contextOrg.isCustomerType_Consortium())}">
                             <span class="la-popup-tooltip la-delay"
                                   data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
                                 <g:link controller="survey" action="evaluationParticipant"

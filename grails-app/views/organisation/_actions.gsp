@@ -1,9 +1,9 @@
-<%@ page import="de.laser.utils.AppUtils; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.storage.RDStore" %>
 <laser:serviceInjection/>
 
-<g:if test="${accessService.checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN')}">
+<g:if test="${accessService.checkPermAffiliationX(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC,'INST_EDITOR','ROLE_ADMIN')}">
     <ui:actionsDropdown>
-        <g:if test="${editable || accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM','INST_EDITOR')}">
+        <g:if test="${editable || accessService.checkPermAffiliation(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC,'INST_EDITOR')}">
             <g:if test="${actionName == 'list'}">
                 <ui:actionsDropdownItem controller="organisation" action="create" message="org.create_new.label"/>
             </g:if>
@@ -18,11 +18,9 @@
                 <ui:actionsDropdownItem data-ui="modal" href="#modalCreateDocument" message="template.documents.add"/>
                 <ui:actionsDropdownItem data-ui="modal" href="#modalCreateNote" message="template.notes.add"/>
 
-                <g:if test="${inContextOrg || isProviderOrAgency}">
-                    <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
-                        <div class="divider"></div>
-                        <ui:actionsDropdownItem message="workflow.instantiate" data-ui="modal" href="#modalCreateWorkflow" />
-                    </g:if>
+                <g:if test="${(inContextOrg || isProviderOrAgency) && workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
+                    <div class="divider"></div>
+                    <ui:actionsDropdownItem message="workflow.instantiate" data-ui="modal" href="#modalCreateWorkflow" />
                 </g:if>
 
 %{--                <ui:actionsDropdownItem data-ui="modal" href="#propDefGroupBindings" message="menu.institutions.configure_prop_groups" />--}% %{-- erms-4798 --}%
@@ -83,7 +81,7 @@
         </g:if>
     </ui:actionsDropdown>
 </g:if>
-<g:elseif test="${accessService.checkPermAffiliationX('ORG_BASIC_MEMBER','INST_EDITOR','ROLE_ADMIN')}">
+<g:elseif test="${accessService.checkPermAffiliationX('ORG_BASIC','INST_EDITOR','ROLE_ADMIN')}">
     <g:if test="${actionName in ['show','notes']}">
         <ui:actionsDropdown>
             <ui:actionsDropdownItem message="template.notes.add" data-ui="modal" href="#modalCreateNote"/>
@@ -127,7 +125,7 @@
 </g:elseif>
 <%-- secure against listInstitution, where no orgId is given --%>
 <g:if test="${createModal}">
-    <g:if test="${editable || accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM','INST_EDITOR')}">
+    <g:if test="${editable || accessService.checkPermAffiliation(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC,'INST_EDITOR')}">
         <laser:render template="/templates/tasks/modal_create" model="${[ownobj: orgInstance, owntp: 'org']}"/>
         <laser:render template="/templates/documents/modal" model="${[ownobj: orgInstance, institution: institution, owntp: 'org']}"/>
     </g:if>

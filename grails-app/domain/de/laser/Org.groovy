@@ -105,7 +105,8 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
 
     static transients = [
             'deleted', 'customerType', 'customerTypeI10n', 'designation',
-            'calculatedPropDefGroups', 'empty', 'consortiaMember'
+            'calculatedPropDefGroups', 'empty', 'consortiaMember',
+            'customerType_Basic', 'customerType_Pro', 'customerType_Inst', 'customerType_Consortium',
     ] // mark read-only accessor methods
 
     static mappedBy = [
@@ -290,7 +291,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     }
 
     /**
-     * Sets for an institution the default customer type, that is ORG_BASIC_MEMBER for consortium members with a basic set of permissions
+     * Sets for an institution the default customer type, that is ORG_BASIC for consortium members with a basic set of permissions
      * @return true if the setup was successful, false otherwise
      */
     boolean setDefaultCustomerType() {
@@ -298,7 +299,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
 
         if (oss == OrgSetting.SETTING_NOT_FOUND) {
             log.debug ('Setting default customer type for org: ' + this.id)
-            OrgSetting.add(this, OrgSetting.KEYS.CUSTOMER_TYPE, Role.findByAuthorityAndRoleType('ORG_BASIC_MEMBER', 'org'))
+            OrgSetting.add(this, OrgSetting.KEYS.CUSTOMER_TYPE, Role.findByAuthorityAndRoleType('ORG_BASIC', 'org'))
             return true
         }
 
@@ -311,7 +312,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      */
     String getCustomerType() {
         String result
-
         def oss = OrgSetting.get(this, OrgSetting.KEYS.CUSTOMER_TYPE)
 
         if (oss != OrgSetting.SETTING_NOT_FOUND) {
@@ -326,13 +326,26 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      */
     String getCustomerTypeI10n() {
         String result
-
         def oss = OrgSetting.get(this, OrgSetting.KEYS.CUSTOMER_TYPE)
 
         if (oss != OrgSetting.SETTING_NOT_FOUND) {
             result = oss.roleValue?.getI10n('authority')
         }
         result
+    }
+
+    boolean isCustomerType_Basic() {
+        this.getCustomerType() in [ CustomerTypeService.ORG_BASIC, CustomerTypeService.ORG_CONSORTIUM_BASIC ]
+    }
+    boolean isCustomerType_Pro() {
+        this.getCustomerType() in [ CustomerTypeService.ORG_PRO, CustomerTypeService.ORG_CONSORTIUM_PRO ]
+    }
+
+    boolean isCustomerType_Inst() {
+        this.getCustomerType() in [ CustomerTypeService.ORG_BASIC, CustomerTypeService.ORG_PRO ]
+    }
+    boolean isCustomerType_Consortium() {
+        this.getCustomerType() in [ CustomerTypeService.ORG_CONSORTIUM_BASIC, CustomerTypeService.ORG_CONSORTIUM_PRO ]
     }
 
     /**
@@ -762,7 +775,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      */
     String dropdownNamingConvention(Org contextOrg){
         String result = ''
-        if (contextOrg.getCustomerType() in ['ORG_BASIC_MEMBER','ORG_INST']){
+        if (contextOrg.isCustomerType_Inst()){
             if (name) {
                 result += name
             }

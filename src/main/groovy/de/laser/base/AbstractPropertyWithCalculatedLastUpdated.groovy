@@ -21,7 +21,7 @@ import groovy.util.logging.Slf4j
  * The property belongs to a tenant {@link de.laser.Org} who may edit the value and configure its visibility setting. If it is not visible, no one except the tenant organisation may see the property.
  * Subscription and license properties may be inherited to member subscriptions / licenses; if they are public, the member may view but not edit the property.
  * This is also the case if a consortium defines a property directly in a member subscription or license and sets it to public; the member can see but not edit.
- * This is inversely the case if a member organisation (it needs to have at least ORG_INST role) defines a property in the member subscription or license and sets it to public - then everyone sees but no one can edit the property.
+ * This is inversely the case if a member organisation (it needs to have at least ORG_PRO role) defines a property in the member subscription or license and sets it to public - then everyone sees but no one can edit the property.
  * This is also the case if someone defines an {@link de.laser.properties.OrgProperty} or {@link de.laser.properties.PlatformProperty} - only the tenant can edit the property and the visibility depends on the isPublic flag.
  * Excepted hereof are OrgProperties/PlatformProperties which are defined before the introduction of tenant; those properties are editable by everyone as tenant is null at those properties.
  * {@link de.laser.properties.PersonProperty} is always private.

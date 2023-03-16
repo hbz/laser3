@@ -114,7 +114,7 @@ class FinanceControllerService {
         //Determine own org belonging, then, in which relationship I am to the given subscription instance
         switch(result.institution.getCustomerType()) {
         //cases one to three
-            case 'ORG_CONSORTIUM':
+            case 'ORG_CONSORTIUM_BASIC':
             case 'ORG_CONSORTIUM_PRO':
                 if (result.subscription) {
                     //cases two and three: child subscription
@@ -168,7 +168,7 @@ class FinanceControllerService {
                 }
                 break
         //cases four and five
-            case 'ORG_INST':
+            case 'ORG_PRO':
                 if (result.subscription) {
                     //case four: child subscription
                     if(result.subscription.instanceOf) {
@@ -191,13 +191,13 @@ class FinanceControllerService {
                 }
                 break
         //cases six: basic member
-            case 'ORG_BASIC_MEMBER':
+            case 'ORG_BASIC':
                 dataToDisplay << 'subscr'
                 result.showView = 'subscr'
                 break
         }
         if (editable)
-            result.editable = accessService.checkPermAffiliationX("ORG_INST, ORG_CONSORTIUM","INST_EDITOR","ROLE_ADMIN")
+            result.editable = accessService.checkPermAffiliationX(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC,"INST_EDITOR","ROLE_ADMIN")
         result.dataToDisplay = dataToDisplay
         //override default view to show if checked by pagination or from elsewhere
         if (params.showView){

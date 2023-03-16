@@ -24,9 +24,10 @@
 
     <div class="ui list secInfoWrapper">
         <div class="item">
-            <span class="IS_AUTHENTICATED_FULLY">ORG_INST</span> &rArr;
-            <span class="ROLE_USER">ORG_BASIC_MEMBER</span> |
-            <span class="ROLE_DATAMANAGER">ORG_CONSORTIUM</span>
+            <span class="IS_AUTHENTICATED_FULLY">ORG_PRO</span> &rArr;
+            <span class="ROLE_USER">ORG_BASIC</span> |
+            <span class="ROLE_DATAMANAGER">ORG_CONSORTIUM_PRO</span> &rArr;
+            <span class="ROLE_DATAMANAGER">ORG_CONSORTIUM_BASIC</span>
         </div>
     </div>
 

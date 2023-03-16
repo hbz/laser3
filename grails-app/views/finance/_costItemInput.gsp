@@ -380,7 +380,7 @@
                         </select>
 
                     </div>
-                    <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
+                    <g:if test="${accessService.checkPerm("ORG_CONSORTIUM_BASIC")}">
                         <div class="ui checkbox">
                             <g:checkBox name="show.subscriber" value="true" checked="true"
                                         onchange="JSPC.app.adjustDropdown()"/>
@@ -782,7 +782,7 @@
                             alert("${message(code:'financials.newCosts.entitlementError')}");
                         else {
                             if(JSPC.app.finance${idSuffix}.newLicenseeTarget.length === 1 && JSPC.app.finance${idSuffix}.newLicenseeTarget.val().length === 0) {
-                                let alertText = "${institution.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO'] ? message(code:'financials.newCosts.noSubscriptionErrorConsortia') : message(code:'financials.newCosts.noSubscriptionError')}"
+                                let alertText = "${institution.isCustomerType_Consortium() ? message(code:'financials.newCosts.noSubscriptionErrorConsortia') : message(code:'financials.newCosts.noSubscriptionError')}"
                                 alert(alertText);
                             }
                             else {

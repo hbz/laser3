@@ -33,7 +33,7 @@ class AccessPointControllerService {
     Map<String,Object> addIpRange(GrailsParameterMap params) {
         Map<String,Object> result = [:]
         OrgAccessPoint orgAccessPoint = OrgAccessPoint.get(params.id)
-        // need to check if contextOrg == orgAccessPoint.org for ORG_CONSORTIUM? The template has no editable elements
+        // need to check if contextOrg == orgAccessPoint.org for ORG_CONSORTIUM_BASIC? The template has no editable elements
         // in that context (would need to fake a post request), similar for deleteAccessPointData method.
         List<IpRange> validRanges = []
         List<IpRange> invalidRanges = []
@@ -141,7 +141,7 @@ class AccessPointControllerService {
         Map<String,Object> result = [:]
         Locale locale = LocaleUtils.getCurrentLocale()
         // without the org somehow passed we can only create AccessPoints for the context org
-        Org orgInstance = accessService.checkPerm("ORG_CONSORTIUM") ? Org.get(params.id) : contextService.getOrg()
+        Org orgInstance = accessService.checkPerm("ORG_CONSORTIUM_BASIC") ? Org.get(params.id) : contextService.getOrg()
         if(!params.name) {
             result.error = messageSource.getMessage('accessPoint.require.name', null, locale)
             [result:result,status:STATUS_ERROR]
@@ -198,7 +198,7 @@ class AccessPointControllerService {
         else {
             Org org = accessPoint.org
             boolean inContextOrg = (org.id == contextService.getOrg().id)
-            if(((accessService.checkPerm('ORG_BASIC_MEMBER') && inContextOrg) || (accessService.checkPerm('ORG_CONSORTIUM')))) {
+            if(((accessService.checkPerm('ORG_BASIC') && inContextOrg) || (accessService.checkPerm('ORG_CONSORTIUM_BASIC')))) {
                 Long oapPlatformLinkCount = OrgAccessPointLink.countByActiveAndOapAndSubPkgIsNull(true, accessPoint)
                 Long oapSubscriptionLinkCount = OrgAccessPointLink.countByActiveAndOapAndSubPkgIsNotNull(true, accessPoint)
                 if (oapPlatformLinkCount != 0 || oapSubscriptionLinkCount != 0) {

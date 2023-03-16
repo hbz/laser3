@@ -12,7 +12,7 @@
                     <g:if test="${query == 'license-x-identifier'}">
                         <th>${message(code:'identifier.label')}</th>
                     </g:if>
-                    <g:if test="${contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO']}">
+                    <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                         <th>${message(code:'subscription.plural')}</th>
 
                         <g:if test="${query != 'license-x-identifier' && query != 'license-x-property'}">
@@ -44,7 +44,7 @@
                         </td>
                     </g:if>
 
-                    <g:if test="${contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO']}">
+                    <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                         <td>
                             <%
                                 println Subscription.executeQuery(

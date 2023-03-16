@@ -85,7 +85,7 @@ class InstAdmService {
             return result
         }
         else {
-            return accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_ADM")
+            return accessService.checkPermAffiliation(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC, "INST_ADM")
         }
     }
 
@@ -123,7 +123,7 @@ class InstAdmService {
 
 		boolean roleAdmin = editor.hasRole('ROLE_ADMIN')
 		boolean instAdmin = editor.hasAffiliation('INST_ADM') // check @ contextService.getOrg()
-		boolean orgMatch  = accessService.checkUserIsMember(user, contextService.getOrg())
+		boolean orgMatch  = user.isMemberOf(contextService.getOrg())
 
 		roleAdmin || (instAdmin && orgMatch)
 	}

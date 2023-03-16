@@ -40,7 +40,7 @@
 <div class="ui bottom attached tab active segment">
 
     <g:if test="${params.tab == 'identifier'}">
-    <%-- orgInstance.hasPerm("ORG_INST,ORG_CONSORTIUM") && ((!fromCreate) || isGrantedOrgRoleAdminOrOrgEditor) --%>
+    <%-- orgInstance.hasPerm(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC) && ((!fromCreate) || isGrantedOrgRoleAdminOrOrgEditor) --%>
         <table class="ui table la-js-responsive-table la-table">
             <thead>
             <tr>

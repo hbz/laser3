@@ -41,17 +41,17 @@
                         <ui:select id="asOrgType" name="type" from="${subscriptionTypes}" value="${RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id}" optionKey="id" optionValue="value" class="ui select dropdown" />
                     </div>
                 </g:if>
-                <g:elseif test="${accessService.checkPerm('ORG_CONSORTIUM')}">
+                <g:elseif test="${accessService.checkPerm('ORG_CONSORTIUM_BASIC')}">
                     <input type="hidden" id="asOrgType" name="type" value="${RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id}" />
                 </g:elseif>
-                <g:elseif test="${accessService.checkPerm('ORG_INST')}">
+                <g:elseif test="${accessService.checkPerm('ORG_PRO')}">
                     <input type="hidden" id="asOrgType" name="type" value="${RDStore.SUBSCRIPTION_TYPE_LOCAL.id}" />
                 </g:elseif>
 
                 <br />
                 <div id="dynHiddenValues"></div>
 
-                <%--<g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
+                <%--<g:if test="${accessService.checkPerm("ORG_CONSORTIUM_BASIC")}">
                     <input class="hidden" type="checkbox" name="generateSlavedSubs" value="Y" checked="checked" readonly="readonly">
                 </g:if>--%>
                 <input id="submitterFallback" type="submit" class="ui button js-click-control" value="${message(code:'default.button.create.label')}" />

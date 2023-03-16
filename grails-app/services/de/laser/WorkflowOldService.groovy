@@ -746,7 +746,7 @@ class WorkflowOldService {
             return true
         }
         Org ctxOrg = contextService.getOrg()
-        if (userRoleName && ctxOrg.getCustomerType() in ['ORG_CONSORTIUM'] && user.hasAffiliationForForeignOrg(userRoleName, ctxOrg)) {
+        if (userRoleName && ctxOrg.getCustomerType() in ['ORG_CONSORTIUM_BASIC'] && user.hasAffiliationForForeignOrg(userRoleName, ctxOrg)) {
             return true
         }
         false
