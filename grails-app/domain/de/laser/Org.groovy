@@ -736,31 +736,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     }
 
     /**
-     * Copied from {@link AccessService#checkOrgPerm(java.lang.String[])}
-     * Checks if the institution has the given permissions granted; those permissions are depending from the institution's customer type.
-     * Other organisations should not have a customer type thus no rights granted at all
-     * @param perms the permissions to verify
-     * @return true if the given permissions are granted, false otherwise
-     */
-    // private boolean checkOrgPerm(String[] orgPerms) {}
-    boolean hasPerm(String perms) {
-        boolean check = false
-
-        if (perms) {
-            def oss = OrgSetting.get(this, OrgSetting.KEYS.CUSTOMER_TYPE)
-            if (oss != OrgSetting.SETTING_NOT_FOUND) {
-                perms.split(',').each { perm ->
-                    check = check || PermGrant.findByPermAndRole(Perm.findByCode(perm.toLowerCase()?.trim()), (Role) oss.getValue())
-                }
-            }
-        }
-        else {
-            check = true
-        }
-        check
-    }
-
-    /**
      * Substitution caller for {@link #dropdownNamingConvention(de.laser.Org)}; substitutes with the context institution
      * @return this organisation's name according to the dropdown naming convention (<a href="https://github.com/hbz/laser2/wiki/UI:-Naming-Conventions">see here</a>)
      */

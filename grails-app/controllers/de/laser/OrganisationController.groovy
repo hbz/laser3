@@ -1058,9 +1058,9 @@ class OrganisationController  {
                     result.customerIdentifier = CustomerIdentifier.executeQuery(query+sort, queryParams)
                 } else if (inContextOrg) {
 
-                    if (result.institution.hasPerm(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC)) {
+                    if (result.institution.isCustomerType_Consortium()) {
                         result.customerIdentifier = CustomerIdentifier.executeQuery(query+sort, queryParams)
-                    } else if (['ORG_BASIC'].contains(result.institution.getCustomerType())) {
+                    } else if (result.institution.isCustomerType_Inst()) {
                         result.customerIdentifier = CustomerIdentifier.executeQuery(query+sort, queryParams)
                     }
                 } else if (isComboRelated) {
