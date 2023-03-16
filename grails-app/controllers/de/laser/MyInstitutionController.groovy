@@ -116,9 +116,9 @@ class MyInstitutionController  {
      * Call for the reporting module
      * @return the reporting entry view
      */
-    @DebugInfo(perm="ORG_PRO,ORG_CONSORTIUM_PRO", affil="INST_USER")
+    @DebugInfo(perm=CustomerTypeService.PERMS_PRO, affil="INST_USER")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_PRO,ORG_CONSORTIUM_PRO", "INST_USER")
+        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER")
     })
     def reporting() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -2620,8 +2620,8 @@ class MyInstitutionController  {
         }
     }
 
-    @DebugInfo(perm="ORG_PRO,ORG_CONSORTIUM_PRO", affil="INST_USER", ctrlService = DebugInfo.IN_BETWEEN)
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_PRO,ORG_CONSORTIUM_PRO", "INST_USER") })
+    @DebugInfo(perm=CustomerTypeService.PERMS_PRO, affil="INST_USER", ctrlService = DebugInfo.IN_BETWEEN)
+    @Secured(closure = { ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER") })
     def currentWorkflows() {
 
         SessionCacheWrapper cache = contextService.getSessionCache()

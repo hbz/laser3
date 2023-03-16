@@ -1,6 +1,7 @@
 package de.laser.ajax
 
 import de.laser.AlternativeName
+import de.laser.CustomerTypeService
 import de.laser.DocContext
 import de.laser.GenericOIDService
 import de.laser.PendingChangeService
@@ -696,9 +697,9 @@ class AjaxHtmlController {
      * Retrieves the filter history and bookmarks for the given reporting view.
      * If a command is being submitted, the cache is being updated. The updated view is being rendered afterwards
      */
-    @DebugInfo(perm="ORG_PRO,ORG_CONSORTIUM_PRO", affil="INST_USER")
+    @DebugInfo(perm=CustomerTypeService.PERMS_PRO, affil="INST_USER")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_PRO,ORG_CONSORTIUM_PRO", "INST_USER")
+        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER")
     })
     def reporting() {
         Map<String, Object> result = [
@@ -747,9 +748,9 @@ class AjaxHtmlController {
     /**
      * Retrieves the details for the given charts
      */
-    @DebugInfo(perm="ORG_PRO,ORG_CONSORTIUM_PRO", affil="INST_USER")
+    @DebugInfo(perm=CustomerTypeService.PERMS_PRO, affil="INST_USER")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_PRO,ORG_CONSORTIUM_PRO", "INST_USER")
+        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER")
     })
     def chartDetails() {
         // TODO - SESSION TIMEOUTS
@@ -784,9 +785,9 @@ class AjaxHtmlController {
      *     <li>PDF</li>
      * </ul>
      */
-    @DebugInfo(perm="ORG_PRO,ORG_CONSORTIUM_PRO", affil="INST_USER")
+    @DebugInfo(perm=CustomerTypeService.PERMS_PRO, affil="INST_USER")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_PRO,ORG_CONSORTIUM_PRO", "INST_USER")
+        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER")
     })
     def chartDetailsExport() {
 
@@ -950,9 +951,9 @@ class AjaxHtmlController {
      *     <li>PDF</li>
      * </ul>
      */
-    @DebugInfo(perm="ORG_PRO,ORG_CONSORTIUM_PRO", affil="INST_USER")
+    @DebugInfo(perm=CustomerTypeService.PERMS_PRO, affil="INST_USER")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_PRO,ORG_CONSORTIUM_PRO", "INST_USER")
+        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER")
     })
     def chartQueryExport() {
 

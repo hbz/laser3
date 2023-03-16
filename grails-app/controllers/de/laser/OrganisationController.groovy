@@ -1099,8 +1099,8 @@ class OrganisationController  {
         result
     }
 
-    @DebugInfo(perm="ORG_PRO,ORG_CONSORTIUM_PRO", affil="INST_USER")
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_PRO,ORG_CONSORTIUM_PRO", "INST_USER") })
+    @DebugInfo(perm=CustomerTypeService.PERMS_PRO, affil="INST_USER")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER") })
     @Check404()
     def workflows() {
         Map<String,Object> ctrlResult = organisationControllerService.workflows( this, params )
@@ -1468,8 +1468,8 @@ class OrganisationController  {
      * @return a table view of the reader numbers, grouped by semesters on the one hand, due dates on the other
      * @see ReaderNumber
      */
-    @DebugInfo(perm="ORG_BASIC,ORG_CONSORTIUM_BASIC", affil="INST_USER")
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM_BASIC", "INST_USER") })
+    @DebugInfo(perm=CustomerTypeService.PERMS_BASIC, affil="INST_USER")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_BASIC, "INST_USER") })
     @Check404(domain=Org)
     def readerNumber() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
@@ -1550,8 +1550,8 @@ class OrganisationController  {
      * @return a list view of access points
      * @see de.laser.oap.OrgAccessPoint
      */
-    @DebugInfo(perm="ORG_BASIC,ORG_CONSORTIUM_BASIC", affil="INST_USER")
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_BASIC,ORG_CONSORTIUM_BASIC", "INST_USER") })
+    @DebugInfo(perm=CustomerTypeService.PERMS_BASIC, affil="INST_USER")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_BASIC, "INST_USER") })
     @Check404(domain=Org)
     def accessPoints() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)

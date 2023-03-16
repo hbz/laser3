@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Profiler; de.laser.utils.AppUtils; grails.util.Environment; de.laser.system.SystemActivityProfiler; de.laser.FormService; de.laser.system.SystemSetting; de.laser.UserSetting; de.laser.RefdataValue; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.Org;de.laser.auth.User;de.laser.system.SystemMessage; org.grails.orm.hibernate.cfg.GrailsHibernateUtil" %>
+<%@ page import="de.laser.CustomerTypeService; de.laser.helper.Profiler; de.laser.utils.AppUtils; grails.util.Environment; de.laser.system.SystemActivityProfiler; de.laser.FormService; de.laser.system.SystemSetting; de.laser.UserSetting; de.laser.RefdataValue; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.Org;de.laser.auth.User;de.laser.system.SystemMessage; org.grails.orm.hibernate.cfg.GrailsHibernateUtil" %>
 <!doctype html>
 
 <laser:serviceInjection />
@@ -113,7 +113,7 @@
                                 </g:if>
 
                                 <div class="divider"></div>
-                                <ui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="ORG_PRO,ORG_CONSORTIUM_PRO" affiliation="INST_USER" controller="myInstitution" action="currentWorkflows" message="menu.my.workflows" />
+                                <ui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="${CustomerTypeService.PERMS_PRO}" affiliation="INST_USER" controller="myInstitution" action="currentWorkflows" message="menu.my.workflows" />
 
                                 <g:if test="${accessService.checkPerm('ORG_CONSORTIUM_PRO')}">
                                     <div class="divider"></div>
@@ -148,7 +148,7 @@
 
                                 <div class="divider"></div>
                                 <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_ADM" controller="myInstitution" action="users" message="menu.institutions.users" />
-                                <ui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="ORG_PRO,ORG_CONSORTIUM_PRO" affiliation="INST_USER" controller="myInstitution" action="reporting" message="menu.institutions.reporting" />
+                                <ui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="${CustomerTypeService.PERMS_PRO}" affiliation="INST_USER" controller="myInstitution" action="reporting" message="menu.institutions.reporting" />
                             </div>
                         </div>
                     </g:if>

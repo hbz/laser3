@@ -31,7 +31,7 @@
                             <g:link controller="org" action="show" id="${institution.id}">${message(code: 'menu.institutions.org_info')}</g:link>
                         </div>
                         <ui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="finance" message="menu.institutions.finance" />
-                        <ui:securedMainNavItem orgPerm="ORG_PRO,ORG_CONSORTIUM_PRO" affiliation="INST_USER" controller="myInstitution" action="reporting" message="myinst.reporting" />
+                        <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" affiliation="INST_USER" controller="myInstitution" action="reporting" message="myinst.reporting" />
                     </div>
                 </div>
 

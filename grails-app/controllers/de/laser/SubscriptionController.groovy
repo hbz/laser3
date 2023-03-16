@@ -1873,8 +1873,8 @@ class SubscriptionController {
      * Call for the reporting view for the given subscription
      * @return the reporting index for the subscription
      */
-    @DebugInfo(perm="ORG_CONSORTIUM_PRO,ORG_PRO", affil="INST_USER")
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM_PRO,ORG_PRO", "INST_USER") })
+    @DebugInfo(perm=CustomerTypeService.PERMS_PRO, affil="INST_USER")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER") })
     @Check404()
     def reporting() {
         if (! params.token) {
@@ -1897,8 +1897,8 @@ class SubscriptionController {
      * Call for the workflows related to this subscription
      * @return the workflow landing page for the given subscription
      */
-    @DebugInfo(perm="ORG_PRO,ORG_CONSORTIUM_PRO", affil="INST_USER")
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_PRO,ORG_CONSORTIUM_PRO", "INST_USER") })
+    @DebugInfo(perm=CustomerTypeService.PERMS_PRO, affil="INST_USER")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER") })
     @Check404()
     def workflows() {
         Map<String,Object> ctrlResult = subscriptionControllerService.workflows( params )

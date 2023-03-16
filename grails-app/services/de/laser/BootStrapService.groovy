@@ -312,17 +312,17 @@ class BootStrapService {
             }
         }
 
-        Role fakeRole                = updateRole('FAKE',                  'fake', [en: 'Fake', de: 'Fake'])
-        Role orgRole                 = updateRole('ORG_BASIC',              'org', [en: 'LAS:eR (Basic)', de: 'LAS:eR (Basic)'])
-        Role orgProRole              = updateRole('ORG_PRO',                'org', [en: 'LAS:eR (Pro)',   de: 'LAS:eR (Pro)'])
-        Role orgConsortiumRole       = updateRole('ORG_CONSORTIUM_BASIC',   'org', [en: 'Consortium Manager (Basic)', de: 'Konsortialmanager (Basic)'])
-        Role orgConsortiumProRole    = updateRole('ORG_CONSORTIUM_PRO',     'org', [en: 'Consortium Manager (Pro)',   de: 'Konsortialmanager (Pro)'])
+        Role fakeRole                = updateRole('FAKE',                                  'fake', [en: 'Fake', de: 'Fake'])
+        Role orgRole                 = updateRole(CustomerTypeService.ORG_BASIC,            'org', [en: 'LAS:eR (Basic)', de: 'LAS:eR (Basic)'])
+        Role orgProRole              = updateRole(CustomerTypeService.ORG_PRO,              'org', [en: 'LAS:eR (Pro)',   de: 'LAS:eR (Pro)'])
+        Role orgConsortiumRole       = updateRole(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'org', [en: 'Consortium Manager (Basic)', de: 'Konsortialmanager (Basic)'])
+        Role orgConsortiumProRole    = updateRole(CustomerTypeService.ORG_CONSORTIUM_PRO,   'org', [en: 'Consortium Manager (Pro)',   de: 'Konsortialmanager (Pro)'])
 
-        updateOrgRolePerms(fakeRole,                    ['FAKE'])
-        updateOrgRolePerms(orgRole,                     ['ORG_BASIC'])
-        updateOrgRolePerms(orgProRole,                  ['ORG_PRO', 'ORG_BASIC'])
-        updateOrgRolePerms(orgConsortiumRole,           ['ORG_CONSORTIUM_BASIC'])
-        updateOrgRolePerms(orgConsortiumProRole,        ['ORG_CONSORTIUM_PRO', 'ORG_CONSORTIUM_BASIC'])
+        updateOrgRolePerms(fakeRole,                ['FAKE'])
+        updateOrgRolePerms(orgRole,                 [CustomerTypeService.ORG_BASIC])
+        updateOrgRolePerms(orgProRole,              [CustomerTypeService.ORG_PRO, CustomerTypeService.ORG_BASIC])
+        updateOrgRolePerms(orgConsortiumRole,       [CustomerTypeService.ORG_CONSORTIUM_BASIC])
+        updateOrgRolePerms(orgConsortiumProRole,    [CustomerTypeService.ORG_CONSORTIUM_PRO, CustomerTypeService.ORG_CONSORTIUM_BASIC])
     }
 
     void setupSystemSettings() {
