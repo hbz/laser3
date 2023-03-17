@@ -291,7 +291,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     }
 
     /**
-     * Sets for an institution the default customer type, that is ORG_BASIC for consortium members with a basic set of permissions
+     * Sets for an institution the default customer type, that is ORG_INST_BASIC for consortium members with a basic set of permissions
      * @return true if the setup was successful, false otherwise
      */
     boolean setDefaultCustomerType() {
@@ -299,7 +299,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
 
         if (oss == OrgSetting.SETTING_NOT_FOUND) {
             log.debug ('Setting default customer type for org: ' + this.id)
-            OrgSetting.add(this, OrgSetting.KEYS.CUSTOMER_TYPE, Role.findByAuthorityAndRoleType('ORG_BASIC', 'org'))
+            OrgSetting.add(this, OrgSetting.KEYS.CUSTOMER_TYPE, Role.findByAuthorityAndRoleType('ORG_INST_BASIC', 'org'))
             return true
         }
         false

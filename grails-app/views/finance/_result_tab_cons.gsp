@@ -302,7 +302,7 @@
                                 </g:link>
                             </td>
                         </g:if>
-                        <g:elseif test="${accessService.checkPermAffiliation("ORG_PRO","INST_EDITOR")}">
+                        <g:elseif test="${accessService.checkPermAffiliation("ORG_INST_PRO","INST_EDITOR")}">
                             <td class="x">
                                 <g:if test="${fixedSubscription}">
                                     <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'financials.costItem.transfer.tooltip')}">

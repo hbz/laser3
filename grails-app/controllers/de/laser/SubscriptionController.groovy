@@ -1798,9 +1798,9 @@ class SubscriptionController {
      * Call for a single user to copy private properties from a consortial member subscription into its successor instance
      * @return the reduced subscription element copy view
      */
-    @DebugInfo(perm = "ORG_PRO", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(perm = "ORG_INST_PRO", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_PRO", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_INST_PRO", "INST_EDITOR", "ROLE_ADMIN")
     })
     def copyMyElements() {
         Map<String, Object> result = subscriptionControllerService.setCopyResultGenerics(params+[copyMyElements: true])

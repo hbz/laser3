@@ -198,7 +198,7 @@ class AccessPointControllerService {
         else {
             Org org = accessPoint.org
             boolean inContextOrg = (org.id == contextService.getOrg().id)
-            if(((accessService.checkPerm('ORG_BASIC') && inContextOrg) || (accessService.checkPerm('ORG_CONSORTIUM_BASIC')))) {
+            if(((accessService.checkPerm('ORG_INST_BASIC') && inContextOrg) || (accessService.checkPerm('ORG_CONSORTIUM_BASIC')))) {
                 Long oapPlatformLinkCount = OrgAccessPointLink.countByActiveAndOapAndSubPkgIsNull(true, accessPoint)
                 Long oapSubscriptionLinkCount = OrgAccessPointLink.countByActiveAndOapAndSubPkgIsNotNull(true, accessPoint)
                 if (oapPlatformLinkCount != 0 || oapSubscriptionLinkCount != 0) {

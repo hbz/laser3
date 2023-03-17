@@ -9,7 +9,7 @@
 
     <laser:render template="breadcrumb" model="${[accessPoint: accessPoint, params: params]}"/>
 
-    <g:if test="${(accessService.checkPermAffiliation('ORG_BASIC', 'INST_EDITOR') && inContextOrg)
+    <g:if test="${(accessService.checkPermAffiliation('ORG_INST_BASIC', 'INST_EDITOR') && inContextOrg)
             || (accessService.checkPermAffiliation('ORG_CONSORTIUM_BASIC', 'INST_EDITOR'))}">
         <ui:controlButtons>
             <ui:exportDropdown>
@@ -89,7 +89,7 @@
                     <td>${accessPointData.ipRange}</td>
                     <td>${accessPointData.ipCidr}</td>
                     <td class="center aligned">
-                        <g:if test="${(accessService.checkPermAffiliation('ORG_BASIC', 'INST_EDITOR') && inContextOrg) || (accessService.checkPermAffiliation('ORG_CONSORTIUM_BASIC', 'INST_EDITOR'))}">
+                        <g:if test="${(accessService.checkPermAffiliation('ORG_INST_BASIC', 'INST_EDITOR') && inContextOrg) || (accessService.checkPermAffiliation('ORG_CONSORTIUM_BASIC', 'INST_EDITOR'))}">
                             <g:link action="deleteAccessPointData" controller="accessPoint" id="${accessPointData.id}" params="[tab: 'IPv4']"
                                     class="ui negative icon button js-open-confirm-modal"
                                     data-confirm-tokenMsg="${message(code: 'confirm.dialog.delete.accessPoint.ip', args: [accessPointData.ipInput])}"
@@ -105,7 +105,7 @@
             </tbody>
         </table>
 
-        <g:if test="${!accessPoint.hasProperty('entityId') && (accessService.checkPermAffiliation('ORG_BASIC', 'INST_EDITOR') && inContextOrg) || (accessService.checkPermAffiliation('ORG_CONSORTIUM_BASIC', 'INST_EDITOR'))}">
+        <g:if test="${!accessPoint.hasProperty('entityId') && (accessService.checkPermAffiliation('ORG_INST_BASIC', 'INST_EDITOR') && inContextOrg) || (accessService.checkPermAffiliation('ORG_CONSORTIUM_BASIC', 'INST_EDITOR'))}">
             <div class="ui divider"></div>
 
             <div class="content">
@@ -164,7 +164,7 @@
                 </td>
                 <td>${accessPointData.ipCidr}</td>
                 <td class="center aligned">
-                    <g:if test="${(accessService.checkPermAffiliation('ORG_BASIC', 'INST_EDITOR') && inContextOrg) || (accessService.checkPermAffiliation('ORG_CONSORTIUM_BASIC', 'INST_EDITOR'))}">
+                    <g:if test="${(accessService.checkPermAffiliation('ORG_INST_BASIC', 'INST_EDITOR') && inContextOrg) || (accessService.checkPermAffiliation('ORG_CONSORTIUM_BASIC', 'INST_EDITOR'))}">
                         <g:link action="deleteAccessPointData" controller="accessPoint" id="${accessPointData.id}" params="[tab: 'IPv6']"
                                 class="ui negative icon button js-open-confirm-modal"
                                 data-confirm-tokenMsg="${message(code: 'confirm.dialog.delete.accessPoint.ip', args: [accessPointData.ipInput])}"
@@ -179,7 +179,7 @@
         </tbody>
     </table>
 
-    <g:if test="${!accessPoint.hasProperty('entityId') && (accessService.checkPermAffiliation('ORG_BASIC', 'INST_EDITOR') && inContextOrg) || (accessService.checkPermAffiliation('ORG_CONSORTIUM_BASIC', 'INST_EDITOR'))}">
+    <g:if test="${!accessPoint.hasProperty('entityId') && (accessService.checkPermAffiliation('ORG_INST_BASIC', 'INST_EDITOR') && inContextOrg) || (accessService.checkPermAffiliation('ORG_CONSORTIUM_BASIC', 'INST_EDITOR'))}">
         <div class="ui divider"></div>
 
         <div class="content">

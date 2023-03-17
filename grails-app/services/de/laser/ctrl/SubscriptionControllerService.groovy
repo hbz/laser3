@@ -3700,7 +3700,7 @@ class SubscriptionControllerService {
         if (!result.editable) {
             //the explicit comparison against bool(true) should ensure that not only the existence of the parameter is checked but also its proper value
             if(params.copyMyElements == true) {
-                if(accessService.checkPermAffiliation('ORG_PRO','INST_EDITOR'))
+                if(accessService.checkPermAffiliation('ORG_INST_PRO','INST_EDITOR'))
                     result
             }
             else null
@@ -3768,7 +3768,7 @@ class SubscriptionControllerService {
                          invalidStatuses: [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY]]).size()
                 List subscrCostCounts = CostItem.executeQuery('select count(ci.id) from CostItem ci where ci.sub = :sub and ci.isVisibleForSubscriber = true and ci.costItemStatus != :deleted', [sub: result.subscription, deleted: RDStore.COST_ITEM_DELETED])
                 int subscrCount = subscrCostCounts ? subscrCostCounts[0] : 0
-                if(result.contextCustomerType == "ORG_PRO") {
+                if(result.contextCustomerType == "ORG_INST_PRO") {
                     List ownCostCounts = CostItem.executeQuery('select count(ci.id) from CostItem ci where ci.sub = :sub and ci.owner = :ctx and ci.costItemStatus != :deleted', [sub: result.subscription, ctx: result.institution, deleted: RDStore.COST_ITEM_DELETED])
                     int ownCount = ownCostCounts ? ownCostCounts[0] : 0
                     if(result.subscription.instanceOf)

@@ -204,7 +204,7 @@ class AccessService {
 
             // if (isOrgBasicMemberView && ctx.isCustomerType_Consortium()) {
             if(isOrgBasicMemberView && (oss.getValue() == Role.findAllByAuthority('ORG_CONSORTIUM_BASIC') || oss.getValue() == Role.findAllByAuthority('ORG_CONSORTIUM_PRO'))){
-                fakeRole = Role.findByAuthority('ORG_BASIC')
+                fakeRole = Role.findByAuthority('ORG_INST_BASIC')
             }
 
             if (oss != OrgSetting.SETTING_NOT_FOUND) {
@@ -295,7 +295,7 @@ class AccessService {
 
     /**
      * Replacement call for the abandoned ROLE_ORG_COM_EDITOR
-     * @return the result of {@link #checkPermAffiliation(java.lang.String, java.lang.String)} for [ORG_PRO, ORG_CONSORTIUM_BASIC] and INST_EDTOR as arguments
+     * @return the result of {@link #checkPermAffiliation(java.lang.String, java.lang.String)} for [ORG_INST_PRO, ORG_CONSORTIUM_BASIC] and INST_EDTOR as arguments
      */
     boolean checkConstraint_ORG_COM_EDITOR() {
         checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')
@@ -304,7 +304,7 @@ class AccessService {
     // ----- REFACTORING -----
 
     boolean checkInstEditorForCustomerType_Basic(boolean inContextOrg) {
-        boolean a = checkPermAffiliation('ORG_BASIC', 'INST_EDITOR') && inContextOrg
+        boolean a = checkPermAffiliation('ORG_INST_BASIC', 'INST_EDITOR') && inContextOrg
         boolean b = checkPermAffiliation('ORG_CONSORTIUM_BASIC', 'INST_EDITOR')
 
         return (a || b)

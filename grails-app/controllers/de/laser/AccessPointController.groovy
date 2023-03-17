@@ -352,7 +352,7 @@ class AccessPointController  {
                     linkedPlatforms                   : linkedPlatforms,
                     linkedPlatformSubscriptionPackages: linkedPlatformSubscriptionPackages,
                     ip                                : params.ip,
-                    editable                          : ((accessService.checkPermAffiliation('ORG_BASIC', 'INST_EDITOR') && inContextOrg) || (accessService.checkPermAffiliation('ORG_CONSORTIUM_BASIC', 'INST_EDITOR'))),
+                    editable                          : ((accessService.checkPermAffiliation('ORG_INST_BASIC', 'INST_EDITOR') && inContextOrg) || (accessService.checkPermAffiliation('ORG_CONSORTIUM_BASIC', 'INST_EDITOR'))),
                     autofocus                         : autofocus,
                     orgInstance                       : orgAccessPoint.org,
                     inContextOrg                      : inContextOrg,
@@ -375,7 +375,7 @@ class AccessPointController  {
         Org organisation = accessService.checkPerm("ORG_CONSORTIUM_BASIC") ? Org.get(params.id) : contextService.getOrg()
         boolean inContextOrg = organisation.id == contextService.getOrg().id
 
-        if(((accessService.checkPermAffiliation('ORG_BASIC', 'INST_EDITOR') && inContextOrg) || (accessService.checkPermAffiliation('ORG_CONSORTIUM_BASIC', 'INST_EDITOR')))){
+        if(((accessService.checkPermAffiliation('ORG_INST_BASIC', 'INST_EDITOR') && inContextOrg) || (accessService.checkPermAffiliation('ORG_CONSORTIUM_BASIC', 'INST_EDITOR')))){
             accessPointService.deleteAccessPointData(AccessPointData.get(params.id))
         }else {
             flash.error = message(code: 'default.noPermissions') as String

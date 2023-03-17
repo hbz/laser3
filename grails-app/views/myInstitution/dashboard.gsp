@@ -11,8 +11,8 @@
 %{--<pre>--}%
 %{--    ORG_CONSORTIUM_BASIC: ${accessService.checkPerm("ORG_CONSORTIUM_BASIC")}--}%
 %{--    ORG_CONSORTIUM_PRO: ${accessService.checkPerm("ORG_CONSORTIUM_PRO")}--}%
-%{--    ORG_BASIC: ${accessService.checkPerm("ORG_BASIC")}--}%
-%{--    ORG_PRO: ${accessService.checkPerm("ORG_PRO")}--}%
+%{--    ORG_INST_BASIC: ${accessService.checkPerm("ORG_INST_BASIC")}--}%
+%{--    ORG_INST_PRO: ${accessService.checkPerm("ORG_INST_PRO")}--}%
 
 %{--    getCustomerType: ${institution.getCustomerType()}--}%
 %{--</pre>--}%

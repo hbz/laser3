@@ -168,7 +168,7 @@ class FinanceControllerService {
                 }
                 break
         //cases four and five
-            case 'ORG_PRO':
+            case 'ORG_INST_PRO':
                 if (result.subscription) {
                     //case four: child subscription
                     if(result.subscription.instanceOf) {
@@ -191,7 +191,7 @@ class FinanceControllerService {
                 }
                 break
         //cases six: basic member
-            case 'ORG_BASIC':
+            case 'ORG_INST_BASIC':
                 dataToDisplay << 'subscr'
                 result.showView = 'subscr'
                 break

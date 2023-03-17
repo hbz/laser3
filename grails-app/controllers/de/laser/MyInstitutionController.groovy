@@ -349,7 +349,7 @@ class MyInstitutionController  {
 
         Set<String> licenseFilterTable = []
 
-        if (accessService.checkPerm("ORG_PRO")) {
+        if (accessService.checkPerm("ORG_INST_PRO")) {
             Set<RefdataValue> roleTypes = []
             if(params.licTypes) {
                 Set<String> licTypes = params.list('licTypes')
@@ -1810,9 +1810,9 @@ class MyInstitutionController  {
      * Default filter setting is current year
      * @return a (filtered) list of surveys, either displayed as html or returned as Excel worksheet
      */
-    @DebugInfo(perm="ORG_BASIC", affil="INST_USER", specRole="ROLE_ADMIN")
+    @DebugInfo(perm="ORG_INST_BASIC", affil="INST_USER", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_BASIC", "INST_USER", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_INST_BASIC", "INST_USER", "ROLE_ADMIN")
     })
     def currentSurveys() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -1903,9 +1903,9 @@ class MyInstitutionController  {
      * The view may be rendered as html or as Excel worksheet to download
      * @return the details view of the given survey
      */
-    @DebugInfo(perm="ORG_BASIC", affil="INST_USER", specRole="ROLE_ADMIN")
+    @DebugInfo(perm="ORG_INST_BASIC", affil="INST_USER", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_BASIC", "INST_USER", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_INST_BASIC", "INST_USER", "ROLE_ADMIN")
     })
     def surveyInfos() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -2028,9 +2028,9 @@ class MyInstitutionController  {
      * pass definitively into the holding of the next year's subscription
      * @return void, returns to the survey details page ({@link #surveyInfos()})
      */
-    @DebugInfo(perm="ORG_BASIC", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugInfo(perm="ORG_INST_BASIC", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_BASIC", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_INST_BASIC", "INST_EDITOR", "ROLE_ADMIN")
     })
     def surveyInfoFinish() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -2125,9 +2125,9 @@ class MyInstitutionController  {
         redirect(url: request.getHeader('referer'))
     }
 
-    @DebugInfo(perm="ORG_BASIC", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugInfo(perm="ORG_INST_BASIC", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_BASIC", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_INST_BASIC", "INST_EDITOR", "ROLE_ADMIN")
     })
     def surveyLinkOpenNewSurvey() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)

@@ -86,9 +86,9 @@ class OrganisationController  {
      *     <li>oamonitor: permissions to the Open Access harvest access</li>
      * </ul>
      */
-    @DebugInfo(perm="FAKE,ORG_BASIC,ORG_CONSORTIUM_BASIC", affil="INST_ADM", specRole="ROLE_ADMIN")
+    @DebugInfo(perm="FAKE,ORG_INST_BASIC,ORG_CONSORTIUM_BASIC", affil="INST_ADM", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("FAKE,ORG_BASIC,ORG_CONSORTIUM_BASIC", "INST_ADM", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("FAKE,ORG_INST_BASIC,ORG_CONSORTIUM_BASIC", "INST_ADM", "ROLE_ADMIN")
     })
     @Check404(domain=Org)
     def settings() {
@@ -165,7 +165,7 @@ class OrganisationController  {
                 result.settings.addAll(allSettings.findAll { it.key in accessSet })
                 result.settings.addAll(allSettings.findAll { it.key in credentialsSet })
             }
-            else if (['ORG_BASIC'].contains(result.institution.getCustomerType())) {
+            else if (['ORG_INST_BASIC'].contains(result.institution.getCustomerType())) {
                 result.settings.addAll(allSettings.findAll { it.key == OrgSetting.KEYS.NATSTAT_SERVER_ACCESS })
             }
             else if (['FAKE'].contains(result.institution.getCustomerType())) {
@@ -1193,9 +1193,9 @@ class OrganisationController  {
      * Call to delete the given customer identifier
      * @return the customer identifier table view
      */
-    @DebugInfo(perm="FAKE,ORG_BASIC,ORG_CONSORTIUM_BASIC", affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(perm="FAKE,ORG_INST_BASIC,ORG_CONSORTIUM_BASIC", affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("FAKE,ORG_BASIC,ORG_CONSORTIUM_BASIC", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("FAKE,ORG_INST_BASIC,ORG_CONSORTIUM_BASIC", "INST_EDITOR", "ROLE_ADMIN")
     })
     def deleteCustomerIdentifier() {
         Map<String,Object> ctrlResult = organisationControllerService.deleteCustomerIdentifier(this,params)
@@ -1822,19 +1822,19 @@ class OrganisationController  {
                     isEditable = userHasEditableRights
                 } else {
                     switch (contextOrg.getCustomerType()){
-                        case 'ORG_BASIC':
+                        case 'ORG_INST_BASIC':
                             switch (orgInstance.getCustomerType()){
-                                case 'ORG_BASIC':    isEditable = user.hasRole('ROLE_YODA'); break
-                                case 'ORG_PRO':            isEditable = user.hasRole('ROLE_YODA'); break
+                                case 'ORG_INST_BASIC':    isEditable = user.hasRole('ROLE_YODA'); break
+                                case 'ORG_INST_PRO':            isEditable = user.hasRole('ROLE_YODA'); break
                                 case 'ORG_CONSORTIUM_BASIC':      isEditable = user.hasRole('ROLE_YODA'); break
                                 case 'ORG_CONSORTIUM_PRO':  isEditable = user.hasRole('ROLE_YODA'); break
                                 default:                    isEditable = user.hasRole('ROLE_YODA'); break
                             }
                             break
-                        case 'ORG_PRO':
+                        case 'ORG_INST_PRO':
                             switch (orgInstance.getCustomerType()){
-                                case 'ORG_BASIC':    isEditable = user.hasRole('ROLE_YODA'); break
-                                case 'ORG_PRO':            isEditable = user.hasRole('ROLE_YODA'); break
+                                case 'ORG_INST_BASIC':    isEditable = user.hasRole('ROLE_YODA'); break
+                                case 'ORG_INST_PRO':            isEditable = user.hasRole('ROLE_YODA'); break
                                 case 'ORG_CONSORTIUM_BASIC':      isEditable = user.hasRole('ROLE_YODA'); break
                                 case 'ORG_CONSORTIUM_PRO':  isEditable = user.hasRole('ROLE_YODA'); break
                                 default:                    isEditable = userHasEditableRights; break //means providers and agencies
@@ -1842,8 +1842,8 @@ class OrganisationController  {
                             break
                         case 'ORG_CONSORTIUM_BASIC':
                             switch (orgInstance.getCustomerType()){
-                                case 'ORG_BASIC':    isEditable = userHasEditableRights; break
-                                case 'ORG_PRO':            isEditable = userHasEditableRights; break
+                                case 'ORG_INST_BASIC':    isEditable = userHasEditableRights; break
+                                case 'ORG_INST_PRO':            isEditable = userHasEditableRights; break
                                 case 'ORG_CONSORTIUM_BASIC':      isEditable = user.hasRole('ROLE_YODA'); break
                                 case 'ORG_CONSORTIUM_PRO':  isEditable = user.hasRole('ROLE_YODA'); break
                                 default:                    isEditable = userHasEditableRights; break //means providers and agencies

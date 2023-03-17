@@ -84,19 +84,19 @@
                 <div class="divider"></div>
             </g:if>
 
-        <g:if test="${(contextCustomerType == 'ORG_PRO' && subscription._getCalculatedType() == Subscription.TYPE_LOCAL) || (customerTypeService.isConsortium( contextCustomerType ) && subscription._getCalculatedType() == Subscription.TYPE_CONSORTIAL)}">
+        <g:if test="${(contextCustomerType == 'ORG_INST_PRO' && subscription._getCalculatedType() == Subscription.TYPE_LOCAL) || (customerTypeService.isConsortium( contextCustomerType ) && subscription._getCalculatedType() == Subscription.TYPE_CONSORTIAL)}">
                 <ui:actionsDropdownItem controller="subscription" action="copySubscription" params="${[sourceObjectId: genericOIDService.getOID(subscription), copyObject: true]}" message="myinst.copySubscription" />
             </g:if>
             <g:else>
                 <ui:actionsDropdownItemDisabled controller="subscription" action="copySubscription" params="${[sourceObjectId: genericOIDService.getOID(subscription), copyObject: true]}" message="myinst.copySubscription" />
             </g:else>
 
-            <g:if test="${(contextCustomerType == 'ORG_PRO' && !subscription.instanceOf) || customerTypeService.isConsortium( contextCustomerType )}">
+            <g:if test="${(contextCustomerType == 'ORG_INST_PRO' && !subscription.instanceOf) || customerTypeService.isConsortium( contextCustomerType )}">
                 <ui:actionsDropdownItem controller="subscription" action="copyElementsIntoSubscription" params="${[sourceObjectId: genericOIDService.getOID(subscription)]}" message="myinst.copyElementsIntoSubscription" />
             </g:if>
         </g:if>
 
-            <g:if test="${contextCustomerType == 'ORG_PRO' && subscription.instanceOf}">
+            <g:if test="${contextCustomerType == 'ORG_INST_PRO' && subscription.instanceOf}">
                 <ui:actionsDropdownItem controller="subscription" action="copyMyElements" params="${[sourceObjectId: genericOIDService.getOID(subscription)]}" message="myinst.copyMyElements" />
                 <g:if test="${navPrevSubscription}">
                     <ui:actionsDropdownItem controller="subscription" action="copyMyElements" params="${[sourceObjectId: genericOIDService.getOID(navPrevSubscription[0]), targetObjectId: genericOIDService.getOID(subscription)]}" message="myinst.copyMyElementsFromPrevSubscription" />
