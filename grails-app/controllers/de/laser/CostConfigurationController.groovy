@@ -26,7 +26,7 @@ class CostConfigurationController {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_USER", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_USER", "ROLE_ADMIN")
+        ctx.accessService.checkConstraint_INST_USER_PERM_X_RA( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     Map<String, Object> index() {
         Map<String, Object> result = [:]

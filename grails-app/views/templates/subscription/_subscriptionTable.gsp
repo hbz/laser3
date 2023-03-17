@@ -144,7 +144,7 @@
                             </g:if>
                             <g:if test="${s.isEditableBy(user) && (s.packages == null || s.packages.size() == 0)}">
                                 <i>
-                                    <g:if test="${accessService.checkPermAffiliationX(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC,"INST_EDITOR","ROLE_ADMIN")}">
+                                    <g:if test="${accessService.checkConstraint_INST_EDITOR_PERM_X_RA( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )}">
                                         <g:message code="myinst.currentSubscriptions.no_links" />
                                         <g:link controller="subscription" action="linkPackage"
                                                 id="${s.id}">${message(code: 'subscription.details.linkPackage.label')}</g:link>

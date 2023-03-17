@@ -158,7 +158,7 @@ class SurveyInfo {
      * @return true if the user belongs to the institution which created (= owns) this survey and if it is at least an editor or general admin, false otherwise
      */
     boolean isEditable() {
-        if(BeanStore.getAccessService().checkPermAffiliationX('ORG_CONSORTIUM_PRO','INST_EDITOR','ROLE_ADMIN') && this.owner?.id == BeanStore.getContextService().getOrg().id)
+        if(BeanStore.getAccessService().checkConstraint_INST_EDITOR_PERM_X_RA( CustomerTypeService.ORG_CONSORTIUM_PRO ) && this.owner?.id == BeanStore.getContextService().getOrg().id)
         {
             return true
         }

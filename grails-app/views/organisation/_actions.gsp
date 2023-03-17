@@ -1,7 +1,7 @@
 <%@ page import="de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.storage.RDStore" %>
 <laser:serviceInjection/>
 
-<g:if test="${accessService.checkPermAffiliationX(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC,'INST_EDITOR','ROLE_ADMIN')}">
+<g:if test="${accessService.checkConstraint_INST_EDITOR_PERM_X_RA( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )}">
     <ui:actionsDropdown>
         <g:if test="${editable || accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC,'INST_EDITOR')}">
             <g:if test="${actionName == 'list'}">

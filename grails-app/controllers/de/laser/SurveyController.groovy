@@ -2297,7 +2297,7 @@ class SurveyController {
     })
      Map<String,Object> allSurveyProperties() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
-        if (!accessService.checkPermAffiliationX('ORG_CONSORTIUM_PRO','INST_USER','ROLE_ADMIN')) {
+        if (!accessService.checkConstraint_INST_USER_PERM_X_RA( CustomerTypeService.ORG_CONSORTIUM_PRO )) {
             response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 

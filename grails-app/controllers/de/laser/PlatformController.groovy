@@ -205,7 +205,7 @@ class PlatformController  {
             result.platformInstanceRecord = records ? records[0] : [:]
             result.platformInstanceRecord.id = params.id
         }
-        result.editable = accessService.checkPermAffiliationX(CustomerTypeService.PERMS_BASIC,'INST_EDITOR','ROLE_ADMIN')
+        result.editable = accessService.checkConstraint_INST_EDITOR_PERM_X_RA( CustomerTypeService.PERMS_BASIC )
 
         String hql = "select oapl from OrgAccessPointLink oapl join oapl.oap as ap " +
                     "where ap.org =:institution and oapl.active=true and oapl.platform.id=${platformInstance.id} " +

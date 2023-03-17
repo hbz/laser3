@@ -80,7 +80,7 @@ class SurveyService {
      */
     boolean isEditableSurvey(Org org, SurveyInfo surveyInfo) {
 
-        if (accessService.checkPermAffiliationX('ORG_CONSORTIUM_PRO', 'INST_EDITOR', 'ROLE_ADMIN') && surveyInfo.owner?.id == contextService.getOrg().id) {
+        if (accessService.checkConstraint_INST_EDITOR_PERM_X_RA( CustomerTypeService.ORG_CONSORTIUM_PRO ) && surveyInfo.owner?.id == contextService.getOrg().id) {
             return true
         }
 
@@ -104,7 +104,7 @@ class SurveyService {
     @Deprecated
     boolean isEditableIssueEntitlementsSurvey(Org org, SurveyConfig surveyConfig) {
 
-        if (accessService.checkPermAffiliationX('ORG_CONSORTIUM_PRO', 'INST_EDITOR', 'ROLE_ADMIN') && surveyConfig.surveyInfo.owner?.id == contextService.getOrg().id) {
+        if (accessService.checkConstraint_INST_EDITOR_PERM_X_RA( CustomerTypeService.ORG_CONSORTIUM_PRO ) && surveyConfig.surveyInfo.owner?.id == contextService.getOrg().id) {
             return true
         }
 

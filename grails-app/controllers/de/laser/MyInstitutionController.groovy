@@ -1812,7 +1812,7 @@ class MyInstitutionController  {
      */
     @DebugInfo(perm=CustomerTypeService.ORG_INST_BASIC, affil="INST_USER", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX(CustomerTypeService.ORG_INST_BASIC, "INST_USER", "ROLE_ADMIN")
+        ctx.accessService.checkConstraint_INST_USER_PERM_X_RA( CustomerTypeService.ORG_INST_BASIC )
     })
     def currentSurveys() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -1905,7 +1905,7 @@ class MyInstitutionController  {
      */
     @DebugInfo(perm=CustomerTypeService.ORG_INST_BASIC, affil="INST_USER", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX(CustomerTypeService.ORG_INST_BASIC, "INST_USER", "ROLE_ADMIN")
+        ctx.accessService.checkConstraint_INST_USER_PERM_X_RA( CustomerTypeService.ORG_INST_BASIC )
     })
     def surveyInfos() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -2487,7 +2487,7 @@ class MyInstitutionController  {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_USER", specRole="ROLE_ADMIN", wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_USER", "ROLE_ADMIN")
+        ctx.accessService.checkConstraint_INST_USER_PERM_X_RA( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     Map<String, Object> budgetCodes() {
         BudgetCode.withTransaction {
@@ -2974,7 +2974,7 @@ class MyInstitutionController  {
      */
     @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_BASIC, affil="INST_USER", specRole="ROLE_ADMIN", wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX(CustomerTypeService.ORG_CONSORTIUM_BASIC,"INST_USER","ROLE_ADMIN")
+        ctx.accessService.checkConstraint_INST_USER_PERM_X_RA( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
     def manageMembers() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
