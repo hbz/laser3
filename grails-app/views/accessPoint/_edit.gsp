@@ -10,7 +10,7 @@
 
     <laser:render template="breadcrumb" model="${[accessPoint: accessPoint, params: params]}"/>
 
-    <g:if test="${accessService.checkInstEditorForCustomerType_Basic( inContextOrg )}">
+    <g:if test="${accessService.checkConstraint_INST_EDITOR_PERM_BASIC( inContextOrg )}">
         <ui:controlButtons>
             <ui:exportDropdown>
                 <ui:exportDropdownItem>

@@ -291,25 +291,6 @@ class AccessService {
     // ----- REFACTORING -----
 
     /**
-     * Replacement call for the abandoned ROLE_ORG_COM_EDITOR
-     * @return the result of {@link #checkPermAffiliation(java.lang.String, java.lang.String)} for [ORG_INST_PRO, ORG_CONSORTIUM_BASIC] and INST_EDTOR as arguments
-     */
-    boolean checkConstraint_ORG_COM_EDITOR() {
-        checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')
-    }
-
-    boolean checkInstEditorForCustomerType_Basic(boolean inContextOrg) {
-        boolean a = checkPermAffiliation(CustomerTypeService.ORG_INST_BASIC, 'INST_EDITOR') && inContextOrg
-        boolean b = checkPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR')
-
-        return (a || b)
-    }
-
-//    boolean checkInstEditorForCustomerType_x_RoleAdmin(String customerType) {
-//        checkPermAffiliationX(CustomerTypeService.ORG_CONSORTIUM_PRO, "INST_EDITOR", "ROLE_ADMIN")
-//    }
-
-    /**
      * Checks if the user has at least the given role at the given institution
      * @param user the user whose permissions should be checked
      * @param org the institution the user belongs to
@@ -350,5 +331,30 @@ class AccessService {
             }
         }
         result
+    }
+
+    // ----- CONSTRAINTS -----
+
+    /**
+     * Replacement call for the abandoned ROLE_ORG_COM_EDITOR
+     * @return the result of {@link #checkPermAffiliation(java.lang.String, java.lang.String)} for [ORG_INST_PRO, ORG_CONSORTIUM_BASIC] and INST_EDTOR as arguments
+     */
+    boolean checkConstraint_ORG_COM_EDITOR() {
+        checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')
+    }
+
+    boolean checkConstraint_INST_USER_PERM_X_specRole_ROLE_ADMIN(String perm) {
+        checkPermAffiliationX(perm, "INST_USER", "ROLE_ADMIN")
+    }
+
+    boolean checkConstraint_INST_EDITOR_PERM_X_specRole_ROLE_ADMIN(String perm) {
+        checkPermAffiliationX(perm, "INST_EDITOR", "ROLE_ADMIN")
+    }
+
+    boolean checkConstraint_INST_EDITOR_PERM_BASIC(boolean inContextOrg) {
+        boolean a = checkPermAffiliation(CustomerTypeService.ORG_INST_BASIC, 'INST_EDITOR') && inContextOrg
+        boolean b = checkPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR')
+
+        return (a || b)
     }
 }
