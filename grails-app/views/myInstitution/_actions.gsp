@@ -4,7 +4,7 @@
 <g:set var="contextOrg" value="${contextService.getOrg()}" />
 <g:if test="${actionName == 'currentSubscriptions'}">
     <ui:actionsDropdown>
-        <g:if test="${accessService.checkPermAffiliation(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC,"INST_EDITOR")}">
+        <g:if test="${accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC,"INST_EDITOR")}">
             <ui:actionsDropdownItem controller="subscription" action="emptySubscription" message="menu.institutions.emptySubscription" />
             <ui:actionsDropdownItem controller="myInstitution" action="subscriptionImport" message="menu.institutions.subscriptionImport" />
             <div class="divider"></div>
@@ -14,7 +14,7 @@
 </g:if>
 
 <g:if test="${actionName in ['currentLicenses']}">
-    <g:if test="${accessService.checkPermAffiliation(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC,"INST_EDITOR")}">
+    <g:if test="${accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC,"INST_EDITOR")}">
         <ui:actionsDropdown>
             <ui:actionsDropdownItem controller="myInstitution" action="emptyLicense" message="license.add.blank" />
 

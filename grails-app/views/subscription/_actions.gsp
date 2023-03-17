@@ -69,7 +69,7 @@
             </ui:exportDropdownItem>--%>
         </ui:exportDropdown>
 </g:if>
-<g:if test="${accessService.checkPermAffiliation(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC,'INST_EDITOR')}">
+<g:if test="${accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC,'INST_EDITOR')}">
     <ui:actionsDropdown>
         <%--<g:if test="${editable}">--%>
             <ui:actionsDropdownItem message="task.create.new" data-ui="modal" href="#modalCreateTask" />
@@ -84,19 +84,19 @@
                 <div class="divider"></div>
             </g:if>
 
-        <g:if test="${(contextCustomerType == 'ORG_PRO' && subscription._getCalculatedType() == Subscription.TYPE_LOCAL) || (contextCustomerType in ['ORG_CONSORTIUM_BASIC', 'ORG_CONSORTIUM_PRO'] && subscription._getCalculatedType() == Subscription.TYPE_CONSORTIAL)}">
+        <g:if test="${(contextCustomerType == 'ORG_INST_PRO' && subscription._getCalculatedType() == Subscription.TYPE_LOCAL) || (customerTypeService.isConsortium( contextCustomerType ) && subscription._getCalculatedType() == Subscription.TYPE_CONSORTIAL)}">
                 <ui:actionsDropdownItem controller="subscription" action="copySubscription" params="${[sourceObjectId: genericOIDService.getOID(subscription), copyObject: true]}" message="myinst.copySubscription" />
             </g:if>
             <g:else>
                 <ui:actionsDropdownItemDisabled controller="subscription" action="copySubscription" params="${[sourceObjectId: genericOIDService.getOID(subscription), copyObject: true]}" message="myinst.copySubscription" />
             </g:else>
 
-            <g:if test="${(contextCustomerType == 'ORG_PRO' && !subscription.instanceOf) || contextCustomerType in ['ORG_CONSORTIUM_BASIC', 'ORG_CONSORTIUM_PRO']}">
+            <g:if test="${(contextCustomerType == 'ORG_INST_PRO' && !subscription.instanceOf) || customerTypeService.isConsortium( contextCustomerType )}">
                 <ui:actionsDropdownItem controller="subscription" action="copyElementsIntoSubscription" params="${[sourceObjectId: genericOIDService.getOID(subscription)]}" message="myinst.copyElementsIntoSubscription" />
             </g:if>
         </g:if>
 
-            <g:if test="${contextCustomerType == 'ORG_PRO' && subscription.instanceOf}">
+            <g:if test="${contextCustomerType == 'ORG_INST_PRO' && subscription.instanceOf}">
                 <ui:actionsDropdownItem controller="subscription" action="copyMyElements" params="${[sourceObjectId: genericOIDService.getOID(subscription)]}" message="myinst.copyMyElements" />
                 <g:if test="${navPrevSubscription}">
                     <ui:actionsDropdownItem controller="subscription" action="copyMyElements" params="${[sourceObjectId: genericOIDService.getOID(navPrevSubscription[0]), targetObjectId: genericOIDService.getOID(subscription)]}" message="myinst.copyMyElementsFromPrevSubscription" />
@@ -154,7 +154,7 @@
                                            params="${[id: params.id]}" message="subscription.details.renewals.label"/>
                 </g:else>
             </g:if>
-            <g:if test="${contextCustomerType in ['ORG_CONSORTIUM_BASIC', 'ORG_CONSORTIUM_PRO'] && showConsortiaFunctions && subscription.instanceOf == null }">
+            <g:if test="${customerTypeService.isConsortium( contextCustomerType ) && showConsortiaFunctions && subscription.instanceOf == null }">
                     <ui:actionsDropdownItem controller="survey" action="addSubtoSubscriptionSurvey"
                                                params="${[sub:params.id]}" text="${message(code:'createSubscriptionSurvey.label')}" />
 
@@ -167,7 +167,7 @@
                 <ui:actionsDropdownItem controller="subscription" action="addMembers" params="${[id:params.id]}" text="${message(code:'subscription.details.addMembers.label',args:menuArgs)}" />
             </g:if>
 
-            <g:if test="${subscription._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL && contextCustomerType in ['ORG_CONSORTIUM_BASIC', 'ORG_CONSORTIUM_PRO']}">
+            <g:if test="${subscription._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL && customerTypeService.isConsortium( contextCustomerType )}">
 
                   <ui:actionsDropdownItem controller="subscription" action="membersSubscriptionsManagement"
                                            params="${[id: params.id]}"
@@ -199,7 +199,7 @@
         </g:if>
     </ui:actionsDropdown>
 </g:if>
-<g:if test="${editable || accessService.checkPermAffiliation(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC,'INST_EDITOR')}">
+<g:if test="${editable || accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC,'INST_EDITOR')}">
     <laser:render template="/templates/documents/modal" model="${[ownobj: subscription, owntp: 'subscription']}"/>
     <laser:render template="/templates/tasks/modal_create" model="${[ownobj: subscription, owntp: 'subscription']}"/>
 </g:if>

@@ -16,7 +16,7 @@
         <div class="divider"></div>
     </g:if>--}%
 
-    <g:if test="${(editable || accessService.checkPermAffiliation(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')) && !['list'].contains(actionName) && packageInstance}">
+    <g:if test="${(editable || accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')) && !['list'].contains(actionName) && packageInstance}">
         <ui:actionsDropdownItem message="package.show.linkToSub" data-ui="modal" href="#linkToSubModal"/>
     </g:if>
 
@@ -24,7 +24,7 @@
 
 </ui:actionsDropdown>
 
-<g:if test="${(editable || accessService.checkPermAffiliation(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')) && !['list'].contains(actionName) && packageInstance}">
+<g:if test="${(editable || accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')) && !['list'].contains(actionName) && packageInstance}">
     <ui:modal id="linkToSubModal" contentClass="scrolling" message="package.show.linkToSub" msgSave="${message(code: 'default.button.link.label')}">
 
         <g:form class="ui form" url="[controller: 'package', action: 'processLinkToSub', id: params.id]">
@@ -81,7 +81,7 @@
                             data-content="${message(code: "subscription.packages.notification.label")}">
                             <i class="ui large icon bullhorn"></i>
                         </th>
-                        <g:if test="${contextCustomerType in ['ORG_CONSORTIUM_BASIC', 'ORG_CONSORTIUM_PRO']}">
+                        <g:if test="${customerTypeService.isConsortium( contextCustomerType )}">
                             <th class="control-label la-popup-tooltip la-delay"
                                 data-content="${message(code: 'subscription.packages.auditable')}">
                                 <i class="ui large icon thumbtack"></i>
@@ -119,7 +119,7 @@
                                     ${RDStore.YN_NO.getI10n("value")}
                                 </g:else>
                             </td>
-                            <g:if test="${contextCustomerType in ['ORG_CONSORTIUM_BASIC', 'ORG_CONSORTIUM_PRO']}">
+                            <g:if test="${customerTypeService.isConsortium( contextCustomerType )}">
                                 <td>
                                     <g:if test="${!(settingKey in excludes)}">
                                         <g:if test="${true}">

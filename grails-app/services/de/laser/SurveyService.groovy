@@ -88,7 +88,7 @@ class SurveyService {
             return false
         }
 
-        if (accessService.checkPermAffiliationX('ORG_BASIC', 'INST_EDITOR', 'ROLE_ADMIN')) {
+        if (accessService.checkPermAffiliationX('ORG_INST_BASIC', 'INST_EDITOR', 'ROLE_ADMIN')) {
             SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfigInList(org, surveyInfo.surveyConfigs)
 
             if (surveyOrg.finishDate) {
@@ -116,7 +116,7 @@ class SurveyService {
             return false
         }
 
-        if (accessService.checkPermAffiliationX('ORG_BASIC', 'INST_EDITOR', 'ROLE_ADMIN')) {
+        if (accessService.checkPermAffiliationX('ORG_INST_BASIC', 'INST_EDITOR', 'ROLE_ADMIN')) {
 
             if (SurveyOrg.findByOrgAndSurveyConfig(org, surveyConfig)?.finishDate) {
                 return false
@@ -487,7 +487,7 @@ class SurveyService {
 
         Map sheetData = [:]
 
-        if (contextOrg.getCustomerType()  == 'ORG_CONSORTIUM_PRO') {
+        if (contextOrg.isCustomerType_Consortium_Pro()) {
             surveyConfigs.each { surveyConfig ->
                 List titles = []
                 List surveyData = []
@@ -1377,7 +1377,7 @@ class SurveyService {
         Org contextOrg = contextService.getOrg()
 
         GrailsParameterMap tmpParams = (GrailsParameterMap) parameterMap.clone()
-        if (contextOrg.getCustomerType()  == 'ORG_CONSORTIUM_PRO') {
+        if (contextOrg.isCustomerType_Consortium_Pro()) {
 
             result = _setSurveyParticipantCounts(result, 'new', tmpParams, participant, contextOrg)
 

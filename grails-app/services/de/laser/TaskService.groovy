@@ -480,7 +480,7 @@ class TaskService {
                 }
 
             }
-            else if (accessService.checkPerm("ORG_PRO")) {
+            else if (accessService.checkPerm("ORG_INST_PRO")) {
                 Map<String, Object> qry_params_for_lic = [
                     lic_org:    contextOrg,
                     org_roles:  [

@@ -272,7 +272,7 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('name')}">
                 <th scope="row" class="la-th-column la-main-object">
                     <div class="la-flexbox">
-                        <g:if test="${org.getCustomerType() in ['ORG_PRO']}">
+                        <g:if test="${org.isCustomerType_Inst_Pro()}">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                                   data-content="${org.getCustomerTypeI10n()}">
                                 <i class="chess rook grey la-list-icon icon"></i>

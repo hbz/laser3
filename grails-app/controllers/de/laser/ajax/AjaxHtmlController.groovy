@@ -239,12 +239,12 @@ class AjaxHtmlController {
         Org contextOrg = contextService.getOrg()
         result.contextCustomerType = contextOrg.getCustomerType()
         result.institution = contextOrg
-        result.showConsortiaFunctions = result.contextCustomerType in ['ORG_CONSORTIUM_BASIC', 'ORG_CONSORTIUM_PRO']
+        result.showConsortiaFunctions = contextOrg.isCustomerType_Consortium()
         result.roleLinks = result.subscription.orgRelations.findAll { OrgRole oo -> !(oo.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA]) }
         result.roleObject = result.subscription
         result.roleRespValue = 'Specific subscription editor'
         result.editmode = result.subscription.isEditableBy(contextService.getUser())
-        result.accessConfigEditable = accessService.checkPermAffiliation('ORG_BASIC','INST_EDITOR') || (accessService.checkPermAffiliation('ORG_CONSORTIUM_BASIC','INST_EDITOR') && result.subscription.getSubscriber().id == contextOrg.id)
+        result.accessConfigEditable = accessService.checkPermAffiliation('ORG_INST_BASIC','INST_EDITOR') || (accessService.checkPermAffiliation('ORG_CONSORTIUM_BASIC','INST_EDITOR') && result.subscription.getSubscriber().id == contextOrg.id)
         render template: '/subscription/packages', model: result
     }
 
@@ -318,7 +318,7 @@ class AjaxHtmlController {
         ctrlResult.result.costPerUse = [:]
         if(ctrlResult.result.subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION) {
             ctrlResult.result.costPerUse.consortialData = subscriptionControllerService.calculateCostPerUse(ctrlResult.result, "consortial")
-            if(ctrlResult.result.institution.getCustomerType() == "ORG_PRO") {
+            if (ctrlResult.result.institution.isCustomerType_Inst_Pro()) {
                 ctrlResult.result.costPerUse.ownData = subscriptionControllerService.calculateCostPerUse(ctrlResult.result, "own")
             }
         }

@@ -173,7 +173,7 @@ class AccessService {
      * @return true if clauses one and two or three or four succeed, false otherwise
      */
     boolean checkForeignOrgComboPermAffiliationX(Map<String, Object> attributes) {
-          if (contextService.getUser()?.hasRole(attributes.specRoles)) {
+        if (contextService.getUser()?.hasRole(attributes.specRoles)) {
             return true
         }
 
@@ -202,8 +202,9 @@ class AccessService {
                 isOrgBasicMemberView = RequestContextHolder.currentRequestAttributes().params.orgBasicMemberView
             } catch (IllegalStateException e) {}
 
+            // if (isOrgBasicMemberView && ctx.isCustomerType_Consortium()) {
             if(isOrgBasicMemberView && (oss.getValue() == Role.findAllByAuthority('ORG_CONSORTIUM_BASIC') || oss.getValue() == Role.findAllByAuthority('ORG_CONSORTIUM_PRO'))){
-                fakeRole = Role.findByAuthority('ORG_BASIC')
+                fakeRole = Role.findByAuthority('ORG_INST_BASIC')
             }
 
             if (oss != OrgSetting.SETTING_NOT_FOUND) {
@@ -289,18 +290,20 @@ class AccessService {
 
     // ----- REFACTORING -----
 
-    // ---- combined checks ----
-    // ---- combined checks ----
-
     /**
      * Replacement call for the abandoned ROLE_ORG_COM_EDITOR
-     * @return the result of {@link #checkPermAffiliation(java.lang.String, java.lang.String)} for [ORG_PRO, ORG_CONSORTIUM_BASIC] and INST_EDTOR as arguments
+     * @return the result of {@link #checkPermAffiliation(java.lang.String, java.lang.String)} for [ORG_INST_PRO, ORG_CONSORTIUM_BASIC] and INST_EDTOR as arguments
      */
     boolean checkConstraint_ORG_COM_EDITOR() {
-        checkPermAffiliation(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')
+        checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')
     }
 
-    // ----- REFACTORING -----
+    boolean checkInstEditorForCustomerType_Basic(boolean inContextOrg) {
+        boolean a = checkPermAffiliation(CustomerTypeService.ORG_INST_BASIC, 'INST_EDITOR') && inContextOrg
+        boolean b = checkPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR')
+
+        return (a || b)
+    }
 
     /**
      * Checks if the user has at least the given role at the given institution

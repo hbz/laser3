@@ -680,7 +680,7 @@ class FinanceService {
                 case "own":
                     //exclude double listing of cost items belonging to member subscriptions
                     String instanceFilter = ""
-                    if(org.hasPerm("ORG_CONSORTIUM_BASIC")) {
+                    if (org.isCustomerType_Consortium()) {
                         instanceFilter = " and sub.instanceOf = null "
                     }
                     String subJoin = filterQuery.subFilter || instanceFilter ? "join ci.sub sub " : ""
@@ -1206,7 +1206,7 @@ class FinanceService {
                     List<Subscription> subMatches
                     if(accessService.checkPerm("ORG_CONSORTIUM_BASIC"))
                         subMatches = Subscription.executeQuery("select oo.sub from OrgRole oo where (cast(oo.sub.id as string) = :idCandidate or oo.sub.globalUID = :idCandidate) and oo.org = :org and oo.roleType in :roleType",[idCandidate:subIdentifier,org:costItem.owner,roleType:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER]])
-                    else if(accessService.checkPerm("ORG_PRO"))
+                    else if(accessService.checkPerm("ORG_INST_PRO"))
                         subMatches = Subscription.executeQuery("select oo.sub from OrgRole oo where (cast(oo.sub.id as string) = :idCandidate or oo.sub.globalUID = :idCandidate) and oo.org = :org and oo.roleType in :roleType",[idCandidate:subIdentifier,org:costItem.owner,roleType:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER]])
                     if(!subMatches)
                         mappingErrorBag.noValidSubscription = subIdentifier

@@ -2031,9 +2031,9 @@ class AjaxController {
     /**
      * Deletes the given task
      */
-    @DebugInfo(perm=CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC, affil="INST_EDITOR")
+    @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC, "INST_EDITOR")
+        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_EDITOR")
     })
     def deleteTask() {
 

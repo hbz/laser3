@@ -99,7 +99,7 @@
 </g:if> %{-- erms-4798 --}%
 
 <%-- private properties --%>
-<g:if test="${accessService.checkPerm(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC)}">
+<g:if test="${accessService.checkPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
 
 <g:each in="${authorizedOrgs}" var="authOrg">
     <g:if test="${authOrg.name == contextOrg?.name}">

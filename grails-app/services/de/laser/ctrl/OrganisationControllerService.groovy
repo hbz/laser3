@@ -213,7 +213,7 @@ class OrganisationControllerService {
         //if(result.contextCustomerType == 'ORG_CONSORTIUM_BASIC')
 
         result.availableConfigs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.SHARE_CONFIGURATION)
-        if(result.contextCustomerType in ['ORG_CONSORTIUM_BASIC', 'ORG_CONSORTIUM_PRO']){
+        if (org.isCustomerType_Consortium()) {
             result.availableConfigs-RDStore.SHARE_CONF_CONSORTIUM
         }
 

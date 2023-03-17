@@ -291,7 +291,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     }
 
     /**
-     * Sets for an institution the default customer type, that is ORG_BASIC for consortium members with a basic set of permissions
+     * Sets for an institution the default customer type, that is ORG_INST_BASIC for consortium members with a basic set of permissions
      * @return true if the setup was successful, false otherwise
      */
     boolean setDefaultCustomerType() {
@@ -299,10 +299,9 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
 
         if (oss == OrgSetting.SETTING_NOT_FOUND) {
             log.debug ('Setting default customer type for org: ' + this.id)
-            OrgSetting.add(this, OrgSetting.KEYS.CUSTOMER_TYPE, Role.findByAuthorityAndRoleType('ORG_BASIC', 'org'))
+            OrgSetting.add(this, OrgSetting.KEYS.CUSTOMER_TYPE, Role.findByAuthorityAndRoleType('ORG_INST_BASIC', 'org'))
             return true
         }
-
         false
     }
 
@@ -335,17 +334,30 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     }
 
     boolean isCustomerType_Basic() {
-        this.getCustomerType() in [ CustomerTypeService.ORG_BASIC, CustomerTypeService.ORG_CONSORTIUM_BASIC ]
+        this.getCustomerType() in [CustomerTypeService.ORG_INST_BASIC, CustomerTypeService.ORG_CONSORTIUM_BASIC ]
     }
     boolean isCustomerType_Pro() {
-        this.getCustomerType() in [ CustomerTypeService.ORG_PRO, CustomerTypeService.ORG_CONSORTIUM_PRO ]
+        this.getCustomerType() in [CustomerTypeService.ORG_INST_PRO, CustomerTypeService.ORG_CONSORTIUM_PRO ]
     }
 
     boolean isCustomerType_Inst() {
-        this.getCustomerType() in [ CustomerTypeService.ORG_BASIC, CustomerTypeService.ORG_PRO ]
+        this.getCustomerType() in [CustomerTypeService.ORG_INST_BASIC, CustomerTypeService.ORG_INST_PRO ]
     }
     boolean isCustomerType_Consortium() {
         this.getCustomerType() in [ CustomerTypeService.ORG_CONSORTIUM_BASIC, CustomerTypeService.ORG_CONSORTIUM_PRO ]
+    }
+
+    boolean isCustomerType_Inst_Basic() {
+        this.getCustomerType() == CustomerTypeService.ORG_INST_BASIC
+    }
+    boolean isCustomerType_Inst_Pro() {
+        this.getCustomerType() == CustomerTypeService.ORG_INST_PRO
+    }
+    boolean isCustomerType_Consortium_Basic() {
+        this.getCustomerType() == CustomerTypeService.ORG_CONSORTIUM_BASIC
+    }
+    boolean isCustomerType_Consortium_Pro() {
+        this.getCustomerType() == CustomerTypeService.ORG_CONSORTIUM_PRO
     }
 
     /**
@@ -457,8 +469,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      */
     List<User> getAllValidInstAdmins() {
         List<User> admins = User.executeQuery(
-                "select u from User u join u.affiliations uo where " +
-                        "uo.org = :org and uo.formalRole = :role and u.enabled = true",
+                "select u from User u join u.affiliations uo where uo.org = :org and uo.formalRole = :role and u.enabled = true",
                 [
                         org: this, role: Role.findByAuthority('INST_ADM')
                 ]
@@ -725,7 +736,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      * @return a {@link List} of {@link User}s associated to this institution; grouped by administrators, editors and users (with reading permissions only)
      */
     Map<String, Object> hasAccessOrgListUser(){
-
         Map<String, Object> result = [:]
 
         result.instAdms = UserOrg.findAllByOrgAndFormalRole(this, Role.findByAuthority('INST_ADM'))
@@ -733,31 +743,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         result.instUsers = UserOrg.findAllByOrgAndFormalRole(this, Role.findByAuthority('INST_USER'))
 
         return result
-    }
-
-    /**
-     * Copied from {@link AccessService#checkOrgPerm(java.lang.String[])}
-     * Checks if the institution has the given permissions granted; those permissions are depending from the institution's customer type.
-     * Other organisations should not have a customer type thus no rights granted at all
-     * @param perms the permissions to verify
-     * @return true if the given permissions are granted, false otherwise
-     */
-    // private boolean checkOrgPerm(String[] orgPerms) {}
-    boolean hasPerm(String perms) {
-        boolean check = false
-
-        if (perms) {
-            def oss = OrgSetting.get(this, OrgSetting.KEYS.CUSTOMER_TYPE)
-            if (oss != OrgSetting.SETTING_NOT_FOUND) {
-                perms.split(',').each { perm ->
-                    check = check || PermGrant.findByPermAndRole(Perm.findByCode(perm.toLowerCase()?.trim()), (Role) oss.getValue())
-                }
-            }
-        }
-        else {
-            check = true
-        }
-        check
     }
 
     /**
