@@ -39,11 +39,11 @@
 
             <div class="divider"></div>
 
-            <g:if test="${(contextCustomerType == "ORG_INST_PRO" && license._getCalculatedType() == License.TYPE_LOCAL) || (customerTypeService.isConsortium( contextCustomerType ) && license._getCalculatedType() == License.TYPE_CONSORTIAL)}">
+            <g:if test="${(contextCustomerType == CustomerTypeService.ORG_INST_PRO && license._getCalculatedType() == License.TYPE_LOCAL) || (customerTypeService.isConsortium( contextCustomerType ) && license._getCalculatedType() == License.TYPE_CONSORTIAL)}">
                 <ui:actionsDropdownItem controller="license" action="copyLicense" params="${[sourceObjectId: genericOIDService.getOID(license), copyObject: true]}" message="myinst.copyLicense" />
             </g:if>
 
-            <g:if test="${(contextCustomerType == "ORG_INST_PRO" && !license.instanceOf) || customerTypeService.isConsortium( contextCustomerType )}">
+            <g:if test="${(contextCustomerType == CustomerTypeService.ORG_INST_PRO && !license.instanceOf) || customerTypeService.isConsortium( contextCustomerType )}">
                 <ui:actionsDropdownItem controller="license" action="copyElementsIntoLicense" params="${[sourceObjectId: genericOIDService.getOID(license)]}" message="myinst.copyElementsIntoLicense" />
             </g:if>
 

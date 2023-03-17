@@ -299,7 +299,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
 
         if (oss == OrgSetting.SETTING_NOT_FOUND) {
             log.debug ('Setting default customer type for org: ' + this.id)
-            OrgSetting.add(this, OrgSetting.KEYS.CUSTOMER_TYPE, Role.findByAuthorityAndRoleType('ORG_INST_BASIC', 'org'))
+            OrgSetting.add(this, OrgSetting.KEYS.CUSTOMER_TYPE, Role.findByAuthorityAndRoleType(CustomerTypeService.ORG_INST_BASIC, 'org'))
             return true
         }
         false
