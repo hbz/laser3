@@ -247,9 +247,9 @@ class OrganisationController  {
      * Call to list the academic institutions without consortia
      * @return a list of institutions; basic consortia members or single users
      */
-    @DebugInfo(perm="ORG_CONSORTIUM_BASIC", type="Consortium", affil="INST_USER", specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_BASIC, type="Consortium", affil="INST_USER", specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermTypeAffiliationX("ORG_CONSORTIUM_BASIC", "Consortium", "INST_USER", "ROLE_ADMIN")
+        ctx.accessService.checkPermTypeAffiliationX(CustomerTypeService.ORG_CONSORTIUM_BASIC, "Consortium", "INST_USER", "ROLE_ADMIN")
     })
     Map listInstitution() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
@@ -830,8 +830,10 @@ class OrganisationController  {
      * Call to create a new member with the given parameter map
      * @return the details view of the new member in case of success, the creation page otherwise
      */
-    @DebugInfo(perm="ORG_CONSORTIUM_BASIC", affil="INST_EDTIOR",specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_BASIC","INST_EDITOR","ROLE_ADMIN") })
+    @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_BASIC, affil="INST_EDTIOR",specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX(CustomerTypeService.ORG_CONSORTIUM_BASIC,"INST_EDITOR","ROLE_ADMIN")
+    })
     def createMember() {
         Map<String,Object> ctrlResult = organisationControllerService.createMember(this,params)
         if(ctrlResult.status == OrganisationControllerService.STATUS_ERROR) {
@@ -848,8 +850,10 @@ class OrganisationController  {
      * Call to create a new consortium member; opens a form to check the new name against existing ones in order to exclude duplicates
      * @return the form with eventual name matches
      */
-    @DebugInfo(perm="ORG_CONSORTIUM_BASIC", affil="INST_EDITOR",specRole="ROLE_ADMIN")
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_BASIC","INST_EDITOR","ROLE_ADMIN") })
+    @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_BASIC, affil="INST_EDITOR",specRole="ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX(CustomerTypeService.ORG_CONSORTIUM_BASIC,"INST_EDITOR","ROLE_ADMIN")
+    })
     Map findOrganisationMatches() {
         Map memberMap = [:]
 
@@ -1276,8 +1280,10 @@ class OrganisationController  {
      * Data the given user may have authored will be reassigned to another user
      * @return the user deletion view where eventual conflicts are being listed
      */
-    @DebugInfo(perm="ORG_CONSORTIUM_BASIC", affil="INST_ADM", specRole = "ROLE_ADMIN")
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_BASIC", "INST_ADM", "ROLE_ADMIN") })
+    @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_BASIC, affil="INST_ADM", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX(CustomerTypeService.ORG_CONSORTIUM_BASIC, "INST_ADM", "ROLE_ADMIN")
+    })
     def deleteUser() {
         Map<String, Object> result = userControllerService.getResultGenericsERMS3067(params)
         result.orgInstance = Org.get(params.id) // overwrite
@@ -1323,8 +1329,10 @@ class OrganisationController  {
      * Call to edit the given user profile
      * @return the profile editing template
      */
-    @DebugInfo(perm="ORG_CONSORTIUM_BASIC", affil="INST_ADM", specRole = "ROLE_ADMIN")
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_BASIC", "INST_ADM", "ROLE_ADMIN") })
+    @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_BASIC, affil="INST_ADM", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX(CustomerTypeService.ORG_CONSORTIUM_BASIC, "INST_ADM", "ROLE_ADMIN")
+    })
     def editUser() {
         Map result = [
                 user: genericOIDService.resolveOID(params.uoid),
@@ -1341,8 +1349,10 @@ class OrganisationController  {
      * Call to create a new user profile
      * @return the profile creation template
      */
-    @DebugInfo(perm="ORG_CONSORTIUM_BASIC", affil="INST_ADM", specRole = "ROLE_ADMIN")
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_BASIC", "INST_ADM", "ROLE_ADMIN") })
+    @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_BASIC, affil="INST_ADM", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX(CustomerTypeService.ORG_CONSORTIUM_BASIC, "INST_ADM", "ROLE_ADMIN")
+    })
     def createUser() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
         result.availableOrgs = Org.get(params.id)
@@ -1355,8 +1365,10 @@ class OrganisationController  {
      * Takes the submitted parameters and creates a new user record with the given parameters
      * @return the user editing template in case of success, redirects back to the creation page otherwise
      */
-    @DebugInfo(perm="ORG_CONSORTIUM_BASIC", affil="INST_ADM", specRole = "ROLE_ADMIN")
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_BASIC","INST_ADM","ROLE_ADMIN") })
+    @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_BASIC, affil="INST_ADM", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX(CustomerTypeService.ORG_CONSORTIUM_BASIC,"INST_ADM","ROLE_ADMIN")
+    })
     def processCreateUser() {
         def success = userService.addNewUser(params, flash)
         //despite IntelliJ's warnings, success may be an array other than the boolean true
@@ -1376,8 +1388,10 @@ class OrganisationController  {
      * Attaches the given user to the given institution
      * @return the user editing profile with the updated data
      */
-    @DebugInfo(perm="ORG_CONSORTIUM_BASIC", affil="INST_ADM", specRole = "ROLE_ADMIN")
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_BASIC","INST_ADM","ROLE_ADMIN") })
+    @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_BASIC, affil="INST_ADM", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX(CustomerTypeService.ORG_CONSORTIUM_BASIC,"INST_ADM","ROLE_ADMIN")
+    })
     def addAffiliation() {
         Map<String, Object> result = userControllerService.getResultGenericsERMS3067(params)
         result.orgInstance = Org.get(params.id) // overwrite
@@ -1715,8 +1729,10 @@ class OrganisationController  {
      * (adds or removes a combo link between the institution and the consortium)
      * @see Combo
      */
-    @DebugInfo(perm="ORG_CONSORTIUM_BASIC", type="Consortium", affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = { ctx.accessService.checkPermTypeAffiliationX("ORG_CONSORTIUM_BASIC", "Consortium", "INST_EDITOR", "ROLE_ADMIN") })
+    @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_BASIC, type="Consortium", affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.accessService.checkPermTypeAffiliationX(CustomerTypeService.ORG_CONSORTIUM_BASIC, "Consortium", "INST_EDITOR", "ROLE_ADMIN")
+    })
     def toggleCombo() {
         Map<String,Object> ctrlResult = organisationControllerService.toggleCombo(this,params)
         if(ctrlResult.status == OrganisationControllerService.STATUS_ERROR) {

@@ -305,6 +305,10 @@ class AccessService {
         return (a || b)
     }
 
+//    boolean checkInstEditorForCustomerType_x_RoleAdmin(String customerType) {
+//        checkPermAffiliationX(CustomerTypeService.ORG_CONSORTIUM_PRO, "INST_EDITOR", "ROLE_ADMIN")
+//    }
+
     /**
      * Checks if the user has at least the given role at the given institution
      * @param user the user whose permissions should be checked
