@@ -241,7 +241,7 @@
 
 
                         <td class="x">
-                            <g:if test="${editable && accessService.checkPermAffiliationX("ORG_CONSORTIUM_PRO", "INST_EDITOR", "ROLE_ADMIN")}">
+                            <g:if test="${editable && accessService.checkConstraint_INST_EDITOR_PERM_X_RA( CustomerTypeService.ORG_CONSORTIUM_PRO )}">
 
                                     <g:link class="ui icon positive button la-popup-tooltip la-delay"
                                             controller="survey" action="addSubtoIssueEntitlementsSurvey"

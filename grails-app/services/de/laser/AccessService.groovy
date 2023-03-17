@@ -343,18 +343,18 @@ class AccessService {
         checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')
     }
 
-    boolean checkConstraint_INST_USER_PERM_X_specRole_ROLE_ADMIN(String perm) {
-        checkPermAffiliationX(perm, "INST_USER", "ROLE_ADMIN")
-    }
-
-    boolean checkConstraint_INST_EDITOR_PERM_X_specRole_ROLE_ADMIN(String perm) {
-        checkPermAffiliationX(perm, "INST_EDITOR", "ROLE_ADMIN")
-    }
-
     boolean checkConstraint_INST_EDITOR_PERM_BASIC(boolean inContextOrg) {
         boolean a = checkPermAffiliation(CustomerTypeService.ORG_INST_BASIC, 'INST_EDITOR') && inContextOrg
         boolean b = checkPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR')
 
         return (a || b)
+    }
+
+    boolean checkConstraint_INST_USER_PERM_X_RA(String perm) {
+        checkPermAffiliationX(perm, "INST_USER", "ROLE_ADMIN")
+    }
+
+    boolean checkConstraint_INST_EDITOR_PERM_X_RA(String perm) {
+        checkPermAffiliationX(perm, "INST_EDITOR", "ROLE_ADMIN")
     }
 }

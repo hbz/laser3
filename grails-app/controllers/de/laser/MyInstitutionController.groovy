@@ -3575,7 +3575,7 @@ join sub.orgRelations or_sub where
      */
     @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_PRO, affil="INST_USER", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX(CustomerTypeService.ORG_CONSORTIUM_PRO, "INST_USER", "ROLE_ADMIN")
+        ctx.accessService.checkConstraint_INST_USER_PERM_X_RA( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     def manageParticipantSurveys() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
