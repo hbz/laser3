@@ -350,11 +350,11 @@ class AccessService {
         return (a || b)
     }
 
-    boolean checkConstraint_INST_USER_PERM_X_RA(String perm) {
-        checkPermAffiliationX(perm, "INST_USER", "ROLE_ADMIN")
+    boolean checkConstraint_INST_USER_PERM_X_RA(String orgPerms) {
+        checkPermAffiliationX(orgPerms, 'INST_USER', 'ROLE_ADMIN')
     }
 
-    boolean checkConstraint_INST_EDITOR_PERM_X_RA(String perm) {
-        checkPermAffiliationX(perm, "INST_EDITOR", "ROLE_ADMIN")
+    boolean checkConstraint_INST_EDITOR_PERM_X_RA(String orgPerms) {
+        checkPermAffiliationX(orgPerms, 'INST_EDITOR', 'ROLE_ADMIN')
     }
 }

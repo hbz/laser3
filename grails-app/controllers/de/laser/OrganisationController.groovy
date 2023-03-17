@@ -783,7 +783,7 @@ class OrganisationController  {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN", wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkConstraint_INST_EDITOR_PERM_X_RA( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def createProvider() {
         Org.withTransaction {
@@ -813,7 +813,7 @@ class OrganisationController  {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkConstraint_INST_EDITOR_PERM_X_RA( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def findProviderMatches() {
 
@@ -832,7 +832,7 @@ class OrganisationController  {
      */
     @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_BASIC, affil="INST_EDTIOR",specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX(CustomerTypeService.ORG_CONSORTIUM_BASIC,"INST_EDITOR","ROLE_ADMIN")
+        ctx.accessService.checkConstraint_INST_EDITOR_PERM_X_RA( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
     def createMember() {
         Map<String,Object> ctrlResult = organisationControllerService.createMember(this,params)
@@ -852,7 +852,7 @@ class OrganisationController  {
      */
     @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_BASIC, affil="INST_EDITOR",specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX(CustomerTypeService.ORG_CONSORTIUM_BASIC,"INST_EDITOR","ROLE_ADMIN")
+        ctx.accessService.checkConstraint_INST_EDITOR_PERM_X_RA( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
     Map findOrganisationMatches() {
         Map memberMap = [:]
@@ -1000,7 +1000,7 @@ class OrganisationController  {
         //IF ORG is a Provider and is NOT ex we:kb
         if(!result.orgInstance.gokbId && (result.orgInstance.sector == RDStore.O_SECTOR_PUBLISHER || RDStore.OT_PROVIDER.id in result.allOrgTypeIds)) {
             result.editable_identifier = accessService.checkMinUserOrgRole(result.user, result.orgInstance, 'INST_EDITOR') ||
-                    accessService.checkPermAffiliationX(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_EDITOR", "ROLE_ADMIN")
+                    accessService.checkConstraint_INST_EDITOR_PERM_X_RA( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
         }
         else if(!result.orgInstance.gokbId) {
             if(accessService.checkPerm("ORG_CONSORTIUM_BASIC")) {

@@ -56,7 +56,7 @@ class CostConfigurationController {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkConstraint_INST_EDITOR_PERM_X_RA( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     Object createNewConfiguration() {
         Map<String, Object> result = [editable:true] //the user clicking here is already authenticated
@@ -86,7 +86,7 @@ class CostConfigurationController {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkConstraint_INST_EDITOR_PERM_X_RA( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def processConfigurationCreation() {
         financeService.processConfigurationCreation(params)
@@ -99,7 +99,7 @@ class CostConfigurationController {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkConstraint_INST_EDITOR_PERM_X_RA( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def deleteCostConfiguration() {
         if(params.ciec) {
@@ -120,7 +120,7 @@ class CostConfigurationController {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkConstraint_INST_EDITOR_PERM_X_RA( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def setAllCostItems() {
         def cie = genericOIDService.resolveOID(params.cie)

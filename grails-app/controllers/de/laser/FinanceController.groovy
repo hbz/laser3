@@ -538,7 +538,7 @@ class FinanceController  {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkConstraint_INST_EDITOR_PERM_X_RA( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def importCostItems() {
         Map<String,Object> ctrlResult = financeService.importCostItems(params)
@@ -569,7 +569,7 @@ class FinanceController  {
      */
     @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_BASIC, affil = "INST_EDITOR", specRole = "ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX(CustomerTypeService.ORG_CONSORTIUM_BASIC, "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkConstraint_INST_EDITOR_PERM_X_RA( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
     def processCostItemsBulk() {
         Map<String,Object> ctrlResult = financeService.processCostItemsBulk(params)

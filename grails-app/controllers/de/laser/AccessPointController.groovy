@@ -134,7 +134,7 @@ class AccessPointController  {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX(CustomerTypeService.PERMS_BASIC, "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkConstraint_INST_EDITOR_PERM_X_RA( CustomerTypeService.PERMS_BASIC )
     })
     def create() {
         Map<String, Object> result = [:]
@@ -161,7 +161,7 @@ class AccessPointController  {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX(CustomerTypeService.PERMS_BASIC, "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkConstraint_INST_EDITOR_PERM_X_RA( CustomerTypeService.PERMS_BASIC )
     })
     def processCreate() {
         RefdataValue accessMethod = (RefdataValue) genericOIDService.resolveOID(params.accessMethod)
@@ -183,7 +183,7 @@ class AccessPointController  {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX(CustomerTypeService.PERMS_BASIC, "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkConstraint_INST_EDITOR_PERM_X_RA( CustomerTypeService.PERMS_BASIC )
     })
     def delete() {
         Map<String,Object> ctrlResult = accessPointControllerService.delete(params)
