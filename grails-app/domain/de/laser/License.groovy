@@ -430,7 +430,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
                 return cons || licseeCons || licsee
             }
             if (perm == 'edit') {
-                if(BeanStore.getAccessService().checkPermAffiliationX(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC,'INST_EDITOR','ROLE_ADMIN'))
+                if(BeanStore.getAccessService().checkPermAffiliationX(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC,'INST_EDITOR','ROLE_ADMIN'))
                     return cons || licsee
             }
         }

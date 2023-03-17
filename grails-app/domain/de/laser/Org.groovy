@@ -334,24 +334,24 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     }
 
     boolean isCustomerType_Basic() {
-        this.getCustomerType() in [ CustomerTypeService.ORG_BASIC, CustomerTypeService.ORG_CONSORTIUM_BASIC ]
+        this.getCustomerType() in [CustomerTypeService.ORG_INST_BASIC, CustomerTypeService.ORG_CONSORTIUM_BASIC ]
     }
     boolean isCustomerType_Pro() {
-        this.getCustomerType() in [ CustomerTypeService.ORG_PRO, CustomerTypeService.ORG_CONSORTIUM_PRO ]
+        this.getCustomerType() in [CustomerTypeService.ORG_INST_PRO, CustomerTypeService.ORG_CONSORTIUM_PRO ]
     }
 
     boolean isCustomerType_Inst() {
-        this.getCustomerType() in [ CustomerTypeService.ORG_BASIC, CustomerTypeService.ORG_PRO ]
+        this.getCustomerType() in [CustomerTypeService.ORG_INST_BASIC, CustomerTypeService.ORG_INST_PRO ]
     }
     boolean isCustomerType_Consortium() {
         this.getCustomerType() in [ CustomerTypeService.ORG_CONSORTIUM_BASIC, CustomerTypeService.ORG_CONSORTIUM_PRO ]
     }
 
     boolean isCustomerType_Inst_Basic() {
-        this.getCustomerType() == CustomerTypeService.ORG_BASIC
+        this.getCustomerType() == CustomerTypeService.ORG_INST_BASIC
     }
     boolean isCustomerType_Inst_Pro() {
-        this.getCustomerType() == CustomerTypeService.ORG_PRO
+        this.getCustomerType() == CustomerTypeService.ORG_INST_PRO
     }
     boolean isCustomerType_Consortium_Basic() {
         this.getCustomerType() == CustomerTypeService.ORG_CONSORTIUM_BASIC
