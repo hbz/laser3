@@ -114,8 +114,8 @@ class FinanceControllerService {
         //Determine own org belonging, then, in which relationship I am to the given subscription instance
         switch(result.institution.getCustomerType()) {
         //cases one to three
-            case 'ORG_CONSORTIUM_BASIC':
-            case 'ORG_CONSORTIUM_PRO':
+            case CustomerTypeService.ORG_CONSORTIUM_BASIC:
+            case CustomerTypeService.ORG_CONSORTIUM_PRO:
                 if (result.subscription) {
                     //cases two and three: child subscription
                     if (result.subscription.instanceOf) {
@@ -168,7 +168,7 @@ class FinanceControllerService {
                 }
                 break
         //cases four and five
-            case 'ORG_INST_PRO':
+            case CustomerTypeService.ORG_INST_PRO:
                 if (result.subscription) {
                     //case four: child subscription
                     if(result.subscription.instanceOf) {
@@ -191,7 +191,7 @@ class FinanceControllerService {
                 }
                 break
         //cases six: basic member
-            case 'ORG_INST_BASIC':
+            case CustomerTypeService.ORG_INST_BASIC:
                 dataToDisplay << 'subscr'
                 result.showView = 'subscr'
                 break

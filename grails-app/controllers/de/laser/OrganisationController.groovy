@@ -1822,30 +1822,30 @@ class OrganisationController  {
                     isEditable = userHasEditableRights
                 } else {
                     switch (contextOrg.getCustomerType()){
-                        case 'ORG_INST_BASIC':
+                        case CustomerTypeService.ORG_INST_BASIC:
                             switch (orgInstance.getCustomerType()){
-                                case 'ORG_INST_BASIC':    isEditable = user.hasRole('ROLE_YODA'); break
-                                case 'ORG_INST_PRO':            isEditable = user.hasRole('ROLE_YODA'); break
-                                case 'ORG_CONSORTIUM_BASIC':      isEditable = user.hasRole('ROLE_YODA'); break
-                                case 'ORG_CONSORTIUM_PRO':  isEditable = user.hasRole('ROLE_YODA'); break
+                                case CustomerTypeService.ORG_INST_BASIC:        isEditable = user.hasRole('ROLE_YODA'); break
+                                case CustomerTypeService.ORG_INST_PRO:          isEditable = user.hasRole('ROLE_YODA'); break
+                                case CustomerTypeService.ORG_CONSORTIUM_BASIC:  isEditable = user.hasRole('ROLE_YODA'); break
+                                case CustomerTypeService.ORG_CONSORTIUM_PRO:    isEditable = user.hasRole('ROLE_YODA'); break
                                 default:                    isEditable = user.hasRole('ROLE_YODA'); break
                             }
                             break
-                        case 'ORG_INST_PRO':
+                        case CustomerTypeService.ORG_INST_PRO:
                             switch (orgInstance.getCustomerType()){
-                                case 'ORG_INST_BASIC':    isEditable = user.hasRole('ROLE_YODA'); break
-                                case 'ORG_INST_PRO':            isEditable = user.hasRole('ROLE_YODA'); break
-                                case 'ORG_CONSORTIUM_BASIC':      isEditable = user.hasRole('ROLE_YODA'); break
-                                case 'ORG_CONSORTIUM_PRO':  isEditable = user.hasRole('ROLE_YODA'); break
+                                case CustomerTypeService.ORG_INST_BASIC:        isEditable = user.hasRole('ROLE_YODA'); break
+                                case CustomerTypeService.ORG_INST_PRO:          isEditable = user.hasRole('ROLE_YODA'); break
+                                case CustomerTypeService.ORG_CONSORTIUM_BASIC:  isEditable = user.hasRole('ROLE_YODA'); break
+                                case CustomerTypeService.ORG_CONSORTIUM_PRO:    isEditable = user.hasRole('ROLE_YODA'); break
                                 default:                    isEditable = userHasEditableRights; break //means providers and agencies
                             }
                             break
-                        case 'ORG_CONSORTIUM_BASIC':
+                        case CustomerTypeService.ORG_CONSORTIUM_BASIC:
                             switch (orgInstance.getCustomerType()){
-                                case 'ORG_INST_BASIC':    isEditable = userHasEditableRights; break
-                                case 'ORG_INST_PRO':            isEditable = userHasEditableRights; break
-                                case 'ORG_CONSORTIUM_BASIC':      isEditable = user.hasRole('ROLE_YODA'); break
-                                case 'ORG_CONSORTIUM_PRO':  isEditable = user.hasRole('ROLE_YODA'); break
+                                case CustomerTypeService.ORG_INST_BASIC:        isEditable = userHasEditableRights; break
+                                case CustomerTypeService.ORG_INST_PRO:          isEditable = userHasEditableRights; break
+                                case CustomerTypeService.ORG_CONSORTIUM_BASIC:  isEditable = user.hasRole('ROLE_YODA'); break
+                                case CustomerTypeService.ORG_CONSORTIUM_PRO:    isEditable = user.hasRole('ROLE_YODA'); break
                                 default:                    isEditable = userHasEditableRights; break //means providers and agencies
                             }
                             break
