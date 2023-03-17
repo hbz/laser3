@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Subscription; de.laser.RefdataCategory; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.CustomerTypeService; de.laser.Subscription; de.laser.RefdataCategory; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.finance.CostItem" %>
 
 <laser:htmlStart message="myinst.currentSubscriptions.label" serviceInjection="true"/>
 
@@ -241,7 +241,7 @@
 
 
                         <td class="x">
-                            <g:if test="${editable && accessService.checkConstraint_INST_EDITOR_PERM_X_RA( CustomerTypeService.ORG_CONSORTIUM_PRO )}">
+                            <g:if test="${editable && accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_PRO )}">
 
                                     <g:link class="ui icon positive button la-popup-tooltip la-delay"
                                             controller="survey" action="addSubtoIssueEntitlementsSurvey"

@@ -9,7 +9,7 @@
 
     <laser:render template="breadcrumb" model="${[accessPoint: accessPoint, params: params]}"/>
 
-    <g:if test="${accessService.checkConstraint_INST_EDITOR_PERM_BASIC( inContextOrg )}">
+    <g:if test="${accessService.is_INST_EDITOR_with_PERMS_BASIC( inContextOrg )}">
         <ui:controlButtons>
             <ui:exportDropdown>
                 <ui:exportDropdownItem>
@@ -88,7 +88,7 @@
                     <td>${accessPointData.ipRange}</td>
                     <td>${accessPointData.ipCidr}</td>
                     <td class="center aligned">
-                        <g:if test="${accessService.checkConstraint_INST_EDITOR_PERM_BASIC( inContextOrg )}">
+                        <g:if test="${accessService.is_INST_EDITOR_with_PERMS_BASIC( inContextOrg )}">
                             <g:link action="deleteAccessPointData" controller="accessPoint" id="${accessPointData.id}"
                                     class="ui negative icon button"
                                     role="button"
@@ -102,7 +102,7 @@
             </tbody>
         </table>
 
-        <g:if test="${!accessPoint.hasProperty('entityId') && accessService.checkConstraint_INST_EDITOR_PERM_BASIC( inContextOrg )}">
+        <g:if test="${!accessPoint.hasProperty('entityId') && accessService.is_INST_EDITOR_with_PERMS_BASIC( inContextOrg )}">
             <div class="ui divider"></div>
 
             <div class="content">
@@ -158,7 +158,7 @@
                 <td>${accessPointData.ipRange}</td>
                 <td>${accessPointData.ipCidr}</td>
                 <td class="center aligned">
-                    <g:if test="${accessService.checkConstraint_INST_EDITOR_PERM_BASIC( inContextOrg )}">
+                    <g:if test="${accessService.is_INST_EDITOR_with_PERMS_BASIC( inContextOrg )}">
                         <g:link action="deleteAccessPointData" controller="accessPoint" id="${accessPointData.id}"
                                 class="ui negative icon button"
                                 role="button"
@@ -172,7 +172,7 @@
         </tbody>
     </table>
 
-    <g:if test="${!accessPoint.hasProperty('entityId') && accessService.checkConstraint_INST_EDITOR_PERM_BASIC( inContextOrg )}">
+    <g:if test="${!accessPoint.hasProperty('entityId') && accessService.is_INST_EDITOR_with_PERMS_BASIC( inContextOrg )}">
         <div class="ui divider"></div>
 
         <div class="content">

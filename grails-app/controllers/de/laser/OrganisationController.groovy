@@ -88,7 +88,7 @@ class OrganisationController  {
      */
     @DebugInfo(perm="FAKE,ORG_INST_BASIC,ORG_CONSORTIUM_BASIC", affil="INST_ADM", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("FAKE,ORG_INST_BASIC,ORG_CONSORTIUM_BASIC", "INST_ADM", "ROLE_ADMIN")
+        ctx.accessService.is_ROLE_ADMIN_or_INST_ADM_with_PERMS( "FAKE,ORG_INST_BASIC,ORG_CONSORTIUM_BASIC" )
     })
     @Check404(domain=Org)
     def settings() {
@@ -388,7 +388,7 @@ class OrganisationController  {
         Map<String, Object> result = [:]
         result.propList    = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
         result.user        = contextService.getUser()
-        result.editable    = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || accessService.checkConstraint_ORG_COM_EDITOR()
+        result.editable    = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || accessService.is_ORG_COM_EDITOR()
 
         params.orgSector    = RDStore.O_SECTOR_PUBLISHER?.id?.toString()
         params.orgType      = RDStore.OT_PROVIDER?.id?.toString()
@@ -783,7 +783,7 @@ class OrganisationController  {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN", wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkConstraint_INST_EDITOR_PERM_X_RA( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+        ctx.accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def createProvider() {
         Org.withTransaction {
@@ -813,7 +813,7 @@ class OrganisationController  {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkConstraint_INST_EDITOR_PERM_X_RA( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+        ctx.accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def findProviderMatches() {
 
@@ -832,7 +832,7 @@ class OrganisationController  {
      */
     @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_BASIC, affil="INST_EDTIOR",specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkConstraint_INST_EDITOR_PERM_X_RA( CustomerTypeService.ORG_CONSORTIUM_BASIC )
+        ctx.accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
     def createMember() {
         Map<String,Object> ctrlResult = organisationControllerService.createMember(this,params)
@@ -852,7 +852,7 @@ class OrganisationController  {
      */
     @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_BASIC, affil="INST_EDITOR",specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkConstraint_INST_EDITOR_PERM_X_RA( CustomerTypeService.ORG_CONSORTIUM_BASIC )
+        ctx.accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
     Map findOrganisationMatches() {
         Map memberMap = [:]
@@ -1000,7 +1000,7 @@ class OrganisationController  {
         //IF ORG is a Provider and is NOT ex we:kb
         if(!result.orgInstance.gokbId && (result.orgInstance.sector == RDStore.O_SECTOR_PUBLISHER || RDStore.OT_PROVIDER.id in result.allOrgTypeIds)) {
             result.editable_identifier = accessService.checkMinUserOrgRole(result.user, result.orgInstance, 'INST_EDITOR') ||
-                    accessService.checkConstraint_INST_EDITOR_PERM_X_RA( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+                    accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
         }
         else if(!result.orgInstance.gokbId) {
             if(accessService.checkPerm("ORG_CONSORTIUM_BASIC")) {
@@ -1199,7 +1199,7 @@ class OrganisationController  {
      */
     @DebugInfo(perm="FAKE,ORG_INST_BASIC,ORG_CONSORTIUM_BASIC", affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("FAKE,ORG_INST_BASIC,ORG_CONSORTIUM_BASIC", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( "FAKE,ORG_INST_BASIC,ORG_CONSORTIUM_BASIC" )
     })
     def deleteCustomerIdentifier() {
         Map<String,Object> ctrlResult = organisationControllerService.deleteCustomerIdentifier(this,params)
@@ -1282,7 +1282,7 @@ class OrganisationController  {
      */
     @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_BASIC, affil="INST_ADM", specRole = "ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX(CustomerTypeService.ORG_CONSORTIUM_BASIC, "INST_ADM", "ROLE_ADMIN")
+        ctx.accessService.is_ROLE_ADMIN_or_INST_ADM_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
     def deleteUser() {
         Map<String, Object> result = userControllerService.getResultGenericsERMS3067(params)
@@ -1331,7 +1331,7 @@ class OrganisationController  {
      */
     @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_BASIC, affil="INST_ADM", specRole = "ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX(CustomerTypeService.ORG_CONSORTIUM_BASIC, "INST_ADM", "ROLE_ADMIN")
+        ctx.accessService.is_ROLE_ADMIN_or_INST_ADM_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
     def editUser() {
         Map result = [
@@ -1351,7 +1351,7 @@ class OrganisationController  {
      */
     @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_BASIC, affil="INST_ADM", specRole = "ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX(CustomerTypeService.ORG_CONSORTIUM_BASIC, "INST_ADM", "ROLE_ADMIN")
+        ctx.accessService.is_ROLE_ADMIN_or_INST_ADM_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
     def createUser() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
@@ -1367,7 +1367,7 @@ class OrganisationController  {
      */
     @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_BASIC, affil="INST_ADM", specRole = "ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX(CustomerTypeService.ORG_CONSORTIUM_BASIC,"INST_ADM","ROLE_ADMIN")
+        ctx.accessService.is_ROLE_ADMIN_or_INST_ADM_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
     def processCreateUser() {
         def success = userService.addNewUser(params, flash)
@@ -1390,7 +1390,7 @@ class OrganisationController  {
      */
     @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_BASIC, affil="INST_ADM", specRole = "ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX(CustomerTypeService.ORG_CONSORTIUM_BASIC,"INST_ADM","ROLE_ADMIN")
+        ctx.accessService.is_ROLE_ADMIN_or_INST_ADM_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
     def addAffiliation() {
         Map<String, Object> result = userControllerService.getResultGenericsERMS3067(params)

@@ -518,7 +518,7 @@ class SubscriptionController {
      */
     @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkConstraint_INST_EDITOR_PERM_X_RA( CustomerTypeService.ORG_CONSORTIUM_BASIC )
+        ctx.accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
     def linkNextPrevMemberSub() {
         Map<String,Object> ctrlResult = subscriptionControllerService.linkNextPrevMemberSub(this,params)
@@ -1581,7 +1581,7 @@ class SubscriptionController {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkConstraint_INST_EDITOR_PERM_X_RA( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+        ctx.accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def renewSubscription() {
         Map<String,Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
@@ -1611,7 +1611,7 @@ class SubscriptionController {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkConstraint_INST_EDITOR_PERM_X_RA( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+        ctx.accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def processRenewSubscription() {
         Map<String,Object> ctrlResult = subscriptionControllerService.processRenewSubscription(this,params)
@@ -1643,7 +1643,7 @@ class SubscriptionController {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkConstraint_INST_EDITOR_PERM_X_RA( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+        ctx.accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def copySubscription() {
         Map<String,Object> ctrlResult = subscriptionControllerService.copySubscription(params)
@@ -1706,7 +1706,7 @@ class SubscriptionController {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkConstraint_INST_EDITOR_PERM_X_RA( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+        ctx.accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def copyElementsIntoSubscription() {
         Map<String,Object> ctrlResult = subscriptionControllerService.copyElementsIntoSubscription(params)
@@ -1804,7 +1804,7 @@ class SubscriptionController {
      */
     @DebugInfo(perm = "ORG_INST_PRO", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkConstraint_INST_EDITOR_PERM_X_RA( CustomerTypeService.ORG_INST_PRO )
+        ctx.accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_INST_PRO )
     })
     def copyMyElements() {
         Map<String, Object> result = subscriptionControllerService.setCopyResultGenerics(params+[copyMyElements: true])
@@ -1854,7 +1854,7 @@ class SubscriptionController {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkConstraint_INST_EDITOR_PERM_X_RA( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+        ctx.accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def addSubscriptions() {
         def candidates = JSON.parse(params.candidates)

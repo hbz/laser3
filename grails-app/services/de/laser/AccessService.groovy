@@ -64,19 +64,6 @@ class AccessService {
     // --- checking current user and context org OR global roles
 
     /**
-     * Checks if the context institution has the given customer types or if the user has one of the given global rights
-     * @param orgPerms the customer types to check
-     * @param specRoles the global permissions to check
-     * @return true if the user has one of the global permissions granted or if the context institution has one of the given customer types
-     */
-    boolean checkPermX(String orgPerms, String specRoles) {
-        if (contextService.getUser()?.hasRole(specRoles)) {
-            return true
-        }
-        _checkOrgPerm(orgPerms.split(','))
-    }
-
-    /**
      * Checks
      * <ul>
      *     <li>if the context institution is one of the given customer types and the user has the given rights granted</li>
@@ -89,7 +76,7 @@ class AccessService {
      * or if the context institution is one of the given customer types
      * and if the user has the given permissions within the institution, false otherwise
      */
-    boolean checkPermAffiliationX(String orgPerms, String userRole, String specRoles) {
+    private boolean _checkPermAffiliationX(String orgPerms, String userRole, String specRoles) {
         if (contextService.getUser()?.hasRole(specRoles)) {
             return true
         }
@@ -333,28 +320,39 @@ class AccessService {
         result
     }
 
-    // ----- CONSTRAINTS -----
+    // ----- CONSTRAINT CHECKS -----
 
     /**
      * Replacement call for the abandoned ROLE_ORG_COM_EDITOR
      * @return the result of {@link #checkPermAffiliation(java.lang.String, java.lang.String)} for [ORG_INST_PRO, ORG_CONSORTIUM_BASIC] and INST_EDTOR as arguments
      */
-    boolean checkConstraint_ORG_COM_EDITOR() {
+    boolean is_ORG_COM_EDITOR() {
         checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')
     }
 
-    boolean checkConstraint_INST_EDITOR_PERM_BASIC(boolean inContextOrg) {
+    boolean is_INST_EDITOR_with_PERMS_BASIC(boolean inContextOrg) {
         boolean a = checkPermAffiliation(CustomerTypeService.ORG_INST_BASIC, 'INST_EDITOR') && inContextOrg
         boolean b = checkPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR')
 
         return (a || b)
     }
 
-    boolean checkConstraint_INST_USER_PERM_X_RA(String orgPerms) {
-        checkPermAffiliationX(orgPerms, 'INST_USER', 'ROLE_ADMIN')
+    boolean is_ROLE_ADMIN_or_has_PERMS(String orgPerms) {
+        if (contextService.getUser()?.hasRole('ROLE_ADMIN')) {
+            return true
+        }
+        _checkOrgPerm(orgPerms.split(','))
     }
 
-    boolean checkConstraint_INST_EDITOR_PERM_X_RA(String orgPerms) {
-        checkPermAffiliationX(orgPerms, 'INST_EDITOR', 'ROLE_ADMIN')
+    boolean is_ROLE_ADMIN_or_INST_USER_with_PERMS(String orgPerms) {
+        _checkPermAffiliationX(orgPerms, 'INST_USER', 'ROLE_ADMIN')
+    }
+
+    boolean is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS(String orgPerms) {
+        _checkPermAffiliationX(orgPerms, 'INST_EDITOR', 'ROLE_ADMIN')
+    }
+
+    boolean is_ROLE_ADMIN_or_INST_ADM_with_PERMS(String orgPerms) {
+        _checkPermAffiliationX(orgPerms, 'INST_ADM', 'ROLE_ADMIN')
     }
 }

@@ -134,7 +134,7 @@ class AccessPointController  {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkConstraint_INST_EDITOR_PERM_X_RA( CustomerTypeService.PERMS_BASIC )
+        ctx.accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.PERMS_BASIC )
     })
     def create() {
         Map<String, Object> result = [:]
@@ -161,7 +161,7 @@ class AccessPointController  {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkConstraint_INST_EDITOR_PERM_X_RA( CustomerTypeService.PERMS_BASIC )
+        ctx.accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.PERMS_BASIC )
     })
     def processCreate() {
         RefdataValue accessMethod = (RefdataValue) genericOIDService.resolveOID(params.accessMethod)
@@ -183,7 +183,7 @@ class AccessPointController  {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkConstraint_INST_EDITOR_PERM_X_RA( CustomerTypeService.PERMS_BASIC )
+        ctx.accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.PERMS_BASIC )
     })
     def delete() {
         Map<String,Object> ctrlResult = accessPointControllerService.delete(params)
@@ -352,7 +352,7 @@ class AccessPointController  {
                     linkedPlatforms                   : linkedPlatforms,
                     linkedPlatformSubscriptionPackages: linkedPlatformSubscriptionPackages,
                     ip                                : params.ip,
-                    editable                          : accessService.checkConstraint_INST_EDITOR_PERM_BASIC( inContextOrg ),
+                    editable                          : accessService.is_INST_EDITOR_with_PERMS_BASIC( inContextOrg ),
                     autofocus                         : autofocus,
                     orgInstance                       : orgAccessPoint.org,
                     inContextOrg                      : inContextOrg,
@@ -375,7 +375,7 @@ class AccessPointController  {
         Org organisation = accessService.checkPerm("ORG_CONSORTIUM_BASIC") ? Org.get(params.id) : contextService.getOrg()
         boolean inContextOrg = organisation.id == contextService.getOrg().id
 
-        if (accessService.checkConstraint_INST_EDITOR_PERM_BASIC( inContextOrg )){
+        if (accessService.is_INST_EDITOR_with_PERMS_BASIC( inContextOrg )){
             accessPointService.deleteAccessPointData(AccessPointData.get(params.id))
         } else {
             flash.error = message(code: 'default.noPermissions') as String

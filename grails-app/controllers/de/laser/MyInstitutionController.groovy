@@ -1665,7 +1665,7 @@ class MyInstitutionController  {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkConstraint_INST_EDITOR_PERM_X_RA( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+        ctx.accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def financeImport() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -1682,7 +1682,7 @@ class MyInstitutionController  {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkConstraint_INST_EDITOR_PERM_X_RA( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+        ctx.accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def generateFinanceImportWorksheet() {
         Subscription subscription = Subscription.get(params.id)
@@ -1720,7 +1720,7 @@ class MyInstitutionController  {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN", wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkConstraint_INST_EDITOR_PERM_X_RA( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+        ctx.accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def processFinanceImport() {
         CostItem.withTransaction { TransactionStatus ts ->
@@ -1757,7 +1757,7 @@ class MyInstitutionController  {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkConstraint_INST_EDITOR_PERM_X_RA( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+        ctx.accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def subscriptionImport() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -1774,7 +1774,7 @@ class MyInstitutionController  {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN", wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkConstraint_INST_EDITOR_PERM_X_RA( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+        ctx.accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def processSubscriptionImport() {
             Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -1812,7 +1812,7 @@ class MyInstitutionController  {
      */
     @DebugInfo(perm=CustomerTypeService.ORG_INST_BASIC, affil="INST_USER", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkConstraint_INST_USER_PERM_X_RA( CustomerTypeService.ORG_INST_BASIC )
+        ctx.accessService.is_ROLE_ADMIN_or_INST_USER_with_PERMS( CustomerTypeService.ORG_INST_BASIC )
     })
     def currentSurveys() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -1905,7 +1905,7 @@ class MyInstitutionController  {
      */
     @DebugInfo(perm=CustomerTypeService.ORG_INST_BASIC, affil="INST_USER", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkConstraint_INST_USER_PERM_X_RA( CustomerTypeService.ORG_INST_BASIC )
+        ctx.accessService.is_ROLE_ADMIN_or_INST_USER_with_PERMS( CustomerTypeService.ORG_INST_BASIC )
     })
     def surveyInfos() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -2030,7 +2030,7 @@ class MyInstitutionController  {
      */
     @DebugInfo(perm=CustomerTypeService.ORG_INST_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkConstraint_INST_EDITOR_PERM_X_RA( CustomerTypeService.ORG_INST_BASIC )
+        ctx.accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_INST_BASIC )
     })
     def surveyInfoFinish() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -2127,7 +2127,7 @@ class MyInstitutionController  {
 
     @DebugInfo(perm=CustomerTypeService.ORG_INST_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkConstraint_INST_EDITOR_PERM_X_RA( CustomerTypeService.ORG_INST_BASIC )
+        ctx.accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_INST_BASIC )
     })
     def surveyLinkOpenNewSurvey() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -2487,7 +2487,7 @@ class MyInstitutionController  {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_USER", specRole="ROLE_ADMIN", wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkConstraint_INST_USER_PERM_X_RA( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+        ctx.accessService.is_ROLE_ADMIN_or_INST_USER_with_PERMS( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     Map<String, Object> budgetCodes() {
         BudgetCode.withTransaction {
@@ -2580,7 +2580,7 @@ class MyInstitutionController  {
      */
     @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_BASIC, affil="INST_EDITOR",specRole="ROLE_ADMIN", wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkConstraint_INST_EDITOR_PERM_X_RA( CustomerTypeService.ORG_CONSORTIUM_BASIC )
+        ctx.accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
     def addMembers() {
         Combo.withTransaction {
@@ -2974,7 +2974,7 @@ class MyInstitutionController  {
      */
     @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_BASIC, affil="INST_USER", specRole="ROLE_ADMIN", wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.accessService.checkConstraint_INST_USER_PERM_X_RA( CustomerTypeService.ORG_CONSORTIUM_BASIC )
+        ctx.accessService.is_ROLE_ADMIN_or_INST_USER_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
     def manageMembers() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -3169,7 +3169,7 @@ join sub.orgRelations or_sub where
      */
     @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_BASIC, affil="INST_USER", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX(CustomerTypeService.ORG_CONSORTIUM_BASIC, "INST_USER", "ROLE_ADMIN")
+        ctx.accessService.is_ROLE_ADMIN_or_INST_USER_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
     def manageConsortiaSubscriptions() {
 
@@ -3575,7 +3575,7 @@ join sub.orgRelations or_sub where
      */
     @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_PRO, affil="INST_USER", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkConstraint_INST_USER_PERM_X_RA( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.accessService.is_ROLE_ADMIN_or_INST_USER_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     def manageParticipantSurveys() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)

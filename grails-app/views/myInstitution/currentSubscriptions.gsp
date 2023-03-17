@@ -39,7 +39,7 @@
                 </g:else>
             </ui:exportDropdown>
 
-            <g:if test="${accessService.checkPermX(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'ROLE_ADMIN')}">
+            <g:if test="${accessService.is_ROLE_ADMIN_or_has_PERMS( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )}">
                 <laser:render template="actions" />
             </g:if>
         </ui:controlButtons>
