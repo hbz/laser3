@@ -232,17 +232,7 @@ class User {
      * @return does the user have the given INST_-role granted?
      */
     boolean hasAffiliation(String userRoleName) {
-        hasAffiliationAND(userRoleName, 'ROLE_USER')
-    }
-
-    /**
-     * Checks if the user has the given institution affiliation and the given global role granted
-     * @param userRoleName the INST_-role to check for
-     * @param globalRoleName the global ROLE constant to check for
-     * @return does the user have the given INST-role AND ROLE constant granted?
-     */
-    boolean hasAffiliationAND(String userRoleName, String globalRoleName) {
-        BeanStore.getUserService().checkAffiliation(this, userRoleName, globalRoleName, 'AND', BeanStore.getContextService().getOrg())
+        BeanStore.getUserService().is_ROLE_YODA_or_ROLE_ADMIN_or_checkAffiliation(this, userRoleName, BeanStore.getContextService().getOrg())
     }
 
     /**
@@ -252,7 +242,7 @@ class User {
      * @return does the user have the given INST_-role for the given org?
      */
     boolean hasAffiliationForForeignOrg(String userRoleName, Org orgToCheck) {
-        BeanStore.getUserService().checkAffiliation(this, userRoleName, 'ROLE_USER', 'AND', orgToCheck)
+        BeanStore.getUserService().is_ROLE_YODA_or_ROLE_ADMIN_or_checkAffiliation(this, userRoleName, orgToCheck)
     }
 
     /**
