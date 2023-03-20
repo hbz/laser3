@@ -2,6 +2,7 @@ package de.laser.api.v0
 
 
 import de.laser.Doc
+import de.laser.GlobalService
 import de.laser.License
 import de.laser.Org
 import de.laser.Package
@@ -16,8 +17,9 @@ import de.laser.api.v0.special.ApiOAMonitor
 import de.laser.api.v0.special.ApiStatistic
 import de.laser.storage.Constants
 import grails.converters.JSON
+import groovy.sql.Sql
 import groovy.util.logging.Slf4j
-import org.apache.tools.ant.util.DateUtils
+import de.laser.utils.DateUtils
 import org.springframework.http.HttpStatus
 
 import javax.servlet.http.HttpServletRequest
@@ -32,7 +34,7 @@ class ApiManager {
     /**
      * The current version of the API. To be updated on every change which affects the output
      */
-    static final VERSION = '1.6'
+    static final VERSION = '1.7'
 
     /**
      * Checks if the request is valid and if, whether the permissions are granted for the context institution making
@@ -61,7 +63,7 @@ class ApiManager {
         boolean isNatStat     = ApiToolkit.hasApiLevel(contextOrg, ApiToolkit.API_LEVEL_NATSTAT)
         boolean isInvoiceTool = ApiToolkit.hasApiLevel(contextOrg, ApiToolkit.API_LEVEL_INVOICETOOL)
 
-        log.debug("API-READ (" + VERSION + "): ${obj} (${format}) -> ${query}:${value} ${changedFrom ? changedFrom.format(DateUtils.ISO8601_DATE_PATTERN) : ''}")
+        log.debug("API-READ (" + VERSION + "): ${obj} (${format}) -> ${query}:${value} ${changedFrom ? DateUtils.getSDF_yyyyMMdd().format(changedFrom) : ''}")
 
         Closure checkValidRequest = { endpoint ->
             if (! endpoint.equalsIgnoreCase(obj)) {
@@ -309,7 +311,9 @@ class ApiManager {
             result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
 
             if (tmp.checkFailureCodes_3()) {
-                result = ApiSubscription.requestSubscription((Subscription) tmp.obj, contextOrg, isInvoiceTool)
+                Sql sql = GlobalService.obtainSqlConnection()
+                result = ApiSubscription.requestSubscription((Subscription) tmp.obj, contextOrg, isInvoiceTool, sql)
+                sql.close()
             }
         }
         else if (checkValidRequest('subscriptionList')) {
