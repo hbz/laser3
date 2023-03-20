@@ -3463,10 +3463,10 @@ class SurveyController {
             def sub_kind = params.subKind
             def sub_form = params.subForm
             def sub_resource = params.subResource
-            def sub_hasPerpetualAccess = params.subHasPerpetualAccess == '1'
+            def sub_hasPerpetualAccess = params.subHasPerpetualAccess == RDStore.YN_YES.id.toString()
             //def sub_hasPerpetualAccess = params.subHasPerpetualAccess
-            def sub_hasPublishComponent = params.subHasPublishComponent == '1'
-            def sub_isPublicForApi = params.subIsPublicForApi == '1'
+            def sub_hasPublishComponent = params.subHasPublishComponent == RDStore.YN_YES.id.toString()
+            def sub_isPublicForApi = params.subIsPublicForApi == RDStore.YN_YES.id.toString()
             def old_subOID = params.subscription.old_subid
             def new_subname = params.subscription.name
             def manualCancellationDate = null
