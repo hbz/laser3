@@ -385,7 +385,7 @@
 
     <div class="sixteen wide column">
         <div class="two fields">
-
+***************************
             <g:if test="${params.tab != 'stats'}">
                 <div class="eight wide field" style="text-align: left;">
                     <g:if test="${editable && params.tab != 'selectedIEs'}">
@@ -486,13 +486,13 @@
 
 
     $(".bulkcheck").change(function() {
-        var index = $(this).parents("tr").attr("data-index");
+        var index = $(this).parents(".column").attr("data-index");
             if (this.checked) {
-                $("tr[data-index='" + index + "'").addClass("positive");
+                $("div[data-index='" + index + "'").addClass("positive");
             } else {
-                $("tr[data-index='" + index + "'").removeClass("positive");
+                $("div[data-index='" + index + "'").removeClass("positive");
             }
-        JSPC.app.updateSelectionCache($(this).parents("tr").attr("data-ieId"), $(this).prop('checked'));
+        JSPC.app.updateSelectionCache($(this).parents(".column").attr("data-ieId"), $(this).prop('checked'));
     });
 
 </laser:script>
