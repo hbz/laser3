@@ -136,7 +136,7 @@ class AccessService {
         boolean check2 = (ctx.id == currentOrg.id) || Combo.findByToOrgAndFromOrg(ctx, currentOrg)
 
         // currentOrg check
-        boolean check3 = (ctx.id == currentOrg.id) && contextService.getUser()?.hasAffiliation(ownerUserRole?.toUpperCase())
+        boolean check3 = (ctx.id == currentOrg.id) && contextService.getUser().is_ROLE_ADMIN_or_hasAffiliation(ownerUserRole?.toUpperCase())
 
         (check1 && check2) || check3
     }
@@ -252,7 +252,7 @@ class AccessService {
      */
     private boolean _checkOrgPermAndUserAffiliation(String[] orgPerms, String userRole) {
         boolean check1 = _checkOrgPerm(orgPerms)
-        boolean check2 = userRole ? contextService.getUser()?.hasAffiliation(userRole?.toUpperCase()) : false
+        boolean check2 = userRole ? contextService.getUser().is_ROLE_ADMIN_or_hasAffiliation(userRole?.toUpperCase()) : false
 
         check1 && check2
     }
@@ -267,7 +267,7 @@ class AccessService {
      */
     private boolean _checkOrgPermAndOrgTypeAndUserAffiliation(String[] orgPerms, String[] orgTypes, String userRole) {
         boolean check1 = _checkOrgPermAndOrgType(orgPerms, orgTypes)
-        boolean check2 = userRole ? contextService.getUser()?.hasAffiliation(userRole?.toUpperCase()) : false
+        boolean check2 = userRole ? contextService.getUser().is_ROLE_ADMIN_or_hasAffiliation(userRole.toUpperCase()) : false
 
         check1 && check2
     }

@@ -122,7 +122,7 @@ class InstAdmService {
 	boolean isUserEditableForInstAdm(User user, User editor, Org org) {
 
 		boolean roleAdmin = editor.hasMinRole('ROLE_ADMIN')
-		boolean instAdmin = editor.hasAffiliation('INST_ADM') // check @ contextService.getOrg()
+		boolean instAdmin = editor.is_ROLE_ADMIN_or_hasAffiliation('INST_ADM') // check @ contextService.getOrg()
 		boolean orgMatch  = user.isMemberOf(contextService.getOrg())
 
 		roleAdmin || (instAdmin && orgMatch)

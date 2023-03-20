@@ -88,7 +88,7 @@
                                 <i aria-hidden="true" class="write icon"></i>
                             </a>
                         </g:if>
-                        <g:if test="${(user == taskInstance.creator) || contextService.getUser().hasAffiliation("INST_ADM")}">
+                        <g:if test="${(user == taskInstance.creator) || contextService.getUser().is_ROLE_ADMIN_or_hasAffiliation("INST_ADM")}">
                             <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.task")}"
                                     data-confirm-term-how="delete"

@@ -917,7 +917,7 @@ class CopyElementsService {
      */
     boolean deleteTasks(List<Long> toDeleteTasks, Object targetObject, def flash) {
         Locale locale = LocaleUtils.getCurrentLocale()
-        boolean isInstAdm = contextService.getUser().hasAffiliation("INST_ADM")
+        boolean isInstAdm = contextService.getUser().is_ROLE_ADMIN_or_hasAffiliation("INST_ADM")
         def userId = contextService.getUser().id
         toDeleteTasks.each { deleteTaskId ->
             Task dTask = Task.get(deleteTaskId)

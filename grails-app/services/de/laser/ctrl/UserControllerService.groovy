@@ -38,7 +38,7 @@ class UserControllerService {
             //result.editable = instAdmService.isUserEditableForInstAdm(result.user, result.editor, contextService.getOrg())
         }
         else {
-            result.editable = result.editor.hasMinRole('ROLE_ADMIN') || result.editor.hasAffiliation('INST_ADM')
+            result.editable = result.editor.is_ROLE_ADMIN_or_hasAffiliation('INST_ADM')
         }
         result
     }
@@ -59,7 +59,7 @@ class UserControllerService {
             //result.editable = instAdmService.isUserEditableForInstAdm(result.user, result.editor, contextService.getOrg())
         }
         else {
-            result.editable = result.editor.hasMinRole('ROLE_ADMIN') || result.editor.hasAffiliation('INST_ADM')
+            result.editable = result.editor.is_ROLE_ADMIN_or_hasAffiliation('INST_ADM')
         }
         result
     }

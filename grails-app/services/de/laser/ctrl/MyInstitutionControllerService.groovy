@@ -185,11 +185,11 @@ class MyInstitutionControllerService {
                 result.editable = surveyService.isEditableSurvey(org, SurveyInfo.get(params.id) ?: null)
                 break
             case 'users':
-                result.editable = user.hasMinRole('ROLE_ADMIN') || user.hasAffiliation('INST_ADM')
+                result.editable = user.is_ROLE_ADMIN_or_hasAffiliation('INST_ADM')
                 break
             case 'managePropertyDefinitions':
                 result.editable = false
-                result.changeProperties = user.hasMinRole('ROLE_ADMIN') || user.hasAffiliation('INST_EDITOR')
+                result.changeProperties = user.is_ROLE_ADMIN_or_hasAffiliation('INST_EDITOR')
                 break
             default:
                 result.editable = accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
