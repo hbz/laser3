@@ -287,6 +287,7 @@ class CopyElementsService {
                         form: targetObject.form ?: null,
                         isPublicForApi: targetObject.isPublicForApi,
                         hasPerpetualAccess: targetObject.hasPerpetualAccess,
+                        hasPublishComponent: targetObject.hasPublishComponent,
                         administrative: subMember.administrative
                 )
                 newSubscription.save()
@@ -1276,7 +1277,7 @@ class CopyElementsService {
      * @param sourceObject the source object from which the attribute should be taken
      * @param targetObject the target object into which the attribute should be copied
      * @param flash the message container
-     * @param propertyName the attrbiute to be transferred
+     * @param propertyName the attribute to be transferred
      * @return true if the transfer was successful, false otherwise
      */
     boolean copyObjectProperty(Object sourceObject, Object targetObject, def flash, String propertyName) {

@@ -7,6 +7,14 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      20.03.2023  rc-3.0  3.0.5       Andreas Bug         Entferne auch Bestandstitel ohne Status
+
+4917    20.03.2023  rc-3.0  3.0.5       Andreas Bug         fehlerhafte Übertragung der Attribute nach Verlängerung
+
+4916    20.03.2023  rc-3.0  3.0.5       Andreas Bug         hasPublishComponent wurde bei Übertrag von Teilnehmerlizenzen nicht angelegt
+
+4869    20.03.2023  rc-3.0  3.0.5       Andreas Bug         API-Version 1.7 nach RC migriert, Bugs behoben
+
 4875    14.03.2023  dev     3.1         David   Feature     Breadcumb / Seitentitel für Orgs aufräumen
 
 4879    13.03.2023  dev     3.1         David   Feature     Kennzeichnung von 'Meine'-Objekten
