@@ -742,7 +742,7 @@ class WorkflowOldService {
 
     private boolean _innerPermissionCheck(String userRoleName) {
         User user = contextService.getUser()
-        if (user.isAdmin() || user.isYoda()) {
+        if (user.hasMinRole('ROLE_ADMIN')) {
             return true
         }
         Org ctxOrg = contextService.getOrg()

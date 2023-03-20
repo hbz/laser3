@@ -51,7 +51,7 @@
             <ui:subNavItem controller="organisation" action="users" params="${[id: orgInstance.id]}" message="org.nav.users"/>
         </g:elseif>--%>
         <g:else>
-            <%-- this kind of check is necessary because it should not be displayed at all if user has no specRoles --%>
+            <%-- this kind of check is necessary because it should not be displayed at all if user has no specRole --%>
             <sec:ifAnyGranted roles="ROLE_ADMIN">
                 <ui:subNavItem controller="organisation" action="users" params="${breadcrumbParams}" message="org.nav.users"/>
             </sec:ifAnyGranted>
@@ -64,7 +64,7 @@
                     org: orgInstance,
                     comboPerm: "ORG_CONSORTIUM_BASIC",
                     comboAffiliation: "INST_ADM",
-                    specRoles: "ROLE_ADMIN"
+                    specRole: "ROLE_ADMIN"
         ])}">
             <ui:subNavItem controller="organisation" action="settings" params="${breadcrumbParams}" message="org.nav.options"/>
         </g:elseif>

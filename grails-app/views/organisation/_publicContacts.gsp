@@ -1,4 +1,4 @@
-<%@ page import="de.laser.PersonRole; de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.CustomerTypeService; de.laser.PersonRole; de.laser.storage.RDStore;" %>
 <laser:serviceInjection/>
 
 <g:set var="showOnlyPublic" value="${true}"/>
@@ -85,7 +85,7 @@
                             person                 : prs,
                             personRole             : PersonRole.findByOrgAndFunctionTypeAndPrs(orgInstance, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, prs),
                             personContext          : orgInstance,
-                            tmplShowDeleteButton   : (isProviderOrAgency && (accessService.checkPermAffiliationX('ORG_CONSORTIUM_BASIC','INST_EDITOR','ROLE_ADMIN'))),
+                            tmplShowDeleteButton   : (isProviderOrAgency && (accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_BASIC ))),
                             tmplShowFunctions      : false,
                             tmplShowPositions      : true,
                             tmplShowResponsiblities: true,
@@ -94,7 +94,7 @@
                             controller             : 'organisation',
                             action                 : 'show',
                             id                     : orgInstance.id,
-                            editable               : (isProviderOrAgency && accessService.checkPermAffiliationX('ORG_CONSORTIUM_BASIC','INST_EDITOR','ROLE_ADMIN') && !existsWekbRecord),
+                            editable               : (isProviderOrAgency && accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_BASIC ) && !existsWekbRecord),
                             noSelection            : true
                     ]}"/>
                 </g:each>
@@ -122,7 +122,7 @@
                                 person                 : prs,
                                 personRole             : PersonRole.findByOrgAndFunctionTypeAndPrs(orgInstance, RDStore.PRS_FUNC_SERVICE_SUPPORT, prs),
                                 personContext          : orgInstance,
-                                tmplShowDeleteButton   : (isProviderOrAgency && (accessService.checkPermAffiliationX('ORG_CONSORTIUM_BASIC','INST_EDITOR','ROLE_ADMIN'))),
+                                tmplShowDeleteButton   : (isProviderOrAgency && (accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_BASIC ))),
                                 tmplShowFunctions      : false,
                                 tmplShowPositions      : true,
                                 tmplShowResponsiblities: true,
@@ -131,7 +131,7 @@
                                 controller             : 'organisation',
                                 action                 : 'show',
                                 id                     : orgInstance.id,
-                                editable               : (isProviderOrAgency && accessService.checkPermAffiliationX('ORG_CONSORTIUM_BASIC','INST_EDITOR','ROLE_ADMIN') && !existsWekbRecord),
+                                editable               : (isProviderOrAgency && accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_BASIC ) && !existsWekbRecord),
                                 noSelection            : true
                         ]}"/>
                     </g:each>
@@ -158,7 +158,7 @@
                                 person                 : prs,
                                 personRole             : PersonRole.findByOrgAndFunctionTypeAndPrs(orgInstance, RDStore.PRS_FUNC_METADATA, prs),
                                 personContext          : orgInstance,
-                                tmplShowDeleteButton   : (isProviderOrAgency && (accessService.checkPermAffiliationX('ORG_CONSORTIUM_BASIC','INST_EDITOR','ROLE_ADMIN'))),
+                                tmplShowDeleteButton   : (isProviderOrAgency && (accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_BASIC ))),
                                 tmplShowFunctions      : false,
                                 tmplShowPositions      : true,
                                 tmplShowResponsiblities: true,
@@ -167,7 +167,7 @@
                                 controller             : 'organisation',
                                 action                 : 'show',
                                 id                     : orgInstance.id,
-                                editable               : (isProviderOrAgency && accessService.checkPermAffiliationX('ORG_CONSORTIUM_BASIC','INST_EDITOR','ROLE_ADMIN') && !existsWekbRecord),
+                                editable               : (isProviderOrAgency && accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_BASIC ) && !existsWekbRecord),
                                 noSelection            : true
                         ]}"/>
                     </g:each>

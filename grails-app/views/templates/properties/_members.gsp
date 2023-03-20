@@ -7,7 +7,7 @@
 <laser:serviceInjection />
 
 <%-- OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')}
-<g:set var="overwriteEditable" value="${editable || accessService.checkPermAffiliationX('ORG_INST_PRO','INST_EDITOR','ROLE_ADMIN')}" />--%>
+<g:set var="overwriteEditable" value="${editable || accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_INST_PRO )}" />--%>
 
 <g:if test="${newProp}">
     <ui:errors bean="${newProp}" />

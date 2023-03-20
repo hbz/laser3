@@ -727,7 +727,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
                 return cons || subscrCons || subscr
             }
             if (perm == 'edit') {
-                if (BeanStore.getAccessService().checkPermAffiliationX(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC,'INST_EDITOR','ROLE_ADMIN'))
+                if (BeanStore.getAccessService().is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC ))
                     return cons || subscr
             }
         }
