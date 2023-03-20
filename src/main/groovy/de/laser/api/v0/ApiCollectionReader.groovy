@@ -4,7 +4,6 @@ import de.laser.ExportService
 import de.laser.AlternativeName
 import de.laser.DeweyDecimalClassification
 import de.laser.DocContext
-import de.laser.GlobalService
 import de.laser.Identifier
 import de.laser.IdentifierNamespace
 import de.laser.IssueEntitlement
@@ -335,9 +334,8 @@ class ApiCollectionReader {
      * @param context the requesting institution ({@link Org}) whose perspective should be taken
      * @return a {@link Collection<Object>} reflecting the result
      */
-    static Collection<Object> getIssueEntitlementCollectionWithSQL(SubscriptionPackage subPkg, ignoreRelation, Org context){
+    static Collection<Object> getIssueEntitlementCollectionWithSQL(SubscriptionPackage subPkg, ignoreRelation, Org context, Sql sql){
         Collection<Object> result = []
-        Sql sql = GlobalService.obtainSqlConnection()
         /*
         List<IssueEntitlement> ieList = IssueEntitlement.executeQuery(
                 'select ie from IssueEntitlement ie join ie.tipp tipp join ie.subscription sub join tipp.pkg pkg ' +
@@ -517,7 +515,7 @@ class ApiCollectionReader {
      * @param context the requesting institution ({@link Org}) whose perspective is going to be taken during the checks
      * @return a {@link Collection<Object>} reflecting the packages and holdings
      */
-    static Collection<Object> getPackageWithIssueEntitlementsCollection(Collection<SubscriptionPackage> list, Org context) {  // TODO - TODO - TODO
+    static Collection<Object> getPackageWithIssueEntitlementsCollection(Collection<SubscriptionPackage> list, Org context, Sql sql = null) {  // TODO - TODO - TODO
         Collection<Object> result = []
 
         list.each { subPkg ->
@@ -526,7 +524,7 @@ class ApiCollectionReader {
 
             //if (pkg != Constants.HTTP_FORBIDDEN) {
             //IGNORE_ALL -> IGNORE_SUBSCRIPTION_AND_PACKAGE (bottleneck one)
-            pkg.issueEntitlements = getIssueEntitlementCollectionWithSQL(subPkg, ApiReader.IGNORE_SUBSCRIPTION_AND_PACKAGE, context)
+            pkg.issueEntitlements = getIssueEntitlementCollectionWithSQL(subPkg, ApiReader.IGNORE_SUBSCRIPTION_AND_PACKAGE, context, sql)
             //}
         }
 

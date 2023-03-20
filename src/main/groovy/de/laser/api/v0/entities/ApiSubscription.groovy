@@ -11,6 +11,7 @@ import de.laser.api.v0.*
 import de.laser.storage.Constants
 import de.laser.storage.RDStore
 import grails.converters.JSON
+import groovy.sql.Sql
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 /**
@@ -84,12 +85,12 @@ class ApiSubscription {
 	 * @param context the institution ({@link Org}) requesting the subscription
      * @return JSON | FORBIDDEN
      */
-    static requestSubscription(Subscription sub, Org context, boolean isInvoiceTool){
+    static requestSubscription(Subscription sub, Org context, boolean isInvoiceTool, Sql sql = null){
         Map<String, Object> result = [:]
 
 		boolean hasAccess = isInvoiceTool || calculateAccess(sub, context)
         if (hasAccess) {
-            result = getSubscriptionMap(sub, ApiReader.IGNORE_NONE, context, isInvoiceTool)
+            result = getSubscriptionMap(sub, ApiReader.IGNORE_NONE, context, isInvoiceTool, sql)
         }
 
         return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)
@@ -133,7 +134,7 @@ class ApiSubscription {
 	 * @param isInvoiceTool is the hbz invoice tool doing the request?
 	 * @return Map<String, Object>
 	 */
-	static Map<String, Object> getSubscriptionMap(Subscription sub, def ignoreRelation, Org context, boolean isInvoiceTool){
+	static Map<String, Object> getSubscriptionMap(Subscription sub, def ignoreRelation, Org context, boolean isInvoiceTool, Sql sql = null){
 		Map<String, Object> result = [:]
 
 		sub = GrailsHibernateUtil.unwrapIfProxy(sub)
@@ -199,7 +200,7 @@ class ApiSubscription {
 		result.organisations = ApiCollectionReader.getOrgLinkCollection(allOrgRoles, ApiReader.IGNORE_SUBSCRIPTION, context) // de.laser.OrgRole
 
 		// TODO refactoring with issueEntitlementService
-		result.packages = ApiCollectionReader.getPackageWithIssueEntitlementsCollection(sub.packages, context) // de.laser.SubscriptionPackage
+		result.packages = ApiCollectionReader.getPackageWithIssueEntitlementsCollection(sub.packages, context, sql) // de.laser.SubscriptionPackage
 
 		// Ignored
 
