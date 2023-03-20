@@ -235,7 +235,7 @@ class AccessService {
         if (orgTypes) {
             orgTypes.each { ot ->
                 RefdataValue type = RefdataValue.getByValueAndCategory(ot?.trim(), RDConstants.ORG_TYPE)
-                check2 = check2 || contextService.getOrg().getAllOrgTypeIds()?.contains(type?.id)
+                check2 = check2 || contextService.getOrg().getAllOrgTypeIds().contains(type?.id)
             }
         } else {
             check2 = true
@@ -252,7 +252,7 @@ class AccessService {
      */
     private boolean _checkOrgPermAndUserAffiliation(String[] orgPerms, String userRole) {
         boolean check1 = _checkOrgPerm(orgPerms)
-        boolean check2 = userRole ? contextService.getUser().is_ROLE_ADMIN_or_hasAffiliation(userRole?.toUpperCase()) : false
+        boolean check2 = userRole ? contextService.getUser().is_ROLE_ADMIN_or_hasAffiliation(userRole.toUpperCase()) : false
 
         check1 && check2
     }
@@ -284,7 +284,7 @@ class AccessService {
      * @param role the minimum role the user needs at the given institution
      * @return true if the user has at least the given role at the given institution, false otherwise
      */
-    boolean checkMinUserOrgRole(User user, Org org, String userRoleName) {
+    boolean checkMinUserOrgRole_ctxConstraint(User user, Org org, String userRoleName) {
         boolean result = false
 
         if (! user || ! org) {

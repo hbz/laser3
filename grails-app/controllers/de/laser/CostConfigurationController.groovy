@@ -43,7 +43,7 @@ class CostConfigurationController {
             }
         }
 
-        result.editable    =  accessService.checkMinUserOrgRole(user, org, "INST_EDITOR")
+        result.editable    =  accessService.checkMinUserOrgRole_ctxConstraint(user, org, "INST_EDITOR")
         result.costItemElementConfigurations = costItemElementConfigurations
         result.costItemElements = costItemElements
         result.institution = org
