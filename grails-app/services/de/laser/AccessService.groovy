@@ -71,13 +71,13 @@ class AccessService {
      * </ul>
      * @param orgPerms the customer types to check
      * @param userRole the user's affiliation to the context institution
-     * @param specRoles the global permissions to check
+     * @param specRole the global permission to check
      * @return true if the user has one of the global permissions
      * or if the context institution is one of the given customer types
      * and if the user has the given permissions within the institution, false otherwise
      */
-    private boolean _checkPermAffiliationX(String orgPerms, String userRole, String specRoles) {
-        if (contextService.getUser()?.hasRole(specRoles)) {
+    private boolean _checkPermAffiliationX(String orgPerms, String userRole, String specRole) {
+        if (contextService.getUser()?.hasMinRole(specRole)) {
             return true
         }
         _checkOrgPermAndUserAffiliation(orgPerms.split(','), userRole)
@@ -92,13 +92,13 @@ class AccessService {
      * @param orgPerms the customer types to check
      * @param orgTypes the organisation types to check
      * @param userRole the user's affiliation to the context institution
-     * @param specRoles the global permissions to check
+     * @param specRole the global permission to check
      * @return true if the user has one of the global permissions
      * or if the context institution is one of the given customer and organisation types
      * and if the user has the given permissions within the institution, false otherwise
      */
-    boolean checkPermTypeAffiliationX(String orgPerms, String orgTypes, String userRole, String specRoles) {
-        if (contextService.getUser()?.hasRole(specRoles)) {
+    boolean checkPermTypeAffiliationX(String orgPerms, String orgTypes, String userRole, String specRole) {
+        if (contextService.getUser()?.hasMinRole(specRole)) {
             return true
         }
         _checkOrgPermAndOrgTypeAndUserAffiliation(orgPerms.split(','), orgTypes.split(','), userRole)
@@ -160,7 +160,7 @@ class AccessService {
      * @return true if clauses one and two or three or four succeed, false otherwise
      */
     boolean checkForeignOrgComboPermAffiliationX(Map<String, Object> attributes) {
-        if (contextService.getUser()?.hasRole(attributes.specRoles)) {
+        if (contextService.getUser()?.hasMinRole(attributes.specRole)) {
             return true
         }
 
@@ -284,23 +284,19 @@ class AccessService {
      * @param role the minimum role the user needs at the given institution
      * @return true if the user has at least the given role at the given institution, false otherwise
      */
-    boolean checkMinUserOrgRole(User user, Org org, def role) {
-
+    boolean checkMinUserOrgRole(User user, Org org, String userRoleName) {
         boolean result = false
-        List rolesToCheck = []
 
         if (! user || ! org) {
             return result
         }
-        if (role instanceof String) {
-            role = Role.findByAuthority(role)
-        }
-        rolesToCheck << role
-
         // NEW CONSTRAINT:
         if (org.id != contextService.getOrg().id) {
             return result
         }
+
+        Role role = Role.findByAuthority(userRoleName)
+        List<Role> rolesToCheck = [role]
 
         // sym. role hierarchy
         if (role.authority == "INST_USER") {
@@ -338,7 +334,7 @@ class AccessService {
     }
 
     boolean is_ROLE_ADMIN_or_has_PERMS(String orgPerms) {
-        if (contextService.getUser()?.hasRole('ROLE_ADMIN')) {
+        if (contextService.getUser()?.hasMinRole('ROLE_ADMIN')) {
             return true
         }
         _checkOrgPerm(orgPerms.split(','))

@@ -121,7 +121,7 @@ class InstAdmService {
 	// moved here from AccessService
 	boolean isUserEditableForInstAdm(User user, User editor, Org org) {
 
-		boolean roleAdmin = editor.hasRole('ROLE_ADMIN')
+		boolean roleAdmin = editor.hasMinRole('ROLE_ADMIN')
 		boolean instAdmin = editor.hasAffiliation('INST_ADM') // check @ contextService.getOrg()
 		boolean orgMatch  = user.isMemberOf(contextService.getOrg())
 

@@ -9,6 +9,26 @@
 
 <div class="ui segment">
     <p class="ui header">
+        <i class="icon large database"></i> Roles and more
+    </p>
+    <p>
+    <pre>
+    Roles                 : ${de.laser.auth.Role.executeQuery("select r from Role r where r.roleType not in ('org', 'fake') order by r.id").collect{ it.id + ':' + it.authority }}
+
+    UserRoles             : ${de.laser.auth.UserRole.findAllByUser(contextService.getUser())}
+
+    hasMinRole('ROLE_YODA')  : ${contextService.getUser().hasMinRole('ROLE_YODA')}
+    hasMinRole('ROLE_ADMIN') : ${contextService.getUser().hasMinRole('ROLE_ADMIN')}
+    hasMinRole('ROLE_USER')  : ${contextService.getUser().hasMinRole('ROLE_USER')}
+
+    SpringSecurityUtils.ifAnyGranted('ROLE_YODA')  : ${grails.plugin.springsecurity.SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}
+    SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') : ${grails.plugin.springsecurity.SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}
+    SpringSecurityUtils.ifAnyGranted('ROLE_USER')  : ${grails.plugin.springsecurity.SpringSecurityUtils.ifAnyGranted('ROLE_USER')}
+    </pre>
+</div>
+
+<div class="ui segment">
+    <p class="ui header">
         <i class="icon large kiwi bird"></i> simple color helper
     </p>
     <p>

@@ -64,7 +64,7 @@
                     org: orgInstance,
                     comboPerm: "ORG_CONSORTIUM_BASIC",
                     comboAffiliation: "INST_ADM",
-                    specRoles: "ROLE_ADMIN"
+                    specRole: "ROLE_ADMIN"
         ])}">
             <ui:subNavItem controller="organisation" action="settings" params="${breadcrumbParams}" message="org.nav.options"/>
         </g:elseif>

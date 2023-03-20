@@ -1337,7 +1337,7 @@ class OrganisationController  {
         Map result = [
                 user: genericOIDService.resolveOID(params.uoid),
                 orgInstance: Org.get(params.id),
-                manipulateAffiliations: contextService.getUser().hasRole(['ROLE_ADMIN', 'ROLE_YODA'])
+                manipulateAffiliations: contextService.getUser().hasMinRole('ROLE_ADMIN')
         ]
         result.editable = checkIsEditable(result.user, contextService.getOrg())
         result.availableOrgs = [ result.orgInstance ]
@@ -1421,7 +1421,7 @@ class OrganisationController  {
                 result.delResult = deletionService.deleteOrganisation(result.orgInstance, null, DeletionService.DRY_RUN)
             }
 
-            if (contextService.getUser().isAdmin()) {
+            if (contextService.getUser().hasMinRole('ROLE_ADMIN')) {
                 result.substituteList = Org.executeQuery("select distinct o from Org o where o.status != :delState", [delState: RDStore.O_STATUS_DELETED])
             }
             else {
@@ -1809,7 +1809,7 @@ class OrganisationController  {
         Org contextOrg = contextService.getOrg()
         Org orgInstance = org
         boolean inContextOrg =  orgInstance?.id == contextOrg.id
-        boolean userHasEditableRights = user.hasRole('ROLE_ADMIN') || user.hasAffiliation('INST_EDITOR')
+        boolean userHasEditableRights = user.hasMinRole('ROLE_ADMIN') || user.hasAffiliation('INST_EDITOR')
         switch(params.action){
             case 'editUser':
                 isEditable = true
@@ -1830,7 +1830,7 @@ class OrganisationController  {
                 if (inContextOrg) {
                     isEditable = userHasEditableRights
                 }else{
-                    isEditable = user.hasRole('ROLE_YODA')
+                    isEditable = user.hasMinRole('ROLE_YODA')
                 }
                 break
             case [ 'show', 'ids', 'readerNumber', 'accessPoints', 'addSubjectGroup', 'deleteSubjectGroup', 'addressbook' ]:
@@ -1840,19 +1840,19 @@ class OrganisationController  {
                     switch (contextOrg.getCustomerType()){
                         case CustomerTypeService.ORG_INST_BASIC:
                             switch (orgInstance.getCustomerType()){
-                                case CustomerTypeService.ORG_INST_BASIC:        isEditable = user.hasRole('ROLE_YODA'); break
-                                case CustomerTypeService.ORG_INST_PRO:          isEditable = user.hasRole('ROLE_YODA'); break
-                                case CustomerTypeService.ORG_CONSORTIUM_BASIC:  isEditable = user.hasRole('ROLE_YODA'); break
-                                case CustomerTypeService.ORG_CONSORTIUM_PRO:    isEditable = user.hasRole('ROLE_YODA'); break
-                                default:                    isEditable = user.hasRole('ROLE_YODA'); break
+                                case CustomerTypeService.ORG_INST_BASIC:        isEditable = user.hasMinRole('ROLE_YODA'); break
+                                case CustomerTypeService.ORG_INST_PRO:          isEditable = user.hasMinRole('ROLE_YODA'); break
+                                case CustomerTypeService.ORG_CONSORTIUM_BASIC:  isEditable = user.hasMinRole('ROLE_YODA'); break
+                                case CustomerTypeService.ORG_CONSORTIUM_PRO:    isEditable = user.hasMinRole('ROLE_YODA'); break
+                                default:                    isEditable = user.hasMinRole('ROLE_YODA'); break
                             }
                             break
                         case CustomerTypeService.ORG_INST_PRO:
                             switch (orgInstance.getCustomerType()){
-                                case CustomerTypeService.ORG_INST_BASIC:        isEditable = user.hasRole('ROLE_YODA'); break
-                                case CustomerTypeService.ORG_INST_PRO:          isEditable = user.hasRole('ROLE_YODA'); break
-                                case CustomerTypeService.ORG_CONSORTIUM_BASIC:  isEditable = user.hasRole('ROLE_YODA'); break
-                                case CustomerTypeService.ORG_CONSORTIUM_PRO:    isEditable = user.hasRole('ROLE_YODA'); break
+                                case CustomerTypeService.ORG_INST_BASIC:        isEditable = user.hasMinRole('ROLE_YODA'); break
+                                case CustomerTypeService.ORG_INST_PRO:          isEditable = user.hasMinRole('ROLE_YODA'); break
+                                case CustomerTypeService.ORG_CONSORTIUM_BASIC:  isEditable = user.hasMinRole('ROLE_YODA'); break
+                                case CustomerTypeService.ORG_CONSORTIUM_PRO:    isEditable = user.hasMinRole('ROLE_YODA'); break
                                 default:                    isEditable = userHasEditableRights; break //means providers and agencies
                             }
                             break
@@ -1860,8 +1860,8 @@ class OrganisationController  {
                             switch (orgInstance.getCustomerType()){
                                 case CustomerTypeService.ORG_INST_BASIC:        isEditable = userHasEditableRights; break
                                 case CustomerTypeService.ORG_INST_PRO:          isEditable = userHasEditableRights; break
-                                case CustomerTypeService.ORG_CONSORTIUM_BASIC:  isEditable = user.hasRole('ROLE_YODA'); break
-                                case CustomerTypeService.ORG_CONSORTIUM_PRO:    isEditable = user.hasRole('ROLE_YODA'); break
+                                case CustomerTypeService.ORG_CONSORTIUM_BASIC:  isEditable = user.hasMinRole('ROLE_YODA'); break
+                                case CustomerTypeService.ORG_CONSORTIUM_PRO:    isEditable = user.hasMinRole('ROLE_YODA'); break
                                 default:                    isEditable = userHasEditableRights; break //means providers and agencies
                             }
                             break

@@ -197,33 +197,8 @@ class User {
      * @param roleName the role name to check for
      * @return does the user have this role granted?
      */
-    boolean hasRole(String roleName) {
+    boolean hasMinRole(String roleName) {
         SpringSecurityUtils.ifAnyGranted(roleName)
-    }
-
-    /**
-     * Checks if one of the given role names is attributed to the user - can only be used with global (ROLE_) constants
-     * @param roleNames the list of role names to check for
-     * @return does the user have any of the roles granted?
-     */
-    boolean hasRole(List<String> roleNames) {
-        SpringSecurityUtils.ifAnyGranted(roleNames?.join(','))
-    }
-
-    /**
-     * Checks for the ROLE_ADMIN status of the user
-     * @return is the user a global admin?
-     */
-    boolean isAdmin() {
-        SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN")
-    }
-
-    /**
-     * Checks for the ROLE_YODA status of the user
-     * @return is the user a yoda superuser?
-     */
-    boolean isYoda() {
-        SpringSecurityUtils.ifAnyGranted("ROLE_YODA")
     }
 
     /**

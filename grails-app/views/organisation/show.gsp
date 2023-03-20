@@ -727,7 +727,7 @@
                         --%>
             </g:if>
 
-                <g:if test="${(user.isAdmin() || institution.isCustomerType_Consortium()) && (institution != orgInstance)}">
+                <g:if test="${(user.hasMinRole('ROLE_ADMIN') || institution.isCustomerType_Consortium()) && (institution != orgInstance)}">
                     <g:if test="${orgInstance.createdBy || orgInstance.legallyObligedBy}">
                         <div class="ui card">
                             <div class="content">
