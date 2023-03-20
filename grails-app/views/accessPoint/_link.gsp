@@ -9,7 +9,7 @@
 
         <g:form class="ui form" url="[controller: 'accessPoint', action: 'linkPlatform']" id="linkPlatform"
                 method="POST">
-            <g:if test="${accessService.checkInstEditorForCustomerType_Basic( inContextOrg )}">
+            <g:if test="${accessService.is_INST_EDITOR_with_PERMS_BASIC( inContextOrg )}">
                 <g:select id="platforms" class="ui dropdown search" name="platforms"
                           from="${platformList}"
                           optionKey="id"

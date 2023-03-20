@@ -197,7 +197,7 @@ class FinanceControllerService {
                 break
         }
         if (editable)
-            result.editable = accessService.checkPermAffiliationX(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC,"INST_EDITOR","ROLE_ADMIN")
+            result.editable = accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
         result.dataToDisplay = dataToDisplay
         //override default view to show if checked by pagination or from elsewhere
         if (params.showView){

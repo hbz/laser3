@@ -197,33 +197,8 @@ class User {
      * @param roleName the role name to check for
      * @return does the user have this role granted?
      */
-    boolean hasRole(String roleName) {
+    boolean hasMinRole(String roleName) {
         SpringSecurityUtils.ifAnyGranted(roleName)
-    }
-
-    /**
-     * Checks if one of the given role names is attributed to the user - can only be used with global (ROLE_) constants
-     * @param roleNames the list of role names to check for
-     * @return does the user have any of the roles granted?
-     */
-    boolean hasRole(List<String> roleNames) {
-        SpringSecurityUtils.ifAnyGranted(roleNames?.join(','))
-    }
-
-    /**
-     * Checks for the ROLE_ADMIN status of the user
-     * @return is the user a global admin?
-     */
-    boolean isAdmin() {
-        SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN")
-    }
-
-    /**
-     * Checks for the ROLE_YODA status of the user
-     * @return is the user a yoda superuser?
-     */
-    boolean isYoda() {
-        SpringSecurityUtils.ifAnyGranted("ROLE_YODA")
     }
 
     /**
@@ -232,17 +207,7 @@ class User {
      * @return does the user have the given INST_-role granted?
      */
     boolean hasAffiliation(String userRoleName) {
-        hasAffiliationAND(userRoleName, 'ROLE_USER')
-    }
-
-    /**
-     * Checks if the user has the given institution affiliation and the given global role granted
-     * @param userRoleName the INST_-role to check for
-     * @param globalRoleName the global ROLE constant to check for
-     * @return does the user have the given INST-role AND ROLE constant granted?
-     */
-    boolean hasAffiliationAND(String userRoleName, String globalRoleName) {
-        BeanStore.getUserService().checkAffiliation(this, userRoleName, globalRoleName, 'AND', BeanStore.getContextService().getOrg())
+        BeanStore.getUserService().is_ROLE_ADMIN_or_checkAffiliation(this, userRoleName, BeanStore.getContextService().getOrg())
     }
 
     /**
@@ -252,7 +217,7 @@ class User {
      * @return does the user have the given INST_-role for the given org?
      */
     boolean hasAffiliationForForeignOrg(String userRoleName, Org orgToCheck) {
-        BeanStore.getUserService().checkAffiliation(this, userRoleName, 'ROLE_USER', 'AND', orgToCheck)
+        BeanStore.getUserService().is_ROLE_ADMIN_or_checkAffiliation(this, userRoleName, orgToCheck)
     }
 
     /**

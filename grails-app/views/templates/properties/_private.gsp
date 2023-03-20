@@ -3,12 +3,12 @@
 %{-- on head of container page, and on window load execute  --}%
 %{-- c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#private-property-wrapper-xxx"); --}%
 
-<%@ page import="de.laser.License; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; java.net.URL" %>
+<%@ page import="de.laser.CustomerTypeService; de.laser.License; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; java.net.URL" %>
 <laser:serviceInjection />
 
 
 <%-- OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')} --%>
-<g:set var="overwriteEditable" value="${editable || accessService.checkPermAffiliationX('ORG_INST_PRO','INST_EDITOR','ROLE_ADMIN')}" />
+<g:set var="overwriteEditable" value="${editable || accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_INST_PRO )}" />
 
 <g:if test="${newProp}">
     <ui:errors bean="${newProp}" />

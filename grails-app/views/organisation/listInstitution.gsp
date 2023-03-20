@@ -14,7 +14,7 @@
         </ui:exportDropdown>
 
         <%
-            editable = (editable && accessService.checkPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)) || contextService.getUser()?.hasRole('ROLE_ADMIN') || accessService.checkConstraint_ORG_COM_EDITOR()
+            editable = (editable && accessService.checkPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)) || contextService.getUser().hasMinRole('ROLE_ADMIN') || accessService.is_ORG_COM_EDITOR()
         %>
         <g:if test="${editable}">
             <laser:render template="actions" />

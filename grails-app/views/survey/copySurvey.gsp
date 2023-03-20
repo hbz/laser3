@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Subscription; de.laser.RefdataCategory; de.laser.Doc; de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataValue;de.laser.survey.SurveyConfig" %>
+<%@ page import="de.laser.CustomerTypeService; de.laser.Subscription; de.laser.RefdataCategory; de.laser.Doc; de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataValue;de.laser.survey.SurveyConfig" %>
 <laser:htmlStart message="copySurvey.label" serviceInjection="true" />
 
 <ui:breadcrumbs>
@@ -504,7 +504,7 @@
                                 </td>
 
                                 <td class="x">
-                                    <g:if test="${editable && accessService.checkPermAffiliationX("ORG_CONSORTIUM_PRO", "INST_EDITOR", "ROLE_ADMIN")}">
+                                    <g:if test="${editable && accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_PRO )}">
                                         <g:link class="ui icon positive button la-popup-tooltip la-delay"
                                                 data-content="${message(code: 'survey.toggleSurveySub.add.label', args: [SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransferIsNotNull(s).size(), SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransferIsNull(s).size()])}"
                                                 controller="survey" action="copySurvey"

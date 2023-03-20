@@ -80,7 +80,7 @@ class SurveyService {
      */
     boolean isEditableSurvey(Org org, SurveyInfo surveyInfo) {
 
-        if (accessService.checkPermAffiliationX('ORG_CONSORTIUM_PRO', 'INST_EDITOR', 'ROLE_ADMIN') && surveyInfo.owner?.id == contextService.getOrg().id) {
+        if (accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_PRO ) && surveyInfo.owner?.id == contextService.getOrg().id) {
             return true
         }
 
@@ -88,7 +88,7 @@ class SurveyService {
             return false
         }
 
-        if (accessService.checkPermAffiliationX('ORG_INST_BASIC', 'INST_EDITOR', 'ROLE_ADMIN')) {
+        if (accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_INST_BASIC )) {
             SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfigInList(org, surveyInfo.surveyConfigs)
 
             if (surveyOrg.finishDate) {
@@ -104,7 +104,7 @@ class SurveyService {
     @Deprecated
     boolean isEditableIssueEntitlementsSurvey(Org org, SurveyConfig surveyConfig) {
 
-        if (accessService.checkPermAffiliationX('ORG_CONSORTIUM_PRO', 'INST_EDITOR', 'ROLE_ADMIN') && surveyConfig.surveyInfo.owner?.id == contextService.getOrg().id) {
+        if (accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_PRO ) && surveyConfig.surveyInfo.owner?.id == contextService.getOrg().id) {
             return true
         }
 
@@ -116,7 +116,7 @@ class SurveyService {
             return false
         }
 
-        if (accessService.checkPermAffiliationX('ORG_INST_BASIC', 'INST_EDITOR', 'ROLE_ADMIN')) {
+        if (accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_INST_BASIC )) {
 
             if (SurveyOrg.findByOrgAndSurveyConfig(org, surveyConfig)?.finishDate) {
                 return false

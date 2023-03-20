@@ -88,7 +88,7 @@ class OrganisationController  {
      */
     @DebugInfo(perm="FAKE,ORG_INST_BASIC,ORG_CONSORTIUM_BASIC", affil="INST_ADM", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("FAKE,ORG_INST_BASIC,ORG_CONSORTIUM_BASIC", "INST_ADM", "ROLE_ADMIN")
+        ctx.accessService.is_ROLE_ADMIN_or_INST_ADM_with_PERMS( "FAKE,ORG_INST_BASIC,ORG_CONSORTIUM_BASIC" )
     })
     @Check404(domain=Org)
     def settings() {
@@ -247,9 +247,9 @@ class OrganisationController  {
      * Call to list the academic institutions without consortia
      * @return a list of institutions; basic consortia members or single users
      */
-    @DebugInfo(perm="ORG_CONSORTIUM_BASIC", type="Consortium", affil="INST_USER", specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_BASIC, type="Consortium", affil="INST_USER", specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermTypeAffiliationX("ORG_CONSORTIUM_BASIC", "Consortium", "INST_USER", "ROLE_ADMIN")
+        ctx.accessService.checkPermTypeAffiliationX(CustomerTypeService.ORG_CONSORTIUM_BASIC, "Consortium", "INST_USER", "ROLE_ADMIN")
     })
     Map listInstitution() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
@@ -388,7 +388,7 @@ class OrganisationController  {
         Map<String, Object> result = [:]
         result.propList    = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
         result.user        = contextService.getUser()
-        result.editable    = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || accessService.checkConstraint_ORG_COM_EDITOR()
+        result.editable    = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || accessService.is_ORG_COM_EDITOR()
 
         params.orgSector    = RDStore.O_SECTOR_PUBLISHER?.id?.toString()
         params.orgType      = RDStore.OT_PROVIDER?.id?.toString()
@@ -783,7 +783,7 @@ class OrganisationController  {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN", wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def createProvider() {
         Org.withTransaction {
@@ -813,7 +813,7 @@ class OrganisationController  {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def findProviderMatches() {
 
@@ -830,8 +830,10 @@ class OrganisationController  {
      * Call to create a new member with the given parameter map
      * @return the details view of the new member in case of success, the creation page otherwise
      */
-    @DebugInfo(perm="ORG_CONSORTIUM_BASIC", affil="INST_EDTIOR",specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_BASIC","INST_EDITOR","ROLE_ADMIN") })
+    @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_BASIC, affil="INST_EDTIOR",specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_BASIC )
+    })
     def createMember() {
         Map<String,Object> ctrlResult = organisationControllerService.createMember(this,params)
         if(ctrlResult.status == OrganisationControllerService.STATUS_ERROR) {
@@ -848,8 +850,10 @@ class OrganisationController  {
      * Call to create a new consortium member; opens a form to check the new name against existing ones in order to exclude duplicates
      * @return the form with eventual name matches
      */
-    @DebugInfo(perm="ORG_CONSORTIUM_BASIC", affil="INST_EDITOR",specRole="ROLE_ADMIN")
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_BASIC","INST_EDITOR","ROLE_ADMIN") })
+    @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_BASIC, affil="INST_EDITOR",specRole="ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_BASIC )
+    })
     Map findOrganisationMatches() {
         Map memberMap = [:]
 
@@ -996,7 +1000,7 @@ class OrganisationController  {
         //IF ORG is a Provider and is NOT ex we:kb
         if(!result.orgInstance.gokbId && (result.orgInstance.sector == RDStore.O_SECTOR_PUBLISHER || RDStore.OT_PROVIDER.id in result.allOrgTypeIds)) {
             result.editable_identifier = accessService.checkMinUserOrgRole(result.user, result.orgInstance, 'INST_EDITOR') ||
-                    accessService.checkPermAffiliationX(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_EDITOR", "ROLE_ADMIN")
+                    accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
         }
         else if(!result.orgInstance.gokbId) {
             if(accessService.checkPerm("ORG_CONSORTIUM_BASIC")) {
@@ -1195,7 +1199,7 @@ class OrganisationController  {
      */
     @DebugInfo(perm="FAKE,ORG_INST_BASIC,ORG_CONSORTIUM_BASIC", affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("FAKE,ORG_INST_BASIC,ORG_CONSORTIUM_BASIC", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( "FAKE,ORG_INST_BASIC,ORG_CONSORTIUM_BASIC" )
     })
     def deleteCustomerIdentifier() {
         Map<String,Object> ctrlResult = organisationControllerService.deleteCustomerIdentifier(this,params)
@@ -1276,8 +1280,10 @@ class OrganisationController  {
      * Data the given user may have authored will be reassigned to another user
      * @return the user deletion view where eventual conflicts are being listed
      */
-    @DebugInfo(perm="ORG_CONSORTIUM_BASIC", affil="INST_ADM", specRole = "ROLE_ADMIN")
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_BASIC", "INST_ADM", "ROLE_ADMIN") })
+    @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_BASIC, affil="INST_ADM", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.is_ROLE_ADMIN_or_INST_ADM_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_BASIC )
+    })
     def deleteUser() {
         Map<String, Object> result = userControllerService.getResultGenericsERMS3067(params)
         result.orgInstance = Org.get(params.id) // overwrite
@@ -1323,13 +1329,15 @@ class OrganisationController  {
      * Call to edit the given user profile
      * @return the profile editing template
      */
-    @DebugInfo(perm="ORG_CONSORTIUM_BASIC", affil="INST_ADM", specRole = "ROLE_ADMIN")
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_BASIC", "INST_ADM", "ROLE_ADMIN") })
+    @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_BASIC, affil="INST_ADM", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.is_ROLE_ADMIN_or_INST_ADM_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_BASIC )
+    })
     def editUser() {
         Map result = [
                 user: genericOIDService.resolveOID(params.uoid),
                 orgInstance: Org.get(params.id),
-                manipulateAffiliations: contextService.getUser().hasRole(['ROLE_ADMIN', 'ROLE_YODA'])
+                manipulateAffiliations: contextService.getUser().hasMinRole('ROLE_ADMIN')
         ]
         result.editable = checkIsEditable(result.user, contextService.getOrg())
         result.availableOrgs = [ result.orgInstance ]
@@ -1341,8 +1349,10 @@ class OrganisationController  {
      * Call to create a new user profile
      * @return the profile creation template
      */
-    @DebugInfo(perm="ORG_CONSORTIUM_BASIC", affil="INST_ADM", specRole = "ROLE_ADMIN")
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_BASIC", "INST_ADM", "ROLE_ADMIN") })
+    @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_BASIC, affil="INST_ADM", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.is_ROLE_ADMIN_or_INST_ADM_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_BASIC )
+    })
     def createUser() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
         result.availableOrgs = Org.get(params.id)
@@ -1355,8 +1365,10 @@ class OrganisationController  {
      * Takes the submitted parameters and creates a new user record with the given parameters
      * @return the user editing template in case of success, redirects back to the creation page otherwise
      */
-    @DebugInfo(perm="ORG_CONSORTIUM_BASIC", affil="INST_ADM", specRole = "ROLE_ADMIN")
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_BASIC","INST_ADM","ROLE_ADMIN") })
+    @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_BASIC, affil="INST_ADM", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.is_ROLE_ADMIN_or_INST_ADM_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_BASIC )
+    })
     def processCreateUser() {
         def success = userService.addNewUser(params, flash)
         //despite IntelliJ's warnings, success may be an array other than the boolean true
@@ -1376,8 +1388,10 @@ class OrganisationController  {
      * Attaches the given user to the given institution
      * @return the user editing profile with the updated data
      */
-    @DebugInfo(perm="ORG_CONSORTIUM_BASIC", affil="INST_ADM", specRole = "ROLE_ADMIN")
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_BASIC","INST_ADM","ROLE_ADMIN") })
+    @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_BASIC, affil="INST_ADM", specRole = "ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.is_ROLE_ADMIN_or_INST_ADM_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_BASIC )
+    })
     def addAffiliation() {
         Map<String, Object> result = userControllerService.getResultGenericsERMS3067(params)
         result.orgInstance = Org.get(params.id) // overwrite
@@ -1407,7 +1421,7 @@ class OrganisationController  {
                 result.delResult = deletionService.deleteOrganisation(result.orgInstance, null, DeletionService.DRY_RUN)
             }
 
-            if (contextService.getUser().isAdmin()) {
+            if (contextService.getUser().hasMinRole('ROLE_ADMIN')) {
                 result.substituteList = Org.executeQuery("select distinct o from Org o where o.status != :delState", [delState: RDStore.O_STATUS_DELETED])
             }
             else {
@@ -1715,8 +1729,10 @@ class OrganisationController  {
      * (adds or removes a combo link between the institution and the consortium)
      * @see Combo
      */
-    @DebugInfo(perm="ORG_CONSORTIUM_BASIC", type="Consortium", affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = { ctx.accessService.checkPermTypeAffiliationX("ORG_CONSORTIUM_BASIC", "Consortium", "INST_EDITOR", "ROLE_ADMIN") })
+    @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_BASIC, type="Consortium", affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.accessService.checkPermTypeAffiliationX(CustomerTypeService.ORG_CONSORTIUM_BASIC, "Consortium", "INST_EDITOR", "ROLE_ADMIN")
+    })
     def toggleCombo() {
         Map<String,Object> ctrlResult = organisationControllerService.toggleCombo(this,params)
         if(ctrlResult.status == OrganisationControllerService.STATUS_ERROR) {
@@ -1793,7 +1809,7 @@ class OrganisationController  {
         Org contextOrg = contextService.getOrg()
         Org orgInstance = org
         boolean inContextOrg =  orgInstance?.id == contextOrg.id
-        boolean userHasEditableRights = user.hasRole('ROLE_ADMIN') || user.hasAffiliation('INST_EDITOR')
+        boolean userHasEditableRights = user.hasMinRole('ROLE_ADMIN') || user.hasAffiliation('INST_EDITOR')
         switch(params.action){
             case 'editUser':
                 isEditable = true
@@ -1814,7 +1830,7 @@ class OrganisationController  {
                 if (inContextOrg) {
                     isEditable = userHasEditableRights
                 }else{
-                    isEditable = user.hasRole('ROLE_YODA')
+                    isEditable = user.hasMinRole('ROLE_YODA')
                 }
                 break
             case [ 'show', 'ids', 'readerNumber', 'accessPoints', 'addSubjectGroup', 'deleteSubjectGroup', 'addressbook' ]:
@@ -1824,19 +1840,19 @@ class OrganisationController  {
                     switch (contextOrg.getCustomerType()){
                         case CustomerTypeService.ORG_INST_BASIC:
                             switch (orgInstance.getCustomerType()){
-                                case CustomerTypeService.ORG_INST_BASIC:        isEditable = user.hasRole('ROLE_YODA'); break
-                                case CustomerTypeService.ORG_INST_PRO:          isEditable = user.hasRole('ROLE_YODA'); break
-                                case CustomerTypeService.ORG_CONSORTIUM_BASIC:  isEditable = user.hasRole('ROLE_YODA'); break
-                                case CustomerTypeService.ORG_CONSORTIUM_PRO:    isEditable = user.hasRole('ROLE_YODA'); break
-                                default:                    isEditable = user.hasRole('ROLE_YODA'); break
+                                case CustomerTypeService.ORG_INST_BASIC:        isEditable = user.hasMinRole('ROLE_YODA'); break
+                                case CustomerTypeService.ORG_INST_PRO:          isEditable = user.hasMinRole('ROLE_YODA'); break
+                                case CustomerTypeService.ORG_CONSORTIUM_BASIC:  isEditable = user.hasMinRole('ROLE_YODA'); break
+                                case CustomerTypeService.ORG_CONSORTIUM_PRO:    isEditable = user.hasMinRole('ROLE_YODA'); break
+                                default:                    isEditable = user.hasMinRole('ROLE_YODA'); break
                             }
                             break
                         case CustomerTypeService.ORG_INST_PRO:
                             switch (orgInstance.getCustomerType()){
-                                case CustomerTypeService.ORG_INST_BASIC:        isEditable = user.hasRole('ROLE_YODA'); break
-                                case CustomerTypeService.ORG_INST_PRO:          isEditable = user.hasRole('ROLE_YODA'); break
-                                case CustomerTypeService.ORG_CONSORTIUM_BASIC:  isEditable = user.hasRole('ROLE_YODA'); break
-                                case CustomerTypeService.ORG_CONSORTIUM_PRO:    isEditable = user.hasRole('ROLE_YODA'); break
+                                case CustomerTypeService.ORG_INST_BASIC:        isEditable = user.hasMinRole('ROLE_YODA'); break
+                                case CustomerTypeService.ORG_INST_PRO:          isEditable = user.hasMinRole('ROLE_YODA'); break
+                                case CustomerTypeService.ORG_CONSORTIUM_BASIC:  isEditable = user.hasMinRole('ROLE_YODA'); break
+                                case CustomerTypeService.ORG_CONSORTIUM_PRO:    isEditable = user.hasMinRole('ROLE_YODA'); break
                                 default:                    isEditable = userHasEditableRights; break //means providers and agencies
                             }
                             break
@@ -1844,8 +1860,8 @@ class OrganisationController  {
                             switch (orgInstance.getCustomerType()){
                                 case CustomerTypeService.ORG_INST_BASIC:        isEditable = userHasEditableRights; break
                                 case CustomerTypeService.ORG_INST_PRO:          isEditable = userHasEditableRights; break
-                                case CustomerTypeService.ORG_CONSORTIUM_BASIC:  isEditable = user.hasRole('ROLE_YODA'); break
-                                case CustomerTypeService.ORG_CONSORTIUM_PRO:    isEditable = user.hasRole('ROLE_YODA'); break
+                                case CustomerTypeService.ORG_CONSORTIUM_BASIC:  isEditable = user.hasMinRole('ROLE_YODA'); break
+                                case CustomerTypeService.ORG_CONSORTIUM_PRO:    isEditable = user.hasMinRole('ROLE_YODA'); break
                                 default:                    isEditable = userHasEditableRights; break //means providers and agencies
                             }
                             break

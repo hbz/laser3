@@ -24,13 +24,13 @@
     </g:link>
 
     <g:if test="${showConsortiaFunctions && !subscription.instanceOf}">
-        <ui:securedSubNavItem orgPerm="ORG_CONSORTIUM_PRO" controller="subscription" action="surveysConsortia" counts="${currentSurveysCounts}" params="${[id:params.id]}" message="subscription.details.surveys.label" />
+        <ui:securedSubNavItem orgPerm="${CustomerTypeService.ORG_CONSORTIUM_PRO}" controller="subscription" action="surveysConsortia" counts="${currentSurveysCounts}" params="${[id:params.id]}" message="subscription.details.surveys.label" />
     </g:if>
     <g:if test="${(contextService.getOrg().isCustomerType_Consortium_Pro() && subscription.instanceOf)}">
-        <ui:securedSubNavItem orgPerm="ORG_CONSORTIUM_PRO" controller="subscription" action="surveys" counts="${currentSurveysCounts}" params="${[id:params.id]}" message="subscription.details.surveys.label" />
+        <ui:securedSubNavItem orgPerm="${CustomerTypeService.ORG_CONSORTIUM_PRO}" controller="subscription" action="surveys" counts="${currentSurveysCounts}" params="${[id:params.id]}" message="subscription.details.surveys.label" />
     </g:if>
     <g:if test="${(contextService.getOrg().isCustomerType_Inst() || params.orgBasicMemberView) && subscription?.type == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL}">
-        <ui:securedSubNavItem orgPerm="ORG_INST_BASIC" controller="subscription" action="surveys" counts="${currentSurveysCounts}" params="${[id:params.id]}" message="subscription.details.surveys.label" />
+        <ui:securedSubNavItem orgPerm="${CustomerTypeService.ORG_INST_BASIC}" controller="subscription" action="surveys" counts="${currentSurveysCounts}" params="${[id:params.id]}" message="subscription.details.surveys.label" />
     </g:if>
     <g:if test="${subscription.packages}">
         <%

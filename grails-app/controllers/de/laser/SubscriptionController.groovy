@@ -516,9 +516,9 @@ class SubscriptionController {
      * Call to insert a succession link between two member subscriptions
      * @return the members view
      */
-    @DebugInfo(perm="ORG_CONSORTIUM_BASIC", affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_BASIC", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
     def linkNextPrevMemberSub() {
         Map<String,Object> ctrlResult = subscriptionControllerService.linkNextPrevMemberSub(this,params)
@@ -538,8 +538,10 @@ class SubscriptionController {
      * Call to a bulk operation view on member instances
      * @return the requested tab view
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM_BASIC", affil = "INST_EDITOR", ctrlService = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM_BASIC", "INST_EDITOR") })
+    @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_BASIC, affil = "INST_EDITOR", ctrlService = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, "INST_EDITOR")
+    })
     def membersSubscriptionsManagement() {
         def input_file
 
@@ -575,9 +577,9 @@ class SubscriptionController {
      * Call to unset the given customer identifier
      * @return the customer identifier tabs view
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM_BASIC", affil = "INST_EDITOR", ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_BASIC, affil = "INST_EDITOR", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM_BASIC", "INST_EDITOR")
+        ctx.accessService.checkPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, "INST_EDITOR")
     })
     def deleteCustomerIdentifier() {
         managementService.deleteCustomerIdentifier(params.long("deleteCI"))
@@ -606,8 +608,10 @@ class SubscriptionController {
      * Call to list surveys linked to a consortial subscription
      * @return a table view of surveys from the consortium's point of view
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM_PRO", affil = "INST_USER", ctrlService = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM_PRO", "INST_USER") })
+    @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_PRO, affil = "INST_USER", ctrlService = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_PRO, "INST_USER")
+    })
     @Check404()
     def surveysConsortia() {
         Map<String,Object> ctrlResult = subscriptionControllerService.surveysConsortia(this, params)
@@ -1577,7 +1581,7 @@ class SubscriptionController {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def renewSubscription() {
         Map<String,Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
@@ -1607,7 +1611,7 @@ class SubscriptionController {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def processRenewSubscription() {
         Map<String,Object> ctrlResult = subscriptionControllerService.processRenewSubscription(this,params)
@@ -1639,7 +1643,7 @@ class SubscriptionController {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def copySubscription() {
         Map<String,Object> ctrlResult = subscriptionControllerService.copySubscription(params)
@@ -1702,7 +1706,7 @@ class SubscriptionController {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def copyElementsIntoSubscription() {
         Map<String,Object> ctrlResult = subscriptionControllerService.copyElementsIntoSubscription(params)
@@ -1798,9 +1802,9 @@ class SubscriptionController {
      * Call for a single user to copy private properties from a consortial member subscription into its successor instance
      * @return the reduced subscription element copy view
      */
-    @DebugInfo(perm = "ORG_INST_PRO", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(perm = CustomerTypeService.ORG_INST_PRO, affil = "INST_EDITOR", specRole = "ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_INST_PRO", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_INST_PRO )
     })
     def copyMyElements() {
         Map<String, Object> result = subscriptionControllerService.setCopyResultGenerics(params+[copyMyElements: true])
@@ -1850,7 +1854,7 @@ class SubscriptionController {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def addSubscriptions() {
         def candidates = JSON.parse(params.candidates)
