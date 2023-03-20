@@ -287,6 +287,7 @@ class CopyElementsService {
                         form: targetObject.form ?: null,
                         isPublicForApi: targetObject.isPublicForApi,
                         hasPerpetualAccess: targetObject.hasPerpetualAccess,
+                        hasPublishComponent: targetObject.hasPublishComponent,
                         administrative: subMember.administrative
                 )
                 newSubscription.save()
