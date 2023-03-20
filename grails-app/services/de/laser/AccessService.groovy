@@ -155,7 +155,7 @@ class AccessService {
      *      affiliation: user's rights at the context institution
      *      comboPerm: customer type of the target institution
      *      comboAffiliation: user's rights for the target institution
-     *      specRoles: global permissions to check
+     *      specRole: global permission to check
      * ]
      * @return true if clauses one and two or three or four succeed, false otherwise
      */

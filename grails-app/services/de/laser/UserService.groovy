@@ -165,10 +165,10 @@ class UserService {
      * @param orgToCheck the institution to which affiliation should be checked
      * @return true if the given permission is granted to the user in the given institution (or a missing one overridden by global roles), false otherwise
      */
-    boolean is_ROLE_YODA_or_ROLE_ADMIN_or_checkAffiliation(User user, String userRoleName, Org orgToCheck) {
+    boolean is_ROLE_ADMIN_or_checkAffiliation(User user, String userRoleName, Org orgToCheck) {
         boolean check = false
 
-        if (SpringSecurityUtils.ifAnyGranted("ROLE_YODA,ROLE_ADMIN")) {
+        if (SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN")) {
             check = true // may the force be with you
         }
         if (! SpringSecurityUtils.ifAnyGranted("ROLE_USER")) {

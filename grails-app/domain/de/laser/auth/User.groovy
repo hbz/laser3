@@ -207,7 +207,7 @@ class User {
      * @return does the user have the given INST_-role granted?
      */
     boolean hasAffiliation(String userRoleName) {
-        BeanStore.getUserService().is_ROLE_YODA_or_ROLE_ADMIN_or_checkAffiliation(this, userRoleName, BeanStore.getContextService().getOrg())
+        BeanStore.getUserService().is_ROLE_ADMIN_or_checkAffiliation(this, userRoleName, BeanStore.getContextService().getOrg())
     }
 
     /**
@@ -217,7 +217,7 @@ class User {
      * @return does the user have the given INST_-role for the given org?
      */
     boolean hasAffiliationForForeignOrg(String userRoleName, Org orgToCheck) {
-        BeanStore.getUserService().is_ROLE_YODA_or_ROLE_ADMIN_or_checkAffiliation(this, userRoleName, orgToCheck)
+        BeanStore.getUserService().is_ROLE_ADMIN_or_checkAffiliation(this, userRoleName, orgToCheck)
     }
 
     /**

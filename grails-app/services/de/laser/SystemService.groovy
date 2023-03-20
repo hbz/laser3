@@ -35,7 +35,7 @@ class SystemService {
     Map<String, Object> serviceCheck() {
         Map<String, Object> checks = [:]
 
-        if(SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_YODA') || ConfigMapper.getShowSystemInfo()) {
+        if(SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || ConfigMapper.getShowSystemInfo()) {
             //GlobalData Sync
             if ((GlobalRecordSource.findAllByActive(false)?.size() == GlobalRecordSource.findAll()?.size()) || GlobalRecordSource.findAll()?.size() == 0) {
                 checks.globalSync = "NOT active"

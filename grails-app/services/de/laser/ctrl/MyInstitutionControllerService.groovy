@@ -192,7 +192,7 @@ class MyInstitutionControllerService {
                 result.changeProperties = user.hasMinRole('ROLE_ADMIN') || user.hasAffiliation('INST_EDITOR')
                 break
             default:
-                result.editable = accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_YODA')
+                result.editable = accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
         }
 
         result
