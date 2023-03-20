@@ -42,7 +42,7 @@
             </g:else>
         </ui:exportDropdown>
 
-            <g:if test="${accessService.checkPermX('ORG_INST,ORG_CONSORTIUM', 'ROLE_ADMIN') || accessService.checkConstraint_ORG_COM_EDITOR()}">
+            <g:if test="${accessService.checkPermX(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'ROLE_ADMIN') || accessService.checkConstraint_ORG_COM_EDITOR()}">
                 <laser:render template="actions" />
             </g:if>
     </ui:controlButtons>
@@ -64,8 +64,9 @@
             <g:if test="${orgList}">
                 <laser:render template="/templates/filter/orgFilterTable"
                       model="[orgList: orgList,
+                              currentProviderIdList: orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies(contextService.getOrg()).toList(),
                               tmplShowCheckbox: false,
-                              tmplConfigShow: ['lineNumber', 'shortname', 'name', 'isWekbCurated', 'altname', 'platform']
+                              tmplConfigShow: ['lineNumber', 'shortname', 'name', 'isWekbCurated', 'altname', 'platform', 'isMyX']
                       ]"/>
             </g:if>
             <g:else>

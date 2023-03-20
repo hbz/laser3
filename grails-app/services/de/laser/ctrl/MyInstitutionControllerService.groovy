@@ -45,7 +45,7 @@ class MyInstitutionControllerService {
         prf.setBenchmark('init')
         Map<String, Object> result = getResultGenerics(controller, params)
 
-        if (! accessService.checkUserIsMember(result.user, result.institution)) {
+        if (! (result.user as User).isMemberOf(result.institution as Org)) {
             return [status: STATUS_ERROR, result: result]
         }
 
@@ -68,7 +68,7 @@ class MyInstitutionControllerService {
 
         // changes -> to AJAX
 
-        //Map<String,Object> pendingChangeConfigMap = [contextOrg:result.institution,consortialView:accessService.checkPerm(result.institution,"ORG_CONSORTIUM"),periodInDays:periodInDays,max:result.max,offset:result.acceptedOffset]
+        //Map<String,Object> pendingChangeConfigMap = [contextOrg:result.institution,consortialView:accessService.checkPerm(result.institution,"ORG_CONSORTIUM_BASIC"),periodInDays:periodInDays,max:result.max,offset:result.acceptedOffset]
         //pu.setBenchmark('pending changes')
         //result.putAll(pendingChangeService.getChanges(pendingChangeConfigMap))
 
@@ -173,7 +173,7 @@ class MyInstitutionControllerService {
         result.institution = org
         result.contextOrg = org
         result.contextCustomerType = org.getCustomerType()
-        result.showConsortiaFunctions = result.contextCustomerType == "ORG_CONSORTIUM"
+        result.showConsortiaFunctions = org.isCustomerType_Consortium()
         switch (params.action) {
             case [ 'processEmptyLicense', 'currentLicenses', 'currentSurveys', 'dashboard', 'getChanges', 'getSurveys', 'emptyLicense', 'surveyInfoFinish' ]:
                 result.editable = accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR')

@@ -11,7 +11,7 @@
 - Gradle 7.6
 - Groovy 3.0.11
 - Java 11
-- PostgreSQL 12+
+- PostgreSQL 13+
 - Elasticsearch 7.16.3
 
 See [details.md](./details.md) for detailed information.

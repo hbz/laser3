@@ -14,6 +14,7 @@ import org.springframework.transaction.TransactionStatus
  * This service contains methods for workflow handling
  */
 @Transactional
+@Deprecated
 class WorkflowOldService {
 
     ContextService contextService
@@ -745,7 +746,7 @@ class WorkflowOldService {
             return true
         }
         Org ctxOrg = contextService.getOrg()
-        if (userRoleName && ctxOrg.getCustomerType() in ['ORG_CONSORTIUM'] && user.hasAffiliationForForeignOrg(userRoleName, ctxOrg)) {
+        if (userRoleName && ctxOrg.isCustomerType_Consortium_Basic() && user.hasAffiliationForForeignOrg(userRoleName, ctxOrg)) {
             return true
         }
         false

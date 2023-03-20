@@ -19,6 +19,11 @@
 						<g:sortableColumn property="sortname" title="${message(code: 'default.name.label')}" />
 						<g:sortableColumn property="providerName" title="${message(code:'default.provider.label')}" />
 						<th>${message(code:'default.url.label')}</th> <%-- needs we:kb rework to make the property sortable --%>
+						<th class="center aligned">
+							<span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.platforms')}">
+								<i class="icon star"></i>
+							</span>
+						</th>
 					</tr>
 					</thead>
 					<tbody>
@@ -73,6 +78,13 @@
 								</g:elseif>
 								<g:if test="${primaryUrl}">
 									${primaryUrl}<a href="<g:createLink url="${primaryUrl}" />" target="_blank"> <i class="external alternate icon"></i></a>
+								</g:if>
+							</td>
+							<td class="center aligned">
+								<g:if test="${platformInstance && myPlatformIds.contains(platformInstance.id)}">
+									<span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.platforms')}">
+										<i class="icon yellow star"></i>
+									</span>
 								</g:if>
 							</td>
 						</tr>

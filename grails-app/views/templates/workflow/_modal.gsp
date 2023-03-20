@@ -81,7 +81,7 @@
         <g:if test="${info}">
             <input type="hidden" name="info" value="${info}" />
         </g:if>
-        <input type="hidden" name="cmd" value="usage:${prefix}:${checkpoint.id}" />
+        <input type="hidden" name="cmd" value="modal:${prefix}:${checkpoint.id}" />
     </g:elseif>
 
 </g:form>

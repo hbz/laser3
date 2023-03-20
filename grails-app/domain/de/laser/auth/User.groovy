@@ -168,7 +168,7 @@ class User {
      * @param org the {@link Org} to check the authority
      * @return is the user member of the given org?
      */
-    boolean hasInstMemberAffiliation(Org org) {
+    boolean isMemberOf(Org org) {
         //used in user/global/edit.gsp
         ! Org.executeQuery(
                 "select uo from UserOrg uo where uo.user = :user and uo.org = :org and uo.formalRole.roleType = 'user'",
@@ -181,7 +181,7 @@ class User {
      * @param org the {@link Org} to check against
      * @return is the user INST_ADM of the org by a combo?
      */
-    boolean hasComboInstAdminAffiliation(Org org) {
+    boolean isComboInstAdminOf(Org org) {
         //used in _membership_table.gsp
         List<Org> orgList = Org.executeQuery('select c.toOrg from Combo c where c.fromOrg = :org', [org: org])
         orgList.add(org)

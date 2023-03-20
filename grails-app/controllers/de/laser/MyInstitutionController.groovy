@@ -116,9 +116,9 @@ class MyInstitutionController  {
      * Call for the reporting module
      * @return the reporting entry view
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @DebugInfo(perm=CustomerTypeService.PERMS_PRO, affil="INST_USER")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
+        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER")
     })
     def reporting() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -177,23 +177,18 @@ class MyInstitutionController  {
      */
     @Secured(['ROLE_USER'])
     def currentPlatforms() {
-
         Map<String, Object> result = [:]
-		Profiler prf = new Profiler()
-		prf.setBenchmark('init')
 
+        result.flagContentGokb = true // gokbService.doQuery
         result.user = contextService.getUser()
         result.contextOrg = contextService.getOrg()
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        prf.setBenchmark("before loading subscription ids")
-
         String instanceFilter = ""
         Map<String, Object> subscriptionParams = [contextOrg:result.contextOrg, roleTypes:[RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA], current:RDStore.SUBSCRIPTION_CURRENT, expired:RDStore.SUBSCRIPTION_EXPIRED]
-        if(result.contextOrg.getCustomerType() == "ORG_CONSORTIUM")
+        if(result.contextOrg.isCustomerType_Consortium())
             instanceFilter += " and s.instanceOf = null "
         Set<Long> idsCurrentSubscriptions = Subscription.executeQuery('select s.id from OrgRole oo join oo.sub s where oo.org = :contextOrg and oo.roleType in (:roleTypes) and (s.status = :current or (s.status = :expired and s.hasPerpetualAccess = true))'+instanceFilter,subscriptionParams)
-
 
         result.subscriptionMap = [:]
         result.platformInstanceList = []
@@ -275,14 +270,13 @@ class MyInstitutionController  {
                 qry3 += " order by ${params.sort} ${params.order}"
             else qry3 += " order by p.normname asc"
 
-            prf.setBenchmark("before loading platforms")
             List platformSubscriptionList = []
             if(wekbIds)
                 platformSubscriptionList.addAll(Platform.executeQuery(qry3, qryParams3))
 
             log.debug("found ${platformSubscriptionList.size()} in list ..")
             /*, [max:result.max, offset:result.offset])) */
-            prf.setBenchmark("before platform subscription list loop")
+
             platformSubscriptionList.each { entry ->
                 Platform pl = (Platform) entry[0]
                 Subscription s = (Subscription) entry[1]
@@ -300,11 +294,7 @@ class MyInstitutionController  {
             }
         }
         result.platformInstanceTotal    = result.platformInstanceList.size()
-
         result.cachedContent = true
-
-		List bm = prf.stopBenchmark()
-		result.benchMark = bm
 
         result
     }
@@ -359,7 +349,7 @@ class MyInstitutionController  {
 
         Set<String> licenseFilterTable = []
 
-        if (accessService.checkPerm("ORG_INST")) {
+        if (accessService.checkPerm("ORG_INST_PRO")) {
             Set<RefdataValue> roleTypes = []
             if(params.licTypes) {
                 Set<String> licTypes = params.list('licTypes')
@@ -374,7 +364,7 @@ class MyInstitutionController  {
                 licenseFilterTable << "action"
             licenseFilterTable << "licensingConsortium"
         }
-        else if (accessService.checkPerm("ORG_CONSORTIUM")) {
+        else if (accessService.checkPerm("ORG_CONSORTIUM_BASIC")) {
             base_qry = "from License as l where exists ( select o from l.orgRelations as o where ( o.roleType = :roleTypeC AND o.org = :lic_org AND l.instanceOf is null AND NOT exists ( select o2 from l.orgRelations as o2 where o2.roleType = :roleTypeL ) ) )"
             qry_params = [roleTypeC:RDStore.OR_LICENSING_CONSORTIUM, roleTypeL:RDStore.OR_LICENSEE_CONS, lic_org:result.institution]
             licenseFilterTable << "memberLicenses"
@@ -484,7 +474,7 @@ class MyInstitutionController  {
                 qry_params.subKinds = subKinds
             }
 
-            if(accessService.checkPerm("ORG_CONSORTIUM")) {
+            if(accessService.checkPerm("ORG_CONSORTIUM_BASIC")) {
                 subscrQueryFilter << "s.instanceOf is null"
             }
 
@@ -524,7 +514,7 @@ class MyInstitutionController  {
             result.orgRoles.put(oo.lic.id,oo.roleType)
         }
         prf.setBenchmark('get consortia')
-        Set<Org> consortia = Org.executeQuery("select os.org from OrgSetting os where os.key = 'CUSTOMER_TYPE' and os.roleValue in (select r from Role r where authority = 'ORG_CONSORTIUM') order by os.org.name asc")
+        Set<Org> consortia = Org.executeQuery("select os.org from OrgSetting os where os.key = 'CUSTOMER_TYPE' and os.roleValue in (select r from Role r where authority = 'ORG_CONSORTIUM_BASIC') order by os.org.name asc")
         prf.setBenchmark('get licensors')
         Set<Org> licensors = orgTypeService.getOrgsForTypeLicensor()
         Map<String,Set<Org>> orgs = [consortia:consortia,licensors:licensors]
@@ -646,16 +636,16 @@ class MyInstitutionController  {
      * Call to create a new license
      * @return the form view to enter the new license parameters
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR")
+    @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
+        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_EDITOR")
     })
     def emptyLicense() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        if (! accessService.checkUserIsMember(result.user, result.institution)) {
+        if (! (result.user as User).isMemberOf(result.institution as Org)) {
             flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]) as String
             response.sendError(HttpStatus.SC_FORBIDDEN)
             return;
@@ -700,7 +690,7 @@ class MyInstitutionController  {
             Org org = contextService.getOrg()
 
             Set<RefdataValue> defaultOrgRoleType = []
-            if(accessService.checkPerm("ORG_CONSORTIUM"))
+            if(accessService.checkPerm("ORG_CONSORTIUM_BASIC"))
                 defaultOrgRoleType << RDStore.OT_CONSORTIUM.id.toString()
             else defaultOrgRoleType << RDStore.OT_INSTITUTION.id.toString()
 
@@ -798,7 +788,7 @@ class MyInstitutionController  {
 		prf.setBenchmark('init')
 
         EhcacheWrapper cache = contextService.getSharedOrgCache('MyInstitutionController/currentProviders')
-        List orgIds = []
+        List<Long> orgIds = []
 
         if (cache.get('orgIds')) {
             orgIds = cache.get('orgIds')
@@ -806,19 +796,21 @@ class MyInstitutionController  {
         }
         else {
 
-            List<Org> matches = Org.executeQuery("""
-select distinct(or_pa.org) from OrgRole or_pa 
-join or_pa.sub sub 
-join sub.orgRelations or_sub where
-    ( sub = or_sub.sub and or_sub.org = :subOrg ) and
-    ( or_sub.roleType in (:subRoleTypes) ) and
-        ( or_pa.roleType in (:paRoleTypes) )
-""", [
-        subOrg:       result.institution,
-        subRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA],
-        paRoleTypes:  [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]
-    ])
-            orgIds = matches.collect{ it.id }
+//            List<Org> matches = Org.executeQuery("""
+//select distinct(or_pa.org) from OrgRole or_pa
+//join or_pa.sub sub
+//join sub.orgRelations or_sub where
+//    ( sub = or_sub.sub and or_sub.org = :subOrg ) and
+//    ( or_sub.roleType in (:subRoleTypes) ) and
+//        ( or_pa.roleType in (:paRoleTypes) )
+//""", [
+//        subOrg:       result.institution,
+//        subRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA],
+//        paRoleTypes:  [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]
+//    ])
+//            orgIds = matches.collect{ it.id }
+
+            orgIds = (orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( result.institution )).toList()
             cache.put('orgIds', orgIds)
         }
 
@@ -993,7 +985,7 @@ join sub.orgRelations or_sub where
      */
     private def _exportcurrentSubscription(List<Subscription> subscriptions, String format, Org contextOrg) {
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
-        boolean asCons = accessService.checkPerm('ORG_CONSORTIUM')
+        boolean asCons = accessService.checkPerm('ORG_CONSORTIUM_BASIC')
         List titles = ['Name',
                        g.message(code: 'globalUID.label'),
                        g.message(code: 'license.label'),
@@ -1190,9 +1182,9 @@ join sub.orgRelations or_sub where
      *     <li>customerIdentifiers</li>
      * </ol>
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_USER")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
+        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_USER")
     })
     def subscriptionsManagement() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -1201,7 +1193,7 @@ join sub.orgRelations or_sub where
 
         if(!(params.tab in ['notes', 'documents', 'properties'])){
             //Important
-            if(!accessService.checkPerm('ORG_CONSORTIUM')) {
+            if(!accessService.checkPerm('ORG_CONSORTIUM_BASIC')) {
                 if(params.subTypes == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id.toString()){
                     flash.error = message(code: 'subscriptionsManagement.noPermission.forSubsWithTypeConsortial') as String
                 }
@@ -1261,9 +1253,9 @@ join sub.orgRelations or_sub where
      * @see Doc
      * @see DocContext
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_USER")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
+        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_USER")
     })
     Map documents() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -1314,7 +1306,7 @@ join sub.orgRelations or_sub where
         String instanceFilter = ""
         List<String> queryFilter = []
 
-        if(accessService.checkPerm("ORG_CONSORTIUM")) {
+        if(accessService.checkPerm("ORG_CONSORTIUM_BASIC")) {
             orgRoles << RDStore.OR_SUBSCRIPTION_CONSORTIA
             queryFilter << " sub.instanceOf is null "
             instanceFilter += "and sub.instanceOf is null"
@@ -1449,7 +1441,7 @@ join sub.orgRelations or_sub where
             Map<String, Object> configMap = [:]
             configMap.putAll(params)
             configMap.validOn = checkedDate.getTime()
-            String consFilter = result.institution.getCustomerType() == 'ORG_CONSORTIUM' ? ' and s.instanceOf is null' : ''
+            String consFilter = result.institution.isCustomerType_Consortium() ? ' and s.instanceOf is null' : ''
             configMap.pkgIds = SubscriptionPackage.executeQuery('select sp.pkg.id from SubscriptionPackage sp join sp.subscription s join s.orgRelations oo where oo.org = :context and oo.roleType in (:subscrTypes)'+consFilter, [context: result.institution, subscrTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS]])
             ServletOutputStream out = response.outputStream
             Map<String,List> tableData = exportService.generateTitleExportKBART(configMap, IssueEntitlement.class.name)
@@ -1465,7 +1457,7 @@ join sub.orgRelations or_sub where
             Map<String, Object> configMap = [:]
             configMap.putAll(params)
             configMap.validOn = checkedDate.getTime()
-            String consFilter = result.institution.getCustomerType() == 'ORG_CONSORTIUM' ? ' and s.instanceOf is null' : ''
+            String consFilter = result.institution.isCustomerType_Consortium() ? ' and s.instanceOf is null' : ''
             configMap.pkgIds = SubscriptionPackage.executeQuery('select sp.pkg.id from SubscriptionPackage sp join sp.subscription s join s.orgRelations oo where oo.org = :context and oo.roleType in (:subscrTypes)'+consFilter, [context: result.institution, subscrTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS]])
             Map<String,List> export = exportService.generateTitleExportCustom(configMap, IssueEntitlement.class.name) //all subscriptions, all packages
             Map sheetData = [:]
@@ -1635,7 +1627,7 @@ join sub.orgRelations or_sub where
     def modal_create() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
-        if (! accessService.checkUserIsMember(result.user, result.institution)) {
+        if (! (result.user as User).isMemberOf(result.institution as Org)) {
             flash.error = "You do not have permission to access ${result.institution.name} pages. Please request access on the profile page";
             response.sendError(HttpStatus.SC_FORBIDDEN)
             return;
@@ -1660,7 +1652,7 @@ join sub.orgRelations or_sub where
         SwissKnife.setPaginationParams(result, params, (User) result.user)
         result.acceptedOffset = 0
         def periodInDays = 600
-        Map<String,Object> pendingChangeConfigMap = [contextOrg: result.institution, consortialView:accessService.checkPerm(result.institution,"ORG_CONSORTIUM"), periodInDays:periodInDays, max:result.max, offset:result.acceptedOffset]
+        Map<String,Object> pendingChangeConfigMap = [contextOrg: result.institution, consortialView:accessService.checkPerm(result.institution,"ORG_CONSORTIUM_BASIC"), periodInDays:periodInDays, max:result.max, offset:result.acceptedOffset]
 
         result.putAll(pendingChangeService.getChanges_old(pendingChangeConfigMap))
 
@@ -1671,9 +1663,9 @@ join sub.orgRelations or_sub where
      * Call for the finance import starting page; the mappings are being explained here and an example sheet for submitting data to import
      * @return the finance import entry view
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_EDITOR", "ROLE_ADMIN")
     })
     def financeImport() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -1688,9 +1680,9 @@ join sub.orgRelations or_sub where
      * @see Subscription
      * @see CostItem
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_EDITOR", "ROLE_ADMIN")
     })
     def generateFinanceImportWorksheet() {
         Subscription subscription = Subscription.get(params.id)
@@ -1726,9 +1718,9 @@ join sub.orgRelations or_sub where
      * processing whether the imported data is read correctly or not
      * @return the control view with the import preparation result
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN", wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN", wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_EDITOR", "ROLE_ADMIN")
     })
     def processFinanceImport() {
         CostItem.withTransaction { TransactionStatus ts ->
@@ -1763,9 +1755,9 @@ join sub.orgRelations or_sub where
      * Call for the subscription import starting page; the mappings are being explained here and an example sheet for submitting data to import
      * @return the subscription import entry view
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_EDITOR", "ROLE_ADMIN")
     })
     def subscriptionImport() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -1780,9 +1772,9 @@ join sub.orgRelations or_sub where
      * processing whether the imported data is read correctly or not
      * @return the control view with the import preparation result
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN", wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN", wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_EDITOR", "ROLE_ADMIN")
     })
     def processSubscriptionImport() {
             Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -1818,9 +1810,9 @@ join sub.orgRelations or_sub where
      * Default filter setting is current year
      * @return a (filtered) list of surveys, either displayed as html or returned as Excel worksheet
      */
-    @DebugInfo(perm="ORG_BASIC_MEMBER", affil="INST_USER", specRole="ROLE_ADMIN")
+    @DebugInfo(perm="ORG_INST_BASIC", affil="INST_USER", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_USER", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_INST_BASIC", "INST_USER", "ROLE_ADMIN")
     })
     def currentSurveys() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -1831,9 +1823,9 @@ join sub.orgRelations or_sub where
 
         params.tab = params.tab ?: 'new'
 
-        if(params.tab != 'new'){
+        //if(params.tab != 'new'){
             params.sort = 'surInfo.endDate DESC, LOWER(surInfo.name)'
-        }
+        //}
 
         if (params.validOnYear == null || params.validOnYear == '') {
             SimpleDateFormat sdfyear = DateUtils.getSDF_yyyy()
@@ -1911,9 +1903,9 @@ join sub.orgRelations or_sub where
      * The view may be rendered as html or as Excel worksheet to download
      * @return the details view of the given survey
      */
-    @DebugInfo(perm="ORG_BASIC_MEMBER", affil="INST_USER", specRole="ROLE_ADMIN")
+    @DebugInfo(perm="ORG_INST_BASIC", affil="INST_USER", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_USER", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_INST_BASIC", "INST_USER", "ROLE_ADMIN")
     })
     def surveyInfos() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -2036,9 +2028,9 @@ join sub.orgRelations or_sub where
      * pass definitively into the holding of the next year's subscription
      * @return void, returns to the survey details page ({@link #surveyInfos()})
      */
-    @DebugInfo(perm="ORG_BASIC_MEMBER", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugInfo(perm="ORG_INST_BASIC", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_INST_BASIC", "INST_EDITOR", "ROLE_ADMIN")
     })
     def surveyInfoFinish() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -2133,9 +2125,9 @@ join sub.orgRelations or_sub where
         redirect(url: request.getHeader('referer'))
     }
 
-    @DebugInfo(perm="ORG_BASIC_MEMBER", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugInfo(perm="ORG_INST_BASIC", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_INST_BASIC", "INST_EDITOR", "ROLE_ADMIN")
     })
     def surveyLinkOpenNewSurvey() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -2390,9 +2382,9 @@ join sub.orgRelations or_sub where
      * Opens the internal address book for the context institution
      * @return a list view of the institution-internal contacts
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_USER")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
+        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_USER")
     })
     def addressbook() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -2493,9 +2485,9 @@ join sub.orgRelations or_sub where
      * @see BudgetCode
      * @see CostItemGroup
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN", wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_USER", specRole="ROLE_ADMIN", wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_USER", "ROLE_ADMIN")
     })
     Map<String, Object> budgetCodes() {
         BudgetCode.withTransaction {
@@ -2551,8 +2543,8 @@ join sub.orgRelations or_sub where
      * @return a table view of tasks
      * @see Task
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER", wtc = DebugInfo.IN_BETWEEN)
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER") })
+    @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_USER", wtc = DebugInfo.IN_BETWEEN)
+    @Secured(closure = { ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_USER") })
     def tasks() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
@@ -2586,8 +2578,8 @@ join sub.orgRelations or_sub where
      * Call for listing institutions eligible to be attached to or detached from the context consortium
      * @return a list of institutions
      */
-    @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_EDITOR",specRole="ROLE_ADMIN", wtc = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM","INST_EDITOR","ROLE_ADMIN") })
+    @DebugInfo(perm="ORG_CONSORTIUM_BASIC", affil="INST_EDITOR",specRole="ROLE_ADMIN", wtc = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_BASIC","INST_EDITOR","ROLE_ADMIN") })
     def addMembers() {
         Combo.withTransaction {
             Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -2628,8 +2620,8 @@ join sub.orgRelations or_sub where
         }
     }
 
-    @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_USER", ctrlService = DebugInfo.IN_BETWEEN)
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER") })
+    @DebugInfo(perm=CustomerTypeService.PERMS_PRO, affil="INST_USER", ctrlService = DebugInfo.IN_BETWEEN)
+    @Secured(closure = { ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER") })
     def currentWorkflows() {
 
         SessionCacheWrapper cache = contextService.getSessionCache()
@@ -2743,8 +2735,9 @@ join sub.orgRelations or_sub where
      * Call for the overview of current workflows for the context institution
      * @return the entry view for the workflows, loading current cache settings
      */
-    @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_USER", ctrlService = DebugInfo.IN_BETWEEN)
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER") })
+    @DebugInfo(perm="ORG_CONSORTIUM_PRO", affil="INST_USER", ctrlService = DebugInfo.IN_BETWEEN)
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM_PRO", "INST_USER") })
+    @Deprecated
     def currentWorkflowsOld() {
         Map<String, Object> result = [:]
 
@@ -2896,25 +2889,8 @@ join sub.orgRelations or_sub where
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         params.subStatus = RDStore.SUBSCRIPTION_CURRENT.id.toString()
-        Map queryParams = params.clone()
-        //queryParams.subPerpetual = "on"
-        //result.propList     = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
-        /*
-        if(!params.subStatus) {
-            if(!params.filterSet) {
-                params.subStatus = RDStore.SUBSCRIPTION_CURRENT.id.toString()
-                result.filterSet = true
-            }
-        }
-        else result.filterSet    = params.filterSet ? true : false
-        if(!params.subPerpetual) {
-            if(!params.filterSet) {
-                params.subPerpetual = "on"
-                result.filterSet = true
-            }
-        }
-        else result.filterSet    = params.filterSet ? true : false
-        */
+        GrailsParameterMap queryParams = params.clone() as GrailsParameterMap
+
         result.filterSet    = params.filterSet ? true : false
 
         queryParams.comboType = result.comboType.value
@@ -2937,7 +2913,6 @@ join sub.orgRelations or_sub where
 
 		List bm = prf.stopBenchmark()
 		result.benchMark = bm
-
 
         if ( params.exportXLS ) {
 
@@ -2993,9 +2968,9 @@ join sub.orgRelations or_sub where
      * The result may be filtered by organisational and subscription parameters
      * @return the list of consortial member institutions
      */
-    @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN", wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(perm="ORG_CONSORTIUM_BASIC", affil="INST_USER", specRole="ROLE_ADMIN", wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM","INST_USER","ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_BASIC","INST_USER","ROLE_ADMIN")
     })
     def manageMembers() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -3022,7 +2997,7 @@ join sub.orgRelations or_sub where
         //params.orgSector    = RDStore.O_SECTOR_HIGHER_EDU?.id?.toString()
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        result.propList     = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
+        result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
         if(!params.subStatus) {
             if(!params.filterSet) {
                 params.subStatus = RDStore.SUBSCRIPTION_CURRENT.id.toString()
@@ -3042,7 +3017,6 @@ join sub.orgRelations or_sub where
         Map<String, Object> fsq = filterService.getOrgComboQuery(params, result.institution)
         String tmpQuery = "select o.id " + fsq.query.minus("select o ")
         List memberIds = Org.executeQuery(tmpQuery, fsq.queryParams)
-
 
         Map queryParamsProviders = [
                 subOrg      : result.institution,
@@ -3115,7 +3089,7 @@ join sub.orgRelations or_sub where
 		prf.setBenchmark('query')
 
         if (params.filterPropDef && memberIds) {
-            fsq                      = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids) order by o.sortname asc", 'o', [oids: memberIds])
+            fsq = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids) order by o.sortname asc", 'o', [oids: memberIds])
         }
 
         List totalMembers      = Org.executeQuery(fsq.query, fsq.queryParams)
@@ -3133,7 +3107,6 @@ join sub.orgRelations or_sub where
 		result.benchMark = bm
 
         if ( params.exportXLS ) {
-
             SXSSFWorkbook wb = (SXSSFWorkbook) organisationService.exportOrg(totalMembers, header, true, 'xls')
             response.setHeader "Content-disposition", "attachment; filename=\"${file}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -3190,8 +3163,8 @@ join sub.orgRelations or_sub where
      * @see Subscription
      * @see Org
      */
-    @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN")
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN") })
+    @DebugInfo(perm="ORG_CONSORTIUM_BASIC", affil="INST_USER", specRole="ROLE_ADMIN")
+    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_BASIC", "INST_USER", "ROLE_ADMIN") })
     def manageConsortiaSubscriptions() {
 
         Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -3594,8 +3567,8 @@ join sub.orgRelations or_sub where
      * The result may be displayed as HTML or exported as Excel worksheet
      * @return a list of surveys the context consortium set up and the given institution is participating at
      */
-    @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN")
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN") })
+    @DebugInfo(perm="ORG_CONSORTIUM_PRO", affil="INST_USER", specRole="ROLE_ADMIN")
+    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM_PRO", "INST_USER", "ROLE_ADMIN") })
     def manageParticipantSurveys() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
@@ -3657,9 +3630,9 @@ join sub.orgRelations or_sub where
      * editing may be done on the given property group
      * @return in every case, the list of property groups; the list may be exported as Excel with the usage data as well, then, an Excel worksheet is being returned
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER", wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_USER", wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
+        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_USER")
     })
     def managePropertyGroups() {
         Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -3773,9 +3746,9 @@ join sub.orgRelations or_sub where
      * Call to display the current usage for the given property in the system
      * @return a form view of the given property definition with their usage in the context institution's objects
      */
-    @DebugInfo(perm = "ORG_INST,ORG_CONSORTIUM", affil = "INST_EDITOR")
+    @DebugInfo(perm = CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil = "INST_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
+        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_EDITOR")
     })
     def manageProperties() {
         Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -3876,9 +3849,9 @@ join sub.orgRelations or_sub where
      * Call to process a bulk assign of a property definition to a given set of objects
      * @return the updated view with the assigned property definitions
      */
-    @DebugInfo(perm = "ORG_INST,ORG_CONSORTIUM", affil = "INST_EDITOR", wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(perm = CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil = "INST_EDITOR", wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
+        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_EDITOR")
     })
     def processManageProperties() {
         PropertyDefinition.withTransaction {
@@ -3989,9 +3962,9 @@ join sub.orgRelations or_sub where
      * To add a custom property definition (which is usable for every institution), the route is {@link de.laser.ajax.AjaxController#addCustomPropertyType()}
      * (but consider the annotation there!)
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER", wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_USER", wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
+        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_USER")
     })
     def managePrivatePropertyDefinitions() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -4042,7 +4015,7 @@ join sub.orgRelations or_sub where
 
         Map<String, Set<PropertyDefinition>> propDefs = [:]
         Set<String> availablePrivDescs = PropertyDefinition.AVAILABLE_PRIVATE_DESCR
-        if(result.institution.getCustomerType() == "ORG_INST")
+        if (result.institution.isCustomerType_Inst_Pro())
             availablePrivDescs = PropertyDefinition.AVAILABLE_PRIVATE_DESCR-PropertyDefinition.SVY_PROP
         availablePrivDescs.each { String it ->
             Set<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, result.institution, [sort: 'name_'+result.languageSuffix]) // ONLY private properties!
@@ -4077,9 +4050,9 @@ join sub.orgRelations or_sub where
      * @return a read-only list of public / general property definitions with the usages of objects owned by the context institution
      * @see AdminController#managePropertyDefinitions()
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER", wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_USER", wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
+        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_USER")
     })
     Object managePropertyDefinitions() {
         Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params)

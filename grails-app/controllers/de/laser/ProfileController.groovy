@@ -39,7 +39,7 @@ class ProfileController {
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
         result.editable = true
-        result.isOrgBasicMember = contextService.getOrg().getCustomerType() == 'ORG_BASIC_MEMBER'
+        result.isOrgBasicMember = contextService.getOrg().isCustomerType_Inst_Basic()
         result.availableOrgs  = Org.executeQuery('from Org o where o.sector = :sector order by o.sortname', [sector: RDStore.O_SECTOR_HIGHER_EDU])
         result.availableOrgRoles = Role.findAllByRoleType('user')
 
@@ -440,7 +440,7 @@ class ProfileController {
                 "N",
                 'profile.updateProfile.token.systemMessages' )
 
-        String messageToken = ((contextService.getOrg().getCustomerType()  == 'ORG_CONSORTIUM') ? 'profile.notification.for.SurveysParticipationFinish' : 'profile.notification.for.SurveysParticipationFinish2')
+        String messageToken = ((contextService.getOrg().isCustomerType_Consortium()) ? 'profile.notification.for.SurveysParticipationFinish' : 'profile.notification.for.SurveysParticipationFinish2')
 
         _changeValue( user.getSetting(KEYS.IS_NOTIFICATION_FOR_SURVEYS_PARTICIPATION_FINISH, RDStore.YN_NO),
                 'isNotificationForSurveysParticipationFinish',

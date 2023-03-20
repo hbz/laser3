@@ -1,6 +1,7 @@
 package de.laser.ajax
 
 import de.laser.AlternativeName
+import de.laser.CustomerTypeService
 import de.laser.GenericOIDService
 import de.laser.AccessService
 import de.laser.CompareService
@@ -42,8 +43,6 @@ import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinition
 import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.report.myInstitution.base.BaseConfig
-import de.laser.stats.Counter4Report
-import de.laser.stats.Counter5Report
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
@@ -202,7 +201,7 @@ class AjaxJsonController {
         queryParams.showConnectedObjs = showConnectedObjs
 
         data = compareService.getMySubscriptions(queryParams)
-        if (accessService.checkPerm("ORG_CONSORTIUM")) {
+        if (accessService.checkPerm("ORG_CONSORTIUM_BASIC")) {
             if (showSubscriber) {
                 List parents = data.clone()
                 Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]
@@ -243,7 +242,7 @@ class AjaxJsonController {
         queryParams.showConnectedLics = showConnectedLics
 
         data = compareService.getMyLicenses(queryParams)
-        if (accessService.checkPerm("ORG_CONSORTIUM")) {
+        if (accessService.checkPerm("ORG_CONSORTIUM_BASIC")) {
             if (showSubscriber) {
                 List parents = data.clone()
                 Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_LICENSEE_CONS, RDStore.OR_LICENSEE]
@@ -256,42 +255,6 @@ class AjaxJsonController {
                 result.add([value: l.id, text: l.dropdownNamingConvention()])
             }
             result.sort{it.text}
-        }
-        render result as JSON
-    }
-
-    /**
-     * Updates the list of selectable metrics for the given report types in the statistics filter
-     * @return a {@link List} of available metric types
-     */
-    @Secured(['ROLE_USER'])
-    def adjustMetricList() {
-        Map<String, Object> queryParams = [reportType: params.reportType, platforms: params.list("platforms[]"), customer: params.customer]
-        Subscription refSub = Subscription.get(params.subscription)
-        String dateFilter = ''
-        if(refSub.startDate) {
-            dateFilter += ' and r.reportFrom >= :startDate'
-            queryParams.startDate = refSub.startDate
-        }
-        if(refSub.endDate) {
-            dateFilter += ' and r.reportTo <= :endDate'
-            queryParams.endDate = refSub.endDate
-        }
-        List<Map<String, Object>> result = []
-        SortedSet metricTypes = new TreeSet<String>()
-        //will the missing of title keys affect the choice?
-        if(queryParams.reportType in Counter4Report.COUNTER_4_REPORTS) {
-            Counter4Report.withTransaction {
-                metricTypes.addAll(Counter4Report.executeQuery('select r.metricType from Counter4Report r where r.reportType = :reportType and r.platformUID in (:platforms) and r.reportInstitutionUID = :customer'+dateFilter, queryParams))
-            }
-        }
-        else if(queryParams.reportType in Counter5Report.COUNTER_5_REPORTS) {
-            Counter5Report.withTransaction {
-                metricTypes.addAll(Counter5Report.executeQuery('select r.metricType from Counter5Report r where lower(r.reportType) = :reportType and r.platformUID in (:platforms) and r.reportInstitutionUID = :customer'+dateFilter, queryParams))
-            }
-        }
-        metricTypes.each { String metricType ->
-            result.add([name: metricType, value: metricType])
         }
         render result as JSON
     }
@@ -430,7 +393,7 @@ class AjaxJsonController {
                 else {
                     switch (propDef.descr) {
                         case PropertyDefinition.SUB_PROP:
-                            String consortialFilter = contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM' ? ' and sp.owner.instanceOf = null' : ''
+                            String consortialFilter = contextService.getOrg().isCustomerType_Consortium() ? ' and sp.owner.instanceOf = null' : ''
                             values = SubscriptionProperty.executeQuery('select sp from SubscriptionProperty sp left join sp.owner.orgRelations oo where sp.type = :propDef and ((sp.tenant = :tenant or ((sp.tenant != :tenant and sp.isPublic = true) or sp.instanceOf != null) and :tenant in oo.org))'+consortialFilter,[propDef:propDef, tenant:contextService.getOrg()])
                             break
                         case PropertyDefinition.ORG_PROP: values = OrgProperty.executeQuery('select op from OrgProperty op where op.type = :propDef and ((op.tenant = :tenant and op.isPublic = true) or op.tenant = null)',[propDef:propDef,tenant:contextService.getOrg()])
@@ -440,7 +403,7 @@ class AjaxJsonController {
                     case PropertyDefinition.PRS_PROP: values = PersonProperty.findAllByType(propDef)
                         break*/
                         case PropertyDefinition.LIC_PROP:
-                            String consortialFilter = contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM' ? ' and lp.owner.instanceOf = null' : ''
+                            String consortialFilter = contextService.getOrg().isCustomerType_Consortium() ? ' and lp.owner.instanceOf = null' : ''
                             values = LicenseProperty.executeQuery('select lp from LicenseProperty lp left join lp.owner.orgRelations oo where lp.type = :propDef and ((lp.tenant = :tenant or ((lp.tenant != :tenant and lp.isPublic = true) or lp.instanceOf != null) and :tenant in oo.org))'+consortialFilter,[propDef:propDef, tenant:contextService.getOrg()])
                             break
                     }
@@ -1014,9 +977,9 @@ class AjaxJsonController {
      * Outputs a chart from the given report parameters
      * @return the template to output and the one of the results {@link de.laser.ReportingGlobalService#doChart(java.util.Map, grails.web.servlet.mvc.GrailsParameterMap)} or {@link de.laser.ReportingLocalService#doChart(java.util.Map, grails.web.servlet.mvc.GrailsParameterMap)}
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @DebugInfo(perm=CustomerTypeService.PERMS_PRO, affil="INST_USER")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
+        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER")
     })
     def chart() {
         Map<String, Object> result = [:]

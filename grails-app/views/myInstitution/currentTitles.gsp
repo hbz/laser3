@@ -236,7 +236,7 @@
                             </td>
                             <%
                                 String instanceFilter = ''
-                                if (institution.getCustomerType() == "ORG_CONSORTIUM")
+                                if (institution.isCustomerType_Consortium())
                                     instanceFilter += ' and sub.instanceOf = null'
                                 Set<IssueEntitlement> title_coverage_info = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.subscription sub join sub.orgRelations oo where oo.org = :context and ie.tipp = :tipp and sub.status = :current and ie.status != :ieStatus' + instanceFilter, [ieStatus: RDStore.TIPP_STATUS_REMOVED, context: institution, tipp: tipp, current: RDStore.SUBSCRIPTION_CURRENT])
                             %>

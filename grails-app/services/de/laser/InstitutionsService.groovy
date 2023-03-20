@@ -156,7 +156,7 @@ class InstitutionsService {
 
             log.debug("adding org link to new license")
 
-            if (accessService.checkPerm("ORG_CONSORTIUM")) {
+            if (accessService.checkPerm("ORG_CONSORTIUM_BASIC")) {
                 new OrgRole(lic: licenseInstance, org: org, roleType: lic_cons_role).save()
             }
             else {

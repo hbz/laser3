@@ -1,13 +1,9 @@
 <%@ page import="de.laser.Combo; de.laser.CustomerIdentifier; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Org; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting" %>
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
 
-<laser:htmlStart message="menu.institutions.org_info" serviceInjection="true" />
+<laser:htmlStart message="${isProviderOrAgency ? 'org.nav.ids' : 'org.nav.idsCidsHyphen'}" serviceInjection="true" />
 
     <g:set var="isGrantedOrgRoleAdminOrOrgEditor" value="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}" />
-
-<ui:debugInfo>
-    <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]"/>
-</ui:debugInfo>
 
 <laser:render template="breadcrumb"
           model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView]}"/>
@@ -44,7 +40,7 @@
 <div class="ui bottom attached tab active segment">
 
     <g:if test="${params.tab == 'identifier'}">
-    <%-- orgInstance.hasPerm("ORG_INST,ORG_CONSORTIUM") && ((!fromCreate) || isGrantedOrgRoleAdminOrOrgEditor) --%>
+    <%-- orgInstance.hasPerm(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC) && ((!fromCreate) || isGrantedOrgRoleAdminOrOrgEditor) --%>
         <table class="ui table la-js-responsive-table la-table">
             <thead>
             <tr>

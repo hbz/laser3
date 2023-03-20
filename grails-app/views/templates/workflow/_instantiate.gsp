@@ -1,24 +1,18 @@
-<%@ page import="de.laser.Subscription; de.laser.workflow.*; de.laser.storage.RDStore; de.laser.workflow.*; de.laser.WorkflowOldService" %>
+<%@ page import="de.laser.Subscription; de.laser.workflow.*; de.laser.storage.RDStore;" %>
 
 <%
-    // TODO
-
     Set<WfChecklist> wfTemplateList = WfChecklist.getAllTemplatesByOwnerAndObjType(contextService.getOrg(), target)
 
     String targetText = '?'
-    String targetController = '?'
 
-    if (target instanceof de.laser.Org) { // TODO
+    if (target instanceof de.laser.Org) {
         targetText = target.name
-        targetController = 'org'
     }
     else if (target instanceof de.laser.License) {
         targetText = target.reference
-        targetController = 'license'
     }
     else if (target instanceof de.laser.Subscription) {
         targetText = target.name
-        targetController = 'subscription'
     }
 %>
 
@@ -84,7 +78,7 @@
                                                              value="${wfTemplateList.first().id}"
                                                              optionKey="id"
                                                              optionValue="title"
-                                                             optionExpl="${{ it.description + ' (' + it.getSequence().size() + ' Aufgaben)'}}" />
+                                                             optionExpl="${{ (it.description ?: '') + ' (' + it.getSequence().size() + ' Aufgaben)'}}" />
                         </div>
 
                         <input type="hidden" name="cmd" value="instantiate:${WfChecklist.KEY}" />

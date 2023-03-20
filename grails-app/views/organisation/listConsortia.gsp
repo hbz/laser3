@@ -8,7 +8,7 @@
 
     <ui:controlButtons>
         <%
-            editable = (editable && accessService.checkPerm('ORG_INST')) || contextService.getUser()?.hasRole('ROLE_ADMIN')
+            editable = (editable && accessService.checkPerm('ORG_INST_PRO')) || contextService.getUser()?.hasRole('ROLE_ADMIN')
         %>
         <ui:exportDropdown>
             <ui:exportDropdownItem>
@@ -66,7 +66,7 @@
                       consortiaIds: consortiaIds,
                       tmplShowCheckbox: false,
                       tmplConfigShow: [
-                              'sortname', 'name'
+                              'sortname', 'name', 'isMyX'
                       ]
               ]"/>
 

@@ -17,33 +17,24 @@ abstract class AbstractReport implements Comparable<AbstractReport> {
     String doi
     String isbn
     String proprietaryIdentifier
-    String identifierHash
+    //only to use for database reports
+    String databaseName
     String reportType
     String publisher
     String metricType
-    String platformUID
-    String reportInstitutionUID
+    Platform platform
+    Org reportInstitution
     Date reportFrom
     Date reportTo
     Integer reportCount
     //only for Journal Report 5 in COUNTER 4 resp. tr_j4 in COUNTER 5
     Date yop
 
-    Platform getPlatform() {
-        return platformUID ? Platform.findByGlobalUID(platformUID) : null
-    }
+    static final String COUNTER_4 = 'counter4'
+    static final String COUNTER_5 = 'counter5'
 
-    void setPlatform(Platform platform) {
-        this.platformUID = platform.globalUID
-    }
-
-    Org getReportInstitution() {
-        return reportInstitutionUID ? Org.findByGlobalUID(reportInstitutionUID) : null
-    }
-
-    void setReportInstitution(Org reportInstitution) {
-        this.reportInstitutionUID = reportInstitution.globalUID
-    }
+    //implementation base for ERMS-4813
+    static Map ERROR_CODES = [:]
 
     @Override
     int compareTo(AbstractReport that) {

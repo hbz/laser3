@@ -210,10 +210,10 @@ class OrganisationControllerService {
                                       isGrantedOrgRoleAdmin: SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'),
                                       contextCustomerType:org.getCustomerType()]
 
-        //if(result.contextCustomerType == 'ORG_CONSORTIUM')
+        //if(result.contextCustomerType == 'ORG_CONSORTIUM_BASIC')
 
         result.availableConfigs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.SHARE_CONFIGURATION)
-        if(result.contextCustomerType == "ORG_CONSORTIUM"){
+        if (org.isCustomerType_Consortium()) {
             result.availableConfigs-RDStore.SHARE_CONF_CONSORTIUM
         }
 
@@ -248,9 +248,9 @@ class OrganisationControllerService {
                     result.consortialView = true
             }
             //restrictions hold if viewed org is not the context org
-            if (!result.inContextOrg && !accessService.checkPerm("ORG_CONSORTIUM") && !SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN")) {
+            if (!result.inContextOrg && !accessService.checkPerm("ORG_CONSORTIUM_BASIC") && !SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN")) {
                 //restrictions further concern only single users or consortium members, not consortia
-                if (!accessService.checkPerm("ORG_CONSORTIUM") && result.orgInstance.getCustomerType() in ["ORG_BASIC_MEMBER","ORG_INST"]) {
+                if (!accessService.checkPerm("ORG_CONSORTIUM_BASIC") && result.orgInstance.isCustomerType_Inst()) {
                     return null
                 }
             }
@@ -266,7 +266,6 @@ class OrganisationControllerService {
         result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
 
         result.notesCount       = docstoreService.getNotes(result.orgInstance, result.contextOrg).size()
-//        result.workflowCount    = workflowOldService.getWorkflowCount(result.orgInstance, result.contextOrg)
         result.checklistCount   = workflowService.getWorkflowCount(result.orgInstance, result.contextOrg)
 
         result.links = linksGenerationService.getOrgLinks(result.orgInstance)

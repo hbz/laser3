@@ -463,6 +463,7 @@ class AdminController  {
      * Gets the current workflows and returns a dashboard-like overview of the outstanding tasks
      */
     @Secured(['ROLE_ADMIN'])
+    @Deprecated
     def manageWorkflows() {
         Map<String, Object> result = [:]
 
@@ -926,7 +927,7 @@ class AdminController  {
         result.orgListTotal = result.orgList.size()
 
         result.allConsortia = Org.executeQuery(
-                "select o from OrgSetting os join os.org o where os.key = 'CUSTOMER_TYPE' and os.roleValue.authority  = 'ORG_CONSORTIUM' order by o.sortname, o.name"
+                "select o from OrgSetting os join os.org o where os.key = 'CUSTOMER_TYPE' and (os.roleValue.authority  = 'ORG_CONSORTIUM_BASIC' or os.roleValue.authority  = 'ORG_CONSORTIUM_PRO') order by o.sortname, o.name"
         )
         result
     }

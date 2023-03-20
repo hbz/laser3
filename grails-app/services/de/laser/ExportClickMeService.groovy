@@ -364,7 +364,7 @@ class ExportClickMeService {
             ],
             consortiumProperties : [
                     label: 'Properties',
-                    message: 'propertyDefinition.plural',
+                    message: 'default.properties.my',
                     fields: [:]
             ]
             //customer identifiers: sense for consortia?
@@ -498,9 +498,14 @@ class ExportClickMeService {
                     message: 'exportClickMe.participantCustomerIdentifiers',
                     fields: [:]
             ],
+            participantContacts : [
+                    label: 'Contacts',
+                    message: 'org.contacts.label',
+                    fields: [:]
+            ],
             participantProperties : [
                     label: 'Properties',
-                    message: 'propertyDefinition.plural',
+                    message: 'default.properties.my',
                     fields: [:]
             ],
 
@@ -509,18 +514,18 @@ class ExportClickMeService {
     static Map<String, Object> EXPORT_PROVIDER_CONFIG = [
             provider : [
                     label: 'Provider',
-                    message: 'default.provider.label',
+                    message: 'default.ProviderAgency.singular',
                     fields: [
-                            'provider.sortname'            : [field: 'sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
                             'provider.name'                : [field: 'name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
+                            'provider.shortname'           : [field: 'shortname', label: 'Shortname', message: 'org.shortname.label', defaultChecked: 'true'],
                             'provider.altnames'            : [field: 'altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true' ],
-                            'provider.funderType'          : [field: 'funderType', label: 'Funder Type', message: 'org.funderType.label'],
-                            'provider.funderHskType'       : [field: 'funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
-                            'provider.generalContact'      : [field: null, label: 'General Contact Person', message: 'org.mainContact.label'],
-                            'provider.billingContact'      : [field: null, label: 'Functional Contact Billing Adress', message: 'org.functionalContactBillingAdress.label'],
-                            'provider.postAdress'          : [field: null, label: 'Post Adress', message: 'addressFormModalPostalAddress'],
-                            'provider.billingAdress'       : [field: null, label: 'Billing Adress', message: 'addressFormModalBillingAddress'],
-                            'provider.linkResolverBaseURL' : [field: 'linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label']
+//                            'provider.funderType'          : [field: 'funderType', label: 'Funder Type', message: 'org.funderType.label'],
+//                            'provider.funderHskType'       : [field: 'funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
+//                            'provider.generalContact'      : [field: null, label: 'General Contact Person', message: 'org.mainContact.label'],
+//                            'provider.billingContact'      : [field: null, label: 'Functional Contact Billing Adress', message: 'org.functionalContactBillingAdress.label'],
+//                            'provider.postAdress'          : [field: null, label: 'Post Adress', message: 'addressFormModalPostalAddress'],
+//                            'provider.billingAdress'       : [field: null, label: 'Billing Adress', message: 'addressFormModalBillingAddress'],
+//                            'provider.linkResolverBaseURL' : [field: 'linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label']
                     ]
             ],
             providerIdentifiers : [
@@ -533,12 +538,16 @@ class ExportClickMeService {
                     message: 'exportClickMe.participantCustomerIdentifiers',
                     fields: [:]
             ],
+            providerContacts : [
+                    label: 'Contacts',
+                    message: 'org.contacts.label',
+                    fields: [:]
+            ],
             providerProperties : [
                     label: 'Properties',
-                    message: 'propertyDefinition.plural',
+                    message: 'default.properties.my',
                     fields: [:]
             ]
-
     ]
 
     static Map<String, Object> EXPORT_ADDRESS_CONFIG = [
@@ -1086,7 +1095,7 @@ class ExportClickMeService {
             exportFields.put("participantIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
         }
         String consortiaFilter = ''
-        if(institution.getCustomerType() == 'ORG_CONSORTIUM')
+        if(institution.isCustomerType_Consortium())
             consortiaFilter = ' and s.instanceOf = null '
         Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where plat in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg join sp.subscription s join s.orgRelations oo where oo.org = :ctx '+consortiaFilter+')', [ctx: institution]).each { Platform plat ->
             exportFields.put("participantCustomerIdentifiers."+plat.id, [field: null, label: plat.name])
@@ -1137,7 +1146,7 @@ class ExportClickMeService {
             fields.participantIdentifiers.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
         }
         String consortiaFilter = ''
-        if(institution.getCustomerType() == 'ORG_CONSORTIUM')
+        if(institution.isCustomerType_Consortium())
             consortiaFilter = ' and s.instanceOf = null '
         Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where plat in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg join sp.subscription s join s.orgRelations oo where oo.org = :ctx '+consortiaFilter+') order by plat.name', [ctx:institution]).each { Platform plat ->
             fields.participantCustomerIdentifiers.fields << ["participantCustomerIdentifiers.${plat.id}":[field: null, label: plat.name]]
@@ -1353,8 +1362,9 @@ class ExportClickMeService {
                 PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg()).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
                     fields.participantProperties.fields << ["participantProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant != null)]]
                 }
+                fields.participantContacts.fields.clear()
                 contactTypes.each { RefdataValue contactType ->
-                    fields.participant.fields.put("participantContact.${contactType.value}", [field: null, label: contactType.getI10n('value')])
+                    fields.participantContacts.fields.put("participantContact.${contactType.value}", [field: null, label: contactType.getI10n('value')])
                 }
                 break
             case 'provider': fields = EXPORT_PROVIDER_CONFIG as Map
@@ -1370,8 +1380,9 @@ class ExportClickMeService {
                 PropertyDefinition.findAllPublicAndPrivateOrgProp(contextOrg).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
                     fields.providerProperties.fields << ["providerProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant != null)]]
                 }
+                fields.providerContacts.fields.clear()
                 contactTypes.each { RefdataValue contactType ->
-                    fields.provider.fields.put("providerContact.${contactType.value}",[field: null, label: contactType.getI10n('value')])
+                    fields.providerContacts.fields.put("providerContact.${contactType.value}",[field: null, label: contactType.getI10n('value')])
                 }
                 break
             default: fields = [:]

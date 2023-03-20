@@ -5,6 +5,7 @@
     <g:set var="entityName" value="${message(code: 'org.label')}" />
 
     <ui:breadcrumbs>
+        <ui:crumb controller="org" action="show" id="${institution.id}" text="${institution.getDesignation()}"/>
         <ui:crumb message="menu.institutions.manage_props" class="active" />
     </ui:breadcrumbs>
 
@@ -210,7 +211,7 @@
                     <%
                         Map<String,Object> availablePrivateDescr = [:]
                         Set<String> availablePrivDescs = PropertyDefinition.AVAILABLE_PRIVATE_DESCR
-                        if (institution.getCustomerType() == "ORG_INST") {
+                        if (institution.isCustomerType_Inst_Pro()) {
                             availablePrivDescs = PropertyDefinition.AVAILABLE_PRIVATE_DESCR - PropertyDefinition.SVY_PROP
                         }
                         availablePrivDescs.each { String pd ->

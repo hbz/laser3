@@ -1,3 +1,4 @@
+<%@ page import="de.laser.CustomerTypeService" %>
 <laser:htmlStart message="menu.public.all_insts" serviceInjection="true"/>
         <g:set var="entityName" value="${message(code: 'org.label')}" />
 
@@ -13,7 +14,7 @@
         </ui:exportDropdown>
 
         <%
-            editable = (editable && accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')) || contextService.getUser()?.hasRole('ROLE_ADMIN') || accessService.checkConstraint_ORG_COM_EDITOR()
+            editable = (editable && accessService.checkPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)) || contextService.getUser()?.hasRole('ROLE_ADMIN') || accessService.checkConstraint_ORG_COM_EDITOR()
         %>
         <g:if test="${editable}">
             <laser:render template="actions" />
@@ -34,14 +35,25 @@
         </g:form>
     </ui:filter>
 
+    <g:if test="${consortiaMemberIds}">%{-- --}%
+        <laser:render template="/templates/filter/orgFilterTable"
+                  model="[orgList: availableOrgs,
+                          consortiaMemberIds: consortiaMemberIds,
+                          tmplShowCheckbox: false,
+                          tmplConfigShow: [
+                                  'sortname', 'name', 'wibid', 'isil', 'region', 'libraryNetwork', 'libraryType', 'status', 'legalInformation', 'isMyX'
+                          ]
+                  ]"/>
+    </g:if>
+    <g:else>%{-- --}%
     <laser:render template="/templates/filter/orgFilterTable"
               model="[orgList: availableOrgs,
-                      consortiaMemberIds: consortiaMemberIds,
                       tmplShowCheckbox: false,
                       tmplConfigShow: [
                               'sortname', 'name', 'wibid', 'isil', 'region', 'libraryNetwork', 'libraryType', 'status', 'legalInformation'
                       ]
               ]"/>
+    </g:else>
 
     <ui:paginate action="listInstitution" params="${params}" max="${max}" total="${consortiaMemberTotal}" />
 

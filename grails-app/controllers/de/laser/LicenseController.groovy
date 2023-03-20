@@ -166,8 +166,6 @@ class LicenseController {
         result.availableLicensorList = orgTypeService.getOrgsForTypeLicensor().minus(result.visibleOrgRelations.collect { OrgRole oo -> oo.org })
         result.existingLicensorIdList = []
 
-
-        // licenseControllerService.workflows(this, params)
         workflowService.executeCmdAndUpdateResult(result, params)
 
         List bm = prf.stopBenchmark()
@@ -264,7 +262,7 @@ class LicenseController {
         result.institution = contextService.getOrg()
 
         License licenseCopy
-            if (accessService.checkPerm(" ORG_CONSORTIUM")) {
+            if (accessService.checkPerm("ORG_CONSORTIUM_BASIC")) {
 
                 if (params.cmd == 'generate') {
                     licenseCopy = institutionsService.copyLicense(
@@ -545,7 +543,7 @@ class LicenseController {
         GrailsParameterMap tmpParams = (GrailsParameterMap) params.clone()
         tmpParams.remove("max")
         tmpParams.remove("offset")
-        if (accessService.checkPerm("ORG_CONSORTIUM"))
+        if (accessService.checkPerm("ORG_CONSORTIUM_BASIC"))
             tmpParams.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
         Map<String,Object> fsq = filterService.getOrgComboQuery(tmpParams, result.institution)
 
@@ -579,8 +577,8 @@ class LicenseController {
      * @see Doc
      * @see DocContext
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER") })
+    @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_USER")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_USER") })
     @Check404()
     def documents() {
         Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW)
@@ -607,8 +605,8 @@ class LicenseController {
         redirect controller: 'license', action:params.redirectAction, id:params.instanceId /*, fragment:'docstab' */
     }
 
-    @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_USER")
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER") })
+    @DebugInfo(perm=CustomerTypeService.PERMS_PRO, affil="INST_USER")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER") })
     @Check404()
     def workflows() {
         Map<String,Object> ctrlResult = licenseControllerService.workflows( this, params )
@@ -619,9 +617,9 @@ class LicenseController {
     /**
      * Entry point for copying a license
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.checkPermAffiliationX(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_EDITOR", "ROLE_ADMIN")
     })
     def copyLicense() {
         Map<String,Object> result = [:]
@@ -638,7 +636,6 @@ class LicenseController {
             result.targetObjectId = params.targetObjectId
             result.targetObject = genericOIDService.resolveOID(params.targetObjectId)
         }
-
 
         result.showConsortiaFunctions = licenseControllerService.showConsortiaFunctions(result.sourceObject)
         result.consortialView = result.showConsortiaFunctions

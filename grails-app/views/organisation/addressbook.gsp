@@ -1,7 +1,6 @@
 <%@ page import="de.laser.Org; de.laser.Person; de.laser.PersonRole; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants " %>
 
-<g:set var="entityName" value="${message(code: 'org.label')}"/>
-<laser:htmlStart text="${message(code:"default.show.label", args:[entityName])}" />
+<laser:htmlStart message="menu.institutions.myAddressbook" />
 
 <g:set var="allOrgTypeIds" value="${orgInstance.getAllOrgTypeIds()}"/>
 <g:set var="isProviderOrAgency"
@@ -12,7 +11,7 @@
 <ui:controlButtons>
     <ui:actionsDropdown>
     <g:if test="${editable}">
-        <g:if test="${(institution.getCustomerType() == 'ORG_CONSORTIUM') && !isProviderOrAgency}">
+        <g:if test="${(institution.isCustomerType_Consortium()) && !isProviderOrAgency}">
             <a href="#createPersonModal" class="item" data-ui="modal"
                onclick="JSPC.app.personCreate('contactPersonForInstitution', ${orgInstance.id});"><g:message
                     code="person.create_new.contactPersonForInstitution.label"/></a>

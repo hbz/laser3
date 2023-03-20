@@ -35,8 +35,8 @@
                 <ui:actionsDropdownItem controller="survey" action="processOpenSurvey" params="[id: params.id]"
                                            message="openSurvey.button"
                                            tooltip="${message(code: "openSurvey.button.info2")}"/>
-                <ui:actionsDropdownItem controller="survey" action="processOpenSurveyNow"
-                                           params="[id: params.id]"
+                <ui:actionsDropdownItem controller="survey" action="processOpenSurvey"
+                                           params="[id: params.id, startNow: true]"
                                            message="openSurveyNow.button"
                                            tooltip="${message(code: "openSurveyNow.button.info2")}"/>
                 <div class="ui divider"></div>
@@ -48,8 +48,8 @@
                                                    message="openSurvey.button"
                                                    tooltip="${message(code: "openSurvey.button.info")}"/>
 
-                <ui:actionsDropdownItemDisabled controller="survey" action="processOpenSurveyNow"
-                                                   params="[id: params.id]"
+                <ui:actionsDropdownItemDisabled controller="survey" action="processOpenSurvey"
+                                                   params="[id: params.id, startNow: true]"
                                                    message="openSurveyNow.button"
                                                    tooltip="${message(code: "openSurveyNow.button.info")}"/>
                 <div class="ui divider"></div>
@@ -162,7 +162,7 @@
     </ui:modal>
 </g:if>
 
-<g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR') && (actionName != 'currentSurveysConsortia' && actionName != 'workflowsSurveysConsortia')}">
+<g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM_PRO', 'INST_EDITOR') && (actionName != 'currentSurveysConsortia' && actionName != 'workflowsSurveysConsortia')}">
     <laser:render template="/templates/documents/modal" model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
     <laser:render template="/templates/tasks/modal_create" model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
     <laser:render template="/templates/notes/modal_create" model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>

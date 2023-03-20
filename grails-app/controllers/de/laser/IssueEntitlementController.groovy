@@ -69,7 +69,7 @@ class IssueEntitlementController {
           result.institutional_usage_identifier = OrgSetting.get(org, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
           if (result.institutional_usage_identifier instanceof OrgSetting && fsresult.usage) {
               result.statsWibid = org.getIdentifierByType('wibid')?.value
-              result.usageMode = org.hasPerm("ORG_CONSORTIUM") ? 'package' : 'institution'
+              result.usageMode = org.isCustomerType_Consortium() ? 'package' : 'institution'
               result.usage = fsresult?.usage
               result.x_axis_labels = fsresult?.x_axis_labels
               result.y_axis_labels = fsresult?.y_axis_labels

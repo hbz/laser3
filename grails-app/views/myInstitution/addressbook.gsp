@@ -5,6 +5,7 @@
 <laser:htmlStart message="menu.institutions.myAddressbook" />
 
 <ui:breadcrumbs>
+    <ui:crumb controller="org" action="show" id="${institution.id}" text="${institution.getDesignation()}"/>
     <ui:crumb message="menu.institutions.myAddressbook" class="active"/>
 </ui:breadcrumbs>
 
@@ -38,7 +39,7 @@
     </ui:exportDropdown>
     <ui:actionsDropdown>
         <g:if test="${editable}">
-            <g:if test="${institution.getCustomerType() == 'ORG_CONSORTIUM'}">
+            <g:if test="${institution.isCustomerType_Consortium()}">
 
                 <a href="#createPersonModal" class="item" data-ui="modal"
                    onclick="JSPC.app.personCreate('contactPersonForInstitution');"><g:message
