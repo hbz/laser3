@@ -95,7 +95,7 @@ class AccessService {
      *      comboPerm: customer type of the target institution
      *      comboAffiliation: user's rights for the target institution
      * ]
-     * @return true if clauses one and two or three or four succeed, false otherwise
+     * @return true if clauses one and two or three succeed, false otherwise
      */
     boolean is_ROLE_ADMIN_or_checkForeignOrgComboPermAffiliation(Org orgToCheck, String comboPerm, String comboAffiliation) {
         if (contextService.getUser()?.hasMinRole('ROLE_ADMIN')) {
@@ -254,12 +254,12 @@ class AccessService {
         List<Role> rolesToCheck = [role]
 
         // sym. role hierarchy
-        if (role.authority == "INST_USER") {
-            rolesToCheck << Role.findByAuthority("INST_EDITOR")
-            rolesToCheck << Role.findByAuthority("INST_ADM")
+        if (role.authority == 'INST_USER') {
+            rolesToCheck << Role.findByAuthority('INST_EDITOR')
+            rolesToCheck << Role.findByAuthority('INST_ADM')
         }
-        else if (role.authority == "INST_EDITOR") {
-            rolesToCheck << Role.findByAuthority("INST_ADM")
+        else if (role.authority == 'INST_EDITOR') {
+            rolesToCheck << Role.findByAuthority('INST_ADM')
         }
 
         rolesToCheck.each{ rot ->

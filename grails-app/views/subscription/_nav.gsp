@@ -65,5 +65,5 @@
     <ui:securedSubNavItem orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="subscription" action="documents" params="${[id:params.id]}" message="default.documents.label" />
     <ui:subNavItem controller="subscription" action="notes" params="${[id:params.id]}" counts="${notesCount}" message="default.notes.label" />
 
-    </g:if>%{-- if ${! params.orgBasicMemberView} --}%
+    </g:if>%{-- if test="${! params.orgBasicMemberView}" --}%
 </ui:subNav>

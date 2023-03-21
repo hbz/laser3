@@ -85,7 +85,7 @@ class InstAdmService {
             return result
         }
         else {
-            return accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_ADM")
+            return accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_ADM')
         }
     }
 
@@ -111,7 +111,7 @@ class InstAdmService {
 
         List<UserOrg> userOrgs = UserOrg.findAllByOrgAndFormalRole(
                 org,
-                Role.findByAuthority("INST_ADM")
+                Role.findByAuthority('INST_ADM')
         )
 
         return (userOrgs.size() == 1 && userOrgs[0].user == user)

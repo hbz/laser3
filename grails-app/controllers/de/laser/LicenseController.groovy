@@ -79,7 +79,7 @@ class LicenseController {
         }
 
         //used for showing/hiding the License Actions menus
-        List<Role> admin_role = Role.findAllByAuthority("INST_ADM")
+        List<Role> admin_role = Role.findAllByAuthority('INST_ADM')
         result.canCopyOrgs = UserOrg.executeQuery("select uo.org from UserOrg uo where uo.user=(:user) and uo.formalRole=(:role) ", [user: result.user, role: admin_role])
 
         prf.setBenchmark('tasks')

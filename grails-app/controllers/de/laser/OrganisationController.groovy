@@ -1005,7 +1005,7 @@ class OrganisationController  {
         else if(!result.orgInstance.gokbId) {
             if(accessService.checkPerm("ORG_CONSORTIUM_BASIC")) {
                 List<Long> consortia = Combo.executeQuery('select c.id from Combo c where c.type = :type and c.fromOrg = :target and c.toOrg = :context',[type:RDStore.COMBO_TYPE_CONSORTIUM,target:result.orgInstance,context:result.institution])
-                if(consortia.size() == 1 && accessService.checkMinUserOrgRole_ctxConstraint(result.user,result.institution,'INST_EDITOR'))
+                if(consortia.size() == 1 && accessService.checkMinUserOrgRole_ctxConstraint(result.user, result.institution, 'INST_EDITOR'))
                     result.editable_identifier = true
             }
             else
