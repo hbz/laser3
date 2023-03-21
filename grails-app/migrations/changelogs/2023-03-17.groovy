@@ -22,12 +22,12 @@ databaseChangeLog = {
         }
     }
 
-    changeSet(author: "klober (modified)", id: "1679034092515-3") {
-        grailsChange {
-            change {
-                sql.execute("DELETE from perm WHERE pm_code in ('org_basic_member', 'org_member_basic', 'org_inst', 'org_consortium')")
-            }
-            rollback {}
-        }
-    }
+//    changeSet(author: "klober (modified)", id: "1679034092515-3") {
+//        grailsChange {
+//            change {
+//                sql.execute("DELETE from perm WHERE pm_code in ('org_basic_member', 'org_member_basic', 'org_inst', 'org_consortium')")
+//            }
+//            rollback {}
+//        }
+//    }
 }
