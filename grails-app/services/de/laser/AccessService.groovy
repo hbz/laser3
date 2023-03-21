@@ -29,7 +29,10 @@ class AccessService {
     }
 
     // --- for action closures: shortcuts ---
-    // --- checking current user and context org
+    // --- for action closures: shortcuts ---
+
+    // --- public
+    // --- public
 
     /**
      * Substitution call for {@link #_checkOrgPerm(java.lang.String[])}
@@ -60,29 +63,6 @@ class AccessService {
         _checkOrgPermAndUserAffiliation(orgPerms.split(','), userRole)
     }
 
-    // --- for action closures: shortcuts ---
-    // --- checking current user and context org OR global roles
-
-    /**
-     * Checks
-     * <ul>
-     *     <li>if the context institution is one of the given customer types and the user has the given rights granted</li>
-     *     <li>or if the user has the given global rights granted</li>
-     * </ul>
-     * @param orgPerms the customer types to check
-     * @param userRole the user's affiliation to the context institution
-     * @param specRole the global permission to check
-     * @return true if the user has one of the global permissions
-     * or if the context institution is one of the given customer types
-     * and if the user has the given permissions within the institution, false otherwise
-     */
-    private boolean _checkPermAffiliationX(String orgPerms, String userRole, String specRole) {
-        if (contextService.getUser()?.hasMinRole(specRole)) {
-            return true
-        }
-        _checkOrgPermAndUserAffiliation(orgPerms.split(','), userRole)
-    }
-
     /**
      * Checks
      * <ul>
@@ -103,10 +83,6 @@ class AccessService {
         _checkOrgPermAndOrgTypeAndUserAffiliation(orgPerms.split(','), orgTypes.split(','), userRole)
     }
 
-    // --- for action closures: shortcuts ---
-    // --- checking current user and context org and combo relation
-    // --- USE FOR FOREIGN ORG CHECKS
-
     /**
      * Checks if
      * <ol>
@@ -121,12 +97,16 @@ class AccessService {
      *      comboPerm: customer type of the target institution
      *      comboAffiliation: user's rights for the target institution
      * ]
-     * @return true if clauses one and two or three succeed, false otherwise
+     * @return true if clauses one and two or three or four succeed, false otherwise
      */
-    boolean checkForeignOrgComboPermAffiliation(Map<String, Object> attributes) {
+    boolean is_ROLE_ADMIN_or_checkForeignOrgComboPermAffiliation(Map<String, Object> attributes) {
+        if (contextService.getUser()?.hasMinRole('ROLE_ADMIN')) {
+            return true
+        }
+
         Org ctx                 = contextService.getOrg()
         Org currentOrg          = (Org) attributes.org
-        String ownerUserRole    = attributes.affiliation
+        String ownerUserRole    = attributes.affiliation // TODO: no affiliation given
         String orgPerms         = attributes.comboPerm
         String userRole         = attributes.comboAffiliation
 
@@ -140,34 +120,31 @@ class AccessService {
         (check1 && check2) || check3
     }
 
-    /**
-     * Checks if
-     * <ol>
-     *     <li>the target institution is of the given customer type and the user has the given permissions granted at the target institution</li>
-     *     <li>there is a combo relation to the given target institution</li>
-     *     <li>or if the user has the given permissions granted at the context institution</li>
-     *     <li>or if the user has one of the given global permissions granted</li>
-     * </ol>
-     * @param attributes a configuration map:
-     * [
-     *      org: context institution,
-     *      affiliation: user's rights at the context institution
-     *      comboPerm: customer type of the target institution
-     *      comboAffiliation: user's rights for the target institution
-     *      specRole: global permission to check
-     * ]
-     * @return true if clauses one and two or three or four succeed, false otherwise
-     */
-    boolean checkForeignOrgComboPermAffiliationX(Map<String, Object> attributes) {
-        if (contextService.getUser()?.hasMinRole(attributes.specRole)) {
-            return true
-        }
-
-        checkForeignOrgComboPermAffiliation(attributes)
-    }
-
     // --- for action closures: implementations ---
     // --- checking current user and context org
+
+    // --- private
+    // --- private
+
+    /**
+     * Checks
+     * <ul>
+     *     <li>if the context institution is one of the given customer types and the user has the given rights granted</li>
+     *     <li>or if the user has the given global rights granted</li>
+     * </ul>
+     * @param orgPerms the customer types to check
+     * @param userRole the user's affiliation to the context institution
+     * @param specRole the global permission to check
+     * @return true if the user has one of the global permissions
+     * or if the context institution is one of the given customer types
+     * and if the user has the given permissions within the institution, false otherwise
+     */
+    private boolean _is_ROLE_ADMIN_or_checkPermAffiliation(String orgPerms, String userRole) {
+        if (contextService.getUser()?.hasMinRole('ROLE_ADMIN')) {
+            return true
+        }
+        _checkOrgPermAndUserAffiliation(orgPerms.split(','), userRole)
+    }
 
     /**
      * Checks for the context institution if one of the given customer types are granted
@@ -188,7 +165,6 @@ class AccessService {
             } catch (IllegalStateException e) {}
 
             if (isOrgBasicMemberView && contextOrg.isCustomerType_Consortium()) {
-            // if(isOrgBasicMemberView && (oss.getValue() == Role.findAllByAuthority('ORG_CONSORTIUM_BASIC') || oss.getValue() == Role.findAllByAuthority('ORG_CONSORTIUM_PRO'))){
                 fakeRole = Role.findByAuthority('ORG_INST_BASIC')
                 // TODO: ERMS-4920 - ORG_INST_BASIC or ORG_INST_PRO
             }
@@ -340,14 +316,14 @@ class AccessService {
     }
 
     boolean is_ROLE_ADMIN_or_INST_USER_with_PERMS(String orgPerms) {
-        _checkPermAffiliationX(orgPerms, 'INST_USER', 'ROLE_ADMIN')
+        _is_ROLE_ADMIN_or_checkPermAffiliation(orgPerms, 'INST_USER')
     }
 
     boolean is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS(String orgPerms) {
-        _checkPermAffiliationX(orgPerms, 'INST_EDITOR', 'ROLE_ADMIN')
+        _is_ROLE_ADMIN_or_checkPermAffiliation(orgPerms, 'INST_EDITOR')
     }
 
     boolean is_ROLE_ADMIN_or_INST_ADM_with_PERMS(String orgPerms) {
-        _checkPermAffiliationX(orgPerms, 'INST_ADM', 'ROLE_ADMIN')
+        _is_ROLE_ADMIN_or_checkPermAffiliation(orgPerms, 'INST_ADM')
     }
 }

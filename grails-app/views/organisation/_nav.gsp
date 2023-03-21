@@ -42,14 +42,6 @@
         <g:if test="${inContextOrg}">
             <ui:securedSubNavItem controller="myInstitution" action="users" message="org.nav.users" affiliation="INST_ADM"/>
         </g:if>
-        <%-- deactivated as of ERMS-2934
-        <g:elseif test="${ accessService.checkForeignOrgComboPermAffiliation([
-                org: orgInstance,
-                comboPerm: "ORG_CONSORTIUM_BASIC",
-                comboAffiliation: "INST_ADM"
-        ]) && !instAdmService.hasInstAdmin(orgInstance) }">
-            <ui:subNavItem controller="organisation" action="users" params="${[id: orgInstance.id]}" message="org.nav.users"/>
-        </g:elseif>--%>
         <g:else>
             <%-- this kind of check is necessary because it should not be displayed at all if user has no specRole --%>
             <sec:ifAnyGranted roles="ROLE_ADMIN">
@@ -60,11 +52,10 @@
             <ui:securedSubNavItem controller="organisation" action="settings" params="${breadcrumbParams}"
                                      message="org.nav.options" affiliation="INST_ADM" affiliationOrg="${orgInstance}"/>
         </g:if>
-        <g:elseif test="${accessService.checkForeignOrgComboPermAffiliationX([
+        <g:elseif test="${accessService.is_ROLE_ADMIN_or_checkForeignOrgComboPermAffiliation([
                     org: orgInstance,
                     comboPerm: "ORG_CONSORTIUM_BASIC",
-                    comboAffiliation: "INST_ADM",
-                    specRole: "ROLE_ADMIN"
+                    comboAffiliation: "INST_ADM"
         ])}">
             <ui:subNavItem controller="organisation" action="settings" params="${breadcrumbParams}" message="org.nav.options"/>
         </g:elseif>
