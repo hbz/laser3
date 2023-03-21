@@ -46,7 +46,7 @@ class InstAdmService {
      * @return true if the user has an INST_ADM grant to either the consortium or one of the members, false otherwise
      */
     boolean hasInstAdmPivileges(User user, Org org, List<RefdataValue> types) {
-        boolean result = accessService.checkMinUserOrgRole(user, org, 'INST_ADM')
+        boolean result = accessService.checkMinUserOrgRole_ctxConstraint(user, org, 'INST_ADM')
 
         List<Org> topOrgs = Org.executeQuery(
                 'select c.toOrg from Combo c where c.fromOrg = :org and c.type in (:types)', [
@@ -54,7 +54,7 @@ class InstAdmService {
             ]
         )
         topOrgs.each{ top ->
-            if (accessService.checkMinUserOrgRole(user, top, 'INST_ADM')) {
+            if (accessService.checkMinUserOrgRole_ctxConstraint(user, top, 'INST_ADM')) {
                 result = true
             }
         }
@@ -122,7 +122,7 @@ class InstAdmService {
 	boolean isUserEditableForInstAdm(User user, User editor, Org org) {
 
 		boolean roleAdmin = editor.hasMinRole('ROLE_ADMIN')
-		boolean instAdmin = editor.hasAffiliation('INST_ADM') // check @ contextService.getOrg()
+		boolean instAdmin = editor.is_ROLE_ADMIN_or_hasAffiliation('INST_ADM') // check @ contextService.getOrg()
 		boolean orgMatch  = user.isMemberOf(contextService.getOrg())
 
 		roleAdmin || (instAdmin && orgMatch)

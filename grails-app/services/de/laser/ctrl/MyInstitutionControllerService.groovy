@@ -49,7 +49,7 @@ class MyInstitutionControllerService {
             return [status: STATUS_ERROR, result: result]
         }
 
-        result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+        result.is_inst_admin = accessService.checkMinUserOrgRole_ctxConstraint(result.user, result.institution, 'INST_ADM')
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
         result.acceptedOffset = 0
@@ -176,23 +176,23 @@ class MyInstitutionControllerService {
         result.showConsortiaFunctions = org.isCustomerType_Consortium()
         switch (params.action) {
             case [ 'processEmptyLicense', 'currentLicenses', 'currentSurveys', 'dashboard', 'getChanges', 'getSurveys', 'emptyLicense', 'surveyInfoFinish' ]:
-                result.editable = accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR')
+                result.editable = accessService.checkMinUserOrgRole_ctxConstraint(user, org, 'INST_EDITOR')
                 break
             case [ 'addressbook', 'budgetCodes', 'tasks' ]:
-                result.editable = accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+                result.editable = accessService.checkMinUserOrgRole_ctxConstraint(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
                 break
             case 'surveyInfos':
                 result.editable = surveyService.isEditableSurvey(org, SurveyInfo.get(params.id) ?: null)
                 break
             case 'users':
-                result.editable = user.hasMinRole('ROLE_ADMIN') || user.hasAffiliation('INST_ADM')
+                result.editable = user.is_ROLE_ADMIN_or_hasAffiliation('INST_ADM')
                 break
             case 'managePropertyDefinitions':
                 result.editable = false
-                result.changeProperties = user.hasMinRole('ROLE_ADMIN') || user.hasAffiliation('INST_EDITOR')
+                result.changeProperties = user.is_ROLE_ADMIN_or_hasAffiliation('INST_EDITOR')
                 break
             default:
-                result.editable = accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+                result.editable = accessService.checkMinUserOrgRole_ctxConstraint(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
         }
 
         result

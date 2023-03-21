@@ -100,8 +100,8 @@ class OrganisationController  {
         result.isComboRelated = isComboRelated
         result.contextOrg = result.institution //for the properties template
 
-        Boolean hasAccess = (result.inContextOrg && accessService.checkMinUserOrgRole(result.user, result.orgInstance, 'INST_ADM')) ||
-                (isComboRelated && accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')) ||
+        Boolean hasAccess = (result.inContextOrg && accessService.checkMinUserOrgRole_ctxConstraint(result.user, result.orgInstance, 'INST_ADM')) ||
+                (isComboRelated && accessService.checkMinUserOrgRole_ctxConstraint(result.user, result.institution, 'INST_ADM')) ||
                 SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
         // forbidden access
@@ -249,7 +249,7 @@ class OrganisationController  {
      */
     @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_BASIC, type="Consortium", affil="INST_USER", specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermTypeAffiliationX(CustomerTypeService.ORG_CONSORTIUM_BASIC, "Consortium", "INST_USER", "ROLE_ADMIN")
+        ctx.accessService.is_ROLE_ADMIN_or_checkPermTypeAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, "Consortium", "INST_USER")
     })
     Map listInstitution() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
@@ -999,17 +999,17 @@ class OrganisationController  {
 
         //IF ORG is a Provider and is NOT ex we:kb
         if(!result.orgInstance.gokbId && (result.orgInstance.sector == RDStore.O_SECTOR_PUBLISHER || RDStore.OT_PROVIDER.id in result.allOrgTypeIds)) {
-            result.editable_identifier = accessService.checkMinUserOrgRole(result.user, result.orgInstance, 'INST_EDITOR') ||
+            result.editable_identifier = accessService.checkMinUserOrgRole_ctxConstraint(result.user, result.orgInstance, 'INST_EDITOR') ||
                     accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
         }
         else if(!result.orgInstance.gokbId) {
             if(accessService.checkPerm("ORG_CONSORTIUM_BASIC")) {
                 List<Long> consortia = Combo.executeQuery('select c.id from Combo c where c.type = :type and c.fromOrg = :target and c.toOrg = :context',[type:RDStore.COMBO_TYPE_CONSORTIUM,target:result.orgInstance,context:result.institution])
-                if(consortia.size() == 1 && accessService.checkMinUserOrgRole(result.user,result.institution,'INST_EDITOR'))
+                if(consortia.size() == 1 && accessService.checkMinUserOrgRole_ctxConstraint(result.user,result.institution,'INST_EDITOR'))
                     result.editable_identifier = true
             }
             else
-                result.editable_identifier = accessService.checkMinUserOrgRole(result.user, result.orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+                result.editable_identifier = accessService.checkMinUserOrgRole_ctxConstraint(result.user, result.orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
         }
         // TODO: experimental asynchronous task
         //waitAll(task_orgRoles, task_properties)
@@ -1022,14 +1022,14 @@ class OrganisationController  {
         Boolean isComboRelated = Combo.findByFromOrgAndToOrg(result.orgInstance, result.institution)
         result.isComboRelated = isComboRelated
 
-        result.hasAccessToCustomeridentifier = ((inContextOrg && accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_USER')) ||
-                (isComboRelated && accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_USER')) ||
+        result.hasAccessToCustomeridentifier = ((inContextOrg && accessService.checkMinUserOrgRole_ctxConstraint(result.user, result.institution, 'INST_USER')) ||
+                (isComboRelated && accessService.checkMinUserOrgRole_ctxConstraint(result.user, result.institution, 'INST_USER')) ||
                 SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) && OrgSetting.get(result.orgInstance, OrgSetting.KEYS.CUSTOMER_TYPE) != OrgSetting.SETTING_NOT_FOUND
 
         if (result.hasAccessToCustomeridentifier) {
 
-            result.editable_customeridentifier = (inContextOrg && accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) ||
-                    (isComboRelated && accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) ||
+            result.editable_customeridentifier = (inContextOrg && accessService.checkMinUserOrgRole_ctxConstraint(result.user, result.institution, 'INST_EDITOR')) ||
+                    (isComboRelated && accessService.checkMinUserOrgRole_ctxConstraint(result.user, result.institution, 'INST_EDITOR')) ||
                     SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
             // adding default settings
@@ -1140,8 +1140,8 @@ class OrganisationController  {
      * it has been attached to; content editing of an uploaded document is not possible in this app!
      * @return the modal to edit the document parameters
      */
-    @DebugInfo(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
+    @DebugInfo(test='is_ROLE_ADMIN_or_hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_EDITOR") })
     def editDocument() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
         if(!result) {
@@ -1163,8 +1163,8 @@ class OrganisationController  {
      * @return the document table view ({@link #documents()})
      * @see DocstoreService#unifiedDeleteDocuments()
      */
-    @DebugInfo(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
+    @DebugInfo(test='is_ROLE_ADMIN_or_hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_EDITOR") })
     def deleteDocuments() {
         log.debug("deleteDocuments ${params}");
 
@@ -1181,8 +1181,8 @@ class OrganisationController  {
      * @see Doc
      * @see DocContext
      */
-    @DebugInfo(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    @DebugInfo(test='is_ROLE_ADMIN_or_hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_USER") })
     @Check404(domain=Org)
     def notes() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
@@ -1225,8 +1225,8 @@ class OrganisationController  {
      * @see UserOrg
      * @see User
      */
-    @DebugInfo(test = 'hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_ADM") })
+    @DebugInfo(test = 'is_ROLE_ADMIN_or_hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_ADM") })
     @Check404(domain=Org)
     def users() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
@@ -1731,7 +1731,7 @@ class OrganisationController  {
      */
     @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_BASIC, type="Consortium", affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermTypeAffiliationX(CustomerTypeService.ORG_CONSORTIUM_BASIC, "Consortium", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.is_ROLE_ADMIN_or_checkPermTypeAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, "Consortium", "INST_EDITOR")
     })
     def toggleCombo() {
         Map<String,Object> ctrlResult = organisationControllerService.toggleCombo(this,params)
@@ -1754,8 +1754,8 @@ class OrganisationController  {
      * Call to list the contacts the context institution has attached to the given organisation
      * @return a table view of the contacts
      */
-    @DebugInfo(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    @DebugInfo(test = 'is_ROLE_ADMIN_or_hasAffiliation("INST_USER")')
+    @Secured(closure = { ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_USER") })
     @Check404(domain=Org)
     def myPublicContacts() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
@@ -1809,7 +1809,7 @@ class OrganisationController  {
         Org contextOrg = contextService.getOrg()
         Org orgInstance = org
         boolean inContextOrg =  orgInstance?.id == contextOrg.id
-        boolean userHasEditableRights = user.hasMinRole('ROLE_ADMIN') || user.hasAffiliation('INST_EDITOR')
+        boolean userHasEditableRights = user.is_ROLE_ADMIN_or_hasAffiliation('INST_EDITOR')
         switch(params.action){
             case 'editUser':
                 isEditable = true
@@ -1818,13 +1818,13 @@ class OrganisationController  {
                 isEditable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
                 break
             case 'properties':
-                isEditable = accessService.checkMinUserOrgRole(user, Org.get(params.id), 'INST_EDITOR') || SpringSecurityUtils.ifAllGranted('ROLE_ADMIN')
+                isEditable = accessService.checkMinUserOrgRole_ctxConstraint(user, Org.get(params.id), 'INST_EDITOR') || SpringSecurityUtils.ifAllGranted('ROLE_ADMIN')
                 break
             case 'users':
-                isEditable = accessService.checkMinUserOrgRole(user, Org.get(params.id), 'INST_ADM') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+                isEditable = accessService.checkMinUserOrgRole_ctxConstraint(user, Org.get(params.id), 'INST_ADM') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
                 break
             case [ 'addOrgType', 'deleteOrgType' ]:
-                isEditable = accessService.checkMinUserOrgRole(user, Org.get(params.org), 'INST_ADM') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+                isEditable = accessService.checkMinUserOrgRole_ctxConstraint(user, Org.get(params.org), 'INST_ADM') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
                 break
             case 'myPublicContacts':
                 if (inContextOrg) {
@@ -1869,7 +1869,7 @@ class OrganisationController  {
                 }
                 break
             default:
-                isEditable = accessService.checkMinUserOrgRole(user, org,'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+                isEditable = accessService.checkMinUserOrgRole_ctxConstraint(user, org,'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
         }
         isEditable
     }

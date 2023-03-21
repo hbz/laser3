@@ -14,7 +14,7 @@
 </g:elseif>
 <g:elseif test="${actionName == 'users'}">
     <g:if test="${controllerName == 'myInstitution'}">%{-- /myInstitution/users --}%
-        <g:if test="${contextService.getUser().hasMinRole('ROLE_ADMIN') || contextService.getUser().hasAffiliation("INST_ADM")}">
+        <g:if test="${contextService.getUser().is_ROLE_ADMIN_or_hasAffiliation("INST_ADM")}">
             <ui:actionsDropdown>
                 <ui:actionsDropdownItem controller="myInstitution" action="createUser" message="user.create_new.label" />
             </ui:actionsDropdown>
@@ -30,7 +30,7 @@
 </g:elseif>
 <g:elseif test="${actionName == 'editUser'}">
     <g:if test="${controllerName == 'myInstitution'}">%{-- /myInstitution/editUser --}%
-        <g:if test="${contextService.getUser().hasMinRole('ROLE_ADMIN') || contextService.getUser().hasAffiliation("INST_ADM")}">
+        <g:if test="${contextService.getUser().is_ROLE_ADMIN_or_hasAffiliation("INST_ADM")}">
             <ui:actionsDropdown>
                 <g:link class="item" action="deleteUser" params="${[uoid: params.uoid]}"><i class="trash alternate outline icon"></i> ${message(code:'deletion.user')}</g:link>
             </ui:actionsDropdown>

@@ -409,7 +409,7 @@ class WorkflowService {
 //            return true
 //        }
         Org ctxOrg = contextService.getOrg()
-        if (userRoleName && ctxOrg.isCustomerType_Pro() && user.hasAffiliationForForeignOrg(userRoleName, ctxOrg)) {
+        if (userRoleName && ctxOrg.isCustomerType_Pro() && user.is_ROLE_ADMIN_or_hasAffiliationForForeignOrg(userRoleName, ctxOrg)) {
             return true
         }
         false

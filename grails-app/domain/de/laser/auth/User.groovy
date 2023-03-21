@@ -206,7 +206,7 @@ class User {
      * @param userRoleName the INST_-role to check for
      * @return does the user have the given INST_-role granted?
      */
-    boolean hasAffiliation(String userRoleName) {
+    boolean is_ROLE_ADMIN_or_hasAffiliation(String userRoleName) {
         BeanStore.getUserService().is_ROLE_ADMIN_or_checkAffiliation(this, userRoleName, BeanStore.getContextService().getOrg())
     }
 
@@ -216,7 +216,7 @@ class User {
      * @param orgToCheck the {@link Org} to check whether the user is affiliated to
      * @return does the user have the given INST_-role for the given org?
      */
-    boolean hasAffiliationForForeignOrg(String userRoleName, Org orgToCheck) {
+    boolean is_ROLE_ADMIN_or_hasAffiliationForForeignOrg(String userRoleName, Org orgToCheck) {
         BeanStore.getUserService().is_ROLE_ADMIN_or_checkAffiliation(this, userRoleName, orgToCheck)
     }
 

@@ -113,7 +113,7 @@ class SubscriptionService {
             date_restriction = sdf.parse(params.validOn)
         }
 
-        result.editable = accessService.checkMinUserOrgRole(contextUser, contextOrg, 'INST_EDITOR')
+        result.editable = accessService.checkMinUserOrgRole_ctxConstraint(contextUser, contextOrg, 'INST_EDITOR')
 
         if (! params.status) {
             if (params.isSiteReloaded != "yes") {

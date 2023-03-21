@@ -227,7 +227,7 @@ class UserService {
                         user = addNewUser([username: username, password: "${adminUser.pass}", display: username, email: "${adminUser.email}", enabled: true, org: orgs[customerKey]],null)
 
                         if (user && orgs[customerKey]) {
-                            if (! user.hasAffiliationForForeignOrg(rightKey, orgs[customerKey])) {
+                            if (! user.is_ROLE_ADMIN_or_hasAffiliationForForeignOrg(rightKey, orgs[customerKey])) {
 
                                 instAdmService.createAffiliation(user, orgs[customerKey], userRole, null)
                                 user.getSetting(UserSetting.KEYS.DASHBOARD, orgs[customerKey])
