@@ -232,21 +232,29 @@ class AccessService {
 
     // ----- REFACTORING -----
 
+    boolean is_ROLE_ADMIN_or_checkMinUserOrgRole_and_CtxOrg(User user, Org orgToCheck, String userRoleName) {
+        if (user?.hasMinRole('ROLE_ADMIN')) {
+            return true
+        }
+
+        checkMinUserOrgRole_and_CtxOrg(user, orgToCheck, userRoleName)
+    }
+
     /**
      * Checks if the user has at least the given role at the given institution
      * @param user the user whose permissions should be checked
-     * @param org the institution the user belongs to
+     * @param orgToCheck the institution the user belongs to
      * @param role the minimum role the user needs at the given institution
      * @return true if the user has at least the given role at the given institution, false otherwise
      */
-    boolean checkMinUserOrgRole_ctxConstraint(User user, Org org, String userRoleName) {
+    boolean checkMinUserOrgRole_and_CtxOrg(User user, Org orgToCheck, String userRoleName) {
         boolean result = false
 
-        if (! user || ! org) {
+        if (! user || ! orgToCheck) {
             return result
         }
         // NEW CONSTRAINT:
-        if (org.id != contextService.getOrg().id) {
+        if (orgToCheck.id != contextService.getOrg().id) {
             return result
         }
 
@@ -263,7 +271,7 @@ class AccessService {
         }
 
         rolesToCheck.each{ rot ->
-            UserOrg userOrg = UserOrg.findByUserAndOrgAndFormalRole(user, org, rot)
+            UserOrg userOrg = UserOrg.findByUserAndOrgAndFormalRole(user, orgToCheck, rot)
             if (userOrg) {
                 result = true
             }

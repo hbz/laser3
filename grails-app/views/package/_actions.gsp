@@ -9,7 +9,7 @@
         <ui:actionsDropdownItem message="task.create.new" data-ui="modal" href="#modalCreateTask" />
         <ui:actionsDropdownItem message="template.documents.add" data-ui="modal" href="#modalCreateDocument" />
     </g:if>
-    <g:if test="${accessService.checkMinUserOrgRole_ctxConstraint(user,org,'INST_EDITOR') && ! ['list'].contains(actionName)}">
+    <g:if test="${accessService.checkMinUserOrgRole_and_CtxOrg(user,org,'INST_EDITOR') && ! ['list'].contains(actionName)}">
         <ui:actionsDropdownItem message="template.addNote" data-ui="modal" href="#modalCreateNote" />
     </g:if>
     <g:if test="${(editable || accessService.checkPermAffiliation(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')) && ! ['list'].contains(actionName)}">
@@ -203,6 +203,6 @@
     <laser:render template="/templates/documents/modal" model="${[ownobj: packageInstance, institution: contextService.getOrg(), owntp: 'pkg']}"/>
     <laser:render template="/templates/tasks/modal_create" model="${[ownobj:packageInstance, owntp:'pkg']}"/>
 </g:if>
-<g:if test="${accessService.checkMinUserOrgRole_ctxConstraint(user,org,'INST_EDITOR') && ! ['list'].contains(actionName)}">
+<g:if test="${accessService.checkMinUserOrgRole_and_CtxOrg(user,org,'INST_EDITOR') && ! ['list'].contains(actionName)}">
     <laser:render template="/templates/notes/modal_create" model="${[ownobj: packageInstance, owntp: 'pkg']}"/>
 </g:if>--}%
