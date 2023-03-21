@@ -136,7 +136,7 @@ class AccessService {
      * or if the context institution is one of the given customer types
      * and if the user has the given permissions within the institution, false otherwise
      */
-    private boolean _is_ROLE_ADMIN_or_checkPermAffiliation(String orgPerms, String userRole) {
+    private boolean _is_ROLE_ADMIN_or_checkOrgPermAndUserAffiliation(String orgPerms, String userRole) {
         if (contextService.getUser()?.hasMinRole('ROLE_ADMIN')) {
             return true
         }
@@ -190,7 +190,7 @@ class AccessService {
         if (orgTypes) {
             orgTypes.each { ot ->
                 RefdataValue type = RefdataValue.getByValueAndCategory(ot.trim(), RDConstants.ORG_TYPE)
-                check2 = check2 || contextService.getOrg()?.getAllOrgTypeIds().contains(type?.id)
+                check2 = check2 || contextService.getOrg()?.getAllOrgTypeIds()?.contains(type?.id)
             }
         } else {
             check2 = true
@@ -286,12 +286,12 @@ class AccessService {
      * @return the result of {@link #checkPermAffiliation(java.lang.String, java.lang.String)} for [ORG_INST_PRO, ORG_CONSORTIUM_BASIC] and INST_EDTOR as arguments
      */
     boolean is_ORG_COM_EDITOR() {
-        checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')
+        _checkOrgPermAndUserAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC.split(','), 'INST_EDITOR')
     }
 
     boolean is_INST_EDITOR_with_PERMS_BASIC(boolean inContextOrg) {
-        boolean a = checkPermAffiliation(CustomerTypeService.ORG_INST_BASIC, 'INST_EDITOR') && inContextOrg
-        boolean b = checkPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR')
+        boolean a = _checkOrgPermAndUserAffiliation(CustomerTypeService.ORG_INST_BASIC.split(','), 'INST_EDITOR') && inContextOrg
+        boolean b = _checkOrgPermAndUserAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC.split(','), 'INST_EDITOR')
 
         return (a || b)
     }
@@ -304,14 +304,14 @@ class AccessService {
     }
 
     boolean is_ROLE_ADMIN_or_INST_USER_with_PERMS(String orgPerms) {
-        _is_ROLE_ADMIN_or_checkPermAffiliation(orgPerms, 'INST_USER')
+        _is_ROLE_ADMIN_or_checkOrgPermAndUserAffiliation(orgPerms, 'INST_USER')
     }
 
     boolean is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS(String orgPerms) {
-        _is_ROLE_ADMIN_or_checkPermAffiliation(orgPerms, 'INST_EDITOR')
+        _is_ROLE_ADMIN_or_checkOrgPermAndUserAffiliation(orgPerms, 'INST_EDITOR')
     }
 
     boolean is_ROLE_ADMIN_or_INST_ADM_with_PERMS(String orgPerms) {
-        _is_ROLE_ADMIN_or_checkPermAffiliation(orgPerms, 'INST_ADM')
+        _is_ROLE_ADMIN_or_checkOrgPermAndUserAffiliation(orgPerms, 'INST_ADM')
     }
 }
