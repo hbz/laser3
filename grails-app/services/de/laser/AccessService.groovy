@@ -179,8 +179,7 @@ class AccessService {
         boolean check = false
 
         if (orgPerms) {
-            Org ctx = contextOrg
-            def oss = OrgSetting.get(ctx, OrgSetting.KEYS.CUSTOMER_TYPE)
+            def oss = OrgSetting.get(contextOrg, OrgSetting.KEYS.CUSTOMER_TYPE)
 
             Role fakeRole
             boolean isOrgBasicMemberView = false
@@ -188,9 +187,10 @@ class AccessService {
                 isOrgBasicMemberView = RequestContextHolder.currentRequestAttributes().params.orgBasicMemberView
             } catch (IllegalStateException e) {}
 
-            // if (isOrgBasicMemberView && ctx.isCustomerType_Consortium()) {
-            if(isOrgBasicMemberView && (oss.getValue() == Role.findAllByAuthority('ORG_CONSORTIUM_BASIC') || oss.getValue() == Role.findAllByAuthority('ORG_CONSORTIUM_PRO'))){
+            if (isOrgBasicMemberView && contextOrg.isCustomerType_Consortium()) {
+            // if(isOrgBasicMemberView && (oss.getValue() == Role.findAllByAuthority('ORG_CONSORTIUM_BASIC') || oss.getValue() == Role.findAllByAuthority('ORG_CONSORTIUM_PRO'))){
                 fakeRole = Role.findByAuthority('ORG_INST_BASIC')
+                // TODO: ERMS-4920 - ORG_INST_BASIC or ORG_INST_PRO
             }
 
             if (oss != OrgSetting.SETTING_NOT_FOUND) {
