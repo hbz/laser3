@@ -17,7 +17,7 @@
 
 %>
 
-<g:if test="${accessService.checkPerm("ORG_BASIC_MEMBER,ORG_CONSORTIUM_PRO")}">
+<g:if test="${accessService.checkPerm(CustomerTypeService.PERMS_INST_BASIC_CONSORTIUM_PRO)}">
     <ui:card message="${controllerName == 'survey' ? 'surveyConfigsInfo.docs' : 'license.documents'}" class="documents la-js-hideable ${css_class}" href="${controllerName == 'survey' ? '#modalCreateDocument' : ''}" editable="${(controllerName == 'survey')  ? (actionName == 'show') : (editable || editable2)}">
         <g:each in="${baseItems}" var="docctx">
            <g:if test="${docctx.isDocAFile() && (docctx.status?.value != 'Deleted')}">

@@ -368,7 +368,7 @@
 
                                         <div class="item"
                                              data-value="remove">${message(code: 'default.remove.label', args: [selected_label])}</div>
-                                        <g:if test="${institution.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO']}">
+                                        <g:if test="${institution.isCustomerType_Consortium()}">
                                             <div class="item"
                                                  data-value="removeWithChildren">${message(code: 'subscription.details.remove.withChildren.label')}</div>
                                         </g:if>

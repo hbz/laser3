@@ -680,7 +680,7 @@ class FinanceService {
                 case "own":
                     //exclude double listing of cost items belonging to member subscriptions
                     String instanceFilter = ""
-                    if(org.hasPerm("ORG_CONSORTIUM")) {
+                    if (org.isCustomerType_Consortium()) {
                         instanceFilter = " and sub.instanceOf = null "
                     }
                     String subJoin = filterQuery.subFilter || instanceFilter ? "join ci.sub sub " : ""
@@ -698,7 +698,7 @@ class FinanceService {
                         ownFilter.remove('filterSubStatus')
                         String queryWithoutSub = "select ci from CostItem ci left join ci.costItemElement cie left join ci.costItemElementConfiguration ciec " +
                                 "where ci.owner = :org and ci.sub = null ${genericExcludes+filterQuery.ciFilter} "+
-                                "order by "+configMap.sortConfig.ownSort+" "+configMap.sortConfig.ownOrder + ' ciec.value desc, cie.value_' + LocaleUtils.getCurrentLang()
+                                "order by "+configMap.sortConfig.ownSort+" "+configMap.sortConfig.ownOrder + ', ciec.value desc, cie.value_' + LocaleUtils.getCurrentLang()
                         prf.setBenchmark("execute second own query")
                         ownSubscriptionCostItems.addAll(CostItem.executeQuery(queryWithoutSub,[org:org]+genericExcludeParams+ownFilter))
                     }
@@ -1204,9 +1204,9 @@ class FinanceService {
                 if(subIdentifier) {
                     //fetch possible identifier namespaces
                     List<Subscription> subMatches
-                    if(accessService.checkPerm("ORG_CONSORTIUM"))
+                    if(accessService.checkPerm("ORG_CONSORTIUM_BASIC"))
                         subMatches = Subscription.executeQuery("select oo.sub from OrgRole oo where (cast(oo.sub.id as string) = :idCandidate or oo.sub.globalUID = :idCandidate) and oo.org = :org and oo.roleType in :roleType",[idCandidate:subIdentifier,org:costItem.owner,roleType:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER]])
-                    else if(accessService.checkPerm("ORG_INST"))
+                    else if(accessService.checkPerm("ORG_INST_PRO"))
                         subMatches = Subscription.executeQuery("select oo.sub from OrgRole oo where (cast(oo.sub.id as string) = :idCandidate or oo.sub.globalUID = :idCandidate) and oo.org = :org and oo.roleType in :roleType",[idCandidate:subIdentifier,org:costItem.owner,roleType:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER]])
                     if(!subMatches)
                         mappingErrorBag.noValidSubscription = subIdentifier

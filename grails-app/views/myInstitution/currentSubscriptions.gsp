@@ -1,4 +1,4 @@
-<%@ page import="de.laser.interfaces.CalculatedType;de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.CustomerTypeService; de.laser.interfaces.CalculatedType;de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
 
 <laser:htmlStart message="myinst.currentSubscriptions.label" serviceInjection="true" />
 
@@ -39,7 +39,7 @@
                 </g:else>
             </ui:exportDropdown>
 
-            <g:if test="${accessService.checkPermX('ORG_INST,ORG_CONSORTIUM', 'ROLE_ADMIN')}">
+            <g:if test="${accessService.is_ROLE_ADMIN_or_has_PERMS( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )}">
                 <laser:render template="actions" />
             </g:if>
         </ui:controlButtons>

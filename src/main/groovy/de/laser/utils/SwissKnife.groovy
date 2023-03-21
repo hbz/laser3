@@ -147,11 +147,11 @@ class SwissKnife {
 
             if (!check) {
                 if (attrs.affiliation && attrs.orgPerm) {
-                    if (user.hasAffiliation(attrs.affiliation) && accessService.checkPerm(attrs.orgPerm)) {
+                    if (user.is_ROLE_ADMIN_or_hasAffiliation(attrs.affiliation) && accessService.checkPerm(attrs.orgPerm)) {
                         check = true
                     }
                 }
-                else if (attrs.affiliation && user.hasAffiliation(attrs.affiliation)) {
+                else if (attrs.affiliation && user.is_ROLE_ADMIN_or_hasAffiliation(attrs.affiliation)) {
                     check = true
                 }
                 else if (attrs.orgPerm && accessService.checkPerm(attrs.orgPerm)) {
@@ -159,7 +159,7 @@ class SwissKnife {
                 }
 
                 if (attrs.affiliation && attrs.affiliationOrg && check) {
-                    check = user.hasAffiliationForForeignOrg(attrs.affiliation, attrs.affiliationOrg)
+                    check = user.is_ROLE_ADMIN_or_hasAffiliationForForeignOrg(attrs.affiliation, attrs.affiliationOrg)
                 }
             }
             checkMap.put(lsmnic, check)

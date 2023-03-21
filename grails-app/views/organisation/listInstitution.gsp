@@ -1,3 +1,4 @@
+<%@ page import="de.laser.CustomerTypeService" %>
 <laser:htmlStart message="menu.public.all_insts" serviceInjection="true"/>
         <g:set var="entityName" value="${message(code: 'org.label')}" />
 
@@ -13,7 +14,7 @@
         </ui:exportDropdown>
 
         <%
-            editable = (editable && accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')) || contextService.getUser()?.hasRole('ROLE_ADMIN') || accessService.checkConstraint_ORG_COM_EDITOR()
+            editable = (editable && accessService.checkPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)) || contextService.getUser().hasMinRole('ROLE_ADMIN') || accessService.is_ORG_COM_EDITOR()
         %>
         <g:if test="${editable}">
             <laser:render template="actions" />

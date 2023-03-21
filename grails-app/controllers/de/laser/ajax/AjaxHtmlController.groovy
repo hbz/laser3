@@ -1,6 +1,7 @@
 package de.laser.ajax
 
 import de.laser.AlternativeName
+import de.laser.CustomerTypeService
 import de.laser.DocContext
 import de.laser.GenericOIDService
 import de.laser.PendingChangeService
@@ -73,7 +74,6 @@ import de.laser.workflow.WfTaskPrototype
 import de.laser.workflow.WfChecklist
 import de.laser.workflow.WfCheckpoint
 import de.laser.workflow.WorkflowHelper
-import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.poi.ss.usermodel.Workbook
 import org.mozilla.universalchardet.UniversalDetector
@@ -164,7 +164,7 @@ class AjaxHtmlController {
         result.acceptedOffset = params.acceptedOffset ? params.int("acceptedOffset") : result.offset
         result.pendingOffset = params.pendingOffset ? params.int("pendingOffset") : result.offset
         def periodInDays = result.user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)
-        Map<String, Object> pendingChangeConfigMap = [contextOrg:result.institution,consortialView:accessService.checkPerm(result.institution,"ORG_CONSORTIUM"),periodInDays:periodInDays,max:result.max,acceptedOffset:result.acceptedOffset, pendingOffset: result.pendingOffset]
+        Map<String, Object> pendingChangeConfigMap = [contextOrg:result.institution,consortialView:accessService.checkPerm(result.institution,"ORG_CONSORTIUM_BASIC"),periodInDays:periodInDays,max:result.max,acceptedOffset:result.acceptedOffset, pendingOffset: result.pendingOffset]
         Map<String, Object> changes = pendingChangeService.getChanges(pendingChangeConfigMap)
         changes.max = result.max
         changes.editable = result.editable
@@ -239,12 +239,12 @@ class AjaxHtmlController {
         Org contextOrg = contextService.getOrg()
         result.contextCustomerType = contextOrg.getCustomerType()
         result.institution = contextOrg
-        result.showConsortiaFunctions = result.contextCustomerType in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO']
+        result.showConsortiaFunctions = contextOrg.isCustomerType_Consortium()
         result.roleLinks = result.subscription.orgRelations.findAll { OrgRole oo -> !(oo.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA]) }
         result.roleObject = result.subscription
         result.roleRespValue = 'Specific subscription editor'
         result.editmode = result.subscription.isEditableBy(contextService.getUser())
-        result.accessConfigEditable = accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR') && result.subscription.getSubscriber().id == contextOrg.id)
+        result.accessConfigEditable = accessService.checkPermAffiliation('ORG_INST_BASIC','INST_EDITOR') || (accessService.checkPermAffiliation('ORG_CONSORTIUM_BASIC','INST_EDITOR') && result.subscription.getSubscriber().id == contextOrg.id)
         render template: '/subscription/packages', model: result
     }
 
@@ -318,7 +318,7 @@ class AjaxHtmlController {
         ctrlResult.result.costPerUse = [:]
         if(ctrlResult.result.subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION) {
             ctrlResult.result.costPerUse.consortialData = subscriptionControllerService.calculateCostPerUse(ctrlResult.result, "consortial")
-            if(ctrlResult.result.institution.getCustomerType() == "ORG_INST") {
+            if (ctrlResult.result.institution.isCustomerType_Inst_Pro()) {
                 ctrlResult.result.costPerUse.ownData = subscriptionControllerService.calculateCostPerUse(ctrlResult.result, "own")
             }
         }
@@ -527,7 +527,7 @@ class AjaxHtmlController {
         result.addAddresses = params.showAddresses == "true" ? true : ''
         result.org = params.org ? Org.get(Long.parseLong(params.org)) : null
         result.functions = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_CONTACT_PRS, RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_OA_CONTACT]
-        if(result.contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO']){
+        if(result.contextOrg.isCustomerType_Consortium()){
             result.functions << RDStore.PRS_FUNC_GASCO_CONTACT
         }
         result.positions = PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION) - [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS]
@@ -590,7 +590,7 @@ class AjaxHtmlController {
         if (result.personInstance){
             result.org = result.personInstance.getBelongsToOrg()
             result.functions = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_CONTACT_PRS, RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_OA_CONTACT]
-            if(contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO']){
+            if(contextOrg.isCustomerType_Consortium()){
                 result.functions << RDStore.PRS_FUNC_GASCO_CONTACT
             }
             result.positions = PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION) - [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS]
@@ -697,9 +697,9 @@ class AjaxHtmlController {
      * Retrieves the filter history and bookmarks for the given reporting view.
      * If a command is being submitted, the cache is being updated. The updated view is being rendered afterwards
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM_PRO", affil="INST_USER")
+    @DebugInfo(perm=CustomerTypeService.PERMS_PRO, affil="INST_USER")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM_PRO", "INST_USER")
+        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER")
     })
     def reporting() {
         Map<String, Object> result = [
@@ -748,9 +748,9 @@ class AjaxHtmlController {
     /**
      * Retrieves the details for the given charts
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM_PRO", affil="INST_USER")
+    @DebugInfo(perm=CustomerTypeService.PERMS_PRO, affil="INST_USER")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM_PRO", "INST_USER")
+        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER")
     })
     def chartDetails() {
         // TODO - SESSION TIMEOUTS
@@ -785,9 +785,9 @@ class AjaxHtmlController {
      *     <li>PDF</li>
      * </ul>
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM_PRO", affil="INST_USER")
+    @DebugInfo(perm=CustomerTypeService.PERMS_PRO, affil="INST_USER")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM_PRO", "INST_USER")
+        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER")
     })
     def chartDetailsExport() {
 
@@ -951,9 +951,9 @@ class AjaxHtmlController {
      *     <li>PDF</li>
      * </ul>
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM_PRO", affil="INST_USER")
+    @DebugInfo(perm=CustomerTypeService.PERMS_PRO, affil="INST_USER")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM_PRO", "INST_USER")
+        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER")
     })
     def chartQueryExport() {
 

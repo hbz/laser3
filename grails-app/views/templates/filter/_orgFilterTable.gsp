@@ -272,7 +272,7 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('name')}">
                 <th scope="row" class="la-th-column la-main-object">
                     <div class="la-flexbox">
-                        <g:if test="${org.getCustomerType() in ['ORG_INST']}">
+                        <g:if test="${org.isCustomerType_Inst_Pro()}">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                                   data-content="${org.getCustomerTypeI10n()}">
                                 <i class="chess rook grey la-list-icon icon"></i>
@@ -405,7 +405,7 @@
                         if (users)
                             instAdminIcon = '<i class="large green check icon"></i>'
                     %>
-                    <g:if test="${contextService.getUser().hasAffiliation('INST_ADM') || SpringSecurityUtils.ifAllGranted("ROLE_ADMIN")}">
+                    <g:if test="${contextService.getUser().is_ROLE_ADMIN_or_hasAffiliation('INST_ADM')}">
                         <br /><g:link controller="organisation" action="users"
                                     params="${[id: org.id]}">${raw(instAdminIcon)}</g:link>
                     </g:if>

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.OrgSubjectGroup; de.laser.OrgRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Org; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting;de.laser.Combo; de.laser.Contact; de.laser.remote.ApiSource" %>
+<%@ page import="de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.OrgSubjectGroup; de.laser.OrgRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Org; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting;de.laser.Combo; de.laser.Contact; de.laser.remote.ApiSource" %>
 
 <g:set var="wekbAPI" value="${ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"/>
 
@@ -65,7 +65,7 @@
                                     owner="${orgInstance}" field="name"
                                     overwriteEditable="${editable && orgInstanceRecord == null}"/>
 
-                            <g:if test="${orgInstance.getCustomerType() == 'ORG_INST'}">
+                            <g:if test="${orgInstance.isCustomerType_Inst_Pro()}">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                                       data-content="${orgInstance.getCustomerTypeI10n()}">
                                     <i class="chess rook grey icon"></i>
@@ -150,7 +150,7 @@
                             <br />&nbsp<br />&nbsp<br />
                         </dd>
                     </dl>
-                    <g:if test="${orgInstance.getCustomerType() == 'ORG_INST'}">
+                    <g:if test="${orgInstance.isCustomerType_Inst_Pro()}">
                         <dl>
                             <dt>
                                 <g:message code="org.linkResolverBase.label"/>
@@ -195,7 +195,7 @@
                 </div>
             </div><!-- .card -->
 
-            <g:if test="${orgInstance.getCustomerType() in ['ORG_BASIC_MEMBER','ORG_INST']}">
+            <g:if test="${orgInstance.isCustomerType_Inst()}">
                 <div class="ui card">
                     <div class="content">
                         <dl>
@@ -368,7 +368,7 @@
                 </div>
             </g:if>
 
-            <g:if test="${orgInstance.getCustomerType() in ['ORG_INST', 'ORG_BASIC_MEMBER']}">
+            <g:if test="${orgInstance.isCustomerType_Inst()}">
                 <div class="ui card">
                     <div class="content">
                         <dl>
@@ -474,11 +474,11 @@
             <%--
             <div class="ui card">
                 <div class="content">
-                    <g:if test="${orgInstance.getCustomerType() in ['ORG_INST', 'ORG_BASIC_MEMBER']}">
+                    <g:if test="${orgInstance.isCustomerType_Inst()}">
                         <h2 class="ui header"><g:message code="org.contactpersons.and.addresses.label"/></h2>
                     </g:if>
 
-                        <g:if test="${(orgInstance.id == institution.id && user.hasAffiliation('INST_EDITOR'))}">
+                        <g:if test="${(orgInstance.id == institution.id && user.is_ROLE_ADMIN_or_hasAffiliation('INST_EDITOR'))}">
                             <g:link action="myPublicContacts" controller="organisation" params="[id: orgInstance.id, tab: 'contacts']"
                                     class="ui button">${message('code': 'org.edit.contactsAndAddresses')}</g:link>
                         </g:if>
@@ -490,7 +490,7 @@
                             <dd>
                             <laser:render template="publicContacts" model="[isProviderOrAgency: isProviderOrAgency, existsWekbRecord: orgInstanceRecord != null]"/>
 
-                            <g:if test="${isProviderOrAgency && accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN') && !orgInstanceRecord}">
+                            <g:if test="${isProviderOrAgency && accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_BASIC ) && !orgInstanceRecord}">
                                 <div class="ui list">
 
                                     <div class="item">
@@ -727,7 +727,7 @@
                         --%>
             </g:if>
 
-                <g:if test="${(user.isAdmin() || institution.getCustomerType()  in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO']) && (institution != orgInstance)}">
+                <g:if test="${(user.hasMinRole('ROLE_ADMIN') || institution.isCustomerType_Consortium()) && (institution != orgInstance)}">
                     <g:if test="${orgInstance.createdBy || orgInstance.legallyObligedBy}">
                         <div class="ui card">
                             <div class="content">
@@ -786,7 +786,7 @@
                     </g:if>
                 </g:if>
 
-            <g:if test="${accessService.checkPerm("ORG_INST,ORG_CONSORTIUM")}">
+            <g:if test="${accessService.checkPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
                 <div id="new-dynamic-properties-block">
                     <laser:render template="properties" model="${[
                             orgInstance   : orgInstance,
@@ -803,14 +803,14 @@
             <div id="container-contacts">
                 <div class="ui card">
                     <div class="content">
-                        <g:if test="${orgInstance.getCustomerType() in ['ORG_INST', 'ORG_BASIC_MEMBER']}">
+                        <g:if test="${orgInstance.isCustomerType_Inst()}">
                             <h2 class="ui header"><g:message code="org.contactpersons.and.addresses.label"/></h2>
                         </g:if>
                         <g:else>
                             <h2 class="ui header"><g:message code="org.contacts.label"/></h2>
                         </g:else>
 
-                        <g:if test="${(orgInstance.id == institution.id && user.hasAffiliation('INST_EDITOR'))}">
+                        <g:if test="${(orgInstance.id == institution.id && user.is_ROLE_ADMIN_or_hasAffiliation('INST_EDITOR'))}">
                             <g:link action="myPublicContacts" controller="organisation" params="[id: orgInstance.id, tab: 'contacts']"
                                     class="ui button">${message('code': 'org.edit.contactsAndAddresses')}</g:link>
                         </g:if>
@@ -964,7 +964,7 @@
                             <g:set var="techSupports" value="${orgInstance.getContactPersonsByFunctionType(true, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, orgInstanceRecord != null)}"/>
                             <g:set var="serviceSupports" value="${orgInstance.getContactPersonsByFunctionType(true, RDStore.PRS_FUNC_SERVICE_SUPPORT, orgInstanceRecord != null)}"/>
                             <g:set var="metadataContacts" value="${orgInstance.getContactPersonsByFunctionType(true, RDStore.PRS_FUNC_METADATA, orgInstanceRecord != null)}"/>
-                            <g:if test="${isProviderOrAgency && accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN') && !orgInstanceRecord}">
+                            <g:if test="${isProviderOrAgency && accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_BASIC ) && !orgInstanceRecord}">
                                 <tr>
                                     <td>
                                         <a href="#createPersonModal" class="ui button" data-ui="modal"
@@ -1007,9 +1007,9 @@
                                                                         <g:each in="${prs.contacts.toSorted()}" var="contact">
                                                                             <g:if test="${contact.contentType && contact.contentType.value in ['E-Mail', 'Mail', 'Url', 'Phone', 'Mobil', 'Fax']}">
                                                                                 <laser:render template="/templates/cpa/contact" model="${[
-                                                                                        overwriteEditable   : (isProviderOrAgency && orgInstanceRecord == null && accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN')),
+                                                                                        overwriteEditable   : (isProviderOrAgency && orgInstanceRecord == null && accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_BASIC )),
                                                                                         contact             : contact,
-                                                                                        tmplShowDeleteButton: (isProviderOrAgency && orgInstanceRecord == null && accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN'))
+                                                                                        tmplShowDeleteButton: (isProviderOrAgency && orgInstanceRecord == null && accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_BASIC ))
                                                                                 ]}"/>
                                                                             </g:if>
                                                                         </g:each>
@@ -1045,9 +1045,9 @@
                                                                         <g:each in="${prs.contacts.toSorted()}" var="contact">
                                                                             <g:if test="${contact.contentType && contact.contentType.value in ['E-Mail', 'Mail', 'Url', 'Phone', 'Mobil', 'Fax']}">
                                                                                 <laser:render template="/templates/cpa/contact" model="${[
-                                                                                        overwriteEditable   : (isProviderOrAgency && orgInstanceRecord == null && accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN')),
+                                                                                        overwriteEditable   : (isProviderOrAgency && orgInstanceRecord == null && accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_BASIC )),
                                                                                         contact             : contact,
-                                                                                        tmplShowDeleteButton: (isProviderOrAgency && orgInstanceRecord == null && accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN'))
+                                                                                        tmplShowDeleteButton: (isProviderOrAgency && orgInstanceRecord == null && accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_BASIC ))
                                                                                 ]}"/>
                                                                             </g:if>
                                                                         </g:each>
@@ -1083,9 +1083,9 @@
                                                                         <g:each in="${prs.contacts.toSorted()}" var="contact">
                                                                             <g:if test="${contact.contentType && contact.contentType.value in ['E-Mail', 'Mail', 'Url', 'Phone', 'Mobil', 'Fax']}">
                                                                                 <laser:render template="/templates/cpa/contact" model="${[
-                                                                                        overwriteEditable   : (isProviderOrAgency && orgInstanceRecord == null && accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN')),
+                                                                                        overwriteEditable   : (isProviderOrAgency && orgInstanceRecord == null && accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_BASIC )),
                                                                                         contact             : contact,
-                                                                                        tmplShowDeleteButton: (isProviderOrAgency && orgInstanceRecord == null && accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN'))
+                                                                                        tmplShowDeleteButton: (isProviderOrAgency && orgInstanceRecord == null && accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_BASIC ))
                                                                                 ]}"/>
                                                                             </g:if>
                                                                         </g:each>
@@ -1211,7 +1211,7 @@
         func();
     }--%>
 
-    <g:if test="${orgInstance.getCustomerType() in ['ORG_INST', 'ORG_BASIC_MEMBER']}">
+    <g:if test="${orgInstance.isCustomerType_Inst()}">
         JSPC.app.showRegionsdropdown( $("#country").editable('getValue', true) );
     </g:if>
     $('#addAltname').click(function() {

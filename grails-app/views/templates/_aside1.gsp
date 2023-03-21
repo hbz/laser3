@@ -17,7 +17,7 @@
         }
     }
 %>
-<g:if test="${accessService.checkPerm("ORG_INST,ORG_CONSORTIUM")}">
+<g:if test="${accessService.checkPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
     <div id="container-tasks">
         <laser:render template="/templates/tasks/card" model="${[ownobj:ownobj, owntp:owntp, css_class:'', parentAtChild: parentAtChild]}"  />
     </div>

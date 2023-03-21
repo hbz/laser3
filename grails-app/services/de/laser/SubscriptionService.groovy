@@ -76,7 +76,7 @@ class SubscriptionService {
         prf.setBenchmark('consortia')
         result.availableConsortia = Combo.executeQuery("select c.toOrg from Combo as c where c.fromOrg = :fromOrg", [fromOrg: contextOrg])
 
-        List<Role> consRoles = Role.findAll { authority in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO'] }
+        List<Role> consRoles = Role.findAll { authority in ['ORG_CONSORTIUM_BASIC', 'ORG_CONSORTIUM_PRO'] }
         prf.setBenchmark('all consortia')
         result.allConsortia = Org.executeQuery(
                 """select o from Org o, OrgSetting os_ct, OrgSetting os_gs where 
@@ -97,7 +97,7 @@ class SubscriptionService {
         viableOrgs.add(contextOrg)
 
         String consortiaFilter = ''
-        if(contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO'])
+        if(contextOrg.isCustomerType_Consortium())
             consortiaFilter = 'and s.instanceOf = null'
 
         Set<Year> availableReferenceYears = Subscription.executeQuery('select s.referenceYear from OrgRole oo join oo.sub s where s.referenceYear != null and oo.org = :contextOrg '+consortiaFilter+' order by s.referenceYear', [contextOrg: contextOrg])
@@ -113,7 +113,7 @@ class SubscriptionService {
             date_restriction = sdf.parse(params.validOn)
         }
 
-        result.editable = accessService.checkMinUserOrgRole(contextUser, contextOrg, 'INST_EDITOR')
+        result.editable = accessService.checkMinUserOrgRole_ctxConstraint(contextUser, contextOrg, 'INST_EDITOR')
 
         if (! params.status) {
             if (params.isSiteReloaded != "yes") {
@@ -151,7 +151,7 @@ class SubscriptionService {
         /* deactivated as statistics key is submitted nowhere, as of July 16th, '20
         if (OrgSetting.get(contextOrg, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID) instanceof OrgSetting){
             result.statsWibid = contextOrg.getIdentifierByType('wibid')?.value
-            result.usageMode = accessService.checkPerm("ORG_CONSORTIUM") ? 'package' : 'institution'
+            result.usageMode = accessService.checkPerm("ORG_CONSORTIUM_BASIC") ? 'package' : 'institution'
         }
          */
         prf.setBenchmark('end properties')
@@ -454,7 +454,7 @@ class SubscriptionService {
             params.joinQuery = "join s.orgRelations so"
         }
 
-        if(accessService.checkPerm("ORG_CONSORTIUM")) {
+        if(accessService.checkPerm("ORG_CONSORTIUM_BASIC")) {
             tmpQ = _getSubscriptionsConsortiaQuery(params)
             result.addAll(Subscription.executeQuery(queryStart + tmpQ[0], tmpQ[1]))
 
@@ -483,7 +483,7 @@ class SubscriptionService {
         List result = []
         List tmpQ
 
-        if(accessService.checkPerm("ORG_CONSORTIUM")) {
+        if(accessService.checkPerm("ORG_CONSORTIUM_BASIC")) {
             tmpQ = _getSubscriptionsConsortiaQuery(params)
             result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
             if (params.showSubscriber) {
@@ -517,7 +517,7 @@ class SubscriptionService {
         List result = []
         List tmpQ
 
-        if(accessService.checkPerm("ORG_INST")) {
+        if(accessService.checkPerm("ORG_INST_PRO")) {
 
             tmpQ = _getSubscriptionsConsortialLicenseQuery(params)
             result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
@@ -538,7 +538,7 @@ class SubscriptionService {
         List result = []
         List tmpQ
 
-        if(accessService.checkPerm("ORG_INST")) {
+        if(accessService.checkPerm("ORG_INST_PRO")) {
 
             tmpQ = _getSubscriptionsConsortialLicenseQuery(params)
             result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
@@ -1906,7 +1906,7 @@ class SubscriptionService {
         Org contextOrg = contextService.getOrg()
         RefdataValue comboType
         String[] parentSubType
-        if(accessService.checkPerm("ORG_CONSORTIUM")) {
+        if(accessService.checkPerm("ORG_CONSORTIUM_BASIC")) {
             comboType = RDStore.COMBO_TYPE_CONSORTIUM
             parentSubType = [RDStore.SUBSCRIPTION_KIND_CONSORTIAL.getI10n('value')]
         }
@@ -1936,7 +1936,7 @@ class SubscriptionService {
                 case "konsortiallizenz":
                 case "parent subscription":
                 case "consortial subscription":
-                    if(accessService.checkPerm("ORG_CONSORTIUM"))
+                    if(accessService.checkPerm("ORG_CONSORTIUM_BASIC"))
                         colMap.instanceOf = c
                     break
                 case "status": colMap.status = c
@@ -2310,7 +2310,7 @@ class SubscriptionService {
                         kind: genericOIDService.resolveOID(entry.kind),
                         form: genericOIDService.resolveOID(entry.form),
                         resource: genericOIDService.resolveOID(entry.resource),
-                        type: (contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO']) ? RDStore.SUBSCRIPTION_TYPE_CONSORTIAL : RDStore.SUBSCRIPTION_TYPE_LOCAL,
+                        type: (contextOrg.isCustomerType_Consortium()) ? RDStore.SUBSCRIPTION_TYPE_CONSORTIAL : RDStore.SUBSCRIPTION_TYPE_LOCAL,
                         isPublicForApi: entry.isPublicForApi,
                         hasPerpetualAccess: entry.hasPerpetualAccess,
                         hasPublishComponent: entry.hasPublishComponent,
@@ -2331,7 +2331,7 @@ class SubscriptionService {
                     sub.refresh() //needed for dependency processing
                     //create the org role associations
                     RefdataValue parentRoleType, memberRoleType
-                    if(accessService.checkPerm("ORG_CONSORTIUM")) {
+                    if(accessService.checkPerm("ORG_CONSORTIUM_BASIC")) {
                         parentRoleType = RDStore.OR_SUBSCRIPTION_CONSORTIA
                         memberRoleType = RDStore.OR_SUBSCRIBER_CONS
                     }

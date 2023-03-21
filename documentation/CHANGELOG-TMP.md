@@ -7,6 +7,18 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4914    21.03.2023  rc-3.0  3.0.5       Andreas Bug         fehlendes Komma in der Abfrage ergänzt
+
+4860    21.03.2023  rc-3.0  3.0.5       Andreas Bug         Proxy verhinderte den korrekten Aufbau der Merkmalsliste
+
+--      20.03.2023  rc-3.0  3.0.5       Andreas Bug         Entferne auch Bestandstitel ohne Status
+
+4917    20.03.2023  rc-3.0  3.0.5       Andreas Bug         fehlerhafte Übertragung der Attribute nach Verlängerung
+
+4916    20.03.2023  rc-3.0  3.0.5       Andreas Bug         hasPublishComponent wurde bei Übertrag von Teilnehmerlizenzen nicht angelegt
+
+4869    20.03.2023  rc-3.0  3.0.5       Andreas Bug         API-Version 1.7 nach RC migriert, Bugs behoben
+
 4842    17.03.2023  dev     3.1         Moe     Feature     Optimierung Reminder-Mail in Umfragen
 
 4875    14.03.2023  dev     3.1         David   Feature     Breadcumb / Seitentitel für Orgs aufräumen
@@ -27,7 +39,11 @@
 
 4738    07.03.2023  dev     3.1         Moe     Feature     Neue Kunden-Typen -> Konsortialstelle Basis
 
+4859    22.02.2023  dev     3.1         Andreas Bug         Umwandlungsvorschrift bei Tausender/Dezimaltrenner korrigiert
+
 --      22.02.2023  rc-3.0  3.0.5       Andreas Bug         Umstrukturierungen für Database Reports
+
+4843    16.02.2023  dev     3.0.5       David   Feature     Database Migration Plugin aktualisieren
 
 4843    16.02.2023  dev     3.1         David   Feature     Database Migration Plugin aktualisieren
 

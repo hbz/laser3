@@ -38,7 +38,7 @@ class YodaService {
      */
     boolean showDebugInfo() {
         //enhanced as of ERMS-829
-        return ( SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_YODA') || ConfigMapper.getShowDebugInfo() )
+        return ( SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || ConfigMapper.getShowDebugInfo() )
     }
 
     /**

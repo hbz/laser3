@@ -18,7 +18,6 @@ import de.laser.utils.LocaleUtils
 import grails.plugins.orm.auditable.Auditable
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
-import javax.persistence.Transient
 import java.text.Normalizer
 import java.text.SimpleDateFormat
 
@@ -431,7 +430,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
                 return cons || licseeCons || licsee
             }
             if (perm == 'edit') {
-                if(BeanStore.getAccessService().checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN'))
+                if(BeanStore.getAccessService().is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC ))
                     return cons || licsee
             }
         }

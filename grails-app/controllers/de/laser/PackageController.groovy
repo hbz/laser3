@@ -247,7 +247,7 @@ class PackageController {
         //result.visibleOrgs.sort { it.org.sortname }
 
         List<RefdataValue> roleTypes = [RDStore.OR_SUBSCRIBER]
-        if (accessService.checkPerm('ORG_CONSORTIUM')) {
+        if (accessService.checkPerm('ORG_CONSORTIUM_BASIC')) {
             roleTypes.addAll([RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS])
         }
 
@@ -268,7 +268,7 @@ class PackageController {
 
         if (OrgSetting.get(result.contextOrg, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID) instanceof OrgSetting) {
             result.statsWibid = result.contextOrg.getIdentifierByType('wibid')?.value
-            result.usageMode = accessService.checkPerm("ORG_CONSORTIUM") ? 'package' : 'institution'
+            result.usageMode = accessService.checkPerm("ORG_CONSORTIUM_BASIC") ? 'package' : 'institution'
             result.packageIdentifier = packageInstance.getIdentifierByType('isil')?.value
         }
 
@@ -643,8 +643,8 @@ class PackageController {
      * the we:kb data will be fetched and data mirrored prior to linking the package
      * to the subscription
      */
-    @DebugInfo(test = 'hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
+    @DebugInfo(test = 'is_ROLE_ADMIN_or_hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_EDITOR") })
     def processLinkToSub() {
         Map<String, Object> result = [:]
         result.pkg = Package.get(params.id)

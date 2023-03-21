@@ -5,7 +5,7 @@
     <laser:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
     <ui:controlButtons>
-        <g:if test="${accessService.checkMinUserOrgRole(user,institution,"INST_EDITOR")}">
+        <g:if test="${accessService.checkMinUserOrgRole_ctxConstraint(user,institution,"INST_EDITOR")}">
             <laser:render template="actions" />
         </g:if>
     </ui:controlButtons>
@@ -145,7 +145,7 @@
                             </span>
                         </g:if>
 
-                        <g:if test="${subscr.getCustomerType() in ['ORG_INST']}">
+                        <g:if test="${subscr.isCustomerType_Inst_Pro()}">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                                   data-content="${subscr.getCustomerTypeI10n()}">
                                 <i class="chess rook grey icon"></i>

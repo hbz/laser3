@@ -43,7 +43,7 @@
 
     <g:if test="${params.descr in [PropertyDefinition.ORG_PROP]}">
         <div class="two fields">
-            <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
+            <g:if test="${accessService.checkPerm('ORG_CONSORTIUM_BASIC')}">
 
                 <div class="field">
                     <div class="inline fields la-filter-inline">

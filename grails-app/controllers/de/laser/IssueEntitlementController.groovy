@@ -32,8 +32,8 @@ class IssueEntitlementController {
      * Shows the given issue entitlement details
      * @return
      */
-    @DebugInfo(test = 'hasAffiliation("INST_USER")', wtc = DebugInfo.NOT_TRANSACTIONAL)
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    @DebugInfo(test = 'is_ROLE_ADMIN_or_hasAffiliation("INST_USER")', wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @Secured(closure = { ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_USER") })
     @Check404()
     def show() {
       Map<String, Object> result = [:]
@@ -69,7 +69,7 @@ class IssueEntitlementController {
           result.institutional_usage_identifier = OrgSetting.get(org, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
           if (result.institutional_usage_identifier instanceof OrgSetting && fsresult.usage) {
               result.statsWibid = org.getIdentifierByType('wibid')?.value
-              result.usageMode = org.hasPerm("ORG_CONSORTIUM") ? 'package' : 'institution'
+              result.usageMode = org.isCustomerType_Consortium() ? 'package' : 'institution'
               result.usage = fsresult?.usage
               result.x_axis_labels = fsresult?.x_axis_labels
               result.y_axis_labels = fsresult?.y_axis_labels
@@ -119,8 +119,8 @@ class IssueEntitlementController {
       result
     }
 
-    @DebugInfo(test='hasAffiliation("INST_EDITOR")', wtc = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
+    @DebugInfo(test='is_ROLE_ADMIN_or_hasAffiliation("INST_EDITOR")', wtc = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = { ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_EDITOR") })
     def delete() {
         IssueEntitlement.withTransaction { TransactionStatus ts ->
             IssueEntitlement issueEntitlementInstance = IssueEntitlement.get(params.id)

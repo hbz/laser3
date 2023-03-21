@@ -17,7 +17,7 @@
         }
     }
 
-    boolean editable2 = accessService.checkMinUserOrgRole(contextService.getUser(),contextService.getOrg(),"INST_EDITOR")
+    boolean editable2 = accessService.checkMinUserOrgRole_ctxConstraint(contextService.getUser(),contextService.getOrg(),"INST_EDITOR")
 %>
 
     <ui:card message="license.notes" class="notes la-js-hideable ${css_class}" href="#modalCreateNote" editable="${editable || editable2}">

@@ -284,3 +284,13 @@ h1.header.icon > i.trophy {
 /* -- simple format helper -- */
 
 *.sf_underline  { text-decoration: underline dotted; }
+
+/* Temp Identifier Bugfix for 3.0, for 3.1 already fixed in LESS Structure - has to delete later */
+
+.ui.list > .item.js-copyTriggerParent {
+    display: flex!important;
+}
+
+.ui.list > .item.js-copyTriggerParent .js-copyTrigger {
+    display: inline-flex !important;
+}

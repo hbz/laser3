@@ -896,7 +896,7 @@ class DeletionService {
     boolean deleteTIPPsCascaded(Collection<TitleInstancePackagePlatform> tippsToDelete) {
         log.debug "processing tipps (${tippsToDelete.collect { TitleInstancePackagePlatform tipp -> tipp.id}})"
         Map<String,Collection<TitleInstancePackagePlatform>> toDelete = [toDelete:tippsToDelete]
-        Map<String,Collection<IssueEntitlement>> delIssueEntitlements = [toDelete:IssueEntitlement.findAllByTippInListAndStatus(tippsToDelete, RDStore.TIPP_STATUS_REMOVED)]
+        Map<String,Collection<IssueEntitlement>> delIssueEntitlements = [toDelete:IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp in (:toDelete) and (ie.status = :removed or ie.status = null)', [toDelete: tippsToDelete, removed: RDStore.TIPP_STATUS_REMOVED])]
         TitleInstancePackagePlatform.withTransaction { status ->
             try {
                 log.info("${PendingChange.executeUpdate('delete from PendingChange pc where pc.tippCoverage in (select tc from TIPPCoverage tc where tc.tipp in (:toDelete))',toDelete)} coverage pending changes deleted")

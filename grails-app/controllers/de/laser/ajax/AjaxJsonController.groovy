@@ -1,6 +1,7 @@
 package de.laser.ajax
 
 import de.laser.AlternativeName
+import de.laser.CustomerTypeService
 import de.laser.GenericOIDService
 import de.laser.AccessService
 import de.laser.CompareService
@@ -42,8 +43,6 @@ import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinition
 import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.report.myInstitution.base.BaseConfig
-import de.laser.stats.Counter4Report
-import de.laser.stats.Counter5Report
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
@@ -202,7 +201,7 @@ class AjaxJsonController {
         queryParams.showConnectedObjs = showConnectedObjs
 
         data = compareService.getMySubscriptions(queryParams)
-        if (accessService.checkPerm("ORG_CONSORTIUM")) {
+        if (accessService.checkPerm("ORG_CONSORTIUM_BASIC")) {
             if (showSubscriber) {
                 List parents = data.clone()
                 Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]
@@ -243,7 +242,7 @@ class AjaxJsonController {
         queryParams.showConnectedLics = showConnectedLics
 
         data = compareService.getMyLicenses(queryParams)
-        if (accessService.checkPerm("ORG_CONSORTIUM")) {
+        if (accessService.checkPerm("ORG_CONSORTIUM_BASIC")) {
             if (showSubscriber) {
                 List parents = data.clone()
                 Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_LICENSEE_CONS, RDStore.OR_LICENSEE]
@@ -394,7 +393,7 @@ class AjaxJsonController {
                 else {
                     switch (propDef.descr) {
                         case PropertyDefinition.SUB_PROP:
-                            String consortialFilter = contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO'] ? ' and sp.owner.instanceOf = null' : ''
+                            String consortialFilter = contextService.getOrg().isCustomerType_Consortium() ? ' and sp.owner.instanceOf = null' : ''
                             values = SubscriptionProperty.executeQuery('select sp from SubscriptionProperty sp left join sp.owner.orgRelations oo where sp.type = :propDef and ((sp.tenant = :tenant or ((sp.tenant != :tenant and sp.isPublic = true) or sp.instanceOf != null) and :tenant in oo.org))'+consortialFilter,[propDef:propDef, tenant:contextService.getOrg()])
                             break
                         case PropertyDefinition.ORG_PROP: values = OrgProperty.executeQuery('select op from OrgProperty op where op.type = :propDef and ((op.tenant = :tenant and op.isPublic = true) or op.tenant = null)',[propDef:propDef,tenant:contextService.getOrg()])
@@ -404,7 +403,7 @@ class AjaxJsonController {
                     case PropertyDefinition.PRS_PROP: values = PersonProperty.findAllByType(propDef)
                         break*/
                         case PropertyDefinition.LIC_PROP:
-                            String consortialFilter = contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO'] ? ' and lp.owner.instanceOf = null' : ''
+                            String consortialFilter = contextService.getOrg().isCustomerType_Consortium() ? ' and lp.owner.instanceOf = null' : ''
                             values = LicenseProperty.executeQuery('select lp from LicenseProperty lp left join lp.owner.orgRelations oo where lp.type = :propDef and ((lp.tenant = :tenant or ((lp.tenant != :tenant and lp.isPublic = true) or lp.instanceOf != null) and :tenant in oo.org))'+consortialFilter,[propDef:propDef, tenant:contextService.getOrg()])
                             break
                     }
@@ -878,8 +877,8 @@ class AjaxJsonController {
      * Validation query; checks if the user with the given username exists
      * @return true if there is a {@link User} matching the given input query, false otherwise
      */
-    @DebugInfo(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasRole('ROLE_ADMIN') || ctx.contextService.getUser()?.hasAffiliation("INST_ADM") })
+    @DebugInfo(test = 'is_ROLE_ADMIN_or_hasAffiliation("INST_ADM")')
+    @Secured(closure = { ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_ADM") })
     def checkExistingUser() {
         Map<String, Object> result = [result: false]
 
@@ -978,9 +977,9 @@ class AjaxJsonController {
      * Outputs a chart from the given report parameters
      * @return the template to output and the one of the results {@link de.laser.ReportingGlobalService#doChart(java.util.Map, grails.web.servlet.mvc.GrailsParameterMap)} or {@link de.laser.ReportingLocalService#doChart(java.util.Map, grails.web.servlet.mvc.GrailsParameterMap)}
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM_PRO", affil="INST_USER")
+    @DebugInfo(perm=CustomerTypeService.PERMS_PRO, affil="INST_USER")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM_PRO", "INST_USER")
+        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER")
     })
     def chart() {
         Map<String, Object> result = [:]

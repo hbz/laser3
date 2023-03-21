@@ -331,8 +331,8 @@ class TaskService {
     private Set<Map> _getOrgsDropdown(Org contextOrg) {
         Set validOrgs = [], validOrgsDropdown = []
         if (contextOrg) {
-            boolean isInstitution = (contextOrg.getCustomerType() in ['ORG_BASIC_MEMBER','ORG_INST'])
-            boolean isConsortium  = (contextOrg.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO'])
+            boolean isInstitution = (contextOrg.isCustomerType_Inst())
+            boolean isConsortium  = (contextOrg.isCustomerType_Consortium())
 
             GrailsParameterMap params = new GrailsParameterMap(WebUtils.retrieveGrailsWebRequest().getCurrentRequest())
             params.sort      = isInstitution ? " LOWER(o.name), LOWER(o.shortname)" : " LOWER(o.sortname), LOWER(o.name)"
@@ -369,7 +369,7 @@ class TaskService {
         List validSubscriptionsWithInstanceOf = []
         List validSubscriptionsWithoutInstanceOf = []
         List<Map> validSubscriptionsDropdown = []
-        boolean isConsortium = contextOrg.getCustomerType()  in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO']
+        boolean isConsortium = contextOrg.isCustomerType_Consortium()
 
         if (contextOrg) {
             if (isConsortium) {
@@ -466,7 +466,7 @@ class TaskService {
             String licensesQueryOhneInstanceOf =
                     'SELECT lic.id, lic.reference, o.roleType, lic.startDate, lic.endDate from License lic left join lic.orgRelations o WHERE  o.org = :lic_org AND o.roleType.id IN (:org_roles) and lic.instanceOf is null order by lic.sortableReference asc'
 
-            if(accessService.checkPerm("ORG_CONSORTIUM")){
+            if(accessService.checkPerm("ORG_CONSORTIUM_BASIC")){
                 Map<String, Object> qry_params_for_lic = [
                     lic_org:    contextOrg,
                     org_roles:  [
@@ -480,7 +480,7 @@ class TaskService {
                 }
 
             }
-            else if (accessService.checkPerm("ORG_INST")) {
+            else if (accessService.checkPerm("ORG_INST_PRO")) {
                 Map<String, Object> qry_params_for_lic = [
                     lic_org:    contextOrg,
                     org_roles:  [
