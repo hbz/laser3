@@ -92,13 +92,12 @@ class AccessService {
      * @param orgPerms the customer types to check
      * @param orgTypes the organisation types to check
      * @param userRole the user's affiliation to the context institution
-     * @param specRole the global permission to check
      * @return true if the user has one of the global permissions
      * or if the context institution is one of the given customer and organisation types
      * and if the user has the given permissions within the institution, false otherwise
      */
-    boolean checkPermTypeAffiliationX(String orgPerms, String orgTypes, String userRole, String specRole) {
-        if (contextService.getUser()?.hasMinRole(specRole)) {
+    boolean is_ROLE_ADMIN_or_checkPermTypeAffiliation(String orgPerms, String orgTypes, String userRole) {
+        if (contextService.getUser()?.hasMinRole('ROLE_ADMIN')) {
             return true
         }
         _checkOrgPermAndOrgTypeAndUserAffiliation(orgPerms.split(','), orgTypes.split(','), userRole)
@@ -136,7 +135,7 @@ class AccessService {
         boolean check2 = (ctx.id == currentOrg.id) || Combo.findByToOrgAndFromOrg(ctx, currentOrg)
 
         // currentOrg check
-        boolean check3 = (ctx.id == currentOrg.id) && contextService.getUser().is_ROLE_ADMIN_or_hasAffiliation(ownerUserRole?.toUpperCase())
+        boolean check3 = (ctx.id == currentOrg.id) && contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation(ownerUserRole?.toUpperCase())
 
         (check1 && check2) || check3
     }
@@ -196,7 +195,7 @@ class AccessService {
 
             if (oss != OrgSetting.SETTING_NOT_FOUND) {
                 orgPerms.each{ cd ->
-                    check = check || PermGrant.findByPermAndRole(Perm.findByCode(cd?.toLowerCase()?.trim()), (Role) fakeRole ?: oss.getValue())
+                    check = check || PermGrant.findByPermAndRole(Perm.findByCode(cd.toLowerCase().trim()), (Role) fakeRole ?: oss.getValue())
                 }
             }
         } else {
@@ -234,8 +233,8 @@ class AccessService {
 
         if (orgTypes) {
             orgTypes.each { ot ->
-                RefdataValue type = RefdataValue.getByValueAndCategory(ot?.trim(), RDConstants.ORG_TYPE)
-                check2 = check2 || contextService.getOrg().getAllOrgTypeIds().contains(type?.id)
+                RefdataValue type = RefdataValue.getByValueAndCategory(ot.trim(), RDConstants.ORG_TYPE)
+                check2 = check2 || contextService.getOrg()?.getAllOrgTypeIds().contains(type?.id)
             }
         } else {
             check2 = true
@@ -252,7 +251,7 @@ class AccessService {
      */
     private boolean _checkOrgPermAndUserAffiliation(String[] orgPerms, String userRole) {
         boolean check1 = _checkOrgPerm(orgPerms)
-        boolean check2 = userRole ? contextService.getUser().is_ROLE_ADMIN_or_hasAffiliation(userRole.toUpperCase()) : false
+        boolean check2 = userRole ? contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation(userRole.toUpperCase()) : false
 
         check1 && check2
     }
@@ -267,7 +266,7 @@ class AccessService {
      */
     private boolean _checkOrgPermAndOrgTypeAndUserAffiliation(String[] orgPerms, String[] orgTypes, String userRole) {
         boolean check1 = _checkOrgPermAndOrgType(orgPerms, orgTypes)
-        boolean check2 = userRole ? contextService.getUser().is_ROLE_ADMIN_or_hasAffiliation(userRole.toUpperCase()) : false
+        boolean check2 = userRole ? contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation(userRole.toUpperCase()) : false
 
         check1 && check2
     }
