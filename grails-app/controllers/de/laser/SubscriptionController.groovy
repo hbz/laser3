@@ -158,7 +158,7 @@ class SubscriptionController {
                 if(allAvailableReports.size() > 0) {
                     Set<String> reportTypes = [], metricTypes = [], accessTypes = [], accessMethods = []
                     allAvailableReports.each { row ->
-                        if(!params.loadFor || (params.loadFor && !(row.reportType in Counter5Report.COUNTER_5_PLATFORM_REPORTS))) {
+                        if(!params.loadFor || (params.loadFor && row.reportType in Counter5Report.COUNTER_5_TITLE_REPORTS)) {
                             if (row.reportType)
                                 reportTypes << row.reportType
                             if (row.metricType)
@@ -302,7 +302,7 @@ class SubscriptionController {
         Map<String,Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_EDIT)
         if(result.subscription.instanceOf)
             result.parentId = result.subscription.instanceOf.id
-        else if(result.subscription._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE])
+        else if(result.subscription._getCalculatedType() in [CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_ADMINISTRATIVE])
             result.parentId = result.subscription.id
 
         if (params.process  && result.editable) {

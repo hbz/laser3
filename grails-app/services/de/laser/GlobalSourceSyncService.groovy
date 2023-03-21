@@ -948,22 +948,22 @@ class GlobalSourceSyncService extends AbstractLockableService {
             Date lastUpdatedDisplay = DateUtils.parseDateGeneric(packageRecord.lastUpdatedDisplay)
             if(!result || result?.lastUpdated < lastUpdatedDisplay) {
                 log.info("package record loaded, reconciling package record for UUID ${packageUUID}")
-                RefdataValue packageStatus = packageRecord.status ? packageStatus.get(packageRecord.status) : null
+                RefdataValue packageStatusVal = packageRecord.status ? packageStatus.get(packageRecord.status) : null
                 RefdataValue contentType = packageRecord.contentType ? RefdataValue.getByValueAndCategory(packageRecord.contentType,RDConstants.PACKAGE_CONTENT_TYPE) : null
                 RefdataValue file = packageRecord.file ? RefdataValue.getByValueAndCategory(packageRecord.file,RDConstants.PACKAGE_FILE) : null
                 RefdataValue scope = packageRecord.scope ? RefdataValue.getByValueAndCategory(packageRecord.scope,RDConstants.PACKAGE_SCOPE) : null
                 Map<String,Object> newPackageProps = [
                     uuid: packageUUID,
                     name: packageRecord.name,
-                    packageStatus: packageStatus,
+                    packageStatus: packageStatusVal,
                     contentType: packageRecord.contentType,
                     file: file,
                     scope: scope
                 ]
                 if(result) {
-                    if(packageStatus == packageStatus.get("Deleted") && result.packageStatus != packageStatus.get("Deleted")) {
+                    if(packageStatusVal == packageStatus.get("Deleted") && result.packageStatus != packageStatus.get("Deleted")) {
                         log.info("package #${result.id}, with GOKb id ${result.gokbId} got deleted, mark as deleted and rapport!")
-                        result.packageStatus = packageStatus
+                        result.packageStatus = packageStatusVal
                     }
                     else {
                         if(packageRecord.nominalPlatformUuid) {
@@ -992,7 +992,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     result = new Package(gokbId: packageRecord.uuid)
                 }
                 result.name = packageRecord.name
-                result.packageStatus?.id = packageStatus?.id
+                result.packageStatus?.id = packageStatusVal?.id
                 result.contentType?.id = contentType?.id
                 result.scope?.id = scope?.id
                 result.file?.id = file?.id
@@ -2121,6 +2121,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             packageStatus.put(rdv.value, rdv)
         }
         packageStatus.put(PERMANENTLY_DELETED, RDStore.PACKAGE_STATUS_DELETED)
+        packageStatus.put("Removed", RDStore.PACKAGE_STATUS_DELETED)
         orgStatus.put(RDStore.ORG_STATUS_CURRENT.value,RDStore.ORG_STATUS_CURRENT)
         orgStatus.put(RDStore.ORG_STATUS_DELETED.value,RDStore.ORG_STATUS_DELETED)
         orgStatus.put(PERMANENTLY_DELETED,RDStore.ORG_STATUS_DELETED)

@@ -17,6 +17,8 @@ abstract class AbstractReport implements Comparable<AbstractReport> {
     String doi
     String isbn
     String proprietaryIdentifier
+    //only to use for database reports
+    String databaseName
     String identifierHash
     String reportType
     String publisher

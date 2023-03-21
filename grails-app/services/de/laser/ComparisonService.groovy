@@ -6,6 +6,7 @@ import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
 import grails.gorm.transactions.Transactional
+import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 @Transactional
 class ComparisonService {
@@ -64,7 +65,9 @@ class ComparisonService {
       props.each { prop ->
 
         //property level - check if the group contains already a mapping for the current property
-        def propertyMap = result.get(genericOIDService.getOID(prop.type))
+        PropertyDefinition propType = GrailsHibernateUtil.unwrapIfProxy(prop.type)
+        String key = genericOIDService.getOID(propType)
+        def propertyMap = result.get(key)
         if(propertyMap == null) {
           propertyMap = [:]
         }
@@ -77,7 +80,7 @@ class ComparisonService {
         }
 
         propertyMap.put(cmpObject,propertyList)
-        result.put(genericOIDService.getOID(prop.type),propertyMap)
+        result.put(key,propertyMap)
       }
       result
     }

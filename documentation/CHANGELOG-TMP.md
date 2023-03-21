@@ -7,6 +7,20 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4914    21.03.2023  rc-3.0  3.0.5       Andreas Bug         fehlendes Komma in der Abfrage ergänzt
+
+4860    21.03.2023  rc-3.0  3.0.5       Andreas Bug         Proxy verhinderte den korrekten Aufbau der Merkmalsliste
+
+--      20.03.2023  rc-3.0  3.0.5       Andreas Bug         Entferne auch Bestandstitel ohne Status
+
+4917    20.03.2023  rc-3.0  3.0.5       Andreas Bug         fehlerhafte Übertragung der Attribute nach Verlängerung
+
+4916    20.03.2023  rc-3.0  3.0.5       Andreas Bug         hasPublishComponent wurde bei Übertrag von Teilnehmerlizenzen nicht angelegt
+
+4869    20.03.2023  rc-3.0  3.0.5       Andreas Bug         API-Version 1.7 nach RC migriert, Bugs behoben
+
+--      22.02.2023  rc-3.0  3.0.5       Andreas Bug         Umstrukturierungen für Database Reports
+
 --      15.02.2023  rc-3.0  3.0.4       Andreas Bug         Synchronisationsfehler behoben
 
 4838    15.02.2023  rc-3.0  3.0.4       Moe     Feature     Bestandsfilter: "Aktuell" + "Abgelaufen" nur bei dauerhaftem Zugriff
