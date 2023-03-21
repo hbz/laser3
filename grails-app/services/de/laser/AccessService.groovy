@@ -1,6 +1,5 @@
 package de.laser
 
-
 import de.laser.auth.*
 import de.laser.storage.RDConstants
 import grails.gorm.transactions.Transactional
@@ -18,9 +17,6 @@ class AccessService {
 
     ContextService contextService
 
-    // ---- new stuff here
-    // ---- new stuff here
-
     /**
      * Test method
      */
@@ -28,27 +24,15 @@ class AccessService {
         value
     }
 
-    // --- for action closures: shortcuts ---
-    // --- for action closures: shortcuts ---
-
-    // --- public
-    // --- public
+    // --- public - simple naming scheme - contextService.getOrg()
+    // --- public - simple naming scheme - contextService.getOrg()
 
     /**
      * @param orgPerms the customer types (= institution permissions) to check
      * @return true if access is granted, false otherwise
      */
     boolean checkPerm(String orgPerms) {
-        _checkOrgPerm(contextService.getOrg(), orgPerms.split(','))
-    }
-
-    /**
-     * @param orgToCheck the context institution whose customer type needs to be checked
-     * @param orgPerms the customer types which need to be granted to access
-     * @return true if access is granted, false otherwise
-     */
-    boolean checkPerm(Org orgToCheck, String orgPerms) {
-        _checkOrgPerm(orgToCheck, orgPerms.split(','))
+        _checkOrgPermForForeignOrg(orgPerms.split(','), contextService.getOrg())
     }
 
     /**
@@ -81,6 +65,18 @@ class AccessService {
         _checkOrgPermAndOrgTypeAndUserAffiliation(orgPerms.split(','), orgTypes.split(','), userRole)
     }
 
+    // --- public - simple naming scheme - orgToCheck
+    // --- public - simple naming scheme - orgToCheck
+
+    /**
+     * @param orgToCheck the context institution whose customer type needs to be checked
+     * @param orgPerms the customer types which need to be granted to access
+     * @return true if access is granted, false otherwise
+     */
+    boolean checkOrgPerm(Org orgToCheck, String orgPerms) {
+        _checkOrgPermForForeignOrg(orgPerms.split(','), orgToCheck)
+    }
+
     /**
      * Checks if
      * <ol>
@@ -97,7 +93,7 @@ class AccessService {
      * ]
      * @return true if clauses one and two or three succeed, false otherwise
      */
-    boolean is_ROLE_ADMIN_or_checkForeignOrgComboPermAffiliation(Org orgToCheck, String comboPerm, String comboAffiliation) {
+    boolean is_ROLE_ADMIN_or_checkOrgComboPermAffiliation(Org orgToCheck, String comboPerm, String comboAffiliation) {
         if (contextService.getUser()?.hasMinRole('ROLE_ADMIN')) {
             return true
         }
@@ -117,11 +113,8 @@ class AccessService {
         (check1 && check2) || check3
     }
 
-    // --- for action closures: implementations ---
-    // --- checking current user and context org
-
-    // --- private
-    // --- private
+    // --- private - complex naming scheme
+    // --- private - complex naming scheme
 
     /**
      * Checks
@@ -149,7 +142,7 @@ class AccessService {
      * @param orgPerms the customer types which need to be granted to access
      * @return true if access is granted, false otherwise
      */
-    private boolean _checkOrgPerm(Org orgToCheck, String[] orgPerms) {
+    private boolean _checkOrgPermForForeignOrg(String[] orgPerms, Org orgToCheck) {
         boolean check = false
 
         if (orgPerms) {
@@ -184,7 +177,7 @@ class AccessService {
      * @return true if the context organisation passes both checks, false otherwise
      */
     private boolean _checkOrgPermAndOrgType(String[] orgPerms, String[] orgTypes) {
-        boolean check1 = _checkOrgPerm(contextService.getOrg(), orgPerms)
+        boolean check1 = _checkOrgPermForForeignOrg(orgPerms, contextService.getOrg())
         boolean check2 = false
 
         if (orgTypes) {
@@ -206,7 +199,7 @@ class AccessService {
      * @return true if the institution has the given customer type and the user the given institutional permissions, false otherwise
      */
     private boolean _checkOrgPermAndUserAffiliation(String[] orgPerms, String userRole) {
-        boolean check1 = _checkOrgPerm(contextService.getOrg(), orgPerms)
+        boolean check1 = _checkOrgPermForForeignOrg(orgPerms, contextService.getOrg())
         boolean check2 = userRole ? contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation(userRole.toUpperCase()) : false
 
         check1 && check2
@@ -300,7 +293,7 @@ class AccessService {
         if (contextService.getUser()?.hasMinRole('ROLE_ADMIN')) {
             return true
         }
-        _checkOrgPerm(contextService.getOrg(), orgPerms.split(','))
+        _checkOrgPermForForeignOrg(orgPerms.split(','), contextService.getOrg())
     }
 
     boolean is_ROLE_ADMIN_or_INST_USER_with_PERMS(String orgPerms) {
