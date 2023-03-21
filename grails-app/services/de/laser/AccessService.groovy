@@ -35,22 +35,20 @@ class AccessService {
     // --- public
 
     /**
-     * Substitution call for {@link #_checkOrgPerm(java.lang.String[])}
      * @param orgPerms the customer types (= institution permissions) to check
      * @return true if access is granted, false otherwise
      */
     boolean checkPerm(String orgPerms) {
-        _checkOrgPerm(orgPerms.split(','))
+        _checkOrgPerm(contextService.getOrg(), orgPerms.split(','))
     }
 
     /**
-     * Substitution call for {@link #_checkOrgPerm(de.laser.Org, java.lang.String[])}
-     * @param ctxOrg the context institution whose customer type needs to be checked
+     * @param orgToCheck the context institution whose customer type needs to be checked
      * @param orgPerms the customer types which need to be granted to access
      * @return true if access is granted, false otherwise
      */
-    boolean checkPerm(Org ctxOrg, String orgPerms) {
-        _checkOrgPerm(ctxOrg, orgPerms.split(','))
+    boolean checkPerm(Org orgToCheck, String orgPerms) {
+        _checkOrgPerm(orgToCheck, orgPerms.split(','))
     }
 
     /**
@@ -99,23 +97,22 @@ class AccessService {
      * ]
      * @return true if clauses one and two or three or four succeed, false otherwise
      */
-    boolean is_ROLE_ADMIN_or_checkForeignOrgComboPermAffiliation(Map<String, Object> attributes) {
+    boolean is_ROLE_ADMIN_or_checkForeignOrgComboPermAffiliation(Org orgToCheck, String comboPerm, String comboAffiliation) {
         if (contextService.getUser()?.hasMinRole('ROLE_ADMIN')) {
             return true
         }
 
         Org ctx                 = contextService.getOrg()
-        Org currentOrg          = (Org) attributes.org
-        String ownerUserRole    = attributes.affiliation // TODO: no affiliation given
-        String orgPerms         = attributes.comboPerm
-        String userRole         = attributes.comboAffiliation
+        String ownerUserRole    = null // attributes.affiliation // --> TODO: no affiliation given
+        String orgPerms         = comboPerm
+        String userRole         = comboAffiliation
 
         // combo check
         boolean check1 = _checkOrgPermAndUserAffiliation(orgPerms.split(','), userRole)
-        boolean check2 = (ctx.id == currentOrg.id) || Combo.findByToOrgAndFromOrg(ctx, currentOrg)
+        boolean check2 = (ctx.id == orgToCheck.id) || Combo.findByToOrgAndFromOrg(ctx, orgToCheck)
 
-        // currentOrg check
-        boolean check3 = (ctx.id == currentOrg.id) && contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation(ownerUserRole?.toUpperCase())
+        // orgToCheck check
+        boolean check3 = (ctx.id == orgToCheck.id) && contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation(ownerUserRole?.toUpperCase())
 
         (check1 && check2) || check3
     }
@@ -148,15 +145,15 @@ class AccessService {
 
     /**
      * Checks for the context institution if one of the given customer types are granted
-     * @param contextOrg the context institution whose customer type needs to be checked
+     * @param orgToCheck the context institution whose customer type needs to be checked
      * @param orgPerms the customer types which need to be granted to access
      * @return true if access is granted, false otherwise
      */
-    private boolean _checkOrgPerm(Org contextOrg, String[] orgPerms) {
+    private boolean _checkOrgPerm(Org orgToCheck, String[] orgPerms) {
         boolean check = false
 
         if (orgPerms) {
-            def oss = OrgSetting.get(contextOrg, OrgSetting.KEYS.CUSTOMER_TYPE)
+            def oss = OrgSetting.get(orgToCheck, OrgSetting.KEYS.CUSTOMER_TYPE)
 
             Role fakeRole
             boolean isOrgBasicMemberView = false
@@ -164,7 +161,7 @@ class AccessService {
                 isOrgBasicMemberView = RequestContextHolder.currentRequestAttributes().params.orgBasicMemberView
             } catch (IllegalStateException e) {}
 
-            if (isOrgBasicMemberView && contextOrg.isCustomerType_Consortium()) {
+            if (isOrgBasicMemberView && orgToCheck.isCustomerType_Consortium()) {
                 fakeRole = Role.findByAuthority('ORG_INST_BASIC')
                 // TODO: ERMS-4920 - ORG_INST_BASIC or ORG_INST_PRO
             }
@@ -181,30 +178,13 @@ class AccessService {
     }
 
     /**
-     * Substitution call for {@link #_checkOrgPerm(de.laser.Org, java.lang.String[])} with {@link ContextService#getOrg()} as default
-     * @param orgPerms the customer types (= institution permissions) to check
-     * @return true if access is granted, false otherwise
-     */
-    private boolean _checkOrgPerm(String[] orgPerms) {
-        boolean check = false
-
-        if (orgPerms) {
-            Org ctx = contextService.getOrg()
-            check = _checkOrgPerm(ctx, orgPerms)
-        } else {
-            check = true
-        }
-        check
-    }
-
-    /**
      * Checks if the context institution has at least one of the given customer types and organisation types attributed
      * @param orgPerms the customer types to check
      * @param orgTypes the organisation types to check
      * @return true if the context organisation passes both checks, false otherwise
      */
     private boolean _checkOrgPermAndOrgType(String[] orgPerms, String[] orgTypes) {
-        boolean check1 = _checkOrgPerm(orgPerms)
+        boolean check1 = _checkOrgPerm(contextService.getOrg(), orgPerms)
         boolean check2 = false
 
         if (orgTypes) {
@@ -226,7 +206,7 @@ class AccessService {
      * @return true if the institution has the given customer type and the user the given institutional permissions, false otherwise
      */
     private boolean _checkOrgPermAndUserAffiliation(String[] orgPerms, String userRole) {
-        boolean check1 = _checkOrgPerm(orgPerms)
+        boolean check1 = _checkOrgPerm(contextService.getOrg(), orgPerms)
         boolean check2 = userRole ? contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation(userRole.toUpperCase()) : false
 
         check1 && check2
@@ -312,7 +292,7 @@ class AccessService {
         if (contextService.getUser()?.hasMinRole('ROLE_ADMIN')) {
             return true
         }
-        _checkOrgPerm(orgPerms.split(','))
+        _checkOrgPerm(contextService.getOrg(), orgPerms.split(','))
     }
 
     boolean is_ROLE_ADMIN_or_INST_USER_with_PERMS(String orgPerms) {

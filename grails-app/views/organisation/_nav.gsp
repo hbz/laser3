@@ -52,11 +52,7 @@
             <ui:securedSubNavItem controller="organisation" action="settings" params="${breadcrumbParams}"
                                      message="org.nav.options" affiliation="INST_ADM" affiliationOrg="${orgInstance}"/>
         </g:if>
-        <g:elseif test="${accessService.is_ROLE_ADMIN_or_checkForeignOrgComboPermAffiliation([
-                    org: orgInstance,
-                    comboPerm: "ORG_CONSORTIUM_BASIC",
-                    comboAffiliation: "INST_ADM"
-        ])}">
+        <g:elseif test="${accessService.is_ROLE_ADMIN_or_checkForeignOrgComboPermAffiliation(orgInstance, "ORG_CONSORTIUM_BASIC", "INST_ADM")}">
             <ui:subNavItem controller="organisation" action="settings" params="${breadcrumbParams}" message="org.nav.options"/>
         </g:elseif>
         <g:else>
