@@ -4,6 +4,7 @@ Source: ${de.laser.config.ConfigMapper.getGrailsServerURL()} - Version: ${de.las
 
 #### 1.7
 
+- internal refactoring
 - bugfix for changedSince argument
 
 #### 1.6
