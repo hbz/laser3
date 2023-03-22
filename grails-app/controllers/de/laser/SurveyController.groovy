@@ -3582,7 +3582,7 @@ class SurveyController {
             User user = contextService.getUser()
             result.error = [] as List
 
-            if (!accessService.checkMinUserOrgRole_ctxConstraint(user, result.institution, "INST_EDITOR")) {
+            if (!accessService.checkMinUserOrgRole_and_CtxOrg(user, result.institution, 'INST_EDITOR')) {
                 result.error = message(code: 'financials.permission.unauthorised', args: [result.institution ? result.institution.name : 'N/A']) as String
                 response.sendError(HttpStatus.SC_FORBIDDEN)
                 return

@@ -13,7 +13,7 @@
             baseItems << it
         }
     }
-    boolean editable2 = accessService.checkPermAffiliation("ORG_CONSORTIUM_PRO", "INST_EDITOR")
+    boolean editable2 = accessService.checkPermAffiliation("ORG_CONSORTIUM_PRO", 'INST_EDITOR')
 
 %>
 

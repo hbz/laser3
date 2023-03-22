@@ -47,7 +47,7 @@ class AddressbookService {
      */
     boolean isAddressEditable(Address address, User user) {
         Org org = address.getPrs()?.tenant ?: address.org
-        accessService.checkMinUserOrgRole_ctxConstraint(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+        accessService.is_ROLE_ADMIN_or_checkMinUserOrgRole_and_CtxOrg(user, org, 'INST_EDITOR')
     }
 
     /**
@@ -58,7 +58,7 @@ class AddressbookService {
      */
     boolean isContactEditable(Contact contact, User user) {
         Org org = contact.getPrs()?.tenant ?: contact.org
-        accessService.checkMinUserOrgRole_ctxConstraint(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+        accessService.is_ROLE_ADMIN_or_checkMinUserOrgRole_and_CtxOrg(user, org, 'INST_EDITOR')
     }
 
     /**
@@ -68,12 +68,12 @@ class AddressbookService {
      * @return true if the user is affiliated at least as INST_EDITOR with the given tenant or is a global admin, false otherwise
      */
     boolean isPersonEditable(Person person, User user) {
-        accessService.checkMinUserOrgRole_ctxConstraint(user, person.tenant , 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+        accessService.is_ROLE_ADMIN_or_checkMinUserOrgRole_and_CtxOrg(user, person.tenant , 'INST_EDITOR')
     }
 
     @Deprecated
     boolean isNumbersEditable(Numbers numbers, User user) {
-        accessService.checkMinUserOrgRole_ctxConstraint(user, person.tenant , 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+        accessService.is_ROLE_ADMIN_or_checkMinUserOrgRole_and_CtxOrg(user, person.tenant , 'INST_EDITOR')
     }
 
     /**

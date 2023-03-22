@@ -5,6 +5,8 @@
 
     <ui:subNavItem controller="subscription" action="show" params="${[id:params.id]}" message="subscription.details.details.label" />
 
+    <g:if test="${! params.orgBasicMemberView}">
+
     <g:if test="${controllerName != 'finance'}">%{-- template is used by subscriptionDetails/* and finance/index --}%
         <ui:subNavItem controller="subscription" counts="${currentTitlesCounts}" action="index" params="${[id:params.id]}" message="subscription.details.current_ent" />
     </g:if>
@@ -63,4 +65,5 @@
     <ui:securedSubNavItem orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="subscription" action="documents" params="${[id:params.id]}" message="default.documents.label" />
     <ui:subNavItem controller="subscription" action="notes" params="${[id:params.id]}" counts="${notesCount}" message="default.notes.label" />
 
+    </g:if>%{-- if test="${! params.orgBasicMemberView}" --}%
 </ui:subNav>

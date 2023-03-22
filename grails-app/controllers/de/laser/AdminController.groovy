@@ -433,7 +433,7 @@ class AdminController  {
         Set<UserOrg> currentAffil = usrKeep.affiliations
 
         mergeRoles.each{ role ->
-            if (!currentRoles.contains(role) && role.authority != "ROLE_YODA") {
+            if (!currentRoles.contains(role) && role.authority != 'ROLE_YODA') {
                 UserRole.create(usrKeep,role)
             }
         }

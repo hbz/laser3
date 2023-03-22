@@ -198,7 +198,7 @@
         </g:if>
     </g:form>
 
-    <g:if test="${accessService.checkPermAffiliation("ORG_CONSORTIUM_BASIC","INST_EDITOR")}">
+    <g:if test="${accessService.checkPermAffiliation("ORG_CONSORTIUM_BASIC", 'INST_EDITOR')}">
         <hr />
 
             <ui:msg class="info" header="${message(code: 'myinst.noMembers.cons.header')}" noClose="true">
