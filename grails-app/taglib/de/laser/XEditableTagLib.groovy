@@ -238,7 +238,7 @@ class XEditableTagLib {
 
     /**
      *   Attributes:
-     *   owner - UserOrg
+     *   owner - UserOrgRole
      *   type - Role.roleType
      *   overwriteEditable - if existing, value overwrites global editable
      */

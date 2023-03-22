@@ -34,7 +34,7 @@ import org.apache.commons.lang3.StringUtils
  *     <li>institution metadata is maintained in LAS:eR directly whereas providers should curate themselves in we:kb; organisations thus have a we:kb-ID (stored as {@link #gokbId}, naming is legacy) which serves as synchronisation
  *     key between the data in the two webapps</li>
  * </ul>
- * @see UserOrg
+ * @see UserOrgRole
  * @see OrgRole
  * @see OrgSetting
  */
@@ -135,7 +135,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         prsLinks:           PersonRole,
         contacts:           Contact,
         addresses:          Address,
-        affiliations:       UserOrg,
+        affiliations:       UserOrgRole,
         propertySet:        OrgProperty,
         altnames:           AlternativeName,
         orgType:            RefdataValue,
@@ -542,7 +542,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         if(currentSubscriptions)
             return false
         //verification c: check if org has active users
-        UserOrg activeUsers = UserOrg.findByOrg(this)
+        UserOrgRole activeUsers = UserOrgRole.findByOrg(this)
         if(activeUsers)
             return false
         return true
@@ -724,7 +724,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      * @return true if there is at least one user registered as institutional administrator, false otherwise
      */
     boolean hasAccessOrg(){
-        if (UserOrg.findAllByOrgAndFormalRole(this, Role.findByAuthority('INST_ADM'))) {
+        if (UserOrgRole.findAllByOrgAndFormalRole(this, Role.findByAuthority('INST_ADM'))) {
             return true
         }
         else {
@@ -739,9 +739,9 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     Map<String, Object> hasAccessOrgListUser(){
         Map<String, Object> result = [:]
 
-        result.instAdms = UserOrg.findAllByOrgAndFormalRole(this, Role.findByAuthority('INST_ADM'))
-        result.instEditors = UserOrg.findAllByOrgAndFormalRole(this, Role.findByAuthority('INST_EDITOR'))
-        result.instUsers = UserOrg.findAllByOrgAndFormalRole(this, Role.findByAuthority('INST_USER'))
+        result.instAdms    = UserOrgRole.findAllByOrgAndFormalRole(this, Role.findByAuthority('INST_ADM'))
+        result.instEditors = UserOrgRole.findAllByOrgAndFormalRole(this, Role.findByAuthority('INST_EDITOR'))
+        result.instUsers   = UserOrgRole.findAllByOrgAndFormalRole(this, Role.findByAuthority('INST_USER'))
 
         return result
     }

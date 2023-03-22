@@ -28,7 +28,7 @@ class AccessService {
     // --- public - simple naming scheme - contextService.getOrg()
 
     /**
-     * @param orgPerms the customer types (= institution permissions) to check
+     * @param orgPerms customer type depending permissions to check against
      * @return true if access is granted, false otherwise
      */
     boolean checkPerm(String orgPerms) {
@@ -37,7 +37,7 @@ class AccessService {
 
     /**
      * Substitution call for {@link #_checkOrgPermAndUserAffiliation(java.lang.String[], java.lang.String)}
-     * @param orgPerms the customer types to check
+     * @param orgPerms customer type depending permissions to check against
      * @param userRole the user permissions to check
      * @return true if the user has the permissions granted and his context institution is one of the given customer types, false otherwise
      */
@@ -51,7 +51,7 @@ class AccessService {
      *     <li>if the context institution is one of the given customer and organisation types and the user has the given rights granted</li>
      *     <li>or if the user has the given global rights granted</li>
      * </ul>
-     * @param orgPerms the customer types to check
+     * @param orgPerms customer type depending permissions to check against
      * @param orgTypes the organisation types to check
      * @param userRole the user's affiliation to the context institution
      * @return true if the user has one of the global permissions
@@ -70,7 +70,7 @@ class AccessService {
 
     /**
      * @param orgToCheck the context institution whose customer type needs to be checked
-     * @param orgPerms the customer types which need to be granted to access
+     * @param orgPerms customer type depending permissions to check against
      * @return true if access is granted, false otherwise
      */
     boolean checkOrgPerm(Org orgToCheck, String orgPerms) {
@@ -122,9 +122,8 @@ class AccessService {
      *     <li>if the context institution is one of the given customer types and the user has the given rights granted</li>
      *     <li>or if the user has the given global rights granted</li>
      * </ul>
-     * @param orgPerms the customer types to check
+     * @param orgPerms customer type depending permissions to check against
      * @param userRole the user's affiliation to the context institution
-     * @param specRole the global permission to check
      * @return true if the user has one of the global permissions
      * or if the context institution is one of the given customer types
      * and if the user has the given permissions within the institution, false otherwise
@@ -139,7 +138,7 @@ class AccessService {
     /**
      * Checks for the context institution if one of the given customer types are granted
      * @param orgToCheck the context institution whose customer type needs to be checked
-     * @param orgPerms the customer types which need to be granted to access
+     * @param orgPerms customer type depending permissions to check against
      * @return true if access is granted, false otherwise
      */
     private boolean _checkOrgPermForForeignOrg(String[] orgPerms, Org orgToCheck) {
@@ -172,7 +171,7 @@ class AccessService {
 
     /**
      * Checks if the context institution has at least one of the given customer types and organisation types attributed
-     * @param orgPerms the customer types to check
+     * @param orgPerms customer type depending permissions to check against
      * @param orgTypes the organisation types to check
      * @return true if the context organisation passes both checks, false otherwise
      */
@@ -194,7 +193,7 @@ class AccessService {
     /**
      * Checks if the context institution has at least one of the given customer types attrbited and if the context user
      * has the given rights attributed
-     * @param orgPerms the customer types to check
+     * @param orgPerms customer type depending permissions to check against
      * @param userRole the given institutional permissions to check
      * @return true if the institution has the given customer type and the user the given institutional permissions, false otherwise
      */
@@ -208,7 +207,7 @@ class AccessService {
     /**
      * Checks if the context institution has at least one of the given customer and organisational types attributed and if the context user
      * has the given rights attributed
-     * @param orgPerms the customer types to check
+     * @param orgPerms the customer types to check against
      * @param orgTypes the organisation types to check
      * @param userRole the given institutional permissions to check
      * @return true if the institution has the given customer and organisation type and the user the given institutional permissions, false otherwise
@@ -264,7 +263,7 @@ class AccessService {
         }
 
         rolesToCheck.each{ rot ->
-            UserOrg userOrg = UserOrg.findByUserAndOrgAndFormalRole(user, orgToCheck, rot)
+            UserOrgRole userOrg = UserOrgRole.findByUserAndOrgAndFormalRole(user, orgToCheck, rot)
             if (userOrg) {
                 result = true
             }

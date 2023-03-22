@@ -2,7 +2,7 @@ package de.laser
 
 import de.laser.auth.Role
 import de.laser.auth.User
-import de.laser.auth.UserOrg
+import de.laser.auth.UserOrgRole
 import de.laser.utils.AppUtils
 import de.laser.config.ConfigMapper
 import de.laser.storage.RDStore
@@ -109,7 +109,7 @@ class InstAdmService {
      */
     boolean isUserLastInstAdminForOrg(User user, Org org){
 
-        List<UserOrg> userOrgs = UserOrg.findAllByOrgAndFormalRole(
+        List<UserOrgRole> userOrgs = UserOrgRole.findAllByOrgAndFormalRole(
                 org,
                 Role.findByAuthority('INST_ADM')
         )
@@ -139,10 +139,10 @@ class InstAdmService {
 
         try {
             Locale loc = LocaleUtils.getCurrentLocale()
-            UserOrg check = UserOrg.findByOrgAndUserAndFormalRole(org, user, formalRole)
+            UserOrgRole check = UserOrgRole.findByOrgAndUserAndFormalRole(org, user, formalRole)
 
             if (formalRole.roleType == 'user') {
-                check = UserOrg.findByOrgAndUserAndFormalRoleInList(org, user, Role.findAllByRoleType('user'))
+                check = UserOrgRole.findByOrgAndUserAndFormalRoleInList(org, user, Role.findAllByRoleType('user'))
             }
 
             if (check) {
@@ -154,7 +154,7 @@ class InstAdmService {
             }
             else {
                 log.debug("Create new user_org entry....");
-                UserOrg uo = new UserOrg(
+                UserOrgRole uo = new UserOrgRole(
                         org: org,
                         user: user,
                         formalRole: formalRole)

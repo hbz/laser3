@@ -401,7 +401,7 @@
                 <td class="center aligned">
                     <%
                         String instAdminIcon = '<i class="large red times icon"></i>'
-                        List<User> users = User.executeQuery('select uo.user from UserOrg uo where uo.org = :org and uo.formalRole = :instAdmin', [org: org, instAdmin: Role.findByAuthority('INST_ADM')])
+                        List<User> users = User.executeQuery('select uo.user from UserOrgRole uo where uo.org = :org and uo.formalRole = :instAdmin', [org: org, instAdmin: Role.findByAuthority('INST_ADM')])
                         if (users)
                             instAdminIcon = '<i class="large green check icon"></i>'
                     %>

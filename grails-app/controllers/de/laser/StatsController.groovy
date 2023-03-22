@@ -21,7 +21,7 @@ class StatsController  {
 
     result.instStats = Org.executeQuery('''
 select distinct(o), count(u) 
-from Org as o, User as u, UserOrg as uo 
+from Org as o, User as u, UserOrgRole as uo 
 where uo.user = u 
 and uo.org = o
 group by o order by o.sortname, o.shortname

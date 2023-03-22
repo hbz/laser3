@@ -3,7 +3,7 @@ package de.laser
 
 import de.laser.auth.Role
 import de.laser.auth.User
-import de.laser.auth.UserOrg
+import de.laser.auth.UserOrgRole
 import de.laser.UserSetting.KEYS
 import de.laser.utils.LocaleUtils
 import de.laser.utils.PasswordUtils
@@ -132,7 +132,7 @@ class ProfileController {
     def deleteAffiliation() {
         log.debug("deleteAffiliation() userOrg: ${params.assoc}")
         User user        = contextService.getUser()
-        UserOrg userOrg  = UserOrg.findByUserAndId(user, params.assoc)
+        UserOrgRole userOrg  = UserOrgRole.findByUserAndId(user, params.assoc)
 
         if (userOrg) {
             userOrg.delete()
@@ -165,7 +165,7 @@ class ProfileController {
             result.delResult = deletionService.deleteUser(result.user, null, DeletionService.DRY_RUN)
         }
 
-        List<Org> orgList = Org.executeQuery('select distinct uo.org from UserOrg uo where uo.user = :self', [self: result.user])
+        List<Org> orgList = Org.executeQuery('select distinct uo.org from UserOrgRole uo where uo.user = :self', [self: result.user])
         result.substituteList = orgList ? User.executeQuery(
                 'select distinct u from User u join u.affiliations ua where ua.org in :orgList and u != :self and ua.formalRole = :instAdm order by u.username',
                 [orgList: orgList, self: result.user, instAdm: Role.findByAuthority('INST_ADM')]

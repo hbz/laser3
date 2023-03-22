@@ -52,7 +52,7 @@ class UserController {
     def delete() {
         Map<String, Object> result = userControllerService.getResultGenerics(params)
 
-            List<Org> affils = Org.executeQuery('select distinct uo.org from UserOrg uo where uo.user = :user', [user: result.user])
+            List<Org> affils = Org.executeQuery('select distinct uo.org from UserOrgRole uo where uo.user = :user', [user: result.user])
 
             if (affils.size() > 1) {
                 flash.error = message(code: 'user.delete.error.multiAffils') as String
@@ -69,7 +69,7 @@ class UserController {
                 result.delResult = deletionService.deleteUser(result.user as User, null, DeletionService.DRY_RUN)
             }
 
-            List<Org> orgList = Org.executeQuery('select distinct uo.org from UserOrg uo where uo.user = :self', [self: result.user])
+            List<Org> orgList = Org.executeQuery('select distinct uo.org from UserOrgRole uo where uo.user = :self', [self: result.user])
             result.substituteList = orgList ? User.executeQuery(
                     'select distinct u from User u join u.affiliations ua where ua.org in :orgList and u != :self and ua.formalRole = :instAdm order by u.username',
                     [orgList: orgList, self: result.user, instAdm: Role.findByAuthority('INST_ADM')]

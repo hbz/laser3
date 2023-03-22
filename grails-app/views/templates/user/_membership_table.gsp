@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Org; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.auth.UserOrg;" %>
+<%@ page import="de.laser.Org; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.auth.UserOrgRole;" %>
 <laser:serviceInjection />
 
 <div class="ui card">
