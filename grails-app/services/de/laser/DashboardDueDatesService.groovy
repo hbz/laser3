@@ -44,7 +44,7 @@ class DashboardDueDatesService {
     String replyTo
     boolean update_running = false
 
-    public static final String QRY_ALL_ORGS_OF_USER = "select distinct o from Org as o where exists ( select uo from UserOrg as uo where uo.org = o and uo.user = :user) order by o.name"
+    public static final String QRY_ALL_ORGS_OF_USER = "select distinct o from Org as o where exists ( select uo from UserOrgRole as uo where uo.org = o and uo.user = :user) order by o.name"
 
     // TODO: refactoring; change event DBDD_SERVICE_START_2
 

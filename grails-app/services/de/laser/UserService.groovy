@@ -3,7 +3,7 @@ package de.laser
 
 import de.laser.auth.Role
 import de.laser.auth.User
-import de.laser.auth.UserOrg
+import de.laser.auth.UserOrgRole
 import de.laser.auth.UserRole
 import de.laser.config.ConfigMapper
 import de.laser.storage.RDConstants
@@ -70,7 +70,7 @@ class UserService {
         Map queryParams = [:]
 
         if (params.org || params.authority) {
-            baseQuery.add( 'UserOrg uo' )
+            baseQuery.add( 'UserOrgRole uo' )
 
             if (params.org) {
                 whereQuery.add( 'uo.user = u and uo.org = :org' )
@@ -122,12 +122,12 @@ class UserService {
             Role formalRole = Role.get(params.formalRole)
 
             if (org && formalRole) {
-                int existingUserOrgs = UserOrg.findAllByOrgAndFormalRole(org, formalRole).size()
+                int existingUserOrgs = UserOrgRole.findAllByOrgAndFormalRole(org, formalRole).size()
 
                 instAdmService.createAffiliation(user, org, formalRole, flash)
 
                 if (formalRole.authority == 'INST_ADM' && existingUserOrgs == 0 && ! org.legallyObligedBy) { // only if new instAdm
-                    if (UserOrg.findByOrgAndUserAndFormalRole(org, user, formalRole)) { // only on success
+                    if (UserOrgRole.findByOrgAndUserAndFormalRole(org, user, formalRole)) { // only on success
                         org.legallyObligedBy = contextService.getOrg()
                         org.save()
                         log.debug("set legallyObligedBy for ${org} -> ${contextService.getOrg()}")
@@ -192,9 +192,9 @@ class UserService {
             rolesToCheck.each { String rot ->
                 Role role = Role.findByAuthority(rot)
                 if (role) {
-                    UserOrg uo = UserOrg.findByUserAndOrgAndFormalRole(user, orgToCheck, role)
+                    UserOrgRole uo = UserOrgRole.findByUserAndOrgAndFormalRole(user, orgToCheck, role)
                     //for users with multiple affiliations, login fails because of LazyInitializationException of the domain collection
-                    List<UserOrg> affiliations = UserOrg.findAllByUser(user)
+                    List<UserOrgRole> affiliations = UserOrgRole.findAllByUser(user)
                     check = check || (uo && affiliations.contains(uo))
                 }
             }

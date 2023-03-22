@@ -2,7 +2,7 @@ package de.laser
 
 
 import de.laser.auth.User
-import de.laser.auth.UserOrg
+import de.laser.auth.UserOrgRole
 import de.laser.finance.CostItem
 import de.laser.config.ConfigDefaults
 import de.laser.properties.PropertyDefinition
@@ -658,7 +658,7 @@ class SurveyService {
         if(surveyInfo.owner)
         {
             //Only User that approved
-            List<UserOrg> userOrgs = UserOrg.findAllByOrg(surveyInfo.owner)
+            List<UserOrgRole> userOrgs = UserOrgRole.findAllByOrg(surveyInfo.owner)
 
             //Only User with Notification by Email and for Surveys Start
             userOrgs.each { userOrg ->
@@ -739,7 +739,7 @@ class SurveyService {
         if(surveyInfo.owner)
         {
             //Only User that approved
-            List<UserOrg> userOrgs = UserOrg.findAllByOrg(participationFinish)
+            List<UserOrgRole> userOrgs = UserOrgRole.findAllByOrg(participationFinish)
 
             //Only User with Notification by Email and for Surveys Start
             userOrgs.each { userOrg ->
@@ -981,7 +981,7 @@ class SurveyService {
         if(orgs)
         {
             //Only User that approved
-            List<UserOrg> userOrgs = UserOrg.findAllByOrgInList(orgs)
+            List<UserOrgRole> userOrgs = UserOrgRole.findAllByOrgInList(orgs)
 
             //Only User with Notification by Email and for Surveys Start
             userOrgs.each { userOrg ->
@@ -1010,7 +1010,7 @@ class SurveyService {
     void emailsToSurveyUsersOfOrg(SurveyInfo surveyInfo, Org org, boolean reminderMail){
 
         //Only User that approved
-        List<UserOrg> userOrgs = UserOrg.findAllByOrg(org)
+        List<UserOrgRole> userOrgs = UserOrgRole.findAllByOrg(org)
 
         //Only User with Notification by Email and for Surveys Start
         userOrgs.each { userOrg ->

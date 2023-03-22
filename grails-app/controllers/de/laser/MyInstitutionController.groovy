@@ -2218,7 +2218,7 @@ class MyInstitutionController  {
      * Lists the users of the context institution
      * @return a list of users affiliated to the context institution
      * @see User
-     * @see de.laser.auth.UserOrg
+     * @see de.laser.auth.UserOrgRole
      */
     @DebugInfo(test = 'is_ROLE_ADMIN_or_hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_ADM") })
@@ -2269,7 +2269,7 @@ class MyInstitutionController  {
         }
 
         if (result.user) {
-            List<Org> affils = Org.executeQuery('select distinct uo.org from UserOrg uo where uo.user = :user',
+            List<Org> affils = Org.executeQuery('select distinct uo.org from UserOrgRole uo where uo.user = :user',
                     [user: result.user])
 
             if (affils.size() > 1) {
@@ -2363,7 +2363,7 @@ class MyInstitutionController  {
     /**
      * Attaches a given user to the given institution
      * @return the user editing view
-     * @see de.laser.auth.UserOrg
+     * @see de.laser.auth.UserOrgRole
      */
     @DebugInfo(test = 'is_ROLE_ADMIN_or_hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_ADM") })

@@ -7,7 +7,7 @@ import de.laser.ctrl.UserControllerService
 import de.laser.properties.OrgProperty
 import de.laser.auth.Role
 import de.laser.auth.User
-import de.laser.auth.UserOrg
+import de.laser.auth.UserOrgRole
 import de.laser.properties.PropertyDefinition
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
@@ -1222,7 +1222,7 @@ class OrganisationController  {
     /**
      * Shows all user accounts affiliated to (at least) the given institution
      * @return renders the user list template with the users affiliated to this institution
-     * @see UserOrg
+     * @see UserOrgRole
      * @see User
      */
     @DebugInfo(test = 'is_ROLE_ADMIN_or_hasAffiliation("INST_ADM")')
@@ -1294,7 +1294,7 @@ class OrganisationController  {
         }
 
         if (result.user) {
-            List<Org> affils = Org.executeQuery('select distinct uo.org from UserOrg uo where uo.user = :user', [user: result.user])
+            List<Org> affils = Org.executeQuery('select distinct uo.org from UserOrgRole uo where uo.user = :user', [user: result.user])
 
             if (affils.size() > 1) {
                 flash.error = message(code: 'user.delete.error.multiAffils') as String

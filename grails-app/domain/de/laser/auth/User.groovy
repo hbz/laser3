@@ -28,7 +28,7 @@ class User {
     boolean accountLocked   = false
     boolean passwordExpired = false
 
-    static hasMany      = [ affiliations: UserOrg, roles: UserRole ]
+    static hasMany      = [ affiliations: UserOrgRole, roles: UserRole ]
     static mappedBy     = [ affiliations: 'user',  roles: 'user' ]
 
     static constraints = {
@@ -72,7 +72,7 @@ class User {
 
     /**
      * Retrieves a {@link Set} of global {@link Role}s assigned to the user.
-     * Note that they are not the affiliations (= {@link UserOrg}s) a user may have and which ensure institution-regulated permissions!
+     * Note that they are not the affiliations (= {@link UserOrgRole}s) a user may have and which ensure institution-regulated permissions!
      * @return the user's {@link Role}s
      */
     Set<Role> getAuthorities() {
@@ -171,7 +171,7 @@ class User {
     boolean isMemberOf(Org org) {
         //used in user/global/edit.gsp
         ! Org.executeQuery(
-                "select uo from UserOrg uo where uo.user = :user and uo.org = :org and uo.formalRole.roleType = 'user'",
+                "select uo from UserOrgRole uo where uo.user = :user and uo.org = :org and uo.formalRole.roleType = 'user'",
                 [user: this, org: org]
         ).isEmpty()
     }
@@ -187,7 +187,7 @@ class User {
         orgList.add(org)
 
         ! Org.executeQuery(
-                "select uo from UserOrg uo where uo.user = :user and uo.org in (:orgList) and uo.formalRole = :instAdm",
+                "select uo from UserOrgRole uo where uo.user = :user and uo.org in (:orgList) and uo.formalRole = :instAdm",
                 [user: this, orgList: orgList, instAdm: Role.findByAuthority('INST_ADM')]
         ).isEmpty()
     }
