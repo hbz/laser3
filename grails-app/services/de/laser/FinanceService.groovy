@@ -698,7 +698,7 @@ class FinanceService {
                         ownFilter.remove('filterSubStatus')
                         String queryWithoutSub = "select ci from CostItem ci left join ci.costItemElement cie left join ci.costItemElementConfiguration ciec " +
                                 "where ci.owner = :org and ci.sub = null ${genericExcludes+filterQuery.ciFilter} "+
-                                "order by "+configMap.sortConfig.ownSort+" "+configMap.sortConfig.ownOrder + ' ciec.value desc, cie.value_' + LocaleUtils.getCurrentLang()
+                                "order by "+configMap.sortConfig.ownSort+" "+configMap.sortConfig.ownOrder + ', ciec.value desc, cie.value_' + LocaleUtils.getCurrentLang()
                         prf.setBenchmark("execute second own query")
                         ownSubscriptionCostItems.addAll(CostItem.executeQuery(queryWithoutSub,[org:org]+genericExcludeParams+ownFilter))
                     }

@@ -9,6 +9,10 @@
 
 4911    22.03.2023  dev     3.1         David   Feature     Refactoring: Kundentyp
 
+4914    21.03.2023  rc-3.0  3.0.5       Andreas Bug         fehlendes Komma in der Abfrage ergänzt
+
+4860    21.03.2023  rc-3.0  3.0.5       Andreas Bug         Proxy verhinderte den korrekten Aufbau der Merkmalsliste
+
 --      20.03.2023  rc-3.0  3.0.5       Andreas Bug         Entferne auch Bestandstitel ohne Status
 
 4917    20.03.2023  rc-3.0  3.0.5       Andreas Bug         fehlerhafte Übertragung der Attribute nach Verlängerung
