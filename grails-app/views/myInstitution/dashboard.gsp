@@ -9,7 +9,7 @@
         <ui:h1HeaderWithIcon text="${institution.name}" />
 
 %{--<pre>--}%
-%{--    ORG_CONSORTIUM_BASIC: ${accessService.checkPerm("ORG_CONSORTIUM_BASIC")}--}%
+%{--    ORG_CONSORTIUM_BASIC: ${accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}--}%
 %{--    ORG_CONSORTIUM_PRO: ${accessService.checkPerm("ORG_CONSORTIUM_PRO")}--}%
 %{--    ORG_INST_BASIC: ${accessService.checkPerm(CustomerTypeService.ORG_INST_BASIC)}--}%
 %{--    ORG_INST_PRO: ${accessService.checkPerm(CustomerTypeService.ORG_INST_PRO)}--}%

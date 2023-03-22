@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyConfig; de.laser.Subscription; de.laser.storage.RDConstants; de.laser.storage.RDStore; de.laser.RefdataCategory; de.laser.License" %>
+<%@ page import="de.laser.CustomerTypeService; de.laser.survey.SurveyConfig; de.laser.Subscription; de.laser.storage.RDConstants; de.laser.storage.RDStore; de.laser.RefdataCategory; de.laser.License" %>
 <laser:serviceInjection/>
 <g:if test="${!(sourceObject && targetObject)}">
     <% if (params) {
@@ -39,7 +39,7 @@
                                       noSelection="${['': message(code: 'default.select.choose.label')]}"
                                       onchange="JSPC.app.adjustDropdown()"/>
                     </div><br/>
-                    <g:if test="${accessService.checkPerm("ORG_CONSORTIUM_BASIC")}">
+                    <g:if test="${accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
                         <div class="ui checkbox">
                             <g:checkBox name="show.subscriber" value="true" checked="false"
                                         onchange="JSPC.app.adjustDropdown()"/>
@@ -67,7 +67,7 @@
                                       noSelection="${['': message(code: 'default.select.choose.label')]}"
                                       onchange="JSPC.app.adjustDropdown()"/>
                     </div><br/>
-                    <g:if test="${accessService.checkPerm("ORG_CONSORTIUM_BASIC")}">
+                    <g:if test="${accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
                         <div class="ui checkbox">
                             <g:checkBox name="show.subscriber" value="true" checked="false"
                                         onchange="JSPC.app.adjustDropdown()"/>

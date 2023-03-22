@@ -380,7 +380,7 @@
                         </select>
 
                     </div>
-                    <g:if test="${accessService.checkPerm("ORG_CONSORTIUM_BASIC")}">
+                    <g:if test="${accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
                         <div class="ui checkbox">
                             <g:checkBox name="show.subscriber" value="true" checked="true"
                                         onchange="JSPC.app.adjustDropdown()"/>

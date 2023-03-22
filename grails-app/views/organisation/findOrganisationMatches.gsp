@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore; de.laser.Org; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.FormService" %>
+<%@ page import="de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.Org; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.FormService" %>
 
 <g:set var="entityName" value="${message(code: 'default.institution')}" />
 <laser:htmlStart text="${message(code:"default.create.label", args:[entityName])}" serviceInjection="true"/>
@@ -55,7 +55,7 @@
 								<tr>
 									<td>
 										${organisationInstance.name}
-										<g:if test="${(accessService.checkPerm('ORG_CONSORTIUM_BASIC') && members.get(organisationInstance.id)?.contains(institution.id) && members.get(organisationInstance.id)?.size() == 1) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
+										<g:if test="${(accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && members.get(organisationInstance.id)?.contains(institution.id) && members.get(organisationInstance.id)?.size() == 1) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
 											<g:link controller="organisation" action="show" id="${organisationInstance.id}">(${message(code:'default.button.edit.label')})</g:link>
 										</g:if>
 									</td>
