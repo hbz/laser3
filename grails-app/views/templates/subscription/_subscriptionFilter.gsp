@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Org; de.laser.RefdataCategory; de.laser.interfaces.CalculatedType;de.laser.storage.RDStore; de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.CustomerTypeService; de.laser.Org; de.laser.RefdataCategory; de.laser.interfaces.CalculatedType;de.laser.storage.RDStore; de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
 <laser:serviceInjection />
 
 <ui:filter>
@@ -214,7 +214,7 @@
             </div>
             <% /* 4-2 */ %>
         <%-- TODO [ticket=2276] provisoric, name check is in order to prevent id mismatch --%>
-            <g:if test="${accessService.checkPerm("ORG_INST_PRO") || institution.globalUID == Org.findByName('LAS:eR Backoffice').globalUID}">
+            <g:if test="${accessService.checkPerm(CustomerTypeService.ORG_INST_PRO) || institution.globalUID == Org.findByName('LAS:eR Backoffice').globalUID}">
                 <div class="field">
                     <fieldset id="subscritionType">
                         <label>${message(code: 'myinst.currentSubscriptions.subscription_type')}</label>
@@ -244,7 +244,7 @@
                 <div class="field"></div>
             </g:else>
 
-            <g:if test="${accessService.checkPerm("ORG_INST_BASIC")}">
+            <g:if test="${accessService.checkPerm(CustomerTypeService.ORG_INST_BASIC)}">
                 <div class="field">
                     <fieldset>
                         <legend id="la-legend-searchDropdown">${message(code: 'gasco.filter.consortialAuthority')}</legend>

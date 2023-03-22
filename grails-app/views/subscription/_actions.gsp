@@ -69,7 +69,7 @@
             </ui:exportDropdownItem>--%>
         </ui:exportDropdown>
 </g:if>
-<g:if test="${accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC,'INST_EDITOR')}">
+<g:if test="${accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')}">
     <ui:actionsDropdown>
         <%--<g:if test="${editable}">--%>
             <ui:actionsDropdownItem message="task.create.new" data-ui="modal" href="#modalCreateTask" />
@@ -133,7 +133,7 @@
                     </g:else>
                 </g:if>
             </sec:ifAnyGranted>
-            <g:if test="${subscription._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE] && accessService.checkPerm("ORG_CONSORTIUM_BASIC")}">
+            <g:if test="${subscription._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE] && accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
                 <div class="divider"></div>
                 <g:if test="${hasNext}">
                     <ui:actionsDropdownItemDisabled controller="subscription" action="renewSubscription"
@@ -199,11 +199,11 @@
         </g:if>
     </ui:actionsDropdown>
 </g:if>
-<g:if test="${editable || accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC,'INST_EDITOR')}">
+<g:if test="${editable || accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')}">
     <laser:render template="/templates/documents/modal" model="${[ownobj: subscription, owntp: 'subscription']}"/>
     <laser:render template="/templates/tasks/modal_create" model="${[ownobj: subscription, owntp: 'subscription']}"/>
 </g:if>
-<g:if test="${accessService.checkMinUserOrgRole_ctxConstraint(user,contextOrg,'INST_EDITOR')}">
+<g:if test="${accessService.checkMinUserOrgRole_and_CtxOrg(user,contextOrg,'INST_EDITOR')}">
     <laser:render template="/templates/notes/modal_create" model="${[ownobj: subscription, owntp: 'subscription']}"/>
 </g:if>
 

@@ -168,10 +168,10 @@ class UserService {
     boolean is_ROLE_ADMIN_or_checkAffiliation(User user, String userRoleName, Org orgToCheck) {
         boolean check = false
 
-        if (SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN")) {
+        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
             check = true // may the force be with you
         }
-        if (! SpringSecurityUtils.ifAnyGranted("ROLE_USER")) {
+        if (! SpringSecurityUtils.ifAnyGranted('ROLE_USER')) {
             check = false // min restriction fail
         }
 
@@ -181,12 +181,12 @@ class UserService {
             List<String> rolesToCheck = [userRoleName]
 
             // handling role hierarchy
-            if (userRoleName == "INST_USER") {
-                rolesToCheck << "INST_EDITOR"
-                rolesToCheck << "INST_ADM"
+            if (userRoleName == 'INST_USER') {
+                rolesToCheck << 'INST_EDITOR'
+                rolesToCheck << 'INST_ADM'
             }
-            else if (userRoleName == "INST_EDITOR") {
-                rolesToCheck << "INST_ADM"
+            else if (userRoleName == 'INST_EDITOR') {
+                rolesToCheck << 'INST_ADM'
             }
 
             rolesToCheck.each { String rot ->

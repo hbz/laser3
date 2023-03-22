@@ -1,5 +1,5 @@
 <!-- A: templates/properties/_genericFilter -->
-<%@ page import="de.laser.properties.PropertyDefinition; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.CustomerTypeService; de.laser.properties.PropertyDefinition; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore" %>
 <laser:serviceInjection/>
 <%--params.filterProp: ${params.filterProp}--%>
 <div class="field">
@@ -43,7 +43,7 @@
 
     <g:if test="${params.descr in [PropertyDefinition.ORG_PROP]}">
         <div class="two fields">
-            <g:if test="${accessService.checkPerm('ORG_CONSORTIUM_BASIC')}">
+            <g:if test="${accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
 
                 <div class="field">
                     <div class="inline fields la-filter-inline">

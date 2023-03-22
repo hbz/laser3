@@ -321,7 +321,7 @@ class MyInstitutionController  {
 		Profiler prf = new Profiler()
 		prf.setBenchmark('init')
 
-        result.is_inst_admin = accessService.checkMinUserOrgRole_ctxConstraint(result.user, result.institution, 'INST_ADM')
+        result.is_inst_admin = accessService.checkMinUserOrgRole_and_CtxOrg(result.user, result.institution, 'INST_ADM')
 
         Date date_restriction = null
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
@@ -350,7 +350,7 @@ class MyInstitutionController  {
 
         Set<String> licenseFilterTable = []
 
-        if (accessService.checkPerm("ORG_INST_PRO")) {
+        if (accessService.checkPerm(CustomerTypeService.ORG_INST_PRO)) {
             Set<RefdataValue> roleTypes = []
             if(params.licTypes) {
                 Set<String> licTypes = params.list('licTypes')
@@ -365,7 +365,7 @@ class MyInstitutionController  {
                 licenseFilterTable << "action"
             licenseFilterTable << "licensingConsortium"
         }
-        else if (accessService.checkPerm("ORG_CONSORTIUM_BASIC")) {
+        else if (accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
             base_qry = "from License as l where exists ( select o from l.orgRelations as o where ( o.roleType = :roleTypeC AND o.org = :lic_org AND l.instanceOf is null AND NOT exists ( select o2 from l.orgRelations as o2 where o2.roleType = :roleTypeL ) ) )"
             qry_params = [roleTypeC:RDStore.OR_LICENSING_CONSORTIUM, roleTypeL:RDStore.OR_LICENSEE_CONS, lic_org:result.institution]
             licenseFilterTable << "memberLicenses"
@@ -475,7 +475,7 @@ class MyInstitutionController  {
                 qry_params.subKinds = subKinds
             }
 
-            if(accessService.checkPerm("ORG_CONSORTIUM_BASIC")) {
+            if (accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
                 subscrQueryFilter << "s.instanceOf is null"
             }
 
@@ -666,7 +666,7 @@ class MyInstitutionController  {
 
         result.defaultEndYear = sdf.format(cal.getTime())
 
-        result.is_inst_admin = accessService.checkMinUserOrgRole_ctxConstraint(result.user, result.institution, 'INST_EDITOR')
+        result.is_inst_admin = accessService.checkMinUserOrgRole_and_CtxOrg(result.user, result.institution, 'INST_EDITOR')
 
         result.licenses = [] // ERMS-2431
         result.numLicenses = 0
@@ -691,14 +691,14 @@ class MyInstitutionController  {
             Org org = contextService.getOrg()
 
             Set<RefdataValue> defaultOrgRoleType = []
-            if(accessService.checkPerm("ORG_CONSORTIUM_BASIC"))
+            if (accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC))
                 defaultOrgRoleType << RDStore.OT_CONSORTIUM.id.toString()
             else defaultOrgRoleType << RDStore.OT_INSTITUTION.id.toString()
 
             params.asOrgType = params.asOrgType ? [params.asOrgType] : defaultOrgRoleType
 
 
-            if (! accessService.checkMinUserOrgRole_ctxConstraint(user, org, 'INST_EDITOR')) {
+            if (! accessService.checkMinUserOrgRole_and_CtxOrg(user, org, 'INST_EDITOR')) {
                 flash.error = message(code:'myinst.error.noAdmin', args:[org.name]) as String
                 response.sendError(HttpStatus.SC_FORBIDDEN)
                 // render(status: '403', text:"You do not have permission to access ${org.name}. Please request access on the profile page");
@@ -986,7 +986,7 @@ class MyInstitutionController  {
      */
     private def _exportcurrentSubscription(List<Subscription> subscriptions, String format, Org contextOrg) {
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
-        boolean asCons = accessService.checkPerm('ORG_CONSORTIUM_BASIC')
+        boolean asCons = accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)
         List titles = ['Name',
                        g.message(code: 'globalUID.label'),
                        g.message(code: 'license.label'),
@@ -1194,7 +1194,7 @@ class MyInstitutionController  {
 
         if(!(params.tab in ['notes', 'documents', 'properties'])){
             //Important
-            if(!accessService.checkPerm('ORG_CONSORTIUM_BASIC')) {
+            if (!accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
                 if(params.subTypes == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id.toString()){
                     flash.error = message(code: 'subscriptionsManagement.noPermission.forSubsWithTypeConsortial') as String
                 }
@@ -1307,7 +1307,7 @@ class MyInstitutionController  {
         String instanceFilter = ""
         List<String> queryFilter = []
 
-        if(accessService.checkPerm("ORG_CONSORTIUM_BASIC")) {
+        if (accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
             orgRoles << RDStore.OR_SUBSCRIPTION_CONSORTIA
             queryFilter << " sub.instanceOf is null "
             instanceFilter += "and sub.instanceOf is null"
@@ -1653,7 +1653,7 @@ class MyInstitutionController  {
         SwissKnife.setPaginationParams(result, params, (User) result.user)
         result.acceptedOffset = 0
         def periodInDays = 600
-        Map<String,Object> pendingChangeConfigMap = [contextOrg: result.institution, consortialView:accessService.checkPerm(result.institution,"ORG_CONSORTIUM_BASIC"), periodInDays:periodInDays, max:result.max, offset:result.acceptedOffset]
+        Map<String,Object> pendingChangeConfigMap = [contextOrg: result.institution, consortialView:accessService.checkOrgPerm(result.institution, 'ORG_CONSORTIUM_BASIC'), periodInDays:periodInDays, max:result.max, offset:result.acceptedOffset]
 
         result.putAll(pendingChangeService.getChanges_old(pendingChangeConfigMap))
 
@@ -4209,7 +4209,7 @@ join sub.orgRelations or_sub where
             License license = License.get(params.id)
             boolean isEditable = license.isEditableBy(result.user)
 
-            if (! (accessService.checkMinUserOrgRole_ctxConstraint(result.user, result.institution, 'INST_EDITOR'))) {
+            if (! (accessService.checkMinUserOrgRole_and_CtxOrg(result.user, result.institution, 'INST_EDITOR'))) {
                 flash.error = message(code:'license.permissionInfo.noPerms') as String
                 response.sendError(HttpStatus.SC_FORBIDDEN)
                 return;

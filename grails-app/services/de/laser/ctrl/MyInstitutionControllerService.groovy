@@ -49,7 +49,7 @@ class MyInstitutionControllerService {
             return [status: STATUS_ERROR, result: result]
         }
 
-        result.is_inst_admin = accessService.checkMinUserOrgRole_ctxConstraint(result.user, result.institution, 'INST_ADM')
+        result.is_inst_admin = accessService.checkMinUserOrgRole_and_CtxOrg(result.user, result.institution, 'INST_ADM')
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
         result.acceptedOffset = 0
@@ -68,7 +68,7 @@ class MyInstitutionControllerService {
 
         // changes -> to AJAX
 
-        //Map<String,Object> pendingChangeConfigMap = [contextOrg:result.institution,consortialView:accessService.checkPerm(result.institution,"ORG_CONSORTIUM_BASIC"),periodInDays:periodInDays,max:result.max,offset:result.acceptedOffset]
+        //Map<String,Object> pendingChangeConfigMap = [contextOrg:result.institution,consortialView:accessService.checkOrgPerm(result.institution, 'ORG_CONSORTIUM_BASIC'),periodInDays:periodInDays,max:result.max,offset:result.acceptedOffset]
         //pu.setBenchmark('pending changes')
         //result.putAll(pendingChangeService.getChanges(pendingChangeConfigMap))
 
@@ -176,10 +176,10 @@ class MyInstitutionControllerService {
         result.showConsortiaFunctions = org.isCustomerType_Consortium()
         switch (params.action) {
             case [ 'processEmptyLicense', 'currentLicenses', 'currentSurveys', 'dashboard', 'getChanges', 'getSurveys', 'emptyLicense', 'surveyInfoFinish' ]:
-                result.editable = accessService.checkMinUserOrgRole_ctxConstraint(user, org, 'INST_EDITOR')
+                result.editable = accessService.checkMinUserOrgRole_and_CtxOrg(user, org, 'INST_EDITOR')
                 break
             case [ 'addressbook', 'budgetCodes', 'tasks' ]:
-                result.editable = accessService.checkMinUserOrgRole_ctxConstraint(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+                result.editable = accessService.is_ROLE_ADMIN_or_checkMinUserOrgRole_and_CtxOrg(user, org, 'INST_EDITOR')
                 break
             case 'surveyInfos':
                 result.editable = surveyService.isEditableSurvey(org, SurveyInfo.get(params.id) ?: null)
@@ -192,7 +192,7 @@ class MyInstitutionControllerService {
                 result.changeProperties = user.is_ROLE_ADMIN_or_hasAffiliation('INST_EDITOR')
                 break
             default:
-                result.editable = accessService.checkMinUserOrgRole_ctxConstraint(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+                result.editable = accessService.is_ROLE_ADMIN_or_checkMinUserOrgRole_and_CtxOrg(user, org, 'INST_EDITOR')
         }
 
         result

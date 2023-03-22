@@ -3364,7 +3364,7 @@ class SurveyController {
 
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         result.institution = contextService.getOrg()
-        if (!(result || accessService.checkPerm("ORG_CONSORTIUM_PRO"))) {
+        if (!(result || accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_PRO))) {
             response.sendError(401); return
         }
 
@@ -3414,7 +3414,7 @@ class SurveyController {
      def processRenewalWithSurvey() {
 
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
-        if (!(result || accessService.checkPerm("ORG_CONSORTIUM_PRO"))) {
+        if (!(result || accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_PRO))) {
             response.sendError(401); return
         }
 
@@ -3582,7 +3582,7 @@ class SurveyController {
             User user = contextService.getUser()
             result.error = [] as List
 
-            if (!accessService.checkMinUserOrgRole_ctxConstraint(user, result.institution, "INST_EDITOR")) {
+            if (!accessService.checkMinUserOrgRole_and_CtxOrg(user, result.institution, 'INST_EDITOR')) {
                 result.error = message(code: 'financials.permission.unauthorised', args: [result.institution ? result.institution.name : 'N/A']) as String
                 response.sendError(HttpStatus.SC_FORBIDDEN)
                 return
@@ -3807,7 +3807,7 @@ class SurveyController {
         result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
 
         result.superOrgType = []
-        if(accessService.checkPerm('ORG_CONSORTIUM_PRO')) {
+        if(accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)) {
             result.superOrgType << message(code:'consortium.superOrgType')
         }
 
@@ -4510,7 +4510,7 @@ class SurveyController {
 
         Org institution = contextService.getOrg()
 
-        if (accessService.checkPerm("ORG_CONSORTIUM_PRO")) {
+        if (accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)) {
 
                 License licenseCopy
 
@@ -4563,7 +4563,7 @@ class SurveyController {
                 }
 
                 if (memberSub) {
-                    if(accessService.checkPerm("ORG_CONSORTIUM_PRO")) {
+                    if(accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)) {
 
                         new OrgRole(org: org, sub: memberSub, roleType: RDStore.OR_SUBSCRIBER_CONS).save()
                         new OrgRole(org: institution, sub: memberSub, roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA).save()

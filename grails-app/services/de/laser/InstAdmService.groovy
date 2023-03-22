@@ -44,7 +44,7 @@ class InstAdmService {
      * @return true if the user has an INST_ADM grant to either the consortium or one of the members, false otherwise
      */
     boolean hasInstAdmPivileges(User user, Org org, List<RefdataValue> types) {
-        boolean result = accessService.checkMinUserOrgRole_ctxConstraint(user, org, 'INST_ADM')
+        boolean result = accessService.checkMinUserOrgRole_and_CtxOrg(user, org, 'INST_ADM')
 
         List<Org> topOrgs = Org.executeQuery(
                 'select c.toOrg from Combo c where c.fromOrg = :org and c.type in (:types)', [
@@ -52,7 +52,7 @@ class InstAdmService {
             ]
         )
         topOrgs.each{ top ->
-            if (accessService.checkMinUserOrgRole_ctxConstraint(user, top, 'INST_ADM')) {
+            if (accessService.checkMinUserOrgRole_and_CtxOrg(user, top, 'INST_ADM')) {
                 result = true
             }
         }
@@ -83,7 +83,7 @@ class InstAdmService {
             return result
         }
         else {
-            return accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_ADM")
+            return accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_ADM')
         }
     }
 
@@ -109,7 +109,7 @@ class InstAdmService {
 
         List<UserOrg> userOrgs = UserOrg.findAllByOrgAndFormalRole(
                 org,
-                Role.findByAuthority("INST_ADM")
+                Role.findByAuthority('INST_ADM')
         )
 
         return (userOrgs.size() == 1 && userOrgs[0].user == user)

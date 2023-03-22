@@ -7,13 +7,13 @@
     String documentMessage
     switch(ownobj.class.name) {
         case Org.class.name: documentMessage = "menu.my.documents"
-            editable = accessService.checkMinUserOrgRole_ctxConstraint(contextService.getUser(), contextOrg, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+            editable = accessService.is_ROLE_ADMIN_or_checkMinUserOrgRole_and_CtxOrg(contextService.getUser(), contextOrg, 'INST_EDITOR')
             break
         default: documentMessage = "license.documents"
             break
     }
 
-    boolean editable2 = accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_EDITOR")
+    boolean editable2 = accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')
     Set<DocContext> documentSet = ownobj.documents
 
     //Those are the rights settings the DMS needs to cope with. See the following documentation which is currently a requirement specification, too, and serves as base for ERMS-2393
@@ -99,7 +99,7 @@
                             </g:if>
 
                             <%-- 3 --%>
-                            <g:if test="${!(ownobj instanceof Org) && ownobj?.showUIShareButton() && accessService.checkMinUserOrgRole_ctxConstraint(contextService.getUser(), docctx.owner.owner, "INST_EDITOR")}">
+                            <g:if test="${!(ownobj instanceof Org) && ownobj?.showUIShareButton() && accessService.checkMinUserOrgRole_and_CtxOrg(contextService.getUser(), docctx.owner.owner, 'INST_EDITOR')}">
                                 <g:if test="${docctx?.isShared}">
                                     <span class="la-js-editmode-container">
                                         <ui:remoteLink class="ui icon green button la-modern-button js-no-wait-wheel la-popup-tooltip la-delay"
@@ -188,7 +188,7 @@
 %{--                                </div>--}%
 %{--                            </g:else>--}%
 %{--                            <%-- START Third Button --%>--}%
-%{--                            <g:if test="${!(ownobj instanceof Org) && ownobj?.showUIShareButton() && accessService.checkMinUserOrgRole_ctxConstraint(contextService.getUser(), docctx.owner.owner, "INST_EDITOR")}">--}%
+%{--                            <g:if test="${!(ownobj instanceof Org) && ownobj?.showUIShareButton() && accessService.checkMinUserOrgRole_and_CtxOrg(contextService.getUser(), docctx.owner.owner, 'INST_EDITOR')}">--}%
 %{--                                <g:if test="${docctx?.isShared}">--}%
 %{--                                    <span class="la-js-editmode-container">--}%
 %{--                                    <ui:remoteLink class="ui icon green button la-modern-button js-no-wait-wheel la-popup-tooltip la-delay"--}%

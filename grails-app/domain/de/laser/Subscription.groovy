@@ -4,6 +4,7 @@ import de.laser.annotations.RefdataInfo
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
+import de.laser.CustomerTypeService
 import de.laser.finance.CostItem
 import de.laser.interfaces.CalculatedType
 import de.laser.interfaces.Permissions

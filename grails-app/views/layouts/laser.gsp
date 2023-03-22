@@ -64,10 +64,10 @@
                                         <ui:link generateElementId="true" role="menuitem" controller="organisation" action="index">${message(code:'menu.public.all_orgs')}</ui:link>
                                     </sec:ifAnyGranted>
 
-                                    <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM_BASIC','INST_USER')}">
+                                    <g:if test="${accessService.checkPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_USER')}">
                                         <ui:link generateElementId="true" role="menuitem" controller="organisation" action="listInstitution">${message(code:'menu.public.all_insts')}</ui:link>
                                     </g:if>
-                                    <g:elseif test="${accessService.checkPermAffiliation('ORG_INST_BASIC','INST_USER')}">
+                                    <g:elseif test="${accessService.checkPermAffiliation(CustomerTypeService.ORG_INST_BASIC, 'INST_USER')}">
                                         <ui:link generateElementId="true" role="menuitem" controller="organisation" action="listConsortia">${message(code:'menu.public.all_cons')}</ui:link>
                                     </g:elseif>
 
@@ -89,11 +89,11 @@
                                 <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentSubscriptions" message="menu.my.subscriptions" />
                                 <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentLicenses" message="menu.my.licenses" />
 
-                                <g:if test="${accessService.checkPerm('ORG_CONSORTIUM_BASIC')}">
+                                <g:if test="${accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
                                     <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" specRole="ROLE_ADMIN" action="manageMembers" message="menu.my.insts" />
                                     <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" specRole="ROLE_ADMIN" action="manageConsortiaSubscriptions" message="menu.my.consortiaSubscriptions" />
                                 </g:if>
-                                <g:elseif test="${accessService.checkPerm('ORG_INST_BASIC')}">
+                                <g:elseif test="${accessService.checkPerm(CustomerTypeService.ORG_INST_BASIC)}">
                                     <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentConsortia" message="menu.my.consortia" />
                                 </g:elseif>
 
@@ -107,7 +107,7 @@
 
                                 <ui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" affiliation="INST_USER" controller="myInstitution" action="subscriptionsManagement" message="menu.my.subscriptionsManagement" />
 
-                                <g:if test="${accessService.checkPerm('ORG_INST_BASIC')}">
+                                <g:if test="${accessService.checkPerm(CustomerTypeService.ORG_INST_BASIC)}">
                                     <div class="divider"></div>
                                     <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentSurveys" message="menu.my.surveys" />
                                 </g:if>
@@ -115,7 +115,7 @@
                                 <div class="divider"></div>
                                 <ui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="${CustomerTypeService.PERMS_PRO}" affiliation="INST_USER" controller="myInstitution" action="currentWorkflows" message="menu.my.workflows" />
 
-                                <g:if test="${accessService.checkPerm('ORG_CONSORTIUM_PRO')}">
+                                <g:if test="${accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
                                     <div class="divider"></div>
                                     <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="survey" action="workflowsSurveysConsortia" message="menu.my.surveys" />
                                 </g:if>
