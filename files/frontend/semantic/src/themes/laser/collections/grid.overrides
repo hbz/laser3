@@ -133,3 +133,8 @@
   }
 
 }
+.ui.grid.positive {
+    box-shadow: 0 0 0 #a3c293 inset;
+    background: #fcfff5;
+    color: #2c662d;
+}

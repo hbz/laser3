@@ -6,7 +6,7 @@
 
     <g:if test="${editable}"><input id="select-all" type="checkbox" name="chkall" ${allChecked}/></g:if>
 
-    <div class="ui accordion la-accordion-showMore">
+    <div class="ui accordion la-accordion-showMore" id="surveyEntitlements">
         <g:each in="${ies.sourceIEs}" var="ie">
 
             <g:set var="tipp" value="${ie.tipp}"/>
@@ -30,8 +30,8 @@
 
 
 
-                    <div class="ui stackable equal width grid">
-                        <div class="one wide column" data-gokbId="${tipp.gokbId}" data-tippId="${tipp.id}" data-ieId="${ie.id}" data-index="${counter}">
+                    <div class="ui stackable equal width grid la-js-checkItem" data-gokbId="${tipp.gokbId}" data-tippId="${tipp.id}" data-ieId="${ie.id}" data-index="${counter}">
+                        <div class="one wide column">
                             <g:if test="${(params.tab == 'previousIEs' || params.tab == 'allIEs' || params.tab == 'toBeSelectedIEs' || params.tab == 'currentIEs') && (editable && !ieInNewSub && allowedToSelect)}">
                                 <input type="checkbox" name="bulkflag"
                                        class="bulkcheck" ${checkedCache ? checkedCache[ie.id.toString()] : ''}>
@@ -42,12 +42,6 @@
                             </g:elseif>
                         </div>
 
-
-                        <div class="one wide column la-js-show-hide" style="display: none">
-                            <g:if test="${editable}"><input type="checkbox"
-                                                            name="_bulkflag.${ie.id}"
-                                                            class="bulkcheck"/></g:if>
-                        </div>
 
                         <div class="one wide column">
                             ${counter++}
@@ -172,22 +166,21 @@
                                         class="ui angle double down icon"></i>
                                 </div>
                                 <g:if test="${(params.tab == 'allIEs' || params.tab == 'selectedIEs' || params.tab == 'toBeSelectedIEs') && editable && ieInNewSub && allowedToSelect}">
-                                    <g:link class="ui icon negative button la-modern-button la-popup-tooltip la-delay"
+                                    <g:link class="ui icon button blue la-modern-button la-popup-tooltip la-delay"
                                             action="processRemoveIssueEntitlementsSurvey"
                                             params="${[id: newSub.id, singleTitle: ieInNewSub.id, packageId: packageId, surveyConfigID: surveyConfig?.id]}"
                                             data-content="${message(code: 'subscription.details.addEntitlements.remove_now')}">
-                                        <i class="la-basket-shopping slash icon"></i>
-
+                                        <i class="shopping basket icon"></i>
                                     </g:link>
                                 </g:if>
 
 
                                 <g:if test="${(params.tab == 'allIEs' || params.tab == 'currentIEs' || params.tab == 'toBeSelectedIEs') && editable && !ieInNewSub && allowedToSelect}">
-                                    <g:link class="ui icon button blue la-modern-button la-popup-tooltip la-delay"
+                                    <g:link class="ui icon negative button la-modern-button la-popup-tooltip la-delay"
                                             action="processAddIssueEntitlementsSurvey"
                                             params="${[id: newSub.id, singleTitle: ie.id, surveyConfigID: surveyConfig?.id]}"
                                             data-content="${message(code: 'subscription.details.addEntitlements.add_now')}">
-                                        <i class="shopping basket icon"></i>
+                                        <i class="la-basket-shopping slash icon"></i>
                                     </g:link>
                                 </g:if>
                             </div>
@@ -408,8 +401,7 @@
     <g:message code="financials.totalCostOnPage"/>: <g:formatNumber number="${sumlistPrice}" type="currency"/><br />
     %{--<g:message code="tipp.price.localPrice"/>: <g:formatNumber number="${sumlocalPrice}" type="currency"/>--}%
     <g:message code="financials.totalCost"/>: <g:formatNumber number="${iesListPriceSum}" type="currency"/>
-    <table class="ui sortable celled la-js-responsive-table la-table table la-ignore-fixed la-bulk-header"
-           id="surveyEntitlements">
+%{--    <table class="ui sortable celled la-js-responsive-table la-table table la-ignore-fixed la-bulk-header">
         <thead>
         <tr>
             <th>
@@ -572,5 +564,5 @@
             <th></th>
         </tr>
         </tfoot>
-    </table>
+    </table>--}%
 </div>

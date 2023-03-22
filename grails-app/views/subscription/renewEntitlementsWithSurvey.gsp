@@ -430,8 +430,22 @@
 
 
         JSPC.app.selectAll = function () {
-            $('#select-all').is( ":checked") ? $('.bulkcheck').prop('checked', true) : $('.bulkcheck').prop('checked', false);
-            $('#select-all').is( ":checked") ? $("#surveyEntitlements tr").addClass("positive") : $("#surveyEntitlements tr").removeClass("positive");
+           if ( $('#select-all').is( ":checked") ){
+                $( '#surveyEntitlements .bulkcheck' ).each(function( index ) {
+                    $(this).prop('checked', true);
+                     $(this).parents('.la-js-checkItem').addClass("positive");
+                    console.log(  $(this));
+                });
+           }
+           else if ( $('#select-all').not( ":checked") ){
+                $( '#surveyEntitlements .bulkcheck' ).each(function( index ) {
+                    $(this).prop('checked', false);
+                    $(this).parents('.la-js-checkItem').removeClass("positive");
+                    console.log( "nein");
+                });
+           }
+           //$('#select-all').is( ":checked") ? $('.bulkcheck').prop('checked', true) : $('.bulkcheck').prop('checked', false);
+           //$('#select-all').is( ":checked") ? $("#surveyEntitlements .la-js-checkItem").addClass("positive") : $("#surveyEntitlements .la-js-checkItem").removeClass("positive");
             JSPC.app.updateSelectionCache("all",$('#select-all').prop('checked'));
         }
 
@@ -486,13 +500,17 @@
 
 
     $(".bulkcheck").change(function() {
-        var index = $(this).parents(".column").attr("data-index");
+        console.log("geklickt");
+        var index = $(this).parents(".la-js-checkItem").attr("data-index");
+
             if (this.checked) {
                 $("div[data-index='" + index + "'").addClass("positive");
             } else {
                 $("div[data-index='" + index + "'").removeClass("positive");
             }
-        JSPC.app.updateSelectionCache($(this).parents(".column").attr("data-ieId"), $(this).prop('checked'));
+
+
+        JSPC.app.updateSelectionCache($(this).parents(".la-js-checkItem").attr("data-ieId"), $(this).prop('checked'));
     });
 
 </laser:script>
