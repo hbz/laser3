@@ -1,5 +1,6 @@
 package de.laser.system
 
+import de.laser.MailSendService
 import de.laser.RefdataValue
 import de.laser.UserSetting
 import de.laser.auth.User
@@ -117,6 +118,7 @@ class SystemAnnouncement {
             return false
         }
 
+        MailSendService mailSendService = BeanStore.getMailSendService()
         withTransaction {
 
             List<User> reps = SystemAnnouncement.getRecipients()
@@ -129,7 +131,7 @@ class SystemAnnouncement {
 
             reps.each { u ->
                 try {
-                    _sendMail(u)
+                    mailSendService.sendSystemAnnouncementMail(u, this)
                     validUserIds << u.id
                 }
                 catch (Exception e) {
@@ -158,46 +160,5 @@ class SystemAnnouncement {
         }
     }
 
-    /**
-     * Sends a mail to a given user. The system announcement is being included in a mail template
-     * @param user the {@link User} to be notified
-     * @throws Exception
-     */
-    private void _sendMail(User user) throws Exception {
 
-        MessageSource messageSource = BeanStore.getMessageSource()
-        Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', RDConstants.LANGUAGE)).value.toString())
-
-        String currentServer = AppUtils.getCurrentServer()
-        String subjectSystemPraefix = (currentServer == AppUtils.PROD) ? "LAS:eR - " : (ConfigMapper.getLaserSystemId() + " - ")
-        String mailSubject = subjectSystemPraefix + messageSource.getMessage('email.subject.sysAnnouncement', null, language)
-
-        boolean isRemindCCbyEmail = user.getSetting(UserSetting.KEYS.IS_REMIND_CC_BY_EMAIL, RDStore.YN_NO)?.rdValue == RDStore.YN_YES
-        String ccAddress
-
-        if (isRemindCCbyEmail){
-            ccAddress = user.getSetting(UserSetting.KEYS.REMIND_CC_EMAILADDRESS, null)?.getValue()
-            // println user.toString() + " : " + isRemindCCbyEmail + " : " + ccAddress
-        }
-
-        if (isRemindCCbyEmail && ccAddress) {
-            BeanStore.getMailService().sendMail {
-                to      user.getEmail()
-                from    ConfigMapper.getNotificationsEmailFrom()
-                cc      ccAddress
-                replyTo ConfigMapper.getNotificationsEmailReplyTo()
-                subject mailSubject
-                body    (view: "/mailTemplates/text/systemAnnouncement", model: [user: user, announcement: this])
-            }
-        }
-        else {
-            BeanStore.getMailService().sendMail {
-                to      user.getEmail()
-                from    ConfigMapper.getNotificationsEmailFrom()
-                replyTo ConfigMapper.getNotificationsEmailReplyTo()
-                subject mailSubject
-                body    (view: "/mailTemplates/text/systemAnnouncement", model: [user: user, announcement: this])
-            }
-        }
-    }
 }

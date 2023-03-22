@@ -36,6 +36,7 @@ class LoginController {
     GrailsApplication grailsApplication
     InstAdmService instAdmService
     SpringSecurityService springSecurityService
+    MailSendService mailSendService
 
   /**
    * Default action; redirects to 'defaultTargetUrl' if logged in, /login/auth otherwise.
@@ -185,7 +186,7 @@ class LoginController {
         if (user.save()) {
           flash.message = message(code: 'user.newPassword.successNoOutput') as String
 
-          instAdmService.sendMail(user, 'Passwortänderung', '/mailTemplates/text/newPassword', [user: user, newPass: newPassword])
+          mailSendService.sendMailToUser(user, 'Passwortänderung', '/mailTemplates/text/newPassword', [user: user, newPass: newPassword])
         }
       }
       else flash.error = g.message(code:'menu.user.forgottenPassword.userError') as String

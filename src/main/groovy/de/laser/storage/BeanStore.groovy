@@ -3,6 +3,7 @@ package de.laser.storage
 
 import de.laser.ESWrapperService
 import de.laser.GenericOIDService
+import de.laser.MailSendService
 import de.laser.PendingChangeService
 import de.laser.AccessService
 import de.laser.AuditService
@@ -126,6 +127,10 @@ class BeanStore {
     }
     static MailService getMailService() {
         Holders.grailsApplication.mainContext.getBean('mailService') as MailService
+    }
+
+    static MailSendService getMailSendService() {
+        Holders.grailsApplication.mainContext.getBean('mailSendService') as MailSendService
     }
     static OrganisationService getOrganisationService() {
         Holders.grailsApplication.mainContext.getBean('organisationService') as OrganisationService
