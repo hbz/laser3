@@ -10,7 +10,7 @@
 
 %{--<pre>--}%
 %{--    ORG_CONSORTIUM_BASIC: ${accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}--}%
-%{--    ORG_CONSORTIUM_PRO: ${accessService.checkPerm("ORG_CONSORTIUM_PRO")}--}%
+%{--    ORG_CONSORTIUM_PRO: ${accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)}--}%
 %{--    ORG_INST_BASIC: ${accessService.checkPerm(CustomerTypeService.ORG_INST_BASIC)}--}%
 %{--    ORG_INST_PRO: ${accessService.checkPerm(CustomerTypeService.ORG_INST_PRO)}--}%
 
@@ -253,7 +253,7 @@
             <div class="ui bottom attached tab segment ${us_dashboard_tab.value == 'Surveys' ? 'active' : ''}"
                  data-tab="surveys" style="border-top: 1px solid #d4d4d5; ">
                 <div class="la-float-right">
-                    <g:if test="${accessService.checkPerm('ORG_CONSORTIUM_PRO')}">
+                    <g:if test="${accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
                         <g:link controller="survey" action="workflowsSurveysConsortia"
                                 class="ui button">${message(code: 'menu.my.surveys')}</g:link>
                     </g:if>

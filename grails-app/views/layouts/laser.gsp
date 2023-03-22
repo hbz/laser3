@@ -115,7 +115,7 @@
                                 <div class="divider"></div>
                                 <ui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="${CustomerTypeService.PERMS_PRO}" affiliation="INST_USER" controller="myInstitution" action="currentWorkflows" message="menu.my.workflows" />
 
-                                <g:if test="${accessService.checkPerm('ORG_CONSORTIUM_PRO')}">
+                                <g:if test="${accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
                                     <div class="divider"></div>
                                     <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="survey" action="workflowsSurveysConsortia" message="menu.my.surveys" />
                                 </g:if>
