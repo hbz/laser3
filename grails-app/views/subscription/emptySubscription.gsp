@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataCategory;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.Combo;de.laser.RefdataValue;de.laser.Org" %>
+<%@ page import="de.laser.CustomerTypeService; de.laser.RefdataCategory;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.Combo;de.laser.RefdataValue;de.laser.Org" %>
 
 <laser:htmlStart message="myinst.emptySubscription.label" serviceInjection="true"/>
 
@@ -44,7 +44,7 @@
                 <g:elseif test="${accessService.checkPerm('ORG_CONSORTIUM_BASIC')}">
                     <input type="hidden" id="asOrgType" name="type" value="${RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id}" />
                 </g:elseif>
-                <g:elseif test="${accessService.checkPerm('ORG_INST_PRO')}">
+                <g:elseif test="${accessService.checkPerm(CustomerTypeService.ORG_INST_PRO)}">
                     <input type="hidden" id="asOrgType" name="type" value="${RDStore.SUBSCRIPTION_TYPE_LOCAL.id}" />
                 </g:elseif>
 

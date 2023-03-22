@@ -609,7 +609,7 @@ class PropertyService {
              licFilterClause += 'and oo.lic.instanceOf = null'
              lpOwnerFilterClause += 'and lp.owner.instanceOf = null'
          }
-         else if(accessService.checkPerm('ORG_INST_BASIC')) {
+         else if(accessService.checkPerm(CustomerTypeService.ORG_INST_BASIC)) {
              orgFilterClause += 'and ot in (:providerAgency)'
              orgFilterParams.providerAgency = [RDStore.OT_AGENCY, RDStore.OT_PROVIDER, RefdataValue.getByValueAndCategory('Broker', RDConstants.ORG_TYPE), RefdataValue.getByValueAndCategory('Content Provider',RDConstants.ORG_TYPE), RefdataValue.getByValueAndCategory('Vendor',RDConstants.ORG_TYPE)]
          }

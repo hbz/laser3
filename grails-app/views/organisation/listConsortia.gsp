@@ -1,3 +1,4 @@
+<%@ page import="de.laser.CustomerTypeService" %>
 <laser:htmlStart message="menu.public.all_cons" serviceInjection="true"/>
 
         <g:set var="entityName" value="${message(code: 'org.label')}" />
@@ -8,7 +9,7 @@
 
     <ui:controlButtons>
         <%
-            editable = (editable && accessService.checkPerm('ORG_INST_PRO')) || contextService.getUser().hasMinRole('ROLE_ADMIN')
+            editable = (editable && accessService.checkPerm(CustomerTypeService.ORG_INST_PRO)) || contextService.getUser().hasMinRole('ROLE_ADMIN')
         %>
         <ui:exportDropdown>
             <ui:exportDropdownItem>

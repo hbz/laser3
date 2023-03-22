@@ -3700,7 +3700,7 @@ class SubscriptionControllerService {
         if (!result.editable) {
             //the explicit comparison against bool(true) should ensure that not only the existence of the parameter is checked but also its proper value
             if(params.copyMyElements == true) {
-                if(accessService.checkPermAffiliation('ORG_INST_PRO','INST_EDITOR'))
+                if(accessService.checkPermAffiliation(CustomerTypeService.ORG_INST_PRO, 'INST_EDITOR'))
                     result
             }
             else null
