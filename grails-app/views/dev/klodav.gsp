@@ -47,6 +47,8 @@
 
         UserRoles             : ${de.laser.auth.UserRole.findAllByUser(contextService.getUser())}
 
+        UserOrgRoles          : ${de.laser.auth.UserOrgRole.findAllByUser(contextService.getUser()).collect{ '(' + it.user.id + ',' + it.org.id + ',' + it.formalRole.id + ')'}}
+
         hasMinRole('ROLE_YODA')  : ${contextService.getUser().hasMinRole('ROLE_YODA')}
         hasMinRole('ROLE_ADMIN') : ${contextService.getUser().hasMinRole('ROLE_ADMIN')}
         hasMinRole('ROLE_USER')  : ${contextService.getUser().hasMinRole('ROLE_USER')}
