@@ -267,7 +267,7 @@
                         ${ci.costItemElement?.getI10n("value")}
                     </td>
                     <g:if test="${!params.orgBasicMemberView}">
-                        <g:if test="${accessService.checkPermAffiliation("ORG_CONSORTIUM_BASIC", 'INST_EDITOR')}">
+                        <g:if test="${accessService.checkPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR')}">
                             <td class="x">
                                 <g:if test="${fixedSubscription}">
                                     <g:link mapping="subfinanceEditCI" params='[sub:"${fixedSubscription.id}", id:"${ci.id}", showView:"cons", offset: params.offset]' class="ui icon button blue la-modern-button trigger-modal" data-id_suffix="edit_${ci.id}"
@@ -302,7 +302,7 @@
                                 </g:link>
                             </td>
                         </g:if>
-                        <g:elseif test="${accessService.checkPermAffiliation("ORG_INST_PRO", 'INST_EDITOR')}">
+                        <g:elseif test="${accessService.checkPermAffiliation(CustomerTypeService.ORG_INST_PRO, 'INST_EDITOR')}">
                             <td class="x">
                                 <g:if test="${fixedSubscription}">
                                     <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'financials.costItem.transfer.tooltip')}">

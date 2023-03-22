@@ -1,4 +1,4 @@
-<%@ page import="de.laser.License; de.laser.storage.RDConstants; de.laser.storage.RDStore; de.laser.RefdataCategory" %>
+<%@ page import="de.laser.CustomerTypeService; de.laser.License; de.laser.storage.RDConstants; de.laser.storage.RDStore; de.laser.RefdataCategory" %>
 <laser:htmlStart message="menu.my.comp_sub" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -19,7 +19,7 @@
                     </g:each>
                 </select>
             </div>
-            <g:if test="${accessService.checkPerm("ORG_CONSORTIUM_BASIC")}">
+            <g:if test="${accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
                 <div class="field">
                 <div class="ui checkbox">
                     <g:checkBox name="show.subscriber" value="true" checked="false"

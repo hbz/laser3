@@ -57,7 +57,7 @@ if (targetObjectId) params << [targetObjectId: genericOIDService.getOID(targetOb
         </div>
     </ui:complexSubNavItem>
 
-%{--    <g:if test="${isSubscriberVisible && accessService.checkPermAffiliation("ORG_CONSORTIUM_BASIC", 'INST_EDITOR')}">
+%{--    <g:if test="${isSubscriberVisible && accessService.checkPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR')}">
         <ui:complexSubNavItem class="${workFlowPart == CopyElementsService.WORKFLOW_SUBSCRIBER ? 'active' : ''}"
                                  controller="license" action="copyElementsIntoLicense"
                                  params="${params << [workFlowPart: CopyElementsService.WORKFLOW_SUBSCRIBER]}">
@@ -97,7 +97,7 @@ if (targetObjectId) params << [targetObjectId: genericOIDService.getOID(targetOb
 <g:if test="${workFlowPart == CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS}">
     <laser:render template="/templates/copyElements/copyDocsAndTasks"/>
 </g:if>
-%{--<g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_SUBSCRIBER && isSubscriberVisible && accessService.checkPermAffiliation("ORG_CONSORTIUM_BASIC", 'INST_EDITOR')}">
+%{--<g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_SUBSCRIBER && isSubscriberVisible && accessService.checkPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR')}">
     <laser:render template="/templates/copyElements/copySubscriber"/>
 </g:elseif>--}%
 <g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_PROPERTIES}">

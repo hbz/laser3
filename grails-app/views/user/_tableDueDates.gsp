@@ -46,7 +46,7 @@
                         </g:elseif>
                         <g:elseif test="${obj instanceof SurveyInfo}">
                             <i class="icon chart pie la-list-icon"></i>
-                            <g:if test="${accessService.checkPerm('ORG_CONSORTIUM_BASIC')}">
+                            <g:if test="${accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
                                 <g:link controller="survey" action="show" params="[surveyConfigID: obj.surveyConfigs[0].id]"
                                         id="${obj.id}">${obj.surveyConfigs[0].getSurveyName()}
                                 </g:link>

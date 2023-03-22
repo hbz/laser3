@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.DateUtils; java.text.SimpleDateFormat; java.text.DateFormat; de.laser.storage.PropertyStore; de.laser.survey.SurveyConfigProperties; de.laser.SubscriptionPackage; de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig; de.laser.DocContext; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.Subscription; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.Platform; de.laser.SubscriptionPackage; de.laser.Org" %>
+<%@ page import="de.laser.CustomerTypeService; de.laser.utils.DateUtils; java.text.SimpleDateFormat; java.text.DateFormat; de.laser.storage.PropertyStore; de.laser.survey.SurveyConfigProperties; de.laser.SubscriptionPackage; de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig; de.laser.DocContext; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.Subscription; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.Platform; de.laser.SubscriptionPackage; de.laser.Org" %>
 <laser:serviceInjection/>
 <g:set var="surveyOrg"
        value="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution)}"/>
@@ -36,7 +36,7 @@
         <div class="ui card ">
             <div class="content">
 
-                <g:if test="${accessService.checkPerm('ORG_CONSORTIUM_PRO') && surveyOrg}">
+                <g:if test="${accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_PRO) && surveyOrg}">
                     <dl>
                         <dt class="control-label">
                             ${message(code: 'surveyOrg.ownerComment.label', args: [institution.sortname])}
@@ -650,7 +650,7 @@
 
                 <div id="container-notes">
                     <laser:render template="/templates/notes/card"
-                              model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '', editable: accessService.checkPermAffiliation('ORG_CONSORTIUM_PRO', 'INST_EDITOR')]}"/>
+                              model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '', editable: accessService.checkPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_PRO, 'INST_EDITOR')]}"/>
                 </div>
 
             </g:if>
@@ -1137,7 +1137,7 @@
                 <th>${message(code: 'default.type.label')}</th>
                 <th>${message(code: 'surveyResult.result')}</th>
                 <th>
-                    <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM_PRO', 'INST_USER')}">
+                    <g:if test="${accessService.checkPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_PRO, 'INST_USER')}">
                         ${message(code: 'surveyResult.participantComment')}
                     </g:if>
                     <g:else>
@@ -1149,7 +1149,7 @@
                     </g:else>
                 </th>
                 <th>
-                    <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM_PRO', 'INST_USER')}">
+                    <g:if test="${accessService.checkPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_PRO, 'INST_USER')}">
                         ${message(code: 'surveyResult.commentOnlyForOwner')}
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
                               data-content="${message(code: 'surveyResult.commentOnlyForOwner.info')}">
@@ -1266,7 +1266,7 @@
                             <ui:xEditable owner="${surveyResult}" type="textarea" field="comment"/>
                         </td>
                         <td>
-                            <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM_PRO', 'INST_USER')}">
+                            <g:if test="${accessService.checkPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_PRO, 'INST_USER')}">
                                 <ui:xEditable owner="${surveyResult}" type="textarea" field="ownerComment"/>
                             </g:if>
                             <g:else>

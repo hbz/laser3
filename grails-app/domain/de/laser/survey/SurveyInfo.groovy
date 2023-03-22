@@ -1,5 +1,6 @@
 package de.laser.survey
 
+import de.laser.CustomerTypeService
 import de.laser.License
 import de.laser.Org
 import de.laser.RefdataValue
