@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4908    23.03.2023  dev     3.1         Andreas Bug         Ausschlussliste war nicht vollständig, was das Hinzufügen von Teilnehmern verhinderte
+
+4860    23.03.2023  dev     3.1         Andreas Bug         (betraf nur DEV) Deadlock verhinderte den Übertrag von Merkmalen
+
 4911    22.03.2023  dev     3.1         David   Feature     Refactoring: Kundentyp
 
 4914    21.03.2023  rc-3.0  3.0.5       Andreas Bug         fehlendes Komma in der Abfrage ergänzt

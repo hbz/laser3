@@ -1172,6 +1172,8 @@ class SubscriptionControllerService {
                     }
                     List<String> excludes = PendingChangeConfiguration.SETTING_KEYS.collect { String key -> key }
                     excludes << 'freezeHolding'
+                    excludes.add(PendingChangeConfiguration.TITLE_REMOVED)
+                    excludes.add(PendingChangeConfiguration.TITLE_REMOVED+PendingChangeConfiguration.NOTIFICATION_SUFFIX)
                     excludes.addAll(PendingChangeConfiguration.SETTING_KEYS.collect { String key -> key+PendingChangeConfiguration.NOTIFICATION_SUFFIX})
                     Set<AuditConfig> inheritedAttributes = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldNotInList(Subscription.class.name,result.subscription.id, excludes)
                     List<Subscription> memberSubs = []
