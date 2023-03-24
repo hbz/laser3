@@ -57,6 +57,8 @@ import java.time.LocalDate
 import java.time.Year
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
+import java.time.temporal.TemporalAdjusters
 import java.util.concurrent.ExecutorService
 
 /**
@@ -77,6 +79,7 @@ class SubscriptionControllerService {
     EscapeService escapeService
     ExecutorService executorService
     ExecutorWrapperService executorWrapperService
+    ExportService exportService
     FilterService filterService
     FinanceControllerService financeControllerService
     FinanceService financeService
@@ -90,6 +93,7 @@ class SubscriptionControllerService {
     PackageService packageService
     PendingChangeService pendingChangeService
     PropertyService propertyService
+    StatsSyncService statsSyncService
     SubscriptionService subscriptionService
     SurveyService surveyService
     TaskService taskService
@@ -628,12 +632,12 @@ class SubscriptionControllerService {
      * </ol>
      */
     Map<String, Object> getDateRange(GrailsParameterMap params, Subscription subscription) {
-        String dateRange
+        //String dateRange
         SortedSet<Date> monthsInRing = new TreeSet<Date>()
         Map<String, Object> dateRangeParams = [:]
         LocalDate startTime, endTime = LocalDate.now(), now = LocalDate.now()
         if(subscription.startDate && subscription.endDate) {
-            dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
+            //dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
             if(!params.containsKey('tabStat') || params.tabStat == 'total') {
                 dateRangeParams.startDate = subscription.startDate
                 dateRangeParams.endDate = subscription.endDate
@@ -649,7 +653,7 @@ class SubscriptionControllerService {
                 endTime = subscription.endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
         }
         else if(subscription.startDate) {
-            dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
+            //dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
             if(!params.containsKey('tabStat') || params.tabStat == 'total') {
                 dateRangeParams.startDate = subscription.startDate
                 dateRangeParams.endDate = new Date()
@@ -662,7 +666,13 @@ class SubscriptionControllerService {
             startTime = subscription.startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
             endTime = LocalDate.now()
         }
-        else dateRange = ''
+        else {
+            LocalDate lastYear = LocalDate.now().minus(1, ChronoUnit.YEARS)
+            startTime = lastYear.with(TemporalAdjusters.firstDayOfYear())
+            endTime = lastYear.with(TemporalAdjusters.lastDayOfYear())
+            dateRangeParams.startDate = Date.from(startTime.atStartOfDay(ZoneId.systemDefault()).toInstant())
+            dateRangeParams.endDate = Date.from(endTime.atStartOfDay(ZoneId.systemDefault()).toInstant())
+        }
         /*
         range spans over the whole availability of reports, no preset!
         else {
@@ -689,7 +699,7 @@ class SubscriptionControllerService {
         }
 
         //titles have to be pre-fetched, title filter thus moved
-        dateRangeParams+[dateRange: dateRange, monthsInRing: monthsInRing]
+        dateRangeParams+[monthsInRing: monthsInRing]
     }
 
     Set fetchTitles(GrailsParameterMap params, Set<Subscription> refSubs, Set<IdentifierNamespace> namespaces, String fetchWhat) {
@@ -806,6 +816,50 @@ class SubscriptionControllerService {
                 tipp = titles[propIdNamespace]?.get(report.proprietaryIdentifier)
         }
         GrailsHibernateUtil.unwrapIfProxy(tipp)
+    }
+
+    SortedSet getAvailableReports(Set<Platform> subscribedPlatforms, Map<String, Object> configMap) {
+        SortedSet<String> allAvailableReports = new TreeSet<String>()
+        subscribedPlatforms.each { Platform platform ->
+            Map<String, Object> platformRecord = configMap.platformInstanceRecords.get(platform.gokbId)
+            CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(configMap.subscription.getSubscriber(), platform)
+            configMap.putAll(exportService.prepareSushiCall(platformRecord))
+            if(configMap.revision && configMap.statsUrl) {
+                if(configMap.revision == AbstractReport.COUNTER_5) {
+                    String apiKey = platform.centralApiKey ?: ci.requestorKey
+                    String queryArguments = "?customer_id=${ci.value}"
+                    if(ci.requestorKey || apiKey)
+                        queryArguments += "&requestor_id=${ci.requestorKey}&api_key=${apiKey}"
+                    Map<String, Object> availableReports = statsSyncService.fetchJSONData(configMap.statsUrl + queryArguments, true)
+                    if(availableReports && availableReports.list) {
+                        allAvailableReports.addAll(availableReports.list.collect { listEntry -> listEntry["Report_ID"].toLowerCase() })
+                    }
+                }
+                else if(configMap.revision == AbstractReport.COUNTER_4) {
+                    //unfortunately! I need to alert that there is no possibility to check whether the API supports the report!
+                    allAvailableReports.addAll(Counter4Report.COUNTER_4_REPORTS)
+                }
+            }
+        }
+        allAvailableReports
+    }
+
+    Map<String, Object> loadFilterList(GrailsParameterMap params) {
+        SortedSet metricTypes = new TreeSet<String>(), accessTypes = new TreeSet<String>(), accessMethods = new TreeSet<String>()
+        try {
+            if(params.reportType in Counter4Report.COUNTER_4_REPORTS)
+                metricTypes.addAll(Counter4Report.METRIC_TYPES.valueOf(params.reportType).metricTypes)
+            else if(params.reportType in Counter5Report.COUNTER_5_REPORTS) {
+                metricTypes.addAll(Counter5Report.METRIC_TYPES.valueOf(params.reportType.toUpperCase()).metricTypes)
+                if(params.reportType in [Counter5Report.TITLE_MASTER_REPORT, Counter5Report.ITEM_MASTER_REPORT])
+                    accessTypes.addAll(Counter5Report.ACCESS_TYPES.valueOf(params.reportType.toUpperCase()).accessTypes)
+                accessMethods.addAll(Counter5Report.ACCESS_METHODS.valueOf(params.reportType.toUpperCase()).accessMethods)
+            }
+        }
+        catch (IllegalArgumentException e) {
+            log.error("no filter setting for picked metric type!")
+        }
+        [metricTypes: metricTypes, accessTypes: accessTypes, accessMethods: accessMethods]
     }
 
     //--------------------------------------------- new subscription creation -----------------------------------------------------------
@@ -1449,29 +1503,35 @@ class SubscriptionControllerService {
                 String oldTab = params.tab
                 params.loadFor = oldTab
                 params.tab = params.tabStat
-
-
-                Map<String, Map<String, TitleInstancePackagePlatform>> titles = [:] //structure: namespace -> value -> tipp
-                Set<TitleInstancePackagePlatform> titlesSorted = [] //fallback structure to preserve sorting
                 Set<Subscription> refSubs = subscriptions
                 subscriptions << baseSub
                 subscriptions << newSub
                 Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription in (:subscriptions)", [subscriptions: refSubs])
                 Set<IdentifierNamespace> namespaces = [IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISSN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISSN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISBN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.PISBN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.DOI, TitleInstancePackagePlatform.class.name)] as Set<IdentifierNamespace>,
-                        propIdNamespaces = IdentifierNamespace.findAllByNsInList(subscribedPlatforms.titleNamespace)
+                                         propIdNamespaces = IdentifierNamespace.findAllByNsInList(subscribedPlatforms.titleNamespace)
                 if(!subscribedPlatforms) {
                     subscribedPlatforms = Platform.executeQuery("select tipp.platform from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (:subscriptions)", [subscriptions: refSubs])
                 }
                 if(subscribedPlatforms) {
                     namespaces.addAll(propIdNamespaces)
                 }
-                fetchTitles(params, refSubs, namespaces, 'ids').each { Map titleMap ->
-                    titlesSorted << GrailsHibernateUtil.unwrapIfProxy(titleMap.tipp)
-                    Map<String, TitleInstancePackagePlatform> innerMap = titles.get(titleMap.namespace)
-                    if(!innerMap)
-                        innerMap = [:]
-                    innerMap.put(titleMap.value, titleMap.tipp)
-                    titles.put(titleMap.namespace, innerMap)
+                result.platformInstanceRecords = [:]
+                result.platforms = subscribedPlatforms
+                result.platformsJSON = subscribedPlatforms.globalUID as JSON
+                ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+                subscribedPlatforms.each { Platform platformInstance ->
+                    Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/find?uuid=${platformInstance.gokbId}")
+                    if (queryResult.error && queryResult.error == 404) {
+                        result.wekbServerUnavailable = message(code: 'wekb.error.404')
+                    }
+                    else if (queryResult.warning) {
+                        List records = queryResult.warning.records
+                        if(records[0]) {
+                            records[0].lastRun = platformInstance.counter5LastRun ?: platformInstance.counter4LastRun
+                            records[0].id = platformInstance.id
+                            result.platformInstanceRecords[platformInstance.gokbId] = records[0]
+                        }
+                    }
                 }
                 Subscription refSub
                 if(params.loadFor in ['allIEsStats', 'topUsed'])
@@ -1480,91 +1540,103 @@ class SubscriptionControllerService {
                     refSub = newSub
                 Map<String, Object> dateRanges = getDateRange(params, refSub)
                 result.monthsInRing = dateRanges.monthsInRing
-                boolean isCounter5 = false
-                SortedSet<String> reportTypes = new TreeSet<String>(), metricTypes = new TreeSet<String>(), accessTypes = new TreeSet<String>()
-                Map<TitleInstancePackagePlatform, Object> usages = [:]
-                Counter5Report.withTransaction {
-                    String customerUID = newSub.getSubscriber().globalUID
-                    Set<String> platforms = subscribedPlatforms.globalUID
-                    Map<String, Object> queryParams = [customer: customerUID, platforms: platforms]
-                    if(dateRanges.dateRange.length() > 0) {
+                SortedSet<String> reportTypes = getAvailableReports(subscribedPlatforms, result)
+                result.reportTypes = reportTypes
+                if(params.reportType) {
+                    result.putAll(loadFilterList(params))
+                    Map<String, Map<String, TitleInstancePackagePlatform>> titles = [:] //structure: namespace -> value -> tipp
+                    Set<TitleInstancePackagePlatform> titlesSorted = [] //fallback structure to preserve sorting
+                    fetchTitles(params, refSubs, namespaces, 'ids').each { Map titleMap ->
+                        titlesSorted << GrailsHibernateUtil.unwrapIfProxy(titleMap.tipp)
+                        Map<String, TitleInstancePackagePlatform> innerMap = titles.get(titleMap.namespace)
+                        if(!innerMap)
+                            innerMap = [:]
+                        innerMap.put(titleMap.value, titleMap.tipp)
+                        titles.put(titleMap.namespace, innerMap)
+                    }
+                    Map<TitleInstancePackagePlatform, Object> usages = [:]
+                    Map<TitleInstancePackagePlatform, Integer> usageTopList = [:]
+                    if(params.platform) {
+                        Platform platform = Platform.get(params.platform)
+                        IdentifierNamespace propIdNamespace = IdentifierNamespace.findByNs(platform.titleNamespace)
+                        Map<String, Object> queryParams = [reportType: params.reportType, customer: newSub.getSubscriber(), platform: platform]
+                        if(params.metricType) {
+                            queryParams.metricTypes = params.list('metricType').join('%7C')
+                        }
+                        if(params.accessType) {
+                            queryParams.accessTypes = params.list('accessType').join('%7C')
+                        }
+                        if(params.accessMethod) {
+                            queryParams.accessMethods = params.list('accessMethod').join('%7C')
+                        }
                         queryParams.startDate = dateRanges.startDate
                         queryParams.endDate = dateRanges.endDate
-                    }
-                    isCounter5 = Counter5Report.executeQuery('select count(r.id) from Counter5Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms)'+dateRanges.dateRange, queryParams)[0] > 0
-                    String baseQuery, groupClause = '', reportCount = 'r.reportCount as reportCount'
-                    if(params.tabStat == 'total') {
-                        reportCount = ' sum(r.reportCount) as reportCount '
-                    }
-                    if(isCounter5) {
-                        result.statsAvailable = true
-                        result.revision = 'counter5'
-                        Counter5Report.executeQuery('select lower(r.reportType), r.metricType from Counter5Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms)'+dateRanges.dateRange+' group by r.reportType, r.metricType, r.accessType', queryParams).each { row ->
-                            reportTypes << row[0]
-                            metricTypes << row[1]
-                        }
-                        //restrict to load only iff report and metric types are set!
-                        if(params.reportType && params.metricType) {
-                            queryParams.reportType = params.reportType
-                            queryParams.metricTypes = params.list('metricType')
-                            Counter5Report.withTransaction {
-                                //counter4Sums.addAll(Counter4Report.executeQuery('select r.reportFrom, r.metricType, sum(r.reportCount) from Counter4Report r where r.reportType = :reportType and r.metricType = :metricType and r.reportInstitutionUID = :customer and r.reportFrom >= :startDate and r.reportTo <= :endDate group by r.reportFrom, r.metricType', queryParams))
-                                Set<AbstractReport> reports
-                                //if(params.tabStat == 'total') {
-                                reports = Counter5Report.executeQuery('select new map(sum(r.reportCount) as totalCount, r.metricType as metricType, r.onlineIdentifier as onlineIdentifier, r.printIdentifier as printIdentifier, r.doi as doi, r.isbn as isbn, r.proprietaryIdentifier as proprietaryIdentifier) from Counter5Report r where lower(r.reportType) = :reportType and r.metricType in (:metricTypes) and r.reportInstitutionUID = :customer and r.platformUID in (:platforms)'+dateRanges.dateRange+'group by r.metricType, r.onlineIdentifier, r.printIdentifier, r.doi, r.isbn, r.proprietaryIdentifier order by totalCount desc', queryParams)
-                                for(Map report : reports) {
-                                    TitleInstancePackagePlatform tipp = null
-                                    if(report.onlineIdentifier || report.isbn) {
-                                        tipp = titles[IdentifierNamespace.EISSN]?.get(report.onlineIdentifier)
-                                        if(!tipp)
-                                            tipp = titles[IdentifierNamespace.ISBN]?.get(report.onlineIdentifier)
-                                        if(!tipp)
-                                            tipp = titles[IdentifierNamespace.ISBN]?.get(report.isbn)
-                                    }
-                                    if(!tipp && (report.printIdentifier || report.isbn)) {
-                                        tipp = titles[IdentifierNamespace.ISSN]?.get(report.printIdentifier)
-                                        if(!tipp)
-                                            tipp = titles[IdentifierNamespace.PISBN]?.get(report.printIdentifier)
-                                        if(!tipp)
-                                            tipp = titles[IdentifierNamespace.PISBN]?.get(report.isbn)
-                                    }
-                                    if(!tipp && report.doi) {
-                                        tipp = titles[IdentifierNamespace.DOI]?.get(report.doi)
-                                    }
-                                    if(!tipp && report.proprietaryIdentifier) {
-                                        propIdNamespaces.each { String propIdNs ->
-                                            if(!tipp)
-                                                tipp = titles[propIdNs]?.get(report.proprietaryIdentifier)
-                                        }
-                                    }
-                                    if(tipp) {
-                                        Map<String, Integer> metrics = usages.get(tipp) ?: [:]
-                                        Integer count = metrics.get(report.metricType) ?: 0
-                                        count += report.totalCount
-                                        metrics.put(report.metricType, count)
+                        Map<String, Object> requestResponse = exportService.getReports(queryParams)
+                        for(Map reportItem : requestResponse.items) {
+                            Map<String, String> identifierMap = [:]
+                            reportItem["Item_ID"].each { idData ->
+                                switch(idData.Type.toLowerCase()) {
+                                    case 'isbn': identifierMap.isbn = idData.Value
+                                        break
+                                    case 'online_issn':
+                                    case 'online_isbn': identifierMap.onlineIdentifier = idData.Value
+                                        break
+                                    case 'print_isbn':
+                                    case 'print_issn': identifierMap.printIdentifier = idData.Value
+                                        break
+                                    case 'doi': identifierMap.doi = idData.Value
+                                        break
+                                    case 'proprietary_id': identifierMap.proprietaryIdentifier = idData.Value
+                                        break
+                                }
+                            }
+                            TitleInstancePackagePlatform tipp = matchReport(titles, propIdNamespace, identifierMap)
+                            if(tipp) {
+                                for(Map performance : reportItem.Performance) {
+                                    for(Map instance : performance.Instance) {
+                                        Map<String, Integer> metrics = usages.containsKey(tipp) ? usages.get(tipp): [:]
+                                        Integer topCount = usageTopList.containsKey(tipp) ? usageTopList.get(tipp) : 0
+                                        Integer metricCount = metrics.get(instance.Metric_Type) ?: 0, count = instance.Count as Integer
+                                        metricCount += count
+                                        metrics.put(instance.Metric_Type, metricCount)
+                                        if(metricCount > topCount)
+                                            usageTopList.put(tipp, metricCount)
                                         usages.put(tipp, metrics)
                                     }
                                 }
-                                //}
                             }
                         }
                     }
-                    else {
-                        result.statsAvailable = Counter4Report.executeQuery('select count(r.id) from Counter4Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms)'+dateRanges.dateRange, queryParams)[0] > 0
-                        result.revision = 'counter4'
-                        Counter4Report.executeQuery('select r.reportType, r.metricType from Counter4Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms)'+dateRanges.dateRange+'group by r.reportType, r.metricType', queryParams).each { row ->
-                            reportTypes << row[0]
-                            metricTypes << row[1]
+                    /*
+                    Counter5Report.withTransaction {
+                        String customerUID = newSub.getSubscriber().globalUID
+                        Set<String> platforms = subscribedPlatforms.globalUID
+                        Map<String, Object> queryParams = [customer: customerUID, platforms: platforms]
+                        if(dateRanges.dateRange.length() > 0) {
+                            queryParams.startDate = dateRanges.startDate
+                            queryParams.endDate = dateRanges.endDate
                         }
-                        //restrict to load only iff report and metric types are set!
-                        if(params.reportType && params.metricType) {
-                            queryParams.reportType = params.reportType
-                            queryParams.metricTypes = params.list('metricType')
-                            Counter4Report.withTransaction {
-                                //counter4Sums.addAll(Counter4Report.executeQuery('select r.reportFrom, r.metricType, sum(r.reportCount) from Counter4Report r where r.reportType = :reportType and r.metricType = :metricType and r.reportInstitutionUID = :customer and r.reportFrom >= :startDate and r.reportTo <= :endDate group by r.reportFrom, r.metricType', queryParams))
-                                Set<AbstractReport> reports
-                                //if(params.tabStat == 'total') {
-                                    reports = Counter4Report.executeQuery('select new map(sum(r.reportCount) as totalCount, r.metricType as metricType, r.onlineIdentifier as onlineIdentifier, r.printIdentifier as printIdentifier, r.doi as doi, r.isbn as isbn, r.proprietaryIdentifier as proprietaryIdentifier) from Counter4Report r where r.reportType = :reportType and r.metricType in (:metricTypes) and r.reportInstitutionUID = :customer and r.platformUID in (:platforms)'+dateRanges.dateRange+'group by r.metricType, r.onlineIdentifier, r.printIdentifier, r.doi, r.isbn, r.proprietaryIdentifier order by totalCount desc', queryParams)
+                        isCounter5 = Counter5Report.executeQuery('select count(r.id) from Counter5Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms)'+dateRanges.dateRange, queryParams)[0] > 0
+                        String baseQuery, groupClause = '', reportCount = 'r.reportCount as reportCount'
+                        if(params.tabStat == 'total') {
+                            reportCount = ' sum(r.reportCount) as reportCount '
+                        }
+                        if(isCounter5) {
+                            result.statsAvailable = true
+                            result.revision = 'counter5'
+                            Counter5Report.executeQuery('select lower(r.reportType), r.metricType from Counter5Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms)'+dateRanges.dateRange+' group by r.reportType, r.metricType, r.accessType', queryParams).each { row ->
+                                reportTypes << row[0]
+                                metricTypes << row[1]
+                            }
+                            //restrict to load only iff report and metric types are set!
+                            if(params.reportType && params.metricType) {
+                                queryParams.reportType = params.reportType
+                                queryParams.metricTypes = params.list('metricType')
+                                Counter5Report.withTransaction {
+                                    //counter4Sums.addAll(Counter4Report.executeQuery('select r.reportFrom, r.metricType, sum(r.reportCount) from Counter4Report r where r.reportType = :reportType and r.metricType = :metricType and r.reportInstitutionUID = :customer and r.reportFrom >= :startDate and r.reportTo <= :endDate group by r.reportFrom, r.metricType', queryParams))
+                                    Set<AbstractReport> reports
+                                    //if(params.tabStat == 'total') {
+                                    reports = Counter5Report.executeQuery('select new map(sum(r.reportCount) as totalCount, r.metricType as metricType, r.onlineIdentifier as onlineIdentifier, r.printIdentifier as printIdentifier, r.doi as doi, r.isbn as isbn, r.proprietaryIdentifier as proprietaryIdentifier) from Counter5Report r where lower(r.reportType) = :reportType and r.metricType in (:metricTypes) and r.reportInstitutionUID = :customer and r.platformUID in (:platforms)'+dateRanges.dateRange+'group by r.metricType, r.onlineIdentifier, r.printIdentifier, r.doi, r.isbn, r.proprietaryIdentifier order by totalCount desc', queryParams)
                                     for(Map report : reports) {
                                         TitleInstancePackagePlatform tipp = null
                                         if(report.onlineIdentifier || report.isbn) {
@@ -1598,16 +1670,72 @@ class SubscriptionControllerService {
                                             usages.put(tipp, metrics)
                                         }
                                     }
-                                //}
+                                    //}
+                                }
+                            }
+                        }
+                        else {
+                            result.statsAvailable = Counter4Report.executeQuery('select count(r.id) from Counter4Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms)'+dateRanges.dateRange, queryParams)[0] > 0
+                            result.revision = 'counter4'
+                            Counter4Report.executeQuery('select r.reportType, r.metricType from Counter4Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms)'+dateRanges.dateRange+'group by r.reportType, r.metricType', queryParams).each { row ->
+                                reportTypes << row[0]
+                                metricTypes << row[1]
+                            }
+                            //restrict to load only iff report and metric types are set!
+                            if(params.reportType && params.metricType) {
+                                queryParams.reportType = params.reportType
+                                queryParams.metricTypes = params.list('metricType')
+                                Counter4Report.withTransaction {
+                                    //counter4Sums.addAll(Counter4Report.executeQuery('select r.reportFrom, r.metricType, sum(r.reportCount) from Counter4Report r where r.reportType = :reportType and r.metricType = :metricType and r.reportInstitutionUID = :customer and r.reportFrom >= :startDate and r.reportTo <= :endDate group by r.reportFrom, r.metricType', queryParams))
+                                    Set<AbstractReport> reports
+                                    //if(params.tabStat == 'total') {
+                                        reports = Counter4Report.executeQuery('select new map(sum(r.reportCount) as totalCount, r.metricType as metricType, r.onlineIdentifier as onlineIdentifier, r.printIdentifier as printIdentifier, r.doi as doi, r.isbn as isbn, r.proprietaryIdentifier as proprietaryIdentifier) from Counter4Report r where r.reportType = :reportType and r.metricType in (:metricTypes) and r.reportInstitutionUID = :customer and r.platformUID in (:platforms)'+dateRanges.dateRange+'group by r.metricType, r.onlineIdentifier, r.printIdentifier, r.doi, r.isbn, r.proprietaryIdentifier order by totalCount desc', queryParams)
+                                        for(Map report : reports) {
+                                            TitleInstancePackagePlatform tipp = null
+                                            if(report.onlineIdentifier || report.isbn) {
+                                                tipp = titles[IdentifierNamespace.EISSN]?.get(report.onlineIdentifier)
+                                                if(!tipp)
+                                                    tipp = titles[IdentifierNamespace.ISBN]?.get(report.onlineIdentifier)
+                                                if(!tipp)
+                                                    tipp = titles[IdentifierNamespace.ISBN]?.get(report.isbn)
+                                            }
+                                            if(!tipp && (report.printIdentifier || report.isbn)) {
+                                                tipp = titles[IdentifierNamespace.ISSN]?.get(report.printIdentifier)
+                                                if(!tipp)
+                                                    tipp = titles[IdentifierNamespace.PISBN]?.get(report.printIdentifier)
+                                                if(!tipp)
+                                                    tipp = titles[IdentifierNamespace.PISBN]?.get(report.isbn)
+                                            }
+                                            if(!tipp && report.doi) {
+                                                tipp = titles[IdentifierNamespace.DOI]?.get(report.doi)
+                                            }
+                                            if(!tipp && report.proprietaryIdentifier) {
+                                                propIdNamespaces.each { String propIdNs ->
+                                                    if(!tipp)
+                                                        tipp = titles[propIdNs]?.get(report.proprietaryIdentifier)
+                                                }
+                                            }
+                                            if(tipp) {
+                                                Map<String, Integer> metrics = usages.get(tipp) ?: [:]
+                                                Integer count = metrics.get(report.metricType) ?: 0
+                                                count += report.totalCount
+                                                metrics.put(report.metricType, count)
+                                                usages.put(tipp, metrics)
+                                            }
+                                        }
+                                    //}
+                                }
                             }
                         }
                     }
+                    */
+                    result.total = usages.size()
+                    if(params.sort == 'count' && params.order == 'asc')
+                        result.topList = usageTopList.sort { Map.Entry<TitleInstancePackagePlatform, Integer> tippA, Map.Entry<TitleInstancePackagePlatform, Integer> tippB -> tippA.getValue() <=> tippB.getValue() }.drop(result.offset).take(result.max)
+                    else
+                        result.topList = usageTopList.sort { Map.Entry<TitleInstancePackagePlatform, Integer> tippA, Map.Entry<TitleInstancePackagePlatform, Integer> tippB -> tippB.getValue() <=> tippA.getValue() }.drop(result.offset).take(result.max)
+                    result.usages = usages
                 }
-                result.reportTypes = reportTypes
-                result.metricTypes = metricTypes
-                result.accessTypes = accessTypes
-                result.total = usages.size()
-                result.usages = usages.drop(result.offset).take(result.max)
                 params.tab = oldTab
             }else {
 

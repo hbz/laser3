@@ -139,29 +139,7 @@ class SubscriptionController {
                 queryParamsBound.endDate = dateRangeParams.endDate
             }
             result.reportTypes = []
-            Set allAvailableReports = []
-
-            subscribedPlatforms.each { Platform platform ->
-                Map<String, Object> platformRecord = result.platformInstanceRecords.get(platform.gokbId)
-                CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(result.subscription.getSubscriber(), platform)
-                result.putAll(exportService.prepareSushiCall(platformRecord))
-                if(result.revision && result.statsUrl) {
-                    if(result.revision == AbstractReport.COUNTER_5) {
-                        String apiKey = platform.centralApiKey ?: ci.requestorKey
-                        String queryArguments = "?customer_id=${ci.value}"
-                        if(ci.requestorKey || apiKey)
-                            queryArguments += "&requestor_id=${ci.requestorKey}&api_key=${apiKey}"
-                        Map<String, Object> availableReports = statsSyncService.fetchJSONData(result.statsUrl + queryArguments, true)
-                        if(availableReports && availableReports.list) {
-                            allAvailableReports.addAll(availableReports.list.collect { listEntry -> listEntry["Report_ID"].toLowerCase() })
-                        }
-                    }
-                    else if(result.revision == AbstractReport.COUNTER_4) {
-                        //unfortunately! I need to alert that there is no possibility to check whether the API supports the report!
-                        allAvailableReports.addAll(Counter4Report.COUNTER_4_REPORTS)
-                    }
-                }
-            }
+            SortedSet allAvailableReports = subscriptionControllerService.getAvailableReports(subscribedPlatforms, result)
             result.reportTypes = allAvailableReports
             //detach from here!
             /*
