@@ -7,9 +7,11 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-4908    23.03.2023  dev     3.1         Andreas Bug         Ausschlussliste war nicht vollständig, was das Hinzufügen von Teilnehmern verhinderte
+4908    24.03.2023  dev     3.1         Andreas Bug         Ausschlussliste war nicht vollständig, was das Hinzufügen von Teilnehmern verhinderte
 
-4860    23.03.2023  dev     3.1         Andreas Bug         (betraf nur DEV) Deadlock verhinderte den Übertrag von Merkmalen
+4881    24.03.2023  dev     3.1         Andreas Feature     Kundennummer-Schlüsselpaare können ab jetzt auch beim Hinzufügen von Teilnehmern angelegt werden
+
+4860    24.03.2023  dev     3.1         Andreas Bug         (betraf nur DEV) Deadlock verhinderte den Übertrag von Merkmalen
 
 4911    22.03.2023  dev     3.1         David   Feature     Refactoring: Kundentyp
 
