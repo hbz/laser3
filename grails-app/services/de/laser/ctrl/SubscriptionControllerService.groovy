@@ -1172,6 +1172,8 @@ class SubscriptionControllerService {
                     }
                     List<String> excludes = PendingChangeConfiguration.SETTING_KEYS.collect { String key -> key }
                     excludes << 'freezeHolding'
+                    excludes.add(PendingChangeConfiguration.TITLE_REMOVED)
+                    excludes.add(PendingChangeConfiguration.TITLE_REMOVED+PendingChangeConfiguration.NOTIFICATION_SUFFIX)
                     excludes.addAll(PendingChangeConfiguration.SETTING_KEYS.collect { String key -> key+PendingChangeConfiguration.NOTIFICATION_SUFFIX})
                     Set<AuditConfig> inheritedAttributes = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldNotInList(Subscription.class.name,result.subscription.id, excludes)
                     List<Subscription> memberSubs = []
@@ -1254,6 +1256,13 @@ class SubscriptionControllerService {
                                     if(propDef.isRefdataValueType())
                                         propValue = RefdataValue.class.name+':'+propValue
                                     subscriptionService.createProperty(propDef, memberSub, (Org) result.institution, propValue, params["propNote${rowKey}"] as String)
+                                }
+                            }
+                            if(params.customerIdentifier || params.requestorKey) {
+                                result.subscription.packages.each { SubscriptionPackage sp ->
+                                    CustomerIdentifier ci = new CustomerIdentifier(customer: cm, type: RefdataValue.getByValueAndCategory('Default', RDConstants.CUSTOMER_IDENTIFIER_TYPE), value: params.customerIdentifier, requestorKey: params.requestorKey, platform: sp.pkg.nominalPlatform, owner: result.institution, isPublic: true)
+                                    if(!ci.save())
+                                        log.error(ci.errors.getAllErrors().toListString())
                                 }
                             }
 
