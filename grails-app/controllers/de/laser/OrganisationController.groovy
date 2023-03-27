@@ -50,6 +50,7 @@ class OrganisationController  {
     InstAdmService instAdmService
     OrganisationControllerService organisationControllerService
     OrganisationService organisationService
+    OrgTypeService orgTypeService
     PropertyService propertyService
     TaskService taskService
     UserControllerService userControllerService
@@ -262,8 +263,14 @@ class OrganisationController  {
 
         List<Org> availableOrgs = Org.executeQuery(fsq.query, fsq.queryParams, [sort:params.sort])
         result.consortiaMemberIds = Combo.executeQuery('select cmb.fromOrg.id from Combo cmb where cmb.toOrg = :toOrg and cmb.type = :type',[toOrg: result.institution, type: RDStore.COMBO_TYPE_CONSORTIUM])
-        result.consortiaMemberTotal = availableOrgs.size()
 
+        if (params.isMyX == 'exclusive') {
+            availableOrgs = availableOrgs.findAll { result.consortiaMemberIds.contains( it.id ) }
+        }
+        else if (params.isMyX == 'not') {
+            availableOrgs = availableOrgs.findAll { ! result.consortiaMemberIds.contains( it.id ) }
+        }
+        result.consortiaMemberTotal = availableOrgs.size()
 
         String message = message(code: 'menu.institutions') as String
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
@@ -309,8 +316,7 @@ class OrganisationController  {
 
         List<Org> availableOrgs = Org.executeQuery(fsq.query, fsq.queryParams, [sort:params.sort])
         availableOrgs.remove(Org.findByName("LAS:eR Backoffice"))
-        result.consortiaTotal = availableOrgs.size()
-        result.availableOrgs = availableOrgs.drop(result.offset).take(result.max)
+
         String header = message(code: 'menu.public.all_cons')
         String exportHeader = message(code: 'export.all.consortia')
         SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
@@ -326,6 +332,16 @@ class OrganisationController  {
         Map<String, Object> currentConsortiaQMap = filterService.getOrgComboQuery(queryParams, result.contextOrg as Org)
         result.consortiaIds = Org.executeQuery(currentConsortiaQMap.query, currentConsortiaQMap.queryParams).collect{ it.id }
         // ? ---
+
+        if (params.isMyX == 'exclusive') {
+            availableOrgs = availableOrgs.findAll { result.consortiaIds.contains( it.id ) } as List<Org>
+        }
+        else if (params.isMyX == 'not') {
+            availableOrgs = availableOrgs.findAll { ! result.consortiaIds.contains( it.id ) } as List<Org>
+        }
+
+        result.consortiaTotal = availableOrgs.size()
+        result.availableOrgs  = availableOrgs.drop(result.offset).take(result.max)
 
         if ( params.exportXLS ) {
             SXSSFWorkbook wb = (SXSSFWorkbook) organisationService.exportOrg(availableOrgs, header, false, 'xls')
@@ -405,7 +421,15 @@ class OrganisationController  {
         }
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        List orgListTotal   = Org.findAll(fsq.query, fsq.queryParams)
+        List orgListTotal            = Org.findAll(fsq.query, fsq.queryParams)
+        result.currentProviderIdList = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies(contextService.getOrg()).toList()
+
+        if (params.isMyX == 'exclusive') {
+            orgListTotal = orgListTotal.findAll { result.currentProviderIdList.contains( it.id ) }
+        }
+        else if (params.isMyX == 'not') {
+            orgListTotal = orgListTotal.findAll { ! result.currentProviderIdList.contains( it.id ) }
+        }
         result.orgListTotal = orgListTotal.size()
         result.orgList      = orgListTotal.drop((int) result.offset).take((int) result.max)
 

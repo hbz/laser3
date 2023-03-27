@@ -31,7 +31,7 @@
             <g:else>
                 <div class="ui message info" style="margin-top:1em;text-align:left;font-size:14px;font-weight:normal;">
                     <i class="hand point right outline icon"></i>
-                    <div class="content">Ihre Änderungen werden direkt wirksam - ohne explizites Speichern.</div>
+                    <div class="content">Bitte beachten Sie: Ihre Änderungen werden direkt/ohne explizites Speichern wirksam.</div>
                 </div>
             </g:else>
         </g:if>

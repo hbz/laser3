@@ -88,6 +88,42 @@
                 </div>
             </g:if>
 
+            <g:if test="${field.equalsIgnoreCase('isMyX')}">
+                <div class="field">
+                    <label for="isMyX">
+                        <g:message code="menu.my" />
+                    </label>
+                    <%
+                        List<Map> isMyXOptions = []
+                        if (actionName == 'listInstitution') {
+                            isMyXOptions = [
+                                    [ id: 'exclusive', value: "Gehört zu '${message(code:'menu.my.insts')}'" ],
+                                    [ id: 'not',       value: "Gehört nicht zu meinen Objekten" ]
+                            ]
+                        }
+                        else if (actionName == 'listConsortia') {
+                            isMyXOptions = [
+                                    [ id: 'exclusive', value: "Gehört zu '${message(code:'menu.my.consortia')}'" ],
+                                    [ id: 'not',       value: "Gehört nicht zu meinen Objekten" ]
+                            ]
+
+                        }
+                        else if (actionName == 'listProvider') {
+                            isMyXOptions = [
+                                    [ id: 'exclusive', value: "Gehört zu '${message(code:'menu.my.providers')}'" ],
+                                    [ id: 'not',       value: "Gehört nicht zu meinen Objekten" ]
+                            ]
+                        }
+                    %>
+                    <select id="isMyX" name="isMyX" class="ui selection fluid dropdown">
+                        <option value="">${message(code:'default.select.choose.label')}</option>
+                        <g:each in="${isMyXOptions}" var="opt">
+                            <option <%=(params.list('isMyX').contains(opt.id)) ? 'selected="selected"' : '' %> value="${opt.id}">${opt.value}</option>
+                        </g:each>
+                    </select>
+                </div>
+            </g:if>
+
             <g:if test="${field.equalsIgnoreCase('property&value')}">
                 <laser:render template="/templates/properties/genericFilter" model="[propList: propList, label:message(code: 'subscription.property.search')]"/>
             </g:if>

@@ -976,12 +976,12 @@
                         </g:if>
                     </g:if>
                     <g:if test="${actionName == 'listInstitution'}">
-                        <g:if test="${consortiaMemberIds && (org.id in consortiaMemberIds)}">
+                        <g:if test="${currentConsortiaMemberIdList && (org.id in currentConsortiaMemberIdList)}">
                             <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.insts')}"><i class="icon yellow star"></i></span>
                         </g:if>
                     </g:if>
                     <g:if test="${actionName == 'listConsortia'}">
-                        <g:if test="${consortiaIds && (org.id in consortiaIds)}">
+                        <g:if test="${currentConsortiaIdList && (org.id in currentConsortiaIdList)}">
                             <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.consortia')}"><i class="icon yellow star"></i></span>
                         </g:if>
                     </g:if>

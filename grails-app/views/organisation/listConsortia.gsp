@@ -55,7 +55,7 @@
         <g:form action="listConsortia" method="get" class="ui form">
             <laser:render template="/templates/filter/orgFilter"
                       model="[
-                              tmplConfigShow: [['name']],
+                              tmplConfigShow: [['name', 'isMyX']],
                               tmplConfigFormFilter: true
                       ]"/>
         </g:form>
@@ -64,7 +64,7 @@
     <laser:render template="/myInstitution/export/individuallyExportModalOrgs" model="[modalID: 'individuallyExportModal', orgType: 'consortium', contactSwitch: true]" />
     <laser:render template="/templates/filter/orgFilterTable"
               model="[orgList: availableOrgs,
-                      consortiaIds: consortiaIds,
+                      currentConsortiaIdList: consortiaIds,
                       tmplShowCheckbox: false,
                       tmplConfigShow: [
                               'sortname', 'name', 'isMyX'
