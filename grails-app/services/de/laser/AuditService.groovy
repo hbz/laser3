@@ -100,7 +100,8 @@ class AuditService {
     @Transient
     def beforeUpdateHandler(Auditable obj, def oldMap, def newMap) {
 
-        obj.withNewTransaction {
+        //from withNewTransaction to withTransaction; it may be that it will conflict with other tickets! Keep an eye on this closure!
+        obj.withTransaction {
             log.debug("beforeUpdateHandler() ${obj} : ${oldMap} => ${newMap}")
 
             if (obj.instanceOf == null) {

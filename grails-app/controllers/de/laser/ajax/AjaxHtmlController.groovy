@@ -332,51 +332,7 @@ class AjaxHtmlController {
      */
     @Secured(['ROLE_USER'])
     def loadFilterList() {
-        //continue here
-        Map<String, Object> result = [:]
-        SortedSet metricTypes = new TreeSet<String>(), accessTypes = new TreeSet<String>(), accessMethods = new TreeSet<String>()
-        try {
-            if(params.reportType in Counter4Report.COUNTER_4_REPORTS)
-                metricTypes.addAll(Counter4Report.METRIC_TYPES.valueOf(params.reportType).metricTypes)
-            else if(params.reportType in Counter5Report.COUNTER_5_REPORTS) {
-                metricTypes.addAll(Counter5Report.METRIC_TYPES.valueOf(params.reportType.toUpperCase()).metricTypes)
-                accessTypes.addAll(Counter5Report.ACCESS_TYPES.valueOf(params.reportType.toUpperCase()).accessTypes)
-                accessMethods.addAll(Counter5Report.ACCESS_METHODS.valueOf(params.reportType.toUpperCase()).accessMethods)
-            }
-        }
-        catch (IllegalArgumentException e) {
-            log.error("no filter setting for picked metric type!")
-        }
-        result.metricTypes = metricTypes
-        result.accessTypes = accessTypes
-        result.accessMethods = accessMethods
-        /*
-        Map<String, Object> queryParams = [reportType: params.reportType, platforms: params.list("platforms[]"), customer: params.customer]
-        Subscription refSub = Subscription.get(params.subscription)
-        String dateFilter = ''
-        if(refSub.startDate) {
-            dateFilter += ' and r.reportFrom >= :startDate'
-            queryParams.startDate = refSub.startDate
-        }
-        if(refSub.endDate) {
-            dateFilter += ' and r.reportTo <= :endDate'
-            queryParams.endDate = refSub.endDate
-        }
-        //will the missing of title keys affect the choice?
-        if(queryParams.reportType in Counter4Report.COUNTER_4_REPORTS) {
-            Counter4Report.withTransaction {
-                metricTypes.addAll(Counter4Report.executeQuery('select r.metricType from Counter4Report r where r.reportType = :reportType and r.platformUID in (:platforms) and r.reportInstitutionUID = :customer'+dateFilter, queryParams))
-            }
-        }
-        else if(queryParams.reportType in Counter5Report.COUNTER_5_REPORTS) {
-            Counter5Report.withTransaction {
-                metricTypes.addAll(Counter5Report.executeQuery('select r.metricType from Counter5Report r where lower(r.reportType) = :reportType and r.platformUID in (:platforms) and r.reportInstitutionUID = :customer'+dateFilter, queryParams))
-            }
-        }
-        metricTypes.each { String metricType ->
-            result.add([name: metricType, value: metricType])
-        }
-        */
+        Map<String, Object> result = subscriptionControllerService.loadFilterList(params)
         render template: "/templates/filter/statsFilter", model: result
     }
 

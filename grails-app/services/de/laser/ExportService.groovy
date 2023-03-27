@@ -1126,10 +1126,8 @@ class ExportService {
 				if(params.accessMethod) {
 					queryParams.accessMethods = params.list('accessMethod').join('%7C')
 				}
-				if(dateRangeParams.dateRange.length() > 0) {
-					queryParams.startDate = dateRangeParams.startDate
-					queryParams.endDate = dateRangeParams.endDate
-				}
+				queryParams.startDate = dateRangeParams.startDate
+				queryParams.endDate = dateRangeParams.endDate
 				//the data
 				Map<String, Object> requestResponse = getReports(queryParams)
 				prf.setBenchmark('data fetched from provider')
@@ -3320,6 +3318,7 @@ class ExportService {
 				filterTime.set(Calendar.DATE, filterTime.getActualMaximum(Calendar.DAY_OF_MONTH))
 				Timestamp endDate = new Timestamp(filterTime.getTime().getTime())
 				List<String> queriedMonths = []
+				/*
 				showStatsInMonthRings.each { Date month ->
 					queriedMonths << "max(case when to_char(c5r_report_from, 'MM') = '${DateUtils.getSDF_MM().format(month)}' then c5r_report_count else 0 end) as \"${DateUtils.getSDF_yyyyMM().format(month)}\""
 				}
@@ -3340,6 +3339,7 @@ class ExportService {
 							'group by c4r_online_identifier, c4r_print_identifier, c4r_doi, c4r_isbn, c4r_proprietary_identifier',
 							[customer: subscriber.globalUID, platforms: connection.createArrayOf('varchar', platforms.toArray()), startDate: startDate, endDate: endDate, defaultReports: connection.createArrayOf('varchar', defaultReports.toArray()), defaultMetric: 'ft_total'])
 				}
+				*/
 			}
 		}
 		else {
