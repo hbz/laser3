@@ -1440,10 +1440,11 @@ class ExportService {
 	 */
 	Map<String, Object> prepareDataWithTitles(Map<String, Map<String, TitleInstancePackagePlatform>> titles, IdentifierNamespace propIdNamespace, String reportType, requestResponse, Boolean showPriceDate = false, Boolean showOtherData = false) {
 		Map<TitleInstancePackagePlatform, Map<String, Map>> titleRows = [:]
-		Map<Date, Integer> countsPerMonth = [:], sumsPerYOP = [:]
+		Map<String, Object> result = [:]
 		Calendar limit = GregorianCalendar.getInstance()
 		limit.set(2000, 0, 1)
 		if(reportType in Counter5Report.COUNTER_5_REPORTS) {
+			Map<Date, Integer> countsPerMonth = [:]
 			for(def reportItem: requestResponse.items) {
 				Map<String, String> identifierMap = [:]
 				reportItem["Item_ID"].each { idData ->
@@ -1579,8 +1580,10 @@ class ExportService {
 					}
 				}
 			}
+			result.sumRows =  countsPerMonth
 		}
         else if(reportType in Counter4Report.COUNTER_4_REPORTS) {
+			Map<String, Map<Date, Integer>> countsPerMonth = [:], sumsPerYOP = [:]
 			for (GPathResult reportItem: requestResponse.reports) {
 				Map<String, String> identifierMap = [:]
 				reportItem.'ns2:ItemIdentifier'.each { identifier ->
@@ -1621,6 +1624,13 @@ class ExportService {
 						}
 						for (GPathResult instance : performance.'ns2:Instance') {
 							int periodTotal = 0, periodHTML = 0, periodPDF = 0, count = Integer.parseInt(instance.'ns2:Count'.text())
+							//certain reports wish that for each metric, too ...
+							Integer countPerMonth = countsPerMonth.get(reportFrom)
+							if(!countPerMonth) {
+								countPerMonth = 0
+							}
+							countPerMonth += count
+							countsPerMonth.put(reportFrom, countPerMonth)
 							String metricType = instance.'ns2:MetricType'.text()
 							Map<String, Object> titleRow = titleRows.get(tipp)
 							if (!titleRow) {
@@ -1708,6 +1718,9 @@ class ExportService {
 					}
 				}
 			}
+			result.sumRows = countsPerMonth
+			result.sumsPerYOP = sumsPerYOP
+		}
 		/*
             Map<String, Object> titleRow = titleRows.get(tipp)
             if(!titleRow) {
@@ -1794,12 +1807,12 @@ class ExportService {
                     break
             }
             titleRows.put(tipp, titleRow)*/
-        }
 		//Duration iterInner = Duration.between(innerStart, Instant.now().truncatedTo(ChronoUnit.MICROS))
 		//log.debug("iteration time inner loop: ${iterInner}")
 
 		//}
-		[titleRows: titleRows, sumRows: countsPerMonth, sumsPerYOP: sumsPerYOP]
+		result.titleRows = titleRows
+		result
 	}
 
 	Map<String, Object> prepareDataWithDatabases(Map requestResponse, String reportType) {
