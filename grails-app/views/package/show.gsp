@@ -153,6 +153,14 @@
                                 <dd>${packageInstanceRecord.openAccess ? RefdataValue.getByValueAndCategory(packageInstanceRecord.openAccess, RDConstants.LICENSE_OA_TYPE)?.getI10n("value") : RefdataValue.getByValueAndCategory('Empty', RDConstants.LICENSE_OA_TYPE).getI10n("value")}</dd>
                             </dl>
                             <dl>
+                                <dt>${message(code: 'package.freeTrial.label')}</dt>
+                                <dd>${packageInstanceRecord.freeTrial ? RefdataValue.getByValueAndCategory(packageInstanceRecord.freeTrial,RDConstants.Y_N).getI10n("value") : message(code: 'default.not.available')}</dd>
+                            </dl>
+                            <dl>
+                                <dt>${message(code: 'package.freeTrialPhase.label')}</dt>
+                                <dd>${packageInstanceRecord.freeTrialPhase ?: message(code: 'default.not.available')}</dd>
+                            </dl>
+                            <dl>
                                 <dt>${message(code: 'package.ddc.label')}</dt>
                                 <dd>
                                     <div class="ui bulleted list">
