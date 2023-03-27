@@ -237,13 +237,13 @@ class UiTagLib {
                                 out << '<div class="ui simple dropdown icon green button la-modern-button ' + attrs.class + ' la-audit-button" data-content="Wert wird vererbt">'
                                 out   << '<i aria-hidden="true" class="icon la-js-editmode-icon thumbtack"></i>'
                                 out   << '<div class="menu">'
-                                out << g.link( 'Vererbung deaktivieren. Wert für Teilnehmer <strong>löschen</strong>',
+                                out << g.link( 'Vererbung deaktivieren. Wert für Einrichtung <strong>löschen</strong>',
                                         controller: 'ajax',
                                         action: 'toggleAudit',
                                         params: ['owner': oid, 'property': [objAttr]],
                                         class: 'item'
                                 )
-                                out << g.link( 'Vererbung deaktivieren. Wert für Teilnehmer <strong>erhalten</strong>',
+                                out << g.link( 'Vererbung deaktivieren. Wert für Einrichtung <strong>erhalten</strong>',
                                         controller: 'ajax',
                                         action: 'toggleAudit',
                                         params: ['owner': oid, 'property': [objAttr], keep: true],

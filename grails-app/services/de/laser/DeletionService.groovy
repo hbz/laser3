@@ -79,7 +79,7 @@ class DeletionService {
         // collecting informations
 
         result.info = []
-        result.info << ['Referenzen: Teilnehmer', ref_instanceOf, FLAG_BLOCKER]
+        result.info << ['Referenzen: Einrichtungen', ref_instanceOf, FLAG_BLOCKER]
 
         result.info << ['Links: Verträge bzw. Lizenzen', links]
         result.info << ['Aufgaben', tasks]
@@ -270,7 +270,7 @@ class DeletionService {
 
         result.info = []
 
-        result.info << ['Referenzen: Teilnehmer', ref_instanceOf, FLAG_BLOCKER]
+        result.info << ['Referenzen: Einrichtungen', ref_instanceOf, FLAG_BLOCKER]
         result.info << ['Referenzen: Vorgänger/Nachfolger', links.findAll { it.linkType == RDStore.LINKTYPE_FOLLOWS }]
 
         result.info << ['Links: Lizenzen', links.findAll { it.linkType == RDStore.LINKTYPE_LICENSE }]
