@@ -1113,8 +1113,8 @@ class StatsSyncService {
      * @param requestBody is the list of available reports fetched?
      * @return the response body or an error map upon failure
      */
-    def fetchXMLData(String url, requestBody) {
-        def result = null
+    Map<String, Object> fetchXMLData(String url, requestBody) {
+        Map<String, Object> result = [:]
 
         BasicHttpClient http
         try  {
@@ -1124,14 +1124,37 @@ class StatsSyncService {
             http = new BasicHttpClient(url, config)
             Closure success = { resp, GPathResult xml ->
                 if(resp.code() == 200) {
-                    result = xml
+                    xml.declareNamespace(["SOAP-ENV": "http://schemas.xmlsoap.org/soap/envelope/",
+                                          ns1       : "http://www.niso.org/schemas/sushi",
+                                          ns2       : "http://www.niso.org/schemas/counter",
+                                          ns3       : "http://www.niso.org/schemas/sushi/counter"])
+                    if (['3000', '3020'].any { String errorCode -> errorCode == xml.'SOAP-ENV:Body'.'ReportResponse'?.'ns1:Exception'?.'ns1:Number'?.text() }) {
+                        log.warn(xml.'SOAP-ENV:Body'.'ReportResponse'.'ns1:Exception'.'ns1:Message'.text())
+                        log.debug(requestBody.toString())
+                        [error: xml.'SOAP-ENV:Body'.'ReportResponse'?.'ns1:Exception'?.'ns1:Number'?.text()]
+                    }
+                    else if (xml.'SOAP-ENV:Body'.'ReportResponse'?.'ns1:Exception'?.'ns1:Number'?.text() == '3030') {
+                        log.info("no data for given period")
+                        //StatsMissingPeriod.construct([from: startTime.getTime(), to: currentYearEnd.getTime(), cursor: lsc])
+                        [error: xml.'SOAP-ENV:Body'.'ReportResponse'?.'ns1:Exception'?.'ns1:Number'?.text() == '3030']
+                    }
+                    else {
+                        GPathResult reportData = xml.'SOAP-ENV:Body'.'ns3:ReportResponse'.'ns3:Report'
+                        //StatsMissingPeriod wasMissing = lsc.missingPeriods.find{ StatsMissingPeriod period -> period.from == startTime.getTime() && period.to == currentYearEnd.getTime() }
+                        //if(wasMissing)
+                        //lsc.missingPeriods.remove(wasMissing)
+                        GPathResult reportItems = reportData.'ns2:Report'.'ns2:Customer'.'ns2:ReportItems'
+                        result = [reports: reportItems, reportName: reportData.'ns2:Report'.'@Name'.text()]
+                    }
                 }
                 else {
                     result = [error: "server response: ${resp.status()}"]
                 }
             }
             Closure failure = { resp, reader ->
-                result = [error: "server response: ${resp.status()} - ${reader}"]
+                if(resp)
+                    result = [error: "server response: ${resp.status()} - ${reader}"]
+                else result = [error: "unknown server error or server not reachable, message: ${resp}"]
             }
             http.post(["Accept": "application/soap+xml; charset=utf-8"], BasicHttpClient.ResponseType.XML, BasicHttpClient.PostType.SOAP, requestBody.toString(), success, failure)
         }
