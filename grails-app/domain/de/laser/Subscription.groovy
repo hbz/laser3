@@ -793,7 +793,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
   /**
    * Retrieves a list of subscriptions for dropdown display. The display can be parametrised, possible options are:
-   * startDate, endDate, hideIdent, inclSubStartDate, hideDeleted, accessibleToUser, inst_shortcode
+   * startDate, endDate, hideIdent, inclSubStartDate, hideDeleted, inst_shortcode
    * @param the display and filter parameter map
    * @return a {@link List} of {@link Map}s of structure [id: oid, text: subscription text] with the query results
    */
@@ -831,16 +831,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
       hqlParams.put('inst', params.inst_shortcode)
     }
 
-
     List results = Subscription.executeQuery(hqlString, hqlParams)
-
-    if(params.accessibleToUser){
-      for(int i=0;i<results.size();i++){
-        if(! results.get(i).checkPermissionsNew("view",User.get(params.accessibleToUser))){
-          results.remove(i)
-        }
-      }
-    }
 
     results?.each { t ->
       String resultText = t.name

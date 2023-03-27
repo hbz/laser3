@@ -29,7 +29,7 @@
         <g:form action="listInstitution" method="get" class="ui form">
             <laser:render template="/templates/filter/orgFilter"
                       model="[
-                              tmplConfigShow: [['name', 'identifier'], ['identifierNamespace', 'customerIDNamespace'], ['country&region', 'libraryNetwork', 'libraryType', 'subjectGroup']],
+                              tmplConfigShow: [['name', 'identifier'], ['identifierNamespace', 'customerIDNamespace', 'isMyX'], ['country&region', 'libraryNetwork', 'libraryType', 'subjectGroup']],
                               tmplConfigFormFilter: true
                       ]"/>
         </g:form>
@@ -38,7 +38,7 @@
     <g:if test="${consortiaMemberIds}">%{-- --}%
         <laser:render template="/templates/filter/orgFilterTable"
                   model="[orgList: availableOrgs,
-                          consortiaMemberIds: consortiaMemberIds,
+                          currentConsortiaMemberIdList: consortiaMemberIds,
                           tmplShowCheckbox: false,
                           tmplConfigShow: [
                                   'sortname', 'name', 'wibid', 'isil', 'region', 'libraryNetwork', 'libraryType', 'status', 'legalInformation', 'isMyX'
