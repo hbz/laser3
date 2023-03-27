@@ -97,21 +97,21 @@
                         List<Map> isMyXOptions = []
                         if (actionName == 'listInstitution') {
                             isMyXOptions = [
-                                    [ id: 'exclusive', value: "Gehört zu '${message(code:'menu.my.insts')}'" ],
-                                    [ id: 'not',       value: "Gehört nicht zu meinen Objekten" ]
+                                    [ id: 'exclusive', value: "${message(code:'filter.isMyX.exclusive', args:[ "${message(code:'menu.my.insts')}" ])}"],
+                                    [ id: 'not',       value: "${message(code:'filter.isMyX.not')}" ]
                             ]
                         }
                         else if (actionName == 'listConsortia') {
                             isMyXOptions = [
-                                    [ id: 'exclusive', value: "Gehört zu '${message(code:'menu.my.consortia')}'" ],
-                                    [ id: 'not',       value: "Gehört nicht zu meinen Objekten" ]
+                                    [ id: 'exclusive', value: "${message(code:'filter.isMyX.exclusive', args:[ "${message(code:'menu.my.consortia')}" ])}"],
+                                    [ id: 'not',       value: "${message(code:'filter.isMyX.not')}" ]
                             ]
 
                         }
                         else if (actionName == 'listProvider') {
                             isMyXOptions = [
-                                    [ id: 'exclusive', value: "Gehört zu '${message(code:'menu.my.providers')}'" ],
-                                    [ id: 'not',       value: "Gehört nicht zu meinen Objekten" ]
+                                    [ id: 'exclusive', value: "${message(code:'filter.isMyX.exclusive', args:[ "${message(code:'menu.my.providers')}" ])}"],
+                                    [ id: 'not',       value: "${message(code:'filter.isMyX.not')}" ]
                             ]
                         }
                     %>
