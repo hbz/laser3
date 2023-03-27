@@ -1833,12 +1833,12 @@ class OrganisationController  {
                     isEditable = user.hasMinRole('ROLE_YODA')
                 }
                 break
-            case [ 'show', 'ids', 'readerNumber', 'accessPoints', 'addSubjectGroup', 'deleteSubjectGroup', 'addressbook' ]:
+            case [ 'show', 'ids', 'addSubjectGroup', 'deleteSubjectGroup', 'readerNumber', 'accessPoints', 'addressbook' ]:
                 if (inContextOrg) {
                     isEditable = userHasEditableRights
                 } else {
                     switch (contextOrg.getCustomerType()){
-                        case CustomerTypeService.ORG_INST_BASIC:
+                        case [ CustomerTypeService.ORG_INST_BASIC, CustomerTypeService.ORG_INST_PRO ] :
                             switch (orgInstance.getCustomerType()){
                                 case CustomerTypeService.ORG_INST_BASIC:        isEditable = user.hasMinRole('ROLE_YODA'); break
                                 case CustomerTypeService.ORG_INST_PRO:          isEditable = user.hasMinRole('ROLE_YODA'); break
@@ -1847,16 +1847,7 @@ class OrganisationController  {
                                 default:                    isEditable = user.hasMinRole('ROLE_YODA'); break
                             }
                             break
-                        case CustomerTypeService.ORG_INST_PRO:
-                            switch (orgInstance.getCustomerType()){
-                                case CustomerTypeService.ORG_INST_BASIC:        isEditable = user.hasMinRole('ROLE_YODA'); break
-                                case CustomerTypeService.ORG_INST_PRO:          isEditable = user.hasMinRole('ROLE_YODA'); break
-                                case CustomerTypeService.ORG_CONSORTIUM_BASIC:  isEditable = user.hasMinRole('ROLE_YODA'); break
-                                case CustomerTypeService.ORG_CONSORTIUM_PRO:    isEditable = user.hasMinRole('ROLE_YODA'); break
-                                default:                    isEditable = userHasEditableRights; break //means providers and agencies
-                            }
-                            break
-                        case CustomerTypeService.ORG_CONSORTIUM_BASIC:
+                        case [ CustomerTypeService.ORG_CONSORTIUM_BASIC, CustomerTypeService.ORG_CONSORTIUM_PRO ] :
                             switch (orgInstance.getCustomerType()){
                                 case CustomerTypeService.ORG_INST_BASIC:        isEditable = userHasEditableRights; break
                                 case CustomerTypeService.ORG_INST_PRO:          isEditable = userHasEditableRights; break
