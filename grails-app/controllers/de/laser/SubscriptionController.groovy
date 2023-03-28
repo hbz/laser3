@@ -132,12 +132,7 @@ class SubscriptionController {
         }
         if(result.subscription._getCalculatedType() != CalculatedType.TYPE_CONSORTIAL) {
             //Set<String> tippUIDs = subscriptionControllerService.fetchTitles(params, refSubs, 'uids')
-            Map<String, Object> queryParamsBound = [customer: result.subscription.getSubscriber().globalUID, platforms: subscribedPlatforms.globalUID],
-                                dateRangeParams = subscriptionControllerService.getDateRange(params, result.subscription)
-            if(dateRangeParams.dateRange.length() > 0) {
-                queryParamsBound.startDate = dateRangeParams.startDate
-                queryParamsBound.endDate = dateRangeParams.endDate
-            }
+            Map<String, Object> dateRangeParams = subscriptionControllerService.getDateRange(params, result.subscription)
             result.reportTypes = []
             SortedSet allAvailableReports = subscriptionControllerService.getAvailableReports(subscribedPlatforms, result)
             result.reportTypes = allAvailableReports
