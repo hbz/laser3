@@ -776,19 +776,19 @@ class ExportService {
 			int rowno = 0
 			//revision 4
 			if(params.revision == 'counter4') {
+				prf.setBenchmark('data fetched from provider')
+				Map<String, Object> queryParams = [reportType: reportType, customer: customer, platform: platform]
+				if(params.metricType) {
+					queryParams.metricTypes = params.list('metricType').join('%7C')
+				}
+				queryParams.startDate = dateRangeParams.startDate
+				queryParams.endDate = dateRangeParams.endDate
+				//the data
+				Map<String, Object> requestResponse = getReports(queryParams)
                 metricTypes.each { String metricType ->
 					sheet = wb.createSheet(metricType)
 					sheet.flushRows(10)
 					sheet.setAutobreaks(true)
-					Map<String, Object> queryParams = [reportType: reportType, customer: customer, platform: platform]
-					if(params.metricType) {
-						queryParams.metricTypes = params.list('metricType').join('%7C')
-					}
-					queryParams.startDate = dateRangeParams.startDate
-					queryParams.endDate = dateRangeParams.endDate
-					//the data
-					Map<String, Object> requestResponse = getReports(queryParams)
-					prf.setBenchmark('data fetched from provider')
 					if(requestResponse.containsKey('reports')) {
 						/*
 						Map<String, Object> queryParams = [reportType: reportType, metricType: metricType, customer: customer.globalUID, platforms: subscribedPlatforms.globalUID]
@@ -920,7 +920,7 @@ class ExportService {
 								prf.setBenchmark('prepare sum row')
 								for(Date month: dateRangeParams.monthsInRing) {
 									cell = row.createCell(j+8)
-									Integer countPerMonth = data.sumRows.get(month) ?: 0
+									Integer countPerMonth = data.sumRows.get(metricType)?.get(month) ?: 0
 									totalCount += countPerMonth
 									cell.setCellValue(countPerMonth)
 									j++
@@ -1116,8 +1116,9 @@ class ExportService {
 						prf.setBenchmark('loop through assembled rows')
 						for(TitleInstancePackagePlatform title: titlesSorted) {
 							Instant start = Instant.now().truncatedTo(ChronoUnit.MICROS)
-							Map titleRow = titleRows.get(title)
-							if(titleRow) {
+							Map metricRow = titleRows.get(title)
+							if(metricRow) {
+								Map titleRow = metricRow.get(metricType)
 								row = sheet.createRow(i+rowno)
 								cell = row.createCell(0)
 								cell.setCellValue(title.name)
@@ -1624,15 +1625,17 @@ class ExportService {
 						}
 						for (GPathResult instance : performance.'ns2:Instance') {
 							int periodTotal = 0, periodHTML = 0, periodPDF = 0, count = Integer.parseInt(instance.'ns2:Count'.text())
-							//certain reports wish that for each metric, too ...
-							Integer countPerMonth = countsPerMonth.get(reportFrom)
-							if(!countPerMonth) {
-								countPerMonth = 0
-							}
-							countPerMonth += count
-							countsPerMonth.put(reportFrom, countPerMonth)
 							String metricType = instance.'ns2:MetricType'.text()
-							Map<String, Object> titleRow = titleRows.get(tipp)
+							//certain reports wish that for each metric, too ...
+							Map<Date, Integer> metricSums = countsPerMonth.containsKey(metricType) ? countsPerMonth.get(metricType) : [:]
+							Integer countPerMonth = metricSums.containsKey(reportFrom) ? metricSums.get(reportFrom) : 0
+							countPerMonth += count
+							metricSums.put(reportFrom, countPerMonth)
+							countsPerMonth.put(metricType, metricSums)
+							Map<String, Map<String, Object>> titleMetrics = titleRows.get(tipp)
+							if(!titleMetrics)
+								titleMetrics = [:]
+							Map<String, Object> titleRow = titleMetrics.get(metricType)
 							if (!titleRow) {
 								titleRow = [:]
 								//key naming identical to column headers
@@ -1713,7 +1716,8 @@ class ExportService {
 									sumsPerYOP.put(key, countPerYOP)
 									break
 							}
-							titleRows.put(tipp, titleRow)
+							titleMetrics.put(metricType, titleRow)
+							titleRows.put(tipp, titleMetrics)
 						}
 					}
 				}
