@@ -12,7 +12,7 @@
                     <th>Voreinstellung</th>
                     <th>Für dieses Objekt überschreiben</th>
                     <g:if test="${showConsortiaFunctions == true}">
-                        <th>Für Teilnehmer anzeigen</th>
+                        <th>Für Einrichtung anzeigen</th>
                     </g:if>
                     <th class="la-action-info">${message(code:'default.actions.label')}</th>
                 </tr>

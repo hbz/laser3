@@ -267,7 +267,7 @@ class LicenseController {
                 if (params.cmd == 'generate') {
                     licenseCopy = institutionsService.copyLicense(
                             result.license, [
-                                lic_name: "${result.license.reference} (Teilnehmervertrag)",
+                                lic_name: "${result.license.reference} (Einrichtungsvertrag)",
                                 isSlaved: "true",
                                 copyStartEnd: true
                             ],

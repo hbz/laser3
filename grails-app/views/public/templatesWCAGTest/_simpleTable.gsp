@@ -13,8 +13,8 @@
 
         <th scope="col" class="la-smaller-table-head sortable"><a href="/laser/myInstitution/currentSubscriptions?status=103&amp;orgRole=Subscription+Consortia&amp;sort=s.startDate&amp;order=asc">Anfangsdatum</a></th>
 
-        <th scope="col" rowspan="2">Teilnehmer</th>
-        <th scope="col" rowspan="2">Teilnehmer-
+        <th scope="col" rowspan="2">Einrichtung</th>
+        <th scope="col" rowspan="2">Einrichtungs-
             <br />kosten</th>
 
         <th scope="col" rowspan="2" class="two">Optionen</th>
