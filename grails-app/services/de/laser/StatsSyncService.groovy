@@ -977,7 +977,7 @@ class StatsSyncService {
             }
         }
         //log.debug(requestBody.toString())
-        //def because on success, I return the GPathResult, a map otherwise
+        //def because on success, I return the GPathResult, a map otherwise - TODO in case of revert!
         def result = fetchXMLData(statsUrl, requestBody)
         if (result && result instanceof GPathResult) {
             GPathResult xml = result
@@ -1066,7 +1066,7 @@ class StatsSyncService {
                     else if(json.containsKey("Code") && !json.containsKey("Report_Header")) {
                         result.error = json["Code"]
                     }
-                    else if(json != null && !json.containsKey("Exception") && !requestList) {
+                    else if(json != null && !requestList) {
                         result.header = json["Report_Header"]
                         result.items = json["Report_Items"]
                     }
@@ -1076,21 +1076,25 @@ class StatsSyncService {
                         else result.error = json.message
                     }
                     else {
-                        result.error = "invalid JSON returned, retry call"
+                        log.error("invalid JSON returned, retry call")
+                        result.error = 'unknownError'
                     }
                 }
                 else if(json.containsKey("Report_Header")) {
                     result.header = json["Report_Header"]
                 }
                 else {
-                    result.error = "server response: ${resp.status()}"
+                    log.error("server response: ${resp.status()} - ${reader}")
+                    result.error = resp.status()
                 }
             }
             Closure failure = { resp, reader ->
                 if(reader.containsKey("Report_Header"))
                     result.header = reader["Report_Header"]
-                else
-                    result.error = "server response: ${resp.status()} - ${reader}"
+                else {
+                    log.error("server response: ${resp.status()} - ${reader}")
+                    result.error = resp.status()
+                }
             }
             HttpClientConfiguration config = new DefaultHttpClientConfiguration()
             config.readTimeout = Duration.ofMinutes(1)
@@ -1136,7 +1140,7 @@ class StatsSyncService {
                     else if (xml.'SOAP-ENV:Body'.'ReportResponse'?.'ns1:Exception'?.'ns1:Number'?.text() == '3030') {
                         log.info("no data for given period")
                         //StatsMissingPeriod.construct([from: startTime.getTime(), to: currentYearEnd.getTime(), cursor: lsc])
-                        [error: xml.'SOAP-ENV:Body'.'ReportResponse'?.'ns1:Exception'?.'ns1:Number'?.text() == '3030']
+                        [error: xml.'SOAP-ENV:Body'.'ReportResponse'?.'ns1:Exception'?.'ns1:Number'?.text()]
                     }
                     else {
                         GPathResult reportData = xml.'SOAP-ENV:Body'.'ns3:ReportResponse'.'ns3:Report'
@@ -1148,13 +1152,19 @@ class StatsSyncService {
                     }
                 }
                 else {
-                    result = [error: "server response: ${resp.status()}"]
+                    log.error("server response: ${resp.status()}")
+                    result = [error: resp.status()]
                 }
             }
             Closure failure = { resp, reader ->
-                if(resp)
-                    result = [error: "server response: ${resp.status()} - ${reader}"]
-                else result = [error: "unknown server error or server not reachable, message: ${resp}"]
+                if(resp) {
+                    log.error("server response: ${resp.status()} - ${reader}")
+                    result = [error: resp.status()]
+                }
+                else {
+                    log.error("unknown error or server not reachable: ${resp}")
+                    result = [error: 'unknownError']
+                }
             }
             http.post(["Accept": "application/soap+xml; charset=utf-8"], BasicHttpClient.ResponseType.XML, BasicHttpClient.PostType.SOAP, requestBody.toString(), success, failure)
         }

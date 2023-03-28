@@ -106,6 +106,10 @@ class SubscriptionController {
     @Check404()
     def stats() {
         Map<String, Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
+        if(params.error)
+            result.error = params.error
+        if(params.reportType)
+            result.putAll(subscriptionControllerService.loadFilterList(params))
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         result.flagContentGokb = true // gokbService.queryElasticsearch
         Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription", [subscription: result.subscription])
@@ -190,16 +194,12 @@ class SubscriptionController {
     @Secured(closure = { ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_USER") })
     def generateReport() {
         if(!params.reportType && !params.metricType) {
-            flash.error = message(code: 'renewEntitlementsWithSurvey.noReportSelected')
-            redirect action: 'stats', id: params.id
+            redirect action: 'stats', id: params.id, params: [error: 'noReportSelected']
         }
         else {
-            SXSSFWorkbook wb = exportService.generateReport(params)
-            if(!wb) {
-                response.sendError(401)
-                return
-            }
-            else {
+            Map<String, Object> ctrlResult = exportService.generateReport(params)
+            if(ctrlResult.containsKey('result')) {
+                SXSSFWorkbook wb = ctrlResult.result
                 Date dateRun = new Date()
                 response.setHeader "Content-disposition", "attachment; filename=report_${DateUtils.getSDF_yyyyMMdd().format(dateRun)}.xlsx"
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -208,6 +208,9 @@ class SubscriptionController {
                 response.outputStream.close()
                 wb.dispose()
                 return
+            }
+            else {
+                redirect action: 'stats', id: params.id, params: [error: ctrlResult.error, reportType: params.reportType, metricType: params.metricType, accessType: params.accessType, accessMethod: params.accessMethod]
             }
         }
     }

@@ -717,7 +717,7 @@ class ExportService {
 	 * @param showOtherData should other data be displayed?
 	 * @return an Excel worksheet of the usage report, either according to the COUNTER 4 or COUNTER 5 format
 	 */
-	SXSSFWorkbook generateReport(GrailsParameterMap params, Boolean showPriceDate = false, Boolean showMetricType = false, Boolean showOtherData = false) {
+	Map<String, Object> generateReport(GrailsParameterMap params, Boolean showPriceDate = false, Boolean showMetricType = false, Boolean showOtherData = false) {
 		Profiler prf = new Profiler()
 		prf.setBenchmark('start export')
 		Locale locale = LocaleUtils.getCurrentLocale()
@@ -744,20 +744,16 @@ class ExportService {
 		namespaces.add(propIdNamespace)
 		prf.setBenchmark('get date ranges')
 		Map<String, Object> dateRangeParams = subscriptionControllerService.getDateRange(params, result.subscription)
-		XSSFWorkbook workbook = new XSSFWorkbook()
-		POIXMLProperties xmlProps = workbook.getProperties()
-		POIXMLProperties.CoreProperties coreProps = xmlProps.getCoreProperties()
-		coreProps.setCreator(messageSource.getMessage('laser',null,locale))
-		SXSSFWorkbook wb = new SXSSFWorkbook(workbook,50)
-		wb.setCompressTempFiles(true)
+		XSSFWorkbook workbook
 		Row row
 		Cell cell
 		SXSSFSheet sheet
-        Set<String> reportTypes = params.list('reportType'), metricTypes = params.list('metricType')
+        Set<String> metricTypes = params.list('metricType')
+		String reportType = params.reportType
 		Map<String, Map<String, TitleInstancePackagePlatform>> titles = [:] //structure: namespace -> value -> tipp
 		Set<TitleInstancePackagePlatform> titlesSorted = [] //fallback structure to preserve sorting
 		prf.setBenchmark('prepare title identifier map')
-        if(reportTypes.any { String reportType -> reportType in Counter4Report.COUNTER_4_TITLE_REPORTS || reportType in Counter5Report.COUNTER_5_TITLE_REPORTS }) {
+        if(reportType in Counter4Report.COUNTER_4_TITLE_REPORTS || reportType in Counter5Report.COUNTER_5_TITLE_REPORTS) {
 			subscriptionControllerService.fetchTitles(params, refSubs, namespaces, 'ids').each { Map titleMap ->
 				titlesSorted << GrailsHibernateUtil.unwrapIfProxy(titleMap.tipp)
 				Map<String, TitleInstancePackagePlatform> innerMap = titles.get(titleMap.namespace)
@@ -767,46 +763,53 @@ class ExportService {
 				titles.put(titleMap.namespace, innerMap)
 			}
         }
-		reportTypes.each { String reportType ->
-			prf.setBenchmark("start loop for ${reportType}")
-			Set<String> columnHeaders = []
-            SortedSet<String> monthHeaders = new TreeSet<String>()
-			Map<TitleInstancePackagePlatform, Map> titleRows = [:]
-			Map<String, Object> sumsPerYOP
-			int rowno = 0
-			//revision 4
-			if(params.revision == 'counter4') {
-				prf.setBenchmark('data fetched from provider')
-				Map<String, Object> queryParams = [reportType: reportType, customer: customer, platform: platform]
-				if(params.metricType) {
-					queryParams.metricTypes = params.list('metricType').join('%7C')
-				}
-				queryParams.startDate = dateRangeParams.startDate
-				queryParams.endDate = dateRangeParams.endDate
-				//the data
-				Map<String, Object> requestResponse = getReports(queryParams)
-                metricTypes.each { String metricType ->
-					sheet = wb.createSheet(metricType)
-					sheet.flushRows(10)
-					sheet.setAutobreaks(true)
-					if(requestResponse.containsKey('reports')) {
-						/*
-						Map<String, Object> queryParams = [reportType: reportType, metricType: metricType, customer: customer.globalUID, platforms: subscribedPlatforms.globalUID]
-						if(dateRangeParams.dateRange.length() > 0) {
-							queryParams.startDate = dateRangeParams.startDate
-							queryParams.endDate = dateRangeParams.endDate
-						}
-						*/
-						//the data
-						//Set<Counter4Report> counter4Reports = []
-						//prf.setBenchmark('get usage data')
-						//we do not need to distinguish right here between reports with and without title identifiers any more
-						//Counter4Report.withTransaction {
-						//counter4Sums.addAll(Counter4Report.executeQuery('select r.reportFrom, r.metricType, sum(r.reportCount) from Counter4Report r where r.reportType = :reportType and r.metricType = :metricType and r.reportInstitutionUID = :customer and r.reportFrom >= :startDate and r.reportTo <= :endDate group by r.reportFrom, r.metricType', queryParams))
-						//counter4Reports.addAll(Counter4Report.executeQuery('select r from Counter4Report r where r.reportType = :reportType and r.metricType = :metricType and r.reportInstitutionUID = :customer and r.platformUID in (:platforms) '+dateRangeParams.dateRange+'order by r.reportFrom', queryParams))
-						//reproduce counter report structure in non-transactional format!
+		//reportTypes.each { String reportType ->
+		Set<String> columnHeaders = []
+		SortedSet<String> monthHeaders = new TreeSet<String>()
+		Map<TitleInstancePackagePlatform, Map> titleRows = [:]
+		Map<String, Object> sumsPerYOP
+		int rowno = 0
+		//revision 4
+		if(params.revision == 'counter4') {
+			prf.setBenchmark('data fetched from provider')
+			Map<String, Object> queryParams = [reportType: reportType, customer: customer, platform: platform]
+			if(params.metricType) {
+				queryParams.metricTypes = params.list('metricType').join('%7C')
+			}
+			queryParams.startDate = dateRangeParams.startDate
+			queryParams.endDate = dateRangeParams.endDate
+			//the data
+			Map<String, Object> requestResponse = getReports(queryParams)
+			if(requestResponse.containsKey('reports')) {
+				Set<String> availableMetrics = requestResponse.reports.'**'.findAll { node -> node.name() == 'MetricType' }.collect { node -> node.text()}.toSet()
+				workbook = new XSSFWorkbook()
+				POIXMLProperties xmlProps = workbook.getProperties()
+				POIXMLProperties.CoreProperties coreProps = xmlProps.getCoreProperties()
+				coreProps.setCreator(messageSource.getMessage('laser',null,locale))
+				SXSSFWorkbook wb = new SXSSFWorkbook(workbook,50)
+				wb.setCompressTempFiles(true)
+				metricTypes.each { String metricType ->
+					/*
+					Map<String, Object> queryParams = [reportType: reportType, metricType: metricType, customer: customer.globalUID, platforms: subscribedPlatforms.globalUID]
+					if(dateRangeParams.dateRange.length() > 0) {
+						queryParams.startDate = dateRangeParams.startDate
+						queryParams.endDate = dateRangeParams.endDate
+					}
+					*/
+					//the data
+					//Set<Counter4Report> counter4Reports = []
+					//prf.setBenchmark('get usage data')
+					//we do not need to distinguish right here between reports with and without title identifiers any more
+					//Counter4Report.withTransaction {
+					//counter4Sums.addAll(Counter4Report.executeQuery('select r.reportFrom, r.metricType, sum(r.reportCount) from Counter4Report r where r.reportType = :reportType and r.metricType = :metricType and r.reportInstitutionUID = :customer and r.reportFrom >= :startDate and r.reportTo <= :endDate group by r.reportFrom, r.metricType', queryParams))
+					//counter4Reports.addAll(Counter4Report.executeQuery('select r from Counter4Report r where r.reportType = :reportType and r.metricType = :metricType and r.reportInstitutionUID = :customer and r.platformUID in (:platforms) '+dateRangeParams.dateRange+'order by r.reportFrom', queryParams))
+					//reproduce counter report structure in non-transactional format!
 
-						//}
+					//}
+					if(metricType in availableMetrics) {
+						sheet = wb.createSheet(metricType)
+						sheet.flushRows(10)
+						sheet.setAutobreaks(true)
 						//the header
 						Row headerRow = sheet.createRow(0)
 						cell = headerRow.createCell(0)
@@ -828,10 +831,10 @@ class ExportService {
 						if(dateRangeParams.containsKey('startDate') && dateRangeParams.containsKey('endDate'))
 							cell.setCellValue("${DateUtils.getSDF_yyyyMMdd().format(dateRangeParams.startDate)} to ${DateUtils.getSDF_yyyyMMdd().format(dateRangeParams.endDate)}")
 						/*
-						else if(counter4Reports) {
-							cell.setCellValue("${DateUtils.getSDF_yyyyMMdd().format(counter4Reports.first().reportFrom)} to ${DateUtils.getSDF_yyyyMMdd().format(counter4Reports.last().reportTo)}")
-						}
-						*/
+                        else if(counter4Reports) {
+                            cell.setCellValue("${DateUtils.getSDF_yyyyMMdd().format(counter4Reports.first().reportFrom)} to ${DateUtils.getSDF_yyyyMMdd().format(counter4Reports.last().reportTo)}")
+                        }
+                        */
 						headerRow = sheet.createRow(5)
 						cell = headerRow.createCell(0)
 						cell.setCellValue("Date run:")
@@ -933,19 +936,19 @@ class ExportService {
 							case Counter4Report.BOOK_REPORT_4:
 								int totalCount = 0
 								/*
-								Counter4Report.withNewSession {
-									Counter4Report.executeQuery('select new map(r.reportFrom as reportMonth, r.metricType as metricType, r.platformUID as platformUID, r.publisher as publisher, r.category as category, sum(r.reportCount) as count) from Counter4Report r where r.reportType = :reportType and r.metricType = :metricType and r.reportInstitutionUID = :customer and r.platformUID in (:platforms)' + dateRangeParams.dateRange + 'group by r.platformUID, r.publisher, r.category, r.reportFrom, r.metricType', queryParams)
-									sumRows.eachWithIndex { sumRow, int i ->
-										cell = row.createCell(0)
-										cell.setCellValue(sumRow.category)
-										cell = row.createCell(2)
-										cell.setCellValue(Platform.findByGlobalUID(sumRow.platformUID).name)
-										cell = row.createCell(i+9)
-										cell.setCellValue(sumRow.count)
-										totalCount += sumRow.count
-									}
-								}
-								*/
+                                Counter4Report.withNewSession {
+                                    Counter4Report.executeQuery('select new map(r.reportFrom as reportMonth, r.metricType as metricType, r.platformUID as platformUID, r.publisher as publisher, r.category as category, sum(r.reportCount) as count) from Counter4Report r where r.reportType = :reportType and r.metricType = :metricType and r.reportInstitutionUID = :customer and r.platformUID in (:platforms)' + dateRangeParams.dateRange + 'group by r.platformUID, r.publisher, r.category, r.reportFrom, r.metricType', queryParams)
+                                    sumRows.eachWithIndex { sumRow, int i ->
+                                        cell = row.createCell(0)
+                                        cell.setCellValue(sumRow.category)
+                                        cell = row.createCell(2)
+                                        cell.setCellValue(Platform.findByGlobalUID(sumRow.platformUID).name)
+                                        cell = row.createCell(i+9)
+                                        cell.setCellValue(sumRow.count)
+                                        totalCount += sumRow.count
+                                    }
+                                }
+                                */
 								cell = row.createCell(8)
 								cell.setCellValue(totalCount)
 								rowno++
@@ -1013,48 +1016,48 @@ class ExportService {
 								Map<String, Object> data = prepareDataWithDatabases(requestResponse, reportType)
 								int totalSum = 0
 								/*
-								TODO migrate
-								Counter4Report.withNewSession {
-									Map<String, Object> categoryRows = [:]
-									Counter4Report.executeQuery('select new map(r.reportFrom as reportFrom, r.metricType as accessDeniedCategory, sum(r.reportCount) as count) from Counter4Report r where r.reportType = :reportType and r.metricType = :metricType and r.reportInstitutionUID = :customer and r.platformUID in (:platforms)'+dateRangeParams.dateRange+'group by r.metricType, r.reportFrom order by r.metricType, r.reportFrom', queryParams).each { countPerCategory ->
-										Map<String, Object> categoryRow = categoryRows.get(countPerCategory.accessDeniedCategory)
-										if(!categoryRow)
-											categoryRow = ['Reporting Period Total': totalSum]
-										else totalSum = categoryRow.get('Reporting Period Total')
-										totalSum += countPerCategory.count
-										categoryRow.put(DateUtils.getSDF_yyyyMM().format(countPerCategory.reportFrom), countPerCategory.count)
-										categoryRow.put('Reporting Period Total', totalSum)
-										categoryRows.put(countPerCategory.accessDeniedCategory, categoryRow)
-									}
-									categoryRows.eachWithIndex { String accessDeniedCategory, Map countsPerCategory, int r ->
-										cell = row.createCell(0)
-										cell.setCellValue('Total for all databases')
-										cell = row.createCell(3)
-										switch(accessDeniedCategory) {
-											case 'no_license': cell.setCellValue('Access denied: content item not licenced')
-												break
-											case 'turnaway': cell.setCellValue('Access denied: concurrent/simultaneous user licence limit exceeded')
-												break
-											case 'ft_html': cell.setCellValue('Record Views HTML')
-												break
-											case 'ft_total': cell.setCellValue('Record Views Total')
-												break
-											default: cell.setCellValue(accessDeniedCategory)
-												break
-										}
-										cell = row.createCell(4)
-										cell.setCellValue(countsPerCategory.get('Reporting Period Total'))
-										monthHeaders.eachWithIndex { String month, int i ->
-											cell = row.createCell(i+5)
-											if(countsPerCategory.containsKey(month))
-												cell.setCellValue(countsPerCategory.get(month))
-											else cell.setCellValue(0)
-										}
-										row = sheet.createRow(rowno)
-										rowno += r
-									}
-								}
-							*/
+                                TODO migrate
+                                Counter4Report.withNewSession {
+                                    Map<String, Object> categoryRows = [:]
+                                    Counter4Report.executeQuery('select new map(r.reportFrom as reportFrom, r.metricType as accessDeniedCategory, sum(r.reportCount) as count) from Counter4Report r where r.reportType = :reportType and r.metricType = :metricType and r.reportInstitutionUID = :customer and r.platformUID in (:platforms)'+dateRangeParams.dateRange+'group by r.metricType, r.reportFrom order by r.metricType, r.reportFrom', queryParams).each { countPerCategory ->
+                                        Map<String, Object> categoryRow = categoryRows.get(countPerCategory.accessDeniedCategory)
+                                        if(!categoryRow)
+                                            categoryRow = ['Reporting Period Total': totalSum]
+                                        else totalSum = categoryRow.get('Reporting Period Total')
+                                        totalSum += countPerCategory.count
+                                        categoryRow.put(DateUtils.getSDF_yyyyMM().format(countPerCategory.reportFrom), countPerCategory.count)
+                                        categoryRow.put('Reporting Period Total', totalSum)
+                                        categoryRows.put(countPerCategory.accessDeniedCategory, categoryRow)
+                                    }
+                                    categoryRows.eachWithIndex { String accessDeniedCategory, Map countsPerCategory, int r ->
+                                        cell = row.createCell(0)
+                                        cell.setCellValue('Total for all databases')
+                                        cell = row.createCell(3)
+                                        switch(accessDeniedCategory) {
+                                            case 'no_license': cell.setCellValue('Access denied: content item not licenced')
+                                                break
+                                            case 'turnaway': cell.setCellValue('Access denied: concurrent/simultaneous user licence limit exceeded')
+                                                break
+                                            case 'ft_html': cell.setCellValue('Record Views HTML')
+                                                break
+                                            case 'ft_total': cell.setCellValue('Record Views Total')
+                                                break
+                                            default: cell.setCellValue(accessDeniedCategory)
+                                                break
+                                        }
+                                        cell = row.createCell(4)
+                                        cell.setCellValue(countsPerCategory.get('Reporting Period Total'))
+                                        monthHeaders.eachWithIndex { String month, int i ->
+                                            cell = row.createCell(i+5)
+                                            if(countsPerCategory.containsKey(month))
+                                                cell.setCellValue(countsPerCategory.get(month))
+                                            else cell.setCellValue(0)
+                                        }
+                                        row = sheet.createRow(rowno)
+                                        rowno += r
+                                    }
+                                }
+                            */
 								row = sheet.createRow(rowno)
 								data.each { String databaseName, Map<String, Object> databaseMetrics ->
 									databaseMetrics.each { String databaseMetricType, Map<String, Object> metricRow ->
@@ -1071,41 +1074,41 @@ class ExportService {
 								rowno = 9
 								int totalCount = 0
 								/*
-								TODO migrate
-								Counter4Report.withNewSession {
-									Counter4Report.executeQuery('select new map(r.reportFrom as reportFrom, r.publisher as publisher, r.metricType as metricType, r.platformUID as platformUID, sum(r.reportCount) as count) from Counter4Report r where r.reportType = :reportType and r.metricType = :metricType and r.reportInstitutionUID = :customer and r.platformUID in (:platforms)'+dateRangeParams.dateRange+'group by r.platformUID, r.publisher, r.reportFrom, r.metricType', queryParams).each { countPerMonth ->
-										cell = row.createCell(0)
-										cell.setCellValue(Platform.findByGlobalUID(countPerMonth.platformUID).name)
-										cell = row.createCell(1)
-										cell.setCellValue(countPerMonth.publisher ?: '')
-										cell = row.createCell(2)
-										switch(countPerMonth.metricType) {
-											case 'search_reg': cell.setCellValue('Regular Searches')
-												break
-											case 'search_fed': cell.setCellValue('Searches-federated and automated')
-												break
-											case 'record_view': cell.setCellValue('Record Views')
-												break
-											case 'result_click': cell.setCellValue('Result Clicks')
-												break
-											default: cell.setCellValue(countPerMonth.metricType)
-												break
-										}
-										monthHeaders.eachWithIndex { String month, int i ->
-											cell = row.getCell(i+4)
-											if(!cell) {
-												cell = row.createCell(i+4)
-												if(DateUtils.getSDF_yyyyMM().format(countPerMonth.reportFrom) == month)
-													cell.setCellValue(countPerMonth.count)
-												else cell.setCellValue(0)
-											}
-											else if(DateUtils.getSDF_yyyyMM().format(countPerMonth.reportFrom) == month)
-												cell.setCellValue(countPerMonth.count)
-										}
-										totalCount += countPerMonth.count
-									}
-								}
-								 */
+                                TODO migrate
+                                Counter4Report.withNewSession {
+                                    Counter4Report.executeQuery('select new map(r.reportFrom as reportFrom, r.publisher as publisher, r.metricType as metricType, r.platformUID as platformUID, sum(r.reportCount) as count) from Counter4Report r where r.reportType = :reportType and r.metricType = :metricType and r.reportInstitutionUID = :customer and r.platformUID in (:platforms)'+dateRangeParams.dateRange+'group by r.platformUID, r.publisher, r.reportFrom, r.metricType', queryParams).each { countPerMonth ->
+                                        cell = row.createCell(0)
+                                        cell.setCellValue(Platform.findByGlobalUID(countPerMonth.platformUID).name)
+                                        cell = row.createCell(1)
+                                        cell.setCellValue(countPerMonth.publisher ?: '')
+                                        cell = row.createCell(2)
+                                        switch(countPerMonth.metricType) {
+                                            case 'search_reg': cell.setCellValue('Regular Searches')
+                                                break
+                                            case 'search_fed': cell.setCellValue('Searches-federated and automated')
+                                                break
+                                            case 'record_view': cell.setCellValue('Record Views')
+                                                break
+                                            case 'result_click': cell.setCellValue('Result Clicks')
+                                                break
+                                            default: cell.setCellValue(countPerMonth.metricType)
+                                                break
+                                        }
+                                        monthHeaders.eachWithIndex { String month, int i ->
+                                            cell = row.getCell(i+4)
+                                            if(!cell) {
+                                                cell = row.createCell(i+4)
+                                                if(DateUtils.getSDF_yyyyMM().format(countPerMonth.reportFrom) == month)
+                                                    cell.setCellValue(countPerMonth.count)
+                                                else cell.setCellValue(0)
+                                            }
+                                            else if(DateUtils.getSDF_yyyyMM().format(countPerMonth.reportFrom) == month)
+                                                cell.setCellValue(countPerMonth.count)
+                                        }
+                                        totalCount += countPerMonth.count
+                                    }
+                                }
+                                 */
 								cell = row.createCell(3)
 								cell.setCellValue(totalCount)
 								rowno++
@@ -1119,46 +1122,69 @@ class ExportService {
 							Map metricRow = titleRows.get(title)
 							if(metricRow) {
 								Map titleRow = metricRow.get(metricType)
-								row = sheet.createRow(i+rowno)
-								cell = row.createCell(0)
-								cell.setCellValue(title.name)
-								for(int c = 1; c < columnHeaders.size(); c++) {
-									cell = row.createCell(c)
-									def empty = ""
-									if(columnHeaders[c].matches('\\d{4}-\\d{2}'))
-										empty = 0
-									cell.setCellValue(titleRow.get(columnHeaders[c]) ?: empty)
+								if(titleRow) {
+									row = sheet.createRow(i+rowno)
+									cell = row.createCell(0)
+									cell.setCellValue(title.name)
+									for(int c = 1; c < columnHeaders.size(); c++) {
+										cell = row.createCell(c)
+										def empty = ""
+										if(columnHeaders[c].matches('\\d{4}-\\d{2}'))
+											empty = 0
+										cell.setCellValue(titleRow.get(columnHeaders[c]) ?: empty)
+									}
+									i++
 								}
-								i++
 							}
 							Duration diff = Duration.between(start, Instant.now().truncatedTo(ChronoUnit.MICROS))
 							//log.debug("cell row generated in ${diff} micros")
 						}
 					}
-					else if(requestResponse.containsKey('error'))
-						return null
-                }
+				}
+				List debug = prf.stopBenchmark()
+				debug.eachWithIndex { bm, int c ->
+					String debugString = "Step: ${c+1}, comment: ${bm[0]} "
+					if (c < debug.size() - 1) {
+						debugString += debug[c+1][1] - bm[1]
+					} else {
+						debugString += '=> ' + ( bm[1] - debug[0][1] ) + ' <='
+					}
+					log.debug(debugString)
+				}
+				if(wb.getNumberOfSheets() == 0)
+					[error: 'noMetricsAvailable']
+				else [result: wb]
 			}
-			//revision 5
-			else if(params.revision == 'counter5') {
+			else requestResponse
+		}
+		//revision 5
+		else if(params.revision == 'counter5') {
+			Map<String, Object> queryParams = [reportType: reportType, customer: customer, platform: platform]
+			if(params.metricType) {
+				queryParams.metricTypes = params.list('metricType').join('%7C')
+			}
+			if(params.accessType) {
+				queryParams.accessTypes = params.list('accessType').join('%7C')
+			}
+			if(params.accessMethod) {
+				queryParams.accessMethods = params.list('accessMethod').join('%7C')
+			}
+			queryParams.startDate = dateRangeParams.startDate
+			queryParams.endDate = dateRangeParams.endDate
+			//the data
+			Map<String, Object> requestResponse = getReports(queryParams)
+			if(requestResponse.containsKey('items')) {
+				workbook = new XSSFWorkbook()
+				POIXMLProperties xmlProps = workbook.getProperties()
+				POIXMLProperties.CoreProperties coreProps = xmlProps.getCoreProperties()
+				coreProps.setCreator(messageSource.getMessage('laser',null,locale))
+				SXSSFWorkbook wb = new SXSSFWorkbook(workbook,50)
+				wb.setCompressTempFiles(true)
 				sheet = wb.createSheet(reportType)
 				sheet.flushRows(10)
 				sheet.setAutobreaks(true)
 				sheet.trackAllColumnsForAutoSizing()
-				Map<String, Object> queryParams = [reportType: reportType, customer: customer, platform: platform]
-				if(params.metricType) {
-					queryParams.metricTypes = params.list('metricType').join('%7C')
-				}
-				if(params.accessType) {
-					queryParams.accessTypes = params.list('accessType').join('%7C')
-				}
-				if(params.accessMethod) {
-					queryParams.accessMethods = params.list('accessMethod').join('%7C')
-				}
-				queryParams.startDate = dateRangeParams.startDate
-				queryParams.endDate = dateRangeParams.endDate
-				//the data
-				Map<String, Object> requestResponse = getReports(queryParams)
+
 				prf.setBenchmark('data fetched from provider')
 				/*
 				desideratum:
@@ -1369,31 +1395,47 @@ class ExportService {
 						titleRows = data.titleRows
 						break
 				}
-				prf.setBenchmark('loop through assembled rows')
-				for(TitleInstancePackagePlatform title: titlesSorted) {
-					Instant start = Instant.now().truncatedTo(ChronoUnit.MICROS)
-					Map titleMetrics = titleRows.get(title)
-					for(Map.Entry titleMetric: titleMetrics) {
-						Map titleAccessTypes = titleMetric.getValue()
-						for(Map.Entry titleAccessType: titleAccessTypes) {
-							int i = 0
-							Map titleYop = titleAccessType.getValue()
-							for(Map.Entry entry: titleYop) {
-								Map titleRow = entry.getValue()
-								row = sheet.createRow(i+rowno)
-								cell = row.createCell(0)
-								cell.setCellValue(title.name)
-								for(int c = 1; c < columnHeaders.size(); c++) {
-									cell = row.createCell(c)
-									cell.setCellValue(titleRow.get(columnHeaders[c]) ?: "")
+				if(titleRows.size() > 0) {
+					prf.setBenchmark('loop through assembled rows')
+					for(TitleInstancePackagePlatform title: titlesSorted) {
+						Instant start = Instant.now().truncatedTo(ChronoUnit.MICROS)
+						Map titleMetrics = titleRows.get(title)
+						for(Map.Entry titleMetric: titleMetrics) {
+							Map titleAccessTypes = titleMetric.getValue()
+							for(Map.Entry titleAccessType: titleAccessTypes) {
+								int i = 0
+								Map titleYop = titleAccessType.getValue()
+								for(Map.Entry entry: titleYop) {
+									Map titleRow = entry.getValue()
+									row = sheet.createRow(i+rowno)
+									cell = row.createCell(0)
+									cell.setCellValue(title.name)
+									for(int c = 1; c < columnHeaders.size(); c++) {
+										cell = row.createCell(c)
+										cell.setCellValue(titleRow.get(columnHeaders[c]) ?: "")
+									}
+									i++
 								}
-								i++
+								rowno += titleYop.size()
 							}
-							rowno += titleYop.size()
 						}
+						Duration diff = Duration.between(start, Instant.now().truncatedTo(ChronoUnit.MICROS))
+						//log.debug("cell row generated in ${diff} micros")
 					}
-					Duration diff = Duration.between(start, Instant.now().truncatedTo(ChronoUnit.MICROS))
-					//log.debug("cell row generated in ${diff} micros")
+					List debug = prf.stopBenchmark()
+					debug.eachWithIndex { bm, int c ->
+						String debugString = "Step: ${c+1}, comment: ${bm[0]} "
+						if (c < debug.size() - 1) {
+							debugString += debug[c+1][1] - bm[1]
+						} else {
+							debugString += '=> ' + ( bm[1] - debug[0][1] ) + ' <='
+						}
+						log.debug(debugString)
+					}
+					[result: wb]
+				}
+				else {
+					[error: 'noSubscribedTitles']
 				}
 				/*
 				titleRows.each{ TitleInstancePackagePlatform title, Map<String, Map<String, Map>> titleMetric ->
@@ -1412,18 +1454,9 @@ class ExportService {
 				}
 				*/
 			}
+			else requestResponse
 		}
-		List debug = prf.stopBenchmark()
-		debug.eachWithIndex { bm, int c ->
-			String debugString = "Step: ${c+1}, comment: ${bm[0]} "
-			if (c < debug.size() - 1) {
-				debugString += debug[c+1][1] - bm[1]
-			} else {
-				debugString += '=> ' + ( bm[1] - debug[0][1] ) + ' <='
-			}
-			log.debug(debugString)
-		}
-		wb
+		else [error: 'COUNTER revision missing!']
 	}
 
 	/**
@@ -1585,6 +1618,7 @@ class ExportService {
 		}
         else if(reportType in Counter4Report.COUNTER_4_REPORTS) {
 			Map<String, Map<Date, Integer>> countsPerMonth = [:], sumsPerYOP = [:]
+			Set<String> metricsAvailable = []
 			for (GPathResult reportItem: requestResponse.reports) {
 				Map<String, String> identifierMap = [:]
 				reportItem.'ns2:ItemIdentifier'.each { identifier ->
@@ -1626,6 +1660,7 @@ class ExportService {
 						for (GPathResult instance : performance.'ns2:Instance') {
 							int periodTotal = 0, periodHTML = 0, periodPDF = 0, count = Integer.parseInt(instance.'ns2:Count'.text())
 							String metricType = instance.'ns2:MetricType'.text()
+							metricsAvailable << metricType
 							//certain reports wish that for each metric, too ...
 							Map<Date, Integer> metricSums = countsPerMonth.containsKey(metricType) ? countsPerMonth.get(metricType) : [:]
 							Integer countPerMonth = metricSums.containsKey(reportFrom) ? metricSums.get(reportFrom) : 0
@@ -1722,6 +1757,7 @@ class ExportService {
 					}
 				}
 			}
+			result.metricsAvailable = metricsAvailable
 			result.sumRows = countsPerMonth
 			result.sumsPerYOP = sumsPerYOP
 		}
