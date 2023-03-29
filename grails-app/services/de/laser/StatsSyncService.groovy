@@ -1084,12 +1084,12 @@ class StatsSyncService {
                     result.header = json["Report_Header"]
                 }
                 else {
-                    log.error("server response: ${resp.status()} - ${reader}")
+                    log.error("server response: ${resp.status()}")
                     result.error = resp.status()
                 }
             }
             Closure failure = { resp, reader ->
-                if(reader.containsKey("Report_Header"))
+                if(reader?.containsKey("Report_Header"))
                     result.header = reader["Report_Header"]
                 else {
                     log.error("server response: ${resp.status()} - ${reader}")
@@ -1097,7 +1097,7 @@ class StatsSyncService {
                 }
             }
             HttpClientConfiguration config = new DefaultHttpClientConfiguration()
-            config.readTimeout = Duration.ofMinutes(1)
+            config.readTimeout = Duration.ofMinutes(5)
             config.maxContentLength = MAX_CONTENT_LENGTH
             BasicHttpClient http = new BasicHttpClient(url, config)
             http.get(BasicHttpClient.ResponseType.JSON, success, failure)

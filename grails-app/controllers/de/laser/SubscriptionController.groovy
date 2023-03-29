@@ -1303,18 +1303,20 @@ class SubscriptionController {
     @DebugInfo(test = 'is_ROLE_ADMIN_or_hasAffiliation("INST_USER")', ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = { ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_USER") })
     def renewEntitlementsWithSurvey() {
-        Map<String,Object> ctrlResult
+        Map<String,Object> ctrlResult, exportResult
         params.statsForSurvey = true
         SXSSFWorkbook wb
         if(params.exportXLSStats) {
-            if(params.reportType && params.metricType) {
-                wb = exportService.generateReport(params, true,  true, true)
+            if(params.reportType) {
+                exportResult = exportService.generateReport(params, true,  true, true)
             }
-            if(wb)
+            if(exportResult.result) {
+                wb = exportResult.result
                 ctrlResult = [status: SubscriptionControllerService.STATUS_OK]
+            }
             else {
                 ctrlResult = subscriptionControllerService.renewEntitlementsWithSurvey(this, params)
-                flash.error = message(code: 'renewEntitlementsWithSurvey.noReportSelected')
+                flash.error = message(code: 'default.stats.error.noReportSelected')
             }
         }
         else {
@@ -1335,6 +1337,15 @@ class SubscriptionController {
             String filename
             if(params.tab == 'allIEs') {
                 queryMap = [sub: ctrlResult.result.subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT, pkgIds: ctrlResult.result.subscription.packages?.pkg?.id]
+                if(params.reportType)
+                    queryMap.reportType = params.reportType
+                if(params.metricType)
+                    queryMap.metricTypes = params.metricType
+                if(params.accessType)
+                    queryMap.accessTypes = params.accessType
+                if(params.accessMethod)
+                    queryMap.accessMethods = params.accessMethod
+                queryMap.platform = Platform.get(params.platform)
                 filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.selectableTitles') + '_' + ctrlResult.result.subscription.dropdownNamingConvention())
             }
             if(params.tab == 'selectedIEs') {
@@ -1369,6 +1380,15 @@ class SubscriptionController {
                 toBeSelectedTippIDs.addAll(allTippIDs - selectedTippIDs)
                 if(toBeSelectedTippIDs.size()) {
                     queryMap = [sub: ctrlResult.result.subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT, tippIds: toBeSelectedTippIDs, pkgIds: ctrlResult.result.subscription.packages?.pkg?.id]
+                    if(params.reportType)
+                        queryMap.reportType = params.reportType
+                    if(params.metricType)
+                        queryMap.metricTypes = params.metricType
+                    if(params.accessType)
+                        queryMap.accessTypes = params.accessType
+                    if(params.accessMethod)
+                        queryMap.accessMethods = params.accessMethod
+                    queryMap.platform = Platform.get(params.platform)
                 }
                 filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.toBeSelectedIEs') + '_' + ctrlResult.result.newSub.dropdownNamingConvention())
             }

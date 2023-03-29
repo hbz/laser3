@@ -797,16 +797,28 @@ class SubscriptionControllerService {
         if(report.onlineIdentifier || report.isbn) {
             tipp = titles[IdentifierNamespace.EISSN]?.get(report.onlineIdentifier)
             if(!tipp)
+                tipp = titles[IdentifierNamespace.EISSN]?.get(report.onlineIdentifier?.replaceAll('-',''))
+            if(!tipp)
                 tipp = titles[IdentifierNamespace.ISBN]?.get(report.onlineIdentifier)
             if(!tipp)
+                tipp = titles[IdentifierNamespace.ISBN]?.get(report.onlineIdentifier?.replaceAll('-',''))
+            if(!tipp)
                 tipp = titles[IdentifierNamespace.ISBN]?.get(report.isbn)
+            if(!tipp)
+                tipp = titles[IdentifierNamespace.ISBN]?.get(report.isbn?.replaceAll('-',''))
         }
         if(!tipp && (report.printIdentifier || report.isbn)) {
             tipp = titles[IdentifierNamespace.ISSN]?.get(report.printIdentifier)
             if(!tipp)
+                tipp = titles[IdentifierNamespace.ISSN]?.get(report.printIdentifier?.replaceAll('-',''))
+            if(!tipp)
                 tipp = titles[IdentifierNamespace.PISBN]?.get(report.printIdentifier)
             if(!tipp)
+                tipp = titles[IdentifierNamespace.PISBN]?.get(report.printIdentifier?.replaceAll('-',''))
+            if(!tipp)
                 tipp = titles[IdentifierNamespace.PISBN]?.get(report.isbn)
+            if(!tipp)
+                tipp = titles[IdentifierNamespace.PISBN]?.get(report.isbn?.replaceAll('-',''))
         }
         if(!tipp && report.doi) {
             tipp = titles[IdentifierNamespace.DOI]?.get(report.doi)

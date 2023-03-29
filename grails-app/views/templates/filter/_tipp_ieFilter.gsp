@@ -310,7 +310,8 @@
                 <div class="field dynFilter">
                     <g:if test="${metricTypes}">
                         <label for="metricType"><g:message code="default.usage.metricType"/></label>
-                        <select name="metricType" id="metricType" multiple="multiple" class="ui selection dropdown">
+                        <%-- was multiple --%>
+                        <select name="metricType" id="metricType" class="ui selection dropdown">
                             <option value=""><g:message code="default.select.choose.label"/></option>
                             <g:each in="${metricTypes}" var="metricType">
                                 <option <%=(metricType in params.metricType) ? 'selected="selected"' : ''%>
@@ -328,7 +329,8 @@
                 <div class="field dynFilter">
                     <g:if test="${accessMethods}">
                         <label for="accessMethod"><g:message code="default.usage.accessMethod"/></label>
-                        <select name="accessMethod" id="accessMethod" multiple="multiple" class="ui selection dropdown">
+                        <%-- was multiple --%>
+                        <select name="accessMethod" id="accessMethod" class="ui selection dropdown">
                             <option value=""><g:message code="default.select.choose.label"/></option>
                             <g:each in="${accessMethods}" var="accessMethod">
                                 <option <%=(accessMethod in params.accessMethod) ? 'selected="selected"' : ''%>
@@ -346,7 +348,8 @@
                 <div class="field dynFilter">
                     <g:if test="${accessTypes}">
                         <label for="accessType"><g:message code="default.usage.accessType"/></label>
-                        <select name="accessType" id="accessType" multiple="multiple" class="ui selection dropdown">
+                        <%-- was multiple --%>
+                        <select name="accessType" id="accessType" class="ui selection dropdown">
                             <option value=""><g:message code="default.select.choose.label"/></option>
                             <g:each in="${accessTypes}" var="accessType">
                                 <option <%=(accessType in params.accessType) ? 'selected="selected"' : ''%>
@@ -383,23 +386,25 @@
 </ui:filter>
 
 <laser:script file="${this.getGroovyPageFileName()}">
-    $("#reportType").on('change', function() {
-        let reportType = $(this).val();
-        <g:applyCodec encodeAs="none">
-            let platforms = ${platformsJSON};
-        </g:applyCodec>
-        $.ajax({
-            url: "<g:createLink controller="ajaxHtml" action="loadFilterList"/>",
-            data: {
-                reportType: reportType,
-                platforms: platforms,
-                customer: '${subscription.getSubscriber().globalUID}',
-                subscription: ${subscription.id}
-            }
-        }).done(function(response) {
-            $('.dynFilter').remove();
-            $('#filterDropdownWrapper').append(response);
-            r2d2.initDynamicUiStuff('#filterDropdownWrapper');
+    <g:if test="${subscription}">
+        $("#reportType").on('change', function() {
+            let reportType = $(this).val();
+            <g:applyCodec encodeAs="none">
+                let platforms = ${platformsJSON};
+            </g:applyCodec>
+            $.ajax({
+                url: "<g:createLink controller="ajaxHtml" action="loadFilterList"/>",
+                data: {
+                    reportType: reportType,
+                    platforms: platforms,
+                    noMultiple: true,
+                    subscription: ${subscription.id},
+                }
+            }).done(function(response) {
+                $('.dynFilter').remove();
+                $('#filterDropdownWrapper').append(response);
+                r2d2.initDynamicUiStuff('#filterDropdownWrapper');
+            });
         });
-    });
+    </g:if>
 </laser:script>
