@@ -186,6 +186,9 @@
                 <g:if test="${revision == AbstractReport.COUNTER_4}">
                     <ui:msg icon="ui info icon" class="info" header="${message(code: 'default.usage.counter4reportInfo.header')}" message="default.usage.counter4reportInfo.text" noClose="true"/>
                 </g:if>
+                <g:if test="${error}">
+                    <ui:msg icon="ui times icon" class="error" message="${message(code: "default.stats.error.${error}")}" noClose="true"/>
+                </g:if>
                 <g:form action="generateReport" name="stats" class="ui form" method="get">
                     <g:hiddenField name="id" value="${subscription.id}"/>
                     <g:hiddenField name="revision" value="${revision}"/>
@@ -214,7 +217,9 @@
                                 </g:if>
                             </select>
                         </div>
-
+                        <g:if test="${params.reportType}">
+                            <g:render template="/templates/filter/statsFilter"/>
+                        </g:if>
                         <%-- reports filters in COUNTER 5 count only for master reports (tr, pr, dr, ir)! COUNTER 4 has no restriction on filter usage afaik --%>
                     </div>
                     <div class="four fields">

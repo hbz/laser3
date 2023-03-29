@@ -4,8 +4,7 @@
         <select name="metricType" id="metricType" multiple="multiple" class="ui search selection dropdown">
             <option value=""><g:message code="default.select.choose.label"/></option>
             <g:each in="${metricTypes}" var="metricType">
-                <option <%--<%=(params.list('metricType')?.contains(metricType)) ? 'selected="selected"' : ''%>--%>
-                        value="${metricType}">
+                <option <%=(params.list('metricType')?.contains(metricType)) ? 'selected="selected"' : ''%> value="${metricType}">
                     ${metricType}
                 </option>
             </g:each>
@@ -27,8 +26,7 @@
         <select name="accessMethod" id="accessMethod" multiple="multiple" class="ui search selection dropdown">
             <option value=""><g:message code="default.select.choose.label"/></option>
             <g:each in="${accessMethods}" var="accessMethod">
-                <option <%--<%=(params.list('accessMethod')?.contains(accessMethod)) ? 'selected="selected"' : ''%>--%>
-                        value="${accessMethod}">
+                <option <%=(params.list('accessMethod')?.contains(accessMethod)) ? 'selected="selected"' : ''%> value="${accessMethod}">
                     ${accessMethod}
                 </option>
             </g:each>
@@ -50,8 +48,7 @@
         <select name="accessType" id="accessType" multiple="multiple" class="ui search selection dropdown">
             <option value=""><g:message code="default.select.choose.label"/></option>
             <g:each in="${accessTypes}" var="accessType">
-                <option <%--<%=(params.list('accessType')?.contains(accessType)) ? 'selected="selected"' : ''%>--%>
-                        value="${accessType}">
+                <option <%=(params.list('accessType')?.contains(accessType)) ? 'selected="selected"' : ''%> value="${accessType}">
                     ${accessType}
                 </option>
             </g:each>
