@@ -2,7 +2,7 @@
 
 <laser:htmlStart message="gasco.title" />
 
-<ui:h1HeaderWithIcon text="${message(code: 'menu.public.gasco_monitor')}: ${message(code: 'gasco.licenceSearch')}" />
+    <ui:h1HeaderWithIcon text="${message(code: 'menu.public.gasco_monitor')}: ${message(code: 'gasco.licenceSearch')}" />
 
     <div class="ui grid">
         <div class="eleven wide column">
@@ -121,11 +121,10 @@
             <th>${message(code:'gasco.table.product')}</th>
             <th>${message(code:'gasco.table.provider')}</th>
             <th>
-                <div id="js-consortium-header">
-                    ${message(code:'gasco.table.consortium')}</div>
-                <div id="js-negotiator-header">
-                    ${message(code:'gasco.table.negotiator')}</div>
+                <span id="js-consortium-header">${message(code:'gasco.table.consortium')}</span>
+                <span id="js-negotiator-header">${message(code:'gasco.table.negotiator')}</span>
             </th>
+            <th> </th>
         </tr>
         </thead>
         <tbody>
@@ -141,7 +140,6 @@
                         ${i + 1}
                     </td>
                     <td>
-
                         <g:if test="${gasco_infolink}">
                             <span  class="la-popup-tooltip la-delay" data-position="right center" data-content="Diese URL aufrufen:  ${gasco_infolink}">
                                 <a class="la-break-all" href="${gasco_infolink}" target="_blank">${gasco_anzeigename ?: sub}</a>
@@ -164,34 +162,26 @@
                         </g:each>
                     </td>
                     <td>
-
-                    ${gasco_verhandlername ?: sub.getConsortia()?.name}
-                    <br />
-                    <g:each in ="${PersonRole.findAllByFunctionTypeAndOrg(RDStore.PRS_FUNC_GASCO_CONTACT, sub.getConsortia())}" var="personRole">
-                        <g:set var="person" value="${personRole.getPrs()}" />
-                        <g:if test="${person.isPublic}">
+                        ${gasco_verhandlername ?: sub.getConsortia()?.name}
+                        <br />
+                        <g:each in ="${PersonRole.findAllByFunctionTypeAndOrg(RDStore.PRS_FUNC_GASCO_CONTACT, sub.getConsortia())}" var="personRole">
+                            <g:set var="person" value="${personRole.getPrs()}" />
+                            <g:if test="${person.isPublic}">
                             <div class="ui list">
                                 <div class="item">
                                     <div class="content">
                                         <div class="header">
                                             ${person?.getFirst_name()} ${person?.getLast_name()}
                                         </div>
-                                        <g:each in ="${Contact.findAllByPrsAndContentType(
-                                                person,
-                                                RDStore.CCT_URL
-                                        )}" var="prsContact">
+                                        <g:each in="${Contact.findAllByPrsAndContentType( person, RDStore.CCT_URL )}" var="prsContact">
                                             <div class="description">
                                                 <i class="icon globe la-list-icon"></i>
                                                 <span  class="la-popup-tooltip la-delay " data-position="right center" data-content="Diese URL aufrufen:  ${prsContact?.content}">
                                                     <a class="la-break-all" href="${prsContact?.content}" target="_blank">${prsContact?.content}</a>
                                                 </span>
-
                                             </div>
                                         </g:each>
-                                        <g:each in ="${Contact.findAllByPrsAndContentType(
-                                                person,
-                                                RDStore.CCT_EMAIL
-                                        )}" var="prsContact">
+                                        <g:each in="${Contact.findAllByPrsAndContentType( person, RDStore.CCT_EMAIL )}" var="prsContact">
                                             <div class="description js-copyTriggerParent">
                                                 <i class="ui icon envelope outline la-list-icon js-copyTrigger"></i>
                                                 <span  class="la-popup-tooltip la-delay" data-position="right center " data-content="Mail senden an ${person?.getFirst_name()} ${person?.getLast_name()}">
@@ -202,26 +192,72 @@
                                     </div>
                                 </div>
                             </div>
-                        </g:if>
+                            </g:if>
                         </g:each>
+                    </td>
+                    <td class="center aligned">
+                        <g:link class="flyoutLink ui icon button blue compact la-modern-button" controller="public" action="gascoFlyout" data-key="${sub.id}">
+                            <i class="icon info"></i>
+                        </g:link>
                     </td>
                 </tr>
             </g:each>
         </tbody>
     </table>
 
-    </g:if>
+    <div id="gascoFlyout" class="ui eight wide flyout" style="padding:50px 0 10px 0;overflow:scroll">
+        <div class="ui header">
+            <i class="info icon"></i>
+            <div class="content"></div>
+        </div>
+        <div class="content"></div>
+    </div>
+
+    <laser:script file="${this.getGroovyPageFileName()}">
+        $('a.flyoutLink').on ('click', function(e) {
+            e.preventDefault();
+            $("html").css("cursor", "auto");
+
+            $('#gascoFlyout').flyout ({
+                onHidden: function (e) { %{-- after animation --}% }
+            });
+
+            $.ajax ({
+                url: $(this).attr ('href'),
+                dataType: 'json',
+                data: { key: $(this).attr ('data-key') }
+            }).done (function (data) {
+                $('#gascoFlyout > .header > .content').html (data.title);
+
+                var txt = '<p><strong>${message(code:'gasco.table.participants')}</strong></p>'
+                if (data.data) {
+
+                    data.data.forEach (function(dd) {
+                        txt = txt + '<p><strong>' + dd.title + '</strong></p>'
+                        txt = txt + '<ul>'
+                        dd.data.forEach (function(e) { txt = txt + '<li>' + e[0] + ': ' + e[1] + '</li>' })
+                        txt = txt + '</ul>'
+                    })
+                } else {
+                    txt = txt + '<p>NO DATA</p>'
+                }
+                $('#gascoFlyout > .content').html (txt);
+                $('#gascoFlyout').flyout ('show');
+            });
+        });
+    </laser:script>
+
+    </g:if>%{-- {subscriptions} --}%
+
 <style>
 .ui.table thead tr:first-child>th {
     top: 48px!important;
 }
-</style>
 <sec:ifAnyGranted roles="ROLE_USER">
-    <style>
-        .ui.table thead tr:first-child>th {
-            top: 90px!important;
-        }
-    </style>
+    .ui.table thead tr:first-child>th {
+        top: 90px!important;
+    }
 </sec:ifAnyGranted>
+</style>
 
 <laser:htmlEnd />

@@ -7,7 +7,11 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-4930    28.03.2023  dev     3.1         David   Bug         "Teilnehmer" durch "Einrichtung" ersetzen
+4904    29.03.2023  dev     3.1         David   Feature     GASCO Sicht anpassen
+
+4942    29.03.2023  dev     3.1         David   Feature     GASCO und we:kb mit separatem Tab öffnen
+
+4930    28.03.2023  dev     3.1         David   Feature     "Teilnehmer" durch "Einrichtung" ersetzen
 
 4931    27.03.2023  dev     3.1         David   Bug         Verlorene Rechte "meine Einrichtungen"
 

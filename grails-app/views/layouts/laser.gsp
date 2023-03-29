@@ -75,9 +75,8 @@
                                     <ui:link generateElementId="true" class="item" role="menuitem" controller="platform" action="list">${message(code:'menu.public.all_platforms')}</ui:link>
 
                                     <div class="divider"></div>
-                                    <ui:link generateElementId="true" class="item" role="menuitem" controller="gasco">${message(code:'menu.public.gasco_monitor')}</ui:link>
-
-                                    <a id="wekb" href="${message(code:'url.wekb.' + currentServer)}" class="item" role="menuitem"><i class="ui icon la-gokb"></i> we:kb</a>
+                                    <ui:link generateElementId="true" target="_blank" onclick="JSPC.app.workaround_targetBlank(event)" class="item" role="menuitem" controller="gasco">${message(code:'menu.public.gasco_monitor')}</ui:link>
+                                    <a id="wekb" href="${message(code:'url.wekb.' + currentServer)}" target="_blank" onclick="JSPC.app.workaround_targetBlank(event)" class="item" role="menuitem"><i class="ui icon la-gokb"></i> we:kb</a>
                             </div>
                         </div>
 
@@ -707,6 +706,8 @@
                 console.log(JSPC);
                 why.info(false);
                 </g:if>
+
+                JSPC.app.workaround_targetBlank = function(e) { e.stopPropagation() }
             })
         </script>
     </body>
