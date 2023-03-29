@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4904    29.03.2023  dev     3.1         David   Feature     GASCO Sicht anpassen
+
+4942    29.03.2023  dev     3.1         David   Feature     GASCO und we:kb mit separatem Tab öffnen
+
+4930    28.03.2023  dev     3.1         David   Feature     "Teilnehmer" durch "Einrichtung" ersetzen
+
 4893    28.03.2023  dev     3.1         Andreas Feature     Umgang mit leeren Reports implementiert
 
 4892    28.03.2023  dev     3.1         Andreas Feature     Reports werden kohärent angeboten
