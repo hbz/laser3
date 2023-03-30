@@ -2,12 +2,10 @@ package de.laser
 
 import de.laser.annotations.Check404
 import de.laser.annotations.DebugInfo
-import de.laser.base.AbstractReport
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.interfaces.CalculatedType
 import de.laser.remote.ApiSource
-import de.laser.stats.Counter4Report
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyOrg
@@ -78,7 +76,7 @@ class SubscriptionController {
      * @return the task listing for this subscription
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_USER", ctrlService = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = { ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_USER") })
+    @Secured(closure = { ctx.accessService.checkCtxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_USER") })
     @Check404()
     def tasks() {
         Map<String,Object> ctrlResult = subscriptionControllerService.tasks(this,params)
@@ -240,7 +238,7 @@ class SubscriptionController {
      * @return the empty subscription form or the list of subscriptions in case of an error
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_EDITOR", ctrlService = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = {ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_EDITOR")})
+    @Secured(closure = {ctx.accessService.checkCtxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_EDITOR")})
     def emptySubscription() {
         Map<String,Object> ctrlResult = subscriptionControllerService.emptySubscription(this,params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
@@ -257,7 +255,7 @@ class SubscriptionController {
      * @return the new subscription's details view in case of success, the subscription list view otherwise
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_EDITOR", ctrlService = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = { ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_EDITOR") })
+    @Secured(closure = { ctx.accessService.checkCtxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_EDITOR") })
     def processEmptySubscription() {
         Map<String,Object> ctrlResult = subscriptionControllerService.processEmptySubscription(this,params)
         if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
@@ -319,7 +317,7 @@ class SubscriptionController {
      * @return the table view of documents for the given subscription
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_USER", ctrlService = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = { ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_USER") })
+    @Secured(closure = { ctx.accessService.checkCtxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_USER") })
     @Check404()
     def documents() {
         Map<String,Object> ctrlResult = subscriptionControllerService.documents(this, params)
@@ -516,7 +514,7 @@ class SubscriptionController {
      */
     @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_BASIC, affil = "INST_EDITOR", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, "INST_EDITOR")
+        ctx.accessService.checkCtxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, "INST_EDITOR")
     })
     def membersSubscriptionsManagement() {
         def input_file
@@ -555,7 +553,7 @@ class SubscriptionController {
      */
     @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_BASIC, affil = "INST_EDITOR", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, "INST_EDITOR")
+        ctx.accessService.checkCtxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, "INST_EDITOR")
     })
     def deleteCustomerIdentifier() {
         managementService.deleteCustomerIdentifier(params.long("deleteCI"))
@@ -586,7 +584,7 @@ class SubscriptionController {
      */
     @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_PRO, affil = "INST_USER", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_PRO, "INST_USER")
+        ctx.accessService.checkCtxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_PRO, "INST_USER")
     })
     @Check404()
     def surveysConsortia() {
@@ -1666,7 +1664,7 @@ class SubscriptionController {
                     break
                 case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
                     ctrlResult.result << copyElementsService.copyObjectElements_DocsAnnouncementsTasks(params)
-                    if (ctrlResult.result.isConsortialObjects && accessService.checkPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_USER')){
+                    if (ctrlResult.result.isConsortialObjects && accessService.checkCtxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_USER')){
                         params.workFlowPart = CopyElementsService.WORKFLOW_SUBSCRIBER
                         ctrlResult.result << copyElementsService.loadDataFor_Subscriber(params)
                     } else {
@@ -1873,7 +1871,7 @@ class SubscriptionController {
      * @return the reporting index for the subscription
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_PRO, affil="INST_USER")
-    @Secured(closure = { ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER") })
+    @Secured(closure = { ctx.accessService.checkCtxPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER") })
     @Check404()
     def reporting() {
         if (! params.token) {
@@ -1897,7 +1895,7 @@ class SubscriptionController {
      * @return the workflow landing page for the given subscription
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_PRO, affil="INST_USER")
-    @Secured(closure = { ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER") })
+    @Secured(closure = { ctx.accessService.checkCtxPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER") })
     @Check404()
     def workflows() {
         Map<String,Object> ctrlResult = subscriptionControllerService.workflows( params )

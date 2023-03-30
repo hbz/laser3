@@ -979,7 +979,7 @@ class AjaxJsonController {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_PRO, affil="INST_USER")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER")
+        ctx.accessService.checkCtxPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER")
     })
     def chart() {
         Map<String, Object> result = [:]

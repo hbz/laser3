@@ -21,7 +21,7 @@ class CompareController  {
      */
     @DebugInfo(perm = CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil = "INST_USER")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_USER")
+        ctx.accessService.checkCtxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_USER")
     })
     def compareLicenses() {
         Map<String, Object> result = [:]
@@ -50,7 +50,7 @@ class CompareController  {
      */
     @DebugInfo(perm = CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil = "INST_USER")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_USER")
+        ctx.accessService.checkCtxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_USER")
     })
     def compareSubscriptions() {
         Map<String, Object> result = [:]
@@ -87,7 +87,7 @@ class CompareController  {
      */
     @DebugInfo(perm = CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil = "INST_USER")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_USER")
+        ctx.accessService.checkCtxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_USER")
     })
     def loadNextBatch() {
         Map<String, Object> result = [:]

@@ -1111,7 +1111,7 @@ class OrganisationController  {
      * @see Task
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_USER")
-    @Secured(closure = { ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_USER") })
+    @Secured(closure = { ctx.accessService.checkCtxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_USER") })
     @Check404(domain=Org)
     def tasks() {
         Map<String,Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
@@ -1126,7 +1126,7 @@ class OrganisationController  {
     }
 
     @DebugInfo(perm=CustomerTypeService.PERMS_PRO, affil="INST_USER")
-    @Secured(closure = { ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER") })
+    @Secured(closure = { ctx.accessService.checkCtxPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER") })
     @Check404()
     def workflows() {
         Map<String,Object> ctrlResult = organisationControllerService.workflows( this, params )
@@ -1144,7 +1144,7 @@ class OrganisationController  {
      * @see DocContext
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_USER")
-    @Secured(closure = { ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_USER") })
+    @Secured(closure = { ctx.accessService.checkCtxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_USER") })
     @Check404(domain=Org)
     def documents() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
@@ -1466,7 +1466,7 @@ class OrganisationController  {
      * @return a table view of public contacts
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_USER")
-    @Secured(closure = { ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_USER") })
+    @Secured(closure = { ctx.accessService.checkCtxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_USER") })
     @Check404(domain=Org)
     def addressbook() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
@@ -1505,7 +1505,7 @@ class OrganisationController  {
      * @see ReaderNumber
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_BASIC, affil="INST_USER")
-    @Secured(closure = { ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_BASIC, "INST_USER") })
+    @Secured(closure = { ctx.accessService.checkCtxPermAffiliation(CustomerTypeService.PERMS_BASIC, "INST_USER") })
     @Check404(domain=Org)
     def readerNumber() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
@@ -1587,7 +1587,7 @@ class OrganisationController  {
      * @see de.laser.oap.OrgAccessPoint
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_BASIC, affil="INST_USER")
-    @Secured(closure = { ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_BASIC, "INST_USER") })
+    @Secured(closure = { ctx.accessService.checkCtxPermAffiliation(CustomerTypeService.PERMS_BASIC, "INST_USER") })
     @Check404(domain=Org)
     def accessPoints() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)

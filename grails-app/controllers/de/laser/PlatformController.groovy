@@ -365,7 +365,7 @@ class PlatformController  {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_BASIC, affil="INST_EDITOR", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_BASIC, "INST_EDITOR")
+        ctx.accessService.checkCtxPermAffiliation(CustomerTypeService.PERMS_BASIC, "INST_EDITOR")
     })
     def addDerivation() {
         Map<String,Object> ctrlResult = platformControllerService.addDerivation(params)
@@ -381,7 +381,7 @@ class PlatformController  {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_BASIC, affil="INST_EDITOR", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_BASIC, "INST_EDITOR")
+        ctx.accessService.checkCtxPermAffiliation(CustomerTypeService.PERMS_BASIC, "INST_EDITOR")
     })
     def removeDerivation() {
         Map<String,Object> ctrlResult = platformControllerService.removeDerivation(params)
@@ -394,7 +394,7 @@ class PlatformController  {
     @Deprecated
     @DebugInfo(perm=CustomerTypeService.PERMS_BASIC, affil="INST_EDITOR", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_BASIC, "INST_EDITOR")
+        ctx.accessService.checkCtxPermAffiliation(CustomerTypeService.PERMS_BASIC, "INST_EDITOR")
     })
     def linkAccessPoint() {
         OrgAccessPoint apInstance
@@ -419,7 +419,7 @@ class PlatformController  {
     @Deprecated
     @DebugInfo(perm=CustomerTypeService.PERMS_BASIC, affil="INST_EDITOR", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_BASIC, "INST_EDITOR")
+        ctx.accessService.checkCtxPermAffiliation(CustomerTypeService.PERMS_BASIC, "INST_EDITOR")
     })
     def removeAccessPoint() {
         Map<String,Object> ctrlResult = platformControllerService.removeAccessPoint(params)

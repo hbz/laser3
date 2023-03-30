@@ -242,7 +242,7 @@ class AjaxHtmlController {
         result.roleObject = result.subscription
         result.roleRespValue = 'Specific subscription editor'
         result.editmode = result.subscription.isEditableBy(contextService.getUser())
-        result.accessConfigEditable = accessService.checkPermAffiliation(CustomerTypeService.ORG_INST_BASIC, 'INST_EDITOR') || (accessService.checkPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR') && result.subscription.getSubscriber().id == contextOrg.id)
+        result.accessConfigEditable = accessService.checkCtxPermAffiliation(CustomerTypeService.ORG_INST_BASIC, 'INST_EDITOR') || (accessService.checkCtxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR') && result.subscription.getSubscriber().id == contextOrg.id)
         render template: '/subscription/packages', model: result
     }
 
@@ -654,7 +654,7 @@ class AjaxHtmlController {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_PRO, affil="INST_USER")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER")
+        ctx.accessService.checkCtxPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER")
     })
     def reporting() {
         Map<String, Object> result = [
@@ -705,7 +705,7 @@ class AjaxHtmlController {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_PRO, affil="INST_USER")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER")
+        ctx.accessService.checkCtxPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER")
     })
     def chartDetails() {
         // TODO - SESSION TIMEOUTS
@@ -742,7 +742,7 @@ class AjaxHtmlController {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_PRO, affil="INST_USER")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER")
+        ctx.accessService.checkCtxPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER")
     })
     def chartDetailsExport() {
 
@@ -908,7 +908,7 @@ class AjaxHtmlController {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_PRO, affil="INST_USER")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER")
+        ctx.accessService.checkCtxPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER")
     })
     def chartQueryExport() {
 

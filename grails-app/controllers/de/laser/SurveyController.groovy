@@ -4846,7 +4846,7 @@ class SurveyController {
      * @return the list of tasks of the given survey
      */
     @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_PRO, affil="INST_USER", ctrlService = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = { ctx.accessService.checkPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_PRO, "INST_USER") })
+    @Secured(closure = { ctx.accessService.checkCtxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_PRO, "INST_USER") })
     def tasks() {
         Map<String,Object> ctrlResult = surveyControllerService.tasks(this,params)
         if(ctrlResult.error == SurveyControllerService.STATUS_ERROR) {
@@ -4870,7 +4870,7 @@ class SurveyController {
      * @return the list of notes of the given survey
      */
     @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_PRO, affil="INST_USER", ctrlService = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = { ctx.accessService.checkPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_PRO, "INST_USER") })
+    @Secured(closure = { ctx.accessService.checkCtxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_PRO, "INST_USER") })
     def notes() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result) {

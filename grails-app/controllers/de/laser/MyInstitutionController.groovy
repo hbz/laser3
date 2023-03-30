@@ -118,7 +118,7 @@ class MyInstitutionController  {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_PRO, affil="INST_USER")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER")
+        ctx.accessService.checkCtxPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER")
     })
     def reporting() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -638,7 +638,7 @@ class MyInstitutionController  {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_EDITOR")
+        ctx.accessService.checkCtxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_EDITOR")
     })
     def emptyLicense() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -1184,7 +1184,7 @@ class MyInstitutionController  {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_USER")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_USER")
+        ctx.accessService.checkCtxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_USER")
     })
     def subscriptionsManagement() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -1255,7 +1255,7 @@ class MyInstitutionController  {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_USER")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_USER")
+        ctx.accessService.checkCtxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_USER")
     })
     Map documents() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -2384,7 +2384,7 @@ class MyInstitutionController  {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_USER")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_USER")
+        ctx.accessService.checkCtxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_USER")
     })
     def addressbook() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -2544,7 +2544,7 @@ class MyInstitutionController  {
      * @see Task
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_USER", wtc = DebugInfo.IN_BETWEEN)
-    @Secured(closure = { ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_USER") })
+    @Secured(closure = { ctx.accessService.checkCtxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_USER") })
     def tasks() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
@@ -2623,7 +2623,7 @@ class MyInstitutionController  {
     }
 
     @DebugInfo(perm=CustomerTypeService.PERMS_PRO, affil="INST_USER", ctrlService = DebugInfo.IN_BETWEEN)
-    @Secured(closure = { ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER") })
+    @Secured(closure = { ctx.accessService.checkCtxPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER") })
     def currentWorkflows() {
 
         SessionCacheWrapper cache = contextService.getSessionCache()
@@ -2739,7 +2739,7 @@ class MyInstitutionController  {
      */
     @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_PRO, affil="INST_USER", ctrlService = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_PRO, "INST_USER")
+        ctx.accessService.checkCtxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_PRO, "INST_USER")
     })
     @Deprecated
     def currentWorkflowsOld() {
@@ -3640,7 +3640,7 @@ join sub.orgRelations or_sub where
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_USER", wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_USER")
+        ctx.accessService.checkCtxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_USER")
     })
     def managePropertyGroups() {
         Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -3756,7 +3756,7 @@ join sub.orgRelations or_sub where
      */
     @DebugInfo(perm = CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil = "INST_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_EDITOR")
+        ctx.accessService.checkCtxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_EDITOR")
     })
     def manageProperties() {
         Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -3859,7 +3859,7 @@ join sub.orgRelations or_sub where
      */
     @DebugInfo(perm = CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil = "INST_EDITOR", wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_EDITOR")
+        ctx.accessService.checkCtxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_EDITOR")
     })
     def processManageProperties() {
         PropertyDefinition.withTransaction {
@@ -3972,7 +3972,7 @@ join sub.orgRelations or_sub where
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_USER", wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_USER")
+        ctx.accessService.checkCtxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_USER")
     })
     def managePrivatePropertyDefinitions() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -4060,7 +4060,7 @@ join sub.orgRelations or_sub where
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_USER", wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_USER")
+        ctx.accessService.checkCtxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_USER")
     })
     Object managePropertyDefinitions() {
         Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params)

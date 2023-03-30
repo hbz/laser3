@@ -572,7 +572,7 @@ class LicenseController {
      * @see DocContext
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_USER")
-    @Secured(closure = { ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_USER") })
+    @Secured(closure = { ctx.accessService.checkCtxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_USER") })
     @Check404()
     def documents() {
         Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW)
@@ -600,7 +600,7 @@ class LicenseController {
     }
 
     @DebugInfo(perm=CustomerTypeService.PERMS_PRO, affil="INST_USER")
-    @Secured(closure = { ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER") })
+    @Secured(closure = { ctx.accessService.checkCtxPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER") })
     @Check404()
     def workflows() {
         Map<String,Object> ctrlResult = licenseControllerService.workflows( this, params )

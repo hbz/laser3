@@ -64,10 +64,10 @@
                                         <ui:link generateElementId="true" role="menuitem" controller="organisation" action="index">${message(code:'menu.public.all_orgs')}</ui:link>
                                     </sec:ifAnyGranted>
 
-                                    <g:if test="${accessService.checkPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_USER')}">
+                                    <g:if test="${accessService.checkCtxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_USER')}">
                                         <ui:link generateElementId="true" role="menuitem" controller="organisation" action="listInstitution">${message(code:'menu.public.all_insts')}</ui:link>
                                     </g:if>
-                                    <g:elseif test="${accessService.checkPermAffiliation(CustomerTypeService.ORG_INST_BASIC, 'INST_USER')}">
+                                    <g:elseif test="${accessService.checkCtxPermAffiliation(CustomerTypeService.ORG_INST_BASIC, 'INST_USER')}">
                                         <ui:link generateElementId="true" role="menuitem" controller="organisation" action="listConsortia">${message(code:'menu.public.all_cons')}</ui:link>
                                     </g:elseif>
 

@@ -24,8 +24,8 @@ class AccessService {
         value
     }
 
-    // --- public - simple naming scheme - contextService.getOrg()
-    // --- public - simple naming scheme - contextService.getOrg()
+    // --- checks for contextService.getOrg() ---
+    // --- checks for contextService.getOrg() ---
 
     /**
      * @param orgPerms customer type depending permissions to check against
@@ -41,7 +41,7 @@ class AccessService {
      * @param userRole the user permissions to check
      * @return true if the user has the permissions granted and his context institution is one of the given customer types, false otherwise
      */
-    boolean checkPermAffiliation(String orgPerms, String userRole) {
+    boolean checkCtxPermAffiliation(String orgPerms, String userRole) {
         _checkOrgPermAndUserAffiliation(orgPerms.split(','), userRole)
     }
 
@@ -275,7 +275,7 @@ class AccessService {
 
     /**
      * Replacement call for the abandoned ROLE_ORG_COM_EDITOR
-     * @return the result of {@link #checkPermAffiliation(java.lang.String, java.lang.String)} for [ORG_INST_PRO, ORG_CONSORTIUM_BASIC] and INST_EDTOR as arguments
+     * @return the result of {@link #checkCtxPermAffiliation(java.lang.String, java.lang.String)} for [ORG_INST_PRO, ORG_CONSORTIUM_BASIC] and INST_EDTOR as arguments
      */
     boolean is_ORG_COM_EDITOR() {
         _checkOrgPermAndUserAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC.split(','), 'INST_EDITOR')
