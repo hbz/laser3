@@ -151,7 +151,7 @@ class PublicController {
                 query += "    )"
                 query += " ))"
 
-                queryParams.put('gascoAnzeigenname', PropertyDefinition.getByNameAndDescr('GASCO display name', PropertyDefinition.SUB_PROP))
+                queryParams.put('gascoAnzeigenname', PropertyStore.SUB_PROP_GASCO_DISPLAY_NAME)
                 queryParams.put('q', q)
             }
 

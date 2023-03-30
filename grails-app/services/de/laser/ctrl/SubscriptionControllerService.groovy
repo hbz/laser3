@@ -209,7 +209,7 @@ class SubscriptionControllerService {
                     prf.setBenchmark('before loading platform')
                     Long supplier_id = suppliers[0]
                     PlatformProperty platform = PlatformProperty.executeQuery('select pp from PlatformProperty pp join pp.type pd where pp.owner.id = :owner and pd.name = :name and pd.descr = :descr', [owner: supplier_id, name: 'NatStat Supplier ID', descr: PropertyDefinition.PLA_PROP])[0]
-                    //        PlatformProperty.findByOwnerAndType(Platform.get(supplier_id), PropertyDefinition.getByNameAndDescr('NatStat Supplier ID', PropertyDefinition.PLA_PROP))
+                    //        PlatformProperty.findByOwnerAndType(Platform.get(supplier_id), PropertyStore.PLA_NATSTAT_SID)
                     prf.setBenchmark('before institutional usage identifier')
                     result.natStatSupplierId = platform?.stringValue ?: null
                     if (result.institutional_usage_identifier != OrgSetting.SETTING_NOT_FOUND) {

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Org; de.laser.PersonRole; de.laser.OrgRole; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.Contact; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.storage.RDConstants;" %>
+<%@ page import="de.laser.storage.PropertyStore; de.laser.Org; de.laser.PersonRole; de.laser.OrgRole; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.Contact; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.storage.RDConstants;" %>
 
 <!doctype html>
 <html>
@@ -150,9 +150,9 @@
             </tr>
             </thead>
             <tbody>
-            <g:set var="GASCO_INFORMATION_LINK" value="${PropertyDefinition.getByNameAndDescr('GASCO information link', PropertyDefinition.SUB_PROP)}" />
-            <g:set var="GASCO_ANZEIGENAME" value="${PropertyDefinition.getByNameAndDescr('GASCO display name', PropertyDefinition.SUB_PROP)}" />
-            <g:set var="GASCO_VERHANDLERNAME" value="${PropertyDefinition.getByNameAndDescr('GASCO negotiator name', PropertyDefinition.SUB_PROP)}" />
+            <g:set var="GASCO_INFORMATION_LINK" value="${PropertyStore.SUB_PROP_GASCO_INFORMATION_LINK}" />
+            <g:set var="GASCO_ANZEIGENAME" value="${PropertyStore.SUB_PROP_GASCO_DISPLAY_NAME}" />
+            <g:set var="GASCO_VERHANDLERNAME" value="${PropertyStore.SUB_PROP_GASCO_NEGOTIATOR_NAME}" />
 
                 <g:each in="${subscriptions}" var="sub" status="i">
                     <g:set var="gasco_infolink" value="${sub.propertySet.find{ it.type == GASCO_INFORMATION_LINK}?.urlValue}" />
