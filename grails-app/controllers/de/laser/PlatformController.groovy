@@ -106,7 +106,8 @@ class PlatformController  {
             }
         }
 
-        Map wekbResultMap = gokbService.doQuery(result, params.clone(), esQuery)
+        // overridden pagination - all uuids are required
+        Map wekbResultMap = gokbService.doQuery(result, [offset:0, max:1000, status: params.status], esQuery)
 
         // ? --- copied from myInstitutionController.currentPlatforms()
         String instanceFilter = ""
@@ -165,14 +166,23 @@ class PlatformController  {
                 }
             }
 
-            result.myPlatformIds = platformInstanceList.collect{ it.id }
+            result.myPlatformsUuids = platformInstanceList.collect{ it.gokbId }
+            result.myPlatformIds    = platformInstanceList.collect{ it.id }
         }
         // ? ---
 
-//        result.putAll(gokbService.doQuery(result, params.clone(), esQuery))
-        result.putAll(wekbResultMap)
+        if (params.isMyX == 'exclusive') {
+            wekbResultMap.records      = wekbResultMap.records.findAll { result.myPlatformsUuids.contains( it.uuid ) }
+            wekbResultMap.recordsCount = wekbResultMap.records.size()
+        }
+        else if (params.isMyX == 'not') {
+            wekbResultMap.records      = wekbResultMap.records.findAll { ! result.myPlatformsUuids.contains( it.uuid ) }
+            wekbResultMap.recordsCount = wekbResultMap.records.size()
+        }
+        wekbResultMap.records = wekbResultMap.records.drop((int) result.offset).take((int) result.max) // pagination
 
-      result
+        result.putAll(wekbResultMap)
+        result
     }
 
     /**
