@@ -2,7 +2,6 @@ package de.laser
 
 
 import de.laser.properties.SubscriptionProperty
-import de.laser.properties.PropertyDefinition
 import de.laser.storage.PropertyStore
 import de.laser.storage.RDStore
 import grails.plugin.springsecurity.annotation.Secured
@@ -68,7 +67,7 @@ class EbookCatalogueController {
                 query += "    )"
                 query += " ))"
 
-                queryParams.put('gascoAnzeigenname', PropertyDefinition.getByNameAndDescr('GASCO display name', PropertyDefinition.SUB_PROP))
+                queryParams.put('gascoAnzeigenname', PropertyStore.SUB_PROP_GASCO_DISPLAY_NAME)
                 queryParams.put('q', q)
             }
 

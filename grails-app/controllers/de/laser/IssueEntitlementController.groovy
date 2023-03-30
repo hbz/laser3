@@ -3,6 +3,7 @@ package de.laser
 import de.laser.annotations.Check404
 import de.laser.auth.User
 import de.laser.config.ConfigMapper
+import de.laser.storage.PropertyStore
 import de.laser.utils.SwissKnife
 import de.laser.properties.PlatformProperty
 import de.laser.properties.PropertyDefinition
@@ -61,8 +62,7 @@ class IssueEntitlementController {
       if (title_id != null &&
            org != null &&
            supplier_id != null && ConfigMapper.getShowStatsInfo()) {
-          PlatformProperty platform = PlatformProperty.findByOwnerAndType(Platform.get(supplier_id),
-              PropertyDefinition.getByNameAndDescr('NatStat Supplier ID', PropertyDefinition.PLA_PROP))
+          PlatformProperty platform = PlatformProperty.findByOwnerAndType(Platform.get(supplier_id), PropertyStore.PLA_NATSTAT_SID)
           result.natStatSupplierId = platform?.stringValue ?: null
           def fsresult = factService.generateUsageData(org.id, supplier_id, result.issueEntitlementInstance.subscription, title_id)
           def fsLicenseResult = factService.generateUsageDataForSubscriptionPeriod(org.id, supplier_id, result.issueEntitlementInstance.subscription, title_id)

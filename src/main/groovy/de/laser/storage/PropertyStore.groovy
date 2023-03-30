@@ -9,7 +9,7 @@ import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 @Slf4j
 class PropertyStore {
 
-    // -- Platform Property
+    // -- Platform Properties
 
     public final static PropertyDefinition PLA_COUNTER_REGISTRY_URL    = getPropertyDefinition('COUNTER Registry URL', PropertyDefinition.PLA_PROP)
 
@@ -32,9 +32,12 @@ class PropertyStore {
     public final static PropertyDefinition PLA_SHIBBOLETH      = getPropertyDefinition('Shibboleth: Supported', PropertyDefinition.PLA_PROP)
     public final static PropertyDefinition PLA_SHIBBOLETH_EID  = getPropertyDefinition('Shibboleth: SP entityID', PropertyDefinition.PLA_PROP)
 
-    // -- Subscription Property
+    // -- Subscription Properties
 
-    public final static PropertyDefinition SUB_PROP_GASCO_ENTRY = getPropertyDefinition('GASCO Entry', PropertyDefinition.SUB_PROP)
+    public final static PropertyDefinition SUB_PROP_GASCO_DISPLAY_NAME      = getPropertyDefinition('GASCO display name', PropertyDefinition.SUB_PROP)
+    public final static PropertyDefinition SUB_PROP_GASCO_ENTRY             = getPropertyDefinition('GASCO Entry', PropertyDefinition.SUB_PROP)
+    public final static PropertyDefinition SUB_PROP_GASCO_INFORMATION_LINK  = getPropertyDefinition('GASCO information link', PropertyDefinition.SUB_PROP)
+    public final static PropertyDefinition SUB_PROP_GASCO_NEGOTIATOR_NAME   = getPropertyDefinition('GASCO negotiator name', PropertyDefinition.SUB_PROP)
 
     // --
 

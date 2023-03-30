@@ -244,7 +244,7 @@ class GokbService {
         String sort = params.sort ? "&sort=" + params.sort : "&sort=sortname"
         String order = params.order ? "&order=" + params.order : "&order=asc"
         String max = params.max ? "&max=${params.max}" : "&max=${ctrlResult.max}"
-        String offset = params.offset ? "&offset=${params.offset}" : "&offset=${ctrlResult.offset}"
+        String offset = (params.offset != null) ? "&offset=${params.offset}" : "&offset=${ctrlResult.offset}"
         [sort: sort, order: order, max: max, offset: offset]
     }
 

@@ -3,6 +3,7 @@ package de.laser
 import de.laser.annotations.Check404
 import de.laser.auth.User
 import de.laser.properties.PropertyDefinition
+import de.laser.storage.PropertyStore
 import de.laser.utils.DateUtils
 import de.laser.annotations.DebugInfo
 import de.laser.remote.ApiSource
@@ -272,9 +273,9 @@ class PackageController {
             result.packageIdentifier = packageInstance.getIdentifierByType('isil')?.value
         }
 
-        Set<Subscription> gascoSubscriptions = Subscription.executeQuery('select s from SubscriptionPackage sp join sp.pkg pkg join sp.subscription s join s.propertySet prop where pkg = :pkg and prop.type = :gasco and prop.refValue = :yes', [pkg: packageInstance, gasco: PropertyDefinition.getByNameAndDescr('GASCO Entry', PropertyDefinition.SUB_PROP), yes: RDStore.YN_YES])
+        Set<Subscription> gascoSubscriptions = Subscription.executeQuery('select s from SubscriptionPackage sp join sp.pkg pkg join sp.subscription s join s.propertySet prop where pkg = :pkg and prop.type = :gasco and prop.refValue = :yes', [pkg: packageInstance, gasco: PropertyStore.SUB_PROP_GASCO_ENTRY, yes: RDStore.YN_YES])
         Map<Org, Map<String, Object>> gascoContacts = [:]
-        PropertyDefinition gascoDisplayName = PropertyDefinition.getByNameAndDescr('GASCO negotiator name', PropertyDefinition.SUB_PROP)
+        PropertyDefinition gascoDisplayName = PropertyStore.SUB_PROP_GASCO_NEGOTIATOR_NAME
         gascoSubscriptions.each { Subscription s ->
             Org gascoNegotiator = s.getConsortia()
             if(gascoNegotiator) {
