@@ -1,6 +1,8 @@
 <%@ page import="de.laser.Org; de.laser.PersonRole; de.laser.OrgRole; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.Contact; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.storage.RDConstants;" %>
 
-<laser:htmlStart message="gasco.title" />
+<laser:htmlStart message="gasco.title">
+    <laser:javascript src="echarts.js"/>%{-- dont move --}%
+</laser:htmlStart>
 
     <ui:h1HeaderWithIcon text="${message(code: 'menu.public.gasco_monitor')}: ${message(code: 'gasco.licenceSearch')}" />
 
@@ -214,34 +216,61 @@
     </div>
 
     <laser:script file="${this.getGroovyPageFileName()}">
+
+        JSPC.app.gasco = {
+            defaultConfig: {
+                tooltip: {
+                    trigger: 'item'
+                },
+                legend: {
+                    orient: 'vertical', left: '20px', bottom: '30px', z: 1
+                },
+                series: [
+                    {
+                        type: 'pie',
+                        radius: [0, '75%'],
+                        center: ['55%', '50%'],
+                        minAngle: 1,
+                        minShowLabelAngle: 1,
+                        encode: {
+                            id: 'id', itemName: 'name', value: 'value'
+                        },
+                        data: []
+                    }
+                ]
+            }
+        };
+
         $('a.flyoutLink').on ('click', function(e) {
             e.preventDefault();
-            $("html").css("cursor", "auto");
+            $('html').css ('cursor', 'auto');
 
             $('#gascoFlyout').flyout ({
-                onHidden: function (e) { %{-- after animation --}% }
+                onHidden: function (e) { %{-- after animation --}%
+                    $('#gascoFlyout > .content').empty();
+                }
             });
 
             $.ajax ({
                 url: $(this).attr ('href'),
                 dataType: 'json',
-                data: { key: $(this).attr ('data-key') }
+                data: {
+                    key: $(this).attr ('data-key')
+                }
             }).done (function (data) {
                 $('#gascoFlyout > .header > .content').html (data.title);
 
-                var txt = '<p><strong>${message(code:'gasco.table.participants')}</strong></p>'
-                if (data.data) {
+                data.data.forEach (function (dd) {
+                    $('#gascoFlyout > .content').append ('<p class="ui header chartHeader">' + dd.title + '</p>');
+                    $('#gascoFlyout > .content').append ('<div class="chartWrapper" id="chartWrapper-' + dd.key + '"></div>');
 
-                    data.data.forEach (function(dd) {
-                        txt = txt + '<p><strong>' + dd.title + '</strong></p>'
-                        txt = txt + '<ul>'
-                        dd.data.forEach (function(e) { txt = txt + '<li>' + e[0] + ': ' + e[1] + '</li>' })
-                        txt = txt + '</ul>'
-                    })
-                } else {
-                    txt = txt + '<p>NO DATA</p>'
-                }
-                $('#gascoFlyout > .content').html (txt);
+                    let chartCfg = Object.assign ({}, JSPC.app.gasco.defaultConfig);
+                    chartCfg.series[0].data = dd.data;
+
+                    let echart = echarts.init ( $('#chartWrapper-' + dd.key)[0] );
+                    echart.setOption (chartCfg);
+                });
+
                 $('#gascoFlyout').flyout ('show');
             });
         });
@@ -250,6 +279,14 @@
     </g:if>%{-- {subscriptions} --}%
 
 <style>
+.chartHeader {
+    text-align: center;
+}
+.chartWrapper {
+    width: 100%;
+    height: 450px;
+    margin: 20px 0;
+}
 .ui.table thead tr:first-child>th {
     top: 48px!important;
 }

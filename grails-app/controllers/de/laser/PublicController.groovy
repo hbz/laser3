@@ -270,16 +270,17 @@ class PublicController {
                     List libraryTypes = Org.executeQuery('select lt, count(lt) from Org o join o.libraryType lt where o in (:oList) group by lt', [oList: participants])
                     result.data.add([
                             'key'   : 'libraryType',
-                            'title' : message(code:'org.libraryType.label'),
-                            'data'  : libraryTypes.collect{ [it[0].getI10n('value'), it[1]] }
+                            'title' : message(code:'org.libraryType.label') + ' der Einrichtungen',
+                            'data'  : libraryTypes.collect{ [id: it[0].id, name: it[0].getI10n('value'), value: it[1]] }
                     ])
 
                     List regions = Org.executeQuery('select r, count(r) from Org o join o.region r where o in (:oList) group by r', [oList: participants])
                     result.data.add([
                             'key'   : 'federalState',
-                            'title' : message(code:'org.federalState.label'),
-                            'data'  : regions.collect{ [it[0].getI10n('value'), it[1]] }
+                            'title' : message(code:'org.federalState.label') + ' der Einrichtungen',
+                            'data'  : regions.collect{ [id: it[0].id, name: it[0].getI10n('value'), value: it[1]] }
                     ])
+
                 }
             }
         }

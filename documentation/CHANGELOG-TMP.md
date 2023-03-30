@@ -19,8 +19,6 @@
 
 4813    28.03.2023  dev     3.1         Andreas Feature     (siehe 4893) Umgang mit leeren Reports implementiert
 
-4930    28.03.2023  dev     3.1         David   Bug         "Teilnehmer" durch "Einrichtung" ersetzen
-
 4931    27.03.2023  dev     3.1         David   Bug         Verlorene Rechte "meine Einrichtungen"
 
 4908    24.03.2023  dev     3.1         Andreas Bug         Ausschlussliste war nicht vollständig, was das Hinzufügen von Teilnehmern verhinderte
