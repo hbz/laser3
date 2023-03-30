@@ -43,8 +43,6 @@ import org.springframework.context.MessageSource
 
 import java.awt.*
 import java.math.RoundingMode
-import java.sql.Connection
-import java.sql.Timestamp
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.text.SimpleDateFormat
@@ -755,12 +753,15 @@ class ExportService {
 		prf.setBenchmark('prepare title identifier map')
         if(reportType in Counter4Report.COUNTER_4_TITLE_REPORTS || reportType in Counter5Report.COUNTER_5_TITLE_REPORTS) {
 			subscriptionControllerService.fetchTitles(params, refSubs, namespaces, 'ids').each { Map titleMap ->
+				//debug only! DO NOT COMMIT!
+				//if(titleMap.tipp.id == 862496) {
 				titlesSorted << GrailsHibernateUtil.unwrapIfProxy(titleMap.tipp)
 				Map<String, TitleInstancePackagePlatform> innerMap = titles.get(titleMap.namespace)
 				if(!innerMap)
 					innerMap = [:]
 				innerMap.put(titleMap.value, titleMap.tipp)
 				titles.put(titleMap.namespace, innerMap)
+				//}
 			}
         }
 		//reportTypes.each { String reportType ->
@@ -3140,7 +3141,6 @@ class ExportService {
 		Sql sql = GlobalService.obtainSqlConnection()
 		Locale locale = LocaleUtils.getCurrentLocale()
 		Map<String, Object> data = getTitleData(configMap, entitlementInstance, sql, showStatsInMonthRings, subscriber)
-		Map<Long, GroovyRowResult> reportMap = [:]
 		List<String> titleHeaders = [
 				messageSource.getMessage('tipp.name',null,locale),
 				'Print Identifier',
@@ -3198,23 +3198,6 @@ class ExportService {
 		titleHeaders.addAll(data.otherTitleIdentifierNamespaces.collect { GroovyRowResult row -> row['idns_ns']})
 		if(showStatsInMonthRings){
 			titleHeaders.addAll(showStatsInMonthRings.collect { Date month -> DateUtils.getSDF_yyyyMM().format(month) })
-			data.reports.each { GroovyRowResult usage ->
-				Long tipp
-				if(usage.get('online_identifier'))
-					tipp = data.identifierInverseMap.get('online_identifier:'+usage.get('online_identifier'))
-				if(usage.get('print_identifier') && !tipp)
-					tipp = data.identifierInverseMap.get('print_identifier:'+usage.get('print_identifier'))
-				if(usage.get('isbn') && !tipp)
-					tipp = data.identifierInverseMap.get('isbn:'+usage.get('isbn'))
-				if(usage.get('doi') && !tipp)
-					tipp = data.identifierInverseMap.get('doi:'+usage.get('doi'))
-				if(usage.get('proprietary_identifier') && !tipp)
-					tipp = data.identifierInverseMap.get('proprietary_identifier:'+usage.get('proprietary_identifier'))
-				if(tipp) {
-					//use this for additional data!
-					reportMap.put(tipp, usage)
-				}
-			}
 		}
 		List rows = []
 		Map<String,List> export = [titles:titleHeaders]
@@ -3223,19 +3206,19 @@ class ExportService {
 				data.coverageMap.get(title['ie_id']).eachWithIndex { GroovyRowResult covStmt, int inner ->
 					log.debug "now processing coverage statement ${inner} for record ${outer}"
 					covStmt.putAll(title)
-					rows.add(buildRow('excel', covStmt, data.identifierMap, data.priceItemMap, reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces, perpetuallyPurchasedTitleURLs, showStatsInMonthRings, subscriber))
+					rows.add(buildRow('excel', covStmt, data.identifierMap, data.priceItemMap, data.reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces, perpetuallyPurchasedTitleURLs, showStatsInMonthRings, subscriber))
 				}
 			}
 			else if(entitlementInstance == TitleInstancePackagePlatform.class.name && data.coverageMap.get(title['tipp_id'])) {
 				data.coverageMap.get(title['tipp_id']).eachWithIndex { GroovyRowResult covStmt, int inner ->
 					log.debug "now processing coverage statement ${inner} for record ${outer}"
 					covStmt.putAll(title)
-					rows.add(buildRow('excel', covStmt, data.identifierMap, data.priceItemMap, reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces, perpetuallyPurchasedTitleURLs, showStatsInMonthRings, subscriber))
+					rows.add(buildRow('excel', covStmt, data.identifierMap, data.priceItemMap, data.reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces, perpetuallyPurchasedTitleURLs, showStatsInMonthRings, subscriber))
 				}
 			}
 			else {
 				log.debug "now processing record ${outer}"
-				rows.add(buildRow('excel', title, data.identifierMap, data.priceItemMap, reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces, perpetuallyPurchasedTitleURLs, showStatsInMonthRings, subscriber))
+				rows.add(buildRow('excel', title, data.identifierMap, data.priceItemMap, data.reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces, perpetuallyPurchasedTitleURLs, showStatsInMonthRings, subscriber))
 			}
 		}
 		export.rows = rows
@@ -3498,15 +3481,16 @@ class ExportService {
 		}
 
 		if(showStatsInMonthRings && subscriber) {
-			GroovyRowResult usageRow = reports.get(titleRecord['tipp_id'])
-			if(usageRow) {
-				Calendar filterTime = GregorianCalendar.getInstance()
-				showStatsInMonthRings.each { Date month ->
+			Map<String, Integer> usageRow = reports.get(titleRecord['tipp_id'])
+			Calendar filterTime = GregorianCalendar.getInstance()
+			showStatsInMonthRings.each { Date month ->
+				if(usageRow) {
 					filterTime.setTime(month)
 					//println(counterReport)
 					//println(counterReport.reportCount ?: '')
 					row.add(createCell(format, usageRow.get(DateUtils.getSDF_yyyyMM().format(month)) ?: ' ', style))
 				}
+				else row.add(createCell(format, ' ', style))
 			}
 		}
 		row
@@ -3524,12 +3508,12 @@ class ExportService {
 
 	Map<String, Object> getTitleData(Map configMap, String entitlementInstance, Sql sql, List showStatsInMonthRings = [], Org subscriber = null) {
 		Map<String, Object> queryData = filterService.prepareTitleSQLQuery(configMap, entitlementInstance, sql)
-		Sql storageSql = GlobalService.obtainStorageSqlConnection()
 		List<GroovyRowResult> titles = sql.rows(queryData.query+queryData.join+' where '+queryData.where+queryData.order, queryData.params),
-							  identifiers, coverages, priceItems, coreTitleIdentifierNamespaces, otherTitleIdentifierNamespaces, reports = []
+							  identifiers, coverages, priceItems, coreTitleIdentifierNamespaces, otherTitleIdentifierNamespaces
+		Map<Long, Map<String, Integer>> reportMap = [:]
 		Map<Long, List<GroovyRowResult>> coverageMap = [:], priceItemMap = [:]
 		Map<Long, Map<String, List<String>>> identifierMap = [:]
-		Map<String, Long> identifierInverseMap = [:]
+		Map<String, Map<String, Long>> identifierInverseMap = [:]
 		List<String> coreTitleNSrestricted = IdentifierNamespace.CORE_TITLE_NS.collect { String coreTitleNS ->
 			!(coreTitleNS in [IdentifierNamespace.ISBN, IdentifierNamespace.PISBN, IdentifierNamespace.ISSN, IdentifierNamespace.EISSN])
 		}
@@ -3561,38 +3545,129 @@ class ExportService {
 					propIdNamespaces << row.plat_title_namespace
 				}
 				identifiers.each { GroovyRowResult idRow ->
-					String key = '', isbnKey
-					switch(idRow.idns_ns) {
-						case IdentifierNamespace.EISSN: key = "online_identifier:${idRow.id_value}"
-							break
-						case IdentifierNamespace.ISBN: key = "online_identifier:${idRow.id_value}"
-							isbnKey = "isbn:${idRow.id_value}"
-							identifierInverseMap.put(isbnKey, idRow.id_tipp_fk)
-							break
-						case IdentifierNamespace.ISSN: key = "print_identifier:${idRow.id_value}"
-							break
-						case IdentifierNamespace.PISBN: key = "print_identifier:${idRow.id_value}"
-							isbnKey = "isbn:${idRow.id_value}"
-							identifierInverseMap.put(isbnKey, idRow.id_tipp_fk)
-							break
-						case IdentifierNamespace.DOI: key = "doi:${idRow.id_value}"
-							break
-						default:
-							if(idRow.idns_ns in propIdNamespaces)
-								key = "proprietary_identifier:${idRow.id_value}"
-							break
-					}
-					identifierInverseMap.put(key, idRow.id_tipp_fk)
+					Map<String, Long> innerMap = identifierInverseMap.containsKey(idRow.idns_ns) ? identifierInverseMap.get(idRow.idns_ns) : [:]
+					innerMap.put(idRow.id_value, idRow.id_tipp_fk)
+					identifierInverseMap.put(idRow.idns_ns, innerMap)
 				}
-				Connection connection = storageSql.dataSource.getConnection()
 				Calendar filterTime = GregorianCalendar.getInstance()
 				filterTime.setTime(showStatsInMonthRings.first())
 				filterTime.set(Calendar.DATE, filterTime.getActualMinimum(Calendar.DAY_OF_MONTH))
-				Timestamp startDate = new Timestamp(filterTime.getTime().getTime())
+				Date startDate = filterTime.getTime()
 				filterTime.setTime(showStatsInMonthRings.last())
 				filterTime.set(Calendar.DATE, filterTime.getActualMaximum(Calendar.DAY_OF_MONTH))
-				Timestamp endDate = new Timestamp(filterTime.getTime().getTime())
-				List<String> queriedMonths = []
+				Date endDate = filterTime.getTime()
+				configMap.customer = subscriber
+				configMap.startDate = startDate
+				configMap.endDate = endDate
+				Map<String, Object> requestResponse = getReports(configMap)
+				//implicit COUNTER 4 check
+				Long titleMatch
+				if(requestResponse.containsKey('reports')) {
+					//COUNTER 4 result
+					for (GPathResult reportItem: requestResponse.reports) {
+						titleMatch = null
+						reportItem.'ns2:ItemIdentifier'.each { identifier ->
+							if(!titleMatch) {
+								switch (identifier.'ns2:Type'.text().toLowerCase()) {
+									case 'isbn': titleMatch = identifierInverseMap[IdentifierNamespace.ISBN]?.get(identifier.'ns2:Value'.text())
+										if(!titleMatch)
+											titleMatch = identifierInverseMap[IdentifierNamespace.PISBN]?.get(identifier.'ns2:Value'.text())
+										if(!titleMatch)
+											titleMatch = identifierInverseMap[IdentifierNamespace.ISBN]?.get(identifier.'ns2:Value'.text().replaceAll('-',''))
+										if(!titleMatch)
+											titleMatch = identifierInverseMap[IdentifierNamespace.PISBN]?.get(identifier.'ns2:Value'.text().replaceAll('-',''))
+										break
+									case 'online_isbn':
+									case 'online_issn': titleMatch = identifierInverseMap[IdentifierNamespace.EISSN]?.get(identifier.'ns2:Value'.text())
+										if(!titleMatch)
+											titleMatch = identifierInverseMap[IdentifierNamespace.ISBN]?.get(identifier.'ns2:Value'.text())
+										if(!titleMatch)
+											titleMatch = identifierInverseMap[IdentifierNamespace.EISSN]?.get(identifier.'ns2:Value'.text().replaceAll('-',''))
+										if(!titleMatch)
+											titleMatch = identifierInverseMap[IdentifierNamespace.ISBN]?.get(identifier.'ns2:Value'.text().replaceAll('-',''))
+										break
+									case 'print_issn':
+									case 'print_isbn': titleMatch = identifierInverseMap[IdentifierNamespace.ISSN]?.get(identifier.'ns2:Value'.text())
+										if(!titleMatch)
+											titleMatch = identifierInverseMap[IdentifierNamespace.PISBN]?.get(identifier.'ns2:Value'.text())
+										if(!titleMatch)
+											titleMatch = identifierInverseMap[IdentifierNamespace.PISBN]?.get(identifier.'ns2:Value'.text().replaceAll('-',''))
+										break
+									case 'doi': titleMatch = identifierInverseMap[IdentifierNamespace.DOI]?.get(identifier.'ns2:Value'.text())
+										break
+									case 'proprietary_id': propIdNamespaces.each { String propIdNamespace ->
+										if(!titleMatch)
+											titleMatch = identifierInverseMap[propIdNamespace]?.get(identifier.'ns2:Value'.text())
+									}
+										break
+								}
+							}
+						}
+						if(titleMatch) {
+							Map<String, Integer> titlePerformance = reportMap.containsKey(titleMatch) ? reportMap.get(titleMatch) : [:]
+							for(GPathResult performance: reportItem.'ns2:ItemPerformance') {
+								Date reportFrom = DateUtils.parseDateGeneric(performance.'ns2:Period'.'ns2:Begin'.text())
+								for(GPathResult instance: performance.'ns2:Instance'.findAll { instCand -> instCand.'ns2:MetricType' == configMap.metricType }) {
+									titlePerformance.put(DateUtils.getSDF_yyyyMM().format(reportFrom), Integer.parseInt(instance.'ns2:Count'.text()))
+								}
+							}
+							reportMap.put(titleMatch, titlePerformance)
+						}
+					}
+				}
+				else if(requestResponse.containsKey('items')) {
+					//COUNTER 5 result
+					for(def reportItem: requestResponse.items) {
+						titleMatch = null
+						reportItem["Item_ID"].each { idData ->
+							if(!titleMatch) {
+								switch(idData.Type.toLowerCase()) {
+									case 'isbn': titleMatch = identifierInverseMap[IdentifierNamespace.ISBN]?.get(idData.Value)
+										if(!titleMatch)
+											titleMatch = identifierInverseMap[IdentifierNamespace.PISBN]?.get(idData.Value)
+										if(!titleMatch)
+											titleMatch = identifierInverseMap[IdentifierNamespace.ISBN]?.get(idData.Value.replaceAll('-',''))
+										if(!titleMatch)
+											titleMatch = identifierInverseMap[IdentifierNamespace.PISBN]?.get(idData.Value.replaceAll('-',''))
+										break
+									case 'online_issn':
+									case 'online_isbn': titleMatch = identifierInverseMap[IdentifierNamespace.EISSN]?.get(idData.Value)
+										if(!titleMatch)
+											titleMatch = identifierInverseMap[IdentifierNamespace.ISBN]?.get(idData.Value)
+										if(!titleMatch)
+											titleMatch = identifierInverseMap[IdentifierNamespace.EISSN]?.get(idData.Value.replaceAll('-',''))
+										if(!titleMatch)
+											titleMatch = identifierInverseMap[IdentifierNamespace.ISBN]?.get(idData.Value.replaceAll('-',''))
+										break
+									case 'print_isbn':
+									case 'print_issn': titleMatch = identifierInverseMap[IdentifierNamespace.ISSN]?.get(idData.Value)
+										if(!titleMatch)
+											titleMatch = identifierInverseMap[IdentifierNamespace.PISBN]?.get(idData.Value)
+										if(!titleMatch)
+											titleMatch = identifierInverseMap[IdentifierNamespace.PISBN]?.get(idData.Value.replaceAll('-',''))
+										break
+									case 'doi': titleMatch = identifierInverseMap[IdentifierNamespace.DOI]?.get(idData.Value)
+										break
+									case 'proprietary_id': propIdNamespaces.each { String propIdNamespace ->
+										if(!titleMatch)
+											titleMatch = identifierInverseMap[propIdNamespace]?.get(idData.Value)
+									}
+										break
+								}
+							}
+						}
+						if(titleMatch) {
+							Map<String, Integer> titlePerformance = reportMap.containsKey(titleMatch) ? reportMap.get(titleMatch) : [:]
+							for(Map performance: reportItem.Performance) {
+								Date reportFrom = DateUtils.parseDateGeneric(performance.Period.Begin_Date)
+								for(Map instance: performance.Instance) {
+									titlePerformance.put(DateUtils.getSDF_yyyyMM().format(reportFrom), instance.Count)
+								}
+							}
+							reportMap.put(titleMatch, titlePerformance)
+						}
+					}
+				}
 				/*
 				showStatsInMonthRings.each { Date month ->
 					queriedMonths << "max(case when to_char(c5r_report_from, 'MM') = '${DateUtils.getSDF_MM().format(month)}' then c5r_report_count else 0 end) as \"${DateUtils.getSDF_yyyyMM().format(month)}\""
@@ -3621,7 +3696,7 @@ class ExportService {
 			coreTitleIdentifierNamespaces = []
 			otherTitleIdentifierNamespaces = []
 		}
-		[titles: titles, coverageMap: coverageMap, priceItemMap: priceItemMap, identifierMap: identifierMap, identifierInverseMap: identifierInverseMap, reports: reports,
+		[titles: titles, coverageMap: coverageMap, priceItemMap: priceItemMap, identifierMap: identifierMap, reportMap: reportMap,
 		 coreTitleIdentifierNamespaces: coreTitleIdentifierNamespaces, otherTitleIdentifierNamespaces: otherTitleIdentifierNamespaces]
 	}
 

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Platform; de.laser.titles.BookInstance; de.laser.remote.ApiSource; de.laser.Org;" %>
+<%@ page import="de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.Subscription; de.laser.titles.BookInstance; de.laser.remote.ApiSource; de.laser.Org;" %>
 <laser:htmlStart message="subscription.details.renewEntitlements.label" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -364,7 +364,7 @@
                 <g:message code="renewEntitlementsWithSurvey.noIEsStats"/>
             </g:elseif>
             <g:else>
-                <g:message code="renewEntitlementsWithSurvey.noReportSelected"/>
+                <g:message code="default.stats.error.noReportSelected"/>
             </g:else>
         </g:if>
         <g:elseif test="${params.tab == 'stats'}">
@@ -503,16 +503,20 @@
         console.log($("#accessMethod").dropdown('get value'));
         */
         let url = $(this).attr('href')+'&reportType='+$("#reportType").dropdown('get value');
-        $.each($("#metricType").dropdown('get value'), function(i, val) {
-            url+='&metricType='+val;
-        });
-        $.each($("#accessType").dropdown('get value'), function(i, val) {
-            url+='&accessType='+val;
-        });
-        $.each($("#accessMethod").dropdown('get value'), function(i, val) {
-            url+='&accessMethod='+val;
-        });
-        window.location.href = url;
+        url+='&metricType='+$("#metricType").dropdown('get value');
+        url+='&accessType='+$("#accessType").dropdown('get value');
+        url+='&accessMethod='+$("#accessMethod").dropdown('get value');
+        if($("#platform").dropdown('get value') !== '') {
+            $.each($("#platform").dropdown('get value'), function(i, val) {
+                url+='&platform='+val;
+            });
+        }
+        else {
+            url+='&platform='+$("#platform").val();
+        }
+        //do not forget to communicate that to the users!
+        if($("#reportType").dropdown('get value') !== '')
+            window.location.href = url;
     });
 </laser:script>
 <laser:htmlEnd />
