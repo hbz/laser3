@@ -259,7 +259,7 @@
                 let fd = new FormData($('#stats')[0]);
                 console.log($('#stats')[0]);
                 $.ajax({
-                    url: "<g:createLink controller="ajaxHtml" action="generateCostPerUse"/>",
+                    url: "<g:createLink controller="ajax" action="generateCostPerUse"/>",
                     data: fd,
                     type: 'POST',
                     processData: false,

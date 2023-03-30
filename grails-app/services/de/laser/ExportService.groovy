@@ -771,11 +771,11 @@ class ExportService {
 		Map<String, Object> sumsPerYOP
 		int rowno = 0
 		//revision 4
-		if(params.revision == 'counter4') {
+		if(params.revision == AbstractReport.COUNTER_4) {
 			prf.setBenchmark('data fetched from provider')
 			Map<String, Object> queryParams = [reportType: reportType, customer: customer, platform: platform]
 			if(params.metricType) {
-				queryParams.metricTypes = params.list('metricType').join('%7C')
+				queryParams.metricTypes = params.list('metricType')
 			}
 			queryParams.startDate = dateRangeParams.startDate
 			queryParams.endDate = dateRangeParams.endDate
@@ -1159,7 +1159,7 @@ class ExportService {
 			else requestResponse
 		}
 		//revision 5
-		else if(params.revision == 'counter5') {
+		else if(params.revision == AbstractReport.COUNTER_5) {
 			Map<String, Object> queryParams = [reportType: reportType, customer: customer, platform: platform]
 			if(params.metricType) {
 				queryParams.metricTypes = params.list('metricType').join('%7C')
@@ -1481,23 +1481,7 @@ class ExportService {
 		if(reportType in Counter5Report.COUNTER_5_REPORTS) {
 			Map<Date, Integer> countsPerMonth = [:]
 			for(def reportItem: requestResponse.items) {
-				Map<String, String> identifierMap = [:]
-				reportItem["Item_ID"].each { idData ->
-					switch(idData.Type.toLowerCase()) {
-						case 'isbn': identifierMap.isbn = idData.Value
-							break
-						case 'online_issn':
-						case 'online_isbn': identifierMap.onlineIdentifier = idData.Value
-							break
-						case 'print_isbn':
-						case 'print_issn': identifierMap.printIdentifier = idData.Value
-							break
-						case 'doi': identifierMap.doi = idData.Value
-							break
-						case 'proprietary_id': identifierMap.proprietaryIdentifier = idData.Value
-							break
-					}
-				}
+				Map<String, String> identifierMap = buildIdentifierMap(reportItem, AbstractReport.COUNTER_5)
 				TitleInstancePackagePlatform tipp = subscriptionControllerService.matchReport(titles, propIdNamespace, identifierMap)
 				if(tipp) {
 					Set<Identifier> titleIDs = tipp.ids
@@ -1621,25 +1605,7 @@ class ExportService {
 			Map<String, Map<Date, Integer>> countsPerMonth = [:], sumsPerYOP = [:]
 			Set<String> metricsAvailable = []
 			for (GPathResult reportItem: requestResponse.reports) {
-				Map<String, String> identifierMap = [:]
-				reportItem.'ns2:ItemIdentifier'.each { identifier ->
-					switch (identifier.'ns2:Type'.text().toLowerCase()) {
-						case 'isbn': identifierMap.isbn = identifier.'ns2:Value'.text()
-							break
-						case 'online_isbn':
-						case 'online_issn':
-							identifierMap.onlineIdentifier = identifier.'ns2:Value'.text()
-							break
-						case 'print_issn':
-						case 'print_isbn':
-							identifierMap.printIdentifier = identifier.'ns2:Value'.text()
-							break
-						case 'doi': identifierMap.doi = identifier.'ns2:Value'.text()
-							break
-						case 'proprietary_id': identifierMap.proprietaryIdentifier = identifier.'ns2:Value'.text()
-							break
-					}
-				}
+				Map<String, String> identifierMap = buildIdentifierMap(reportItem, AbstractReport.COUNTER_4)
 				TitleInstancePackagePlatform tipp = subscriptionControllerService.matchReport(titles, propIdNamespace, identifierMap)
 				if(tipp) {
 					Set<PriceItem> priceItems = []
@@ -2076,6 +2042,49 @@ class ExportService {
 		else
 			result.error = 'no we:kb platform available'
 		result
+	}
+
+	Map<String, String> buildIdentifierMap(reportItem, String revision) {
+		Map<String, String> identifierMap = [:]
+		if(revision == AbstractReport.COUNTER_4) {
+			reportItem.'ns2:ItemIdentifier'.each { identifier ->
+				switch (identifier.'ns2:Type'.text().toLowerCase()) {
+					case 'isbn': identifierMap.isbn = identifier.'ns2:Value'.text()
+						break
+					case 'online_isbn':
+					case 'online_issn':
+						identifierMap.onlineIdentifier = identifier.'ns2:Value'.text()
+						break
+					case 'print_issn':
+					case 'print_isbn':
+						identifierMap.printIdentifier = identifier.'ns2:Value'.text()
+						break
+					case 'doi': identifierMap.doi = identifier.'ns2:Value'.text()
+						break
+					case 'proprietary_id': identifierMap.proprietaryIdentifier = identifier.'ns2:Value'.text()
+						break
+				}
+			}
+		}
+		else if(revision == AbstractReport.COUNTER_5) {
+			reportItem["Item_ID"].each { idData ->
+				switch (idData.Type.toLowerCase()) {
+					case 'isbn': identifierMap.isbn = idData.Value
+						break
+					case 'online_issn':
+					case 'online_isbn': identifierMap.onlineIdentifier = idData.Value
+						break
+					case 'print_isbn':
+					case 'print_issn': identifierMap.printIdentifier = idData.Value
+						break
+					case 'doi': identifierMap.doi = idData.Value
+						break
+					case 'proprietary_id': identifierMap.proprietaryIdentifier = idData.Value
+						break
+				}
+			}
+		}
+		identifierMap
 	}
 
 	/**

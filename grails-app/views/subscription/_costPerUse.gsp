@@ -58,7 +58,7 @@
         </tr>
         </thead>
         <tbody>
-        <g:each in="${params.metricType.split(',')}" var="metricType">
+        <g:each in="${metricTypes}" var="metricType">
             <tr>
                 <td>${params.reportType.toUpperCase()}</td>
                 <td>
@@ -92,7 +92,7 @@
         </tr>
         </thead>
         <tbody>
-            <g:each in="${params.metricType.split(',')}" var="metricType">
+            <g:each in="${metricTypes}" var="metricType">
                 <tr>
                     <td>${params.reportType.toUpperCase()}</td>
                     <td>${metricType}</td>
