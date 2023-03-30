@@ -3,7 +3,7 @@ package de.laser
 
 import de.laser.auth.Role
 import de.laser.auth.User
-import de.laser.auth.UserOrg
+import de.laser.auth.UserOrgRole
 import de.laser.UserSetting.KEYS
 import de.laser.utils.LocaleUtils
 import de.laser.utils.PasswordUtils
@@ -39,7 +39,7 @@ class ProfileController {
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
         result.editable = true
-        result.isOrgBasicMember = contextService.getOrg().getCustomerType() == 'ORG_BASIC_MEMBER'
+        result.isOrgBasicMember = contextService.getOrg().isCustomerType_Inst_Basic()
         result.availableOrgs  = Org.executeQuery('from Org o where o.sector = :sector order by o.sortname', [sector: RDStore.O_SECTOR_HIGHER_EDU])
         result.availableOrgRoles = Role.findAllByRoleType('user')
 
@@ -132,7 +132,7 @@ class ProfileController {
     def deleteAffiliation() {
         log.debug("deleteAffiliation() userOrg: ${params.assoc}")
         User user        = contextService.getUser()
-        UserOrg userOrg  = UserOrg.findByUserAndId(user, params.assoc)
+        UserOrgRole userOrg  = UserOrgRole.findByUserAndId(user, params.assoc)
 
         if (userOrg) {
             userOrg.delete()
@@ -165,7 +165,7 @@ class ProfileController {
             result.delResult = deletionService.deleteUser(result.user, null, DeletionService.DRY_RUN)
         }
 
-        List<Org> orgList = Org.executeQuery('select distinct uo.org from UserOrg uo where uo.user = :self', [self: result.user])
+        List<Org> orgList = Org.executeQuery('select distinct uo.org from UserOrgRole uo where uo.user = :self', [self: result.user])
         result.substituteList = orgList ? User.executeQuery(
                 'select distinct u from User u join u.affiliations ua where ua.org in :orgList and u != :self and ua.formalRole = :instAdm order by u.username',
                 [orgList: orgList, self: result.user, instAdm: Role.findByAuthority('INST_ADM')]
@@ -440,7 +440,7 @@ class ProfileController {
                 "N",
                 'profile.updateProfile.token.systemMessages' )
 
-        String messageToken = ((contextService.getOrg().getCustomerType()  in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO']) ? 'profile.notification.for.SurveysParticipationFinish' : 'profile.notification.for.SurveysParticipationFinish2')
+        String messageToken = ((contextService.getOrg().isCustomerType_Consortium()) ? 'profile.notification.for.SurveysParticipationFinish' : 'profile.notification.for.SurveysParticipationFinish2')
 
         _changeValue( user.getSetting(KEYS.IS_NOTIFICATION_FOR_SURVEYS_PARTICIPATION_FINISH, RDStore.YN_NO),
                 'isNotificationForSurveysParticipationFinish',

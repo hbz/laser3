@@ -2,9 +2,9 @@ package de.laser
 
 import de.laser.finance.CostItem
 import de.laser.properties.PlatformProperty
-import de.laser.properties.PropertyDefinition
 import de.laser.stats.Fact
 import de.laser.stats.StatsTripleCursor
+import de.laser.storage.PropertyStore
 import de.laser.storage.RDConstants
 import de.laser.utils.DateUtils
 import grails.gorm.transactions.Transactional
@@ -371,7 +371,7 @@ class FactService {
    */
   private Map<String,List> _getUsageRanges(supplier_id, Org org, Subscription subscription) {
     String customer = org.getIdentifierByType('wibid')?.value
-    String supplierId = PlatformProperty.findByOwnerAndType(Platform.get(supplier_id), PropertyDefinition.getByNameAndDescr('NatStat Supplier ID', PropertyDefinition.PLA_PROP))
+    String supplierId = PlatformProperty.findByOwnerAndType(Platform.get(supplier_id), PropertyStore.PLA_NATSTAT_SID)
     List factTypes = StatsTripleCursor.findAllByCustomerIdAndSupplierId(customer, supplierId).factType.unique()
 
     String titleRangesHql = "select stc from StatsTripleCursor as stc where " +

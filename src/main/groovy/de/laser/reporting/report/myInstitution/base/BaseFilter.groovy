@@ -19,7 +19,7 @@ class BaseFilter {
     static List<String> getRestrictedConfigSources(Map<String, Object> config) {
         ContextService contextService = BeanStore.getContextService()
 
-        if (contextService.getUser().hasRole(['ROLE_ADMIN', 'ROLE_YODA'])) {
+        if (contextService.getUser().hasMinRole('ROLE_ADMIN')) {
             config.source
         }
         else {

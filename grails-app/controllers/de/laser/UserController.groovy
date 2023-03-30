@@ -44,15 +44,15 @@ class UserController {
      * Call to delete the given user, listing eventual substitutes for personal belongings.
      * If confirmed, the deletion will be executed and objects reassigned to the given substitute
      */
-    @DebugInfo(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
+    @DebugInfo(test = 'is_ROLE_ADMIN_or_hasAffiliation("INST_ADM")')
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasRole('ROLE_ADMIN') || ctx.contextService.getUser()?.hasAffiliation("INST_ADM")
+        ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_ADM")
     })
     @Check404()
     def delete() {
         Map<String, Object> result = userControllerService.getResultGenerics(params)
 
-            List<Org> affils = Org.executeQuery('select distinct uo.org from UserOrg uo where uo.user = :user', [user: result.user])
+            List<Org> affils = Org.executeQuery('select distinct uo.org from UserOrgRole uo where uo.user = :user', [user: result.user])
 
             if (affils.size() > 1) {
                 flash.error = message(code: 'user.delete.error.multiAffils') as String
@@ -69,7 +69,7 @@ class UserController {
                 result.delResult = deletionService.deleteUser(result.user as User, null, DeletionService.DRY_RUN)
             }
 
-            List<Org> orgList = Org.executeQuery('select distinct uo.org from UserOrg uo where uo.user = :self', [self: result.user])
+            List<Org> orgList = Org.executeQuery('select distinct uo.org from UserOrgRole uo where uo.user = :self', [self: result.user])
             result.substituteList = orgList ? User.executeQuery(
                     'select distinct u from User u join u.affiliations ua where ua.org in :orgList and u != :self and ua.formalRole = :instAdm order by u.username',
                     [orgList: orgList, self: result.user, instAdm: Role.findByAuthority('INST_ADM')]
@@ -134,9 +134,9 @@ class UserController {
      * Shows the affiliations and global roles given user
      * @return a list of the user's affiliations and roles
      */
-    @DebugInfo(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")')
+    @DebugInfo(test = 'is_ROLE_ADMIN_or_hasAffiliation("INST_ADM")')
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasRole('ROLE_ADMIN') || ctx.contextService.getUser()?.hasAffiliation("INST_ADM")
+        ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_ADM")
     })
     @Check404()
     def show() {
@@ -148,9 +148,9 @@ class UserController {
      * Creates a new random password to the given user and sends that via mail to the address registered to the account
      * @return a redirect to the referer
      */
-    @DebugInfo(test = 'hasRole("ROLE_ADMIN") || hasAffiliation("INST_ADM")', wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(test = 'is_ROLE_ADMIN_or_hasAffiliation("INST_ADM")', wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasRole('ROLE_ADMIN') || ctx.contextService.getUser()?.hasAffiliation("INST_ADM")
+        ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_ADM")
     })
     def newPassword() {
         User.withTransaction {

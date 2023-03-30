@@ -28,7 +28,7 @@
             </thead>
             <tbody>
             <g:each in="${taskInstanceList}" var="taskInstance">
-                <!-- OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')} -->
+                <!-- OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${accessService.checkMinUserOrgRole_and_CtxOrg(user, contextService.getOrg(), 'INST_EDITOR')} -->
                 <g:set var="overwriteEditable" value="${editable || taskService.isTaskEditableBy(taskInstance, contextService.getUser(), contextService.getOrg())}" />
                 <tr>
                     <td>
@@ -88,7 +88,7 @@
                                 <i aria-hidden="true" class="write icon"></i>
                             </a>
                         </g:if>
-                        <g:if test="${(user == taskInstance.creator) || contextService.getUser().hasAffiliation("INST_ADM")}">
+                        <g:if test="${(user == taskInstance.creator) || contextService.getUser().is_ROLE_ADMIN_or_hasAffiliation('INST_ADM')}">
                             <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.task")}"
                                     data-confirm-term-how="delete"

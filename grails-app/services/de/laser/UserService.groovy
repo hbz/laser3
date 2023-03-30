@@ -3,7 +3,7 @@ package de.laser
 
 import de.laser.auth.Role
 import de.laser.auth.User
-import de.laser.auth.UserOrg
+import de.laser.auth.UserOrgRole
 import de.laser.auth.UserRole
 import de.laser.config.ConfigMapper
 import de.laser.storage.RDConstants
@@ -45,7 +45,7 @@ class UserService {
             else if (! uss.getValue()) {
                 uss.setValue(firstOrg)
             }
-            if(firstOrg.getCustomerType() in ['ORG_BASIC_MEMBER','ORG_INST'])
+            if(firstOrg.isCustomerType_Inst())
                 user.getSetting(UserSetting.KEYS.IS_NOTIFICATION_FOR_SURVEYS_PARTICIPATION_FINISH, RDStore.YN_YES)
         }
 
@@ -70,7 +70,7 @@ class UserService {
         Map queryParams = [:]
 
         if (params.org || params.authority) {
-            baseQuery.add( 'UserOrg uo' )
+            baseQuery.add( 'UserOrgRole uo' )
 
             if (params.org) {
                 whereQuery.add( 'uo.user = u and uo.org = :org' )
@@ -122,12 +122,12 @@ class UserService {
             Role formalRole = Role.get(params.formalRole)
 
             if (org && formalRole) {
-                int existingUserOrgs = UserOrg.findAllByOrgAndFormalRole(org, formalRole).size()
+                int existingUserOrgs = UserOrgRole.findAllByOrgAndFormalRole(org, formalRole).size()
 
                 instAdmService.createAffiliation(user, org, formalRole, flash)
 
                 if (formalRole.authority == 'INST_ADM' && existingUserOrgs == 0 && ! org.legallyObligedBy) { // only if new instAdm
-                    if (UserOrg.findByOrgAndUserAndFormalRole(org, user, formalRole)) { // only on success
+                    if (UserOrgRole.findByOrgAndUserAndFormalRole(org, user, formalRole)) { // only on success
                         org.legallyObligedBy = contextService.getOrg()
                         org.save()
                         log.debug("set legallyObligedBy for ${org} -> ${contextService.getOrg()}")
@@ -162,33 +162,17 @@ class UserService {
      * Checks the user's permissions in the given institution
      * @param user the user to check
      * @param userRoleName the user's role (permission grant) in the institution to be checked
-     * @param globalRoleName the (eventual) global permission which may override local permissions
-     * @param mode AND: local affiliation is necessary even if global roles are granted, OR: global roles override missing local affiliation
      * @param orgToCheck the institution to which affiliation should be checked
      * @return true if the given permission is granted to the user in the given institution (or a missing one overridden by global roles), false otherwise
      */
-    boolean checkAffiliation(User user, String userRoleName, String globalRoleName, String mode, Org orgToCheck) {
-
+    boolean is_ROLE_ADMIN_or_checkAffiliation(User user, String userRoleName, Org orgToCheck) {
         boolean check = false
 
-        // TODO:
-
-        if (SpringSecurityUtils.ifAnyGranted("ROLE_YODA")) {
+        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
             check = true // may the force be with you
         }
-        if (SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN")) {
-            check = true // may the force be with you
-        }
-
-        if (mode == 'AND') {
-            if (! SpringSecurityUtils.ifAnyGranted(globalRoleName)) {
-                check = false // min restriction fail
-            }
-        }
-        else if (mode == 'OR') {
-            if (SpringSecurityUtils.ifAnyGranted(globalRoleName)) {
-                check = true // min level granted
-            }
+        if (! SpringSecurityUtils.ifAnyGranted('ROLE_USER')) {
+            check = false // min restriction fail
         }
 
         // TODO:
@@ -197,26 +181,26 @@ class UserService {
             List<String> rolesToCheck = [userRoleName]
 
             // handling role hierarchy
-            if (userRoleName == "INST_USER") {
-                rolesToCheck << "INST_EDITOR"
-                rolesToCheck << "INST_ADM"
+            if (userRoleName == 'INST_USER') {
+                rolesToCheck << 'INST_EDITOR'
+                rolesToCheck << 'INST_ADM'
             }
-            else if (userRoleName == "INST_EDITOR") {
-                rolesToCheck << "INST_ADM"
+            else if (userRoleName == 'INST_EDITOR') {
+                rolesToCheck << 'INST_ADM'
             }
 
             rolesToCheck.each { String rot ->
                 Role role = Role.findByAuthority(rot)
                 if (role) {
-                    UserOrg uo = UserOrg.findByUserAndOrgAndFormalRole(user, orgToCheck, role)
+                    UserOrgRole uo = UserOrgRole.findByUserAndOrgAndFormalRole(user, orgToCheck, role)
                     //for users with multiple affiliations, login fails because of LazyInitializationException of the domain collection
-                    List<UserOrg> affiliations = UserOrg.findAllByUser(user)
+                    List<UserOrgRole> affiliations = UserOrgRole.findAllByUser(user)
                     check = check || (uo && affiliations.contains(uo))
                 }
             }
         }
 
-        //TODO: log.debug("affiliationCheck(): ${user} - ${userRoleName}, ${globalRoleName}, ${mode} @ ${orgToCheck} -> ${check}")
+        //TODO: log.debug("affiliationCheck(): ${user} - ${userRoleName} @ ${orgToCheck} -> ${check}")
         check
     }
 
@@ -243,7 +227,7 @@ class UserService {
                         user = addNewUser([username: username, password: "${adminUser.pass}", display: username, email: "${adminUser.email}", enabled: true, org: orgs[customerKey]],null)
 
                         if (user && orgs[customerKey]) {
-                            if (! user.hasAffiliationForForeignOrg(rightKey, orgs[customerKey])) {
+                            if (! user.is_ROLE_ADMIN_or_hasAffiliationForForeignOrg(rightKey, orgs[customerKey])) {
 
                                 instAdmService.createAffiliation(user, orgs[customerKey], userRole, null)
                                 user.getSetting(UserSetting.KEYS.DASHBOARD, orgs[customerKey])

@@ -10,7 +10,7 @@ import de.laser.utils.SwissKnife
 import de.laser.remote.FTControl
 import de.laser.auth.Role
 import de.laser.auth.User
-import de.laser.auth.UserOrg
+import de.laser.auth.UserOrgRole
 import de.laser.auth.UserRole
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
@@ -428,23 +428,23 @@ class AdminController  {
     @Transactional
     def copyUserRoles(User usrMrg, User usrKeep){
         Set<Role> mergeRoles = usrMrg.getAuthorities()
-        Set<UserOrg> mergeAffil = usrMrg.affiliations
+        Set<UserOrgRole> mergeAffil = usrMrg.affiliations
         Set<Role> currentRoles = usrKeep.getAuthorities()
-        Set<UserOrg> currentAffil = usrKeep.affiliations
+        Set<UserOrgRole> currentAffil = usrKeep.affiliations
 
         mergeRoles.each{ role ->
-            if (!currentRoles.contains(role) && role.authority != "ROLE_YODA") {
+            if (!currentRoles.contains(role) && role.authority != 'ROLE_YODA') {
                 UserRole.create(usrKeep,role)
             }
         }
         mergeAffil.each{affil ->
             if(!currentAffil.contains(affil)){
                 // We should check that the new role does not already exist
-                UserOrg existing_affil_check = UserOrg.findByOrgAndUserAndFormalRole(affil.org,usrKeep,affil.formalRole)
+                UserOrgRole existing_affil_check = UserOrgRole.findByOrgAndUserAndFormalRole(affil.org, usrKeep, affil.formalRole)
 
         if ( existing_affil_check == null ) {
             log.debug("No existing affiliation")
-            UserOrg newAffil = new UserOrg(org:affil.org,user:usrKeep,formalRole:affil.formalRole)
+            UserOrgRole newAffil = new UserOrgRole(org:affil.org, user:usrKeep, formalRole:affil.formalRole)
             if(!newAffil.save(failOnError:true)){
                 log.error("Probem saving user roles")
                 newAffil.errors.each { e ->
@@ -927,7 +927,7 @@ class AdminController  {
         result.orgListTotal = result.orgList.size()
 
         result.allConsortia = Org.executeQuery(
-                "select o from OrgSetting os join os.org o where os.key = 'CUSTOMER_TYPE' and (os.roleValue.authority  = 'ORG_CONSORTIUM' or os.roleValue.authority  = 'ORG_CONSORTIUM_PRO') order by o.sortname, o.name"
+                "select o from OrgSetting os join os.org o where os.key = 'CUSTOMER_TYPE' and (os.roleValue.authority  = 'ORG_CONSORTIUM_BASIC' or os.roleValue.authority  = 'ORG_CONSORTIUM_PRO') order by o.sortname, o.name"
         )
         result
     }

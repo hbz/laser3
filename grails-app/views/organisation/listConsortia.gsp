@@ -1,3 +1,4 @@
+<%@ page import="de.laser.CustomerTypeService" %>
 <laser:htmlStart message="menu.public.all_cons" serviceInjection="true"/>
 
         <g:set var="entityName" value="${message(code: 'org.label')}" />
@@ -8,7 +9,7 @@
 
     <ui:controlButtons>
         <%
-            editable = (editable && accessService.checkPerm('ORG_INST')) || contextService.getUser()?.hasRole('ROLE_ADMIN')
+            editable = (editable && accessService.checkPerm(CustomerTypeService.ORG_INST_PRO)) || contextService.getUser().hasMinRole('ROLE_ADMIN')
         %>
         <ui:exportDropdown>
             <ui:exportDropdownItem>
@@ -54,7 +55,7 @@
         <g:form action="listConsortia" method="get" class="ui form">
             <laser:render template="/templates/filter/orgFilter"
                       model="[
-                              tmplConfigShow: [['name']],
+                              tmplConfigShow: [['name', 'isMyX']],
                               tmplConfigFormFilter: true
                       ]"/>
         </g:form>
@@ -63,7 +64,7 @@
     <laser:render template="/myInstitution/export/individuallyExportModalOrgs" model="[modalID: 'individuallyExportModal', orgType: 'consortium', contactSwitch: true]" />
     <laser:render template="/templates/filter/orgFilterTable"
               model="[orgList: availableOrgs,
-                      consortiaIds: consortiaIds,
+                      currentConsortiaIdList: consortiaIds,
                       tmplShowCheckbox: false,
                       tmplConfigShow: [
                               'sortname', 'name', 'isMyX'

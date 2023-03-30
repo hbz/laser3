@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Subscription; de.laser.properties.PropertyDefinitionGroupBinding; de.laser.properties.PropertyDefinitionGroup; de.laser.properties.PropertyDefinition; de.laser.properties.SubscriptionProperty; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.interfaces.CalculatedType" %>
+<%@ page import="de.laser.CustomerTypeService; de.laser.Subscription; de.laser.properties.PropertyDefinitionGroupBinding; de.laser.properties.PropertyDefinitionGroup; de.laser.properties.PropertyDefinition; de.laser.properties.SubscriptionProperty; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.interfaces.CalculatedType" %>
 <laser:serviceInjection />
 <!-- _properties -->
 
@@ -99,7 +99,7 @@
                     prop_desc: PropertyDefinition.SUB_PROP,
                     ownobj: subscription,
                     orphanedProperties: allPropDefGroups.orphanedProperties,
-                    editable: (!calledFromSurvey && accessService.checkPermAffiliation('ORG_INST, ORG_CONSORTIUM','INST_EDITOR')),
+                    editable: (!calledFromSurvey && accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')),
                     custom_props_div: "custom_props_div_props" ]}"/>
         </div>
     </div>

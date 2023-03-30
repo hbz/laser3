@@ -150,6 +150,12 @@ class BasicHttpClient {
                 onFailure.call(response, response.getBody())
             }
         }
+        else if (sc < 0) {
+            if (onFailure) {
+                log.warn '[ request ] ' + url + ' > '+ sc
+                onFailure.call(response, response?.getBody())
+            }
+        }
         response
     }
 

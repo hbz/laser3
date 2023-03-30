@@ -53,7 +53,7 @@
                               value="${['':'']}"/>
             </div>
 
-            <%-- <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
+            <%-- <g:if test="${accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
                 <div class="field">
                     <label>${message(code:'myinst.emptySubscription.create_as')}</label>
 

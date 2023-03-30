@@ -1,8 +1,8 @@
 <%@page import="de.laser.storage.RDStore" %>
 <laser:serviceInjection />
 
-<%--OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${accessService.checkMinUserOrgRole(user, institution, 'INST_EDITOR')} @ ${institution}--%>
-<g:set var="overwriteEditable" value="${editable || accessService.checkMinUserOrgRole(user, institution, 'INST_EDITOR')}" />
+<%--OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${accessService.checkMinUserOrgRole_and_CtxOrg(user, institution, 'INST_EDITOR')} @ ${institution}--%>
+<g:set var="overwriteEditable" value="${editable || accessService.checkMinUserOrgRole_and_CtxOrg(user, institution, 'INST_EDITOR')}" />
 
 <ui:card message="task.plural" class="notes la-js-hideable ${css_class}" href="#modalCreateTask" editable="${overwriteEditable}">
     <div class="ui relaxed divided list  la-js-dont-hide-this-card">

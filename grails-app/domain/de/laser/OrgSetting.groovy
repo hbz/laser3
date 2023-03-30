@@ -8,7 +8,7 @@ import de.laser.storage.RDConstants
  * This class represents organisation-wide configuration settings, see the enum {@link OrgSetting.KEYS} for the possible settings.
  * All of them trigger further functionality; the {@link OrgSetting.KEYS#CUSTOMER_TYPE} for example is a key setting and the
  * distinction factor between institutions and (other) organisations (see {@link Org} for the definition of both). Organisations
- * do not have a CUSTOMER_TYPE while institutions mandatorily do have one; they are at least ORG_BASIC_MEMBERs. See {@link Role} for
+ * do not have a CUSTOMER_TYPE while institutions mandatorily do have one; they are at least ORG_MEMBER_BASICs. See {@link Role} for
  * the possible customer types to be granted.
  * UserSetting is a class with the same functionality for users
  * @see Org

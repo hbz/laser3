@@ -1,4 +1,4 @@
-<%@ page import="de.laser.workflow.WfChecklist; de.laser.workflow.WfCheckpoint; de.laser.storage.RDStore; de.laser.utils.DateUtils; de.laser.workflow.WorkflowHelper; de.laser.workflow.WfWorkflow; de.laser.UserSetting; de.laser.system.SystemAnnouncement; de.laser.storage.RDConstants; de.laser.AccessService; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DashboardDueDate" %>
+<%@ page import="de.laser.CustomerTypeService; de.laser.workflow.WfChecklist; de.laser.workflow.WfCheckpoint; de.laser.storage.RDStore; de.laser.utils.DateUtils; de.laser.workflow.WorkflowHelper; de.laser.workflow.WfWorkflow; de.laser.UserSetting; de.laser.system.SystemAnnouncement; de.laser.storage.RDConstants; de.laser.AccessService; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DashboardDueDate" %>
 
 <laser:htmlStart message="menu.institutions.dash" serviceInjection="true"/>
 
@@ -7,6 +7,15 @@
         </ui:breadcrumbs>
 
         <ui:h1HeaderWithIcon text="${institution.name}" />
+
+%{--<pre>--}%
+%{--    ORG_CONSORTIUM_BASIC: ${accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}--}%
+%{--    ORG_CONSORTIUM_PRO: ${accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)}--}%
+%{--    ORG_INST_BASIC: ${accessService.checkPerm(CustomerTypeService.ORG_INST_BASIC)}--}%
+%{--    ORG_INST_PRO: ${accessService.checkPerm(CustomerTypeService.ORG_INST_PRO)}--}%
+
+%{--    getCustomerType: ${institution.getCustomerType()}--}%
+%{--</pre>--}%
 
         <div class="ui equal width grid la-clear-before">
             <div class="row">
@@ -31,15 +40,15 @@
                             <g:link controller="org" action="show" id="${institution.id}">${message(code: 'menu.institutions.org_info')}</g:link>
                         </div>
                         <ui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="finance" message="menu.institutions.finance" />
-                        <ui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM_PRO" affiliation="INST_USER" controller="myInstitution" action="reporting" message="myinst.reporting" />
+                        <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" affiliation="INST_USER" controller="myInstitution" action="reporting" message="myinst.reporting" />
                     </div>
                 </div>
 
                 <div class="column">
                     <div class="ui divided relaxed list">
-                        <ui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" controller="myInstitution" action="tasks" message="task.plural" />
-                        <ui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" controller="myInstitution" action="addressbook" message="menu.institutions.myAddressbook" />
-                        <ui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" controller="myInstitution" action="managePrivatePropertyDefinitions" message="menu.institutions.manage_props" />
+                        <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="tasks" message="task.plural" />
+                        <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="addressbook" message="menu.institutions.myAddressbook" />
+                        <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="managePrivatePropertyDefinitions" message="menu.institutions.manage_props" />
                     </div>
                 </div>
             </div>
@@ -69,7 +78,7 @@
             ${dueDatesCount} ${message(code:'myinst.dash.due_dates.label')}
         </a>
 
-        <g:if test="${institution.getCustomerType() in ['ORG_INST', 'ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO']}">
+        <g:if test="${institution.isCustomerType_Consortium() || institution.isCustomerType_Inst_Pro()}">
             <a class="${us_dashboard_tab.value == 'PendingChanges' ? 'active item':'item'}" data-tab="pendingchanges">
                 <i class="history icon large"></i>
                 <span id="pendingCount">${message(code:'myinst.pendingChanges.label', args: [message(code:'myinst.loadPending')])}</span>
@@ -85,14 +94,14 @@
             ${systemAnnouncements.size()} ${message(code:'announcement.plural')}
         </a>
 
-        <g:if test="${accessService.checkPerm('ORG_BASIC_MEMBER,ORG_CONSORTIUM_PRO')}">
+        <g:if test="${accessService.checkPerm(CustomerTypeService.PERMS_INST_BASIC_CONSORTIUM_PRO)}">
             <a class="${us_dashboard_tab.value == 'Surveys' ? 'active item' : 'item'}" data-tab="surveys">
                 <i class="chart pie icon large"></i>
                 <span id="surveyCount">${message(code: 'myinst.dash.survey.label', args: [message(code: 'myinst.loadPending')])}</span>
             </a>
         </g:if>
 
-        <g:if test="${accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')}">
+        <g:if test="${accessService.checkPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
             <a class="${us_dashboard_tab.value == 'Tasks' ? 'active item':'item'}" data-tab="tasks">
                 <i class="calendar check outline icon large"></i>
                 ${tasksCount} ${message(code:'myinst.dash.task.label')}
@@ -115,7 +124,7 @@
             </div>
         </div>
 
-        <g:if test="${institution.getCustomerType() in ['ORG_INST', 'ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO']}">
+        <g:if test="${institution.isCustomerType_Consortium() || institution.isCustomerType_Inst_Pro()}">
             <div class="ui bottom attached tab ${us_dashboard_tab.value == 'PendingChanges' ? 'active':''}" data-tab="pendingchanges" id="pendingChanges">
             </div>
         </g:if>
@@ -160,7 +169,7 @@
             </g:if>
         </div>
 
-        <g:if test="${accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')}">
+        <g:if test="${accessService.checkPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
         <div class="ui bottom attached tab ${us_dashboard_tab.value == 'Tasks' ? 'active':''}" data-tab="tasks">
 
             <g:if test="${editable}">
@@ -240,11 +249,11 @@
 
         </g:if>
 
-        <g:if test="${accessService.checkPerm('ORG_BASIC_MEMBER,ORG_CONSORTIUM_PRO')}">
+        <g:if test="${accessService.checkPerm(CustomerTypeService.PERMS_INST_BASIC_CONSORTIUM_PRO)}">
             <div class="ui bottom attached tab segment ${us_dashboard_tab.value == 'Surveys' ? 'active' : ''}"
                  data-tab="surveys" style="border-top: 1px solid #d4d4d5; ">
                 <div class="la-float-right">
-                    <g:if test="${accessService.checkPerm('ORG_CONSORTIUM_PRO')}">
+                    <g:if test="${accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
                         <g:link controller="survey" action="workflowsSurveysConsortia"
                                 class="ui button">${message(code: 'menu.my.surveys')}</g:link>
                     </g:if>

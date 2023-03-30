@@ -2,7 +2,7 @@ package de.laser
 
 
 import de.laser.auth.User
-import de.laser.auth.UserOrg
+import de.laser.auth.UserOrgRole
 import de.laser.finance.CostItem
 import de.laser.config.ConfigDefaults
 import de.laser.properties.PropertyDefinition
@@ -80,7 +80,7 @@ class SurveyService {
      */
     boolean isEditableSurvey(Org org, SurveyInfo surveyInfo) {
 
-        if (accessService.checkPermAffiliationX('ORG_CONSORTIUM_PRO', 'INST_EDITOR', 'ROLE_ADMIN') && surveyInfo.owner?.id == contextService.getOrg().id) {
+        if (accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_PRO ) && surveyInfo.owner?.id == contextService.getOrg().id) {
             return true
         }
 
@@ -88,7 +88,7 @@ class SurveyService {
             return false
         }
 
-        if (accessService.checkPermAffiliationX('ORG_BASIC_MEMBER', 'INST_EDITOR', 'ROLE_ADMIN')) {
+        if (accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_INST_BASIC )) {
             SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfigInList(org, surveyInfo.surveyConfigs)
 
             if (surveyOrg.finishDate) {
@@ -104,7 +104,7 @@ class SurveyService {
     @Deprecated
     boolean isEditableIssueEntitlementsSurvey(Org org, SurveyConfig surveyConfig) {
 
-        if (accessService.checkPermAffiliationX('ORG_CONSORTIUM_PRO', 'INST_EDITOR', 'ROLE_ADMIN') && surveyConfig.surveyInfo.owner?.id == contextService.getOrg().id) {
+        if (accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_PRO ) && surveyConfig.surveyInfo.owner?.id == contextService.getOrg().id) {
             return true
         }
 
@@ -116,7 +116,7 @@ class SurveyService {
             return false
         }
 
-        if (accessService.checkPermAffiliationX('ORG_BASIC_MEMBER', 'INST_EDITOR', 'ROLE_ADMIN')) {
+        if (accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_INST_BASIC )) {
 
             if (SurveyOrg.findByOrgAndSurveyConfig(org, surveyConfig)?.finishDate) {
                 return false
@@ -487,7 +487,7 @@ class SurveyService {
 
         Map sheetData = [:]
 
-        if (contextOrg.getCustomerType()  == 'ORG_CONSORTIUM_PRO') {
+        if (contextOrg.isCustomerType_Consortium_Pro()) {
             surveyConfigs.each { surveyConfig ->
                 List titles = []
                 List surveyData = []
@@ -658,7 +658,7 @@ class SurveyService {
         if(surveyInfo.owner)
         {
             //Only User that approved
-            List<UserOrg> userOrgs = UserOrg.findAllByOrg(surveyInfo.owner)
+            List<UserOrgRole> userOrgs = UserOrgRole.findAllByOrg(surveyInfo.owner)
 
             //Only User with Notification by Email and for Surveys Start
             userOrgs.each { userOrg ->
@@ -739,7 +739,7 @@ class SurveyService {
         if(surveyInfo.owner)
         {
             //Only User that approved
-            List<UserOrg> userOrgs = UserOrg.findAllByOrg(participationFinish)
+            List<UserOrgRole> userOrgs = UserOrgRole.findAllByOrg(participationFinish)
 
             //Only User with Notification by Email and for Surveys Start
             userOrgs.each { userOrg ->
@@ -981,7 +981,7 @@ class SurveyService {
         if(orgs)
         {
             //Only User that approved
-            List<UserOrg> userOrgs = UserOrg.findAllByOrgInList(orgs)
+            List<UserOrgRole> userOrgs = UserOrgRole.findAllByOrgInList(orgs)
 
             //Only User with Notification by Email and for Surveys Start
             userOrgs.each { userOrg ->
@@ -1010,7 +1010,7 @@ class SurveyService {
     void emailsToSurveyUsersOfOrg(SurveyInfo surveyInfo, Org org, boolean reminderMail){
 
         //Only User that approved
-        List<UserOrg> userOrgs = UserOrg.findAllByOrg(org)
+        List<UserOrgRole> userOrgs = UserOrgRole.findAllByOrg(org)
 
         //Only User with Notification by Email and for Surveys Start
         userOrgs.each { userOrg ->
@@ -1377,7 +1377,7 @@ class SurveyService {
         Org contextOrg = contextService.getOrg()
 
         GrailsParameterMap tmpParams = (GrailsParameterMap) parameterMap.clone()
-        if (contextOrg.getCustomerType()  == 'ORG_CONSORTIUM_PRO') {
+        if (contextOrg.isCustomerType_Consortium_Pro()) {
 
             result = _setSurveyParticipantCounts(result, 'new', tmpParams, participant, contextOrg)
 
@@ -1743,7 +1743,7 @@ class SurveyService {
         RefdataValue role_subCons = RDStore.OR_SUBSCRIBER_CONS
         RefdataValue role_sub_consortia = RDStore.OR_SUBSCRIPTION_CONSORTIA
 
-        if (accessService.checkPerm(org, 'ORG_CONSORTIUM_PRO')) {
+        if (accessService.checkOrgPerm(org, 'ORG_CONSORTIUM_PRO')) {
             //nur Parents
             base_qry = " from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
                     " AND s.instanceOf is null "

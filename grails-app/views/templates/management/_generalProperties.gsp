@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.FormService; de.laser.Subscription; de.laser.interfaces.CalculatedType;" %>
+<%@ page import="de.laser.CustomerTypeService; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.FormService; de.laser.Subscription; de.laser.interfaces.CalculatedType;" %>
 <laser:serviceInjection/>
 
 <g:if test="${filteredSubscriptions}">
@@ -166,7 +166,7 @@
                                   value="${['': '']}"/>
                 </div>
 
-                <g:if test="${accessService.checkPerm('ORG_INST')}">
+                <g:if test="${accessService.checkPerm(CustomerTypeService.ORG_INST_PRO)}">
                     <div class="field">
                         <label>${message(code: 'subscription.isAutomaticRenewAnnually.label')}</label>
                         <ui:select name="process_isAutomaticRenewAnnually"
@@ -217,7 +217,7 @@
                     <th>${message(code: 'subscription.isPublicForApi.label')}</th>
                     <th>${message(code: 'subscription.hasPerpetualAccess.label')}</th>
                     <th>${message(code: 'subscription.hasPublishComponent.label')}</th>
-                    <g:if test="${accessService.checkPerm('ORG_INST')}">
+                    <g:if test="${accessService.checkPerm(CustomerTypeService.ORG_INST_PRO)}">
                         <th>${message(code: 'subscription.isAutomaticRenewAnnually.label')}</th>
                     </g:if>
                     <th class="la-no-uppercase">
@@ -261,7 +261,7 @@
                                     </span>
                                 </g:if>
 
-                                <g:if test="${subscr.getCustomerType() == 'ORG_INST'}">
+                                <g:if test="${subscr.isCustomerType_Inst_Pro()}">
                                     <span class="la-long-tooltip la-popup-tooltip la-delay"
                                           data-position="bottom center"
                                           data-content="${subscr.getCustomerTypeI10n()}">
@@ -331,7 +331,7 @@
                                                     overwriteEditable="${editableOld}"/>
                             <ui:auditButton auditable="[sub, 'hasPublishComponent']"/>
                         </td>
-                        <g:if test="${accessService.checkPerm('ORG_INST')}">
+                        <g:if test="${accessService.checkPerm(CustomerTypeService.ORG_INST_PRO)}">
                             <td>
                                 <g:if test="${(sub.type == RDStore.SUBSCRIPTION_TYPE_LOCAL && sub._getCalculatedType() == CalculatedType.TYPE_LOCAL)}">
                                     <ui:xEditableBoolean owner="${sub}" field="isAutomaticRenewAnnually" overwriteEditable="${editable && sub.isAllowToAutomaticRenewAnnually()}"/>

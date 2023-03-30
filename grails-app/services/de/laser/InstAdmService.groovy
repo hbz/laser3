@@ -2,7 +2,7 @@ package de.laser
 
 import de.laser.auth.Role
 import de.laser.auth.User
-import de.laser.auth.UserOrg
+import de.laser.auth.UserOrgRole
 import de.laser.utils.AppUtils
 import de.laser.config.ConfigMapper
 import de.laser.storage.RDStore
@@ -46,7 +46,7 @@ class InstAdmService {
      * @return true if the user has an INST_ADM grant to either the consortium or one of the members, false otherwise
      */
     boolean hasInstAdmPivileges(User user, Org org, List<RefdataValue> types) {
-        boolean result = accessService.checkMinUserOrgRole(user, org, 'INST_ADM')
+        boolean result = accessService.checkMinUserOrgRole_and_CtxOrg(user, org, 'INST_ADM')
 
         List<Org> topOrgs = Org.executeQuery(
                 'select c.toOrg from Combo c where c.fromOrg = :org and c.type in (:types)', [
@@ -54,7 +54,7 @@ class InstAdmService {
             ]
         )
         topOrgs.each{ top ->
-            if (accessService.checkMinUserOrgRole(user, top, 'INST_ADM')) {
+            if (accessService.checkMinUserOrgRole_and_CtxOrg(user, top, 'INST_ADM')) {
                 result = true
             }
         }
@@ -85,7 +85,7 @@ class InstAdmService {
             return result
         }
         else {
-            return accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_ADM")
+            return accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_ADM')
         }
     }
 
@@ -109,9 +109,9 @@ class InstAdmService {
      */
     boolean isUserLastInstAdminForOrg(User user, Org org){
 
-        List<UserOrg> userOrgs = UserOrg.findAllByOrgAndFormalRole(
+        List<UserOrgRole> userOrgs = UserOrgRole.findAllByOrgAndFormalRole(
                 org,
-                Role.findByAuthority("INST_ADM")
+                Role.findByAuthority('INST_ADM')
         )
 
         return (userOrgs.size() == 1 && userOrgs[0].user == user)
@@ -121,9 +121,9 @@ class InstAdmService {
 	// moved here from AccessService
 	boolean isUserEditableForInstAdm(User user, User editor, Org org) {
 
-		boolean roleAdmin = editor.hasRole('ROLE_ADMIN')
-		boolean instAdmin = editor.hasAffiliation('INST_ADM') // check @ contextService.getOrg()
-		boolean orgMatch  = accessService.checkUserIsMember(user, contextService.getOrg())
+		boolean roleAdmin = editor.hasMinRole('ROLE_ADMIN')
+		boolean instAdmin = editor.is_ROLE_ADMIN_or_hasAffiliation('INST_ADM') // check @ contextService.getOrg()
+		boolean orgMatch  = user.isMemberOf(contextService.getOrg())
 
 		roleAdmin || (instAdmin && orgMatch)
 	}
@@ -139,10 +139,10 @@ class InstAdmService {
 
         try {
             Locale loc = LocaleUtils.getCurrentLocale()
-            UserOrg check = UserOrg.findByOrgAndUserAndFormalRole(org, user, formalRole)
+            UserOrgRole check = UserOrgRole.findByOrgAndUserAndFormalRole(org, user, formalRole)
 
             if (formalRole.roleType == 'user') {
-                check = UserOrg.findByOrgAndUserAndFormalRoleInList(org, user, Role.findAllByRoleType('user'))
+                check = UserOrgRole.findByOrgAndUserAndFormalRoleInList(org, user, Role.findAllByRoleType('user'))
             }
 
             if (check) {
@@ -154,7 +154,7 @@ class InstAdmService {
             }
             else {
                 log.debug("Create new user_org entry....");
-                UserOrg uo = new UserOrg(
+                UserOrgRole uo = new UserOrgRole(
                         org: org,
                         user: user,
                         formalRole: formalRole)

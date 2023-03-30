@@ -272,7 +272,7 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('name')}">
                 <th scope="row" class="la-th-column la-main-object">
                     <div class="la-flexbox">
-                        <g:if test="${org.getCustomerType() in ['ORG_INST']}">
+                        <g:if test="${org.isCustomerType_Inst_Pro()}">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                                   data-content="${org.getCustomerTypeI10n()}">
                                 <i class="chess rook grey la-list-icon icon"></i>
@@ -401,11 +401,11 @@
                 <td class="center aligned">
                     <%
                         String instAdminIcon = '<i class="large red times icon"></i>'
-                        List<User> users = User.executeQuery('select uo.user from UserOrg uo where uo.org = :org and uo.formalRole = :instAdmin', [org: org, instAdmin: Role.findByAuthority('INST_ADM')])
+                        List<User> users = User.executeQuery('select uo.user from UserOrgRole uo where uo.org = :org and uo.formalRole = :instAdmin', [org: org, instAdmin: Role.findByAuthority('INST_ADM')])
                         if (users)
                             instAdminIcon = '<i class="large green check icon"></i>'
                     %>
-                    <g:if test="${contextService.getUser().hasAffiliation('INST_ADM') || SpringSecurityUtils.ifAllGranted("ROLE_ADMIN")}">
+                    <g:if test="${contextService.getUser().is_ROLE_ADMIN_or_hasAffiliation('INST_ADM')}">
                         <br /><g:link controller="organisation" action="users"
                                     params="${[id: org.id]}">${raw(instAdminIcon)}</g:link>
                     </g:if>
@@ -976,12 +976,12 @@
                         </g:if>
                     </g:if>
                     <g:if test="${actionName == 'listInstitution'}">
-                        <g:if test="${consortiaMemberIds && (org.id in consortiaMemberIds)}">
+                        <g:if test="${currentConsortiaMemberIdList && (org.id in currentConsortiaMemberIdList)}">
                             <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.insts')}"><i class="icon yellow star"></i></span>
                         </g:if>
                     </g:if>
                     <g:if test="${actionName == 'listConsortia'}">
-                        <g:if test="${consortiaIds && (org.id in consortiaIds)}">
+                        <g:if test="${currentConsortiaIdList && (org.id in currentConsortiaIdList)}">
                             <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.consortia')}"><i class="icon yellow star"></i></span>
                         </g:if>
                     </g:if>

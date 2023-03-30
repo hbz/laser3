@@ -211,7 +211,7 @@ class BootStrapService {
                             Role role = Role.findByAuthorityAndRoleType(affil, 'user')
                             if (org && role) {
                                 log.debug("  -> adding affiliation: ${role} for ${org.shortname} ")
-                                new UserOrg(
+                                new UserOrgRole(
                                         user: user,
                                         org: org,
                                         formalRole: role
@@ -259,18 +259,13 @@ class BootStrapService {
      * @see Role
      * @see Perm
      * @see PermGrant
-     * @see UserOrg
+     * @see UserOrgRole
      */
     void setupRolesAndPermissions() {
 
         PermGrant.executeUpdate('delete PermGrant pg')
 
-        // Permissions
-
-        Perm edit_permission = Perm.findByCode('edit') ?: new Perm(code: 'edit').save(failOnError: true)
-        Perm view_permission = Perm.findByCode('view') ?: new Perm(code: 'view').save(failOnError: true)
-
-        // Global User Roles
+        // Global User Roles - native spring support
 
         Closure updateRole = { String authority, String roleType, Map<String, String> translations ->
 
@@ -286,24 +281,24 @@ class BootStrapService {
              tmp = updateRole('ROLE_ADMIN', 'global',       [en: 'ROLE_ADMIN', de: 'ROLE_ADMIN'])
              tmp = updateRole('ROLE_USER',  'global',       [en: 'ROLE_USER', de: 'ROLE_USER'])
 
-        // Inst User Roles
+        // Inst User Roles - not natively supported
 
         Role instAdmin  = updateRole('INST_ADM', 'user',    [en: 'INST_ADM', de: 'INST_ADM'])
         Role instEditor = updateRole('INST_EDITOR', 'user', [en: 'INST_EDITOR', de: 'INST_EDITOR'])
         Role instUser   = updateRole('INST_USER', 'user',   [en: 'INST_USER', de: 'INST_USER'])
 
-        ensurePermGrant(instAdmin, edit_permission)
-        ensurePermGrant(instAdmin, view_permission)
-
-        ensurePermGrant(instEditor, edit_permission)
-        ensurePermGrant(instEditor, view_permission)
-
-        ensurePermGrant(instUser, view_permission)
+//        Perm edit_permission = Perm.findByCode('edit') ?: new Perm(code: 'edit').save(failOnError: true)
+//        Perm view_permission = Perm.findByCode('view') ?: new Perm(code: 'view').save(failOnError: true)
+//
+//        ensurePermGrant(instAdmin, edit_permission)
+//        ensurePermGrant(instAdmin, view_permission)
+//        ensurePermGrant(instEditor, edit_permission)
+//        ensurePermGrant(instEditor, view_permission)
+//        ensurePermGrant(instUser, view_permission)
 
         // Customer Types
 
-        Closure updateOrgRolePerms = { Role role, List<String> permList ->
-            // TODO PermGrant.executeQuery('DELETE ALL')
+        Closure updateRolePerms = { Role role, List<String> permList ->
 
             permList.each{ String code ->
                 code = code.toLowerCase()
@@ -312,17 +307,17 @@ class BootStrapService {
             }
         }
 
-        Role fakeRole                = updateRole('FAKE',                   'fake', [en: 'Fake', de: 'Fake'])
-        Role orgMemberRole           = updateRole('ORG_BASIC_MEMBER',       'org', [en: 'Institution consortium member', de: 'Konsorte'])
-        Role orgSingleRole           = updateRole('ORG_INST',               'org', [en: 'Institution basic', de: 'Vollnutzer'])
-        Role orgConsortiumRole       = updateRole('ORG_CONSORTIUM',         'org', [en: 'Consortium basic', de: 'Konsortium Basic'])
-        Role orgConsortiumProRole       = updateRole('ORG_CONSORTIUM_PRO',         'org', [en: 'Consortium pro', de: 'Konsortium Pro'])
+        Role fakeRole               = updateRole('FAKE',                                   'fake', [en: 'Fake', de: 'Fake'])
+        Role orgInstRole            = updateRole(CustomerTypeService.ORG_INST_BASIC,        'org', [en: 'LAS:eR (Basic)', de: 'LAS:eR (Basic)'])
+        Role orgInstProRole         = updateRole(CustomerTypeService.ORG_INST_PRO,          'org', [en: 'LAS:eR (Pro)', de: 'LAS:eR (Pro)'])
+        Role orgConsortiumRole      = updateRole(CustomerTypeService.ORG_CONSORTIUM_BASIC,  'org', [en: 'Consortium Manager (Basic)', de: 'Konsortialmanager (Basic)'])
+        Role orgConsortiumProRole   = updateRole(CustomerTypeService.ORG_CONSORTIUM_PRO,    'org', [en: 'Consortium Manager (Pro)',   de: 'Konsortialmanager (Pro)'])
 
-        updateOrgRolePerms(fakeRole,                    ['FAKE'])
-        updateOrgRolePerms(orgMemberRole,               ['ORG_BASIC_MEMBER'])
-        updateOrgRolePerms(orgSingleRole,               ['ORG_INST', 'ORG_BASIC_MEMBER'])
-        updateOrgRolePerms(orgConsortiumRole,           ['ORG_CONSORTIUM'])
-        updateOrgRolePerms(orgConsortiumProRole,           ['ORG_CONSORTIUM_PRO', 'ORG_CONSORTIUM'])
+        updateRolePerms(fakeRole,                ['FAKE'])
+        updateRolePerms(orgInstRole,             [CustomerTypeService.ORG_INST_BASIC])
+        updateRolePerms(orgInstProRole,          [CustomerTypeService.ORG_INST_PRO, CustomerTypeService.ORG_INST_BASIC])
+        updateRolePerms(orgConsortiumRole,       [CustomerTypeService.ORG_CONSORTIUM_BASIC])
+        updateRolePerms(orgConsortiumProRole,    [CustomerTypeService.ORG_CONSORTIUM_PRO, CustomerTypeService.ORG_CONSORTIUM_BASIC])
     }
 
     void setupSystemSettings() {

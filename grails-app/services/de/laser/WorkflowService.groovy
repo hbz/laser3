@@ -20,9 +20,10 @@ class WorkflowService {
     }
 
     def executeCmdAndUpdateResult(Map<String, Object> result, GrailsParameterMap params) {
-        log.debug('executeCmdAndUpdateResult() ' + params)
 
         if (params.cmd) {
+            log.debug('executeCmdAndUpdateResult() ' + params)
+
             String[] cmd = (params.cmd as String).split(':')
 
             if (cmd[1] in [WfChecklist.KEY, WfCheckpoint.KEY] ) {
@@ -404,11 +405,11 @@ class WorkflowService {
 
     private boolean _innerPermissionCheck(String userRoleName) {
         User user = contextService.getUser()
-        if (user.isAdmin() || user.isYoda()) {
-            return true
-        }
+//        if (user.hasMinRole('ROLE_ADMIN')) {
+//            return true
+//        }
         Org ctxOrg = contextService.getOrg()
-        if (userRoleName && ctxOrg.getCustomerType() in ['ORG_INST', 'ORG_CONSORTIUM_PRO'] && user.hasAffiliationForForeignOrg(userRoleName, ctxOrg)) {
+        if (userRoleName && ctxOrg.isCustomerType_Pro() && user.is_ROLE_ADMIN_or_hasAffiliationForForeignOrg(userRoleName, ctxOrg)) {
             return true
         }
         false

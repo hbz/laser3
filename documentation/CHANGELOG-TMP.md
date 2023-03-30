@@ -7,6 +7,44 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4904    29.03.2023  dev     3.1         David   Feature     GASCO Sicht anpassen
+
+4942    29.03.2023  dev     3.1         David   Feature     GASCO und we:kb mit separatem Tab öffnen
+
+4930    28.03.2023  dev     3.1         David   Feature     "Teilnehmer" durch "Einrichtung" ersetzen
+
+4893    28.03.2023  dev     3.1         Andreas Feature     Umgang mit leeren Reports implementiert
+
+4892    28.03.2023  dev     3.1         Andreas Feature     Reports werden kohärent angeboten
+
+4813    28.03.2023  dev     3.1         Andreas Feature     (siehe 4893) Umgang mit leeren Reports implementiert
+
+4931    27.03.2023  dev     3.1         David   Bug         Verlorene Rechte "meine Einrichtungen"
+
+4908    24.03.2023  dev     3.1         Andreas Bug         Ausschlussliste war nicht vollständig, was das Hinzufügen von Teilnehmern verhinderte
+
+4881    24.03.2023  dev     3.1         Andreas Feature     Kundennummer-Schlüsselpaare können ab jetzt auch beim Hinzufügen von Teilnehmern angelegt werden
+
+4860    24.03.2023  dev     3.1         Andreas Bug         (betraf nur DEV) Deadlock verhinderte den Übertrag von Merkmalen
+
+4911    22.03.2023  dev     3.1         David   Feature     Refactoring: Kundentyp
+
+4914    21.03.2023  rc-3.0  3.0.5       Andreas Bug         fehlendes Komma in der Abfrage ergänzt
+
+4860    21.03.2023  rc-3.0  3.0.5       Andreas Bug         Proxy verhinderte den korrekten Aufbau der Merkmalsliste
+
+--      20.03.2023  rc-3.0  3.0.5       Andreas Bug         Entferne auch Bestandstitel ohne Status
+
+4917    20.03.2023  rc-3.0  3.0.5       Andreas Bug         fehlerhafte Übertragung der Attribute nach Verlängerung
+
+4916    20.03.2023  rc-3.0  3.0.5       Andreas Bug         hasPublishComponent wurde bei Übertrag von Teilnehmerlizenzen nicht angelegt
+
+4869    20.03.2023  rc-3.0  3.0.5       Andreas Bug         API-Version 1.7 nach RC migriert, Bugs behoben
+
+4875    14.03.2023  dev     3.1         David   Feature     Breadcumb / Seitentitel für Orgs aufräumen
+
+4879    13.03.2023  dev     3.1         David   Feature     Kennzeichnung von 'Meine'-Objekten
+
 4751    10.03.2023  dev     3.1         Moe     Feature     Umfrage-Kategorie "neu"
 
 4696    10.03.2023  dev     3.1         Moe     Feature     Überprüfung: Titel-Umfrage - Bestand verknüpft?
@@ -21,11 +59,15 @@
 
 4738    07.03.2023  dev     3.1         Moe     Feature     Neue Kunden-Typen -> Konsortialstelle Basis
 
+4859    22.02.2023  dev     3.1         Andreas Bug         Umwandlungsvorschrift bei Tausender/Dezimaltrenner korrigiert
+
 --      22.02.2023  rc-3.0  3.0.5       Andreas Bug         Umstrukturierungen für Database Reports
 
 4843    16.02.2023  dev     3.0.5       David   Feature     Database Migration Plugin aktualisieren
 
---      15.02.2023  dev     3.0.4       David   Feature     Grails 5.3.2
+4843    16.02.2023  dev     3.1         David   Feature     Database Migration Plugin aktualisieren
+
+--      15.02.2023  dev     3.1         David   Feature     Grails 5.3.2
 
 --      15.02.2023  rc-3.0  3.0.4       Andreas Bug         Synchronisationsfehler behoben
 

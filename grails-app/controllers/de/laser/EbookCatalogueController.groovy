@@ -2,7 +2,7 @@ package de.laser
 
 
 import de.laser.properties.SubscriptionProperty
-import de.laser.properties.PropertyDefinition
+import de.laser.storage.PropertyStore
 import de.laser.storage.RDStore
 import grails.plugin.springsecurity.annotation.Secured
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -44,7 +44,7 @@ class EbookCatalogueController {
             query += "          ( select scp from s.propertySet as scp where "
             query += "               scp.type = :gasco and lower(scp.refValue.value) = 'yes'"
             query += "           )"
-            queryParams.put('gasco', PropertyDefinition.getByNameAndDescr('GASCO Entry', PropertyDefinition.SUB_PROP))
+            queryParams.put('gasco', PropertyStore.SUB_PROP_GASCO_ENTRY)
             query += "        ) "
 
             query += " and exists ( select ogr from OrgRole ogr where ogr.sub = s and ogr.org in (:validOrgs) )"
@@ -67,7 +67,7 @@ class EbookCatalogueController {
                 query += "    )"
                 query += " ))"
 
-                queryParams.put('gascoAnzeigenname', PropertyDefinition.getByNameAndDescr('GASCO display name', PropertyDefinition.SUB_PROP))
+                queryParams.put('gascoAnzeigenname', PropertyStore.SUB_PROP_GASCO_DISPLAY_NAME)
                 queryParams.put('q', q)
             }
 
@@ -122,11 +122,7 @@ class EbookCatalogueController {
             SubscriptionPackage sp  = SubscriptionPackage.get(params.long('id'))
             Subscription sub = sp?.subscription
             Package pkg = sp?.pkg
-            SubscriptionProperty scp = SubscriptionProperty.findByOwnerAndTypeAndRefValue(
-                    sub,
-                    PropertyDefinition.getByNameAndDescr('GASCO Entry', PropertyDefinition.SUB_PROP),
-                    RDStore.YN_YES
-            )
+            SubscriptionProperty scp = SubscriptionProperty.findByOwnerAndTypeAndRefValue( sub, PropertyStore.SUB_PROP_GASCO_ENTRY, RDStore.YN_YES )
 
             if (scp) {
                 result.subscription = sub
@@ -215,7 +211,7 @@ class EbookCatalogueController {
                             and exists 
                                 ( select ogr from OrgRole ogr where ogr.sub = s and ogr.org in (:validOrgs) )""",
                     [
-                    gasco    : PropertyDefinition.getByNameAndDescr('GASCO Entry', PropertyDefinition.SUB_PROP),
+                    gasco    : PropertyStore.SUB_PROP_GASCO_ENTRY,
                     validOrgs: result.allConsortia
                     ]
             ))

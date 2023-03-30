@@ -1,5 +1,5 @@
 <!-- _costItemInput.gsp -->
-<%@ page import="de.laser.finance.BudgetCode; de.laser.finance.CostItem; de.laser.IssueEntitlement; de.laser.IssueEntitlementGroup; de.laser.Subscription; de.laser.SubscriptionPackage; de.laser.UserSetting; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.*; de.laser.interfaces.CalculatedType; de.laser.finance.CostItemElementConfiguration" %>
+<%@ page import="de.laser.CustomerTypeService; de.laser.finance.BudgetCode; de.laser.finance.CostItem; de.laser.IssueEntitlement; de.laser.IssueEntitlementGroup; de.laser.Subscription; de.laser.SubscriptionPackage; de.laser.UserSetting; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.*; de.laser.interfaces.CalculatedType; de.laser.finance.CostItemElementConfiguration" %>
 <laser:serviceInjection />
 
         <g:if test="${costItem}">
@@ -380,7 +380,7 @@
                         </select>
 
                     </div>
-                    <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
+                    <g:if test="${accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
                         <div class="ui checkbox">
                             <g:checkBox name="show.subscriber" value="true" checked="true"
                                         onchange="JSPC.app.adjustDropdown()"/>
@@ -596,9 +596,9 @@
                 output = parseFloat(input);
             }
             else {
-                if(input.match(/(\d+,?)*\d+(\.\d{2,})?/g))
+                if(input.match(/^(?!0+\.00)(?=.{1,9}(\.|$))(?!0(?!\.))\d{1,3}(,\d{3})*(\.\d+)?$/g))
                     output = parseFloat(input.replace(/,/g, "."));
-                else if(input.match(/(\d+\.?)*\d+(,\d{2,})?/g))
+                else if(input.match(/^(?!0+,00)(?=.{1,9}(,|$))(?!0(?!,))\d{1,3}([\.']\d{3})*(,\d+)?$/g))
                     output = parseFloat(input.replace(/\./g,"").replace(/,/g,"."));
                 //else console.log("Please check over regex!");
             }
@@ -782,7 +782,7 @@
                             alert("${message(code:'financials.newCosts.entitlementError')}");
                         else {
                             if(JSPC.app.finance${idSuffix}.newLicenseeTarget.length === 1 && JSPC.app.finance${idSuffix}.newLicenseeTarget.val().length === 0) {
-                                let alertText = "${institution.getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO'] ? message(code:'financials.newCosts.noSubscriptionErrorConsortia') : message(code:'financials.newCosts.noSubscriptionError')}"
+                                let alertText = "${institution.isCustomerType_Consortium() ? message(code:'financials.newCosts.noSubscriptionErrorConsortia') : message(code:'financials.newCosts.noSubscriptionError')}"
                                 alert(alertText);
                             }
                             else {

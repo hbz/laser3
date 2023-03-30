@@ -12,14 +12,14 @@
             <th>${message(code: 'sidewide.number')}</th>
             <th>${message(code: 'title.label')}</th>
             <th class="two wide"><g:message code="default.usage.metricType"/></th>
-            <g:sortableColumn title="${message(code:"default.count.label")}" property="r.reportCount" params="${params}" class="two wide"/>
+            <g:sortableColumn title="${message(code:"default.count.label")}" property="count" params="${params}" class="two wide"/>
             <th class="two wide"><g:message code="default.actions.label"/></th>
         </tr>
         </thead>
         <tbody>
             <g:set var="start" value="${System.currentTimeMillis()}"/>
-            <g:each in="${stats}" var="stat">
-                <g:set var="tipp" value="${stat.getKey()}"/>
+            <g:each in="${topList}" var="topView">
+                <g:set var="tipp" value="${topView.getKey()}"/>
                 <g:set var="ie" value="${IssueEntitlement.findByTippAndSubscriptionAndStatusAndAcceptStatus(tipp, subscription, RDStore.TIPP_STATUS_CURRENT, RDStore.IE_ACCEPT_STATUS_FIXED)}"/>
                 <g:set var="ieInNewSub"
                        value="${surveyService.titleContainedBySubscription(newSub, tipp)}"/>
@@ -72,8 +72,10 @@
                     <!-- END TEMPLATE -->
                     </td>
                     <g:if test="${params.tab == 'topUsed'}">
-                        <td><g:each in="${stat.getValue()}" var="usage">${usage.getKey()}</g:each></td>
-                        <td><g:each in="${stat.getValue()}" var="usage">${usage.getValue()}</g:each></td>
+                        <g:set var="usage" value="${usages.get(tipp)}"/>
+                        <%-- continue here: display k-v pairs without concatination --%>
+                        <td><g:each in="${usage.keySet()}" var="metric">${metric}<br></g:each></td>
+                        <td><g:each in="${usage.keySet()}" var="metric">${usage.get(metric)}<br></g:each></td>
                     </g:if>
                     <td>
                         <g:if test="${(params.tab in ['allIEsStats', 'holdingIEsStats']) && editable && ieInNewSub && allowedToSelect}">

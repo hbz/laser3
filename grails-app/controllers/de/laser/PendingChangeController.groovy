@@ -19,8 +19,8 @@ class PendingChangeController  {
     /**
      * Call to accept the given change and to trigger processing of the changes stored in the record
      */
-    @DebugInfo(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
+    @DebugInfo(test='is_ROLE_ADMIN_or_hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_EDITOR") })
     def accept() {
         log.debug("Accept")
         //distinct between legacy accept and new accept!
@@ -58,8 +58,8 @@ class PendingChangeController  {
     /**
      * Call to reject the given change
      */
-    @DebugInfo(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
+    @DebugInfo(test='is_ROLE_ADMIN_or_hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_EDITOR") })
     def reject() {
         log.debug("Reject")
         //distinct between legacy reject and new reject!
@@ -71,8 +71,8 @@ class PendingChangeController  {
     /**
      * Call to bulk-process a set of changes. Loops through the changes and performs accepting or rejecting
      */
-    @DebugInfo(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
+    @DebugInfo(test='is_ROLE_ADMIN_or_hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_EDITOR") })
     def processAll() {
         log.debug("processAll - ${params}")
         List<String> concernedPackage = params.list("acceptChangesForPackages")

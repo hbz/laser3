@@ -3,6 +3,7 @@ package de.laser
 import de.laser.annotations.RefdataInfo
 import de.laser.auth.*
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
+import de.laser.CustomerTypeService
 import de.laser.finance.CostItem
 import de.laser.interfaces.DeleteFlag
 import de.laser.oap.OrgAccessPoint
@@ -33,7 +34,7 @@ import org.apache.commons.lang3.StringUtils
  *     <li>institution metadata is maintained in LAS:eR directly whereas providers should curate themselves in we:kb; organisations thus have a we:kb-ID (stored as {@link #gokbId}, naming is legacy) which serves as synchronisation
  *     key between the data in the two webapps</li>
  * </ul>
- * @see UserOrg
+ * @see UserOrgRole
  * @see OrgRole
  * @see OrgSetting
  */
@@ -105,7 +106,8 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
 
     static transients = [
             'deleted', 'customerType', 'customerTypeI10n', 'designation',
-            'calculatedPropDefGroups', 'empty', 'consortiaMember'
+            'calculatedPropDefGroups', 'empty', 'consortiaMember',
+            'customerType_Basic', 'customerType_Pro', 'customerType_Inst', 'customerType_Consortium',
     ] // mark read-only accessor methods
 
     static mappedBy = [
@@ -133,7 +135,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         prsLinks:           PersonRole,
         contacts:           Contact,
         addresses:          Address,
-        affiliations:       UserOrg,
+        affiliations:       UserOrgRole,
         propertySet:        OrgProperty,
         altnames:           AlternativeName,
         orgType:            RefdataValue,
@@ -290,7 +292,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     }
 
     /**
-     * Sets for an institution the default customer type, that is ORG_BASIC_MEMBER for consortium members with a basic set of permissions
+     * Sets for an institution the default customer type, that is ORG_INST_BASIC for consortium members with a basic set of permissions
      * @return true if the setup was successful, false otherwise
      */
     boolean setDefaultCustomerType() {
@@ -298,10 +300,9 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
 
         if (oss == OrgSetting.SETTING_NOT_FOUND) {
             log.debug ('Setting default customer type for org: ' + this.id)
-            OrgSetting.add(this, OrgSetting.KEYS.CUSTOMER_TYPE, Role.findByAuthorityAndRoleType('ORG_BASIC_MEMBER', 'org'))
+            OrgSetting.add(this, OrgSetting.KEYS.CUSTOMER_TYPE, Role.findByAuthorityAndRoleType(CustomerTypeService.ORG_INST_BASIC, 'org'))
             return true
         }
-
         false
     }
 
@@ -311,7 +312,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      */
     String getCustomerType() {
         String result
-
         def oss = OrgSetting.get(this, OrgSetting.KEYS.CUSTOMER_TYPE)
 
         if (oss != OrgSetting.SETTING_NOT_FOUND) {
@@ -326,13 +326,39 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      */
     String getCustomerTypeI10n() {
         String result
-
         def oss = OrgSetting.get(this, OrgSetting.KEYS.CUSTOMER_TYPE)
 
         if (oss != OrgSetting.SETTING_NOT_FOUND) {
             result = oss.roleValue?.getI10n('authority')
         }
         result
+    }
+
+    boolean isCustomerType_Basic() {
+        this.getCustomerType() in [CustomerTypeService.ORG_INST_BASIC, CustomerTypeService.ORG_CONSORTIUM_BASIC ]
+    }
+    boolean isCustomerType_Pro() {
+        this.getCustomerType() in [CustomerTypeService.ORG_INST_PRO, CustomerTypeService.ORG_CONSORTIUM_PRO ]
+    }
+
+    boolean isCustomerType_Inst() {
+        this.getCustomerType() in [CustomerTypeService.ORG_INST_BASIC, CustomerTypeService.ORG_INST_PRO ]
+    }
+    boolean isCustomerType_Consortium() {
+        this.getCustomerType() in [ CustomerTypeService.ORG_CONSORTIUM_BASIC, CustomerTypeService.ORG_CONSORTIUM_PRO ]
+    }
+
+    boolean isCustomerType_Inst_Basic() {
+        this.getCustomerType() == CustomerTypeService.ORG_INST_BASIC
+    }
+    boolean isCustomerType_Inst_Pro() {
+        this.getCustomerType() == CustomerTypeService.ORG_INST_PRO
+    }
+    boolean isCustomerType_Consortium_Basic() {
+        this.getCustomerType() == CustomerTypeService.ORG_CONSORTIUM_BASIC
+    }
+    boolean isCustomerType_Consortium_Pro() {
+        this.getCustomerType() == CustomerTypeService.ORG_CONSORTIUM_PRO
     }
 
     /**
@@ -444,8 +470,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      */
     List<User> getAllValidInstAdmins() {
         List<User> admins = User.executeQuery(
-                "select u from User u join u.affiliations uo where " +
-                        "uo.org = :org and uo.formalRole = :role and u.enabled = true",
+                "select u from User u join u.affiliations uo where uo.org = :org and uo.formalRole = :role and u.enabled = true",
                 [
                         org: this, role: Role.findByAuthority('INST_ADM')
                 ]
@@ -517,7 +542,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         if(currentSubscriptions)
             return false
         //verification c: check if org has active users
-        UserOrg activeUsers = UserOrg.findByOrg(this)
+        UserOrgRole activeUsers = UserOrgRole.findByOrg(this)
         if(activeUsers)
             return false
         return true
@@ -699,7 +724,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      * @return true if there is at least one user registered as institutional administrator, false otherwise
      */
     boolean hasAccessOrg(){
-        if (UserOrg.findAllByOrgAndFormalRole(this, Role.findByAuthority('INST_ADM'))) {
+        if (UserOrgRole.findAllByOrgAndFormalRole(this, Role.findByAuthority('INST_ADM'))) {
             return true
         }
         else {
@@ -712,39 +737,13 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      * @return a {@link List} of {@link User}s associated to this institution; grouped by administrators, editors and users (with reading permissions only)
      */
     Map<String, Object> hasAccessOrgListUser(){
-
         Map<String, Object> result = [:]
 
-        result.instAdms = UserOrg.findAllByOrgAndFormalRole(this, Role.findByAuthority('INST_ADM'))
-        result.instEditors = UserOrg.findAllByOrgAndFormalRole(this, Role.findByAuthority('INST_EDITOR'))
-        result.instUsers = UserOrg.findAllByOrgAndFormalRole(this, Role.findByAuthority('INST_USER'))
+        result.instAdms    = UserOrgRole.findAllByOrgAndFormalRole(this, Role.findByAuthority('INST_ADM'))
+        result.instEditors = UserOrgRole.findAllByOrgAndFormalRole(this, Role.findByAuthority('INST_EDITOR'))
+        result.instUsers   = UserOrgRole.findAllByOrgAndFormalRole(this, Role.findByAuthority('INST_USER'))
 
         return result
-    }
-
-    /**
-     * Copied from {@link AccessService#checkOrgPerm(java.lang.String[])}
-     * Checks if the institution has the given permissions granted; those permissions are depending from the institution's customer type.
-     * Other organisations should not have a customer type thus no rights granted at all
-     * @param perms the permissions to verify
-     * @return true if the given permissions are granted, false otherwise
-     */
-    // private boolean checkOrgPerm(String[] orgPerms) {}
-    boolean hasPerm(String perms) {
-        boolean check = false
-
-        if (perms) {
-            def oss = OrgSetting.get(this, OrgSetting.KEYS.CUSTOMER_TYPE)
-            if (oss != OrgSetting.SETTING_NOT_FOUND) {
-                perms.split(',').each { perm ->
-                    check = check || PermGrant.findByPermAndRole(Perm.findByCode(perm.toLowerCase()?.trim()), (Role) oss.getValue())
-                }
-            }
-        }
-        else {
-            check = true
-        }
-        check
     }
 
     /**
@@ -762,7 +761,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      */
     String dropdownNamingConvention(Org contextOrg){
         String result = ''
-        if (contextOrg.getCustomerType() in ['ORG_BASIC_MEMBER','ORG_INST']){
+        if (contextOrg.isCustomerType_Inst()){
             if (name) {
                 result += name
             }

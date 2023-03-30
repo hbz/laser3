@@ -36,14 +36,14 @@
         </th>
 
         <th scope="col" rowspan="2">
-            <a href="#" class="la-popup-tooltip la-delay" data-content="Teilnehmer" data-position="top center"
-               aria-label="Teilnehmer" data-why-id="why-722">
+            <a href="#" class="la-popup-tooltip la-delay" data-content="Einrichtung" data-position="top center"
+               aria-label="Einrichtung" data-why-id="why-722">
                 <i class="users large icon" aria-hidden="true"></i>
             </a>
         </th>
         <th scope="col" rowspan="2">
-            <a href="#" class="la-popup-tooltip la-delay" data-content="Teilnehmerkosten" data-position="top center"
-               aria-label="Teilnehmerkosten" data-why-id="why-725">
+            <a href="#" class="la-popup-tooltip la-delay" data-content="Einrichtungskosten" data-position="top center"
+               aria-label="Einrichtungskosten" data-why-id="why-725">
                 <i class="money bill large icon" aria-hidden="true"></i>
             </a>
         </th>
@@ -109,12 +109,12 @@
             <span class="la-secondHeaderRow" data-label="Enddatum:">31.12.2022</span>
         </td>
 
-        <td data-label="Teilnehmer:">
+        <td data-label="Einrichtung:">
 
             <a href="/subscription/members/47645">2</a>
 
         </td>
-        <td data-label="Teilnehmerkosten:">
+        <td data-label="Einrichtungskosten:">
             <a href="/subscription/47645/finance">
 
                 1

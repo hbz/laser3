@@ -1,4 +1,4 @@
-<%@ page import="de.laser.UserSetting; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.auth.Role; de.laser.auth.UserOrg; de.laser.UserSetting.KEYS; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.UserSetting; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.auth.Role; de.laser.auth.UserOrgRole; de.laser.UserSetting.KEYS; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
 
 <laser:htmlStart message="profile.user" serviceInjection="true" />
 
@@ -113,7 +113,7 @@
                                                    value="Y" ${isNotificationForSurveysParticipationFinish ? 'checked' : ''}/>
                                         </div>
                                     </td>
-                                    <td>${contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO'] ? message(code: 'profile.notification.for.SurveysParticipationFinish') : message(code: 'profile.notification.for.SurveysParticipationFinish2')}</td>
+                                    <td>${contextService.getOrg().isCustomerType_Consortium() ? message(code: 'profile.notification.for.SurveysParticipationFinish') : message(code: 'profile.notification.for.SurveysParticipationFinish2')}</td>
                                 </tr>
 
                                 <tr>

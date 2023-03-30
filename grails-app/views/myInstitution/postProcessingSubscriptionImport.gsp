@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore; grails.converters.JSON;de.laser.OrgRole" %>
+<%@ page import="de.laser.CustomerTypeService; de.laser.storage.RDStore; grails.converters.JSON;de.laser.OrgRole" %>
 <laser:htmlStart message="myinst.subscriptionImport.post.title" serviceInjection="true"/>
 
         <ui:breadcrumbs>
@@ -37,7 +37,7 @@
                                             ${license.reference}
                                         </g:each>
                                     </li>
-                                    <g:if test="${accessService.checkPerm("ORG_CONSORTIUM") && sub.instanceOf && sub.member}">
+                                    <g:if test="${accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && sub.instanceOf && sub.member}">
                                         <li><g:message code="myinst.subscriptionImport.instanceOf" args="${parentSubType}"/>: ${genericOIDService.resolveOID(sub.instanceOf)}</li>
                                         <li><g:message code="myinst.subscriptionImport.member"/>: ${genericOIDService.resolveOID(sub.member)}</li>
                                     </g:if>

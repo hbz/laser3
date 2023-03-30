@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.AppUtils; de.laser.License; de.laser.interfaces.CalculatedType; de.laser.storage.RDStore; de.laser.Org" %>
+<%@ page import="de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.License; de.laser.interfaces.CalculatedType; de.laser.storage.RDStore; de.laser.Org" %>
 <laser:serviceInjection />
 
 <g:if test="${actionName == 'show'}">
@@ -9,10 +9,10 @@
     </ui:exportDropdown>
 </g:if>
 
-<g:if test="${accessService.checkMinUserOrgRole(user,institution,'INST_EDITOR')}">
+<g:if test="${accessService.checkMinUserOrgRole_and_CtxOrg(user, institution, 'INST_EDITOR')}">
     <ui:actionsDropdown>
 
-        <g:if test="${contextCustomerType in ["ORG_INST","ORG_CONSORTIUM","ORG_CONSORTIUM_PRO"]}">
+        <g:if test="${contextCustomerType in ["ORG_INST_PRO","ORG_CONSORTIUM_BASIC","ORG_CONSORTIUM_PRO"]}">
             <ui:actionsDropdownItem message="task.create.new" data-ui="modal" href="#modalCreateTask" />
             <ui:actionsDropdownItem message="template.documents.add" data-ui="modal" href="#modalCreateDocument" />
         </g:if>
@@ -32,26 +32,25 @@
                 </g:if>
             </g:if>
 
-            <div class="divider"></div>
-
             <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
+                <div class="divider"></div>
                 <ui:actionsDropdownItem message="workflow.instantiate" data-ui="modal" href="#modalCreateWorkflow" />
             </g:if>
 
             <div class="divider"></div>
 
-            <g:if test="${(contextCustomerType == "ORG_INST" && license._getCalculatedType() == License.TYPE_LOCAL) || (contextCustomerType in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO'] && license._getCalculatedType() == License.TYPE_CONSORTIAL)}">
+            <g:if test="${(contextCustomerType == CustomerTypeService.ORG_INST_PRO && license._getCalculatedType() == License.TYPE_LOCAL) || (customerTypeService.isConsortium( contextCustomerType ) && license._getCalculatedType() == License.TYPE_CONSORTIAL)}">
                 <ui:actionsDropdownItem controller="license" action="copyLicense" params="${[sourceObjectId: genericOIDService.getOID(license), copyObject: true]}" message="myinst.copyLicense" />
             </g:if>
 
-            <g:if test="${(contextCustomerType == "ORG_INST" && !license.instanceOf) || contextCustomerType in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO']}">
+            <g:if test="${(contextCustomerType == CustomerTypeService.ORG_INST_PRO && !license.instanceOf) || customerTypeService.isConsortium( contextCustomerType )}">
                 <ui:actionsDropdownItem controller="license" action="copyElementsIntoLicense" params="${[sourceObjectId: genericOIDService.getOID(license)]}" message="myinst.copyElementsIntoLicense" />
             </g:if>
 
         </g:if>
         <g:if test="${actionName == 'show'}">
             <%-- the second clause is to prevent the menu display for consortia at member subscriptions --%>
-            <g:if test="${accessService.checkPermAffiliation('ORG_INST, ORG_CONSORTIUM','INST_EDITOR') && !(institution.id == license.getLicensingConsortium()?.id && license.instanceOf)}">
+            <g:if test="${accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR') && !(institution.id == license.getLicensingConsortium()?.id && license.instanceOf)}">
                 <div class="divider"></div>
                 <ui:actionsDropdownItem data-ui="modal" href="#propDefGroupBindings" message="menu.institutions.configure_prop_groups" />
             </g:if>
@@ -77,11 +76,11 @@
     </ui:actionsDropdown>
 </g:if>
 
-<g:if test="${editable || accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM','INST_EDITOR')}">
+<g:if test="${editable || accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')}">
     <laser:render template="/templates/tasks/modal_create" model="${[ownobj:license, owntp:'license']}"/>
     <laser:render template="/templates/documents/modal" model="${[ownobj:license, owntp:'license']}"/>
 </g:if>
-<g:if test="${accessService.checkMinUserOrgRole(user,institution,'INST_EDITOR')}">
+<g:if test="${accessService.checkMinUserOrgRole_and_CtxOrg(user, institution, 'INST_EDITOR')}">
     <laser:render template="/templates/notes/modal_create" model="${[ownobj: license, owntp: 'license']}"/>
 </g:if>
 

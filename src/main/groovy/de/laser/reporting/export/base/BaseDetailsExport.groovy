@@ -82,7 +82,7 @@ abstract class BaseDetailsExport {
 
         if (key == CostItemExportLocal.KEY) {
             if (ctxConsortium()) {
-                CostItemExportLocal.CONFIG_ORG_CONSORTIUM
+                CostItemExportLocal.CONFIG_ORG_CONSORTIUM_BASIC
             }
         }
         else if (key == IssueEntitlementExportLocal.KEY) {
@@ -90,7 +90,7 @@ abstract class BaseDetailsExport {
         }
         else if (key == LicenseExportGlobal.KEY) {
             if (ctxConsortium()) {
-                LicenseExportGlobal.CONFIG_ORG_CONSORTIUM
+                LicenseExportGlobal.CONFIG_ORG_CONSORTIUM_BASIC
             } else if (ctxInst()) {
                 LicenseExportGlobal.CONFIG_ORG_INST
             }
@@ -111,14 +111,14 @@ abstract class BaseDetailsExport {
         else if (key in [SubscriptionExportLocal.KEY, SubscriptionExportGlobal.KEY]) {
             if (isGlobal(this)) {
                 if (ctxConsortium()) {
-                    SubscriptionExportGlobal.CONFIG_ORG_CONSORTIUM
+                    SubscriptionExportGlobal.CONFIG_ORG_CONSORTIUM_BASIC
                 } else if (ctxInst()) {
                     SubscriptionExportGlobal.CONFIG_ORG_INST
                 }
             }
             else if (isLocal(this)) {
                 if (ctxConsortium()) {
-                    SubscriptionExportLocal.CONFIG_ORG_CONSORTIUM
+                    SubscriptionExportLocal.CONFIG_ORG_CONSORTIUM_BASIC
                 } else if (ctxInst()) {
                     SubscriptionExportLocal.CONFIG_ORG_INST
                 }
@@ -165,11 +165,11 @@ abstract class BaseDetailsExport {
     }
     static boolean ctxConsortium() {
         ContextService contextService = BeanStore.getContextService()
-        contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM', 'ORG_CONSORTIUM_PRO']
+        contextService.getOrg().isCustomerType_Consortium()
     }
     static boolean ctxInst() {
         ContextService contextService = BeanStore.getContextService()
-        contextService.getOrg().getCustomerType() == 'ORG_INST'
+        contextService.getOrg().isCustomerType_Inst_Pro()
     }
 
     // -----

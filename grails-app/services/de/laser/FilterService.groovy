@@ -1444,7 +1444,7 @@ class FilterService {
             base_qry += " group by tipp, ic, ie.id "
         else if(!params.bulkOperation) base_qry += " group by tipp, ic "
 
-        if ((params.sort != null) && (params.sort.length() > 0)) {
+        if (params.sort != null && params.sort.length() > 0 && params.sort != 'count') {
             if(params.sort == 'startDate')
                 base_qry += "order by ic.startDate ${params.order}, lower(ie.sortname), lower(tipp.sortname) "
             else if(params.sort == 'endDate')

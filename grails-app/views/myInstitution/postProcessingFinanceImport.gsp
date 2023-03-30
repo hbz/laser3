@@ -1,4 +1,4 @@
-<%@ page import="de.laser.OrgRole; grails.converters.JSON;de.laser.storage.RDStore" %>
+<%@ page import="de.laser.CustomerTypeService; de.laser.OrgRole; grails.converters.JSON;de.laser.storage.RDStore" %>
 <laser:htmlStart message="myinst.financeImport.post.title" serviceInjection="true"/>
 
         <ui:breadcrumbs>
@@ -16,7 +16,7 @@
                 <thead>
                     <tr>
                         <th rowspan="2">${message(code:'myinst.financeImport.post.costItem')}</th>
-                        <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
+                        <g:if test="${accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
                             <th rowspan="2">${message(code:'myinst.financeImport.post.makeVisibleForSubscribers')}</th>
                         </g:if>
                         <th>${message(code:'myinst.financeImport.post.takeItem')}</th>
@@ -73,7 +73,7 @@
                                     </li>
                                 </ul>
                             </td>
-                            <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
+                            <g:if test="${accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
                                 <td>
                                     <g:if test="${ci.sub && OrgRole.executeQuery('select oo from OrgRole oo where oo.org = :org and oo.sub = :sub and oo.roleType = :roleType and oo.sub.instanceOf is not null',[org: ci.owner,sub: ci.sub,roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA])}">
                                         ${message(code:'myinst.financeImport.post.visible')} <input name="visibleForSubscriber${r}" type="radio" value="true"><br />${message(code:'myinst.financeImport.post.notVisible')} <input name="visibleForSubscriber${r}" type="radio" value="false" checked>

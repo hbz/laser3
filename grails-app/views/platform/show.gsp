@@ -6,7 +6,12 @@
 <ui:modeSwitch controller="platform" action="show" params="${params}"/>
 
 <ui:breadcrumbs>
-    <ui:crumb controller="platform" action="index" message="platform.show.all"/>
+    <g:if test="${isMyPlatform}">
+        <ui:crumb controller="myInstitution" action="currentPlatforms" message="menu.my.platforms"/>
+    </g:if>
+    <g:else>
+        <ui:crumb controller="platform" action="list" message="platform.show.all"/>
+    </g:else>
     <ui:crumb class="active" id="${platformInstance.id}" text="${platformInstance.name}"/>
 </ui:breadcrumbs>
 
@@ -69,6 +74,11 @@
                     <dl>
                         <dt><g:message code="platform.auth.shibboleth.supported"/></dt>
                         <dd>${platformInstanceRecord.shibbolethAuthentication ? RefdataValue.getByValueAndCategory(platformInstanceRecord.shibbolethAuthentication, RDConstants.Y_N).getI10n("value") : message(code: 'default.not.available')}</dd>
+                    </dl>
+                    <dl>
+                        <dt><g:message code="platform.auth.shibboleth.federations"/></dt>
+                        <%-- we:kb structure missing - TODO! --%>
+                        <dd>${platformInstanceRecord.shibbolethFederations ? RefdataValue.getByValueAndCategory(platformInstanceRecord.shibbolethFederations, RDConstants.SHIBBOLETH_FEDERATION).getI10n("value") : message(code: 'default.not.available')}</dd>
                     </dl>
                     <dl>
                         <dt><g:message code="platform.auth.userPass.supported"/></dt>

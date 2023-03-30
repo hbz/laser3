@@ -13,14 +13,16 @@
                             <g:formatDate format="${message(code:'default.date.format.notime')}" date="${clistInfo.lastUpdated}"/>
                         </div>
                         <div class="right aligned six wide column la-column-left-lessPadding">
-                            <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
-                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.workflow", args: [clist.title])}"
-                                    data-confirm-term-how="delete"
-                                    controller="${clistInfo.targetController}" action="${actionName}" id="${clistInfo.target.id}" params="${[cmd:"delete:${WfChecklist.KEY}:${clist.id}"]}"
-                                    role="button"
-                                    aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                <i class="trash alternate outline icon"></i>
-                            </g:link>
+                            <g:if test="${workflowService.hasUserPerm_edit()}">
+                                <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.workflow", args: [clist.title])}"
+                                        data-confirm-term-how="delete"
+                                        controller="${clistInfo.targetController}" action="${actionName}" id="${clistInfo.target.id}" params="${[cmd:"delete:${WfChecklist.KEY}:${clist.id}"]}"
+                                        role="button"
+                                        aria-label="${message(code: 'ariaLabel.delete.universal')}">
+                                    <i class="trash alternate outline icon"></i>
+                                </g:link>
+                            </g:if>
                         </div>
                     </div>
                 </div>

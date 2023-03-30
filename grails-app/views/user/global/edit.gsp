@@ -143,12 +143,12 @@
             %{-- TODO: overwrite for ROLE_ADMIN ? all available Orgs --}%
         </g:if>
         %{-- not found -- <g:elseif test="${availableComboConsOrgs}">
-            <g:set var="orgLabel" value="Teilnehmer" />
+            <g:set var="orgLabel" value="Einrichtung" />
             <g:set var="availableOrgs" value="${availableComboConsOrgs}" />
         </g:elseif> --}%
 
         <g:if test="${ availableOrgs }">
-            <g:if test="${controllerName == 'user' || (controllerName in ['myInstitution', 'organisation'] && ! user.hasInstMemberAffiliation(orgInstance))}">
+            <g:if test="${controllerName == 'user' || (controllerName in ['myInstitution', 'organisation'] && ! user.isMemberOf(orgInstance))}">
                 <div class="ui segment form">
 
                     <g:form controller="${controllerName}" action="addAffiliation" class="ui form" method="get">

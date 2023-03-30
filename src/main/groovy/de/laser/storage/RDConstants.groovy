@@ -138,6 +138,7 @@ class RDConstants {
 
     public static final String SEMESTER               = 'semester'
     public static final String SHARE_CONFIGURATION    = 'share.configuration'
+    public static final String SHIBBOLETH_FEDERATION  = 'shibboleth.federation'
     public static final String SIM_USER_NUMBER        = 'sim.user.number'
     public static final String SIS_BUSINESS_MODEL_BASE = "sis.business.model.base"
     public static final String SIS_REJECTION_REASON   = "sis.rejection.reason"

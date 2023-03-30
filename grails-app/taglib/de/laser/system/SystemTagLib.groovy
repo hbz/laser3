@@ -17,6 +17,7 @@ class SystemTagLib {
         g.set( var:'compareService',            bean:'compareService' )
         g.set( var:'contextService',            bean:'contextService' )
         g.set( var:'controlledListService',     bean:'controlledListService' )
+        g.set( var:'customerTypeService',       bean:'customerTypeService' )
         g.set( var:'deletionService',           bean:'deletionService')
         g.set( var:'docstoreService',           bean:'docstoreService' )
         g.set( var:'escapeService',             bean:'escapeService')

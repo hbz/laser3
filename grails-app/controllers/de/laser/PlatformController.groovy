@@ -49,7 +49,12 @@ class PlatformController  {
     @Secured(['ROLE_USER'])
     def list() {
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
-        Map<String, Object> result = [user: contextService.getUser(), editUrl: apiSource.editUrl]
+        Map<String, Object> result = [
+                user: contextService.getUser(),
+                editUrl: apiSource.editUrl,
+                myPlatformIds: [],
+                flagContentGokb : true // gokbService.doQuery
+        ]
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         String esQuery = "?componentType=Platform"
@@ -101,9 +106,83 @@ class PlatformController  {
             }
         }
 
-        result.putAll(gokbService.doQuery(result, params.clone(), esQuery))
+        // overridden pagination - all uuids are required
+        Map wekbResultMap = gokbService.doQuery(result, [offset:0, max:1000, status: params.status], esQuery)
 
-      result
+        // ? --- copied from myInstitutionController.currentPlatforms()
+        String instanceFilter = ""
+        Map<String, Object> subscriptionParams = [
+                contextOrg: contextService.getOrg(),
+                roleTypes:  [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA],
+                current:    RDStore.SUBSCRIPTION_CURRENT,
+                expired:    RDStore.SUBSCRIPTION_EXPIRED
+        ]
+        if (contextService.getOrg().isCustomerType_Consortium()) {
+            instanceFilter += " and s.instanceOf = null "
+        }
+
+        Set<Long> idsCurrentSubscriptions = Subscription.executeQuery(
+                'select s.id from OrgRole oo join oo.sub s where oo.org = :contextOrg and oo.roleType in (:roleTypes) and (s.status = :current or (s.status = :expired and s.hasPerpetualAccess = true))' + instanceFilter,
+                subscriptionParams
+        )
+
+        if (idsCurrentSubscriptions) {
+            String qry3 =
+                    "select distinct p, s, p.normname from SubscriptionPackage subPkg join subPkg.subscription s join subPkg.pkg pkg, " +
+                    "TitleInstancePackagePlatform tipp join tipp.platform p left join p.org o " +
+                    "where tipp.pkg = pkg and s.id in (:subIds) and p.gokbId in (:wekbIds) " +
+                    "and ((pkg.packageStatus is null) or (pkg.packageStatus != :pkgDeleted)) " +
+                    "and ((tipp.status is null) or (tipp.status != :tippRemoved)) " +
+                    "group by p, s order by p.normname asc"
+
+            Map qryParams3 = [
+                    subIds     : idsCurrentSubscriptions,
+                    pkgDeleted : RDStore.PACKAGE_STATUS_DELETED,
+                    tippRemoved: RDStore.TIPP_STATUS_REMOVED,
+                    wekbIds    : wekbResultMap.records.collect { Map hit -> hit.uuid }
+            ]
+
+            List platformSubscriptionList = []
+            List platformInstanceList = []
+            Map  subscriptionMap = [:]
+
+            if (qryParams3.wekbIds) {
+                platformSubscriptionList.addAll(Platform.executeQuery(qry3, qryParams3))
+            }
+
+            platformSubscriptionList.each { entry ->
+                Platform pl = (Platform) entry[0]
+                Subscription s = (Subscription) entry[1]
+
+                String key = 'platform_' + pl.id
+
+                if (! subscriptionMap.containsKey(key)) {
+                    subscriptionMap.put(key, [])
+                    platformInstanceList.add(pl)
+                }
+
+                if (s.status.value == RDStore.SUBSCRIPTION_CURRENT.value) {
+                    subscriptionMap.get(key).add(s)
+                }
+            }
+
+            result.myPlatformsUuids = platformInstanceList.collect{ it.gokbId }
+            result.myPlatformIds    = platformInstanceList.collect{ it.id }
+        }
+        // ? ---
+
+        if (params.isMyX == 'exclusive') {
+            wekbResultMap.records      = wekbResultMap.records.findAll { result.myPlatformsUuids.contains( it.uuid ) }
+            wekbResultMap.recordsCount = wekbResultMap.records.size()
+        }
+        else if (params.isMyX == 'not') {
+            wekbResultMap.records      = wekbResultMap.records.findAll { ! result.myPlatformsUuids.contains( it.uuid ) }
+            wekbResultMap.recordsCount = wekbResultMap.records.size()
+        }
+        wekbResultMap.records = wekbResultMap.records.drop((int) result.offset).take((int) result.max) // pagination
+
+        result.putAll(wekbResultMap)
+        result
     }
 
     /**
@@ -136,7 +215,7 @@ class PlatformController  {
             result.platformInstanceRecord = records ? records[0] : [:]
             result.platformInstanceRecord.id = params.id
         }
-        result.editable = accessService.checkPermAffiliationX('ORG_BASIC_MEMBER,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN')
+        result.editable = accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.PERMS_BASIC )
 
         String hql = "select oapl from OrgAccessPointLink oapl join oapl.oap as ap " +
                     "where ap.org =:institution and oapl.active=true and oapl.platform.id=${platformInstance.id} " +
@@ -150,6 +229,43 @@ class PlatformController  {
         result.accessPointList = OrgAccessPoint.executeQuery(notActiveAPLinkQuery, [institution : result.contextOrg])
 
         result.selectedInstitution = result.contextOrg.id
+
+        // ? --- copied from myInstitutionController.currentPlatforms()
+        String instanceFilter = ""
+        Map<String, Object> subscriptionParams = [
+                contextOrg: contextService.getOrg(),
+                roleTypes:  [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA],
+                current:    RDStore.SUBSCRIPTION_CURRENT,
+                expired:    RDStore.SUBSCRIPTION_EXPIRED
+        ]
+        if (contextService.getOrg().isCustomerType_Consortium()) {
+            instanceFilter += " and s.instanceOf = null "
+        }
+
+        Set<Long> idsCurrentSubscriptions = Subscription.executeQuery(
+                'select s.id from OrgRole oo join oo.sub s where oo.org = :contextOrg and oo.roleType in (:roleTypes) and (s.status = :current or (s.status = :expired and s.hasPerpetualAccess = true))' + instanceFilter,
+                subscriptionParams
+        )
+
+        if (idsCurrentSubscriptions) {
+            String qry3 =
+                    "select distinct p, s, p.normname from SubscriptionPackage subPkg join subPkg.subscription s join subPkg.pkg pkg, " +
+                            "TitleInstancePackagePlatform tipp join tipp.platform p left join p.org o " +
+                            "where tipp.pkg = pkg and s.id in (:subIds) and p.gokbId in (:wekbIds) " +
+                            "and ((pkg.packageStatus is null) or (pkg.packageStatus != :pkgDeleted)) " +
+                            "and ((tipp.status is null) or (tipp.status != :tippRemoved)) " +
+                            "group by p, s order by p.normname asc"
+
+            Map qryParams3 = [
+                    subIds     : idsCurrentSubscriptions,
+                    pkgDeleted : RDStore.PACKAGE_STATUS_DELETED,
+                    tippRemoved: RDStore.TIPP_STATUS_REMOVED,
+                    wekbIds    : [ platformInstance.gokbId ]
+            ]
+            result.isMyPlatform = Platform.executeQuery(qry3, qryParams3) ? true : false
+        }
+        // ? ---
+
         result
     }
 
@@ -175,8 +291,8 @@ class PlatformController  {
      * @deprecated use {@link #dynamicApLink} instead
      */
     @Deprecated
-    @DebugInfo(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
+    @DebugInfo(test='is_ROLE_ADMIN_or_hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_EDITOR") })
     @Check404()
     def link() {
         Map<String, Object> result = [:]
@@ -208,8 +324,8 @@ class PlatformController  {
      * Call to link a platform to another access point
      * @return renders the available options in a modal
      */
-    @DebugInfo(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
+    @DebugInfo(test='is_ROLE_ADMIN_or_hasAffiliation("INST_EDITOR")')
+    @Secured(closure = { ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_EDITOR") })
     def dynamicApLink(){
         Map<String, Object> result = [:]
         Platform platformInstance = Platform.get(params.platform_id)
@@ -247,9 +363,9 @@ class PlatformController  {
      * Call to add a new derivation to the given platform
      * @return redirect to the referer
      */
-    @DebugInfo(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(perm=CustomerTypeService.PERMS_BASIC, affil="INST_EDITOR", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR")
+        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_BASIC, "INST_EDITOR")
     })
     def addDerivation() {
         Map<String,Object> ctrlResult = platformControllerService.addDerivation(params)
@@ -263,9 +379,9 @@ class PlatformController  {
      * Call to remove a new derivation to the given platform
      * @return redirect to the referer
      */
-    @DebugInfo(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(perm=CustomerTypeService.PERMS_BASIC, affil="INST_EDITOR", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR")
+        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_BASIC, "INST_EDITOR")
     })
     def removeDerivation() {
         Map<String,Object> ctrlResult = platformControllerService.removeDerivation(params)
@@ -276,9 +392,9 @@ class PlatformController  {
     }
 
     @Deprecated
-    @DebugInfo(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(perm=CustomerTypeService.PERMS_BASIC, affil="INST_EDITOR", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR")
+        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_BASIC, "INST_EDITOR")
     })
     def linkAccessPoint() {
         OrgAccessPoint apInstance
@@ -301,9 +417,9 @@ class PlatformController  {
     }
 
     @Deprecated
-    @DebugInfo(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(perm=CustomerTypeService.PERMS_BASIC, affil="INST_EDITOR", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR")
+        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_BASIC, "INST_EDITOR")
     })
     def removeAccessPoint() {
         Map<String,Object> ctrlResult = platformControllerService.removeAccessPoint(params)
