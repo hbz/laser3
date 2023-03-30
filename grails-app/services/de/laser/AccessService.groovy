@@ -32,23 +32,23 @@ class AccessService {
      * @return true if access is granted, false otherwise
      */
     boolean checkCtxPerm(String orgPerms) {
-        _checkOrgPermForForeignOrg(orgPerms.split(','), contextService.getOrg())
+        _hasPerm_forOrg_withFakeRole(orgPerms.split(','), contextService.getOrg())
     }
     boolean checkCtxPerm_or_ROLEADMIN(String orgPerms) {
         if (contextService.getUser()?.hasMinRole('ROLE_ADMIN')) {
             return true
         }
-        _checkOrgPermForForeignOrg(orgPerms.split(','), contextService.getOrg())
+        _hasPerm_forOrg_withFakeRole(orgPerms.split(','), contextService.getOrg())
     }
 
     /**
-     * Substitution call for {@link #_checkOrgPermAndUserAffiliation(java.lang.String[], java.lang.String)}
+     * Substitution call for {@link #_hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(java.lang.String[], java.lang.String)}
      * @param orgPerms customer type depending permissions to check against
      * @param instUserRole the user permissions to check
      * @return true if the user has the permissions granted and his context institution is one of the given customer types, false otherwise
      */
     boolean checkCtxPermAffiliation(String orgPerms, String instUserRole) {
-        _checkOrgPermAndUserAffiliation(orgPerms.split(','), instUserRole)
+        _hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(orgPerms.split(','), instUserRole)
     }
 
     /**
@@ -68,7 +68,7 @@ class AccessService {
         if (contextService.getUser()?.hasMinRole('ROLE_ADMIN')) {
             return true
         }
-        _checkOrgPermAndOrgTypeAndUserAffiliation(orgPerms.split(','), orgTypes.split(','), instUserRole)
+        _hasPermAndTypeAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(orgPerms.split(','), orgTypes.split(','), instUserRole)
     }
 
     // --- checks for other orgs ---
@@ -80,7 +80,7 @@ class AccessService {
      * @return true if access is granted, false otherwise
      */
     boolean checkOrgPerm(Org orgToCheck, String orgPerms) {
-        _checkOrgPermForForeignOrg(orgPerms.split(','), orgToCheck)
+        _hasPerm_forOrg_withFakeRole(orgPerms.split(','), orgToCheck)
     }
 
     /**
@@ -107,7 +107,7 @@ class AccessService {
         String instUserRole     = comboAffiliation
 
         // combo check
-        boolean check1 = _checkOrgPermAndUserAffiliation(orgPerms.split(','), instUserRole)
+        boolean check1 = _hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(orgPerms.split(','), instUserRole)
         boolean check2 = (ctx.id == orgToCheck.id) || Combo.findByToOrgAndFromOrg(ctx, orgToCheck)
 
         // orgToCheck check
@@ -131,11 +131,11 @@ class AccessService {
      * or if the context institution is one of the given customer types
      * and if the user has the given permissions within the institution, false otherwise
      */
-    private boolean _is_ROLE_ADMIN_or_checkOrgPermAndUserAffiliation(String orgPerms, String instUserRole) {
+    private boolean _hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser_or_ROLEADMIN(String orgPerms, String instUserRole) {
         if (contextService.getUser()?.hasMinRole('ROLE_ADMIN')) {
             return true
         }
-        _checkOrgPermAndUserAffiliation(orgPerms.split(','), instUserRole)
+        _hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(orgPerms.split(','), instUserRole)
     }
 
     /**
@@ -144,7 +144,7 @@ class AccessService {
      * @param orgPerms customer type depending permissions to check against
      * @return true if access is granted, false otherwise
      */
-    private boolean _checkOrgPermForForeignOrg(String[] orgPerms, Org orgToCheck) {
+    private boolean _hasPerm_forOrg_withFakeRole(String[] orgPerms, Org orgToCheck) {
         boolean check = false
 
         if (orgPerms) {
@@ -179,8 +179,8 @@ class AccessService {
      * @param instUserRole the given institutional permissions to check
      * @return true if the institution has the given customer type and the user the given institutional permissions, false otherwise
      */
-    private boolean _checkOrgPermAndUserAffiliation(String[] orgPerms, String instUserRole) {
-        boolean check1 = _checkOrgPermForForeignOrg(orgPerms, contextService.getOrg())
+    private boolean _hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(String[] orgPerms, String instUserRole) {
+        boolean check1 = _hasPerm_forOrg_withFakeRole(orgPerms, contextService.getOrg())
         boolean check2 = instUserRole ? contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation(instUserRole.toUpperCase()) : false
 
         check1 && check2
@@ -194,8 +194,8 @@ class AccessService {
      * @param instUserRole the given institutional permissions to check
      * @return true if the institution has the given customer and organisation type and the user the given institutional permissions, false otherwise
      */
-    private boolean _checkOrgPermAndOrgTypeAndUserAffiliation(String[] orgPerms, String[] orgTypes, String instUserRole) {
-        boolean check1 = _checkOrgPermForForeignOrg(orgPerms, contextService.getOrg())
+    private boolean _hasPermAndTypeAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(String[] orgPerms, String[] orgTypes, String instUserRole) {
+        boolean check1 = _hasPerm_forOrg_withFakeRole(orgPerms, contextService.getOrg())
         boolean check2 = orgTypes ? false : true
 
         boolean check3 = instUserRole ? contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation(instUserRole.toUpperCase()) : false
@@ -269,25 +269,25 @@ class AccessService {
      * @return the result of {@link #checkCtxPermAffiliation(java.lang.String, java.lang.String)} for [ORG_INST_PRO, ORG_CONSORTIUM_BASIC] and INST_EDTOR as arguments
      */
     boolean is_ORG_COM_EDITOR() {
-        _checkOrgPermAndUserAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC.split(','), 'INST_EDITOR')
+        _hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC.split(','), 'INST_EDITOR')
     }
 
     boolean is_INST_EDITOR_with_PERMS_BASIC(boolean inContextOrg) {
-        boolean a = _checkOrgPermAndUserAffiliation(CustomerTypeService.ORG_INST_BASIC.split(','), 'INST_EDITOR') && inContextOrg
-        boolean b = _checkOrgPermAndUserAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC.split(','), 'INST_EDITOR')
+        boolean a = _hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(CustomerTypeService.ORG_INST_BASIC.split(','), 'INST_EDITOR') && inContextOrg
+        boolean b = _hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(CustomerTypeService.ORG_CONSORTIUM_BASIC.split(','), 'INST_EDITOR')
 
         return (a || b)
     }
 
     boolean is_ROLE_ADMIN_or_INST_USER_with_PERMS(String orgPerms) {
-        _is_ROLE_ADMIN_or_checkOrgPermAndUserAffiliation(orgPerms, 'INST_USER')
+        _hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser_or_ROLEADMIN(orgPerms, 'INST_USER')
     }
 
     boolean is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS(String orgPerms) {
-        _is_ROLE_ADMIN_or_checkOrgPermAndUserAffiliation(orgPerms, 'INST_EDITOR')
+        _hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser_or_ROLEADMIN(orgPerms, 'INST_EDITOR')
     }
 
     boolean is_ROLE_ADMIN_or_INST_ADM_with_PERMS(String orgPerms) {
-        _is_ROLE_ADMIN_or_checkOrgPermAndUserAffiliation(orgPerms, 'INST_ADM')
+        _hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser_or_ROLEADMIN(orgPerms, 'INST_ADM')
     }
 }
