@@ -1,11 +1,10 @@
 <g:if test="${metricTypes}">
     <div class="field dynFilter">
         <label for="metricType"><g:message code="default.usage.metricType"/></label>
-        <select name="metricType" id="metricType" multiple="multiple" class="ui search selection dropdown">
+        <select name="metricType" id="metricType" <g:if test="${noMultiple == false}"> multiple="multiple" </g:if> class="ui search selection dropdown">
             <option value=""><g:message code="default.select.choose.label"/></option>
             <g:each in="${metricTypes}" var="metricType">
-                <option <%--<%=(params.list('metricType')?.contains(metricType)) ? 'selected="selected"' : ''%>--%>
-                        value="${metricType}">
+                <option <%=(params.list('metricType')?.contains(metricType)) ? 'selected="selected"' : ''%> value="${metricType}">
                     ${metricType}
                 </option>
             </g:each>
@@ -24,11 +23,10 @@
 <g:if test="${accessMethods}">
     <div class="field dynFilter">
         <label for="accessMethod"><g:message code="default.usage.accessMethod"/></label>
-        <select name="accessMethod" id="accessMethod" multiple="multiple" class="ui search selection dropdown">
+        <select name="accessMethod" id="accessMethod" <g:if test="${noMultiple == false}"> multiple="multiple" </g:if> class="ui search selection dropdown">
             <option value=""><g:message code="default.select.choose.label"/></option>
             <g:each in="${accessMethods}" var="accessMethod">
-                <option <%--<%=(params.list('accessMethod')?.contains(accessMethod)) ? 'selected="selected"' : ''%>--%>
-                        value="${accessMethod}">
+                <option <%=(params.list('accessMethod')?.contains(accessMethod)) ? 'selected="selected"' : ''%> value="${accessMethod}">
                     ${accessMethod}
                 </option>
             </g:each>
@@ -47,11 +45,10 @@
 <g:if test="${accessTypes}">
     <div class="field dynFilter">
         <label for="accessType"><g:message code="default.usage.accessType"/></label>
-        <select name="accessType" id="accessType" multiple="multiple" class="ui search selection dropdown">
+        <select name="accessType" id="accessType" <g:if test="${noMultiple == false}"> multiple="multiple" </g:if> class="ui search selection dropdown">
             <option value=""><g:message code="default.select.choose.label"/></option>
             <g:each in="${accessTypes}" var="accessType">
-                <option <%--<%=(params.list('accessType')?.contains(accessType)) ? 'selected="selected"' : ''%>--%>
-                        value="${accessType}">
+                <option <%=(params.list('accessType')?.contains(accessType)) ? 'selected="selected"' : ''%> value="${accessType}">
                     ${accessType}
                 </option>
             </g:each>
