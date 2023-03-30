@@ -312,20 +312,6 @@ class AjaxHtmlController {
         }
     }
 
-    @Secured(['ROLE_USER'])
-    def generateCostPerUse() {
-        Map<String, Object> ctrlResult = subscriptionControllerService.getStatsDataForCostPerUse(params)
-        ctrlResult.result.costPerUse = [:]
-        if(ctrlResult.result.subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION) {
-            ctrlResult.result.costPerUse.consortialData = subscriptionControllerService.calculateCostPerUse(ctrlResult.result, "consortial")
-            if (ctrlResult.result.institution.isCustomerType_Inst_Pro()) {
-                ctrlResult.result.costPerUse.ownData = subscriptionControllerService.calculateCostPerUse(ctrlResult.result, "own")
-            }
-        }
-        else ctrlResult.result.costPerUse.ownData = subscriptionControllerService.calculateCostPerUse(ctrlResult.result, "own")
-        render template: "/subscription/costPerUse", model: ctrlResult.result
-    }
-
     /**
      * Generates a list of selectable metrics or access types for the given report types in the statistics filter
      * @return a {@link List} of available metric types

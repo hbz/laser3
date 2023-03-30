@@ -596,13 +596,9 @@
                 output = parseFloat(input);
             }
             else {
-                if(input.match(/^(?!0+\.00)(?=.{1,9}(\.|$))(?!0(?!\.))\d{1,3}(,\d{3})*(\.\d+)?$/g))
-                    output = parseFloat(input.replace(/,/g, "."));
-                else if(input.match(/^(?!0+,00)(?=.{1,9}(,|$))(?!0(?!,))\d{1,3}([\.']\d{3})*(,\d+)?$/g))
-                    output = parseFloat(input.replace(/\./g,"").replace(/,/g,"."));
+                output = parseFloat(input.replaceAll(/[.']/g,"").replaceAll(",","."));
                 //else console.log("Please check over regex!");
             }
-            console.log(output);
             return output;
         },
         doubleToString: function (input) {

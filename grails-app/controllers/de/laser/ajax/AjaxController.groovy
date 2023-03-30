@@ -10,7 +10,9 @@ import de.laser.base.AbstractI10n
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.cache.EhcacheWrapper
 import de.laser.cache.SessionCacheWrapper
+import de.laser.ctrl.SubscriptionControllerService
 import de.laser.helper.*
+import de.laser.interfaces.CalculatedType
 import de.laser.interfaces.ShareSupport
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
@@ -57,6 +59,7 @@ class AjaxController {
     FilterService filterService
     PendingChangeService pendingChangeService
     PropertyService propertyService
+    SubscriptionControllerService subscriptionControllerService
 
     def refdata_config = [
     "ContentProvider" : [
@@ -2121,5 +2124,22 @@ class AjaxController {
         changes.max = result.max
         changes.editable = result.editable
         render template: '/myInstitution/changesWrapper', model: changes
+    }
+
+    @Secured(['ROLE_USER'])
+    def generateCostPerUse() {
+        Map<String, Object> ctrlResult = subscriptionControllerService.getStatsDataForCostPerUse(params)
+        if(ctrlResult.status == SubscriptionControllerService.STATUS_OK) {
+            ctrlResult.result.costPerUse = [:]
+            if(ctrlResult.result.subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION) {
+                ctrlResult.result.costPerUse.consortialData = subscriptionControllerService.calculateCostPerUse(ctrlResult.result, "consortial")
+                if (ctrlResult.result.institution.isCustomerType_Inst_Pro()) {
+                    ctrlResult.result.costPerUse.ownData = subscriptionControllerService.calculateCostPerUse(ctrlResult.result, "own")
+                }
+            }
+            else ctrlResult.result.costPerUse.ownData = subscriptionControllerService.calculateCostPerUse(ctrlResult.result, "own")
+            render template: "/subscription/costPerUse", model: ctrlResult.result
+        }
+        else [error: ctrlResult.error]
     }
 }
