@@ -63,7 +63,7 @@
         }
     }
 %>
-<g:if test="${accessService.checkPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
+<g:if test="${accessService.checkCtxPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
     <ui:card message="${documentMessage}" class="documents la-js-hideable ${css_class}" href="#modalCreateDocument" editable="${editable || editable2}">
         <g:each in="${baseItems}" var="docctx">
             <g:if test="${docctx.isDocAFile() && (docctx.status?.value!='Deleted')}">

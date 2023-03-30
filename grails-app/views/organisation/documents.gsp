@@ -9,7 +9,7 @@
     <laser:render template="breadcrumb"
               model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView]}"/>
 
-    <g:if test="${accessService.checkPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
+    <g:if test="${accessService.checkCtxPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
         <ui:controlButtons>
           <laser:render template="actions" model="[org:org]" />
         </ui:controlButtons>

@@ -31,7 +31,7 @@ class AccessService {
      * @param orgPerms customer type depending permissions to check against
      * @return true if access is granted, false otherwise
      */
-    boolean checkPerm(String orgPerms) {
+    boolean checkCtxPerm(String orgPerms) {
         _checkOrgPermForForeignOrg(orgPerms.split(','), contextService.getOrg())
     }
 

@@ -166,7 +166,7 @@
                                   value="${['': '']}"/>
                 </div>
 
-                <g:if test="${accessService.checkPerm(CustomerTypeService.ORG_INST_PRO)}">
+                <g:if test="${accessService.checkCtxPerm(CustomerTypeService.ORG_INST_PRO)}">
                     <div class="field">
                         <label>${message(code: 'subscription.isAutomaticRenewAnnually.label')}</label>
                         <ui:select name="process_isAutomaticRenewAnnually"
@@ -217,7 +217,7 @@
                     <th>${message(code: 'subscription.isPublicForApi.label')}</th>
                     <th>${message(code: 'subscription.hasPerpetualAccess.label')}</th>
                     <th>${message(code: 'subscription.hasPublishComponent.label')}</th>
-                    <g:if test="${accessService.checkPerm(CustomerTypeService.ORG_INST_PRO)}">
+                    <g:if test="${accessService.checkCtxPerm(CustomerTypeService.ORG_INST_PRO)}">
                         <th>${message(code: 'subscription.isAutomaticRenewAnnually.label')}</th>
                     </g:if>
                     <th class="la-no-uppercase">
@@ -331,7 +331,7 @@
                                                     overwriteEditable="${editableOld}"/>
                             <ui:auditButton auditable="[sub, 'hasPublishComponent']"/>
                         </td>
-                        <g:if test="${accessService.checkPerm(CustomerTypeService.ORG_INST_PRO)}">
+                        <g:if test="${accessService.checkCtxPerm(CustomerTypeService.ORG_INST_PRO)}">
                             <td>
                                 <g:if test="${(sub.type == RDStore.SUBSCRIPTION_TYPE_LOCAL && sub._getCalculatedType() == CalculatedType.TYPE_LOCAL)}">
                                     <ui:xEditableBoolean owner="${sub}" field="isAutomaticRenewAnnually" overwriteEditable="${editable && sub.isAllowToAutomaticRenewAnnually()}"/>

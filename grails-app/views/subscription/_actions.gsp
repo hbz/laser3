@@ -133,7 +133,7 @@
                     </g:else>
                 </g:if>
             </sec:ifAnyGranted>
-            <g:if test="${subscription._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE] && accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
+            <g:if test="${subscription._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE] && accessService.checkCtxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
                 <div class="divider"></div>
                 <g:if test="${hasNext}">
                     <ui:actionsDropdownItemDisabled controller="subscription" action="renewSubscription"

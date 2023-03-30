@@ -7,8 +7,6 @@ import de.laser.custom.CustomWkhtmltoxService
 import de.laser.utils.LocaleUtils
 import de.laser.storage.RDConstants
 import de.laser.properties.LicenseProperty
-import de.laser.auth.Role
-import de.laser.auth.UserOrgRole
 import de.laser.properties.PropertyDefinition
  
 import de.laser.utils.DateUtils
@@ -258,7 +256,7 @@ class LicenseController {
         result.institution = contextService.getOrg()
 
         License licenseCopy
-            if (accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+            if (accessService.checkCtxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
 
                 if (params.cmd == 'generate') {
                     licenseCopy = institutionsService.copyLicense(
@@ -539,7 +537,7 @@ class LicenseController {
         GrailsParameterMap tmpParams = (GrailsParameterMap) params.clone()
         tmpParams.remove("max")
         tmpParams.remove("offset")
-        if (accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC))
+        if (accessService.checkCtxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC))
             tmpParams.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
         Map<String,Object> fsq = filterService.getOrgComboQuery(tmpParams, result.institution)
 

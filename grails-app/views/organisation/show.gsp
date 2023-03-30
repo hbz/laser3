@@ -786,7 +786,7 @@
                     </g:if>
                 </g:if>
 
-            <g:if test="${accessService.checkPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
+            <g:if test="${accessService.checkCtxPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
                 <div id="new-dynamic-properties-block">
                     <laser:render template="properties" model="${[
                             orgInstance   : orgInstance,

@@ -248,9 +248,9 @@ class OrganisationControllerService {
                     result.consortialView = true
             }
             //restrictions hold if viewed org is not the context org
-            if (!result.inContextOrg && !accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && !SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
+            if (!result.inContextOrg && !accessService.checkCtxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && !SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
                 //restrictions further concern only single users or consortium members, not consortia
-                if (!accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && result.orgInstance.isCustomerType_Inst()) {
+                if (!accessService.checkCtxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && result.orgInstance.isCustomerType_Inst()) {
                     return null
                 }
             }

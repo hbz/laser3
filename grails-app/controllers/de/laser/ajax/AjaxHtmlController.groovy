@@ -33,8 +33,6 @@ import de.laser.Person
 import de.laser.PersonRole
 import de.laser.SubscriptionPackage
 import de.laser.SubscriptionService
-import de.laser.stats.Counter4Report
-import de.laser.stats.Counter5Report
 import de.laser.storage.PropertyStore
 import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyConfigProperties
@@ -184,7 +182,7 @@ class AjaxHtmlController {
                 [org: result.institution,
                  status: RDStore.SURVEY_SURVEY_STARTED])
 
-        if (accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)){
+        if (accessService.checkCtxPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)){
             activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where surConfig.surveyInfo.status = :status  and surConfig.surveyInfo.owner = :org " +
                     " order by surConfig.surveyInfo.endDate",
                     [org: result.institution,

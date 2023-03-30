@@ -201,7 +201,7 @@ class AjaxJsonController {
         queryParams.showConnectedObjs = showConnectedObjs
 
         data = compareService.getMySubscriptions(queryParams)
-        if (accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+        if (accessService.checkCtxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
             if (showSubscriber) {
                 List parents = data.clone()
                 Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]
@@ -242,7 +242,7 @@ class AjaxJsonController {
         queryParams.showConnectedLics = showConnectedLics
 
         data = compareService.getMyLicenses(queryParams)
-        if (accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+        if (accessService.checkCtxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
             if (showSubscriber) {
                 List parents = data.clone()
                 Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_LICENSEE_CONS, RDStore.OR_LICENSEE]

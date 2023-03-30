@@ -603,13 +603,13 @@ class PropertyService {
              parameterMap.status = RefdataValue.get(params.objStatus)
          String subFilterClause = '', licFilterClause = '', spOwnerFilterClause = '', lpOwnerFilterClause = '', orgFilterClause = ''
 
-         if(accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+         if(accessService.checkCtxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
              subFilterClause += 'and oo.sub.instanceOf = null'
              spOwnerFilterClause += 'and sp.owner.instanceOf = null'
              licFilterClause += 'and oo.lic.instanceOf = null'
              lpOwnerFilterClause += 'and lp.owner.instanceOf = null'
          }
-         else if(accessService.checkPerm(CustomerTypeService.ORG_INST_BASIC)) {
+         else if(accessService.checkCtxPerm(CustomerTypeService.ORG_INST_BASIC)) {
              orgFilterClause += 'and ot in (:providerAgency)'
              orgFilterParams.providerAgency = [RDStore.OT_AGENCY, RDStore.OT_PROVIDER, RefdataValue.getByValueAndCategory('Broker', RDConstants.ORG_TYPE), RefdataValue.getByValueAndCategory('Content Provider',RDConstants.ORG_TYPE), RefdataValue.getByValueAndCategory('Vendor',RDConstants.ORG_TYPE)]
          }
@@ -653,7 +653,7 @@ class PropertyService {
                      orgFilterMap.myProvidersIds = myProvidersIds
                  }
 
-                 if (accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+                 if (accessService.checkCtxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
 
                      if (params.myInsts) {
                          List<Long> myInstsIds = Org.executeQuery("select o.id from Org as o, Combo as c where c.fromOrg = o and c.toOrg = :context and c.type.id = :comboType " +
