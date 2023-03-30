@@ -250,7 +250,7 @@ class OrganisationController  {
      */
     @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_BASIC, type="Consortium", affil="INST_USER", specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = { 
-        ctx.accessService.is_ROLE_ADMIN_or_checkPermTypeAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, "Consortium", "INST_USER")
+        ctx.accessService.checkCtxPermTypeAffiliation_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC, "Consortium", "INST_USER")
     })
     Map listInstitution() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
@@ -1755,7 +1755,7 @@ class OrganisationController  {
      */
     @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_BASIC, type="Consortium", affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.is_ROLE_ADMIN_or_checkPermTypeAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, "Consortium", "INST_EDITOR")
+        ctx.accessService.checkCtxPermTypeAffiliation_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC, "Consortium", "INST_EDITOR")
     })
     def toggleCombo() {
         Map<String,Object> ctrlResult = organisationControllerService.toggleCombo(this,params)

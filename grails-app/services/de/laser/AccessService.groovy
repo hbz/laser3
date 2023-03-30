@@ -34,6 +34,12 @@ class AccessService {
     boolean checkCtxPerm(String orgPerms) {
         _checkOrgPermForForeignOrg(orgPerms.split(','), contextService.getOrg())
     }
+    boolean checkCtxPerm_or_ROLEADMIN(String orgPerms) {
+        if (contextService.getUser()?.hasMinRole('ROLE_ADMIN')) {
+            return true
+        }
+        _checkOrgPermForForeignOrg(orgPerms.split(','), contextService.getOrg())
+    }
 
     /**
      * Substitution call for {@link #_checkOrgPermAndUserAffiliation(java.lang.String[], java.lang.String)}
@@ -58,7 +64,7 @@ class AccessService {
      * or if the context institution is one of the given customer and organisation types
      * and if the user has the given permissions within the institution, false otherwise
      */
-    boolean is_ROLE_ADMIN_or_checkPermTypeAffiliation(String orgPerms, String orgTypes, String instUserRole) {
+    boolean checkCtxPermTypeAffiliation_or_ROLEADMIN(String orgPerms, String orgTypes, String instUserRole) {
         if (contextService.getUser()?.hasMinRole('ROLE_ADMIN')) {
             return true
         }
@@ -87,13 +93,12 @@ class AccessService {
      * @param attributes a configuration map:
      * [
      *      org: context institution,
-     *      affiliation: user's rights at the context institution
-     *      comboPerm: customer type of the target institution
+     *      comboPerms: customer type of the target institution
      *      comboAffiliation: user's rights for the target institution
      * ]
      * @return true if clauses one and two or three succeed, false otherwise
      */
-    boolean is_ROLE_ADMIN_or_checkOrgComboPermAffiliation(Org orgToCheck, String comboPerms, String comboAffiliation) {
+    boolean checkOrgPermAffiliation_withCombo_or_ROLEADMIN(Org orgToCheck, String comboPerms, String comboAffiliation) {
         if (contextService.getUser()?.hasMinRole('ROLE_ADMIN')) {
             return true
         }
@@ -111,8 +116,8 @@ class AccessService {
         (check1 && check2) || check3
     }
 
-    // --- private - complex naming scheme
-    // --- private - complex naming scheme
+    // --- private method calls - complex naming scheme
+    // --- private method calls - complex naming scheme
 
     /**
      * Checks
@@ -272,13 +277,6 @@ class AccessService {
         boolean b = _checkOrgPermAndUserAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC.split(','), 'INST_EDITOR')
 
         return (a || b)
-    }
-
-    boolean is_ROLE_ADMIN_or_has_PERMS(String orgPerms) {
-        if (contextService.getUser()?.hasMinRole('ROLE_ADMIN')) {
-            return true
-        }
-        _checkOrgPermForForeignOrg(orgPerms.split(','), contextService.getOrg())
     }
 
     boolean is_ROLE_ADMIN_or_INST_USER_with_PERMS(String orgPerms) {
