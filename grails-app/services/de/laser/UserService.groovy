@@ -180,7 +180,7 @@ class UserService {
         if (! check) {
             List<String> rolesToCheck = [userRoleName]
 
-            // handling role hierarchy
+            // handling inst role hierarchy
             if (userRoleName == 'INST_USER') {
                 rolesToCheck << 'INST_EDITOR'
                 rolesToCheck << 'INST_ADM'

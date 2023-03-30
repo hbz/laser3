@@ -250,20 +250,20 @@ class AccessService {
             return result
         }
 
-        Role role = Role.findByAuthority(userRoleName)
-        List<Role> rolesToCheck = [role]
+        List<String> rolesToCheck = [userRoleName]
 
-        // sym. role hierarchy
-        if (role.authority == 'INST_USER') {
-            rolesToCheck << Role.findByAuthority('INST_EDITOR')
-            rolesToCheck << Role.findByAuthority('INST_ADM')
+        // handling inst role hierarchy
+        if (userRoleName == 'INST_USER') {
+            rolesToCheck << 'INST_EDITOR'
+            rolesToCheck << 'INST_ADM'
         }
-        else if (role.authority == 'INST_EDITOR') {
-            rolesToCheck << Role.findByAuthority('INST_ADM')
+        else if (userRoleName == 'INST_EDITOR') {
+            rolesToCheck << 'INST_ADM'
         }
 
-        rolesToCheck.each{ rot ->
-            UserOrgRole userOrg = UserOrgRole.findByUserAndOrgAndFormalRole(user, orgToCheck, rot)
+        rolesToCheck.each{ String rot ->
+            Role role = Role.findByAuthority(rot)
+            UserOrgRole userOrg = UserOrgRole.findByUserAndOrgAndFormalRole(user, orgToCheck, role)
             if (userOrg) {
                 result = true
             }

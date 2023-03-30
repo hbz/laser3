@@ -12,7 +12,7 @@
 <g:if test="${accessService.checkMinUserOrgRole_and_CtxOrg(user, institution, 'INST_EDITOR')}">
     <ui:actionsDropdown>
 
-        <g:if test="${contextCustomerType in ["ORG_INST_PRO","ORG_CONSORTIUM_BASIC","ORG_CONSORTIUM_PRO"]}">
+        <g:if test="${contextCustomerType in [CustomerTypeService.ORG_INST_PRO, CustomerTypeService.ORG_CONSORTIUM_BASIC, CustomerTypeService.ORG_CONSORTIUM_PRO]}">
             <ui:actionsDropdownItem message="task.create.new" data-ui="modal" href="#modalCreateTask" />
             <ui:actionsDropdownItem message="template.documents.add" data-ui="modal" href="#modalCreateDocument" />
         </g:if>
