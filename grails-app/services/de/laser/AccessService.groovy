@@ -65,8 +65,8 @@ class AccessService {
         _checkOrgPermAndOrgTypeAndUserAffiliation(orgPerms.split(','), orgTypes.split(','), instUserRole)
     }
 
-    // --- public - simple naming scheme - orgToCheck
-    // --- public - simple naming scheme - orgToCheck
+    // --- checks for other orgs ---
+    // --- checks for other orgs ---
 
     /**
      * @param orgToCheck the context institution whose customer type needs to be checked
@@ -168,27 +168,6 @@ class AccessService {
     }
 
     /**
-     * Checks if the context institution has at least one of the given customer types and organisation types attributed
-     * @param orgPerms customer type depending permissions to check against
-     * @param orgTypes the organisation types to check
-     * @return true if the context organisation passes both checks, false otherwise
-     */
-    private boolean _checkOrgPermAndOrgType(String[] orgPerms, String[] orgTypes) {
-        boolean check1 = _checkOrgPermForForeignOrg(orgPerms, contextService.getOrg())
-        boolean check2 = false
-
-        if (orgTypes) {
-            orgTypes.each { ot ->
-                RefdataValue type = RefdataValue.getByValueAndCategory(ot.trim(), RDConstants.ORG_TYPE)
-                check2 = check2 || contextService.getOrg()?.getAllOrgTypeIds()?.contains(type?.id)
-            }
-        } else {
-            check2 = true
-        }
-        check1 && check2
-    }
-
-    /**
      * Checks if the context institution has at least one of the given customer types attrbited and if the context user
      * has the given rights attributed
      * @param orgPerms customer type depending permissions to check against
@@ -211,10 +190,19 @@ class AccessService {
      * @return true if the institution has the given customer and organisation type and the user the given institutional permissions, false otherwise
      */
     private boolean _checkOrgPermAndOrgTypeAndUserAffiliation(String[] orgPerms, String[] orgTypes, String instUserRole) {
-        boolean check1 = _checkOrgPermAndOrgType(orgPerms, orgTypes)
-        boolean check2 = instUserRole ? contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation(instUserRole.toUpperCase()) : false
+        boolean check1 = _checkOrgPermForForeignOrg(orgPerms, contextService.getOrg())
+        boolean check2 = orgTypes ? false : true
 
-        check1 && check2
+        boolean check3 = instUserRole ? contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation(instUserRole.toUpperCase()) : false
+
+        if (orgTypes) {
+            orgTypes.each { ot ->
+                RefdataValue type = RefdataValue.getByValueAndCategory(ot.trim(), RDConstants.ORG_TYPE)
+                check2 = check2 || contextService.getOrg()?.getAllOrgTypeIds()?.contains(type?.id)
+            }
+        }
+
+        check1 && check2 && check3
     }
 
     // ---- new stuff here
