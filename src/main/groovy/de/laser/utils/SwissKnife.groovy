@@ -159,7 +159,7 @@ class SwissKnife {
                 }
 
                 if (attrs.affiliation && attrs.affiliationOrg && check) {
-                    check = user.is_ROLE_ADMIN_or_hasAffiliationForForeignOrg(attrs.affiliation, attrs.affiliationOrg)
+                    check = user.hasOrgAffiliation_or_ROLEADMIN(attrs.affiliationOrg, attrs.affiliation)
                 }
             }
             checkMap.put(lsmnic, check)

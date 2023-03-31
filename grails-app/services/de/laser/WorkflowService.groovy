@@ -403,13 +403,13 @@ class WorkflowService {
         _innerPermissionCheck('INST_EDITOR')
     }
 
-    private boolean _innerPermissionCheck(String userRoleName) {
+    private boolean _innerPermissionCheck(String instUserRole) {
         User user = contextService.getUser()
 //        if (user.hasMinRole('ROLE_ADMIN')) {
 //            return true
 //        }
         Org ctxOrg = contextService.getOrg()
-        if (userRoleName && ctxOrg.isCustomerType_Pro() && user.is_ROLE_ADMIN_or_hasAffiliationForForeignOrg(userRoleName, ctxOrg)) {
+        if (instUserRole && ctxOrg.isCustomerType_Pro() && user.hasOrgAffiliation_or_ROLEADMIN(ctxOrg, instUserRole)) {
             return true
         }
         false
