@@ -7,7 +7,7 @@
     String documentMessage
     switch(ownobj.class.name) {
         case Org.class.name: documentMessage = "menu.my.documents"
-            editable = accessService.is_ROLE_ADMIN_or_checkMinUserOrgRole_and_CtxOrg(contextService.getUser(), contextOrg, 'INST_EDITOR')
+            editable = accessService.checkMinUserOrgRole_and_CtxOrg_or_ROLEADMIN(contextService.getUser(), contextOrg, 'INST_EDITOR')
             break
         default: documentMessage = "license.documents"
             break

@@ -139,8 +139,7 @@ class AccessService {
         (check1 && check2) || check3
     }
 
-    // --- private method calls - complex naming scheme
-    // --- private method calls - complex naming scheme
+    // --- private methods ONLY
 
     /**
      * Checks for the context institution if one of the given customer types are granted
@@ -195,7 +194,8 @@ class AccessService {
 
     // ----- REFACTORING -----
 
-    boolean is_ROLE_ADMIN_or_checkMinUserOrgRole_and_CtxOrg(User user, Org orgToCheck, String userRoleName) {
+    // TODO
+    boolean checkMinUserOrgRole_and_CtxOrg_or_ROLEADMIN(User user, Org orgToCheck, String userRoleName) {
         if (user?.hasMinRole('ROLE_ADMIN')) {
             return true
         }
@@ -210,6 +210,7 @@ class AccessService {
      * @param role the minimum role the user needs at the given institution
      * @return true if the user has at least the given role at the given institution, false otherwise
      */
+    // TODO
     boolean checkMinUserOrgRole_and_CtxOrg(User user, Org orgToCheck, String userRoleName) {
         boolean result = false
 
@@ -248,10 +249,12 @@ class AccessService {
      * Replacement call for the abandoned ROLE_ORG_COM_EDITOR
      * @return the result of {@link #ctxPermAffiliation(java.lang.String, java.lang.String)} for [ORG_INST_PRO, ORG_CONSORTIUM_BASIC] and INST_EDTOR as arguments
      */
+    // TODO
     boolean is_ORG_COM_EDITOR() {
         _hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC.split(','), 'INST_EDITOR')
     }
 
+    // TODO
     boolean is_INST_EDITOR_with_PERMS_BASIC(boolean inContextOrg) {
         boolean a = _hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(CustomerTypeService.ORG_INST_BASIC.split(','), 'INST_EDITOR') && inContextOrg
         boolean b = _hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(CustomerTypeService.ORG_CONSORTIUM_BASIC.split(','), 'INST_EDITOR')

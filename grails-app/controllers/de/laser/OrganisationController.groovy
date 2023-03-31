@@ -1033,7 +1033,7 @@ class OrganisationController  {
                     result.editable_identifier = true
             }
             else
-                result.editable_identifier = accessService.is_ROLE_ADMIN_or_checkMinUserOrgRole_and_CtxOrg(result.user, result.orgInstance, 'INST_EDITOR')
+                result.editable_identifier = accessService.checkMinUserOrgRole_and_CtxOrg_or_ROLEADMIN(result.user, result.orgInstance, 'INST_EDITOR')
         }
         // TODO: experimental asynchronous task
         //waitAll(task_orgRoles, task_properties)
@@ -1842,13 +1842,13 @@ class OrganisationController  {
                 isEditable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
                 break
             case 'properties':
-                isEditable = accessService.is_ROLE_ADMIN_or_checkMinUserOrgRole_and_CtxOrg(user, Org.get(params.id), 'INST_EDITOR')
+                isEditable = accessService.checkMinUserOrgRole_and_CtxOrg_or_ROLEADMIN(user, Org.get(params.id), 'INST_EDITOR')
                 break
             case 'users':
-                isEditable = accessService.is_ROLE_ADMIN_or_checkMinUserOrgRole_and_CtxOrg(user, Org.get(params.id), 'INST_ADM')
+                isEditable = accessService.checkMinUserOrgRole_and_CtxOrg_or_ROLEADMIN(user, Org.get(params.id), 'INST_ADM')
                 break
             case [ 'addOrgType', 'deleteOrgType' ]:
-                isEditable = accessService.is_ROLE_ADMIN_or_checkMinUserOrgRole_and_CtxOrg(user, Org.get(params.org), 'INST_ADM')
+                isEditable = accessService.checkMinUserOrgRole_and_CtxOrg_or_ROLEADMIN(user, Org.get(params.org), 'INST_ADM')
                 break
             case 'myPublicContacts':
                 if (inContextOrg) {
@@ -1884,7 +1884,7 @@ class OrganisationController  {
                 }
                 break
             default:
-                isEditable = accessService.is_ROLE_ADMIN_or_checkMinUserOrgRole_and_CtxOrg(user, org,'INST_EDITOR')
+                isEditable = accessService.checkMinUserOrgRole_and_CtxOrg_or_ROLEADMIN(user, org,'INST_EDITOR')
         }
         isEditable
     }
