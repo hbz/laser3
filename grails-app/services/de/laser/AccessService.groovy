@@ -196,8 +196,7 @@ class AccessService {
 
     // TODO
     boolean checkMinUserOrgRole_and_CtxOrg_or_ROLEADMIN(User user, Org orgToCheck, String userRoleName) {
-        if (user?.hasMinRole('ROLE_ADMIN')) { // --> TODO
-//        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
+        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
             return true
         }
 

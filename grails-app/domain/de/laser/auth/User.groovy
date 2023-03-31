@@ -3,7 +3,6 @@ package de.laser.auth
 import de.laser.Org
 import de.laser.UserSetting
 import de.laser.storage.BeanStore
-import grails.plugin.springsecurity.SpringSecurityUtils
 
 import javax.persistence.Transient
 
@@ -193,16 +192,6 @@ class User {
     }
 
     /**
-     * Checks if the given role is attributed to the user - can only be used with global (ROLE_) constants
-     * @param roleName the role name to check for
-     * @return does the user have this role granted?
-     */
-    @Deprecated
-    boolean hasMinRole(String roleName) {
-        SpringSecurityUtils.ifAnyGranted(roleName)
-    }
-
-    /**
      * Checks if the user has the given affiliation granted. To be used with one of the INST_ role constants
      * @param instUserRole the INST_-role to check for
      * @return does the user have the given INST_-role granted?
@@ -219,6 +208,10 @@ class User {
      */
     boolean hasOrgAffiliation_or_ROLEADMIN(Org orgToCheck, String instUserRole) {
         BeanStore.getUserService().checkAffiliation_or_ROLEADMIN(this, orgToCheck, instUserRole)
+    }
+
+    boolean isYoda() {
+        getAuthorities().authority.contains('ROLE_YODA')
     }
 
     /**
