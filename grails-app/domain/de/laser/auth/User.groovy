@@ -197,6 +197,7 @@ class User {
      * @param roleName the role name to check for
      * @return does the user have this role granted?
      */
+    @Deprecated
     boolean hasMinRole(String roleName) {
         SpringSecurityUtils.ifAnyGranted(roleName)
     }

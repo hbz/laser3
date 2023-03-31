@@ -1,4 +1,4 @@
-<%@ page import="de.laser.auth.Role" %>
+<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils; de.laser.auth.Role" %>
 <laser:htmlStart text="Frontend for Developers" serviceInjection="true" />
 
 <br />
@@ -49,13 +49,9 @@
 
         UserOrgRoles          : ${de.laser.auth.UserOrgRole.findAllByUser(contextService.getUser()).collect{ '(' + it.user.id + ',' + it.org.id + ',' + it.formalRole.id + ')'}}
 
-        hasMinRole('ROLE_YODA')  : ${contextService.getUser().hasMinRole('ROLE_YODA')}
-        hasMinRole('ROLE_ADMIN') : ${contextService.getUser().hasMinRole('ROLE_ADMIN')}
-        hasMinRole('ROLE_USER')  : ${contextService.getUser().hasMinRole('ROLE_USER')}
-
-        SpringSecurityUtils.ifAnyGranted('ROLE_YODA')  : ${grails.plugin.springsecurity.SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}
-        SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') : ${grails.plugin.springsecurity.SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}
-        SpringSecurityUtils.ifAnyGranted('ROLE_USER')  : ${grails.plugin.springsecurity.SpringSecurityUtils.ifAnyGranted('ROLE_USER')}
+        SpringSecurityUtils.ifAnyGranted('ROLE_YODA')  : ${SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}
+        SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') : ${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}
+        SpringSecurityUtils.ifAnyGranted('ROLE_USER')  : ${SpringSecurityUtils.ifAnyGranted('ROLE_USER')}
     </pre>
 </div>
 

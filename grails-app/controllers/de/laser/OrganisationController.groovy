@@ -1361,7 +1361,7 @@ class OrganisationController  {
         Map result = [
                 user: genericOIDService.resolveOID(params.uoid),
                 orgInstance: Org.get(params.id),
-                manipulateAffiliations: contextService.getUser().hasMinRole('ROLE_ADMIN')
+                manipulateAffiliations: SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
         ]
         result.editable = checkIsEditable(result.user, contextService.getOrg())
         result.availableOrgs = [ result.orgInstance ]
@@ -1445,7 +1445,7 @@ class OrganisationController  {
                 result.delResult = deletionService.deleteOrganisation(result.orgInstance, null, DeletionService.DRY_RUN)
             }
 
-            if (contextService.getUser().hasMinRole('ROLE_ADMIN')) {
+            if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
                 result.substituteList = Org.executeQuery("select distinct o from Org o where o.status != :delState", [delState: RDStore.O_STATUS_DELETED])
             }
             else {
