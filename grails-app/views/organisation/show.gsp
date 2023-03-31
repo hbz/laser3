@@ -490,7 +490,7 @@
                             <dd>
                             <laser:render template="publicContacts" model="[isProviderOrAgency: isProviderOrAgency, existsWekbRecord: orgInstanceRecord != null]"/>
 
-                            <g:if test="${isProviderOrAgency && accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_BASIC ) && !orgInstanceRecord}">
+                            <g:if test="${isProviderOrAgency && accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC ) && !orgInstanceRecord}">
                                 <div class="ui list">
 
                                     <div class="item">
@@ -786,7 +786,7 @@
                     </g:if>
                 </g:if>
 
-            <g:if test="${accessService.checkPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
+            <g:if test="${accessService.ctxPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
                 <div id="new-dynamic-properties-block">
                     <laser:render template="properties" model="${[
                             orgInstance   : orgInstance,
@@ -964,7 +964,7 @@
                             <g:set var="techSupports" value="${orgInstance.getContactPersonsByFunctionType(true, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, orgInstanceRecord != null)}"/>
                             <g:set var="serviceSupports" value="${orgInstance.getContactPersonsByFunctionType(true, RDStore.PRS_FUNC_SERVICE_SUPPORT, orgInstanceRecord != null)}"/>
                             <g:set var="metadataContacts" value="${orgInstance.getContactPersonsByFunctionType(true, RDStore.PRS_FUNC_METADATA, orgInstanceRecord != null)}"/>
-                            <g:if test="${isProviderOrAgency && accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_BASIC ) && !orgInstanceRecord}">
+                            <g:if test="${isProviderOrAgency && accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC ) && !orgInstanceRecord}">
                                 <tr>
                                     <td>
                                         <a href="#createPersonModal" class="ui button" data-ui="modal"
@@ -1007,9 +1007,9 @@
                                                                         <g:each in="${prs.contacts.toSorted()}" var="contact">
                                                                             <g:if test="${contact.contentType && contact.contentType.value in ['E-Mail', 'Mail', 'Url', 'Phone', 'Mobil', 'Fax']}">
                                                                                 <laser:render template="/templates/cpa/contact" model="${[
-                                                                                        overwriteEditable   : (isProviderOrAgency && orgInstanceRecord == null && accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_BASIC )),
+                                                                                        overwriteEditable   : (isProviderOrAgency && orgInstanceRecord == null && accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )),
                                                                                         contact             : contact,
-                                                                                        tmplShowDeleteButton: (isProviderOrAgency && orgInstanceRecord == null && accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_BASIC ))
+                                                                                        tmplShowDeleteButton: (isProviderOrAgency && orgInstanceRecord == null && accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC ))
                                                                                 ]}"/>
                                                                             </g:if>
                                                                         </g:each>
@@ -1045,9 +1045,9 @@
                                                                         <g:each in="${prs.contacts.toSorted()}" var="contact">
                                                                             <g:if test="${contact.contentType && contact.contentType.value in ['E-Mail', 'Mail', 'Url', 'Phone', 'Mobil', 'Fax']}">
                                                                                 <laser:render template="/templates/cpa/contact" model="${[
-                                                                                        overwriteEditable   : (isProviderOrAgency && orgInstanceRecord == null && accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_BASIC )),
+                                                                                        overwriteEditable   : (isProviderOrAgency && orgInstanceRecord == null && accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )),
                                                                                         contact             : contact,
-                                                                                        tmplShowDeleteButton: (isProviderOrAgency && orgInstanceRecord == null && accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_BASIC ))
+                                                                                        tmplShowDeleteButton: (isProviderOrAgency && orgInstanceRecord == null && accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC ))
                                                                                 ]}"/>
                                                                             </g:if>
                                                                         </g:each>
@@ -1083,9 +1083,9 @@
                                                                         <g:each in="${prs.contacts.toSorted()}" var="contact">
                                                                             <g:if test="${contact.contentType && contact.contentType.value in ['E-Mail', 'Mail', 'Url', 'Phone', 'Mobil', 'Fax']}">
                                                                                 <laser:render template="/templates/cpa/contact" model="${[
-                                                                                        overwriteEditable   : (isProviderOrAgency && orgInstanceRecord == null && accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_BASIC )),
+                                                                                        overwriteEditable   : (isProviderOrAgency && orgInstanceRecord == null && accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )),
                                                                                         contact             : contact,
-                                                                                        tmplShowDeleteButton: (isProviderOrAgency && orgInstanceRecord == null && accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_BASIC ))
+                                                                                        tmplShowDeleteButton: (isProviderOrAgency && orgInstanceRecord == null && accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC ))
                                                                                 ]}"/>
                                                                             </g:if>
                                                                         </g:each>

@@ -346,7 +346,7 @@ class AjaxController {
               log.debug('ignored value "' + it + '" from result because of constraint: '+ params.constraint)
           }
           //value is correct incorrectly translated!
-          if (it.value.equalsIgnoreCase('local subscription') && accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && params.constraint?.contains('removeValue_localSubscription')) {
+          if (it.value.equalsIgnoreCase('local subscription') && accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && params.constraint?.contains('removeValue_localSubscription')) {
               log.debug('ignored value "' + it + '" from result because of constraint: '+ params.constraint)
           }
           // default ..
@@ -2036,7 +2036,7 @@ class AjaxController {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_EDITOR")
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_EDITOR")
     })
     def deleteTask() {
 
@@ -2119,7 +2119,7 @@ class AjaxController {
         result.acceptedOffset = params.acceptedOffset ? params.int("acceptedOffset") : result.offset
         result.pendingOffset = params.pendingOffset ? params.int("pendingOffset") : result.offset
         def periodInDays = result.user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)
-        Map<String, Object> pendingChangeConfigMap = [contextOrg:result.institution, consortialView:accessService.checkOrgPerm(result.institution, 'ORG_CONSORTIUM_BASIC'), periodInDays:periodInDays, max:result.max, acceptedOffset:result.acceptedOffset, pendingOffset: result.pendingOffset]
+        Map<String, Object> pendingChangeConfigMap = [contextOrg:result.institution, consortialView:accessService.otherOrgPerm(result.institution, 'ORG_CONSORTIUM_BASIC'), periodInDays:periodInDays, max:result.max, acceptedOffset:result.acceptedOffset, pendingOffset: result.pendingOffset]
         Map<String, Object> changes = pendingChangeService.getChanges(pendingChangeConfigMap)
         changes.max = result.max
         changes.editable = result.editable

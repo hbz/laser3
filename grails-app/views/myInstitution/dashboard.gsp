@@ -9,10 +9,10 @@
         <ui:h1HeaderWithIcon text="${institution.name}" />
 
 %{--<pre>--}%
-%{--    ORG_CONSORTIUM_BASIC: ${accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}--}%
-%{--    ORG_CONSORTIUM_PRO: ${accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)}--}%
-%{--    ORG_INST_BASIC: ${accessService.checkPerm(CustomerTypeService.ORG_INST_BASIC)}--}%
-%{--    ORG_INST_PRO: ${accessService.checkPerm(CustomerTypeService.ORG_INST_PRO)}--}%
+%{--    ORG_CONSORTIUM_BASIC: ${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}--}%
+%{--    ORG_CONSORTIUM_PRO: ${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)}--}%
+%{--    ORG_INST_BASIC: ${accessService.ctxPerm(CustomerTypeService.ORG_INST_BASIC)}--}%
+%{--    ORG_INST_PRO: ${accessService.ctxPerm(CustomerTypeService.ORG_INST_PRO)}--}%
 
 %{--    getCustomerType: ${institution.getCustomerType()}--}%
 %{--</pre>--}%
@@ -94,14 +94,14 @@
             ${systemAnnouncements.size()} ${message(code:'announcement.plural')}
         </a>
 
-        <g:if test="${accessService.checkPerm(CustomerTypeService.PERMS_INST_BASIC_CONSORTIUM_PRO)}">
+        <g:if test="${accessService.ctxPerm(CustomerTypeService.PERMS_INST_BASIC_CONSORTIUM_PRO)}">
             <a class="${us_dashboard_tab.value == 'Surveys' ? 'active item' : 'item'}" data-tab="surveys">
                 <i class="chart pie icon large"></i>
                 <span id="surveyCount">${message(code: 'myinst.dash.survey.label', args: [message(code: 'myinst.loadPending')])}</span>
             </a>
         </g:if>
 
-        <g:if test="${accessService.checkPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
+        <g:if test="${accessService.ctxPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
             <a class="${us_dashboard_tab.value == 'Tasks' ? 'active item':'item'}" data-tab="tasks">
                 <i class="calendar check outline icon large"></i>
                 ${tasksCount} ${message(code:'myinst.dash.task.label')}
@@ -169,7 +169,7 @@
             </g:if>
         </div>
 
-        <g:if test="${accessService.checkPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
+        <g:if test="${accessService.ctxPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
         <div class="ui bottom attached tab ${us_dashboard_tab.value == 'Tasks' ? 'active':''}" data-tab="tasks">
 
             <g:if test="${editable}">
@@ -249,11 +249,11 @@
 
         </g:if>
 
-        <g:if test="${accessService.checkPerm(CustomerTypeService.PERMS_INST_BASIC_CONSORTIUM_PRO)}">
+        <g:if test="${accessService.ctxPerm(CustomerTypeService.PERMS_INST_BASIC_CONSORTIUM_PRO)}">
             <div class="ui bottom attached tab segment ${us_dashboard_tab.value == 'Surveys' ? 'active' : ''}"
                  data-tab="surveys" style="border-top: 1px solid #d4d4d5; ">
                 <div class="la-float-right">
-                    <g:if test="${accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
+                    <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
                         <g:link controller="survey" action="workflowsSurveysConsortia"
                                 class="ui button">${message(code: 'menu.my.surveys')}</g:link>
                     </g:if>

@@ -1,9 +1,9 @@
 <%@ page import="de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.storage.RDStore" %>
 <laser:serviceInjection/>
 
-<g:if test="${accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )}">
+<g:if test="${accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )}">
     <ui:actionsDropdown>
-        <g:if test="${editable || accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')}">
+        <g:if test="${editable || accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')}">
             <g:if test="${actionName == 'list'}">
                 <ui:actionsDropdownItem controller="organisation" action="create" message="org.create_new.label"/>
             </g:if>
@@ -81,7 +81,7 @@
         </g:if>
     </ui:actionsDropdown>
 </g:if>
-<g:elseif test="${accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_INST_BASIC )}">
+<g:elseif test="${accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )}">
     <g:if test="${actionName in ['show','notes']}">
         <ui:actionsDropdown>
             <ui:actionsDropdownItem message="template.notes.add" data-ui="modal" href="#modalCreateNote"/>
@@ -125,7 +125,7 @@
 </g:elseif>
 <%-- secure against listInstitution, where no orgId is given --%>
 <g:if test="${createModal}">
-    <g:if test="${editable || accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')}">
+    <g:if test="${editable || accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')}">
         <laser:render template="/templates/tasks/modal_create" model="${[ownobj: orgInstance, owntp: 'org']}"/>
         <laser:render template="/templates/documents/modal" model="${[ownobj: orgInstance, institution: institution, owntp: 'org']}"/>
     </g:if>

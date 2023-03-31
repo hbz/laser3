@@ -1,4 +1,4 @@
-<%@ page import="de.laser.config.ConfigMapper" %>
+<%@ page import="grails.util.Holders; de.laser.config.ConfigMapper" %>
 <laser:htmlStart message="menu.yoda.systemQuartz" />
 
 <ui:breadcrumbs>
@@ -38,7 +38,9 @@
 
                     if (job.configurationProperties) {
                         job.configurationProperties.each { prop ->
-                            isActive = isActive && (currentConfig.get(prop[0].trim()) && ! (currentConfig.get(prop[0].trim()) in [null, false]))
+//                            isActive = isActive && (currentConfig.get(prop[0].trim()) && ! (currentConfig.get(prop[0].trim()) in [null, false]))
+                            def cpval = Holders.grailsApplication.config.getProperty(prop[0].trim(), Object)
+                            isActive = isActive && (cpval != null && cpval != false)
                         }
                     }
 
@@ -69,8 +71,11 @@
                     </td>
                     <td class="${tdClass}">
                         <g:each in="${job.configurationProperties}" var="prop">
-                            <g:if test="${currentConfig.get(prop[0].trim())}">
-                                ${prop[0]} = ${currentConfig.get(prop[0].trim())} <br />
+%{--                            <g:if test="${currentConfig.get(prop[0].trim())}">--}%
+%{--                                ${prop[0]} = ${currentConfig.get(prop[0].trim())} <br />--}%
+                            <g:set var="cpval" value="${Holders.grailsApplication.config.getProperty(prop[0].trim(), Object)}" />
+                            <g:if test="${cpval}">
+                                ${prop[0]} = ${cpval} <br />
                             </g:if>
                             <g:else>
                                 ${prop[0]} <br />

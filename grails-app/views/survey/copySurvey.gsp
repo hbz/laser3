@@ -504,7 +504,7 @@
                                 </td>
 
                                 <td class="x">
-                                    <g:if test="${editable && accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_PRO )}">
+                                    <g:if test="${editable && accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )}">
                                         <g:link class="ui icon positive button la-popup-tooltip la-delay"
                                                 data-content="${message(code: 'survey.toggleSurveySub.add.label', args: [SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransferIsNotNull(s).size(), SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransferIsNull(s).size()])}"
                                                 controller="survey" action="copySurvey"

@@ -235,7 +235,7 @@ class SubscriptionControllerService {
                         }
                         result.statsWibid = result.institution.getIdentifierByType('wibid')?.value
                         if (result.statsWibid && result.natStatSupplierId) {
-                            result.usageMode = accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) ? 'package' : 'institution'
+                            result.usageMode = accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) ? 'package' : 'institution'
                             result.usage = fsresult?.usage
                             result.missingMonths = fsresult?.missingMonths
                             result.missingSubscriptionMonths = fsLicenseResult?.missingMonths
@@ -941,7 +941,7 @@ class SubscriptionControllerService {
             cal.set(Calendar.MONTH, Calendar.DECEMBER)
             cal.set(Calendar.DAY_OF_MONTH, 31)
             result.defaultEndYear = sdf.format(cal.getTime())
-            if(accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+            if(accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
                 params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
                 Map<String,Object> fsq = filterService.getOrgComboQuery(params, result.institution)
                 result.members = Org.executeQuery(fsq.query, fsq.queryParams, params)
@@ -3689,7 +3689,7 @@ class SubscriptionControllerService {
                 }
                 else {
                     log.debug("Save ok")
-                    if(accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+                    if(accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
                         if (params.list('auditList')) {
                             //copy audit
                             params.list('auditList').each { auditField ->
@@ -3880,7 +3880,7 @@ class SubscriptionControllerService {
         if (!result.editable) {
             //the explicit comparison against bool(true) should ensure that not only the existence of the parameter is checked but also its proper value
             if(params.copyMyElements == true) {
-                if(accessService.checkPermAffiliation(CustomerTypeService.ORG_INST_PRO, 'INST_EDITOR'))
+                if(accessService.ctxPermAffiliation(CustomerTypeService.ORG_INST_PRO, 'INST_EDITOR'))
                     result
             }
             else null
@@ -3990,7 +3990,7 @@ class SubscriptionControllerService {
         }
         else {
             if (checkOption in [AccessService.CHECK_EDIT, AccessService.CHECK_VIEW_AND_EDIT]) {
-                result.editable = accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')
+                result.editable = accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')
             }
         }
         result.consortialView = result.showConsortiaFunctions ?: result.contextOrg.isCustomerType_Consortium()

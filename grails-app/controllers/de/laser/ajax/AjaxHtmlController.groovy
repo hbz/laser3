@@ -33,8 +33,6 @@ import de.laser.Person
 import de.laser.PersonRole
 import de.laser.SubscriptionPackage
 import de.laser.SubscriptionService
-import de.laser.stats.Counter4Report
-import de.laser.stats.Counter5Report
 import de.laser.storage.PropertyStore
 import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyConfigProperties
@@ -164,7 +162,7 @@ class AjaxHtmlController {
         result.acceptedOffset = params.acceptedOffset ? params.int("acceptedOffset") : result.offset
         result.pendingOffset = params.pendingOffset ? params.int("pendingOffset") : result.offset
         def periodInDays = result.user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)
-        Map<String, Object> pendingChangeConfigMap = [contextOrg:result.institution, consortialView:accessService.checkOrgPerm(result.institution, 'ORG_CONSORTIUM_BASIC'), periodInDays:periodInDays, max:result.max, acceptedOffset:result.acceptedOffset, pendingOffset: result.pendingOffset]
+        Map<String, Object> pendingChangeConfigMap = [contextOrg:result.institution, consortialView:accessService.otherOrgPerm(result.institution, 'ORG_CONSORTIUM_BASIC'), periodInDays:periodInDays, max:result.max, acceptedOffset:result.acceptedOffset, pendingOffset: result.pendingOffset]
         Map<String, Object> changes = pendingChangeService.getChanges(pendingChangeConfigMap)
         changes.max = result.max
         changes.editable = result.editable
@@ -184,7 +182,7 @@ class AjaxHtmlController {
                 [org: result.institution,
                  status: RDStore.SURVEY_SURVEY_STARTED])
 
-        if (accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)){
+        if (accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)){
             activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where surConfig.surveyInfo.status = :status  and surConfig.surveyInfo.owner = :org " +
                     " order by surConfig.surveyInfo.endDate",
                     [org: result.institution,
@@ -244,7 +242,7 @@ class AjaxHtmlController {
         result.roleObject = result.subscription
         result.roleRespValue = 'Specific subscription editor'
         result.editmode = result.subscription.isEditableBy(contextService.getUser())
-        result.accessConfigEditable = accessService.checkPermAffiliation(CustomerTypeService.ORG_INST_BASIC, 'INST_EDITOR') || (accessService.checkPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR') && result.subscription.getSubscriber().id == contextOrg.id)
+        result.accessConfigEditable = accessService.ctxPermAffiliation(CustomerTypeService.ORG_INST_BASIC, 'INST_EDITOR') || (accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR') && result.subscription.getSubscriber().id == contextOrg.id)
         render template: '/subscription/packages', model: result
     }
 
@@ -642,7 +640,7 @@ class AjaxHtmlController {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_PRO, affil="INST_USER")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER")
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER")
     })
     def reporting() {
         Map<String, Object> result = [
@@ -693,7 +691,7 @@ class AjaxHtmlController {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_PRO, affil="INST_USER")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER")
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER")
     })
     def chartDetails() {
         // TODO - SESSION TIMEOUTS
@@ -730,7 +728,7 @@ class AjaxHtmlController {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_PRO, affil="INST_USER")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER")
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER")
     })
     def chartDetailsExport() {
 
@@ -896,7 +894,7 @@ class AjaxHtmlController {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_PRO, affil="INST_USER")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER")
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER")
     })
     def chartQueryExport() {
 
