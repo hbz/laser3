@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4741    31.03.2023  dev     3.1         Andreas Feature     Zusammenführung von Einrichtungen
+
 4834    30.03.2023  dev     3.1         Andreas Feature     Umstellung der Statistikladevorgänge auf direkten Abruf vom Anbieter
 
 4904    29.03.2023  dev     3.1         David   Feature     GASCO Sicht anpassen
