@@ -165,7 +165,7 @@ class UserService {
      * @param orgToCheck the institution to which affiliation should be checked
      * @return true if the given permission is granted to the user in the given institution (or a missing one overridden by global roles), false otherwise
      */
-    boolean is_ROLE_ADMIN_or_checkAffiliation(User user, String instUserRole, Org orgToCheck) {
+    boolean checkAffiliation_or_ROLEADMIN(User user, Org orgToCheck, String instUserRole) {
         boolean check = false
 
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
@@ -200,7 +200,7 @@ class UserService {
             }
         }
 
-        //TODO: log.debug("affiliationCheck(): ${user} - ${instUserRole} @ ${orgToCheck} -> ${check}")
+        //TODO: log.debug("checkAffiliation_or_ROLEADMIN(): ${user} ${orgToCheck} ${instUserRole} -> ${check}")
         check
     }
 
@@ -227,7 +227,7 @@ class UserService {
                         user = addNewUser([username: username, password: "${adminUser.pass}", display: username, email: "${adminUser.email}", enabled: true, org: orgs[customerKey]],null)
 
                         if (user && orgs[customerKey]) {
-                            if (! user.is_ROLE_ADMIN_or_hasAffiliationForForeignOrg(rightKey, orgs[customerKey])) {
+                            if (! user.hasOrgAffiliation_or_ROLEADMIN(orgs[customerKey], rightKey)) {
 
                                 instAdmService.createAffiliation(user, orgs[customerKey], userRole, null)
                                 user.getSetting(UserSetting.KEYS.DASHBOARD, orgs[customerKey])
