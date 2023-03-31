@@ -592,7 +592,7 @@ class SubscriptionControllerService {
         Questions:
         1. use all clicks or unique clicks? -> use for each metric a separate cost per use
         2. the 100% encompasses everything. If I select several metrics, how should I calculate cost per use? Distribute equally?
-           response: I need to take the 100% of all clicks as well (i.e. of all metrics); the cost per use has thus to be calculated by the amount of clicks. So all clicks of all metrics altogether give the complete sum. I need to calculate the percentage of the metric first and divide by that.
+           response: I need to take the 100% of all clicks as well (i.e. of all metrics); the cost per use has thus to be calculated by the amount of clicks. So all clicks of all metrics altogether give the complete sum.
          */
         Set<CostItem> costItems = []
         if(config == "own") {
@@ -642,18 +642,21 @@ class SubscriptionControllerService {
                 //loop 2: metrics
                 statsData.allYearSums.each { String metricType, Map<String, Object> reportYearMetrics ->
                     //loop 3: metrics in report year
-                    reportYearMetrics.each { String year, Integer sum ->
+                    reportYearMetrics.each { String year, Integer count ->
                         BigDecimal totalSum = allCostSums.get(reportYear)
                         if(totalSum) {
                             BigDecimal partOfTotalSum
-                            if(sum != totalClicksInYear) {
-                                BigDecimal percentage = sum / totalClicksInYear
+                            /*
+                            I am unsure whether I have indeed to calculate from percentage ...
+                            if(count != totalClicksInYear) {
+                                BigDecimal percentage = count / totalClicksInYear
                                 log.debug("percentage: ${percentage*100} % for ${metricType}")
                                 partOfTotalSum = totalSum * percentage
                             }
                             else partOfTotalSum = totalSum
+                            */
                             BigDecimal metricSum = costPerMetric.get(metricType) ?: 0.0
-                            metricSum += (partOfTotalSum / sum).setScale(2, RoundingMode.HALF_UP)
+                            metricSum += (totalSum / count).setScale(2, RoundingMode.HALF_UP)
                             costPerMetric.put(metricType, metricSum)
                         }
                     }
