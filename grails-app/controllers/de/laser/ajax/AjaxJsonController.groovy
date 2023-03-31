@@ -201,7 +201,7 @@ class AjaxJsonController {
         queryParams.showConnectedObjs = showConnectedObjs
 
         data = compareService.getMySubscriptions(queryParams)
-        if (accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+        if (accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
             if (showSubscriber) {
                 List parents = data.clone()
                 Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]
@@ -242,7 +242,7 @@ class AjaxJsonController {
         queryParams.showConnectedLics = showConnectedLics
 
         data = compareService.getMyLicenses(queryParams)
-        if (accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+        if (accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
             if (showSubscriber) {
                 List parents = data.clone()
                 Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_LICENSEE_CONS, RDStore.OR_LICENSEE]
@@ -979,7 +979,7 @@ class AjaxJsonController {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_PRO, affil="INST_USER")
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER")
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER")
     })
     def chart() {
         Map<String, Object> result = [:]

@@ -386,7 +386,7 @@
 </ui:filter>
 
 <laser:script file="${this.getGroovyPageFileName()}">
-    <g:if test="${subscription}">
+    <g:if test="${subscription && platformsJSON}">
         $("#reportType").on('change', function() {
             let reportType = $(this).val();
             <g:applyCodec encodeAs="none">

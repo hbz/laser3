@@ -11,7 +11,7 @@
     <laser:render template="/templates/properties/groupBindings" model="${[
             propDefGroup: propDefGroup,
             ownobj: license,
-            editable: accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR'),
+            editable: accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR'),
             availPropDefGroups: availPropDefGroups
     ]}" />
 
@@ -116,7 +116,7 @@
                     prop_desc: PropertyDefinition.LIC_PROP,
                     ownobj: license,
                     orphanedProperties: allPropDefGroups.orphanedProperties,
-                    editable: accessService.checkPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR'),
+                    editable: accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR'),
                     custom_props_div: "custom_props_div_props" ]}"/>
         </div>
     </div>

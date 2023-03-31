@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4834    30.03.2023  dev     3.1         Andreas Feature     Umstellung der Statistikladevorgänge auf direkten Abruf vom Anbieter
+
 4904    29.03.2023  dev     3.1         David   Feature     GASCO Sicht anpassen
 
 4942    29.03.2023  dev     3.1         David   Feature     GASCO und we:kb mit separatem Tab öffnen

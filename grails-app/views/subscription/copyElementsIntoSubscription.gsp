@@ -101,7 +101,7 @@
                 </div>
             </div>
 
-            <g:if test="${!fromSurvey && isSubscriberVisible && accessService.checkPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_USER')}">
+            <g:if test="${!fromSurvey && isSubscriberVisible && accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_USER')}">
                 <div class="${workFlowPart == CopyElementsService.WORKFLOW_SUBSCRIBER ? 'active' : (workFlowPart in [CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS, CopyElementsService.WORKFLOW_PROPERTIES] ? 'completed' : '')} step">
 
                     <div class="content">
@@ -188,7 +188,7 @@
                 </div>
             </ui:complexSubNavItem>
 
-            <g:if test="${isSubscriberVisible && accessService.checkPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR')}">
+            <g:if test="${isSubscriberVisible && accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR')}">
                 <ui:complexSubNavItem class="${workFlowPart == CopyElementsService.WORKFLOW_SUBSCRIBER ? 'active' : ''}" controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: CopyElementsService.WORKFLOW_SUBSCRIBER]}" >
                     <div class="content">
                         <div class="title">
@@ -233,7 +233,7 @@
     <g:if test="${workFlowPart == CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS}">
         <laser:render template="/templates/copyElements/copyDocsAndTasks" />
     </g:if>
-    <g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_SUBSCRIBER && isSubscriberVisible && accessService.checkPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR')}">
+    <g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_SUBSCRIBER && isSubscriberVisible && accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR')}">
         <laser:render template="/templates/copyElements/copySubscriber" />
     </g:elseif>
     <g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_PROPERTIES}">

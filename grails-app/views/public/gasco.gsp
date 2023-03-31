@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.PropertyStore; de.laser.Org; de.laser.PersonRole; de.laser.OrgRole; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.Contact; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.storage.RDConstants;" %>
+<%@ page import="de.laser.Subscription; de.laser.storage.PropertyStore; de.laser.Org; de.laser.PersonRole; de.laser.OrgRole; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.Contact; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.storage.RDConstants;" %>
 
 <laser:htmlStart message="gasco.title">
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
@@ -133,6 +133,11 @@
         <g:set var="GASCO_INFORMATION_LINK" value="${PropertyStore.SUB_PROP_GASCO_INFORMATION_LINK}" />
         <g:set var="GASCO_ANZEIGENAME" value="${PropertyStore.SUB_PROP_GASCO_DISPLAY_NAME}" />
         <g:set var="GASCO_VERHANDLERNAME" value="${PropertyStore.SUB_PROP_GASCO_NEGOTIATOR_NAME}" />
+        <%
+            List flyoutCheckList = Subscription.executeQuery(
+                    'select distinct(s.instanceOf.id), count(*) from Subscription s group by s.instanceOf.id order by s.instanceOf.id'
+            ).collect{ it[0] }
+        %>
             <g:each in="${subscriptions}" var="sub" status="i">
                 <g:set var="gasco_infolink" value="${sub.propertySet.find{ it.type == GASCO_INFORMATION_LINK}?.urlValue}" />
                 <g:set var="gasco_anzeigename" value="${sub.propertySet.find{ it.type == GASCO_ANZEIGENAME}?.stringValue}" />
@@ -198,9 +203,16 @@
                         </g:each>
                     </td>
                     <td class="center aligned">
-                        <g:link class="flyoutLink ui icon button blue compact la-modern-button" controller="public" action="gascoFlyout" data-key="${sub.id}">
-                            <i class="icon info"></i>
-                        </g:link>
+                        <g:if test="${flyoutCheckList.contains(sub.id)}">
+                            <g:link class="flyoutLink ui icon button blue la-modern-button" controller="public" action="gascoFlyout" data-key="${sub.id}">
+                                <i class="icon info"></i>
+                            </g:link>
+                        </g:if>
+                        <g:else>
+                            <span data-position="top right" class="la-popup-tooltip la-delay" data-content="Leider stehen keine Informationen zur Verfügung. Bitte wenden Sie sich an die Konsortialstelle.">
+                                <i class="icon grey minus circle"></i>
+                            </span>
+                        </g:else>
                     </td>
                 </tr>
             </g:each>
@@ -244,10 +256,14 @@
         $('a.flyoutLink').on ('click', function(e) {
             e.preventDefault();
             $('html').css ('cursor', 'auto');
+            $(this).removeClass('blue');
 
             $('#gascoFlyout').flyout ({
-                onHidden: function (e) { %{-- after animation --}%
-                    $('#gascoFlyout > .content').empty();
+                onHide: function (e) {
+                    $('a.flyoutLink').addClass('blue');
+                },
+                onHidden: function (e) {
+                    $('#gascoFlyout > .content').empty(); %{-- after animation --}%
                 }
             });
 
@@ -272,7 +288,7 @@
                 });
 
                 $('#gascoFlyout').flyout ('show');
-            });
+            })
         });
     </laser:script>
 
