@@ -141,7 +141,7 @@ class AccessPointControllerService {
         Map<String,Object> result = [:]
         Locale locale = LocaleUtils.getCurrentLocale()
         // without the org somehow passed we can only create AccessPoints for the context org
-        Org orgInstance = accessService.checkCtxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) ? Org.get(params.id) : contextService.getOrg()
+        Org orgInstance = accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) ? Org.get(params.id) : contextService.getOrg()
         if(!params.name) {
             result.error = messageSource.getMessage('accessPoint.require.name', null, locale)
             [result:result,status:STATUS_ERROR]
@@ -198,7 +198,7 @@ class AccessPointControllerService {
         else {
             Org org = accessPoint.org
             boolean inContextOrg = (org.id == contextService.getOrg().id)
-            if(((accessService.checkCtxPerm(CustomerTypeService.ORG_INST_BASIC) && inContextOrg) || (accessService.checkCtxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)))) {
+            if(((accessService.ctxPerm(CustomerTypeService.ORG_INST_BASIC) && inContextOrg) || (accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)))) {
                 Long oapPlatformLinkCount = OrgAccessPointLink.countByActiveAndOapAndSubPkgIsNull(true, accessPoint)
                 Long oapSubscriptionLinkCount = OrgAccessPointLink.countByActiveAndOapAndSubPkgIsNotNull(true, accessPoint)
                 if (oapPlatformLinkCount != 0 || oapSubscriptionLinkCount != 0) {

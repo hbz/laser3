@@ -343,7 +343,7 @@ class AjaxController {
               log.debug('ignored value "' + it + '" from result because of constraint: '+ params.constraint)
           }
           //value is correct incorrectly translated!
-          if (it.value.equalsIgnoreCase('local subscription') && accessService.checkCtxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && params.constraint?.contains('removeValue_localSubscription')) {
+          if (it.value.equalsIgnoreCase('local subscription') && accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && params.constraint?.contains('removeValue_localSubscription')) {
               log.debug('ignored value "' + it + '" from result because of constraint: '+ params.constraint)
           }
           // default ..
@@ -2033,7 +2033,7 @@ class AjaxController {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_EDITOR")
     @Secured(closure = {
-        ctx.accessService.checkCtxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_EDITOR")
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_EDITOR")
     })
     def deleteTask() {
 

@@ -15,7 +15,7 @@
 
             <div class="content">
                 <div class="ui header">
-                    <g:if test="${accessService.checkCtxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
+                    <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
                         <g:link controller="survey" action="show" params="[surveyConfigID: surveyConfig.id]"
                                 id="${surveyInfo.id}">${i+1+surveysOffset}: ${surveyConfig.getSurveyName()}
                         </g:link>
@@ -41,7 +41,7 @@
 
                 <div class="description">
                     <p>
-                        <g:if test="${accessService.checkCtxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
+                        <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
                             <g:link controller="survey" action="surveyParticipants" id="${surveyInfo.id}"
                                     params="[surveyConfigID: surveyConfig.id]" class="ui icon">
                                 <strong>${message(code: 'surveyParticipants.label')}:</strong>

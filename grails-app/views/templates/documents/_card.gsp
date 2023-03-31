@@ -13,7 +13,7 @@
             break
     }
 
-    boolean editable2 = accessService.checkCtxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')
+    boolean editable2 = accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')
     Set<DocContext> documentSet = ownobj.documents
 
     //Those are the rights settings the DMS needs to cope with. See the following documentation which is currently a requirement specification, too, and serves as base for ERMS-2393
@@ -63,7 +63,7 @@
         }
     }
 %>
-<g:if test="${accessService.checkCtxPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
+<g:if test="${accessService.ctxPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
     <ui:card message="${documentMessage}" class="documents la-js-hideable ${css_class}" href="#modalCreateDocument" editable="${editable || editable2}">
         <g:each in="${baseItems}" var="docctx">
             <g:if test="${docctx.isDocAFile() && (docctx.status?.value!='Deleted')}">

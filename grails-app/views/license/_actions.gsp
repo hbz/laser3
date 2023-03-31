@@ -50,7 +50,7 @@
         </g:if>
         <g:if test="${actionName == 'show'}">
             <%-- the second clause is to prevent the menu display for consortia at member subscriptions --%>
-            <g:if test="${accessService.checkCtxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR') && !(institution.id == license.getLicensingConsortium()?.id && license.instanceOf)}">
+            <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR') && !(institution.id == license.getLicensingConsortium()?.id && license.instanceOf)}">
                 <div class="divider"></div>
                 <ui:actionsDropdownItem data-ui="modal" href="#propDefGroupBindings" message="menu.institutions.configure_prop_groups" />
             </g:if>
@@ -76,7 +76,7 @@
     </ui:actionsDropdown>
 </g:if>
 
-<g:if test="${editable || accessService.checkCtxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')}">
+<g:if test="${editable || accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')}">
     <laser:render template="/templates/tasks/modal_create" model="${[ownobj:license, owntp:'license']}"/>
     <laser:render template="/templates/documents/modal" model="${[ownobj:license, owntp:'license']}"/>
 </g:if>

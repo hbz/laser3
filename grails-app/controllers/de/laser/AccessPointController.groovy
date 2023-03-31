@@ -41,7 +41,7 @@ class AccessPointController  {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_BASIC, affil="INST_EDITOR", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkCtxPermAffiliation(CustomerTypeService.PERMS_BASIC, "INST_EDITOR")
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_BASIC, "INST_EDITOR")
     })
     def addIpRange() {
         Map<String,Object> ctrlResult = accessPointControllerService.addIpRange(params)
@@ -61,7 +61,7 @@ class AccessPointController  {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_BASIC, affil="INST_EDITOR", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkCtxPermAffiliation(CustomerTypeService.PERMS_BASIC, "INST_EDITOR")
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_BASIC, "INST_EDITOR")
     })
     def addMailDomain() {
         Map<String,Object> ctrlResult = accessPointControllerService.addMailDomain(params)
@@ -134,12 +134,12 @@ class AccessPointController  {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
-        ctx.accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.PERMS_BASIC )
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_BASIC )
     })
     def create() {
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
-        Org organisation = accessService.checkCtxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) ? Org.get(params.id) : contextService.getOrg()
+        Org organisation = accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) ? Org.get(params.id) : contextService.getOrg()
         result.institution = contextService.getOrg()
         result.contextCustomerType = result.institution.getCustomerType()
         result.orgInstance = organisation
@@ -161,7 +161,7 @@ class AccessPointController  {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.PERMS_BASIC )
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_BASIC )
     })
     def processCreate() {
         RefdataValue accessMethod = (RefdataValue) genericOIDService.resolveOID(params.accessMethod)
@@ -183,7 +183,7 @@ class AccessPointController  {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.PERMS_BASIC )
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_BASIC )
     })
     def delete() {
         Map<String,Object> ctrlResult = accessPointControllerService.delete(params)
@@ -369,10 +369,10 @@ class AccessPointController  {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_BASIC, affil="INST_EDITOR", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkCtxPermAffiliation(CustomerTypeService.PERMS_BASIC, "INST_EDITOR")
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_BASIC, "INST_EDITOR")
     })
     def deleteAccessPointData() {
-        Org organisation = accessService.checkCtxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) ? Org.get(params.id) : contextService.getOrg()
+        Org organisation = accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) ? Org.get(params.id) : contextService.getOrg()
         boolean inContextOrg = organisation.id == contextService.getOrg().id
 
         if (accessService.is_INST_EDITOR_with_PERMS_BASIC( inContextOrg )){
@@ -389,7 +389,7 @@ class AccessPointController  {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_BASIC, affil="INST_EDITOR", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkCtxPermAffiliation(CustomerTypeService.PERMS_BASIC, "INST_EDITOR")
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_BASIC, "INST_EDITOR")
     })
     def linkPlatform() {
         Map<String,Object> result = accessPointService.linkPlatform(params)
@@ -403,7 +403,7 @@ class AccessPointController  {
      */
     @DebugInfo(perm=CustomerTypeService.PERMS_BASIC, affil="INST_EDITOR", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkCtxPermAffiliation(CustomerTypeService.PERMS_BASIC, "INST_EDITOR")
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_BASIC, "INST_EDITOR")
     })
     def unlinkPlatform() {
         Map<String,Object> result = accessPointService.unlinkPlatform(OrgAccessPointLink.get(params.id))

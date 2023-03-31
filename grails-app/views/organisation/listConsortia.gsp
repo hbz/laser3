@@ -9,7 +9,7 @@
 
     <ui:controlButtons>
         <%
-            editable = (editable && accessService.checkCtxPerm(CustomerTypeService.ORG_INST_PRO)) || contextService.getUser().hasMinRole('ROLE_ADMIN')
+            editable = (editable && accessService.ctxPerm(CustomerTypeService.ORG_INST_PRO)) || contextService.getUser().hasMinRole('ROLE_ADMIN')
         %>
         <ui:exportDropdown>
             <ui:exportDropdownItem>

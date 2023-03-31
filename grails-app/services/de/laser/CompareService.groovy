@@ -132,13 +132,13 @@ class CompareService {
         String base_qry
         Map qry_params
 
-        if (accessService.checkCtxPerm(CustomerTypeService.ORG_INST_PRO)) {
+        if (accessService.ctxPerm(CustomerTypeService.ORG_INST_PRO)) {
             base_qry = """from License as l where (
                 exists ( select o from l.orgRelations as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :lic_org ) ) 
             )"""
             qry_params = [roleType1: RDStore.OR_LICENSEE, roleType2: RDStore.OR_LICENSEE_CONS, lic_org: result.institution]
 
-        } else if (accessService.checkCtxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+        } else if (accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
             base_qry = """from License as l where (
                     exists ( select o from l.orgRelations as o where ( 
                     ( o.roleType = :roleTypeC 

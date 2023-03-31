@@ -31,10 +31,10 @@ class AccessService {
      * @param orgPerms customer type depending permissions to check against
      * @return true if access is granted, false otherwise
      */
-    boolean checkCtxPerm(String orgPerms) {
+    boolean ctxPerm(String orgPerms) {
         _hasPerm_forOrg_withFakeRole(orgPerms.split(','), contextService.getOrg())
     }
-    boolean checkCtxPerm_or_ROLEADMIN(String orgPerms) {
+    boolean ctxPerm_or_ROLEADMIN(String orgPerms) {
         if (contextService.getUser()?.hasMinRole('ROLE_ADMIN')) {
             return true
         }
@@ -47,7 +47,7 @@ class AccessService {
      * @param instUserRole the user permissions to check
      * @return true if the user has the permissions granted and his context institution is one of the given customer types, false otherwise
      */
-    boolean checkCtxPermAffiliation(String orgPerms, String instUserRole) {
+    boolean ctxPermAffiliation(String orgPerms, String instUserRole) {
         _hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(orgPerms.split(','), instUserRole)
     }
 
@@ -69,6 +69,18 @@ class AccessService {
             return true
         }
         _hasPermAndTypeAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(orgPerms.split(','), orgTypes.split(','), instUserRole)
+    }
+
+    boolean ctxInstUserCheckPerm_or_ROLEADMIN(String orgPerms) {
+        _hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser_or_ROLEADMIN(orgPerms, 'INST_USER')
+    }
+
+    boolean ctxInstEditorCheckPerm_or_ROLEADMIN(String orgPerms) {
+        _hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser_or_ROLEADMIN(orgPerms, 'INST_EDITOR')
+    }
+
+    boolean ctxInstAdmCheckPerm_or_ROLEADMIN(String orgPerms) {
+        _hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser_or_ROLEADMIN(orgPerms, 'INST_ADM')
     }
 
     // --- checks for other orgs ---
@@ -266,7 +278,7 @@ class AccessService {
 
     /**
      * Replacement call for the abandoned ROLE_ORG_COM_EDITOR
-     * @return the result of {@link #checkCtxPermAffiliation(java.lang.String, java.lang.String)} for [ORG_INST_PRO, ORG_CONSORTIUM_BASIC] and INST_EDTOR as arguments
+     * @return the result of {@link #ctxPermAffiliation(java.lang.String, java.lang.String)} for [ORG_INST_PRO, ORG_CONSORTIUM_BASIC] and INST_EDTOR as arguments
      */
     boolean is_ORG_COM_EDITOR() {
         _hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC.split(','), 'INST_EDITOR')
@@ -277,17 +289,5 @@ class AccessService {
         boolean b = _hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(CustomerTypeService.ORG_CONSORTIUM_BASIC.split(','), 'INST_EDITOR')
 
         return (a || b)
-    }
-
-    boolean is_ROLE_ADMIN_or_INST_USER_with_PERMS(String orgPerms) {
-        _hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser_or_ROLEADMIN(orgPerms, 'INST_USER')
-    }
-
-    boolean is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS(String orgPerms) {
-        _hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser_or_ROLEADMIN(orgPerms, 'INST_EDITOR')
-    }
-
-    boolean is_ROLE_ADMIN_or_INST_ADM_with_PERMS(String orgPerms) {
-        _hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser_or_ROLEADMIN(orgPerms, 'INST_ADM')
     }
 }

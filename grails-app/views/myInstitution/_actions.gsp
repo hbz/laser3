@@ -4,7 +4,7 @@
 <g:set var="contextOrg" value="${contextService.getOrg()}" />
 <g:if test="${actionName == 'currentSubscriptions'}">
     <ui:actionsDropdown>
-        <g:if test="${accessService.checkCtxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')}">
+        <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')}">
             <ui:actionsDropdownItem controller="subscription" action="emptySubscription" message="menu.institutions.emptySubscription" />
             <ui:actionsDropdownItem controller="myInstitution" action="subscriptionImport" message="menu.institutions.subscriptionImport" />
             <div class="divider"></div>
@@ -14,7 +14,7 @@
 </g:if>
 
 <g:if test="${actionName in ['currentLicenses']}">
-    <g:if test="${accessService.checkCtxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')}">
+    <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')}">
         <ui:actionsDropdown>
             <ui:actionsDropdownItem controller="myInstitution" action="emptyLicense" message="license.add.blank" />
 
@@ -25,7 +25,7 @@
 </g:if>
 
 <g:if test="${actionName in ['manageMembers', 'addMembers']}">
-    <g:if test="${accessService.checkCtxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR')}">
+    <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR')}">
         <ui:actionsDropdown>
             <g:if test="${comboType != null && comboType == RDStore.COMBO_TYPE_CONSORTIUM}">
                 <ui:actionsDropdownItem controller="myInstitution" action="addMembers" message="menu.institutions.add_consortia_members" />

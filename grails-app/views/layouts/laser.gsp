@@ -64,10 +64,10 @@
                                         <ui:link generateElementId="true" role="menuitem" controller="organisation" action="index">${message(code:'menu.public.all_orgs')}</ui:link>
                                     </sec:ifAnyGranted>
 
-                                    <g:if test="${accessService.checkCtxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_USER')}">
+                                    <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_USER')}">
                                         <ui:link generateElementId="true" role="menuitem" controller="organisation" action="listInstitution">${message(code:'menu.public.all_insts')}</ui:link>
                                     </g:if>
-                                    <g:elseif test="${accessService.checkCtxPermAffiliation(CustomerTypeService.ORG_INST_BASIC, 'INST_USER')}">
+                                    <g:elseif test="${accessService.ctxPermAffiliation(CustomerTypeService.ORG_INST_BASIC, 'INST_USER')}">
                                         <ui:link generateElementId="true" role="menuitem" controller="organisation" action="listConsortia">${message(code:'menu.public.all_cons')}</ui:link>
                                     </g:elseif>
 
@@ -88,11 +88,11 @@
                                 <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentSubscriptions" message="menu.my.subscriptions" />
                                 <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentLicenses" message="menu.my.licenses" />
 
-                                <g:if test="${accessService.checkCtxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
+                                <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
                                     <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" specRole="ROLE_ADMIN" action="manageMembers" message="menu.my.insts" />
                                     <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" specRole="ROLE_ADMIN" action="manageConsortiaSubscriptions" message="menu.my.consortiaSubscriptions" />
                                 </g:if>
-                                <g:elseif test="${accessService.checkCtxPerm(CustomerTypeService.ORG_INST_BASIC)}">
+                                <g:elseif test="${accessService.ctxPerm(CustomerTypeService.ORG_INST_BASIC)}">
                                     <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentConsortia" message="menu.my.consortia" />
                                 </g:elseif>
 
@@ -106,7 +106,7 @@
 
                                 <ui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" affiliation="INST_USER" controller="myInstitution" action="subscriptionsManagement" message="menu.my.subscriptionsManagement" />
 
-                                <g:if test="${accessService.checkCtxPerm(CustomerTypeService.ORG_INST_BASIC)}">
+                                <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_INST_BASIC)}">
                                     <div class="divider"></div>
                                     <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentSurveys" message="menu.my.surveys" />
                                 </g:if>
@@ -114,7 +114,7 @@
                                 <div class="divider"></div>
                                 <ui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="${CustomerTypeService.PERMS_PRO}" affiliation="INST_USER" controller="myInstitution" action="currentWorkflows" message="menu.my.workflows" />
 
-                                <g:if test="${accessService.checkCtxPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
+                                <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
                                     <div class="divider"></div>
                                     <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="survey" action="workflowsSurveysConsortia" message="menu.my.surveys" />
                                 </g:if>
@@ -503,7 +503,7 @@
                         </g:if>
                     </div>
 
-                        <g:if test="${(controllerName=='dev' && actionName=='frontend' ) || (controllerName=='subscription'|| controllerName=='license') && actionName=='show' && (editable || accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC ))}">
+                        <g:if test="${(controllerName=='dev' && actionName=='frontend' ) || (controllerName=='subscription'|| controllerName=='license') && actionName=='show' && (editable || accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC ))}">
                             <div class="item">
                                 <g:if test="${user?.getSettingsValue(UserSetting.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N))?.value=='Yes'}">
                                     <button class="ui icon toggle active blue button la-modern-button  la-toggle-controls la-popup-tooltip la-delay" data-content="${message(code:'statusbar.showButtons.tooltip')}" data-position="bottom right">
@@ -644,7 +644,7 @@
 
         <g:if test="${(controllerName=='dev' && actionName=='frontend' ) || (controllerName=='subscription'|| controllerName=='license') && actionName=='show'}">
             <laser:script file="${this.getGroovyPageFileName()}">
-                <g:if test="${editable} || ${accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )}">
+                <g:if test="${editable} || ${accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )}">
                     <g:if test="${user?.getSettingsValue(UserSetting.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N))?.value == 'Yes'}">
                         deckSaver.configs.editMode  = true;
                     </g:if>

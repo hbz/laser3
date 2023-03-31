@@ -18,7 +18,7 @@
             </g:each>
         </select>
         </div>
-            <g:if test="${accessService.checkCtxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
+            <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
                 <div class="ui field">
                 <div class="ui checkbox">
                     <g:checkBox name="show.subscriber" value="true" checked="false"
