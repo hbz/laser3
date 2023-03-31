@@ -69,7 +69,7 @@ class AccessService {
         }
         boolean check1 = _hasPerm_forOrg_withFakeRole(orgPerms.split(','), contextService.getOrg())
         boolean check2 = contextService.getOrg().getAllOrgTypeIds().contains( RDStore.OT_CONSORTIUM.id )
-        boolean check3 = instUserRole ? contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation(instUserRole.toUpperCase()) : false
+        boolean check3 = instUserRole ? contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN(instUserRole.toUpperCase()) : false
 
         check1 && check2 && check3
     }
@@ -134,7 +134,7 @@ class AccessService {
         boolean check2 = (ctx.id == orgToCheck.id) || Combo.findByToOrgAndFromOrg(ctx, orgToCheck)
 
         // orgToCheck check
-        boolean check3 = (ctx.id == orgToCheck.id) && contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation(null) // TODO: legacy - no affiliation given
+        boolean check3 = (ctx.id == orgToCheck.id) && contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN(null) // TODO: legacy - no affiliation given
 
         (check1 && check2) || check3
     }
@@ -184,7 +184,7 @@ class AccessService {
      */
     private boolean _hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(String[] orgPerms, String instUserRole) {
         boolean check1 = _hasPerm_forOrg_withFakeRole(orgPerms, contextService.getOrg())
-        boolean check2 = instUserRole ? contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation(instUserRole.toUpperCase()) : false
+        boolean check2 = instUserRole ? contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN(instUserRole.toUpperCase()) : false
 
         check1 && check2
     }

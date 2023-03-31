@@ -35,10 +35,9 @@ class UserControllerService {
         if (params.get('id')) {
             result.user = User.get(params.id)
             result.editable = result.editor.hasMinRole('ROLE_ADMIN') || instAdmService.isUserEditableForInstAdm(result.user, result.editor)
-            //result.editable = instAdmService.isUserEditableForInstAdm(result.user, result.editor, contextService.getOrg())
         }
         else {
-            result.editable = result.editor.is_ROLE_ADMIN_or_hasAffiliation('INST_ADM')
+            result.editable = result.editor.hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
         }
         result
     }
@@ -56,10 +55,9 @@ class UserControllerService {
         if (params.get('uoid')) {
             result.user = genericOIDService.resolveOID(params.uoid)
             result.editable = result.editor.hasMinRole('ROLE_ADMIN') || instAdmService.isUserEditableForInstAdm(result.user, result.editor)
-            //result.editable = instAdmService.isUserEditableForInstAdm(result.user, result.editor, contextService.getOrg())
         }
         else {
-            result.editable = result.editor.is_ROLE_ADMIN_or_hasAffiliation('INST_ADM')
+            result.editable = result.editor.hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
         }
         result
     }
