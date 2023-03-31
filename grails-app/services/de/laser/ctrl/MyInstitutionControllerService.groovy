@@ -68,7 +68,7 @@ class MyInstitutionControllerService {
 
         // changes -> to AJAX
 
-        //Map<String,Object> pendingChangeConfigMap = [contextOrg:result.institution,consortialView:accessService.checkOrgPerm(result.institution, 'ORG_CONSORTIUM_BASIC'),periodInDays:periodInDays,max:result.max,offset:result.acceptedOffset]
+        //Map<String,Object> pendingChangeConfigMap = [contextOrg:result.institution,consortialView:accessService.otherOrgPerm(result.institution, 'ORG_CONSORTIUM_BASIC'),periodInDays:periodInDays,max:result.max,offset:result.acceptedOffset]
         //pu.setBenchmark('pending changes')
         //result.putAll(pendingChangeService.getChanges(pendingChangeConfigMap))
 
