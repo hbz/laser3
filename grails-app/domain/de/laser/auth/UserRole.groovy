@@ -9,6 +9,10 @@ import javax.persistence.Transient
  */
 class UserRole implements Serializable, Comparable {
 
+	public static final String ROLE_USER	= 'ROLE_USER'
+	public static final String ROLE_ADMIN   = 'ROLE_ADMIN'
+	public static final String ROLE_YODA  	= 'ROLE_YODA'
+
 	private static final long serialVersionUID = 1
 
 	Date dateCreated

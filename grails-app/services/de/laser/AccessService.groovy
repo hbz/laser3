@@ -134,7 +134,8 @@ class AccessService {
         boolean check2 = (ctx.id == orgToCheck.id) || Combo.findByToOrgAndFromOrg(ctx, orgToCheck)
 
         // orgToCheck check
-        boolean check3 = (ctx.id == orgToCheck.id) && contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN(null) // TODO: legacy - no affiliation given
+        boolean check3 = (ctx.id == orgToCheck.id) && SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+        // boolean check3 = (ctx.id == orgToCheck.id) && contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN(null) // legacy - no affiliation given
 
         (check1 && check2) || check3
     }
@@ -151,7 +152,6 @@ class AccessService {
         boolean check = false
 
         if (orgPerms) {
-            def oss = OrgSetting.get(orgToCheck, OrgSetting.KEYS.CUSTOMER_TYPE)
 
             Role fakeRole
             boolean isOrgBasicMemberView = false
@@ -164,6 +164,7 @@ class AccessService {
                 // TODO: ERMS-4920 - ORG_INST_BASIC or ORG_INST_PRO
             }
 
+            def oss = OrgSetting.get(orgToCheck, OrgSetting.KEYS.CUSTOMER_TYPE)
             if (oss != OrgSetting.SETTING_NOT_FOUND) {
                 orgPerms.each{ cd ->
                     check = check || PermGrant.findByPermAndRole(Perm.findByCode(cd.toLowerCase().trim()), (Role) fakeRole ?: oss.getValue())

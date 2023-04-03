@@ -30,7 +30,6 @@ class InstAdmService {
      * @return true if there is at least one user affiliated as INST_ADM, false otherwise
      */
     boolean hasInstAdmin(Org org) {
-        //selecting IDs is much more performant than whole objects
         List<Long> admins = User.executeQuery("select u.id from User u join u.affiliations uo join uo.formalRole role where " +
                 "uo.org = :org and role.authority = :role and u.enabled = true",
                 [org: org,
@@ -143,10 +142,7 @@ class InstAdmService {
             }
             else {
                 log.debug("Create new user_org entry....");
-                UserOrgRole uo = new UserOrgRole(
-                        org: org,
-                        user: user,
-                        formalRole: formalRole)
+                UserOrgRole uo = new UserOrgRole( org: org, user: user, formalRole: formalRole )
 
                 if (uo.save()) {
                     flash?.message = messageSource.getMessage('user.affiliation.request.success', null, loc)

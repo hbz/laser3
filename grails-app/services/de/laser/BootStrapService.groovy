@@ -230,6 +230,7 @@ class BootStrapService {
      * @see UserService#setupAdminAccounts()
      * @see OrganisationService#createOrgsFromScratch()
      */
+    @Deprecated
     void setupAdminUsers() {
 
         if (AppUtils.getCurrentServer() == AppUtils.QA) {
