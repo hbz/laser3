@@ -347,13 +347,17 @@
         </ui:tabs>
     </g:if>
 </g:if>--%>
-
-<g:form name="renewEntitlements" id="${newSub.id}" action="processRenewEntitlementsWithSurvey" class="ui form">
+<div class="ui bottom attached tab active segment">
+    <g:form name="renewEntitlements" id="${newSub.id}" action="processRenewEntitlementsWithSurvey" class="ui form">
     <g:hiddenField id="packageId" name="packageId" value="${params.packageId}"/>
     <g:hiddenField name="surveyConfigID" value="${surveyConfig.id}"/>
     <g:hiddenField name="tab" value="${params.tab}"/>
+        <div class="ui segment grid la-filter">
+            <div class="field" style="padding: 10px 15px">
+                <g:if test="${editable}"><input id="select-all" type="checkbox" name="chkall" ${allChecked}/></g:if>
+            </div>
+        </div>
 
-    <div class="ui segment">
 
         <g:if test="${params.tab in ['allIEsStats', 'holdingIEsStats', 'topUsed']}">
             <g:if test="${usages && usages.size() > 0}">
@@ -379,11 +383,10 @@
                       model="${[ies: [sourceIEs: sourceIEs], showPackage: true, showPlattform: true]}"/>
         </g:else>
 
-    </div>
 
-    <div class="sixteen wide column">
-        <div class="two fields">
-***************************
+
+        <div class="sixteen wide column">
+            <div class="two fields">
             <g:if test="${params.tab != 'stats'}">
                 <div class="eight wide field" style="text-align: left;">
                     <g:if test="${editable && params.tab != 'selectedIEs'}">
@@ -418,7 +421,7 @@
     </div>
 
 </g:form>
-
+</div>
 <g:if test="${sourceIEs}">
     <ui:paginate action="renewEntitlementsWithSurvey" controller="subscription" params="${params}"
                     max="${max}" total="${num_ies_rows}"/>
