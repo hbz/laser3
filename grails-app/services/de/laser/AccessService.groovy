@@ -67,11 +67,18 @@ class AccessService {
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
             return true
         }
-        boolean check1 = _hasPerm_forOrg_withFakeRole(orgPerms.split(','), contextService.getOrg())
-        boolean check2 = contextService.getOrg().getAllOrgTypeIds().contains( RDStore.OT_CONSORTIUM.id )
-        boolean check3 = instUserRole ? contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN(instUserRole.toUpperCase()) : false
+//        boolean check1 = _hasPerm_forOrg_withFakeRole(orgPerms.split(','), contextService.getOrg())
+//        boolean check2 = contextService.getOrg().getAllOrgTypeIds().contains( RDStore.OT_CONSORTIUM.id )
+//        boolean check3 = instUserRole ? contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN(instUserRole.toUpperCase()) : false
+//
+//        check1 && check2 && check3
 
-        check1 && check2 && check3
+        if (contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN( instUserRole?.toUpperCase() )) {
+            if (contextService.getOrg().getAllOrgTypeIds().contains( RDStore.OT_CONSORTIUM.id )) {
+                return _hasPerm_forOrg_withFakeRole(orgPerms.split(','), contextService.getOrg())
+            }
+        }
+        return false
     }
 
     boolean ctxInstUserCheckPerm_or_ROLEADMIN(String orgPerms) {
@@ -115,26 +122,24 @@ class AccessService {
      * </ol>
      * @param attributes a configuration map:
      * [
-     *      org: context institution,
-     *      comboPerms: customer type of the target institution
-     *      comboAffiliation: user's rights for the target institution
+     *      orgToCheck: context institution,
+     *      orgPerms: customer type of the target institution
+     *      instUserRole: user's rights for the target institution
      * ]
      * @return true if clauses one and two or three succeed, false otherwise
      */
-    boolean otherOrgAndComboCheckPermAffiliation_or_ROLEADMIN(Org orgToCheck, String comboPerms, String comboAffiliation) {
+    boolean otherOrgAndComboCheckPermAffiliation_or_ROLEADMIN(Org orgToCheck, String orgPerms, String instUserRole) {
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
             return true
         }
-        Org ctx                 = contextService.getOrg()
-        String orgPerms         = comboPerms
-        String instUserRole     = comboAffiliation
+        Org ctx = contextService.getOrg()
 
         // combo check
         boolean check1 = _hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(orgPerms.split(','), instUserRole)
-        boolean check2 = (ctx.id == orgToCheck.id) || Combo.findByToOrgAndFromOrg(ctx, orgToCheck)
+        boolean check2 = (orgToCheck.id == ctx.id) || Combo.findByToOrgAndFromOrg(ctx, orgToCheck)
 
         // orgToCheck check
-        boolean check3 = (ctx.id == orgToCheck.id) && SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+        boolean check3 = (orgToCheck.id == ctx.id) && SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
         // boolean check3 = (ctx.id == orgToCheck.id) && contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN(null) // legacy - no affiliation given
 
         (check1 && check2) || check3
@@ -184,10 +189,15 @@ class AccessService {
      * @return true if the institution has the given customer type and the user the given institutional permissions, false otherwise
      */
     private boolean _hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(String[] orgPerms, String instUserRole) {
-        boolean check1 = _hasPerm_forOrg_withFakeRole(orgPerms, contextService.getOrg())
-        boolean check2 = instUserRole ? contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN(instUserRole.toUpperCase()) : false
+//        boolean check1 = _hasPerm_forOrg_withFakeRole(orgPerms, contextService.getOrg())
+//        boolean check2 = instUserRole ? contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN(instUserRole.toUpperCase()) : false
+//
+//        check1 && check2
 
-        check1 && check2
+        if (contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN( instUserRole?.toUpperCase() )) {
+            return _hasPerm_forOrg_withFakeRole(orgPerms, contextService.getOrg())
+        }
+        return false
     }
 
     // ---- new stuff here

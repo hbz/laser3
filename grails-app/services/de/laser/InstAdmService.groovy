@@ -32,8 +32,7 @@ class InstAdmService {
     boolean hasInstAdmin(Org org) {
         List<Long> admins = User.executeQuery("select u.id from User u join u.affiliations uo join uo.formalRole role where " +
                 "uo.org = :org and role.authority = :role and u.enabled = true",
-                [org: org,
-                 role: 'INST_ADM'])
+                [org: org, role: 'INST_ADM'])
         admins.size() > 0
     }
 
@@ -107,11 +106,7 @@ class InstAdmService {
      * @return true if the given user is the last admin of the given institution
      */
     boolean isUserLastInstAdminForOrg(User user, Org org){
-
-        List<UserOrgRole> userOrgs = UserOrgRole.findAllByOrgAndFormalRole(
-                org,
-                Role.findByAuthority('INST_ADM')
-        )
+        List<UserOrgRole> userOrgs = UserOrgRole.findAllByOrgAndFormalRole(org, Role.findByAuthority('INST_ADM'))
 
         return (userOrgs.size() == 1 && userOrgs[0].user == user)
     }
