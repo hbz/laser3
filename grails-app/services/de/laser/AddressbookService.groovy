@@ -120,12 +120,12 @@ class AddressbookService {
             List<String> posParts = []
             if (params.function){
                 posParts << "pr.functionType.id in (:selectedFunctions) "
-                qParams << [selectedFunctions: filterService.listReaderWrapper(params, 'function').collect{Long.parseLong(it)}]
+                qParams << [selectedFunctions: filterService.listReaderWrapper(params, 'function').collect{ it -> it instanceof String ? Long.parseLong(it) : it }]
             }
 
             if (params.position){
                 posParts << "pr.positionType.id in (:selectedPositions) "
-                qParams << [selectedPositions: filterService.listReaderWrapper(params, 'position').collect{Long.parseLong(it)}]
+                qParams << [selectedPositions: filterService.listReaderWrapper(params, 'position').collect{ it -> it instanceof String ? Long.parseLong(it) : it }]
             }
             qParts << '('+posParts.join(' OR ')+')'
         }

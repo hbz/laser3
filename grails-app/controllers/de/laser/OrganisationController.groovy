@@ -963,12 +963,15 @@ class OrganisationController  {
         }
         else {
             Set<Package> packages = []
-            OrgRole.executeQuery('select oo from OrgRole oo where oo.org = :org and exists(select sp from SubscriptionPackage sp join sp.subscription s join s.orgRelations ooo where ooo.org = :ctx and sp.pkg = oo.pkg) or exists(select oo.id from IssueEntitlement ie join ie.subscription s join s.orgRelations ooo join ie.tipp tipp where oo.tipp = tipp and oo.org = :org and ooo.org = :ctx)', [ctx: result.institution, org: result.orgInstance]).each { OrgRole oo ->
-                if (oo.pkg)
-                    packages << oo.pkg
-                else if (oo.tipp)
-                    packages << oo.tipp.pkg
+            OrgRole.executeQuery('select oo from OrgRole oo where oo.org = :org and exists(select sp from SubscriptionPackage sp join sp.subscription s join s.orgRelations ooo where ooo.org = :ctx and sp.pkg = oo.pkg)', [ctx: result.institution, org: result.orgInstance]).each { OrgRole oo ->
+                packages << oo.pkg
             }
+            /*
+            ATTEMPT! Tendancy goes over to link packages with providers, not as much titles with packages. If data gets missing, this query must be reconsidered and reactivated!
+            OrgRole.executeQuery('select oo from OrgRole oo where oo.org = :org and oo.tipp in (select ie.tipp from IssueEntitlement ie join ie.subscription s join s.orgRelations ooo where ooo.org = :ctx)', [ctx: result.institution, org: result.orgInstance]).each { OrgRole oo ->
+                packages << oo.tipp.pkg
+            }
+            */
             result.packages = packages.sort { Package pkg -> pkg.sortname }
             //may become a performance bottleneck - SUBJECT OF OBSERVATION!
             String subConsortialFilter = '', licConsortialFilter = ''
