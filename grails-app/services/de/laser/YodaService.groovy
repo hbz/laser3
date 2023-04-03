@@ -3,6 +3,7 @@ package de.laser
 import de.laser.config.ConfigMapper
 import de.laser.exceptions.SyncException
 import de.laser.http.BasicHttpClient
+import de.laser.properties.OrgProperty
 import de.laser.remote.GlobalRecordSource
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
@@ -331,6 +332,13 @@ class YodaService {
                 if(record?.count == 0) {
                     if(obj instanceof Org) {
                         OrgRole.executeUpdate('delete from OrgRole oo where oo.org = :org', [org: obj])
+                        PersonRole.executeUpdate('delete from PersonRole pr where pr.org = :org', [org: obj])
+                        Identifier.executeUpdate('delete from Identifier id where id.org = :org', [org: obj])
+                        Address.executeUpdate('delete from Address a where a.org = :org', [org: obj])
+                        Contact.executeUpdate('delete from Contact c where c.org = :org', [org: obj])
+                        OrgProperty.executeUpdate('delete from OrgProperty op where op.owner = :org', [org: obj])
+                        DocContext.executeUpdate('update DocContext dc set dc.targetOrg = null where dc.targetOrg = :org', [org: obj])
+                        DocContext.executeUpdate('update DocContext dc set dc.org = (select doc.owner from Doc doc where doc = dc.owner) where dc.org = :org', [org: obj])
                         deletionService.deleteOrganisation(obj, null, false)
                     }
                     else if(obj instanceof Platform) {
