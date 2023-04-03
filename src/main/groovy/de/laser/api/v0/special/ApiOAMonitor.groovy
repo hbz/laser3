@@ -125,7 +125,7 @@ class ApiOAMonitor {
             result.globalUID    = org.globalUID
             result.gokbId       = org.gokbId
             result.name         = org.name
-            result.shortname    = org.shortname
+            result.shortname    = org.sortname //deprecated and to be removed for 3.2
             result.sortname     = org.sortname
             result.region       = org.region?.value
             result.country      = org.country?.value

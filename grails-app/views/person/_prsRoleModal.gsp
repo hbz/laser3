@@ -12,7 +12,7 @@
                       id="newPrsRoleOrg_${tmplId}" name="newPrsRoleOrg"
                           from="${Org.findAll("from Org o order by lower(o.name)")}"
                           optionKey="id"
-                          optionValue="${{ it.name ?: it.sortname ?: it.shortname }}"
+                          optionValue="${{ it.name ?: it.sortname }}"
                 value="${presetOrgId}"
             />
         </div>

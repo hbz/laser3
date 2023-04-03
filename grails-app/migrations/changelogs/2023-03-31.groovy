@@ -61,4 +61,17 @@ databaseChangeLog = {
         }
     }
 
+    changeSet(author: "galffy (hand-coded)", id: "1680264063145-3") {
+        grailsChange {
+            change {
+                sql.execute("update org set org_sortname = org_shortname where org_sortname is null and org_shortname is not null")
+            }
+            rollback {}
+        }
+    }
+
+    changeSet(author: "galffy (generated)", id: "1680264063145-4") {
+        dropColumn(columnName: "org_shortname", tableName: "org")
+    }
+
 }

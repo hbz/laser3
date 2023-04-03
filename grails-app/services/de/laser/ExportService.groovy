@@ -214,7 +214,7 @@ class ExportService {
 	 */
 	def exportOrg(Collection orgs, String message, boolean addHigherEducationTitles, String format) {
 		Locale locale = LocaleUtils.getCurrentLocale()
-		List titles = [messageSource.getMessage('org.sortname.label',null,locale), 'Name', messageSource.getMessage('org.shortname.label',null,locale),messageSource.getMessage('globalUID.label',null,locale)]
+		List titles = [messageSource.getMessage('org.sortname.label',null,locale), 'Name', messageSource.getMessage('globalUID.label',null,locale)]
 
 
 		if (addHigherEducationTitles) {
@@ -283,10 +283,6 @@ class ExportService {
 					//Name
 					cell = row.createCell(cellnum++)
 					cell.setCellValue(org.name ?: '')
-
-					//Shortname
-					cell = row.createCell(cellnum++)
-					cell.setCellValue(org.shortname ?: '')
 
 					//subscription globalUID
 					cell = row.createCell(cellnum++)
@@ -398,8 +394,6 @@ class ExportService {
 					row.add(org.sortname ? org.sortname.replaceAll(',','') : '')
 					//Name
 					row.add(org.name ? org.name.replaceAll(',','') : '')
-					//Shortname
-					row.add(org.shortname ? org.shortname.replaceAll(',','') : '')
 					//subscription globalUID
 					row.add(org.globalUID)
 					if(addHigherEducationTitles) {

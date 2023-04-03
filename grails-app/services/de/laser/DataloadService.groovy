@@ -151,7 +151,6 @@ class DataloadService {
                 result.visible = 'Public'
                 result.rectype = org.getClass().getSimpleName()
 
-                result.shortname = org.shortname
                 result.sortname = org.sortname
 
                 result.type = []
@@ -375,7 +374,7 @@ class DataloadService {
 
                         result.members = []
                         orgs.each { Org org ->
-                            result.members.add([dbId: org.id, name: org.name, shortname: org.shortname, sortname: org.sortname])
+                            result.members.add([dbId: org.id, name: org.name, sortname: org.sortname])
                         }
                         break
                     case CalculatedType.TYPE_LOCAL:
@@ -446,7 +445,7 @@ class DataloadService {
 
                         result.members = []
                         orgs.each { org ->
-                            result.members.add([dbId: org.id, name: org.name, shortname: org.shortname, sortname: org.sortname])
+                            result.members.add([dbId: org.id, name: org.name, sortname: org.sortname])
                         }
                         break
                         /*              case CalculatedType.TYPE_ADMINISTRATIVE:

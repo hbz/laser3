@@ -90,7 +90,7 @@ class ApiOrg {
         result.gokbId              = org.gokbId
         result.name                = org.name
         result.altNames            = ApiCollectionReader.getAlternativeNameCollection(org.altnames)
-        result.shortname           = org.shortname
+        result.shortname           = org.sortname //deprecated and to be removed for 3.2
         result.sortname            = org.sortname
         result.lastUpdated         = ApiToolkit.formatInternalDate(org._getCalculatedLastUpdated())
         result.eInvoice            = org.eInvoice ? RDStore.YN_YES.value : RDStore.YN_NO.value

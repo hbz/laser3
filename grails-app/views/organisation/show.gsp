@@ -75,29 +75,15 @@
                     </dl>
                     <g:if test="${!inContextOrg || isGrantedOrgRoleAdminOrOrgEditor}">
                         <dl>
-                            <dt><g:message code="org.shortname.label" /></dt>
+                            <dt><g:message code="org.sortname.label" /></dt>
                             <dd>
                                 <ui:xEditable
                                         data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
                                         data_confirm_term_how="ok"
                                         class="js-open-confirm-modal-xEditable"
-                                        owner="${orgInstance}" field="shortname" overwriteEditable="${editable && orgInstanceRecord == null}"/>
+                                        owner="${orgInstance}" field="sortname" overwriteEditable="${editable && orgInstanceRecord == null}"/>
                             </dd>
                         </dl>
-                        <g:if test="${!isProviderOrAgency}">
-                            <dl>
-                                <dt>
-                                    <g:message code="org.sortname.label" />
-                                </dt>
-                                <dd>
-                                    <ui:xEditable
-                                            data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
-                                            data_confirm_term_how="ok"
-                                            class="js-open-confirm-modal-xEditable"
-                                            owner="${orgInstance}" field="sortname"/>
-                                </dd>
-                            </dl>
-                        </g:if>
                     </g:if>
                     <dl>
                         <dt><g:message code="org.altname.label" /></dt>

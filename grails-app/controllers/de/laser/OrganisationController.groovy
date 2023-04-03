@@ -190,7 +190,7 @@ class OrganisationController  {
         result.user = contextService.getUser()
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        params.sort = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
+        params.sort = params.sort ?: " LOWER(o.sortname), LOWER(o.name)"
 
         result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
@@ -258,6 +258,9 @@ class OrganisationController  {
         params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id.toString()
         if(!params.sort)
             params.sort = " LOWER(o.sortname)"
+        if(!params.orgStatus && !params.filterSet) {
+            params.orgStatus = [RDStore.ORG_STATUS_CURRENT.id]
+        }
         Map<String, Object> fsq = filterService.getOrgQuery(params)
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
@@ -408,7 +411,7 @@ class OrganisationController  {
 
         params.orgSector    = RDStore.O_SECTOR_PUBLISHER?.id?.toString()
         params.orgType      = RDStore.OT_PROVIDER?.id?.toString()
-        params.sort        = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
+        params.sort        = params.sort ?: " LOWER(o.sortname), LOWER(o.name)"
 
         def fsq            = filterService.getOrgQuery(params)
         result.filterSet = params.filterSet ? true : false
@@ -844,7 +847,7 @@ class OrganisationController  {
         Map<String, Object> result = [:]
         if ( params.proposedProvider ) {
 
-            result.providerMatches= Org.executeQuery("from Org as o where exists (select roletype from o.orgType as roletype where roletype = :provider ) and (lower(o.name) like :searchName or lower(o.shortname) like :searchName or lower(o.sortname) like :searchName ) ",
+            result.providerMatches= Org.executeQuery("from Org as o where exists (select roletype from o.orgType as roletype where roletype = :provider ) and (lower(o.name) like :searchName or lower(o.sortname) like :searchName ) ",
                     [provider: RDStore.OT_PROVIDER, searchName: "%${params.proposedProvider.toLowerCase()}%"])
         }
         result
@@ -895,7 +898,7 @@ class OrganisationController  {
         Map result = [institution:contextService.getOrg(), organisationMatches:[], members:memberMap, comboType:RDStore.COMBO_TYPE_CONSORTIUM]
         //searching members for consortium, i.e. the context org is a consortium
         if (params.proposedOrganisation) {
-            result.organisationMatches.addAll(Org.executeQuery("select o from Org as o where exists (select roletype from o.orgType as roletype where roletype = :institution ) and (lower(o.name) like :searchName or lower(o.shortname) like :searchName or lower(o.sortname) like :searchName) ",
+            result.organisationMatches.addAll(Org.executeQuery("select o from Org as o where exists (select roletype from o.orgType as roletype where roletype = :institution ) and (lower(o.name) like :searchName or lower(o.sortname) like :searchName) ",
                     [institution: RDStore.OT_INSTITUTION, searchName: "%${params.proposedOrganisation.toLowerCase()}%"]))
         }
         if (params.proposedOrganisationID) {

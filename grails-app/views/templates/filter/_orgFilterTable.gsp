@@ -40,10 +40,6 @@
                 <g:sortableColumn title="${message(code: 'org.sortname.label')}"
                                   property="lower(o.sortname)" params="${request.getParameterMap()}"/>
             </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('shortname')}">
-                <g:sortableColumn title="${message(code: 'org.shortname.label')}"
-                                  property="lower(o.shortname)" params="${request.getParameterMap()}"/>
-            </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('name')}">
                 <g:sortableColumn title="${message(code: 'org.fullName.label')}" property="lower(o.name)"
                                   params="${request.getParameterMap()}"/>
@@ -253,22 +249,6 @@
                     ${org.sortname}
                 </td>
             </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('shortname')}">
-                <td>
-                    <g:if test="${tmplDisableOrgIds && (org.id in tmplDisableOrgIds)}">
-                        <g:if test="${org.shortname}">
-                            ${fieldValue(bean: org, field: "shortname")}
-                        </g:if>
-                    </g:if>
-                    <g:else>
-                        <g:link controller="organisation" action="show" id="${org.id}">
-                            <g:if test="${org.shortname}">
-                                ${fieldValue(bean: org, field: "shortname")}
-                            </g:if>
-                        </g:link>
-                    </g:else>
-                </td>
-            </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('name')}">
                 <th scope="row" class="la-th-column la-main-object">
                     <div class="la-flexbox">
@@ -279,18 +259,11 @@
                             </span>
                         </g:if>
                         <g:if test="${tmplDisableOrgIds && (org.id in tmplDisableOrgIds)}">
-                            ${fieldValue(bean: org, field: "name")} <br />
-                            <g:if test="${org.shortname && !tmplConfigItem.equalsIgnoreCase('shortname')}">
-                                (${fieldValue(bean: org, field: "shortname")})
-                            </g:if>
+                            ${fieldValue(bean: org, field: "name")}
                         </g:if>
                         <g:else>
                             <g:link controller="organisation" action="show" id="${org.id}">
                                 ${fieldValue(bean: org, field: "name")}
-                                <g:if test="${org.shortname && !tmplConfigItem.equalsIgnoreCase('shortname')}">
-                                    <br />
-                                    (${fieldValue(bean: org, field: "shortname")})
-                                </g:if>
                             </g:link>
                         </g:else>
 

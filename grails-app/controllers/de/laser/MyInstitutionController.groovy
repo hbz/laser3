@@ -215,7 +215,6 @@ class MyInstitutionController  {
                 qry3 += "and ("
                 qry3 += "   genfunc_filter_matcher(o.name, :query) = true"
                 qry3 += "   or genfunc_filter_matcher(o.sortname, :query) = true"
-                qry3 += "   or genfunc_filter_matcher(o.shortname, :query) = true "
                 qry3 += ")"
                 qryParams3.put('query', "${params.q}")
             }
@@ -440,7 +439,6 @@ class MyInstitutionController  {
                     " or exists ( select orgR from OrgRole as orgR where orgR.lic = l and "+
                     "   orgR.roleType in (:licRoleTypes) and ( "+
                     " genfunc_filter_matcher(orgR.org.name, :name_filter) = true "+
-                    " or genfunc_filter_matcher(orgR.org.shortname, :name_filter) = true "+
                     " or genfunc_filter_matcher(orgR.org.sortname, :name_filter) = true "+
                     " ) ) " +
                     " or exists ( select li.id from Links li where li.sourceLicense = l and li.linkType = :linkType and genfunc_filter_matcher(li.destinationSubscription.name, :name_filter) = true ) " +
@@ -819,7 +817,7 @@ class MyInstitutionController  {
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        params.sort = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
+        params.sort = params.sort ?: " LOWER(o.sortname), LOWER(o.name)"
         params.subPerpetual = 'on'
 
         GrailsParameterMap tmpParams = (GrailsParameterMap) params.clone()

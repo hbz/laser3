@@ -185,7 +185,6 @@ class SubscriptionsQueryService {
                             " or exists ( select orgR from OrgRole as orgR where orgR.sub = s and" +
                             "   orgR.roleType in (:subRoleTypes) and ( " +
                                 " genfunc_filter_matcher(orgR.org.name, :name_filter) = true " +
-                                " or genfunc_filter_matcher(orgR.org.shortname, :name_filter) = true " +
                                 " or genfunc_filter_matcher(orgR.org.sortname, :name_filter) = true " +
                             " ) ) " + // filter by Anbieter, Konsortium, Agency
                          " ) "
