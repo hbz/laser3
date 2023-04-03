@@ -42515,6 +42515,10 @@ i.icon.la-phone.open {
   font-family: Icons;
 }
 
+i.icon.la-basket-shopping.slash {
+  font-family: 'icomoon';
+}
+
 i.icon.hand.pointer.outline.slash:before {
   content: "\e901";
 }
@@ -42656,6 +42660,10 @@ i.icon.la-phone.open:before {
 
 i.icon.la-phone:before {
   content: "\f095";
+}
+
+i.icon.la-basket-shopping.slash:before {
+  content: "\e91d";
 }
 
 /*******************************
@@ -57478,6 +57486,12 @@ legend {
     padding-right: 0em !important;
   }
 }
+
+.ui.grid.positive {
+  box-shadow: 0 0 0 #a3c293 inset;
+  background: #fcfff5;
+  color: #2c662d;
+}
 /*
  * # Fomantic - Menu
  * https://github.com/fomantic/Fomantic-UI/
@@ -67904,7 +67918,8 @@ a.inverted.ui.card:hover,
 #container-notes,
 #container-provider,
 #container-billing,
-#container-links {
+#container-links,
+#container-workflows {
   width: 100%;
 }
 

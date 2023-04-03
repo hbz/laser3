@@ -33,7 +33,7 @@
   .icon {
     font-size: 1.3em;
     width: auto;
-    margin: 0em @iconDistance 0em @iconDistance;
+    //margin: 0em @iconDistance 0em @iconDistance;
     vertical-align: sub;
   }
   >a {
@@ -80,7 +80,7 @@
   vertical-align: super;
   align-items:center;
   .icon {
-    //margin: 0em @iconDistance 0em @iconDistance;
+    margin: 0em @iconDistance 0em @iconDistance;
   }
   >a {
     opacity: 1;
@@ -329,4 +329,9 @@ a .ui.circular.label {
     .js-copyTrigger{
         display: inline-flex!important
     }
+}
+
+/* Label with Icon Strip */
+.ui.label.la-iconStrip>.icon{
+    margin: 0 0.25rem 0 0;
 }
