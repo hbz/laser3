@@ -44,7 +44,7 @@
 									<th>${message(code:'default.name.label')}</th>
 									<g:if test="${comboType == RDStore.COMBO_TYPE_CONSORTIUM}">
 										<th>${message(code:'identifier.plural')}</th>
-										<th>${message(code:'org.shortname.label')}</th>
+										<th>${message(code:'org.sortname.label')}</th>
 										<th>${message(code:'org.country.label')}</th>
 										<th>${message(code: 'org.consortiaToggle.label')}</th>
 									</g:if>
@@ -83,7 +83,7 @@
 													  model="${[tipp: organisationInstance]}"/>
 
 									</td>
-									<td>${organisationInstance.shortname}</td>
+									<td>${organisationInstance.sortname}</td>
 									<td>${organisationInstance.country}</td>
 									<td>
 									<%-- here: switch if in consortia or not --%>

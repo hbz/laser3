@@ -83,7 +83,7 @@ class ControlledListService {
         LinkedHashMap filter = [deleted: RDStore.ORG_STATUS_DELETED, context: org]
         if(params.query && params.query.length() > 0) {
             filter.put("query",params.query)
-            queryString += " and genfunc_filter_matcher(o.name,:query) = true " //taking also sortname and shortname into consideration causes GC overhead
+            queryString += " and genfunc_filter_matcher(o.name,:query) = true " //taking also sortname into consideration causes GC overhead
         }
         Set<Org> orgs = Org.executeQuery(queryString+" order by o.name asc",filter)
         orgs.each { Org o ->

@@ -291,8 +291,8 @@ class PlatformController  {
      * @deprecated use {@link #dynamicApLink} instead
      */
     @Deprecated
-    @DebugInfo(test='is_ROLE_ADMIN_or_hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_EDITOR") })
+    @DebugInfo(test='hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR")')
+    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR") })
     @Check404()
     def link() {
         Map<String, Object> result = [:]
@@ -324,8 +324,8 @@ class PlatformController  {
      * Call to link a platform to another access point
      * @return renders the available options in a modal
      */
-    @DebugInfo(test='is_ROLE_ADMIN_or_hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_EDITOR") })
+    @DebugInfo(test='hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR")')
+    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR") })
     def dynamicApLink(){
         Map<String, Object> result = [:]
         Platform platformInstance = Platform.get(params.platform_id)

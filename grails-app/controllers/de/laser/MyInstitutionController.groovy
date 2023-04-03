@@ -106,8 +106,8 @@ class MyInstitutionController  {
      * The landing page after login; this is also the call when the home button is clicked
      * @return the {@link #dashboard()} view
      */
-    @DebugInfo(test='is_ROLE_ADMIN_or_hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_USER") })
+    @DebugInfo(test='hasCtxAffiliation_or_ROLEADMIN("INST_USER")')
+    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_USER") })
     def index() {
         redirect(action:'dashboard')
     }
@@ -215,7 +215,6 @@ class MyInstitutionController  {
                 qry3 += "and ("
                 qry3 += "   genfunc_filter_matcher(o.name, :query) = true"
                 qry3 += "   or genfunc_filter_matcher(o.sortname, :query) = true"
-                qry3 += "   or genfunc_filter_matcher(o.shortname, :query) = true "
                 qry3 += ")"
                 qryParams3.put('query', "${params.q}")
             }
@@ -305,8 +304,8 @@ class MyInstitutionController  {
      * query; licenses without a subscription may get lost if there is no subscription linked to it!
      * @return the license list view
      */
-    @DebugInfo(test='is_ROLE_ADMIN_or_hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_USER") })
+    @DebugInfo(test='hasCtxAffiliation_or_ROLEADMIN("INST_USER")')
+    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_USER") })
     def currentLicenses() {
 
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -440,7 +439,6 @@ class MyInstitutionController  {
                     " or exists ( select orgR from OrgRole as orgR where orgR.lic = l and "+
                     "   orgR.roleType in (:licRoleTypes) and ( "+
                     " genfunc_filter_matcher(orgR.org.name, :name_filter) = true "+
-                    " or genfunc_filter_matcher(orgR.org.shortname, :name_filter) = true "+
                     " or genfunc_filter_matcher(orgR.org.sortname, :name_filter) = true "+
                     " ) ) " +
                     " or exists ( select li.id from Links li where li.sourceLicense = l and li.linkType = :linkType and genfunc_filter_matcher(li.destinationSubscription.name, :name_filter) = true ) " +
@@ -682,8 +680,8 @@ class MyInstitutionController  {
      * Creates a new license based on the parameters submitted
      * @return the license details view ({@link LicenseController#show()}) of the new license record
      */
-    @DebugInfo(test='is_ROLE_ADMIN_or_hasAffiliation("INST_USER")', wtc = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = { ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_USER") })
+    @DebugInfo(test='hasCtxAffiliation_or_ROLEADMIN("INST_USER")', wtc = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_USER") })
     def processEmptyLicense() {
         License.withTransaction { TransactionStatus ts ->
             User user = contextService.getUser()
@@ -780,8 +778,8 @@ class MyInstitutionController  {
      * The list results may be filtered with filter parameters
      * @return a list of matching {@link Org} records, as html or as export pipe (Excel / CSV)
      */
-    @DebugInfo(test='is_ROLE_ADMIN_or_hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_USER") })
+    @DebugInfo(test='hasCtxAffiliation_or_ROLEADMIN("INST_USER")')
+    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_USER") })
     def currentProviders() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 		Profiler prf = new Profiler()
@@ -819,7 +817,7 @@ class MyInstitutionController  {
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        params.sort = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
+        params.sort = params.sort ?: " LOWER(o.sortname), LOWER(o.name)"
         params.subPerpetual = 'on'
 
         GrailsParameterMap tmpParams = (GrailsParameterMap) params.clone()
@@ -906,8 +904,8 @@ class MyInstitutionController  {
      * Default filter setting is status: current or with perpetual access
      * @return a (filtered) list of subscriptions, either as direct html output or as export stream (CSV, Excel)
      */
-    @DebugInfo(test='is_ROLE_ADMIN_or_hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_USER") })
+    @DebugInfo(test='hasCtxAffiliation_or_ROLEADMIN("INST_USER")')
+    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_USER") })
     def currentSubscriptions() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
@@ -1227,8 +1225,8 @@ class MyInstitutionController  {
      * Connects the context subscription with the given pair
      * @return void, redirects to referer
      */
-    @DebugInfo(test='is_ROLE_ADMIN_or_hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_EDITOR") })
+    @DebugInfo(test='hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR")')
+    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR") })
     def linkObjects() {
         Map<String,Object> ctrlResult = linksGenerationService.createOrUpdateLink(params)
         if(ctrlResult.status == LinksGenerationService.STATUS_ERROR)
@@ -1240,8 +1238,8 @@ class MyInstitutionController  {
      * Removes the given link
      * @return void, redirects to referer
      */
-    @DebugInfo(test='is_ROLE_ADMIN_or_hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_EDITOR") })
+    @DebugInfo(test='hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR")')
+    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR") })
     def unlinkObjects() {
         linksGenerationService.deleteLink(params.oid)
         redirect(url: request.getHeader('referer'))
@@ -1271,8 +1269,8 @@ class MyInstitutionController  {
      * @return the document table view ({@link #documents()})
      * @see DocstoreService#unifiedDeleteDocuments()
      */
-    @DebugInfo(test='is_ROLE_ADMIN_or_hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_EDITOR") })
+    @DebugInfo(test='hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR")')
+    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR") })
     def deleteDocuments() {
         log.debug("deleteDocuments ${params}");
 
@@ -1294,8 +1292,8 @@ class MyInstitutionController  {
      * @see Platform
      * @see IssueEntitlement
      */
-    @DebugInfo(test='is_ROLE_ADMIN_or_hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_USER") })
+    @DebugInfo(test='hasCtxAffiliation_or_ROLEADMIN("INST_USER")')
+    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_USER") })
     def currentTitles() {
 
         Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -1497,8 +1495,8 @@ class MyInstitutionController  {
      * @see SubscriptionPackage
      * @see Package
      */
-    @DebugInfo(test='is_ROLE_ADMIN_or_hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_USER") })
+    @DebugInfo(test='hasCtxAffiliation_or_ROLEADMIN("INST_USER")')
+    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_USER") })
     def currentPackages() {
 
         Map<String, Object> result = [:]
@@ -1603,8 +1601,8 @@ class MyInstitutionController  {
      * The information is grouped in tabs where information is being preloaded (except changes, notifications and surveys)
      * @return the dashboard view with the prefilled tabs
      */
-    @DebugInfo(test = 'is_ROLE_ADMIN_or_hasAffiliation("INST_USER")', ctrlService = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = { ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_USER") })
+    @DebugInfo(test = 'hasCtxAffiliation_or_ROLEADMIN("INST_USER")', ctrlService = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_USER") })
     def dashboard() {
 
         Map<String, Object> ctrlResult = myInstitutionControllerService.dashboard(this, params)
@@ -1622,8 +1620,8 @@ class MyInstitutionController  {
      * Opens the modal to create a new task
      * @return the task creation modal
      */
-    @DebugInfo(test = 'is_ROLE_ADMIN_or_hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_USER") })
+    @DebugInfo(test = 'hasCtxAffiliation_or_ROLEADMIN("INST_USER")')
+    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_USER") })
     def modal_create() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
@@ -1644,8 +1642,8 @@ class MyInstitutionController  {
      * @return a list of changes to be accepted or rejected
      * @see PendingChange
      */
-    @DebugInfo(test = 'is_ROLE_ADMIN_or_hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_USER") })
+    @DebugInfo(test = 'hasCtxAffiliation_or_ROLEADMIN("INST_USER")')
+    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_USER") })
     def changes() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
@@ -2220,8 +2218,8 @@ class MyInstitutionController  {
      * @see User
      * @see de.laser.auth.UserOrgRole
      */
-    @DebugInfo(test = 'is_ROLE_ADMIN_or_hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_ADM") })
+    @DebugInfo(test = 'hasCtxAffiliation_or_ROLEADMIN("INST_ADM")')
+    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_ADM") })
     def users() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
@@ -2258,8 +2256,8 @@ class MyInstitutionController  {
      * Call to delete a given user
      * @return the user deletion page where the details of the given user are being enumerated
      */
-    @DebugInfo(test = 'is_ROLE_ADMIN_or_hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_ADM") })
+    @DebugInfo(test = 'hasCtxAffiliation_or_ROLEADMIN("INST_ADM")')
+    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_ADM") })
     def deleteUser() {
         Map<String, Object> result = userControllerService.getResultGenericsERMS3067(params)
 
@@ -2305,8 +2303,8 @@ class MyInstitutionController  {
      * Call to edit the given user
      * @return the user details view for editing the profile
      */
-    @DebugInfo(test = 'is_ROLE_ADMIN_or_hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_ADM") })
+    @DebugInfo(test = 'hasCtxAffiliation_or_ROLEADMIN("INST_ADM")')
+    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_ADM") })
     def editUser() {
         Map<String, Object> result = userControllerService.getResultGenericsERMS3067(params)
 
@@ -2327,8 +2325,8 @@ class MyInstitutionController  {
      * Call to create a new user for the context institution
      * @return the form to enter the new user's parameters
      */
-    @DebugInfo(test = 'is_ROLE_ADMIN_or_hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_ADM") })
+    @DebugInfo(test = 'hasCtxAffiliation_or_ROLEADMIN("INST_ADM")')
+    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_ADM") })
     def createUser() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
         result.orgInstance = result.institution
@@ -2343,8 +2341,8 @@ class MyInstitutionController  {
      * Processes the submitted parameters and creates a new user for the context institution
      * @return a redirect to the profile edit page on success, back to the user creation page otherwise
      */
-    @DebugInfo(test = 'is_ROLE_ADMIN_or_hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_ADM") })
+    @DebugInfo(test = 'hasCtxAffiliation_or_ROLEADMIN("INST_ADM")')
+    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_ADM") })
     def processCreateUser() {
         def success = userService.addNewUser(params,flash)
         //despite IntelliJ's warnings, success may be an array other than the boolean true
@@ -2365,8 +2363,8 @@ class MyInstitutionController  {
      * @return the user editing view
      * @see de.laser.auth.UserOrgRole
      */
-    @DebugInfo(test = 'is_ROLE_ADMIN_or_hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_ADM") })
+    @DebugInfo(test = 'hasCtxAffiliation_or_ROLEADMIN("INST_ADM")')
+    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_ADM") })
     def addAffiliation() {
         Map<String, Object> result = userControllerService.getResultGenericsERMS3067(params)
         if (! result.editable) {
@@ -4200,8 +4198,8 @@ join sub.orgRelations or_sub where
      * Call to open the license copy view
      * @return the entry point view of the license copy process
      */
-    @DebugInfo(test='is_ROLE_ADMIN_or_hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_USER") })
+    @DebugInfo(test='hasCtxAffiliation_or_ROLEADMIN("INST_USER")')
+    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_USER") })
     def copyLicense() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 

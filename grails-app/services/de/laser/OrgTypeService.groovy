@@ -17,7 +17,7 @@ class OrgTypeService {
      */
     List<Org> getOrgsForTypeAgency() {
         List<Org> result = Org.executeQuery(
-                "select o from Org o join o.orgType as rt where rt.value = 'Agency' order by lower(o.shortname), o.name"
+                "select o from Org o join o.orgType as rt where rt.value = 'Agency' order by lower(o.sortname), o.name"
         )
         result.unique()
     }
@@ -27,7 +27,7 @@ class OrgTypeService {
      */
     List<Org> getOrgsForTypeProvider() {
         List<Org> result = Org.executeQuery(
-                "select o from Org o join o.orgType as rt where rt.value = 'Provider' order by lower(o.shortname), o.name"
+                "select o from Org o join o.orgType as rt where rt.value = 'Provider' order by lower(o.sortname), o.name"
         )
         result.unique()
     }

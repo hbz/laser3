@@ -517,7 +517,7 @@ class ExportClickMeService {
                     message: 'default.ProviderAgency.singular',
                     fields: [
                             'provider.name'                : [field: 'name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
-                            'provider.shortname'           : [field: 'shortname', label: 'Shortname', message: 'org.shortname.label', defaultChecked: 'true'],
+                            'provider.sortname'           : [field: 'sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
                             'provider.altnames'            : [field: 'altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true' ],
 //                            'provider.funderType'          : [field: 'funderType', label: 'Funder Type', message: 'org.funderType.label'],
 //                            'provider.funderHskType'       : [field: 'funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.auth.Role" %>
+<%@ page import="de.laser.auth.*; grails.plugin.springsecurity.SpringSecurityUtils" %>
 <laser:htmlStart text="Frontend for Developers" serviceInjection="true" />
 
 <br />
@@ -43,19 +43,21 @@
     </p>
     <p>
     <pre>
-        Roles                 : ${de.laser.auth.Role.executeQuery("select r from Role r where r.roleType not in ('org', 'fake') order by r.id").collect{ it.id + ':' + it.authority }}
+        Roles                 : ${Role.executeQuery("select r from Role r where r.roleType not in ('org', 'fake') order by r.id").collect{ it.id + ':' + it.authority }}
 
-        UserRoles             : ${de.laser.auth.UserRole.findAllByUser(contextService.getUser())}
+        UserRoles             : ${UserRole.findAllByUser(contextService.getUser())}
 
-        UserOrgRoles          : ${de.laser.auth.UserOrgRole.findAllByUser(contextService.getUser()).collect{ '(' + it.user.id + ',' + it.org.id + ',' + it.formalRole.id + ')'}}
+        UserOrgRoles          : ${UserOrgRole.findAllByUser(contextService.getUser()).collect{ '(' + it.user.id + ',' + it.org.id + ',' + it.formalRole.id + ')'}}
 
-        hasMinRole('ROLE_YODA')  : ${contextService.getUser().hasMinRole('ROLE_YODA')}
-        hasMinRole('ROLE_ADMIN') : ${contextService.getUser().hasMinRole('ROLE_ADMIN')}
-        hasMinRole('ROLE_USER')  : ${contextService.getUser().hasMinRole('ROLE_USER')}
+        contextService.getUser().isYoda()  : ${contextService.getUser().isYoda()}
 
-        SpringSecurityUtils.ifAnyGranted('ROLE_YODA')  : ${grails.plugin.springsecurity.SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}
-        SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') : ${grails.plugin.springsecurity.SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}
-        SpringSecurityUtils.ifAnyGranted('ROLE_USER')  : ${grails.plugin.springsecurity.SpringSecurityUtils.ifAnyGranted('ROLE_USER')}
+        User.get(77).isYoda()  : ${User.get(77).isYoda()}
+        User.get(88).isYoda()  : ${User.get(88).isYoda()}
+        User.get(99).isYoda()  : ${User.get(99).isYoda()}
+
+        SpringSecurityUtils.ifAnyGranted('ROLE_YODA')  : ${SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}
+        SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') : ${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}
+        SpringSecurityUtils.ifAnyGranted('ROLE_USER')  : ${SpringSecurityUtils.ifAnyGranted('ROLE_USER')}
     </pre>
 </div>
 
@@ -65,7 +67,7 @@
     </p>
     <p>
     <pre>
-    <g:each in="${de.laser.auth.Role.executeQuery('select r, pg, p from Role r join r.grantedPermissions pg join pg.perm p')}" var="e">
+    <g:each in="${Role.executeQuery('select r, pg, p from Role r join r.grantedPermissions pg join pg.perm p')}" var="e">
         ${e[0].authority} (${e[0].roleType}) - ${e[2].code}</g:each>
     </pre>
 </div>

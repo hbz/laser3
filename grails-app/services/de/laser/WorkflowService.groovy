@@ -404,12 +404,11 @@ class WorkflowService {
     }
 
     private boolean _innerPermissionCheck(String instUserRole) {
-        User user = contextService.getUser()
-//        if (user.hasMinRole('ROLE_ADMIN')) {
+//        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
 //            return true
 //        }
         Org ctxOrg = contextService.getOrg()
-        if (instUserRole && ctxOrg.isCustomerType_Pro() && user.hasOrgAffiliation_or_ROLEADMIN(ctxOrg, instUserRole)) {
+        if (instUserRole && ctxOrg.isCustomerType_Pro() && contextService.getUser().hasOrgAffiliation_or_ROLEADMIN(ctxOrg, instUserRole)) {
             return true
         }
         false

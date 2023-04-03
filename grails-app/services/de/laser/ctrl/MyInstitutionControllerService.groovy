@@ -185,11 +185,11 @@ class MyInstitutionControllerService {
                 result.editable = surveyService.isEditableSurvey(org, SurveyInfo.get(params.id) ?: null)
                 break
             case 'users':
-                result.editable = user.is_ROLE_ADMIN_or_hasAffiliation('INST_ADM')
+                result.editable = user.hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
                 break
             case 'managePropertyDefinitions':
                 result.editable = false
-                result.changeProperties = user.is_ROLE_ADMIN_or_hasAffiliation('INST_EDITOR')
+                result.changeProperties = user.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
                 break
             default:
                 result.editable = accessService.checkMinUserOrgRole_and_CtxOrg_or_ROLEADMIN(user, org, 'INST_EDITOR')

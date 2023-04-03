@@ -117,17 +117,6 @@ class InstAdmService {
         return (userOrgs.size() == 1 && userOrgs[0].user == user)
     }
 
-	@Deprecated
-	// moved here from AccessService
-	boolean isUserEditableForInstAdm(User user, User editor, Org org) {
-
-		boolean roleAdmin = editor.hasMinRole('ROLE_ADMIN')
-		boolean instAdmin = editor.is_ROLE_ADMIN_or_hasAffiliation('INST_ADM') // check @ contextService.getOrg()
-		boolean orgMatch  = user.isMemberOf(contextService.getOrg())
-
-		roleAdmin || (instAdmin && orgMatch)
-	}
-
     /**
      * Links the given user to the given institution with the given role
      * @param user the user to link

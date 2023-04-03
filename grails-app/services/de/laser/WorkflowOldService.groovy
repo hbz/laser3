@@ -6,6 +6,7 @@ import de.laser.config.ConfigMapper
 import de.laser.utils.AppUtils
 import de.laser.workflow.*
 import grails.gorm.transactions.Transactional
+import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.grails.web.util.WebUtils
 import org.springframework.transaction.TransactionStatus
@@ -741,12 +742,11 @@ class WorkflowOldService {
     }
 
     private boolean _innerPermissionCheck(String instUserRole) {
-        User user = contextService.getUser()
-        if (user.hasMinRole('ROLE_ADMIN')) {
+        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
             return true
         }
         Org ctxOrg = contextService.getOrg()
-        if (instUserRole && ctxOrg.isCustomerType_Consortium_Basic() && user.hasOrgAffiliation_or_ROLEADMIN(ctxOrg, instUserRole)) {
+        if (instUserRole && ctxOrg.isCustomerType_Consortium_Basic() && contextService.getUser().hasOrgAffiliation_or_ROLEADMIN(ctxOrg, instUserRole)) {
             return true
         }
         false
