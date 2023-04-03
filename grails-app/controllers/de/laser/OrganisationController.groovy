@@ -1829,7 +1829,7 @@ class OrganisationController  {
      * @return true if edit rights are granted to the given user/org/view context, false otherwise
      */
     boolean checkIsEditable(User user, Org org) {
-        boolean isEditable
+        boolean isEditable = false
         Org contextOrg = contextService.getOrg()
         Org orgInstance = org
         boolean inContextOrg =  orgInstance?.id == contextOrg.id
