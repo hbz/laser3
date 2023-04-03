@@ -39,8 +39,8 @@ class PersonController  {
      * @return redirect back to the referer -> an updated list of person contacts
      * @see Person
      */
-    @DebugInfo(test='is_ROLE_ADMIN_or_hasAffiliation("INST_EDITOR")', wtc = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = { ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_EDITOR") })
+    @DebugInfo(test='hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR")', wtc = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR") })
     def create() {
         Person.withTransaction {
             Org contextOrg = contextService.getOrg()
@@ -227,8 +227,8 @@ class PersonController  {
      * Takes the submitted parameters and updates the person contact based on the given parameter map
      * @return redirect to the referer -> the updated view of the person contact
      */
-    @DebugInfo(test='is_ROLE_ADMIN_or_hasAffiliation("INST_EDITOR")', wtc = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = { ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_EDITOR") })
+    @DebugInfo(test='hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR")', wtc = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR") })
     def edit() {
         //redirect controller: 'person', action: 'show', params: params
         //return // ----- deprecated
@@ -397,8 +397,8 @@ class PersonController  {
      * Deletes the given person contact
      * @return redirects to one of the list views from which the person contact to be deleted has been called
      */
-    @DebugInfo(test='is_ROLE_ADMIN_or_hasAffiliation("INST_EDITOR")', wtc = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = { ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_EDITOR") })
+    @DebugInfo(test='hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR")', wtc = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR") })
     def delete() {
         Person.withTransaction {
             Person personInstance = Person.get(params.id)

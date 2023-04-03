@@ -1,9 +1,9 @@
 package de.laser
 
 import de.laser.auth.*
-import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import grails.gorm.transactions.Transactional
+import grails.plugin.springsecurity.SpringSecurityUtils
 import org.springframework.web.context.request.RequestContextHolder
 
 /**
@@ -35,7 +35,7 @@ class AccessService {
         _hasPerm_forOrg_withFakeRole(orgPerms.split(','), contextService.getOrg())
     }
     boolean ctxPerm_or_ROLEADMIN(String orgPerms) {
-        if (contextService.getUser()?.hasMinRole('ROLE_ADMIN')) {
+        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
             return true
         }
         _hasPerm_forOrg_withFakeRole(orgPerms.split(','), contextService.getOrg())
@@ -64,32 +64,32 @@ class AccessService {
      * and if the user has the given permissions within the institution, false otherwise
      */
     boolean ctxConsortiumCheckPermAffiliation_or_ROLEADMIN(String orgPerms, String instUserRole) {
-        if (contextService.getUser()?.hasMinRole('ROLE_ADMIN')) {
+        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
             return true
         }
         boolean check1 = _hasPerm_forOrg_withFakeRole(orgPerms.split(','), contextService.getOrg())
         boolean check2 = contextService.getOrg().getAllOrgTypeIds().contains( RDStore.OT_CONSORTIUM.id )
-        boolean check3 = instUserRole ? contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation(instUserRole.toUpperCase()) : false
+        boolean check3 = instUserRole ? contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN(instUserRole.toUpperCase()) : false
 
         check1 && check2 && check3
     }
 
     boolean ctxInstUserCheckPerm_or_ROLEADMIN(String orgPerms) {
-        if (contextService.getUser()?.hasMinRole('ROLE_ADMIN')) {
+        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
             return true
         }
         _hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(orgPerms.split(','), 'INST_USER')
     }
 
     boolean ctxInstEditorCheckPerm_or_ROLEADMIN(String orgPerms) {
-        if (contextService.getUser()?.hasMinRole('ROLE_ADMIN')) {
+        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
             return true
         }
         _hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(orgPerms.split(','), 'INST_EDITOR')
     }
 
     boolean ctxInstAdmCheckPerm_or_ROLEADMIN(String orgPerms) {
-        if (contextService.getUser()?.hasMinRole('ROLE_ADMIN')) {
+        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
             return true
         }
         _hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(orgPerms.split(','), 'INST_ADM')
@@ -122,7 +122,7 @@ class AccessService {
      * @return true if clauses one and two or three succeed, false otherwise
      */
     boolean otherOrgAndComboCheckPermAffiliation_or_ROLEADMIN(Org orgToCheck, String comboPerms, String comboAffiliation) {
-        if (contextService.getUser()?.hasMinRole('ROLE_ADMIN')) {
+        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
             return true
         }
         Org ctx                 = contextService.getOrg()
@@ -134,7 +134,7 @@ class AccessService {
         boolean check2 = (ctx.id == orgToCheck.id) || Combo.findByToOrgAndFromOrg(ctx, orgToCheck)
 
         // orgToCheck check
-        boolean check3 = (ctx.id == orgToCheck.id) && contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation(null) // TODO: legacy - no affiliation given
+        boolean check3 = (ctx.id == orgToCheck.id) && contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN(null) // TODO: legacy - no affiliation given
 
         (check1 && check2) || check3
     }
@@ -184,7 +184,7 @@ class AccessService {
      */
     private boolean _hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(String[] orgPerms, String instUserRole) {
         boolean check1 = _hasPerm_forOrg_withFakeRole(orgPerms, contextService.getOrg())
-        boolean check2 = instUserRole ? contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation(instUserRole.toUpperCase()) : false
+        boolean check2 = instUserRole ? contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN(instUserRole.toUpperCase()) : false
 
         check1 && check2
     }
@@ -196,7 +196,7 @@ class AccessService {
 
     // TODO
     boolean checkMinUserOrgRole_and_CtxOrg_or_ROLEADMIN(User user, Org orgToCheck, String userRoleName) {
-        if (user?.hasMinRole('ROLE_ADMIN')) {
+        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
             return true
         }
 

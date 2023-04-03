@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.OrgSubjectGroup; de.laser.OrgRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Org; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting;de.laser.Combo; de.laser.Contact; de.laser.remote.ApiSource" %>
+<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.OrgSubjectGroup; de.laser.OrgRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Org; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting;de.laser.Combo; de.laser.Contact; de.laser.remote.ApiSource" %>
 
 <g:set var="wekbAPI" value="${ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"/>
 
@@ -478,7 +478,7 @@
                         <h2 class="ui header"><g:message code="org.contactpersons.and.addresses.label"/></h2>
                     </g:if>
 
-                        <g:if test="${(orgInstance.id == institution.id && user.is_ROLE_ADMIN_or_hasAffiliation('INST_EDITOR'))}">
+                        <g:if test="${(orgInstance.id == institution.id && user.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR'))}">
                             <g:link action="myPublicContacts" controller="organisation" params="[id: orgInstance.id, tab: 'contacts']"
                                     class="ui button">${message('code': 'org.edit.contactsAndAddresses')}</g:link>
                         </g:if>
@@ -727,7 +727,7 @@
                         --%>
             </g:if>
 
-                <g:if test="${(user.hasMinRole('ROLE_ADMIN') || institution.isCustomerType_Consortium()) && (institution != orgInstance)}">
+                <g:if test="${(SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || institution.isCustomerType_Consortium()) && (institution != orgInstance)}">
                     <g:if test="${orgInstance.createdBy || orgInstance.legallyObligedBy}">
                         <div class="ui card">
                             <div class="content">
@@ -810,7 +810,7 @@
                             <h2 class="ui header"><g:message code="org.contacts.label"/></h2>
                         </g:else>
 
-                        <g:if test="${(orgInstance.id == institution.id && user.is_ROLE_ADMIN_or_hasAffiliation('INST_EDITOR'))}">
+                        <g:if test="${(orgInstance.id == institution.id && user.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR'))}">
                             <g:link action="myPublicContacts" controller="organisation" params="[id: orgInstance.id, tab: 'contacts']"
                                     class="ui button">${message('code': 'org.edit.contactsAndAddresses')}</g:link>
                         </g:if>

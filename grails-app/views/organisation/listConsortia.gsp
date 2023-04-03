@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService" %>
+<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService" %>
 <laser:htmlStart message="menu.public.all_cons" serviceInjection="true"/>
 
         <g:set var="entityName" value="${message(code: 'org.label')}" />
@@ -9,7 +9,7 @@
 
     <ui:controlButtons>
         <%
-            editable = (editable && accessService.ctxPerm(CustomerTypeService.ORG_INST_PRO)) || contextService.getUser().hasMinRole('ROLE_ADMIN')
+            editable = (editable && accessService.ctxPerm(CustomerTypeService.ORG_INST_PRO)) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
         %>
         <ui:exportDropdown>
             <ui:exportDropdownItem>

@@ -1164,8 +1164,8 @@ class OrganisationController  {
      * it has been attached to; content editing of an uploaded document is not possible in this app!
      * @return the modal to edit the document parameters
      */
-    @DebugInfo(test='is_ROLE_ADMIN_or_hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_EDITOR") })
+    @DebugInfo(test='hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR")')
+    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR") })
     def editDocument() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
         if(!result) {
@@ -1187,8 +1187,8 @@ class OrganisationController  {
      * @return the document table view ({@link #documents()})
      * @see DocstoreService#unifiedDeleteDocuments()
      */
-    @DebugInfo(test='is_ROLE_ADMIN_or_hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_EDITOR") })
+    @DebugInfo(test='hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR")')
+    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR") })
     def deleteDocuments() {
         log.debug("deleteDocuments ${params}");
 
@@ -1205,8 +1205,8 @@ class OrganisationController  {
      * @see Doc
      * @see DocContext
      */
-    @DebugInfo(test='is_ROLE_ADMIN_or_hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_USER") })
+    @DebugInfo(test='hasCtxAffiliation_or_ROLEADMIN("INST_USER")')
+    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_USER") })
     @Check404(domain=Org)
     def notes() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
@@ -1249,8 +1249,8 @@ class OrganisationController  {
      * @see UserOrgRole
      * @see User
      */
-    @DebugInfo(test = 'is_ROLE_ADMIN_or_hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_ADM") })
+    @DebugInfo(test = 'hasCtxAffiliation_or_ROLEADMIN("INST_ADM")')
+    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_ADM") })
     @Check404(domain=Org)
     def users() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
@@ -1361,8 +1361,11 @@ class OrganisationController  {
         Map result = [
                 user: genericOIDService.resolveOID(params.uoid),
                 orgInstance: Org.get(params.id),
-                manipulateAffiliations: contextService.getUser().hasMinRole('ROLE_ADMIN')
+                manipulateAffiliations: SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
         ]
+        // TODO: --> CHECK LOGIC IMPLEMENTATION <--
+        // TODO: userIsYoda != SpringSecurityUtils.ifAnyGranted('ROLE_YODA') @ user.hasMinRole('ROLE_YODA')
+
         result.editable = checkIsEditable(result.user, contextService.getOrg())
         result.availableOrgs = [ result.orgInstance ]
 
@@ -1445,7 +1448,7 @@ class OrganisationController  {
                 result.delResult = deletionService.deleteOrganisation(result.orgInstance, null, DeletionService.DRY_RUN)
             }
 
-            if (contextService.getUser().hasMinRole('ROLE_ADMIN')) {
+            if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
                 result.substituteList = Org.executeQuery("select distinct o from Org o where o.status != :delState", [delState: RDStore.O_STATUS_DELETED])
             }
             else {
@@ -1778,8 +1781,8 @@ class OrganisationController  {
      * Call to list the contacts the context institution has attached to the given organisation
      * @return a table view of the contacts
      */
-    @DebugInfo(test = 'is_ROLE_ADMIN_or_hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_USER") })
+    @DebugInfo(test = 'hasCtxAffiliation_or_ROLEADMIN("INST_USER")')
+    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_USER") })
     @Check404(domain=Org)
     def myPublicContacts() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
@@ -1829,11 +1832,15 @@ class OrganisationController  {
      * @return true if edit rights are granted to the given user/org/view context, false otherwise
      */
     boolean checkIsEditable(User user, Org org) {
-        boolean isEditable
+        boolean isEditable = false
         Org contextOrg = contextService.getOrg()
         Org orgInstance = org
         boolean inContextOrg =  orgInstance?.id == contextOrg.id
-        boolean userHasEditableRights = user.is_ROLE_ADMIN_or_hasAffiliation('INST_EDITOR')
+        boolean userHasEditableRights = user.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+        boolean userIsYoda            = user.isYoda()
+        // TODO: --> CHECK LOGIC IMPLEMENTATION <--
+        // TODO: userIsYoda != SpringSecurityUtils.ifAnyGranted('ROLE_YODA') @ user.hasMinRole('ROLE_YODA')
+
         switch(params.action){
             case 'editUser':
                 isEditable = true
@@ -1854,7 +1861,7 @@ class OrganisationController  {
                 if (inContextOrg) {
                     isEditable = userHasEditableRights
                 }else{
-                    isEditable = user.hasMinRole('ROLE_YODA')
+                    isEditable = userIsYoda
                 }
                 break
             case [ 'show', 'ids', 'addSubjectGroup', 'deleteSubjectGroup', 'readerNumber', 'accessPoints', 'addressbook' ]:
@@ -1864,20 +1871,20 @@ class OrganisationController  {
                     switch (contextOrg.getCustomerType()){
                         case [ CustomerTypeService.ORG_INST_BASIC, CustomerTypeService.ORG_INST_PRO ] :
                             switch (orgInstance.getCustomerType()){
-                                case CustomerTypeService.ORG_INST_BASIC:        isEditable = user.hasMinRole('ROLE_YODA'); break
-                                case CustomerTypeService.ORG_INST_PRO:          isEditable = user.hasMinRole('ROLE_YODA'); break
-                                case CustomerTypeService.ORG_CONSORTIUM_BASIC:  isEditable = user.hasMinRole('ROLE_YODA'); break
-                                case CustomerTypeService.ORG_CONSORTIUM_PRO:    isEditable = user.hasMinRole('ROLE_YODA'); break
-                                default:                    isEditable = user.hasMinRole('ROLE_YODA'); break
+                                case CustomerTypeService.ORG_INST_BASIC:        isEditable = userIsYoda; break
+                                case CustomerTypeService.ORG_INST_PRO:          isEditable = userIsYoda; break
+                                case CustomerTypeService.ORG_CONSORTIUM_BASIC:  isEditable = userIsYoda; break
+                                case CustomerTypeService.ORG_CONSORTIUM_PRO:    isEditable = userIsYoda; break
+                                default:                                        isEditable = userIsYoda; break
                             }
                             break
                         case [ CustomerTypeService.ORG_CONSORTIUM_BASIC, CustomerTypeService.ORG_CONSORTIUM_PRO ] :
                             switch (orgInstance.getCustomerType()){
                                 case CustomerTypeService.ORG_INST_BASIC:        isEditable = userHasEditableRights; break
                                 case CustomerTypeService.ORG_INST_PRO:          isEditable = userHasEditableRights; break
-                                case CustomerTypeService.ORG_CONSORTIUM_BASIC:  isEditable = user.hasMinRole('ROLE_YODA'); break
-                                case CustomerTypeService.ORG_CONSORTIUM_PRO:    isEditable = user.hasMinRole('ROLE_YODA'); break
-                                default:                    isEditable = userHasEditableRights; break //means providers and agencies
+                                case CustomerTypeService.ORG_CONSORTIUM_BASIC:  isEditable = userIsYoda; break
+                                case CustomerTypeService.ORG_CONSORTIUM_PRO:    isEditable = userIsYoda; break
+                                default:                                        isEditable = userHasEditableRights; break //means providers and agencies
                             }
                             break
                     }
