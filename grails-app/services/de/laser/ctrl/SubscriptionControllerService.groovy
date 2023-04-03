@@ -1117,7 +1117,6 @@ class SubscriptionControllerService {
                     org.sub = subChild
                     org.name = subscr.name
                     org.sortname = subscr.sortname
-                    org.shortname = subscr.shortname
                     org.globalUID = subChild.globalUID
                     org.libraryType = subscr.libraryType
                     org.libraryNetwork = subscr.libraryNetwork
@@ -1246,7 +1245,7 @@ class SubscriptionControllerService {
                                 kind: result.subscription.kind ?: null,
                                 status: subStatus,
                                 name: result.subscription.name,
-                                //name: result.subscription.name + " (" + (cm.get(0).shortname ?: cm.get(0).name) + ")",
+                                //name: result.subscription.name + " (" + (cm.get(0).sortname ?: cm.get(0).name) + ")",
                                 startDate: startDate,
                                 endDate: endDate,
                                 administrative: result.subscription._getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE,

@@ -37,11 +37,11 @@ class FilterService {
      */
     Map<String, Object> getOrgQuery(GrailsParameterMap params) {
         Map<String, Object> result = [:]
-        ArrayList<String> query = ["o.status != :orgStatus"]
-        Map<String, Object> queryParams = ["orgStatus" : RDStore.ORG_STATUS_DELETED]
+        ArrayList<String> query = []
+        Map<String, Object> queryParams = [:]
 
         if (params.orgNameContains?.length() > 0) {
-            query << "((genfunc_filter_matcher(o.name, :orgNameContains) = true or genfunc_filter_matcher(o.shortname, :orgNameContains) = true or genfunc_filter_matcher(o.sortname, :orgNameContains) = true) or exists(select alt.id from AlternativeName alt where alt.org = o and genfunc_filter_matcher(alt.name, :orgNameContains) = true) )"
+            query << "((genfunc_filter_matcher(o.name, :orgNameContains) = true or genfunc_filter_matcher(o.sortname, :orgNameContains) = true) or exists(select alt.id from AlternativeName alt where alt.org = o and genfunc_filter_matcher(alt.name, :orgNameContains) = true) )"
              queryParams << [orgNameContains : "${params.orgNameContains}"]
         }
         if (params.orgType) {
@@ -52,6 +52,15 @@ class FilterService {
                 query << " exists (select roletype from o.orgType as roletype where roletype.id = :orgType )"
                 queryParams << [orgType: Long.parseLong(params.orgType)]
             }
+        }
+        if (params.orgStatus) {
+            List selectedStatus = listReaderWrapper(params, 'orgStatus').collect { key -> Long.parseLong(key) }
+            query << "o.status.id in (:orgStatus)"
+            queryParams.orgStatus = selectedStatus
+        }
+        else {
+            query << "o.status != :orgStatus"
+            queryParams.orgStatus = RDStore.ORG_STATUS_REMOVED
         }
         if (params.orgRole?.length() > 0) {
             query << " exists (select ogr from o.links as ogr where ogr.roleType.id = :orgRole )"
@@ -133,6 +142,11 @@ class FilterService {
             queryParams << [customerTypeKey : OrgSetting.KEYS.CUSTOMER_TYPE]
         }
 
+        if (params.legallyObligedBy?.length() > 0) {
+            query << "o.legallyObligedBy.id in (:legallyObligedBy)"
+            queryParams << [legallyObligedBy: listReaderWrapper(params, 'legallyObligedBy').collect { key -> Long.parseLong(key) }]
+        }
+
         if (params.platform?.length() > 0) {
             query << "exists (select plat.id from Platform plat where plat.org = o and genfunc_filter_matcher(plat.name, :platform) = true)"
             queryParams << [platform: params.platform]
@@ -180,10 +194,9 @@ class FilterService {
 
         // ERMS-1592, ERMS-1596
         if (params.orgNameContains?.length() > 0) {
-            query << "(genfunc_filter_matcher(o.name, :orgNameContains1) = true or genfunc_filter_matcher(o.shortname, :orgNameContains2) = true or genfunc_filter_matcher(o.sortname, :orgNameContains3) = true) "
+            query << "(genfunc_filter_matcher(o.name, :orgNameContains1) = true or genfunc_filter_matcher(o.sortname, :orgNameContains2) = true) "
              queryParams << [orgNameContains1 : "${params.orgNameContains}"]
              queryParams << [orgNameContains2 : "${params.orgNameContains}"]
-             queryParams << [orgNameContains3 : "${params.orgNameContains}"]
         }
         if (params.orgType?.length() > 0) {
             query << " exists (select roletype from o.orgType as roletype where roletype.id = :orgType )"
@@ -962,10 +975,9 @@ class FilterService {
         Map<String,Object> queryParams = [surveyConfig: surveyConfig]
 
         if (params.orgNameContains?.length() > 0) {
-            base_qry += " and (genfunc_filter_matcher(surveyOrg.org.name, :orgNameContains1) = true or genfunc_filter_matcher(surveyOrg.org.shortname, :orgNameContains2) = true or genfunc_filter_matcher(surveyOrg.org.sortname, :orgNameContains3) = true) "
+            base_qry += " and (genfunc_filter_matcher(surveyOrg.org.name, :orgNameContains1) = true or genfunc_filter_matcher(surveyOrg.org.sortname, :orgNameContains2) = true) "
             queryParams << [orgNameContains1 : "${params.orgNameContains}"]
             queryParams << [orgNameContains2 : "${params.orgNameContains}"]
-            queryParams << [orgNameContains3 : "${params.orgNameContains}"]
         }
         if (params.orgType?.length() > 0) {
             base_qry += " and exists (select roletype from surveyOrg.org.orgType as roletype where roletype.id = :orgType )"

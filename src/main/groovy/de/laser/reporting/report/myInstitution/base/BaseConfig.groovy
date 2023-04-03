@@ -284,8 +284,8 @@ class BaseConfig {
                     from: Org.executeQuery('select distinct(org) from Org org join org.orgType ot where ot in (:otList)',
                             [ otList: [RDStore.OT_PROVIDER] ]).collect{[
                             id: it.id,
-                            value_de: it.shortname ? (it.shortname + ' - ' + it.name) : it.name,
-                            value_en: it.shortname ? (it.shortname + ' - ' + it.name) : it.name,
+                            value_de: it.sortname ? (it.sortname + ' - ' + it.name) : it.name,
+                            value_en: it.sortname ? (it.sortname + ' - ' + it.name) : it.name,
                     ]}.sort({ a, b -> a.value_de.toLowerCase() <=> b.value_de.toLowerCase() })
             ]
         }
@@ -311,8 +311,8 @@ class BaseConfig {
                     label: messageSource.getMessage('platform.provider', null, locale),
                     from: Org.executeQuery('select distinct(org) from Platform plt join plt.org org').collect{[
                             id: it.id,
-                            value_de: it.shortname ? (it.shortname + ' - ' + it.name) : it.name,
-                            value_en: it.shortname ? (it.shortname + ' - ' + it.name) : it.name,
+                            value_de: it.sortname ? (it.sortname + ' - ' + it.name) : it.name,
+                            value_en: it.sortname ? (it.sortname + ' - ' + it.name) : it.name,
                     ]}.sort({ a, b -> a.value_de.toLowerCase() <=> b.value_de.toLowerCase() })
             ]
         }

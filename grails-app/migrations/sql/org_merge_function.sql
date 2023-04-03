@@ -45,7 +45,6 @@ BEGIN
 		insert into alternative_name (altname_version, altname_name, altname_org_fk) values (0, altname, new_key);
 		end loop;
 	select * into oldorgdata from org where org_id = old_key;
-	update org set org_shortname = oldorgdata.org_shortname where org_id = new_key and org_shortname is null;
 	update org set org_url = oldorgdata.org_url where org_id = new_key and org_url is null;
     delete from contact WHERE ct_org_fk = old_key and ct_content in (select ct_content from contact where ct_org_fk = new_key);
 	update contact set ct_org_fk = new_key where ct_org_fk = old_key;

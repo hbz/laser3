@@ -602,12 +602,13 @@
             return output;
         },
         doubleToString: function (input) {
-            //console.log(userLang);
-            let output;
-            if(JSPC.app.finance${idSuffix}.userLang !== 'en')
-                output = input.toFixed(2).toString().replace(".",",");
-            else output = input.toFixed(2).toString();
-            return output;
+            if(!isNaN(input)) {
+                let output;
+                if(JSPC.app.finance${idSuffix}.userLang !== 'en')
+                    output = input.toFixed(2).toString().replace(".",",");
+                else output = input.toFixed(2).toString();
+                return output;
+            }
         },
         init: function(elem) {
             //console.log(this);

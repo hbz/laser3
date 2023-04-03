@@ -206,11 +206,11 @@ class BootStrapService {
                     }
 
                     su.affils.each { key, values ->
-                        Org org = Org.findByShortname(key)
+                        Org org = Org.findBySortname(key)
                         values.each { affil ->
                             Role role = Role.findByAuthorityAndRoleType(affil, 'user')
                             if (org && role) {
-                                log.debug("  -> adding affiliation: ${role} for ${org.shortname} ")
+                                log.debug("  -> adding affiliation: ${role} for ${org.sortname} ")
                                 new UserOrgRole(
                                         user: user,
                                         org: org,

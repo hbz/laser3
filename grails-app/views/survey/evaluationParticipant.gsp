@@ -77,7 +77,7 @@
         <tbody>
         <tr>
             <td>
-                <p><strong><g:link controller="organisation" action="show" id="${choosenOrg.id}">${choosenOrg.name} (${choosenOrg.shortname})</g:link></strong></p>
+                <p><strong><g:link controller="organisation" action="show" id="${choosenOrg.id}">${choosenOrg.name} (${choosenOrg.sortname})</g:link></strong></p>
 
                 ${choosenOrg.libraryType?.getI10n('value')}
             </td>
