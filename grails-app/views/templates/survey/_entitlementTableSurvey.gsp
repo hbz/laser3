@@ -49,8 +49,8 @@
 
                         <div class="column">
                             <div class="ui list">
-                                <g:if test="${(params.tab != 'currentIEs' && ieInNewSub && ieInNewSub.acceptStatus == RDStore.IE_ACCEPT_STATUS_FIXED) &&
-                                            participantPerpetualAccessToTitle &&
+                                <g:if test="${(params.tab != 'currentIEs' && ieInNewSub && ieInNewSub.acceptStatus == RDStore.IE_ACCEPT_STATUS_FIXED) ||
+                                            participantPerpetualAccessToTitle ||
                                             (participantPerpetualAccessToTitle && previousSubscription && surveyService.titleContainedBySubscription(previousSubscription, tipp)?.acceptStatus == RDStore.IE_ACCEPT_STATUS_FIXED)}">
                                     <div class="ui label la-iconStrip">
                                         <g:if test="${params.tab != 'currentIEs' && ieInNewSub && ieInNewSub.acceptStatus == RDStore.IE_ACCEPT_STATUS_FIXED}">
@@ -153,8 +153,9 @@
                                                 </div>
                                             </g:if>
                                         </div>
-
-                                        <g:if test="${i < ie.priceItems.size() - 1}"><hr></g:if>
+                                        <g:if test="${priceItem.listPrice && (i < ie.priceItems.size() - 1)}">
+                                            <hr>
+                                        </g:if>
                                         <g:set var="sumlistPrice" value="${sumlistPrice + (priceItem.listPrice ?: 0)}"/>
                                         <g:set var="sumlocalPrice"
                                                value="${sumlocalPrice + (priceItem.localPrice ?: 0)}"/>
