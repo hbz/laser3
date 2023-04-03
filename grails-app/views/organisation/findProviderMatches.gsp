@@ -36,7 +36,7 @@
 							<tr>
 								<th>${message(code:'default.name.label')}</th>
 								<th>${message(code:'identifier.plural')}</th>
-								<th>${message(code:'org.shortname.label')}</th>
+								<th>${message(code:'org.sortname.label')}</th>
 								<th>${message(code:'org.country.label')}</th>
 							</tr>
 							</thead>
@@ -51,7 +51,7 @@
 											</g:if>
 											<g:each in="${providerInstance.ids?.sort{it?.ns?.ns}}" var="id"><li>${id.ns.ns}: ${id.value}</li></g:each>
 									</ul></td>
-									<td>${providerInstance.shortname}</td>
+									<td>${providerInstance.sortname}</td>
 									<td>${providerInstance.country}</td>
 								</tr>
 							</g:each>

@@ -7,20 +7,11 @@
     <g:textField name="name" maxlength="255" value="${orgInstance?.name}"/>
 </div>
 
-<div class="fields two">
-<div class="field ${hasErrors(bean: orgInstance, field: 'shortname', 'error')}">
-	<label for="shortname">
-		<g:message code="org.shortname.label" />
-	</label>
-    <g:textField name="shortname" maxlength="255" value="${orgInstance?.shortname}"/>
-</div>
-
 <div class="field ${hasErrors(bean: orgInstance, field: 'sortname', 'error')}">
 	<label for="sortname">
 		<g:message code="org.sortname.label" />
 	</label>
     <g:textField name="sortname" maxlength="255" value="${orgInstance?.sortname}"/>
-</div>
 </div>
 
 <div class="fields two">

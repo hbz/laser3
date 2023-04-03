@@ -43,7 +43,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         implements DeleteFlag {
 
     String name
-    String shortname
     String shortcode            // Used to generate friendly semantic URLs
     String sortname
     String legalPatronName
@@ -153,7 +152,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
            version          column:'org_version'
          globalUID          column:'org_guid'
               name          column:'org_name',      index:'org_name_idx'
-         shortname          column:'org_shortname', index:'org_shortname_idx'
           sortname          column:'org_sortname',  index:'org_sortname_idx'
    legalPatronName          column:'org_legal_patronname'
                url          column:'org_url'
@@ -207,7 +205,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     static constraints = {
            globalUID(nullable:true, blank:false, unique:true, maxSize:255)
                 name(blank:false, maxSize:255)
-           shortname(nullable:true, blank:true, maxSize:255)
             sortname(nullable:true, blank:true, maxSize:255)
      legalPatronName(nullable:true, blank:true, maxSize:255)
                  url(nullable:true, blank:true, maxSize:512)
@@ -515,7 +512,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     /**
      * Gets the display string for this organisation; the following cascade is being checked. If one field is not set, the following is being returned:
      * <ol>
-     *     <li>shortname</li>
      *     <li>sortname</li>
      *     <li>name</li>
      *     <li>globalUID</li>
@@ -524,7 +520,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      * @return one of the fields listed above
      */
     String getDesignation() {
-        shortname ?: (sortname ?: (name ?: (globalUID ?: id)))
+        sortname ?: (name ?: (globalUID ?: id))
     }
 
     /**
@@ -764,9 +760,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         if (contextOrg.isCustomerType_Inst()){
             if (name) {
                 result += name
-            }
-            if (shortname){
-                result += ' (' + shortname + ')'
             }
         } else {
             if (sortname) {

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.LocaleUtils; de.laser.I10nTranslation; de.laser.*; de.laser.auth.Role; de.laser.storage.RDConstants; de.laser.RefdataValue" %>
+<%@ page import="de.laser.utils.LocaleUtils; de.laser.I10nTranslation; de.laser.*; de.laser.auth.Role; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.storage.RDStore" %>
 
 <%
     String lang = LocaleUtils.getCurrentLang()
@@ -155,6 +155,17 @@
                 </div>
             </g:if>
 
+            <g:if test="${field.equalsIgnoreCase('orgStatus')}">
+                <div class="field">
+                    <label for="orgStatus">${message(code: 'default.status.label')}</label>
+                    <g:if test="${orgStatusSet == null || orgStatusSet.isEmpty()}">
+                        <g:set var="orgStatusSet" value="${RefdataCategory.getAllRefdataValues([RDConstants.ORG_STATUS])-RDStore.ORG_STATUS_REMOVED}" scope="request"/>
+                    </g:if>
+                    <ui:select class="ui dropdown multiple search selection" id="orgStatus" name="orgStatus"
+                               from="${orgStatusSet}" optionKey="id" optionValue="value" value="${params.orgStatus}" />
+                </div>
+            </g:if>
+
             <g:if test="${field.equalsIgnoreCase('role')}">
                 <div class="field">
                     <label for="orgRole">${message(code: 'org.orgRole.label')}</label>
@@ -226,18 +237,30 @@
                                   noSelection="${['':message(code:'default.select.choose.label')]}"/>
                 </div>
             </g:if>
+            <g:if test="${field.equalsIgnoreCase('isLegallyObligedBy')}">
+                <div class="field">
+                    <label for="legallyObligedBy">${message(code: 'org.legallyObligedBy.label')}</label>
+                    <g:set var="legalObligations" value="${Org.executeQuery('select distinct(lob) from Org o inner join o.legallyObligedBy lob where o.status != :removed order by lob.sortname', [removed: RDStore.ORG_STATUS_REMOVED])}" scope="request"/>
+                    <g:select class="ui dropdown multiple search" id="legallyObligedBy" name="legallyObligedBy"
+                               from="${legalObligations}"
+                               optionKey="id"
+                               optionValue="sortname"
+                               value="${params.legallyObligedBy}"
+                               noSelection="${['':message(code:'default.select.choose.label')]}"/>
+                </div>
+            </g:if>
             <g:if test="${field.equalsIgnoreCase('customerType')}">
-            <div class="field">
-                <label for="customerType">${message(code:'org.customerType.label')}</label>
-                <ui:select id="customerType" name="customerType"
-                              from="${[Role.findByAuthority('FAKE')] + Role.findAllByRoleType('org')}"
-                              optionKey="id"
-                              optionValue="authority"
-                              value="${params.customerType}"
-                              class="ui dropdown"
-                              noSelection="${['':message(code:'default.select.choose.label')]}"
-                />
-            </div>
+                <div class="field">
+                    <label for="customerType">${message(code:'org.customerType.label')}</label>
+                    <ui:select id="customerType" name="customerType"
+                                  from="${[Role.findByAuthority('FAKE')] + Role.findAllByRoleType('org')}"
+                                  optionKey="id"
+                                  optionValue="authority"
+                                  value="${params.customerType}"
+                                  class="ui dropdown"
+                                  noSelection="${['':message(code:'default.select.choose.label')]}"
+                    />
+                </div>
             </g:if>
             <g:if test="${field.equalsIgnoreCase('providers')}">
                 <div class="field">

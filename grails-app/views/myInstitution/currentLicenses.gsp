@@ -227,9 +227,9 @@
                               <g:if test="${licensor}">
                                   <g:link controller="organisation" action="show" id="${licensor.id}">
                                       ${fieldValue(bean: licensor, field: "name")}
-                                      <g:if test="${licensor.shortname}">
+                                      <g:if test="${licensor.sortname}">
                                           <br />
-                                          (${fieldValue(bean: licensor, field: "shortname")})
+                                          (${fieldValue(bean: licensor, field: "sortname")})
                                       </g:if>
                                   </g:link>
                               </g:if>

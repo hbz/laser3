@@ -196,7 +196,7 @@
                 <div class="field">
                     <g:select id="filterTableCtx" name="filterTableCtx" class="ui dropdown search selection"
                               from="${contextStats.collect{Org.get(it[3])}.unique()}"
-                              optionKey="id" optionValue="${{it.sortname + ' (' + it.shortname + ')'}}"
+                              optionKey="id" optionValue="${{it.sortname}}"
                               noSelection="['':'Alle anzeigen']"
                     />
                 </div>

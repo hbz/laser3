@@ -29,7 +29,7 @@
         <g:form action="listInstitution" method="get" class="ui form">
             <laser:render template="/templates/filter/orgFilter"
                       model="[
-                              tmplConfigShow: [['name', 'identifier'], ['identifierNamespace', 'customerIDNamespace', 'isMyX'], ['country&region', 'libraryNetwork', 'libraryType', 'subjectGroup']],
+                              tmplConfigShow: [['name', 'orgStatus', 'isLegallyObligedBy'], ['identifier', 'identifierNamespace', 'customerIDNamespace', 'isMyX'], ['country&region', 'libraryNetwork', 'libraryType', 'subjectGroup']],
                               tmplConfigFormFilter: true
                       ]"/>
         </g:form>
@@ -41,7 +41,7 @@
                           currentConsortiaMemberIdList: consortiaMemberIds,
                           tmplShowCheckbox: false,
                           tmplConfigShow: [
-                                  'sortname', 'name', 'wibid', 'isil', 'region', 'libraryNetwork', 'libraryType', 'status', 'legalInformation', 'isMyX'
+                                  'sortname', 'name', 'isil', 'region', 'libraryNetwork', 'libraryType', 'status', 'legalInformation', 'isMyX'
                           ]
                   ]"/>
     </g:if>
@@ -50,7 +50,7 @@
               model="[orgList: availableOrgs,
                       tmplShowCheckbox: false,
                       tmplConfigShow: [
-                              'sortname', 'name', 'wibid', 'isil', 'region', 'libraryNetwork', 'libraryType', 'status', 'legalInformation'
+                              'sortname', 'name', 'isil', 'region', 'libraryNetwork', 'libraryType', 'status', 'legalInformation'
                       ]
               ]"/>
     </g:else>

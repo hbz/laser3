@@ -204,7 +204,6 @@ class AccessPointService {
 
         titles.addAll([messageSource.getMessage('org.sortname.label',null, locale),
                        'Name',
-                       messageSource.getMessage('org.shortname.label',null, locale),
                        messageSource.getMessage('accessPoint.ip.name.label',null, locale),
                        messageSource.getMessage('accessMethod.label',null, locale),
                        messageSource.getMessage('accessPoint.ip.format.range',null, locale),
@@ -226,7 +225,6 @@ class AccessPointService {
                         row = []
                         row.add([field: org.sortname ?: '', style: null])
                         row.add([field: org.name ?: '', style: null])
-                        row.add([field: org.shortname ?: '', style: null])
                         row.add([field: it.name ?: '', style: null])
                         row.add([field: 'IPv4', style: null])
                         row.add([field: it.ipRange ?: '', style: null])
@@ -238,7 +236,6 @@ class AccessPointService {
                         row = []
                         row.add([field: org.sortname ?: '', style: null])
                         row.add([field: org.name ?: '', style: null])
-                        row.add([field: org.shortname ?: '', style: null])
                         row.add([field: it.name ?: '', style: null])
                         row.add([field: 'IPv6', style: null])
                         row.add([field: it.ipRange ?: '', style: null])
@@ -271,7 +268,6 @@ class AccessPointService {
 
         titles.addAll([messageSource.getMessage('org.sortname.label',null, locale),
                        'Name',
-                       messageSource.getMessage('org.shortname.label',null, locale),
                        messageSource.getMessage('accessPoint.ip.name.label',null, locale),
                        messageSource.getMessage('accessMethod.label',null, locale),
                        messageSource.getMessage('accessPoint.ip.format.range',null, locale),
@@ -293,7 +289,6 @@ class AccessPointService {
                         row = []
                         row.add([field: org.sortname ?: '', style: null])
                         row.add([field: org.name ?: '', style: null])
-                        row.add([field: org.shortname ?: '', style: null])
                         row.add([field: it.name ?: '', style: null])
                         row.add([field: 'IPv4', style: null])
                         row.add([field: it.ipRange ?: '', style: null])
@@ -305,7 +300,6 @@ class AccessPointService {
                         row = []
                         row.add([field: org.sortname ?: '', style: null])
                         row.add([field: org.name ?: '', style: null])
-                        row.add([field: org.shortname ?: '', style: null])
                         row.add([field: it.name ?: '', style: null])
                         row.add([field: 'IPv6', style: null])
                         row.add([field: it.ipRange ?: '', style: null])
@@ -337,7 +331,6 @@ class AccessPointService {
 
         titles.addAll([messageSource.getMessage('org.sortname.label',null, locale),
                        'Name',
-                       messageSource.getMessage('org.shortname.label',null, locale),
                        messageSource.getMessage('accessPoint.ezproxy.name.label',null, locale),
                        messageSource.getMessage('accessMethod.label',null, locale),
                        messageSource.getMessage('accessPoint.ip.format.range',null, locale),
@@ -360,7 +353,6 @@ class AccessPointService {
                         row = []
                         row.add([field: org.sortname ?: '', style: null])
                         row.add([field: org.name ?: '', style: null])
-                        row.add([field: org.shortname ?: '', style: null])
                         row.add([field: it.name ?: '', style: null])
                         row.add([field: 'IPv4', style: null])
                         row.add([field: it.ipRange ?: '', style: null])
@@ -373,7 +365,6 @@ class AccessPointService {
                         row = []
                         row.add([field: org.sortname ?: '', style: null])
                         row.add([field: org.name ?: '', style: null])
-                        row.add([field: org.shortname ?: '', style: null])
                         row.add([field: it.name ?: '', style: null])
                         row.add([field: 'IPv6', style: null])
                         row.add([field: it.ipRange ?: '', style: null])
@@ -407,7 +398,6 @@ class AccessPointService {
 
         titles.addAll([messageSource.getMessage('org.sortname.label',null, locale),
                        'Name',
-                       messageSource.getMessage('org.shortname.label',null, locale),
                        messageSource.getMessage('accessPoint.shibboleth.name.label',null, locale),
                        messageSource.getMessage('accessMethod.label',null, locale),
                        messageSource.getMessage('accessPoint.entitiyId.label',null, locale)
@@ -423,7 +413,6 @@ class AccessPointService {
                 if (accessPoint.accessMethod == RDStore.ACCESS_POINT_TYPE_SHIBBOLETH) {
                     row.add([field: org.sortname ?: '', style: null])
                     row.add([field: org.name ?: '', style: null])
-                    row.add([field: org.shortname ?: '', style: null])
                     row.add([field: accessPoint.name ?: '', style: null])
                     row.add([field: accessPoint.accessMethod ? accessPoint.accessMethod.getI10n('value') : '', style: null])
                     row.add([field: accessPoint.entityId ?: '', style: null])

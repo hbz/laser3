@@ -70,8 +70,8 @@
                     <td>
                         <g:link controller="organisation" action="show" id="${org.id}">
                             ${fieldValue(bean: org, field: "name")} <br />
-                            <g:if test="${org.shortname}">
-                                (${fieldValue(bean: org, field: "shortname")})
+                            <g:if test="${org.sortname}">
+                                (${fieldValue(bean: org, field: "sortname")})
                             </g:if>
                         </g:link>
                     </td>
