@@ -1363,6 +1363,9 @@ class OrganisationController  {
                 orgInstance: Org.get(params.id),
                 manipulateAffiliations: SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
         ]
+        // TODO: --> CHECK LOGIC IMPLEMENTATION <--
+        // TODO: userIsYoda != SpringSecurityUtils.ifAnyGranted('ROLE_YODA') @ user.hasMinRole('ROLE_YODA')
+
         result.editable = checkIsEditable(result.user, contextService.getOrg())
         result.availableOrgs = [ result.orgInstance ]
 
@@ -1835,13 +1838,8 @@ class OrganisationController  {
         boolean inContextOrg =  orgInstance?.id == contextOrg.id
         boolean userHasEditableRights = user.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
         boolean userIsYoda            = user.isYoda()
-
-        // TODO: --> WRONG LOGIC IMPLEMENTATION ? <--
+        // TODO: --> CHECK LOGIC IMPLEMENTATION <--
         // TODO: userIsYoda != SpringSecurityUtils.ifAnyGranted('ROLE_YODA') @ user.hasMinRole('ROLE_YODA')
-        // OrganisationController.editUser() {
-        //     result.user : genericOIDService.resolveOID(params.uoid)
-        //     result.editable = checkIsEditable(result.user, contextService.getOrg())
-        // }
 
         switch(params.action){
             case 'editUser':
