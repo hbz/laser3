@@ -267,11 +267,24 @@ class OrganisationController  {
         List<Org> availableOrgs = Org.executeQuery(fsq.query, fsq.queryParams, [sort:params.sort])
         result.consortiaMemberIds = Combo.executeQuery('select cmb.fromOrg.id from Combo cmb where cmb.toOrg = :toOrg and cmb.type = :type',[toOrg: result.institution, type: RDStore.COMBO_TYPE_CONSORTIUM])
 
-        if (params.isMyX == 'exclusive') {
-            availableOrgs = availableOrgs.findAll { result.consortiaMemberIds.contains( it.id ) }
-        }
-        else if (params.isMyX == 'not') {
-            availableOrgs = availableOrgs.findAll { ! result.consortiaMemberIds.contains( it.id ) }
+        if (params.isMyX) {
+            List xFilter = params.list('isMyX')
+            Set<Long> f1Result = []
+
+            if (xFilter.contains('ismyx_exclusive')) {
+                f1Result.addAll( availableOrgs.findAll { result.consortiaMemberIds.contains( it.id ) }.collect{ it.id } )
+            }
+            if (xFilter.contains('ismyx_not')) {
+                f1Result.addAll( availableOrgs.findAll { ! result.consortiaMemberIds.contains( it.id ) }.collect{ it.id }  )
+            }
+            availableOrgs = availableOrgs.findAll { f1Result.contains(it.id) } as List<Org>
+
+//            if (xFilter.contains('ismyx_exclusive')) {
+//                availableOrgs = availableOrgs.findAll { result.consortiaMemberIds.contains( it.id ) }
+//            }
+//            else if (xFilter.contains('ismyx_not')) {
+//                availableOrgs = availableOrgs.findAll { ! result.consortiaMemberIds.contains( it.id ) }
+//            }
         }
         result.consortiaMemberTotal = availableOrgs.size()
 
@@ -336,11 +349,17 @@ class OrganisationController  {
         result.consortiaIds = Org.executeQuery(currentConsortiaQMap.query, currentConsortiaQMap.queryParams).collect{ it.id }
         // ? ---
 
-        if (params.isMyX == 'exclusive') {
-            availableOrgs = availableOrgs.findAll { result.consortiaIds.contains( it.id ) } as List<Org>
-        }
-        else if (params.isMyX == 'not') {
-            availableOrgs = availableOrgs.findAll { ! result.consortiaIds.contains( it.id ) } as List<Org>
+        if (params.isMyX) {
+            List xFilter = params.list('isMyX')
+            Set<Long> f1Result = []
+
+            if (xFilter.contains('ismyx_exclusive')) {
+                f1Result.addAll( availableOrgs.findAll { result.consortiaIds.contains( it.id ) }.collect{ it.id } )
+            }
+            if (xFilter.contains('ismyx_not')) {
+                f1Result.addAll( availableOrgs.findAll { ! result.consortiaIds.contains( it.id ) }.collect{ it.id }  )
+            }
+            availableOrgs = availableOrgs.findAll { f1Result.contains(it.id) } as List<Org>
         }
 
         result.consortiaTotal = availableOrgs.size()
@@ -427,12 +446,32 @@ class OrganisationController  {
         List orgListTotal            = Org.findAll(fsq.query, fsq.queryParams)
         result.currentProviderIdList = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies(contextService.getOrg()).toList()
 
-        if (params.isMyX == 'exclusive') {
-            orgListTotal = orgListTotal.findAll { result.currentProviderIdList.contains( it.id ) }
+        if (params.isMyX) {
+            List xFilter = params.list('isMyX')
+            Set<Long> f1Result = [], f2Result = []
+            boolean   f1Set = false, f2Set = false
+
+            if (xFilter.contains('ismyx_exclusive')) {
+                f1Result.addAll( orgListTotal.findAll { result.currentProviderIdList.contains( it.id ) }.collect{ it.id } )
+                f1Set = true
+            }
+            if (xFilter.contains('ismyx_not')) {
+                f1Result.addAll( orgListTotal.findAll { ! result.currentProviderIdList.contains( it.id ) }.collect{ it.id }  )
+                f1Set = true
+            }
+            if (xFilter.contains('wekb_exclusive')) {
+                f2Result.addAll( orgListTotal.findAll {it.gokbId != null }.collect{ it.id } )
+                f2Set = true
+            }
+            if (xFilter.contains('wekb_not')) {
+                f2Result.addAll( orgListTotal.findAll { it.gokbId == null }.collect{ it.id }  )
+                f2Set = true
+            }
+
+            if (f1Set) { orgListTotal = orgListTotal.findAll { f1Result.contains(it.id) } }
+            if (f2Set) { orgListTotal = orgListTotal.findAll { f2Result.contains(it.id) } }
         }
-        else if (params.isMyX == 'not') {
-            orgListTotal = orgListTotal.findAll { ! result.currentProviderIdList.contains( it.id ) }
-        }
+
         result.orgListTotal = orgListTotal.size()
         result.orgList      = orgListTotal.drop((int) result.offset).take((int) result.max)
 

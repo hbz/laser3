@@ -29,7 +29,11 @@
         <g:form action="listInstitution" method="get" class="ui form">
             <laser:render template="/templates/filter/orgFilter"
                       model="[
-                              tmplConfigShow: [['name', 'orgStatus', 'isLegallyObligedBy'], ['identifier', 'identifierNamespace', 'customerIDNamespace', 'isMyX'], ['country&region', 'libraryNetwork', 'libraryType', 'subjectGroup']],
+                              tmplConfigShow: [
+                                      ['name', 'orgStatus', 'isLegallyObligedBy'],
+                                      ['identifier', 'identifierNamespace', 'customerIDNamespace', 'isMyX'],
+                                      ['country&region', 'libraryNetwork', 'libraryType', 'subjectGroup']
+                              ],
                               tmplConfigFormFilter: true
                       ]"/>
         </g:form>

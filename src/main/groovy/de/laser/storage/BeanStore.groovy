@@ -1,6 +1,6 @@
 package de.laser.storage
 
-
+import de.laser.CustomerTypeService
 import de.laser.ESWrapperService
 import de.laser.GenericOIDService
 import de.laser.PendingChangeService
@@ -22,6 +22,7 @@ import de.laser.ShareService
 import de.laser.SubscriptionsQueryService
 import de.laser.SystemService
 import de.laser.UserService
+import de.laser.WorkflowService
 import de.laser.YodaService
 import de.laser.ctrl.FinanceControllerService
 import grails.gsp.PageRenderer
@@ -97,6 +98,9 @@ class BeanStore {
     static ContextService getContextService() {
         Holders.grailsApplication.mainContext.getBean('contextService') as ContextService
     }
+    static CustomerTypeService getCustomerTypeService() {
+        Holders.grailsApplication.mainContext.getBean('customerTypeService') as CustomerTypeService
+    }
     static DeletionService getDeletionService() {
         Holders.grailsApplication.mainContext.getBean('deletionService') as DeletionService
     }
@@ -150,6 +154,9 @@ class BeanStore {
     }
     static UserService getUserService() {
         Holders.grailsApplication.mainContext.getBean('userService') as UserService
+    }
+    static WorkflowService getWorkflowService() {
+        Holders.grailsApplication.mainContext.getBean('workflowService') as WorkflowService
     }
     static YodaService getYodaService() {
         Holders.grailsApplication.mainContext.getBean('yodaService') as YodaService

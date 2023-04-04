@@ -30,11 +30,9 @@ class InstAdmService {
      * @return true if there is at least one user affiliated as INST_ADM, false otherwise
      */
     boolean hasInstAdmin(Org org) {
-        //selecting IDs is much more performant than whole objects
         List<Long> admins = User.executeQuery("select u.id from User u join u.affiliations uo join uo.formalRole role where " +
                 "uo.org = :org and role.authority = :role and u.enabled = true",
-                [org: org,
-                 role: 'INST_ADM'])
+                [org: org, role: 'INST_ADM'])
         admins.size() > 0
     }
 
@@ -108,11 +106,7 @@ class InstAdmService {
      * @return true if the given user is the last admin of the given institution
      */
     boolean isUserLastInstAdminForOrg(User user, Org org){
-
-        List<UserOrgRole> userOrgs = UserOrgRole.findAllByOrgAndFormalRole(
-                org,
-                Role.findByAuthority('INST_ADM')
-        )
+        List<UserOrgRole> userOrgs = UserOrgRole.findAllByOrgAndFormalRole(org, Role.findByAuthority('INST_ADM'))
 
         return (userOrgs.size() == 1 && userOrgs[0].user == user)
     }
@@ -143,10 +137,7 @@ class InstAdmService {
             }
             else {
                 log.debug("Create new user_org entry....");
-                UserOrgRole uo = new UserOrgRole(
-                        org: org,
-                        user: user,
-                        formalRole: formalRole)
+                UserOrgRole uo = new UserOrgRole( org: org, user: user, formalRole: formalRole )
 
                 if (uo.save()) {
                     flash?.message = messageSource.getMessage('user.affiliation.request.success', null, loc)
