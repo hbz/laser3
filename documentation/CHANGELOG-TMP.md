@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4951    04.04.2023  dev     3.1         Andreas Bug         Filter "Dauerhafter Zugriff" fehlte in Übersicht von verknüpften Lizenzen eines Vertrages
+
 4789    31.03.2023  dev     3.1         Andreas Feature     Aktualisieren der Anbieterdaten
 
 4741    31.03.2023  dev     3.1         Andreas Feature     Zusammenführung von Einrichtungen

@@ -75,6 +75,15 @@
                         </div>
                     </div>
                 </div>
+                <div class="field">
+                    <label>${message(code:'subscription.hasPerpetualAccess.label')}</label>
+                    <ui:select class="ui fluid dropdown" name="hasPerpetualAccess"
+                               from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
+                               optionKey="id"
+                               optionValue="value"
+                               value="${params.hasPerpetualAccess}"
+                               noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+                </div>
                 <div class="field la-field-right-aligned">
                     <a href="${request.forwardURI}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</a>
                     <input name="filterSet" type="hidden" value="true">
