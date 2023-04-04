@@ -42357,6 +42357,10 @@ i.icon.la-phone.open {
   font-family: Icons;
 }
 
+i.icon.la-basket-shopping.slash {
+  font-family: 'icomoon';
+}
+
 i.icon.hand.pointer.outline.slash:before {
   content: "\e901";
 }
@@ -42498,6 +42502,10 @@ i.icon.la-phone.open:before {
 
 i.icon.la-phone:before {
   content: "\f095";
+}
+
+i.icon.la-basket-shopping.slash:before {
+  content: "\e91d";
 }
 
 /*******************************
@@ -47289,7 +47297,6 @@ a.ui.ui.ui.inverted.basic.black.label:hover {
 .ui.label.la-annual-rings .icon {
   font-size: 1.3em;
   width: auto;
-  margin: 0em 0.75em 0em 0.75em;
   vertical-align: sub;
 }
 
@@ -47340,6 +47347,10 @@ a.ui.ui.ui.inverted.basic.black.label:hover {
   border: none;
   vertical-align: super;
   align-items: center;
+}
+
+.ui.la-annual-rings-modern .icon {
+  margin: 0em 0.75em 0em 0.75em;
 }
 
 .ui.la-annual-rings-modern > a {
@@ -47587,6 +47598,12 @@ a .ui.circular.label:focus {
 
 .ui.list > .item.js-copyTriggerParent .js-copyTrigger {
   display: inline-flex !important;
+}
+
+/* Label with Icon Strip */
+
+.ui.label.la-iconStrip > .icon {
+  margin: 0 0.25rem 0 0;
 }
 /*!
  * # Fomantic-UI ^2.9.1 - List
@@ -57294,6 +57311,12 @@ legend {
     padding-left: 0em !important;
     padding-right: 0em !important;
   }
+}
+
+.ui.grid.positive {
+  box-shadow: 0 0 0 #a3c293 inset;
+  background: #fcfff5;
+  color: #2c662d;
 }
 /*
  * # Fomantic - Menu
@@ -67792,7 +67815,8 @@ a.inverted.ui.card:hover,
 #container-notes,
 #container-provider,
 #container-billing,
-#container-links {
+#container-links,
+#container-workflows {
   width: 100%;
 }
 

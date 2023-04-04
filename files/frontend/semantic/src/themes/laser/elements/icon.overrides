@@ -1811,6 +1811,9 @@ i.icon.la-phone {
 i.icon.la-phone.open {
   font-family: Icons;
 }
+i.icon.la-basket-shopping.slash {
+  font-family: 'icomoon';
+}
 
 // to turn off all the buttons on a side
 // the other part of the button is the SEMANTIC UI Icon: 'hand pointer outline'
@@ -1856,6 +1859,8 @@ i.icon.la-copy.open:before { content: "\f24d"; }
 i.icon.la-copy:before { content: "\f24d"; }
 i.icon.la-phone.open:before { content: "\f095"; transform: rotate(45deg);}
 i.icon.la-phone:before { content: "\f095"; }
+
+i.icon.la-basket-shopping.slash:before { content: "\e91d"; }
 /*******************************
            Laser Icons
 *******************************/

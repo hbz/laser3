@@ -18,7 +18,7 @@
 //= require modules/setTextareaHeight.js
 //= require modules/system.js
 
-console.log('+ bundle: laser.js')
+console.log('+ bundle: laser.js');
 
 // here we go ..
 
