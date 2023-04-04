@@ -171,15 +171,49 @@ class PlatformController  {
         }
         // ? ---
 
-        if (params.isMyX == 'exclusive') {
-            wekbResultMap.records      = wekbResultMap.records.findAll { result.myPlatformsUuids.contains( it.uuid ) }
-            wekbResultMap.recordsCount = wekbResultMap.records.size()
+        if (params.isMyX) {
+            List xFilter = params.list('isMyX')
+            Set<String> f1Result = [], f2Result = []
+            boolean     f1Set = false, f2Set = false
+
+            if (xFilter.contains('ismyx_exclusive')) {
+                f1Result.addAll( wekbResultMap.records.findAll { result.myPlatformsUuids.contains(it.uuid) }.collect{ it.uuid } )
+                f1Set = true
+            }
+            if (xFilter.contains('ismyx_not')) {
+                f1Result.addAll( wekbResultMap.records.findAll { ! result.myPlatformsUuids.contains(it.uuid) }.collect{ it.uuid } )
+                f1Set = true
+            }
+            if (xFilter.contains('wekb_exclusive')) {
+                f2Result.addAll( wekbResultMap.records.findAll {
+                    if (it.providerUuid) { return true }
+                    Platform p = Platform.findByGokbId(it.uuid)
+                    if (p && p.org) { return p.org.gokbId != null } else { return false }
+                }.collect{ it.uuid } )
+                f2Set = true
+            }
+            if (xFilter.contains('wekb_not')) {
+                f2Result.addAll( wekbResultMap.records.findAll {
+                    if (it.providerUuid) { return false }
+                    return Platform.findByGokbId(it.uuid)?.org?.gokbId == null
+                }.collect{ it.uuid } )
+                f2Set = true
+            }
+
+            if (f1Set) { wekbResultMap.records = wekbResultMap.records.findAll { f1Result.contains(it.uuid) } }
+            if (f2Set) { wekbResultMap.records = wekbResultMap.records.findAll { f2Result.contains(it.uuid) } }
+
+//            if (xFilter.contains('ismyx_exclusive')) {
+//                wekbResultMap.records      = wekbResultMap.records.findAll { result.myPlatformsUuids.contains( it.uuid ) }
+//                wekbResultMap.recordsCount = wekbResultMap.records.size()
+//            }
+//            else if (xFilter.contains('ismyx_not')) {
+//                wekbResultMap.records      = wekbResultMap.records.findAll { ! result.myPlatformsUuids.contains( it.uuid ) }
+//                wekbResultMap.recordsCount = wekbResultMap.records.size()
+//            }
         }
-        else if (params.isMyX == 'not') {
-            wekbResultMap.records      = wekbResultMap.records.findAll { ! result.myPlatformsUuids.contains( it.uuid ) }
-            wekbResultMap.recordsCount = wekbResultMap.records.size()
-        }
-        wekbResultMap.records = wekbResultMap.records.drop((int) result.offset).take((int) result.max) // pagination
+        wekbResultMap.recordsCount = wekbResultMap.records.size()
+        wekbResultMap.records      = wekbResultMap.records.drop((int) result.offset).take((int) result.max) // pagination
 
         result.putAll(wekbResultMap)
         result

@@ -91,31 +91,31 @@
             <g:if test="${field.equalsIgnoreCase('isMyX')}">
                 <div class="field">
                     <label for="isMyX">
-                        <g:message code="menu.my" />
+                        <g:message code="filter.isMyX.label" />
                     </label>
                     <%
                         List<Map> isMyXOptions = []
+
                         if (actionName == 'listInstitution') {
-                            isMyXOptions = [
-                                    [ id: 'exclusive', value: "${message(code:'filter.isMyX.exclusive', args:[ "${message(code:'menu.my.insts')}" ])}"],
-                                    [ id: 'not',       value: "${message(code:'filter.isMyX.not')}" ]
-                            ]
+                            isMyXOptions.add([ id: 'ismyx_exclusive',   value: "${message(code:'filter.isMyX.exclusive', args:["${message(code:'menu.my.insts')}"])}" ])
+                            isMyXOptions.add([ id: 'ismyx_not',         value: "${message(code:'filter.isMyX.not')}" ])
                         }
                         else if (actionName == 'listConsortia') {
-                            isMyXOptions = [
-                                    [ id: 'exclusive', value: "${message(code:'filter.isMyX.exclusive', args:[ "${message(code:'menu.my.consortia')}" ])}"],
-                                    [ id: 'not',       value: "${message(code:'filter.isMyX.not')}" ]
-                            ]
-
+                            isMyXOptions.add([ id: 'ismyx_exclusive',   value: "${message(code:'filter.isMyX.exclusive', args:["${message(code:'menu.my.consortia')}"])}" ])
+                            isMyXOptions.add([ id: 'ismyx_not',         value: "${message(code:'filter.isMyX.not')}" ])
                         }
                         else if (actionName == 'listProvider') {
-                            isMyXOptions = [
-                                    [ id: 'exclusive', value: "${message(code:'filter.isMyX.exclusive', args:[ "${message(code:'menu.my.providers')}" ])}"],
-                                    [ id: 'not',       value: "${message(code:'filter.isMyX.not')}" ]
-                            ]
+                            isMyXOptions.add([ id: 'wekb_exclusive',    value: "${message(code:'filter.wekb.exclusive')}" ])
+                            isMyXOptions.add([ id: 'wekb_not',          value: "${message(code:'filter.wekb.not')}" ])
+                            isMyXOptions.add([ id: 'ismyx_exclusive',   value: "${message(code:'filter.isMyX.exclusive', args:["${message(code:'menu.my.providers')}"])}" ])
+                            isMyXOptions.add([ id: 'ismyx_not',         value: "${message(code:'filter.isMyX.not')}" ])
+                        }
+                        else if (actionName == 'currentProviders') {
+                            isMyXOptions.add([ id: 'wekb_exclusive',    value: "${message(code:'filter.wekb.exclusive')}" ])
+                            isMyXOptions.add([ id: 'wekb_not',          value: "${message(code:'filter.wekb.not')}" ])
                         }
                     %>
-                    <select id="isMyX" name="isMyX" class="ui selection fluid dropdown">
+                    <select id="isMyX" name="isMyX" class="ui selection fluid dropdown" multiple="">
                         <option value="">${message(code:'default.select.choose.label')}</option>
                         <g:each in="${isMyXOptions}" var="opt">
                             <option <%=(params.list('isMyX').contains(opt.id)) ? 'selected="selected"' : '' %> value="${opt.id}">${opt.value}</option>
