@@ -292,7 +292,25 @@ class MyInstitutionController  {
                 }
             }
         }
-        result.platformInstanceTotal    = result.platformInstanceList.size()
+
+        if (params.isMyX) {
+            List xFilter = params.list('isMyX')
+            Set<Long> f1Result = []
+
+            if (xFilter.contains('wekb_exclusive')) {
+                f1Result.addAll( result.platformInstanceList.findAll {
+                    if (it.org) { return it.org.gokbId != null } else { return false }
+                }.collect{ it.id } )
+            }
+            if (xFilter.contains('wekb_not')) {
+                f1Result.addAll( result.platformInstanceList.findAll {
+                    return it.org?.gokbId == null
+                }.collect{ it.id } )
+            }
+            result.platformInstanceList = result.platformInstanceList.findAll { f1Result.contains(it.id) }
+        }
+
+        result.platformInstanceTotal = result.platformInstanceList.size()
         result.cachedContent = true
 
         result
@@ -793,21 +811,6 @@ class MyInstitutionController  {
             log.debug('orgIds from cache')
         }
         else {
-
-//            List<Org> matches = Org.executeQuery("""
-//select distinct(or_pa.org) from OrgRole or_pa
-//join or_pa.sub sub
-//join sub.orgRelations or_sub where
-//    ( sub = or_sub.sub and or_sub.org = :subOrg ) and
-//    ( or_sub.roleType in (:subRoleTypes) ) and
-//        ( or_pa.roleType in (:paRoleTypes) )
-//""", [
-//        subOrg:       result.institution,
-//        subRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA],
-//        paRoleTypes:  [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]
-//    ])
-//            orgIds = matches.collect{ it.id }
-
             orgIds = (orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( result.institution )).toList()
             cache.put('orgIds', orgIds)
         }
@@ -829,6 +832,20 @@ class MyInstitutionController  {
             fsq = propertyService.evalFilterQuery(tmpParams, fsq.query, 'o', fsq.queryParams)
         }
         List orgListTotal = Org.findAll(fsq.query, fsq.queryParams)
+
+        if (params.isMyX) {
+            List xFilter = params.list('isMyX')
+            Set<Long> f1Result = []
+
+            if (xFilter.contains('wekb_exclusive')) {
+                f1Result.addAll( orgListTotal.findAll {it.gokbId != null }.collect{ it.id } )
+            }
+            if (xFilter.contains('wekb_not')) {
+                f1Result.addAll( orgListTotal.findAll { it.gokbId == null }.collect{ it.id }  )
+            }
+            orgListTotal = orgListTotal.findAll { f1Result.contains(it.id) }
+        }
+
         result.orgListTotal = orgListTotal.size()
         result.orgList = orgListTotal.drop((int) result.offset).take((int) result.max)
 
