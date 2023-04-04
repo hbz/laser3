@@ -51,7 +51,7 @@
                 <div class="two fields">
                     <div class="field">
                         <label><g:message code="financials.budgetCode"/></label>
-                        <select name="newBudgetCodes" class="ui fluid search dropdown" multiple="multiple">
+                        <select name="newBudgetCodes" class="ui fluid search dropdown multiple" multiple="multiple">
                             <g:each in="${budgetCodes}" var="bc">
                                 <g:if test="${costItem?.getBudgetcodes()?.contains(bc)}">
                                     <option selected="selected" value="${bc.class.name}:${bc.id}">${bc.value}</option>
