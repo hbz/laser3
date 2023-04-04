@@ -55,7 +55,7 @@
             <g:form action="listProvider" method="get" class="ui form">
                 <laser:render template="/templates/filter/orgFilter"
                           model="[
-                                  tmplConfigShow: [['name', 'identifier'], ['platform', 'isMyX']],
+                                  tmplConfigShow: [['name', 'identifier'],['curatoryGroup', 'orgStatus'] , ['providerRole', 'isMyX']],
                                   tmplConfigFormFilter: true
                           ]"/>
             </g:form>

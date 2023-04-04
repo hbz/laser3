@@ -182,6 +182,26 @@
                 </div>
             </g:if>
 
+            <g:if test="${field.equalsIgnoreCase('providerRole')}">
+                <div class="field">
+                    <label for="providerRole">${message(code: 'org.orgRole.label')}</label>
+                    <%
+                        Set<RefdataValue> providerRoles = [
+                                RefdataValue.getByValueAndCategory('Broker', RDConstants.ORG_TYPE), RefdataValue.getByValueAndCategory('Content Provider', RDConstants.ORG_TYPE),
+                                RefdataValue.getByValueAndCategory('Imprint', RDConstants.ORG_TYPE), RefdataValue.getByValueAndCategory('Issuing Body', RDConstants.ORG_TYPE),
+                                RefdataValue.getByValueAndCategory('Licensee', RDConstants.ORG_TYPE), RDStore.OT_LICENSOR, RefdataValue.getByValueAndCategory('Platform Provider', RDConstants.ORG_TYPE),
+                                RDStore.OT_PUBLISHER, RefdataValue.getByValueAndCategory('Vendor', RDConstants.ORG_TYPE)
+                        ]
+                    %>
+                    <select name="providerRole" id="providerRole" multiple="" class="ui fluid select dropdown search">
+                        <option value="">${message(code:'default.select.choose.label')}</option>
+                        <g:each in="${providerRoles}" var="providerRole">
+                            <option <%= (params.list('providerRole').contains(providerRole.id.toString())) ? 'selected="selected"' : '' %> value="${providerRole.id}">${providerRole.value}</option>
+                        </g:each>
+                    </select>
+                </div>
+            </g:if>
+
             <g:if test="${field.equalsIgnoreCase('sector')}">
                 <div class="field">
                     <label for="orgSector">${message(code: 'org.sector.label')}</label>
@@ -241,12 +261,12 @@
                 <div class="field">
                     <label for="legallyObligedBy">${message(code: 'org.legallyObligedBy.label')}</label>
                     <g:set var="legalObligations" value="${Org.executeQuery('select distinct(lob) from Org o inner join o.legallyObligedBy lob where o.status != :removed order by lob.sortname', [removed: RDStore.ORG_STATUS_REMOVED])}" scope="request"/>
-                    <g:select class="ui dropdown multiple search" id="legallyObligedBy" name="legallyObligedBy"
-                               from="${legalObligations}"
-                               optionKey="id"
-                               optionValue="sortname"
-                               value="${params.legallyObligedBy}"
-                               noSelection="${['':message(code:'default.select.choose.label')]}"/>
+                    <select id="legallyObligedBy" name="legallyObligedBy" multiple="">
+                        <option value="">${message(code:'default.select.choose.label')}</option>
+                        <g:each in="${legalObligations}" var="legalObligation">
+                            <option <%=(params.list('legallyObligedBy').contains(legalObligation.id.toString())) ? 'selected="selected"' : '' %> %> value="${legalObligation.id}">${legalObligation.sortname}</option>
+                        </g:each>
+                    </select>
                 </div>
             </g:if>
             <g:if test="${field.equalsIgnoreCase('customerType')}">
@@ -275,6 +295,17 @@
                             </option>
                         </g:each>
                     </select>
+                </div>
+            </g:if>
+            <g:if test="${field.equalsIgnoreCase('curatoryGroup')}">
+                <div class="field">
+                    <label for="curatoryGroup">${message(code: 'package.curatoryGroup.label')}</label>
+                    <g:select class="ui fluid search select dropdown" name="curatoryGroup"
+                              from="${curatoryGroups.sort{it.name.toLowerCase()}}"
+                              optionKey="name"
+                              optionValue="name"
+                              value="${params.curatoryGroup}"
+                              noSelection="${['' : message(code:'default.select.choose.label')]}"/>
                 </div>
             </g:if>
             <g:if test="${field.equalsIgnoreCase('subscription')}">
