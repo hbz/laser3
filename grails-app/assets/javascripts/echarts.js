@@ -2,4 +2,4 @@
 //
 //= require /echarts/echarts.min.js             //--> assets/vendor
 
-console.log('+ bundle: echarts.js')
+console.log('+ bundle: echarts.js');

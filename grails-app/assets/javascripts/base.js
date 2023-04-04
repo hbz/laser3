@@ -12,4 +12,4 @@
 //= require /trumbowyg/langs/de.js                              //--> assets/vendor
 //= require /trumbowyg/plugins/history/trumbowyg.history.js     //--> assets/vendor
 
-console.log('+ bundle: base.js')
+console.log('+ bundle: base.js');
