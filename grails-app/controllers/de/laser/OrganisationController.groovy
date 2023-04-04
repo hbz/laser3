@@ -9,6 +9,7 @@ import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.auth.UserOrgRole
 import de.laser.properties.PropertyDefinition
+import de.laser.remote.ApiSource
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
@@ -46,6 +47,7 @@ class OrganisationController  {
     ExportClickMeService exportClickMeService
     FilterService filterService
     GenericOIDService genericOIDService
+    GokbService gokbService
     IdentifierService identifierService
     InstAdmService instAdmService
     OrganisationControllerService organisationControllerService
@@ -428,6 +430,31 @@ class OrganisationController  {
         result.user        = contextService.getUser()
         result.editable    = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || accessService.is_ORG_COM_EDITOR()
 
+        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        Map queryCuratoryGroups = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/groups')
+        if(queryCuratoryGroups.error == 404) {
+            result.error = message(code:'wekb.error.'+queryCuratoryGroups.error) as String
+        }
+        else {
+            if (queryCuratoryGroups.warning) {
+                List recordsCuratoryGroups = queryCuratoryGroups.warning.result
+                result.curatoryGroups = recordsCuratoryGroups?.findAll { it.status == "Current" }
+            }
+        }
+        /*
+        we:kb implementation missing but currently not needed anyway; see _orgFilter
+        Map queryRoles = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/refdatas?category=Role') //await Moe's construction
+        if(queryRoles.error == 404) {
+            result.error = message(code:'wekb.error.'+queryRoles.error) as String
+        }
+        else {
+            if (queryRoles.warning) {
+                List recordsRoles = queryRoles.warning.result
+                result.roles = recordsRoles
+            }
+        }
+        */
+
         params.orgSector    = RDStore.O_SECTOR_PUBLISHER?.id?.toString()
         params.orgType      = RDStore.OT_PROVIDER?.id?.toString()
         params.sort        = params.sort ?: " LOWER(o.sortname), LOWER(o.name)"
@@ -441,10 +468,21 @@ class OrganisationController  {
             fsq = filterService.getOrgQuery(params)
             fsq = propertyService.evalFilterQuery(params, fsq.query, 'o', fsq.queryParams)
         }
+
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         List orgListTotal            = Org.findAll(fsq.query, fsq.queryParams)
         result.currentProviderIdList = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies(contextService.getOrg()).toList()
+        if (params.curatoryGroup || params.providerRole) {
+            String esQuery = "?componentType=Org"
+            if(params.curatoryGroup)
+                esQuery += "&curatoryGroupExact=${params.curatoryGroup.replaceAll('&','ampersand').replaceAll('\\+','%2B').replaceAll(' ','%20')}"
+            if(params.providerRole)
+                esQuery += "&role=${RefdataValue.get(params.providerRole).value.replaceAll(' ','%20')}"
+            Map<String, Object> wekbResult = gokbService.doQuery(result, [max: 10000, offset: 0], esQuery)
+            List<String> uuids = wekbResult.records.uuid
+            orgListTotal = orgListTotal.findAll { Org org -> org.gokbId in uuids }
+        }
 
         if (params.isMyX) {
             List xFilter = params.list('isMyX')
