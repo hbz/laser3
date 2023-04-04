@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4946    04.04.2023  rc-3.0  3.0.6       Moe     Bug         Automatische Verlängerung erzeugt keine Nachfolge-Lizenz
+
 4947    04.04.2023  rc-3.0  3.0.6       Moe     Bug         Erinnerung an eigene Organisationsmerkmale vom Typ datum funktioniert nicht
 
 4914    21.03.2023  rc-3.0  3.0.5       Andreas Bug         fehlendes Komma in der Abfrage ergänzt
