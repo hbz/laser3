@@ -5,7 +5,7 @@
     <laser:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
     <ui:controlButtons>
-        <g:if test="${userService.checkMinUserOrgRole_and_CtxOrg(user, institution, 'INST_EDITOR')}">
+        <g:if test="${userService.checkAffiliationAndCtxOrg(user, institution, 'INST_EDITOR')}">
             <laser:render template="actions" />
         </g:if>
     </ui:controlButtons>

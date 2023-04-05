@@ -9,7 +9,7 @@
     </ui:exportDropdown>
 </g:if>
 
-<g:if test="${userService.checkMinUserOrgRole_and_CtxOrg(user, institution, 'INST_EDITOR')}">
+<g:if test="${userService.checkAffiliationAndCtxOrg(user, institution, 'INST_EDITOR')}">
     <ui:actionsDropdown>
 
         <g:if test="${contextCustomerType in [CustomerTypeService.ORG_INST_PRO, CustomerTypeService.ORG_CONSORTIUM_BASIC, CustomerTypeService.ORG_CONSORTIUM_PRO]}">
@@ -80,7 +80,7 @@
     <laser:render template="/templates/tasks/modal_create" model="${[ownobj:license, owntp:'license']}"/>
     <laser:render template="/templates/documents/modal" model="${[ownobj:license, owntp:'license']}"/>
 </g:if>
-<g:if test="${userService.checkMinUserOrgRole_and_CtxOrg(user, institution, 'INST_EDITOR')}">
+<g:if test="${userService.checkAffiliationAndCtxOrg(user, institution, 'INST_EDITOR')}">
     <laser:render template="/templates/notes/modal_create" model="${[ownobj: license, owntp: 'license']}"/>
 </g:if>
 

@@ -50,7 +50,7 @@ class MyInstitutionControllerService {
             return [status: STATUS_ERROR, result: result]
         }
 
-        result.is_inst_admin = userService.checkMinUserOrgRole_and_CtxOrg(result.user, result.institution, 'INST_ADM')
+        result.is_inst_admin = userService.checkAffiliationAndCtxOrg(result.user, result.institution, 'INST_ADM')
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
         result.acceptedOffset = 0
@@ -177,10 +177,10 @@ class MyInstitutionControllerService {
         result.showConsortiaFunctions = org.isCustomerType_Consortium()
         switch (params.action) {
             case [ 'processEmptyLicense', 'currentLicenses', 'currentSurveys', 'dashboard', 'getChanges', 'getSurveys', 'emptyLicense', 'surveyInfoFinish' ]:
-                result.editable = userService.checkMinUserOrgRole_and_CtxOrg(user, org, 'INST_EDITOR')
+                result.editable = userService.checkAffiliationAndCtxOrg(user, org, 'INST_EDITOR')
                 break
             case [ 'addressbook', 'budgetCodes', 'tasks' ]:
-                result.editable = userService.checkMinUserOrgRole_and_CtxOrg_or_ROLEADMIN(user, org, 'INST_EDITOR')
+                result.editable = userService.checkAffiliationAndCtxOrg_or_ROLEADMIN(user, org, 'INST_EDITOR')
                 break
             case 'surveyInfos':
                 result.editable = surveyService.isEditableSurvey(org, SurveyInfo.get(params.id) ?: null)
@@ -193,7 +193,7 @@ class MyInstitutionControllerService {
                 result.changeProperties = user.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
                 break
             default:
-                result.editable = userService.checkMinUserOrgRole_and_CtxOrg_or_ROLEADMIN(user, org, 'INST_EDITOR')
+                result.editable = userService.checkAffiliationAndCtxOrg_or_ROLEADMIN(user, org, 'INST_EDITOR')
         }
 
         result

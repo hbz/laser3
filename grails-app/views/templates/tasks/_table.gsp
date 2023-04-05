@@ -28,7 +28,7 @@
             </thead>
             <tbody>
             <g:each in="${taskInstanceList}" var="taskInstance">
-                <!-- OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${userService.checkMinUserOrgRole_and_CtxOrg(user, contextService.getOrg(), 'INST_EDITOR')} -->
+                <!-- OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${userService.checkAffiliationAndCtxOrg(user, contextService.getOrg(), 'INST_EDITOR')} -->
                 <g:set var="overwriteEditable" value="${editable || taskService.isTaskEditableBy(taskInstance, contextService.getUser(), contextService.getOrg())}" />
                 <tr>
                     <td>
