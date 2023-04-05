@@ -19,6 +19,7 @@ class AddressbookService {
     ContextService contextService
     FilterService filterService
     PropertyService propertyService
+    UserService userService
 
     /**
      * Retrieves all private contacts for the given tenant institution
@@ -47,7 +48,7 @@ class AddressbookService {
      */
     boolean isAddressEditable(Address address, User user) {
         Org org = address.getPrs()?.tenant ?: address.org
-        accessService.checkMinUserOrgRole_and_CtxOrg_or_ROLEADMIN(user, org, 'INST_EDITOR')
+        userService.checkMinUserOrgRole_and_CtxOrg_or_ROLEADMIN(user, org, 'INST_EDITOR')
     }
 
     /**
@@ -58,7 +59,7 @@ class AddressbookService {
      */
     boolean isContactEditable(Contact contact, User user) {
         Org org = contact.getPrs()?.tenant ?: contact.org
-        accessService.checkMinUserOrgRole_and_CtxOrg_or_ROLEADMIN(user, org, 'INST_EDITOR')
+        userService.checkMinUserOrgRole_and_CtxOrg_or_ROLEADMIN(user, org, 'INST_EDITOR')
     }
 
     /**
@@ -68,12 +69,12 @@ class AddressbookService {
      * @return true if the user is affiliated at least as INST_EDITOR with the given tenant or is a global admin, false otherwise
      */
     boolean isPersonEditable(Person person, User user) {
-        accessService.checkMinUserOrgRole_and_CtxOrg_or_ROLEADMIN(user, person.tenant , 'INST_EDITOR')
+        userService.checkMinUserOrgRole_and_CtxOrg_or_ROLEADMIN(user, person.tenant , 'INST_EDITOR')
     }
 
     @Deprecated
     boolean isNumbersEditable(Numbers numbers, User user) {
-        accessService.checkMinUserOrgRole_and_CtxOrg_or_ROLEADMIN(user, person.tenant , 'INST_EDITOR')
+        userService.checkMinUserOrgRole_and_CtxOrg_or_ROLEADMIN(user, person.tenant , 'INST_EDITOR')
     }
 
     /**

@@ -203,6 +203,46 @@ class UserService {
         check
     }
 
+    boolean checkMinUserOrgRole_and_CtxOrg_or_ROLEADMIN(User user, Org orgToCheck, String instUserRole) {
+        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
+            return true
+        }
+
+        checkMinUserOrgRole_and_CtxOrg(user, orgToCheck, instUserRole)
+    }
+
+    boolean checkMinUserOrgRole_and_CtxOrg(User user, Org orgToCheck, String instUserRole) {
+        boolean result = false
+
+        if (! user || ! orgToCheck) {
+            return result
+        }
+        // NEW CONSTRAINT:
+        if (orgToCheck.id != contextService.getOrg().id) {
+            return result
+        }
+
+        List<String> rolesToCheck = [instUserRole]
+
+        // handling inst role hierarchy
+        if (instUserRole == 'INST_USER') {
+            rolesToCheck << 'INST_EDITOR'
+            rolesToCheck << 'INST_ADM'
+        }
+        else if (instUserRole == 'INST_EDITOR') {
+            rolesToCheck << 'INST_ADM'
+        }
+
+        rolesToCheck.each{ String rot ->
+            Role role = Role.findByAuthority(rot)
+            UserOrgRole userOrg = UserOrgRole.findByUserAndOrgAndFormalRole(user, orgToCheck, role)
+            if (userOrg) {
+                result = true
+            }
+        }
+        result
+    }
+
     /**
      * This setup was used only for QA in order to create test accounts for the hbz employees. Is disused as everyone should start from scratch when using the system
      * @param orgs the configuration {@link Map} containing the affiliation configurations to process

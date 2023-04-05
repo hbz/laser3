@@ -56,6 +56,7 @@ class SurveyController {
     AccessService accessService
     ContextService contextService
     ComparisonService comparisonService
+    CompareService compareService
     CopyElementsService copyElementsService
     CustomWkhtmltoxService wkhtmltoxService
     DocstoreService docstoreService
@@ -75,7 +76,7 @@ class SurveyController {
     SurveyControllerService surveyControllerService
     SurveyService surveyService
     TaskService taskService
-    CompareService compareService
+    UserService userService
 
     //-----
 
@@ -3582,7 +3583,7 @@ class SurveyController {
             User user = contextService.getUser()
             result.error = [] as List
 
-            if (!accessService.checkMinUserOrgRole_and_CtxOrg(user, result.institution, 'INST_EDITOR')) {
+            if (!userService.checkMinUserOrgRole_and_CtxOrg(user, result.institution, 'INST_EDITOR')) {
                 result.error = message(code: 'financials.permission.unauthorised', args: [result.institution ? result.institution.name : 'N/A']) as String
                 response.sendError(HttpStatus.SC_FORBIDDEN)
                 return
