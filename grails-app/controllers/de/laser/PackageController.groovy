@@ -138,7 +138,7 @@ class PackageController {
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        RefdataValue deleted_package_status = RefdataValue.getByValueAndCategory('Deleted', RDConstants.PACKAGE_STATUS)
+        RefdataValue deleted_package_status = RDStore.PACKAGE_STATUS_DELETED
         //def qry_params = [deleted_package_status]
         def qry_params = []
 

@@ -64,8 +64,7 @@ class RDStore {
     public final static RefdataValue DOC_TYPE_NOTE              = getRefdataValue('Note', RDConstants.DOCUMENT_TYPE)
     public final static RefdataValue DOC_TYPE_ONIXPL            = getRefdataValue('ONIX-PL License', RDConstants.DOCUMENT_TYPE)
 
-    public final static RefdataValue IE_ACCESS_CURRENT      = getRefdataValue('Current', RDConstants.IE_ACCESS_STATUS)
-
+    public final static RefdataValue IE_ACCESS_CURRENT                      = getRefdataValue('Current', RDConstants.IE_ACCESS_STATUS)
     public final static RefdataValue IE_ACCEPT_STATUS_FIXED                 = getRefdataValue('Fixed', RDConstants.IE_ACCEPT_STATUS)
     public final static RefdataValue IE_ACCEPT_STATUS_UNDER_NEGOTIATION     = getRefdataValue('Under Negotiation', RDConstants.IE_ACCEPT_STATUS)
     public final static RefdataValue IE_ACCEPT_STATUS_UNDER_CONSIDERATION   = getRefdataValue('Under Consideration', RDConstants.IE_ACCEPT_STATUS)
@@ -231,7 +230,13 @@ class RDStore {
     public final static RefdataValue TASK_STATUS_DONE            = getRefdataValue('Done', RDConstants.TASK_STATUS)
     public final static RefdataValue TASK_STATUS_DEFERRED        = getRefdataValue('Deferred', RDConstants.TASK_STATUS)
 
-    public final static RefdataValue TAX_REVERSE_CHARGE     = getRefdataValue('reverse charge', RDConstants.TAX_TYPE)
+    public final static RefdataValue TAX_TYPE_NOT_APPLICABLE    = getRefdataValue('not applicable', RDConstants.TAX_TYPE)
+    public final static RefdataValue TAX_TYPE_NOT_TAXABLE       = getRefdataValue('not taxable', RDConstants.TAX_TYPE)
+    public final static RefdataValue TAX_TYPE_REVERSE_CHARGE    = getRefdataValue('reverse charge', RDConstants.TAX_TYPE)
+    public final static RefdataValue TAX_TYPE_TAXABLE           = getRefdataValue('taxable', RDConstants.TAX_TYPE)
+    public final static RefdataValue TAX_TYPE_TAXABLE_EXEMPT    = getRefdataValue('taxable tax-exempt', RDConstants.TAX_TYPE)
+    public final static RefdataValue TAX_TYPE_TAX_CONTAINED_7   = getRefdataValue('tax contained 7', RDConstants.TAX_TYPE)
+    public final static RefdataValue TAX_TYPE_TAX_CONTAINED_19  = getRefdataValue('tax contained 19', RDConstants.TAX_TYPE)
 
     public final static RefdataValue TITLE_TYPE_EBOOK       = getRefdataValue('Book', RDConstants.TITLE_MEDIUM)
     public final static RefdataValue TITLE_TYPE_JOURNAL     = getRefdataValue('Journal', RDConstants.TITLE_MEDIUM)
@@ -251,6 +256,8 @@ class RDStore {
     public final static RefdataValue TIPP_STATUS_TRANSFERRED        = getRefdataValue('Transferred', RDConstants.TIPP_STATUS)
     public final static RefdataValue TIPP_STATUS_UNKNOWN            = getRefdataValue('Unknown', RDConstants.TIPP_STATUS)
     public final static RefdataValue TIPP_STATUS_DELETED            = getRefdataValue('Deleted',  RDConstants.TIPP_STATUS)
+
+    public final static RefdataValue US_DASHBOARD_TAB_DUE_DATES = getRefdataValue('Due Dates', RDConstants.USER_SETTING_DASHBOARD_TAB)
 
     //public final static RefdataValue WF_CONDITION_STATUS_OPEN    = getRefdataValue('open', RDConstants.WF_CONDITION_STATUS)
     //public final static RefdataValue WF_CONDITION_STATUS_DONE    = getRefdataValue('done', RDConstants.WF_CONDITION_STATUS)

@@ -341,7 +341,7 @@ class LinksGenerationService {
                 }
             }
             else if(!linkComment && configMap.commentContent.length() > 0) {
-                RefdataValue typeNote = RefdataValue.getByValueAndCategory('Note', RDConstants.DOCUMENT_TYPE)
+                RefdataValue typeNote = RDStore.DOC_TYPE_NOTE
                 // 4644 DocContext commentContext = DocContext.findByDoctypeAndLink(typeNote, link)
                 DocContext commentContext = DocContext.findByLink(link)
                 if(commentContext) {
