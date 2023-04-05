@@ -7,9 +7,17 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4954    05.04.2023  rc-3.0  3.0.6       Moe     Feature     allgemeine Merkmale Lizenzebene
+
 4951    04.04.2023  dev     3.1         Andreas Bug         Filter "Dauerhafter Zugriff" fehlte in Übersicht von verknüpften Lizenzen eines Vertrages
 
 4950    04.04.2023  dev     3.1         David   Feature     Filter bei "Anbieter/Lieferant" (alle und meine)
+
+4948    04.04.2023  rc-3.0  3.0.6       Moe     Bug         Lizenz erst nach Ablaufdatum auf abgelaufen setzen
+
+4947    04.04.2023  rc-3.0  3.0.6       Moe     Bug         Erinnerung an eigene Organisationsmerkmale vom Typ datum funktioniert nicht
+
+4946    04.04.2023  rc-3.0  3.0.6       Moe     Bug         Automatische Verlängerung erzeugt keine Nachfolge-Lizenz
 
 4789    31.03.2023  dev     3.1         Andreas Feature     Aktualisieren der Anbieterdaten
 
