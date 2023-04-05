@@ -10,4 +10,13 @@ databaseChangeLog = {
             rollback {}
         }
     }
+
+    changeSet(author: "galffy (hand-coded)", id: "1680680702702-2") {
+        grailsChange {
+            change {
+                sql.execute("update identifier_namespace set idns_ns = 'viaf' where idns_ns = 'VIAF'")
+            }
+            rollback {}
+        }
+    }
 }

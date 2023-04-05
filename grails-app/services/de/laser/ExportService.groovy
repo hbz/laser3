@@ -637,7 +637,8 @@ class ExportService {
 	List<String> loadPropListHeaders(Set<PropertyDefinition> propSet) {
 		List<String> titles = []
 		propSet.each {
-			titles.add(it.name_de)
+			titles.add(it.getI10n('name'))
+			titles.add("${it.getI10n('name')} ${messageSource.getMessage('default.notes.plural', null, LocaleUtils.getCurrentLocale())}")
 		}
 		titles
 	}
@@ -657,28 +658,30 @@ class ExportService {
 		SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
 		propertyDefinitions.each { PropertyDefinition pd ->
 			//log.debug("now processing ${pd.name_de}")
-			Set<String> value = []
+			List<String> value = [], note = []
 			String ownerClassName = target.class.name.substring(target.class.name.lastIndexOf(".") + 1)
 			List<AbstractPropertyWithCalculatedLastUpdated> propCheck = (new GroovyClassLoader()).loadClass("de.laser.properties.${ownerClassName}Property").executeQuery('select prop from '+ownerClassName+'Property prop where prop.owner = :owner and prop.type = :pd and (prop.stringValue != null or prop.intValue != null or prop.decValue != null or prop.refValue != null or prop.urlValue != null or prop.dateValue != null)', [pd: pd, owner: target])
 			AbstractPropertyWithCalculatedLastUpdated prop = null
 			if(propCheck)
 				prop = propCheck[0]
-			if(prop && prop.value) {
-				if(prop.refValue)
-					value << prop.refValue.getI10n('value')
-				else
-					value << prop.getValue() ?: ' '
+			if(prop && prop.getValue()) {
+				value << prop.getValueInI10n() ?: ' '
 			}
+			if(prop && prop.note)
+				note << prop.note
 			if(childObjects) {
 				if(target.hasProperty("propertySet")) {
 					//childObjects.get(target).each { childObj ->
 						//childObj.propertySet.findAll{ AbstractPropertyWithCalculatedLastUpdated childProp -> childProp.type.descr == pd.descr && childProp.type == pd && childProp.value && !childProp.instanceOf && (childProp.tenant == contextOrg || childProp.isPublic) }
 						(new GroovyClassLoader()).loadClass("de.laser.properties.${ownerClassName}Property").executeQuery('select prop from '+ownerClassName+'Property prop where prop.owner.instanceOf = :owner and prop.type = :pd and prop.instanceOf = null and (prop.tenant = :ctx or prop.isPublic = true) and (prop.stringValue != null or prop.intValue != null or prop.decValue != null or prop.refValue != null or prop.urlValue != null or prop.dateValue != null)', [pd: pd, ctx: contextOrg, owner: target]).each { AbstractPropertyWithCalculatedLastUpdated childProp ->
-							if(childProp.value) {
+							if(childProp.getValue()) {
 								if(childProp.refValue)
 									value << "${childProp.refValue.getI10n('value')} (${objectNames.get(childProp.owner)})"
 								else
 									value << childProp.getValue() ? "${childProp.getValue()} (${objectNames.get(childProp.owner)})" : ' '
+							}
+							if(childProp.note) {
+								note << childProp.note
 							}
 						}
 					//}
@@ -687,14 +690,18 @@ class ExportService {
 			def cell
 			switch(format) {
 				case [ "xls", "xlsx" ]:
-					cell = [field: value.join(', '), style: null]
+					cell = [field: value.join('\n'), style: null]
+					cells.add(cell)
+					cell = [field: note.join('\n'), style: null]
+					cells.add(cell)
 					break
 				case "csv":
-					cell = value.join('; ').replaceAll(',',';')
+					cell = value.join('|').replaceAll(',',';')
+					cells.add(cell)
+					cell = note.join('|').replaceAll(',',';')
+					cells.add(cell)
 					break
 			}
-			if(cell)
-				cells.add(cell)
 		}
 		cells
 	}

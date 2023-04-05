@@ -261,10 +261,10 @@
                 <div class="field">
                     <label for="legallyObligedBy">${message(code: 'org.legallyObligedBy.label')}</label>
                     <g:set var="legalObligations" value="${Org.executeQuery('select distinct(lob) from Org o inner join o.legallyObligedBy lob where o.status != :removed order by lob.sortname', [removed: RDStore.ORG_STATUS_REMOVED])}" scope="request"/>
-                    <select id="legallyObligedBy" name="legallyObligedBy" multiple="">
+                    <select id="legallyObligedBy" name="legallyObligedBy" multiple="" class="ui search select dropdown">
                         <option value="">${message(code:'default.select.choose.label')}</option>
                         <g:each in="${legalObligations}" var="legalObligation">
-                            <option <%=(params.list('legallyObligedBy').contains(legalObligation.id.toString())) ? 'selected="selected"' : '' %> %> value="${legalObligation.id}">${legalObligation.sortname}</option>
+                            <option <%=(params.list('legallyObligedBy').contains(legalObligation.id.toString())) ? 'selected="selected"' : '' %> value="${legalObligation.id}">${legalObligation.sortname}</option>
                         </g:each>
                     </select>
                 </div>
