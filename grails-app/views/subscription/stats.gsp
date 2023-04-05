@@ -226,7 +226,8 @@
                         <div class="field"></div>
                         <div class="field"></div>
                         <div class="field la-field-right-aligned">
-                            <input id="generateCostPerUse" type="button" class="ui secondary button" value="${message(code: 'default.stats.generateCostPerUse')}"/>
+                        <%-- deactivated as of ERMS-3996; concept needs to be clarified
+                        <input id="generateCostPerUse" type="button" class="ui secondary button" value="${message(code: 'default.stats.generateCostPerUse')}"/>--%>
                         </div>
                         <div class="field la-field-right-aligned">
                             <input type="submit" class="ui primary button" value="${message(code: 'default.stats.generateReport')}"/>
