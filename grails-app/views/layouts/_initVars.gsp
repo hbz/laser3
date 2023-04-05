@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.AppUtils; de.laser.UserSetting; de.laser.RefdataValue; de.laser.auth.User; de.laser.storage.RDConstants;" %>
+<%@ page import="de.laser.storage.RDStore; de.laser.utils.AppUtils; de.laser.UserSetting; de.laser.RefdataValue; de.laser.auth.User; de.laser.storage.RDConstants;" %>
 <%@ page import="org.springframework.web.servlet.LocaleResolver;org.springframework.web.servlet.support.RequestContextUtils;" %>
 
 <laser:serviceInjection />
@@ -14,7 +14,7 @@
     contextOrg          = contextService.getOrg()
 
     if (contextUser) {
-        RefdataValue rdvLocale = contextUser.getSetting(UserSetting.KEYS.LANGUAGE, RefdataValue.getByValueAndCategory('de', RDConstants.LANGUAGE))?.getValue()
+        RefdataValue rdvLocale = contextUser.getSetting(UserSetting.KEYS.LANGUAGE, RDStore.LANGUAGE_DE)?.getValue()
 
         if (rdvLocale) {
             currentLang = rdvLocale.value

@@ -4,4 +4,4 @@
 //= require /spring-websocket/stomp.js      //--> assets/vendor
 //= require /spring-websocket/webstomp.js   //--> assets/vendor
 
-console.log('+ bundle: spring-websocket.js')
+console.log('+ bundle: spring-websocket.js');

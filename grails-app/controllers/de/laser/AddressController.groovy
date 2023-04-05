@@ -84,19 +84,19 @@ class AddressController  {
         }
         String messageCode
         switch (addressInstance.type){
-            case RDStore.ADRESS_TYPE_POSTAL:
+            case RDStore.ADDRESS_TYPE_POSTAL:
                 messageCode = "addressFormModalPostalAddress"
                 break
-            case RDStore.ADRESS_TYPE_BILLING:
+            case RDStore.ADDRESS_TYPE_BILLING:
                 messageCode = "addressFormModalBillingAddress"
                 break
-            case RDStore.ADRESS_TYPE_LEGAL_PATRON:
+            case RDStore.ADDRESS_TYPE_LEGAL_PATRON:
                 messageCode = "addressFormModalLegalPatronAddress"
                 break
-            case RDStore.ADRESS_TYPE_DELIVERY:
+            case RDStore.ADDRESS_TYPE_DELIVERY:
                 messageCode = "addressFormModalDeliveryAddress"
                 break
-            case RDStore.ADRESS_TYPE_LIBRARY:
+            case RDStore.ADDRESS_TYPE_LIBRARY:
                 messageCode = "addressFormModalLibraryAddress"
                 break
         }

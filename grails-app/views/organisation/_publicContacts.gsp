@@ -38,15 +38,15 @@
     </div>
     <div class="card">
         <div class="content">
-            <div class="header la-primary-header">${RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS.getI10n('value')}</div>
+            <div class="header la-primary-header">${RDStore.PRS_FUNC_FC_BILLING_ADDRESS.getI10n('value')}</div>
 
             <div class="description">
                 <g:set var="persons"
-                       value="${orgInstance.getContactPersonsByFunctionType(showOnlyPublic, RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS)}"/>
+                       value="${orgInstance.getContactPersonsByFunctionType(showOnlyPublic, RDStore.PRS_FUNC_FC_BILLING_ADDRESS)}"/>
                 <g:each in="${persons}" var="prs">
                     <laser:render template="/templates/cpa/person_full_details" model="${[
                             person                 : prs,
-                            personRole             : PersonRole.findByOrgAndFunctionTypeAndPrs(orgInstance, RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS, prs),
+                            personRole             : PersonRole.findByOrgAndFunctionTypeAndPrs(orgInstance, RDStore.PRS_FUNC_FC_BILLING_ADDRESS, prs),
                             personContext          : orgInstance,
                             tmplShowDeleteButton   : true,
                             tmplShowFunctions      : false,
@@ -61,7 +61,7 @@
                     ]}"/>
                 </g:each>
                 <g:if test="${!persons}">
-                    <g:message code="person.function.notExist" args="[RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS.getI10n('value')]"/>
+                    <g:message code="person.function.notExist" args="[RDStore.PRS_FUNC_FC_BILLING_ADDRESS.getI10n('value')]"/>
                 </g:if>
             </div>
         </div>

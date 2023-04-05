@@ -9,6 +9,7 @@ import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.auth.UserOrgRole
 import de.laser.properties.PropertyDefinition
+import de.laser.remote.ApiSource
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
@@ -46,6 +47,7 @@ class OrganisationController  {
     ExportClickMeService exportClickMeService
     FilterService filterService
     GenericOIDService genericOIDService
+    GokbService gokbService
     IdentifierService identifierService
     InstAdmService instAdmService
     OrganisationControllerService organisationControllerService
@@ -267,11 +269,24 @@ class OrganisationController  {
         List<Org> availableOrgs = Org.executeQuery(fsq.query, fsq.queryParams, [sort:params.sort])
         result.consortiaMemberIds = Combo.executeQuery('select cmb.fromOrg.id from Combo cmb where cmb.toOrg = :toOrg and cmb.type = :type',[toOrg: result.institution, type: RDStore.COMBO_TYPE_CONSORTIUM])
 
-        if (params.isMyX == 'exclusive') {
-            availableOrgs = availableOrgs.findAll { result.consortiaMemberIds.contains( it.id ) }
-        }
-        else if (params.isMyX == 'not') {
-            availableOrgs = availableOrgs.findAll { ! result.consortiaMemberIds.contains( it.id ) }
+        if (params.isMyX) {
+            List xFilter = params.list('isMyX')
+            Set<Long> f1Result = []
+
+            if (xFilter.contains('ismyx_exclusive')) {
+                f1Result.addAll( availableOrgs.findAll { result.consortiaMemberIds.contains( it.id ) }.collect{ it.id } )
+            }
+            if (xFilter.contains('ismyx_not')) {
+                f1Result.addAll( availableOrgs.findAll { ! result.consortiaMemberIds.contains( it.id ) }.collect{ it.id }  )
+            }
+            availableOrgs = availableOrgs.findAll { f1Result.contains(it.id) } as List<Org>
+
+//            if (xFilter.contains('ismyx_exclusive')) {
+//                availableOrgs = availableOrgs.findAll { result.consortiaMemberIds.contains( it.id ) }
+//            }
+//            else if (xFilter.contains('ismyx_not')) {
+//                availableOrgs = availableOrgs.findAll { ! result.consortiaMemberIds.contains( it.id ) }
+//            }
         }
         result.consortiaMemberTotal = availableOrgs.size()
 
@@ -336,11 +351,17 @@ class OrganisationController  {
         result.consortiaIds = Org.executeQuery(currentConsortiaQMap.query, currentConsortiaQMap.queryParams).collect{ it.id }
         // ? ---
 
-        if (params.isMyX == 'exclusive') {
-            availableOrgs = availableOrgs.findAll { result.consortiaIds.contains( it.id ) } as List<Org>
-        }
-        else if (params.isMyX == 'not') {
-            availableOrgs = availableOrgs.findAll { ! result.consortiaIds.contains( it.id ) } as List<Org>
+        if (params.isMyX) {
+            List xFilter = params.list('isMyX')
+            Set<Long> f1Result = []
+
+            if (xFilter.contains('ismyx_exclusive')) {
+                f1Result.addAll( availableOrgs.findAll { result.consortiaIds.contains( it.id ) }.collect{ it.id } )
+            }
+            if (xFilter.contains('ismyx_not')) {
+                f1Result.addAll( availableOrgs.findAll { ! result.consortiaIds.contains( it.id ) }.collect{ it.id }  )
+            }
+            availableOrgs = availableOrgs.findAll { f1Result.contains(it.id) } as List<Org>
         }
 
         result.consortiaTotal = availableOrgs.size()
@@ -409,6 +430,31 @@ class OrganisationController  {
         result.user        = contextService.getUser()
         result.editable    = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || accessService.is_ORG_COM_EDITOR()
 
+        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        Map queryCuratoryGroups = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/groups')
+        if(queryCuratoryGroups.error == 404) {
+            result.error = message(code:'wekb.error.'+queryCuratoryGroups.error) as String
+        }
+        else {
+            if (queryCuratoryGroups.warning) {
+                List recordsCuratoryGroups = queryCuratoryGroups.warning.result
+                result.curatoryGroups = recordsCuratoryGroups?.findAll { it.status == "Current" }
+            }
+        }
+        /*
+        we:kb implementation missing but currently not needed anyway; see _orgFilter
+        Map queryRoles = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/refdatas?category=Role') //await Moe's construction
+        if(queryRoles.error == 404) {
+            result.error = message(code:'wekb.error.'+queryRoles.error) as String
+        }
+        else {
+            if (queryRoles.warning) {
+                List recordsRoles = queryRoles.warning.result
+                result.roles = recordsRoles
+            }
+        }
+        */
+
         params.orgSector    = RDStore.O_SECTOR_PUBLISHER?.id?.toString()
         params.orgType      = RDStore.OT_PROVIDER?.id?.toString()
         params.sort        = params.sort ?: " LOWER(o.sortname), LOWER(o.name)"
@@ -422,17 +468,48 @@ class OrganisationController  {
             fsq = filterService.getOrgQuery(params)
             fsq = propertyService.evalFilterQuery(params, fsq.query, 'o', fsq.queryParams)
         }
+
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         List orgListTotal            = Org.findAll(fsq.query, fsq.queryParams)
         result.currentProviderIdList = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies(contextService.getOrg()).toList()
+        if (params.curatoryGroup || params.providerRole) {
+            String esQuery = "?componentType=Org"
+            if(params.curatoryGroup)
+                esQuery += "&curatoryGroupExact=${params.curatoryGroup.replaceAll('&','ampersand').replaceAll('\\+','%2B').replaceAll(' ','%20')}"
+            if(params.providerRole)
+                esQuery += "&role=${RefdataValue.get(params.providerRole).value.replaceAll(' ','%20')}"
+            Map<String, Object> wekbResult = gokbService.doQuery(result, [max: 10000, offset: 0], esQuery)
+            List<String> uuids = wekbResult.records.uuid
+            orgListTotal = orgListTotal.findAll { Org org -> org.gokbId in uuids }
+        }
 
-        if (params.isMyX == 'exclusive') {
-            orgListTotal = orgListTotal.findAll { result.currentProviderIdList.contains( it.id ) }
+        if (params.isMyX) {
+            List xFilter = params.list('isMyX')
+            Set<Long> f1Result = [], f2Result = []
+            boolean   f1Set = false, f2Set = false
+
+            if (xFilter.contains('ismyx_exclusive')) {
+                f1Result.addAll( orgListTotal.findAll { result.currentProviderIdList.contains( it.id ) }.collect{ it.id } )
+                f1Set = true
+            }
+            if (xFilter.contains('ismyx_not')) {
+                f1Result.addAll( orgListTotal.findAll { ! result.currentProviderIdList.contains( it.id ) }.collect{ it.id }  )
+                f1Set = true
+            }
+            if (xFilter.contains('wekb_exclusive')) {
+                f2Result.addAll( orgListTotal.findAll {it.gokbId != null }.collect{ it.id } )
+                f2Set = true
+            }
+            if (xFilter.contains('wekb_not')) {
+                f2Result.addAll( orgListTotal.findAll { it.gokbId == null }.collect{ it.id }  )
+                f2Set = true
+            }
+
+            if (f1Set) { orgListTotal = orgListTotal.findAll { f1Result.contains(it.id) } }
+            if (f2Set) { orgListTotal = orgListTotal.findAll { f2Result.contains(it.id) } }
         }
-        else if (params.isMyX == 'not') {
-            orgListTotal = orgListTotal.findAll { ! result.currentProviderIdList.contains( it.id ) }
-        }
+
         result.orgListTotal = orgListTotal.size()
         result.orgList      = orgListTotal.drop((int) result.offset).take((int) result.max)
 
@@ -1795,7 +1872,7 @@ class OrganisationController  {
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        result.rdvAllPersonFunctions = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_CONTACT_PRS, RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN]
+        result.rdvAllPersonFunctions = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_CONTACT_PRS, RDStore.PRS_FUNC_FC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN]
         result.rdvAllPersonPositions = PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION) - [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS]
 
         if(result.institution.isCustomerType_Consortium() && result.orgInstance)
@@ -1808,7 +1885,7 @@ class OrganisationController  {
 
         List allOrgTypeIds = result.orgInstance.getAllOrgTypeIds()
         if(RDStore.OT_PROVIDER.id in allOrgTypeIds || RDStore.OT_AGENCY.id in allOrgTypeIds){
-            result.rdvAllPersonFunctions = PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION) - [RDStore.PRS_FUNC_GASCO_CONTACT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_FUNC_LIBRARY_ADDRESS, RDStore.PRS_FUNC_FUNC_LEGAL_PATRON_ADDRESS, RDStore.PRS_FUNC_FUNC_POSTAL_ADDRESS, RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS, RDStore.PRS_FUNC_FUNC_DELIVERY_ADDRESS]
+            result.rdvAllPersonFunctions = PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION) - [RDStore.PRS_FUNC_GASCO_CONTACT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_FC_LIBRARY_ADDRESS, RDStore.PRS_FUNC_FC_LEGAL_PATRON_ADDRESS, RDStore.PRS_FUNC_FC_POSTAL_ADDRESS, RDStore.PRS_FUNC_FC_BILLING_ADDRESS, RDStore.PRS_FUNC_FC_DELIVERY_ADDRESS]
             result.rdvAllPersonPositions = [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_DIREKTION, RDStore.PRS_POS_DIREKTION_ASS, RDStore.PRS_POS_RB, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS, RDStore.PRS_POS_TS]
 
         }

@@ -1,7 +1,6 @@
 package de.laser.storage
 
 import de.laser.RefdataValue
-import de.laser.properties.PropertyDefinition
 import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
@@ -10,21 +9,21 @@ import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 @Slf4j
 class RDStore {
 
-    public final static RefdataValue GENERIC_NULL_VALUE         = getRefdataValue('generic.null.value','filter.fake.values')
+    public final static RefdataValue GENERIC_NULL_VALUE             = getRefdataValue('generic.null.value','filter.fake.values')
 
     public final static RefdataValue ACCESS_POINT_TYPE_EZPROXY      = getRefdataValue('ezproxy', RDConstants.ACCESS_POINT_TYPE)
     public final static RefdataValue ACCESS_POINT_TYPE_IP           = getRefdataValue('ip', RDConstants.ACCESS_POINT_TYPE)
-    public final static RefdataValue ACCESS_POINT_TYPE_MAIL_DOMAIN           = getRefdataValue('mailDomain', RDConstants.ACCESS_POINT_TYPE)
+    public final static RefdataValue ACCESS_POINT_TYPE_MAIL_DOMAIN  = getRefdataValue('mailDomain', RDConstants.ACCESS_POINT_TYPE)
     public final static RefdataValue ACCESS_POINT_TYPE_OA           = getRefdataValue('oa', RDConstants.ACCESS_POINT_TYPE)
     public final static RefdataValue ACCESS_POINT_TYPE_PROXY        = getRefdataValue('proxy', RDConstants.ACCESS_POINT_TYPE)
     public final static RefdataValue ACCESS_POINT_TYPE_SHIBBOLETH   = getRefdataValue('shibboleth', RDConstants.ACCESS_POINT_TYPE)
     public final static RefdataValue ACCESS_POINT_TYPE_VPN          = getRefdataValue('vpn', RDConstants.ACCESS_POINT_TYPE)
 
-    public final static RefdataValue ADRESS_TYPE_POSTAL         = getRefdataValue('Postal address', RDConstants.ADDRESS_TYPE)
-    public final static RefdataValue ADRESS_TYPE_BILLING        = getRefdataValue('Billing address', RDConstants.ADDRESS_TYPE)
-    public final static RefdataValue ADRESS_TYPE_LEGAL_PATRON   = getRefdataValue('Legal patron address', RDConstants.ADDRESS_TYPE)
-    public final static RefdataValue ADRESS_TYPE_DELIVERY       = getRefdataValue('Delivery address', RDConstants.ADDRESS_TYPE)
-    public final static RefdataValue ADRESS_TYPE_LIBRARY        = getRefdataValue('Library address', RDConstants.ADDRESS_TYPE)
+    public final static RefdataValue ADDRESS_TYPE_POSTAL         = getRefdataValue('Postal address', RDConstants.ADDRESS_TYPE)
+    public final static RefdataValue ADDRESS_TYPE_BILLING        = getRefdataValue('Billing address', RDConstants.ADDRESS_TYPE)
+    public final static RefdataValue ADDRESS_TYPE_LEGAL_PATRON   = getRefdataValue('Legal patron address', RDConstants.ADDRESS_TYPE)
+    public final static RefdataValue ADDRESS_TYPE_DELIVERY       = getRefdataValue('Delivery address', RDConstants.ADDRESS_TYPE)
+    public final static RefdataValue ADDRESS_TYPE_LIBRARY        = getRefdataValue('Library address', RDConstants.ADDRESS_TYPE)
 
     public final static RefdataValue CCT_EMAIL  = getRefdataValue('E-Mail', RDConstants.CONTACT_CONTENT_TYPE)
     public final static RefdataValue CCT_PHONE  = getRefdataValue('Phone', RDConstants.CONTACT_CONTENT_TYPE)
@@ -35,8 +34,8 @@ class RDStore {
     public final static RefdataValue CIEC_NEGATIVE  = getRefdataValue('negative', RDConstants.COST_CONFIGURATION)
     public final static RefdataValue CIEC_NEUTRAL   = getRefdataValue('neutral', RDConstants.COST_CONFIGURATION)
 
-    public final static RefdataValue COMBO_TYPE_CONSORTIUM  = getRefdataValue('Consortium', RDConstants.COMBO_TYPE)
-    public final static RefdataValue COMBO_TYPE_FOLLOWS     = getRefdataValue('follows', RDConstants.COMBO_TYPE)
+    public final static RefdataValue COMBO_TYPE_CONSORTIUM      = getRefdataValue('Consortium', RDConstants.COMBO_TYPE)
+    public final static RefdataValue COMBO_TYPE_FOLLOWS         = getRefdataValue('follows', RDConstants.COMBO_TYPE)
 
     public final static RefdataValue COMBO_STATUS_ACTIVE        = getRefdataValue('Active', RDConstants.COMBO_STATUS)
     public final static RefdataValue COMBO_STATUS_INACTIVE      = getRefdataValue('Inactive', RDConstants.COMBO_STATUS)
@@ -71,7 +70,7 @@ class RDStore {
     public final static RefdataValue IE_ACCEPT_STATUS_UNDER_NEGOTIATION     = getRefdataValue('Under Negotiation', RDConstants.IE_ACCEPT_STATUS)
     public final static RefdataValue IE_ACCEPT_STATUS_UNDER_CONSIDERATION   = getRefdataValue('Under Consideration', RDConstants.IE_ACCEPT_STATUS)
 
-    public final static RefdataValue LANGUAGE_DE    = getRefdataValue('de', RDConstants.LANGUAGE)
+    public final static RefdataValue LANGUAGE_DE            = getRefdataValue('de', RDConstants.LANGUAGE)
     
     public final static RefdataValue LICENSE_TYPE_ACTUAL    = getRefdataValue('Actual', RDConstants.LICENSE_TYPE)
 
@@ -118,10 +117,10 @@ class RDStore {
     public final static RefdataValue OT_PROVIDER            = getRefdataValue('Provider', RDConstants.ORG_TYPE)
     public final static RefdataValue OT_PUBLISHER           = getRefdataValue('Publisher', RDConstants.ORG_TYPE)
 
-    public final static RefdataValue PACKAGE_STATUS_DELETED = getRefdataValue('Deleted', RDConstants.PACKAGE_STATUS)
-    public final static RefdataValue PACKAGE_STATUS_REMOVED = getRefdataValue('Removed', RDConstants.PACKAGE_STATUS)
+    public final static RefdataValue PACKAGE_STATUS_DELETED     = getRefdataValue('Deleted', RDConstants.PACKAGE_STATUS)
+    public final static RefdataValue PACKAGE_STATUS_REMOVED     = getRefdataValue('Removed', RDConstants.PACKAGE_STATUS)
 
-    public final static RefdataValue PACKAGE_SCOPE_NATIONAL = getRefdataValue('National', RDConstants.PACKAGE_SCOPE)
+    public final static RefdataValue PACKAGE_SCOPE_NATIONAL     = getRefdataValue('National', RDConstants.PACKAGE_SCOPE)
 
     public final static RefdataValue PENDING_CHANGE_PENDING     = getRefdataValue('Pending', RDConstants.PENDING_CHANGE_STATUS)
     public final static RefdataValue PENDING_CHANGE_ACCEPTED    = getRefdataValue('Accepted', RDConstants.PENDING_CHANGE_STATUS)
@@ -148,8 +147,9 @@ class RDStore {
     public final static RefdataValue PLATFORM_STATUS_DELETED    = getRefdataValue('Deleted', RDConstants.PLATFORM_STATUS)
     public final static RefdataValue PLATFORM_STATUS_REMOVED    = getRefdataValue('Removed', RDConstants.PLATFORM_STATUS)
 
-    public final static RefdataValue PRS_RESP_SPEC_SUB_EDITOR   = getRefdataValue('Specific subscription editor', RDConstants.PERSON_RESPONSIBILITY)
     public final static RefdataValue PRS_RESP_SPEC_LIC_EDITOR   = getRefdataValue('Specific license editor', RDConstants.PERSON_RESPONSIBILITY)
+    public final static RefdataValue PRS_RESP_SPEC_PKG_EDITOR   = getRefdataValue('Specific package editor', RDConstants.PERSON_RESPONSIBILITY)
+    public final static RefdataValue PRS_RESP_SPEC_SUB_EDITOR   = getRefdataValue('Specific subscription editor', RDConstants.PERSON_RESPONSIBILITY)
 
     public final static RefdataValue REPORTING_CONTACT_TYPE_CONTACTS    = getRefdataValue('contacts', RDConstants.REPORTING_CONTACT_TYPE)
     public final static RefdataValue REPORTING_CONTACT_TYPE_ADDRESSES   = getRefdataValue('addresses', RDConstants.REPORTING_CONTACT_TYPE)
@@ -219,13 +219,12 @@ class RDStore {
     public final static RefdataValue TIPP_STATUS_UNKNOWN            = getRefdataValue('Unknown', RDConstants.TIPP_STATUS)
     public final static RefdataValue TIPP_STATUS_DELETED            = getRefdataValue('Deleted',  RDConstants.TIPP_STATUS)
 
-
     public final static RefdataValue PRS_FUNC_CONTACT_PRS               = getRefdataValue('Contact Person', RDConstants.PERSON_FUNCTION)
-    public final static RefdataValue PRS_FUNC_FUNC_BILLING_ADDRESS      = getRefdataValue('Functional Contact Billing Adress', RDConstants.PERSON_FUNCTION)
-    public final static RefdataValue PRS_FUNC_FUNC_DELIVERY_ADDRESS     = getRefdataValue('Functional Contact Delivery Address', RDConstants.PERSON_FUNCTION)
-    public final static RefdataValue PRS_FUNC_FUNC_LEGAL_PATRON_ADDRESS = getRefdataValue('Functional Contact Legal Patron Address', RDConstants.PERSON_FUNCTION)
-    public final static RefdataValue PRS_FUNC_FUNC_LIBRARY_ADDRESS      = getRefdataValue('Functional Contact Library Address', RDConstants.PERSON_FUNCTION)
-    public final static RefdataValue PRS_FUNC_FUNC_POSTAL_ADDRESS       = getRefdataValue('Functional Contact Postal Address', RDConstants.PERSON_FUNCTION)
+    public final static RefdataValue PRS_FUNC_FC_BILLING_ADDRESS        = getRefdataValue('Functional Contact Billing Adress', RDConstants.PERSON_FUNCTION)
+    public final static RefdataValue PRS_FUNC_FC_DELIVERY_ADDRESS       = getRefdataValue('Functional Contact Delivery Address', RDConstants.PERSON_FUNCTION)
+    public final static RefdataValue PRS_FUNC_FC_LEGAL_PATRON_ADDRESS   = getRefdataValue('Functional Contact Legal Patron Address', RDConstants.PERSON_FUNCTION)
+    public final static RefdataValue PRS_FUNC_FC_LIBRARY_ADDRESS        = getRefdataValue('Functional Contact Library Address', RDConstants.PERSON_FUNCTION)
+    public final static RefdataValue PRS_FUNC_FC_POSTAL_ADDRESS         = getRefdataValue('Functional Contact Postal Address', RDConstants.PERSON_FUNCTION)
     public final static RefdataValue PRS_FUNC_GASCO_CONTACT             = getRefdataValue('GASCO-Contact', RDConstants.PERSON_FUNCTION)
     public final static RefdataValue PRS_FUNC_GENERAL_CONTACT_PRS       = getRefdataValue('General contact person', RDConstants.PERSON_FUNCTION)
     public final static RefdataValue PRS_FUNC_RESPONSIBLE_ADMIN         = getRefdataValue('Responsible Admin', RDConstants.PERSON_FUNCTION)

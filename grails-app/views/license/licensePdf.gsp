@@ -371,7 +371,7 @@
                                                 <i>${message(code:'address.public')}</i>
                                             </td>
                                             <td>
-                                                ${RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION).getI10n('value')}
+                                                ${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')}
                                             </td>
                                             <td>
                                                 <g:link controller="organisation" action="${(institution.isCustomerType_Consortium() || institution.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.org.id]" absolute="true">${func}</g:link>
@@ -391,7 +391,7 @@
                                                 <i>${message(code:'address.public')}</i>
                                             </td>
                                             <td>
-                                                ${RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION).getI10n('value')}
+                                                ${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')}
                                             </td>
                                             <td>
                                                 <g:link controller="organisation" action="${(institution.isCustomerType_Consortium() || institution.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.org.id]" absolute="true">${resp}</g:link>
@@ -415,7 +415,7 @@
                                                 <i>${message(code:'address.private')}</i>
                                             </td>
                                             <td>
-                                                ${RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION).getI10n('value')}
+                                                ${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')}
                                             </td>
                                             <td>
                                                 <g:link controller="organisation" action="${(institution.isCustomerType_Consortium() || institution.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.org.id]" absolute="true">${func}</g:link>

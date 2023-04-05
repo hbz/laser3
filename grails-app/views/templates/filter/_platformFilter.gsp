@@ -83,29 +83,31 @@
             </div>
         </div>
 
-        <g:if test="${actionName == 'list'}">
-            <div class="three fields">
-                <div class="field"></div>
-                <div class="field"></div>
-                <div class="field">
-                    <label for="isMyX">
-                        <g:message code="menu.my" />
-                    </label>
-                    <%
-                        List<Map> isMyXOptions = [
-                                [ id: 'exclusive', value: "${message(code:'filter.isMyX.exclusive', args:[ "${message(code:'menu.my.platforms')}" ])}"],
-                                [ id: 'not',       value: "${message(code:'filter.isMyX.not')}" ]
-                        ]
-                    %>
-                    <select id="isMyX" name="isMyX" class="ui selection fluid dropdown">
-                        <option value="">${message(code:'default.select.choose.label')}</option>
-                        <g:each in="${isMyXOptions}" var="opt">
-                            <option <%=(params.list('isMyX').contains(opt.id)) ? 'selected="selected"' : '' %> value="${opt.id}">${opt.value}</option>
-                        </g:each>
-                    </select>
-                </div>
+        <div class="three fields">
+            <div class="field"></div>
+            <div class="field"></div>
+            <div class="field">
+                <label for="isMyX">
+                    <g:message code="filter.isMyX.label" />
+                </label>
+                <%
+                    List<Map> isMyXOptions = []
+                    isMyXOptions.add([ id: 'wekb_exclusive',    value: "${message(code:'filter.wekb.exclusive')}" ])
+                    isMyXOptions.add([ id: 'wekb_not',          value: "${message(code:'filter.wekb.not')}" ])
+
+                    if (actionName == 'list') {
+                        isMyXOptions.add([ id: 'ismyx_exclusive',   value: "${message(code:'filter.isMyX.exclusive', args:["${message(code:'menu.my.platforms')}"])}" ])
+                        isMyXOptions.add([ id: 'ismyx_not',         value: "${message(code:'filter.isMyX.not')}" ])
+                    }
+                %>
+                <select id="isMyX" name="isMyX" class="ui selection fluid dropdown" multiple="">
+                    <option value="">${message(code:'default.select.choose.label')}</option>
+                    <g:each in="${isMyXOptions}" var="opt">
+                        <option <%=(params.list('isMyX').contains(opt.id)) ? 'selected="selected"' : '' %> value="${opt.id}">${opt.value}</option>
+                    </g:each>
+                </select>
             </div>
-        </g:if>
+        </div>
 
         <div class="three fields">
             <div class="field"></div>

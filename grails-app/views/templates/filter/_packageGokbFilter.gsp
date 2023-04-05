@@ -49,8 +49,7 @@
 
             <g:if test="${curatoryGroups}">
                 <div class="field">
-                    <label for="curatoryGroup">${message(code: 'package.curatoryGroup.label')}
-                    </label>
+                    <label for="curatoryGroup">${message(code: 'package.curatoryGroup.label')}</label>
 
                     <g:select class="ui fluid search select dropdown" name="curatoryGroup"
                               from="${curatoryGroups.sort{it.name.toLowerCase()}}"

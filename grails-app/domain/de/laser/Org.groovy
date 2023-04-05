@@ -468,9 +468,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     List<User> getAllValidInstAdmins() {
         List<User> admins = User.executeQuery(
                 "select u from User u join u.affiliations uo where uo.org = :org and uo.formalRole = :role and u.enabled = true",
-                [
-                        org: this, role: Role.findByAuthority('INST_ADM')
-                ]
+                [org: this, role: Role.findByAuthority('INST_ADM')]
         )
         admins
     }
@@ -618,8 +616,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         if (onlyPublic) {
             if(exWekb) {
                 Person.executeQuery(
-                        "select distinct p from Person as p inner join p.roleLinks pr where pr.org = :org and pr.functionType = :functionType " +
-                                " and p.tenant = :org",
+                        "select distinct p from Person as p inner join p.roleLinks pr where pr.org = :org and pr.functionType = :functionType and p.tenant = :org",
                         [org: this, functionType: functionType]
                 )
             }

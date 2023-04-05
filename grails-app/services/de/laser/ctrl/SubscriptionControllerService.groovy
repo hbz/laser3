@@ -179,7 +179,7 @@ class SubscriptionControllerService {
                 }
             }
             // -- private properties
-            result.modalPrsLinkRole = RefdataValue.getByValueAndCategory('Specific subscription editor', RDConstants.PERSON_RESPONSIBILITY)
+            result.modalPrsLinkRole = RDStore.PRS_RESP_SPEC_SUB_EDITOR
             result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(result.contextOrg)
             result.visiblePrsLinks = []
             result.subscription.prsLinks.each { pl ->
@@ -2679,13 +2679,13 @@ class SubscriptionControllerService {
                                             case "listCurrencyCol": ieCandidate.listCurrency = RefdataValue.getByValueAndCategory(cellEntry, RDConstants.CURRENCY)?.value
                                                 break
                                             case "listPriceEurCol": ieCandidate.listPrice = escapeService.parseFinancialValue(cellEntry)
-                                                ieCandidate.listCurrency = RefdataValue.getByValueAndCategory("EUR", RDConstants.CURRENCY).value
+                                                ieCandidate.listCurrency = RDStore.CURRENCY_EUR.value
                                                 break
                                             case "listPriceUsdCol": ieCandidate.listPrice = escapeService.parseFinancialValue(cellEntry)
-                                                ieCandidate.listCurrency = RefdataValue.getByValueAndCategory("USD", RDConstants.CURRENCY).value
+                                                ieCandidate.listCurrency = RDStore.CURRENCY_USD.value
                                                 break
                                             case "listPriceGbpCol": ieCandidate.listPrice = escapeService.parseFinancialValue(cellEntry)
-                                                ieCandidate.listCurrency = RefdataValue.getByValueAndCategory("GBP", RDConstants.CURRENCY).value
+                                                ieCandidate.listCurrency = RDStore.CURRENCY_GBP.value
                                                 break
                                             case "localPriceCol": ieCandidate.localPrice = escapeService.parseFinancialValue(cellEntry)
                                                 break

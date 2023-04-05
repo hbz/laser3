@@ -6,4 +6,4 @@
 //= require /swagger-ui/swagger-ui-standalone-preset.js         //--> assets/vendor
 //= require /crypto-js-4.1.1/crypto-js.js                       //--> assets/vendor
 
-console.log('+ bundle: swagger.js')
+console.log('+ bundle: swagger.js');

@@ -73,7 +73,7 @@
                     <%--<g:if test="${tmplShowAddAddresses}">
                         <% Map model = [:]
                         model.prsId = person?.id
-                        model.typeId = RDStore.ADRESS_TYPE_LIBRARY
+                        model.typeId = RDStore.ADDRESS_TYPE_LIBRARY
                         model.redirect = '.'
                         model.hideType = true%>
                         <input class="ui icon button" type="button"
