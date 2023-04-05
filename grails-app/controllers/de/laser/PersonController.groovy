@@ -203,11 +203,11 @@ class PersonController  {
 
         List<PersonRole> gcp = PersonRole.where {
             prs == personInstance &&
-            functionType == RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)
+            functionType == RDStore.PRS_FUNC_GENERAL_CONTACT_PRS
         }.findAll()
         List<PersonRole> fcba = PersonRole.where {
             prs == personInstance &&
-            functionType == RefdataValue.getByValueAndCategory('Functional Contact Billing Adress', RDConstants.PERSON_FUNCTION)
+            functionType == RDStore.PRS_FUNC_FC_BILLING_ADDRESS
         }.findAll()
         
 
@@ -635,7 +635,7 @@ class PersonController  {
         if (params.functionType) {
             PersonRole result
 
-            RefdataValue functionRdv = RefdataValue.get(params.functionType) ?: RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)
+            RefdataValue functionRdv = RefdataValue.get(params.functionType) ?: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS
             Org functionOrg = Org.get(params.functionOrg)
 
             if (functionRdv && functionOrg) {

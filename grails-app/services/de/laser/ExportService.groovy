@@ -230,7 +230,7 @@ class ExportService {
 		titles.add(messageSource.getMessage('subscription.isPublicForApi.label',null,locale))
 		titles.add(messageSource.getMessage('subscription.hasPerpetualAccess.label',null,locale))
 		titles.add(messageSource.getMessage('default.status.label',null,locale))
-		titles.add(RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION).getI10n('value'))
+		titles.add(RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value'))
 		//titles.add(RefdataValue.getByValueAndCategory('Functional contact', RDConstants.PERSON_CONTACT_TYPE).getI10n('value'))
 
 		def propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())

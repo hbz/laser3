@@ -240,7 +240,7 @@ class PackageController {
         Map<String,Object> preCon = taskService.getPreconditionsWithoutTargets(result.contextOrg)
         result << preCon*/
 
-        result.modalPrsLinkRole = RefdataValue.getByValueAndCategory('Specific package editor', RDConstants.PERSON_RESPONSIBILITY)
+        result.modalPrsLinkRole = RDStore.PRS_RESP_SPEC_PKG_EDITOR
         result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(result.contextOrg)
 
         // restrict visible for templates/links/orgLinksAsList

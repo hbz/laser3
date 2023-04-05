@@ -653,7 +653,7 @@ class ManagementService {
             }
 
             if(params.tab == 'providerAgency') {
-                result.modalPrsLinkRole = RefdataValue.getByValueAndCategory('Specific subscription editor', RDConstants.PERSON_RESPONSIBILITY)
+                result.modalPrsLinkRole = RDStore.PRS_RESP_SPEC_SUB_EDITOR
                 result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(result.institution)
                 if(result.subscription) {
                     result.visibleOrgRelations = OrgRole.executeQuery("select oo from OrgRole oo join oo.org org where oo.sub = :parent and oo.roleType in (:roleTypes) order by org.name asc", [parent: result.subscription, roleTypes: [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]])

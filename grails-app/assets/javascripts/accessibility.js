@@ -18,7 +18,7 @@
 //= require modules/setTextareaHeight.js
 //= require modules/system.js
 
-console.log('+ bundle: accessibility.js')
+console.log('+ bundle: accessibility.js');
 
 // here we go ..
 

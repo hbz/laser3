@@ -79,7 +79,7 @@ class OrganisationService {
         }
         RefdataValue generalContact = RDStore.PRS_FUNC_GENERAL_CONTACT_PRS
         RefdataValue responsibleAdmin = RefdataValue.getByValueAndCategory('Responsible Admin', RDConstants.PERSON_FUNCTION)
-        RefdataValue billingContact = RefdataValue.getByValueAndCategory('Functional Contact Billing Adress', RDConstants.PERSON_FUNCTION)
+        RefdataValue billingContact = RDStore.PRS_FUNC_FC_BILLING_ADDRESS
         titles.addAll(['ISIL','WIB-ID','EZB-ID',generalContact.getI10n('value')])
         if(addHigherEducationTitles)
             titles.add(responsibleAdmin.getI10n('value'))
@@ -221,10 +221,10 @@ class OrganisationService {
         Map<String,Role> customerTypes = [
                 konsorte:   Role.findByAuthority( CustomerTypeService.ORG_INST_BASIC ),
                 vollnutzer: Role.findByAuthority( CustomerTypeService.ORG_INST_PRO ),
-                konsortium: Role.findByAuthority(CustomerTypeService.ORG_CONSORTIUM_BASIC )
+                konsortium: Role.findByAuthority( CustomerTypeService.ORG_CONSORTIUM_BASIC )
         ]
-        RefdataValue institution = RefdataValue.getByValueAndCategory('Institution', RDConstants.ORG_TYPE)
-        RefdataValue consortium = RefdataValue.getByValueAndCategory('Consortium', RDConstants.ORG_TYPE)
+        RefdataValue institution = RDStore.OT_INSTITUTION
+        RefdataValue consortium = RDStore.OT_CONSORTIUM
         //create home org
         Org hbz = Org.findByName('hbz Konsortialstelle Digitale Inhalte')
         if(!hbz) {
