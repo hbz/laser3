@@ -121,17 +121,6 @@ class AjaxHtmlController {
         render result
     }
 
-    /**
-     * Loads the display configuration fragment for the given entry point and the queried parameters
-     * @return the display configurations fragment
-     */
-    @Deprecated
-    @Secured(['ROLE_USER'])
-    def loadGeneralFilter() {
-        Map<String,Object> result = [entry:params.entry,queried:params.queried]
-        render view: '/reporting/_displayConfigurations', model: result
-    }
-
     @Secured(['ROLE_USER'])
     def addObject() {
         def resultObj, owner

@@ -40,7 +40,6 @@ class SubscriptionController {
     GokbService gokbService
     LinksGenerationService linksGenerationService
     ManagementService managementService
-    StatsSyncService statsSyncService
     SubscriptionControllerService subscriptionControllerService
     SubscriptionService subscriptionService
     SurveyService surveyService

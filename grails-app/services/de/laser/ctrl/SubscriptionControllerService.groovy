@@ -332,23 +332,6 @@ class SubscriptionControllerService {
         }
     }
 
-    @Deprecated
-    Map<String,Object> changes(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
-        if (!result) {
-            [result:null,status:STATUS_ERROR]
-        }
-        else {
-            SwissKnife.setPaginationParams(result, params, (User) result.user)
-            Map<String, Object> baseParams = [sub: result.subscription, stats: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED]]
-            Set<PendingChange> todoHistoryLines = PendingChange.executeQuery("select pc from PendingChange as pc where pc.subscription = :sub and pc.status in (:stats) order by pc.ts desc", baseParams)
-            result.todoHistoryLinesTotal = todoHistoryLines.size()
-            result.todoHistoryLines = todoHistoryLines.drop(result.offset).take(result.max)
-
-            [result:result,status:STATUS_OK]
-        }
-    }
-
     //--------------------------------------------- statistics section -----------------------------------------------------------
 
     /**

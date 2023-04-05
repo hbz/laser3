@@ -436,11 +436,6 @@ class SubscriptionService {
         result
     }
 
-    @Deprecated
-    Set<Org> getAllTimeSubscribersForConsortiaSubscription(Set<Subscription> entrySet) {
-        Org.executeQuery('select oo.org from OrgRole oo join oo.org org where oo.sub.instanceOf in (:entry) and oo.roleType in (:subscriberRoleTypes) order by org.sortname asc, org.name asc',[entry:entrySet,subscriberRoleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])
-    }
-
     /**
      * Gets a (filtered) list of subscriptions to which the context institution has reading rights
      * @param params the filter parameter map
@@ -706,121 +701,6 @@ class SubscriptionService {
         ies
     }
 
-    @Deprecated
-    List getIssueEntitlementsWithFilter(Subscription subscription, params) {
-
-        if(subscription) {
-            String base_qry = null
-            Map<String,Object> qry_params = [subscription: subscription]
-
-            SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
-            def date_filter
-            if (params.asAt && params?.asAt?.length() > 0) {
-                date_filter = sdf.parse(params.asAt)
-            } else {
-                date_filter = new Date()
-            }
-
-            if (params.filter) {
-                base_qry = " from IssueEntitlement as ie where ie.subscription = :subscription "
-                if (params.mode != 'advanced') {
-                    // If we are not in advanced mode, hide IEs that are not current, otherwise filter
-                    // base_qry += "and ie.status <> ? and ( ? >= coalesce(ie.accessStartDate,subscription.startDate) ) and ( ( ? <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) )  "
-                    // qry_params.add(deleted_ie);
-                    base_qry += "and (( :startDate >= coalesce(ie.accessStartDate,subscription.startDate) ) OR ( ie.accessStartDate is null )) and ( ( :endDate <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) )  "
-                    qry_params.startDate = date_filter
-                    qry_params.endDate = date_filter
-                }
-                base_qry += "and ( ( lower(ie.name) like :title ) or ( exists ( from Identifier ident where ident.tipp.id = ie.tipp.id and ident.value like :identifier ) ) ) "
-                qry_params.title = "%${params.filter.trim().toLowerCase()}%"
-                qry_params.identifier = "%${params.filter}%"
-            } else {
-                base_qry = " from IssueEntitlement as ie where ie.subscription = :subscription "
-                if (params.mode != 'advanced') {
-                    // If we are not in advanced mode, hide IEs that are not current, otherwise filter
-
-                    base_qry += " and (( :startDate >= coalesce(ie.accessStartDate,subscription.startDate) ) OR ( ie.accessStartDate is null )) and ( ( :endDate <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) ) "
-                    qry_params.startDate = date_filter
-                    qry_params.endDate = date_filter
-                }
-            }
-
-            if(params.mode != 'advanced') {
-                base_qry += " and ie.status = :current "
-                qry_params.current = RDStore.TIPP_STATUS_CURRENT
-            }
-            else {
-                base_qry += " and ie.status != :ieStatus "
-                qry_params.ieStatus = RDStore.TIPP_STATUS_REMOVED
-            }
-
-            if(params.ieAcceptStatusFixed) {
-                base_qry += " and ie.acceptStatus = :ieAcceptStatus "
-                qry_params.ieAcceptStatus = RDStore.IE_ACCEPT_STATUS_FIXED
-            }
-
-            if(params.ieAcceptStatusNotFixed) {
-                base_qry += " and ie.acceptStatus != :ieAcceptStatus "
-                qry_params.ieAcceptStatus = RDStore.IE_ACCEPT_STATUS_FIXED
-            }
-
-            if(params.summaryOfContent) {
-                base_qry += " and lower(ie.tipp.summaryOfContent) like :summaryOfContent "
-                qry_params.summaryOfContent = "%${params.summaryOfContent.trim().toLowerCase()}%"
-            }
-
-            if (params.subject_references && params.subject_references != "" && params.list('subject_references')) {
-                Set<String> subjectQuery = []
-                params.list('subject_references').each { String subReference ->
-                    subjectQuery << "genfunc_filter_matcher(ie.tipp.subjectReference, '${subReference.toLowerCase()}') = true"
-                }
-                base_qry += " and (${subjectQuery.join(" or ")}) "
-            }
-
-            if (params.series_names && params.series_names != "" && params.list('series_names')) {
-                base_qry += " and lower(ie.tipp.seriesName) in (:series_names)"
-                qry_params.series_names = params.list('series_names').collect { ""+it.toLowerCase()+"" }
-            }
-
-            if(params.ebookFirstAutorOrFirstEditor) {
-                base_qry += " and (lower(ie.tipp.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(ie.tipp.firstEditor) like :ebookFirstAutorOrFirstEditor) "
-                qry_params.ebookFirstAutorOrFirstEditor = "%${params.ebookFirstAutorOrFirstEditor.trim().toLowerCase()}%"
-            }
-
-            if (params.pkgfilter && (params.pkgfilter != '')) {
-                base_qry += " and ie.tipp.pkg.id = :pkgId "
-                qry_params.pkgId = Long.parseLong(params.pkgfilter)
-            }
-
-            //dateFirstOnline from
-            if(params.dateFirstOnlineFrom) {
-                base_qry += " and (ie.tipp.dateFirstOnline is not null AND ie.tipp.dateFirstOnline >= :dateFirstOnlineFrom) "
-                qry_params.dateFirstOnlineFrom = sdf.parse(params.dateFirstOnlineFrom)
-
-            }
-            //dateFirstOnline to
-            if(params.dateFirstOnlineTo) {
-                base_qry += " and (ie.tipp.dateFirstOnline is not null AND ie.tipp.dateFirstOnline <= :dateFirstOnlineTo) "
-                qry_params.dateFirstOnlineTo = sdf.parse(params.dateFirstOnlineTo)
-            }
-
-            if ((params.sort != null) && (params.sort.length() > 0)) {
-                base_qry += "order by ie.${params.sort} ${params.order} "
-            } else {
-                base_qry += "order by lower(ie.sortname) asc"
-            }
-
-            List<IssueEntitlement> ies = IssueEntitlement.executeQuery("select ie " + base_qry, qry_params, [max: params.max, offset: params.offset])
-
-
-            ies.sort { it.sortname }
-            ies
-        }else{
-            List<IssueEntitlement> ies = []
-            ies
-        }
-    }
-
     /**
      * Gets issue entitlements for the given subscription which are under consideration
      * @param subscription the subscription whose titles should be returned
@@ -960,17 +840,6 @@ class SubscriptionService {
     List getCurrentIssueEntitlementIDs(Subscription subscription) {
         List<Long> ieIDs = subscription ? IssueEntitlement.executeQuery("select ie.id from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :cur and ie.acceptStatus = :fixed", [sub: subscription, cur: RDStore.TIPP_STATUS_CURRENT, fixed: RDStore.IE_ACCEPT_STATUS_FIXED]) : []
         ieIDs
-    }
-
-    @Deprecated
-    List getVisibleOrgRelationsWithoutConsortia(Subscription subscription) {
-        List visibleOrgRelations = []
-        subscription?.orgRelations?.each { OrgRole or ->
-            if (!(or.org?.id == contextService.getOrg().id) && !(or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA])) {
-                visibleOrgRelations << or
-            }
-        }
-        visibleOrgRelations.sort { it.org?.name?.toLowerCase() }
     }
 
     /**
