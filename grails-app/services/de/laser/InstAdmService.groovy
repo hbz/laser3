@@ -23,6 +23,7 @@ class InstAdmService {
     ContextService contextService
     MailService mailService
     MessageSource messageSource
+    UserService userService
 
     /**
      * Checks if the given institution has an administrator
@@ -44,7 +45,7 @@ class InstAdmService {
      * @return true if the user has an INST_ADM grant to either the consortium or one of the members, false otherwise
      */
     boolean hasInstAdmPivileges(User user, Org org, List<RefdataValue> types) {
-        boolean result = accessService.checkMinUserOrgRole_and_CtxOrg(user, org, 'INST_ADM')
+        boolean result = userService.checkAffiliationAndCtxOrg(user, org, 'INST_ADM')
 
         List<Org> topOrgs = Org.executeQuery(
                 'select c.toOrg from Combo c where c.fromOrg = :org and c.type in (:types)', [
@@ -52,7 +53,7 @@ class InstAdmService {
             ]
         )
         topOrgs.each{ top ->
-            if (accessService.checkMinUserOrgRole_and_CtxOrg(user, top, 'INST_ADM')) {
+            if (userService.checkAffiliationAndCtxOrg(user, top, 'INST_ADM')) {
                 result = true
             }
         }

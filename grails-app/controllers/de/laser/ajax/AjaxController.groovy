@@ -60,6 +60,7 @@ class AjaxController {
     PendingChangeService pendingChangeService
     PropertyService propertyService
     SubscriptionControllerService subscriptionControllerService
+    UserService userService
 
     def refdata_config = [
     "ContentProvider" : [
@@ -1544,8 +1545,8 @@ class AjaxController {
             else            flash.error += message(code:'dashboardDueDate.err.toShow.doesNotExist')
         }
 
-        result.is_inst_admin = accessService.checkMinUserOrgRole_and_CtxOrg(result.user, result.institution, 'INST_ADM')
-        result.editable = accessService.checkMinUserOrgRole_and_CtxOrg(result.user, result.institution, 'INST_EDITOR')
+        result.is_inst_admin = userService.checkAffiliationAndCtxOrg(result.user, result.institution, 'INST_ADM')
+        result.editable = userService.checkAffiliationAndCtxOrg(result.user, result.institution, 'INST_EDITOR')
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
         result.dashboardDueDatesOffset = result.offset
@@ -1613,8 +1614,8 @@ class AjaxController {
             else          flash.error += message(code:'dashboardDueDate.err.toSetUndone.doesNotExist')
         }
 
-        result.is_inst_admin = accessService.checkMinUserOrgRole_and_CtxOrg(result.user, result.institution, 'INST_ADM')
-        result.editable = accessService.checkMinUserOrgRole_and_CtxOrg(result.user, result.institution, 'INST_EDITOR')
+        result.is_inst_admin = userService.checkAffiliationAndCtxOrg(result.user, result.institution, 'INST_ADM')
+        result.editable = userService.checkAffiliationAndCtxOrg(result.user, result.institution, 'INST_EDITOR')
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
         result.dashboardDueDatesOffset = result.offset

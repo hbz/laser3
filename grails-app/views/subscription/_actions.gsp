@@ -203,7 +203,7 @@
     <laser:render template="/templates/documents/modal" model="${[ownobj: subscription, owntp: 'subscription']}"/>
     <laser:render template="/templates/tasks/modal_create" model="${[ownobj: subscription, owntp: 'subscription']}"/>
 </g:if>
-<g:if test="${accessService.checkMinUserOrgRole_and_CtxOrg(user,contextOrg,'INST_EDITOR')}">
+<g:if test="${userService.checkAffiliationAndCtxOrg(user, contextOrg, 'INST_EDITOR')}">
     <laser:render template="/templates/notes/modal_create" model="${[ownobj: subscription, owntp: 'subscription']}"/>
 </g:if>
 

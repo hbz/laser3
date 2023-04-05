@@ -159,12 +159,12 @@ class UserService {
 
     /**
      * Checks the user's permissions in the given institution
-     * @param user the user to check
+     * @param userToCheck the user to check
      * @param instUserRole the user's role (permission grant) in the institution to be checked
      * @param orgToCheck the institution to which affiliation should be checked
      * @return true if the given permission is granted to the user in the given institution (or a missing one overridden by global roles), false otherwise
      */
-    boolean checkAffiliation_or_ROLEADMIN(User user, Org orgToCheck, String instUserRole) {
+    boolean checkAffiliation_or_ROLEADMIN(User userToCheck, Org orgToCheck, String instUserRole) {
         boolean check = false
 
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
@@ -191,9 +191,9 @@ class UserService {
             rolesToCheck.each { String rot ->
                 Role role = Role.findByAuthority(rot)
                 if (role) {
-                    UserOrgRole uo = UserOrgRole.findByUserAndOrgAndFormalRole(user, orgToCheck, role)
+                    UserOrgRole uo = UserOrgRole.findByUserAndOrgAndFormalRole(userToCheck, orgToCheck, role)
                     //for users with multiple affiliations, login fails because of LazyInitializationException of the domain collection
-                    List<UserOrgRole> affiliations = UserOrgRole.findAllByUser(user)
+                    List<UserOrgRole> affiliations = UserOrgRole.findAllByUser(userToCheck)
                     check = check || (uo && affiliations.contains(uo))
                 }
             }
@@ -201,6 +201,46 @@ class UserService {
 
         //TODO: log.debug("checkAffiliation_or_ROLEADMIN(): ${user} ${orgToCheck} ${instUserRole} -> ${check}")
         check
+    }
+
+    boolean checkAffiliationAndCtxOrg_or_ROLEADMIN(User userToCheck, Org orgToCheck, String instUserRole) {
+        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
+            return true
+        }
+
+        checkAffiliationAndCtxOrg(userToCheck, orgToCheck, instUserRole)
+    }
+
+    boolean checkAffiliationAndCtxOrg(User userToCheck, Org orgToCheck, String instUserRole) {
+        boolean result = false
+
+        if (! userToCheck || ! orgToCheck) {
+            return result
+        }
+        // NEW CONSTRAINT:
+        if (orgToCheck.id != contextService.getOrg().id) {
+            return result
+        }
+
+        List<String> rolesToCheck = [instUserRole]
+
+        // handling inst role hierarchy
+        if (instUserRole == 'INST_USER') {
+            rolesToCheck << 'INST_EDITOR'
+            rolesToCheck << 'INST_ADM'
+        }
+        else if (instUserRole == 'INST_EDITOR') {
+            rolesToCheck << 'INST_ADM'
+        }
+
+        rolesToCheck.each{ String rot ->
+            Role role = Role.findByAuthority(rot)
+            UserOrgRole userOrg = UserOrgRole.findByUserAndOrgAndFormalRole(userToCheck, orgToCheck, role)
+            if (userOrg) {
+                result = true
+            }
+        }
+        result
     }
 
     /**

@@ -200,60 +200,7 @@ class AccessService {
         return false
     }
 
-    // ---- new stuff here
-    // ---- new stuff here
-
     // ----- REFACTORING -----
-
-    // TODO
-    boolean checkMinUserOrgRole_and_CtxOrg_or_ROLEADMIN(User user, Org orgToCheck, String userRoleName) {
-        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
-            return true
-        }
-
-        checkMinUserOrgRole_and_CtxOrg(user, orgToCheck, userRoleName)
-    }
-
-    /**
-     * Checks if the user has at least the given role at the given institution
-     * @param user the user whose permissions should be checked
-     * @param orgToCheck the institution the user belongs to
-     * @param role the minimum role the user needs at the given institution
-     * @return true if the user has at least the given role at the given institution, false otherwise
-     */
-    // TODO
-    boolean checkMinUserOrgRole_and_CtxOrg(User user, Org orgToCheck, String userRoleName) {
-        boolean result = false
-
-        if (! user || ! orgToCheck) {
-            return result
-        }
-        // NEW CONSTRAINT:
-        if (orgToCheck.id != contextService.getOrg().id) {
-            return result
-        }
-
-        List<String> rolesToCheck = [userRoleName]
-
-        // handling inst role hierarchy
-        if (userRoleName == 'INST_USER') {
-            rolesToCheck << 'INST_EDITOR'
-            rolesToCheck << 'INST_ADM'
-        }
-        else if (userRoleName == 'INST_EDITOR') {
-            rolesToCheck << 'INST_ADM'
-        }
-
-        rolesToCheck.each{ String rot ->
-            Role role = Role.findByAuthority(rot)
-            UserOrgRole userOrg = UserOrgRole.findByUserAndOrgAndFormalRole(user, orgToCheck, role)
-            if (userOrg) {
-                result = true
-            }
-        }
-        result
-    }
-
     // ----- CONSTRAINT CHECKS -----
 
     /**

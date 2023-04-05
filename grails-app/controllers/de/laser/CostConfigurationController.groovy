@@ -20,6 +20,7 @@ class CostConfigurationController {
     ContextService contextService
     FinanceService financeService
     GenericOIDService genericOIDService
+    UserService userService
 
     /**
      * Gets the current list of an institution's cost configurations
@@ -43,7 +44,7 @@ class CostConfigurationController {
             }
         }
 
-        result.editable    =  accessService.checkMinUserOrgRole_and_CtxOrg(user, org, "INST_EDITOR")
+        result.editable = userService.checkAffiliationAndCtxOrg(user, org, 'INST_EDITOR')
         result.costItemElementConfigurations = costItemElementConfigurations
         result.costItemElements = costItemElements
         result.institution = org

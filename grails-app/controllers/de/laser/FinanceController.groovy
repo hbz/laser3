@@ -40,6 +40,7 @@ class FinanceController  {
     FinanceService financeService
     GenericOIDService genericOIDService
     PendingChangeService pendingChangeService
+    UserService userService
     WorkflowService workflowService
 
     /**
@@ -140,7 +141,7 @@ class FinanceController  {
     def financialsExport()  {
         log.debug("Financial Export :: ${params}")
         Map<String, Object> result = financeControllerService.getResultGenerics(params+[forExport:true])
-        if (!accessService.checkMinUserOrgRole_and_CtxOrg(result.user, result.institution, 'INST_USER')) {
+        if (!userService.checkAffiliationAndCtxOrg(result.user, result.institution, 'INST_USER')) {
             flash.error = message(code: 'financials.permission.unauthorised', args: [result.institution? result.institution.name : 'N/A']) as String
             response.sendError(HttpStatus.SC_FORBIDDEN)
             return

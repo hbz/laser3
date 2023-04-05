@@ -43,14 +43,15 @@ class SubscriptionService {
     EscapeService escapeService
     FilterService filterService
     GenericOIDService genericOIDService
+    GokbService gokbService
     LinksGenerationService linksGenerationService
     MessageSource messageSource
     PackageService packageService
     PropertyService propertyService
     RefdataService refdataService
     SubscriptionsQueryService subscriptionsQueryService
-    GokbService gokbService
     SurveyService surveyService
+    UserService userService
 
     /**
      * ex MyInstitutionController.currentSubscriptions()
@@ -113,7 +114,7 @@ class SubscriptionService {
             date_restriction = sdf.parse(params.validOn)
         }
 
-        result.editable = accessService.checkMinUserOrgRole_and_CtxOrg(contextUser, contextOrg, 'INST_EDITOR')
+        result.editable = userService.checkAffiliationAndCtxOrg(contextUser, contextOrg, 'INST_EDITOR')
 
         if (! params.status) {
             if (params.isSiteReloaded != "yes") {
