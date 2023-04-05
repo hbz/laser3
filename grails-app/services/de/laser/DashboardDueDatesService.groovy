@@ -143,7 +143,8 @@ class DashboardDueDatesService {
                     } else {//insert
                         das = new DashboardDueDate(messageSource, obj, user, org, false, false)
                         das.save()
-                        log.debug("DashboardDueDatesService UPDATE: " + das);
+                        dashboarEntriesToInsert << das
+                        log.debug("DashboardDueDatesService INSERT: " + das);
                     }
 
                 }
