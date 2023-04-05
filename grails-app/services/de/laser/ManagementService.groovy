@@ -154,7 +154,7 @@ class ManagementService {
                         if(!keyPair) {
                             keyPair = new CustomerIdentifier(platform: platform,
                                     customer: customer,
-                                    type: RefdataValue.getByValueAndCategory('Default', RDConstants.CUSTOMER_IDENTIFIER_TYPE),
+                                    type: RDStore.CUSTOMER_IDENTIFIER_TYPE_DEFAULT,
                                     owner: contextService.getOrg(),
                                     isPublic: true)
                             if(!keyPair.save()) {

@@ -709,7 +709,7 @@ class OrganisationController  {
                     note: params.note?.trim(),
                     owner: contextService.getOrg(),
                     isPublic: true,
-                    type: RefdataValue.getByValueAndCategory('Default', RDConstants.CUSTOMER_IDENTIFIER_TYPE)
+                    type: RDStore.CUSTOMER_IDENTIFIER_TYPE_DEFAULT
             )
             if(!ci.save())
                 log.error("error on inserting customer identifier: ${ci.getErrors().getAllErrors().toListString()}")

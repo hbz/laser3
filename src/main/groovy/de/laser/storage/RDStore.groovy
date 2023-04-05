@@ -52,6 +52,8 @@ class RDStore {
 
     public final static RefdataValue COST_ITEM_ELEMENT_CONSORTIAL_PRICE = getRefdataValue('price: consortial price', RDConstants.COST_ITEM_ELEMENT)
 
+    public final static RefdataValue CUSTOMER_IDENTIFIER_TYPE_DEFAULT = getRefdataValue('Default', RDConstants.CUSTOMER_IDENTIFIER_TYPE)
+
     public final static RefdataValue CURRENCY_EUR   = getRefdataValue('EUR', RDConstants.CURRENCY)
     public final static RefdataValue CURRENCY_GBP   = getRefdataValue('GBP', RDConstants.CURRENCY)
     public final static RefdataValue CURRENCY_USD   = getRefdataValue('USD', RDConstants.CURRENCY)
@@ -78,6 +80,8 @@ class RDStore {
     public final static RefdataValue LICENSE_INTENDED       = getRefdataValue('Intended', RDConstants.LICENSE_STATUS)
     //public final static RefdataValue LICENSE_IN_PROGRESS  = getRefdataValue('In Progress', RDConstants.LICENSE_STATUS)
     public final static RefdataValue LICENSE_EXPIRED        = getRefdataValue('Retired', RDConstants.LICENSE_STATUS)
+
+    public final static RefdataValue LICENSE_OA_TYPE_EMPTY  = getRefdataValue('Empty', RDConstants.LICENSE_OA_TYPE)
 
     public final static RefdataValue LINKTYPE_FOLLOWS       = getRefdataValue('follows', RDConstants.LINK_TYPE)
     public final static RefdataValue LINKTYPE_LICENSE       = getRefdataValue('license', RDConstants.LINK_TYPE)

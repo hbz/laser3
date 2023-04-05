@@ -1301,7 +1301,7 @@ class SubscriptionControllerService {
                             }
                             if(params.customerIdentifier || params.requestorKey) {
                                 result.subscription.packages.each { SubscriptionPackage sp ->
-                                    CustomerIdentifier ci = new CustomerIdentifier(customer: cm, type: RefdataValue.getByValueAndCategory('Default', RDConstants.CUSTOMER_IDENTIFIER_TYPE), value: params.customerIdentifier, requestorKey: params.requestorKey, platform: sp.pkg.nominalPlatform, owner: result.institution, isPublic: true)
+                                    CustomerIdentifier ci = new CustomerIdentifier(customer: cm, type: RDStore.CUSTOMER_IDENTIFIER_TYPE_DEFAULT, value: params.customerIdentifier, requestorKey: params.requestorKey, platform: sp.pkg.nominalPlatform, owner: result.institution, isPublic: true)
                                     if(!ci.save())
                                         log.error(ci.errors.getAllErrors().toListString())
                                 }

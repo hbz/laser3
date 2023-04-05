@@ -88,7 +88,7 @@ class MyInstitutionControllerService {
         result.enableMyInstFormFields = true // enable special form fields
 
 
-        /*def announcement_type = RefdataValue.getByValueAndCategory('Announcement', RDConstants.DOCUMENT_TYPE)
+        /*def announcement_type = RDStore.DOC_TYPE_ANNOUNCEMENT
         result.recentAnnouncements = Doc.findAllByType(announcement_type, [max: result.max,offset:result.announcementOffset, sort: 'dateCreated', order: 'desc'])
         result.recentAnnouncementsCount = Doc.findAllByType(announcement_type).size()*/
         prf.setBenchmark('due dates')
