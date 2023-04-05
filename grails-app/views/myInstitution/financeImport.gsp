@@ -49,7 +49,7 @@
                             break
                         //as of December 3rd '20, Micha said that no reverse charge should be made possible by tax type in order to avoid confusion with users of the interface
                         case 'taxType': List<RefdataValue> taxTypes = RefdataCategory.getAllRefdataValues(RDConstants.TAX_TYPE)
-                            taxTypes.remove(RDStore.TAX_REVERSE_CHARGE)
+                            taxTypes.remove(RDStore.TAX_TYPE_REVERSE_CHARGE)
                             args.addAll(taxTypes.collect { it -> it.getI10n('value') })
                             break
                         case 'taxRate': args.addAll([0,5,7,16,19])

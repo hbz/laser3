@@ -6,7 +6,6 @@ import de.laser.auth.User
 import de.laser.auth.UserOrgRole
 import de.laser.auth.UserRole
 import de.laser.config.ConfigMapper
-import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.LocaleUtils
 import grails.gorm.transactions.Transactional
@@ -134,7 +133,7 @@ class UserService {
                     }
                 }
                 user.getSetting(UserSetting.KEYS.DASHBOARD, org)
-                user.getSetting(UserSetting.KEYS.DASHBOARD_TAB, RefdataValue.getByValueAndCategory('Due Dates', RDConstants.USER_SETTING_DASHBOARD_TAB))
+                user.getSetting(UserSetting.KEYS.DASHBOARD_TAB, RDStore.US_DASHBOARD_TAB_DUE_DATES)
             }
         }
 

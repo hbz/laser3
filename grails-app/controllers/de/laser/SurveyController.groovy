@@ -1120,7 +1120,7 @@ class SurveyController {
                 RefdataValue taxType = (RefdataValue) genericOIDService.resolveOID(newTaxRate[0])
                 int taxRate = Integer.parseInt(newTaxRate[1])
                 switch (taxType.id) {
-                    case RefdataValue.getByValueAndCategory("taxable", RDConstants.TAX_TYPE).id:
+                    case RDStore.TAX_TYPE_TAXABLE.id:
                         switch (taxRate) {
                             case 5: tax_key = CostItem.TAX_TYPES.TAXABLE_5
                                 break
@@ -1132,16 +1132,16 @@ class SurveyController {
                                 break
                         }
                         break
-                    case RefdataValue.getByValueAndCategory("taxable tax-exempt", RDConstants.TAX_TYPE).id:
+                    case RDStore.TAX_TYPE_TAXABLE_EXEMPT.id:
                         tax_key = CostItem.TAX_TYPES.TAX_EXEMPT
                         break
-                    case RefdataValue.getByValueAndCategory("not taxable", RDConstants.TAX_TYPE).id:
+                    case RDStore.TAX_TYPE_NOT_TAXABLE.id:
                         tax_key = CostItem.TAX_TYPES.TAX_NOT_TAXABLE
                         break
-                    case RefdataValue.getByValueAndCategory("not applicable", RDConstants.TAX_TYPE).id:
+                    case RDStore.TAX_TYPE_NOT_APPLICABLE.id:
                         tax_key = CostItem.TAX_TYPES.TAX_NOT_APPLICABLE
                         break
-                    case RefdataValue.getByValueAndCategory("reverse charge", RDConstants.TAX_TYPE).id:
+                    case RDStore.TAX_TYPE_REVERSE_CHARGE.id:
                         tax_key = CostItem.TAX_TYPES.TAX_REVERSE_CHARGE
                         break
                 }
@@ -3630,7 +3630,7 @@ class SurveyController {
                 RefdataValue taxType = (RefdataValue) genericOIDService.resolveOID(newTaxRate[0])
                 int taxRate = Integer.parseInt(newTaxRate[1])
                 switch (taxType.id) {
-                    case RefdataValue.getByValueAndCategory("taxable", RDConstants.TAX_TYPE).id:
+                    case RDStore.TAX_TYPE_TAXABLE.id:
                         switch (taxRate) {
                             case 7: tax_key = CostItem.TAX_TYPES.TAXABLE_7
                                 break
@@ -3638,16 +3638,16 @@ class SurveyController {
                                 break
                         }
                         break
-                    case RefdataValue.getByValueAndCategory("taxable tax-exempt", RDConstants.TAX_TYPE).id:
+                    case RDStore.TAX_TYPE_TAXABLE_EXEMPT.id:
                         tax_key = CostItem.TAX_TYPES.TAX_EXEMPT
                         break
-                    case RefdataValue.getByValueAndCategory("not taxable", RDConstants.TAX_TYPE).id:
+                    case RDStore.TAX_TYPE_NOT_TAXABLE.id:
                         tax_key = CostItem.TAX_TYPES.TAX_NOT_TAXABLE
                         break
-                    case RefdataValue.getByValueAndCategory("not applicable", RDConstants.TAX_TYPE).id:
+                    case RDStore.TAX_TYPE_NOT_APPLICABLE.id:
                         tax_key = CostItem.TAX_TYPES.TAX_NOT_APPLICABLE
                         break
-                    case RefdataValue.getByValueAndCategory("reverse charge", RDConstants.TAX_TYPE).id:
+                    case RDStore.TAX_TYPE_REVERSE_CHARGE.id:
                         tax_key = CostItem.TAX_TYPES.TAX_REVERSE_CHARGE
                         break
                 }

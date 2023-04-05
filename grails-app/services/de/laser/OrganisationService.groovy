@@ -77,9 +77,9 @@ class OrganisationService {
             titles.add(messageSource.getMessage('org.region.label',null, locale))
             titles.add(messageSource.getMessage('org.country.label',null, locale))
         }
-        RefdataValue generalContact = RDStore.PRS_FUNC_GENERAL_CONTACT_PRS
-        RefdataValue responsibleAdmin = RefdataValue.getByValueAndCategory('Responsible Admin', RDConstants.PERSON_FUNCTION)
-        RefdataValue billingContact = RDStore.PRS_FUNC_FC_BILLING_ADDRESS
+        RefdataValue generalContact     = RDStore.PRS_FUNC_GENERAL_CONTACT_PRS
+        RefdataValue responsibleAdmin   = RDStore.PRS_FUNC_RESPONSIBLE_ADMIN
+        RefdataValue billingContact     = RDStore.PRS_FUNC_FC_BILLING_ADDRESS
         titles.addAll(['ISIL','WIB-ID','EZB-ID',generalContact.getI10n('value')])
         if(addHigherEducationTitles)
             titles.add(responsibleAdmin.getI10n('value'))

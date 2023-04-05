@@ -371,7 +371,7 @@ class UiTagLib {
 				// default profile setting
                 else {
                     User currentUser = contextService.getUser()
-                    String settingValue = currentUser.getSettingsValue(UserSetting.KEYS.SHOW_EXTENDED_FILTER, RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N)).value
+                    String settingValue = currentUser.getSettingsValue(UserSetting.KEYS.SHOW_EXTENDED_FILTER, RDStore.YN_YES).value
 
                     if (settingValue.toLowerCase() == 'no') {
                         extended = false
