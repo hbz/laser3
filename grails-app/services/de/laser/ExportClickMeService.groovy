@@ -3137,7 +3137,7 @@ class ExportClickMeService {
         }
         /*else if (fieldKey.endsWith('.billingContact')) {
             if (org) {
-                Map<String, Object> queryParams = [org: org, functionTypes: [RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS], type: RDStore.CCT_EMAIL, isPublic: isPublic]
+                Map<String, Object> queryParams = [org: org, functionTypes: [RDStore.PRS_FUNC_FC_BILLING_ADDRESS], type: RDStore.CCT_EMAIL, isPublic: isPublic]
                 if(!isPublic) {
                     tenantFilter = ' and p.tenant = :ctx'
                     queryParams.ctx = contextService.getOrg()
@@ -3155,7 +3155,7 @@ class ExportClickMeService {
 
         } else if (fieldKey.endsWith('.billingAdress')) {
             if (org) {
-                RefdataValue billingAddress = RDStore.ADRESS_TYPE_BILLING
+                RefdataValue billingAddress = RDStore.ADDRESS_TYPE_BILLING
                 Map<String, Object> queryParams = [org: org, type: billingAddress], personRoleParams = [isPublic: isPublic]
                 if(!isPublic) {
                     tenantFilter = ' and p.tenant = :ctx'
@@ -3177,7 +3177,7 @@ class ExportClickMeService {
 
         } else if (fieldKey.endsWith('.postAdress')) {
             if (org) {
-                RefdataValue postAddress = RDStore.ADRESS_TYPE_POSTAL
+                RefdataValue postAddress = RDStore.ADDRESS_TYPE_POSTAL
                 Map<String, Object> queryParams = [org: org, type: postAddress], personRoleParams = [isPublic: isPublic]
                 if(!isPublic) {
                     tenantFilter = ' and p.tenant = :ctx'
@@ -3365,29 +3365,29 @@ class ExportClickMeService {
                 /*else if (fieldKey.endsWith('.billingContact')) {
                     if(contactSources) {
                         contactSources.each { String contactSwitch ->
-                            titles << "${RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS."${localizedValue}"} ${messageSource.getMessage("org.export.column.${contactSwitch}", null, locale)}"
+                            titles << "${RDStore.PRS_FUNC_FC_BILLING_ADDRESS."${localizedValue}"} ${messageSource.getMessage("org.export.column.${contactSwitch}", null, locale)}"
                         }
                     }
                     else
-                        titles << RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS."${localizedValue}"
+                        titles << RDStore.PRS_FUNC_FC_BILLING_ADDRESS."${localizedValue}"
                 }
                 else if (fieldKey.endsWith('.billingAdress')) {
                     if(contactSources) {
                         contactSources.each { String contactSwitch ->
-                            titles << "${RDStore.ADRESS_TYPE_BILLING."${localizedValue}"} ${messageSource.getMessage("org.export.column.${contactSwitch}", null, locale)}"
+                            titles << "${RDStore.ADDRESS_TYPE_BILLING."${localizedValue}"} ${messageSource.getMessage("org.export.column.${contactSwitch}", null, locale)}"
                         }
                     }
                     else
-                        titles << RDStore.ADRESS_TYPE_BILLING."${localizedValue}"
+                        titles << RDStore.ADDRESS_TYPE_BILLING."${localizedValue}"
                 }
                 else if (fieldKey.endsWith('.postAdress')) {
                     if(contactSources) {
                         contactSources.each { String contactSwitch ->
-                            titles << "${RDStore.ADRESS_TYPE_POSTAL."${localizedValue}"} ${messageSource.getMessage("org.export.column.${contactSwitch}", null, locale)}"
+                            titles << "${RDStore.ADDRESS_TYPE_POSTAL."${localizedValue}"} ${messageSource.getMessage("org.export.column.${contactSwitch}", null, locale)}"
                         }
                     }
                     else
-                        titles << RDStore.ADRESS_TYPE_POSTAL."${localizedValue}"
+                        titles << RDStore.ADDRESS_TYPE_POSTAL."${localizedValue}"
                 }*/
                 else if (fieldKey == 'participant.readerNumbers') {
                     titles << messageSource.getMessage('readerNumber.semester.label', null, locale)

@@ -500,8 +500,8 @@
 
                                     <%
                                         Set<String> typeNames = new TreeSet<String>()
-                                        typeNames.add(RDStore.ADRESS_TYPE_BILLING.getI10n('value'))
-                                        typeNames.add(RDStore.ADRESS_TYPE_POSTAL.getI10n('value'))
+                                        typeNames.add(RDStore.ADDRESS_TYPE_BILLING.getI10n('value'))
+                                        typeNames.add(RDStore.ADDRESS_TYPE_POSTAL.getI10n('value'))
                                         Map<String, List> typeAddressMap = [:]
                                         orgInstance.addresses.each {
                                             it.type.each { type ->
@@ -850,7 +850,7 @@
                                                             </div>
                                                         </div>
                                                     </g:each>
-                                                    <g:set var="persons" value="${orgInstance.getContactPersonsByFunctionType(true, RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS)}"/>
+                                                    <g:set var="persons" value="${orgInstance.getContactPersonsByFunctionType(true, RDStore.PRS_FUNC_FC_BILLING_ADDRESS)}"/>
                                                     <g:each in="${persons}" var="prs">
                                                         <div class="row">
                                                             <div class="two wide column">
@@ -862,7 +862,7 @@
                                                                 </g:else>
                                                             </div>
                                                             <div class="fourteen wide column">
-                                                                <div class="ui label">${RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS.getI10n('value')}</div>
+                                                                <div class="ui label">${RDStore.PRS_FUNC_FC_BILLING_ADDRESS.getI10n('value')}</div>
                                                                 <div class="ui header">${prs}</div>
                                                                 <g:each in="${prs.roleLinks}" var="personRole">
                                                                     <g:if test="${personRole.org.id == orgInstance.id && personRole.positionType}">
@@ -897,8 +897,8 @@
                                 </tr>
                                 <%
                                     Set<String> typeNames = new TreeSet<String>()
-                                    typeNames.add(RDStore.ADRESS_TYPE_BILLING.getI10n('value'))
-                                    typeNames.add(RDStore.ADRESS_TYPE_POSTAL.getI10n('value'))
+                                    typeNames.add(RDStore.ADDRESS_TYPE_BILLING.getI10n('value'))
+                                    typeNames.add(RDStore.ADDRESS_TYPE_POSTAL.getI10n('value'))
                                     Map<String, List> typeAddressMap = [:]
                                     orgInstance.addresses.each {
                                         it.type.each { type ->

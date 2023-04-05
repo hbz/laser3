@@ -2551,13 +2551,13 @@ class SubscriptionService {
                                             case "listCurrencyCol": priceItem.listCurrency = cellEntry ? RefdataValue.getByValueAndCategory(cellEntry, RDConstants.CURRENCY) : null
                                                 break
                                             case "listPriceEurCol": priceItem.listPrice = cellEntry ? escapeService.parseFinancialValue(cellEntry) : null
-                                                priceItem.listCurrency = RefdataValue.getByValueAndCategory("EUR", RDConstants.CURRENCY)
+                                                priceItem.listCurrency = RDStore.CURRENCY_EUR
                                                 break
                                             case "listPriceUsdCol": priceItem.listPrice = cellEntry ?  escapeService.parseFinancialValue(cellEntry) : null
-                                                priceItem.listCurrency = RefdataValue.getByValueAndCategory("USD", RDConstants.CURRENCY)
+                                                priceItem.listCurrency = RDStore.CURRENCY_USD
                                                 break
                                             case "listPriceGbpCol": priceItem.listPrice = cellEntry ? escapeService.parseFinancialValue(cellEntry) : null
-                                                priceItem.listCurrency = RefdataValue.getByValueAndCategory("GBP", RDConstants.CURRENCY)
+                                                priceItem.listCurrency = RDStore.CURRENCY_GBP
                                                 break
                                             case "localPriceCol": priceItem.localPrice = cellEntry ? escapeService.parseFinancialValue(cellEntry) : null
                                                 break
@@ -2710,7 +2710,7 @@ class SubscriptionService {
     def copySpecificSubscriptionEditorOfProvideryAndAgencies(Subscription sourceSub, Subscription targetSub){
 
         sourceSub.getProviders().each { provider ->
-            RefdataValue refdataValue = RefdataValue.getByValueAndCategory('Specific subscription editor', RDConstants.PERSON_RESPONSIBILITY)
+            RefdataValue refdataValue = RDStore.PRS_RESP_SPEC_SUB_EDITOR
 
             Person.getPublicByOrgAndObjectResp(provider, sourceSub, 'Specific subscription editor').each { prs ->
 
@@ -2744,7 +2744,7 @@ class SubscriptionService {
             }
         }
         sourceSub.getAgencies().each { agency ->
-            RefdataValue refdataValue = RefdataValue.getByValueAndCategory('Specific subscription editor', RDConstants.PERSON_RESPONSIBILITY)
+            RefdataValue refdataValue = RDStore.PRS_RESP_SPEC_SUB_EDITOR
 
             Person.getPublicByOrgAndObjectResp(agency, sourceSub, 'Specific subscription editor').each { prs ->
                 if(!(agency in targetSub.orgRelations.org)){

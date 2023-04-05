@@ -111,7 +111,7 @@
                                 <% Map model = [:]
                                 model.prsId = personInstance.id
                                 model.redirect = '.'
-                                model.typeId = RDStore.ADRESS_TYPE_LIBRARY.id
+                                model.typeId = RDStore.ADDRESS_TYPE_LIBRARY.id
                                 model.hideType = true%>
                                 <input class="ui icon button" type="button"
                                        value="${message(code: 'default.add.label', args: [message(code: 'address.label')])}"

@@ -166,7 +166,7 @@ class SystemAnnouncement {
     private void _sendMail(User user) throws Exception {
 
         MessageSource messageSource = BeanStore.getMessageSource()
-        Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', RDConstants.LANGUAGE)).value.toString())
+        Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RDStore.LANGUAGE_DE).value.toString())
 
         String currentServer = AppUtils.getCurrentServer()
         String subjectSystemPraefix = (currentServer == AppUtils.PROD) ? "LAS:eR - " : (ConfigMapper.getLaserSystemId() + " - ")
