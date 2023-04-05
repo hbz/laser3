@@ -7,7 +7,9 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-4950    04.01.2023  dev     3.1         David   Feature     Filter bei "Anbieter/Lieferant" (alle und meine)
+4951    04.04.2023  dev     3.1         Andreas Bug         Filter "Dauerhafter Zugriff" fehlte in Übersicht von verknüpften Lizenzen eines Vertrages
+
+4950    04.04.2023  dev     3.1         David   Feature     Filter bei "Anbieter/Lieferant" (alle und meine)
 
 4789    31.03.2023  dev     3.1         Andreas Feature     Aktualisieren der Anbieterdaten
 

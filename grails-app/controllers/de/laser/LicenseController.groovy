@@ -519,6 +519,7 @@ class LicenseController {
         if (! params.status) {
             if (!params.filterSet) {
                 params.status = RDStore.SUBSCRIPTION_CURRENT.id
+                params.hasPerpetualAccess = RDStore.YN_YES.id.toString() //because of frontend compatibility
                 result.defaultSet = true
             }
             else {
