@@ -413,6 +413,9 @@ class SubscriptionController {
                 }else if (params.exportShibboleths) {
                     filename = "${datetoday}_" + escapeService.escapeString(message(code: 'subscriptionDetails.members.exportShibboleths.fileName'))
                     wb = (SXSSFWorkbook) accessPointService.exportShibbolethsOfOrgs(ctrlResult.result.filteredSubChilds.orgs.flatten())
+                }else if (params.exportMailDomains) {
+                    filename = "${datetoday}_" + escapeService.escapeString(message(code: 'subscriptionDetails.members.exportMailDomains.fileName'))
+                    wb = (SXSSFWorkbook) accessPointService.exportMailDomainsOfOrgs(ctrlResult.result.filteredSubChilds.orgs.flatten())
                 }
                 if(wb) {
                     response.setHeader "Content-disposition", "attachment; filename=${filename}.xlsx"

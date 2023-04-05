@@ -4,6 +4,7 @@ package de.laser
 import de.laser.base.AbstractCoverage
 import de.laser.finance.CostItem
 import de.laser.finance.PriceItem
+import de.laser.remote.ApiSource
 import de.laser.storage.PropertyStore
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
@@ -38,6 +39,7 @@ class ExportClickMeService {
     ExportService exportService
     AccessPointService accessPointService
     ContextService contextService
+    GokbService gokbService
 
     static Map<String, Object> EXPORT_RENEWAL_CONFIG = [
             //Wichtig: Hier bei dieser Config bitte drauf achten, welche Feld Bezeichnung gesetzt ist, 
@@ -84,6 +86,7 @@ class ExportClickMeService {
                                     'participant.exportProxys'      : [field: null, label: 'Export Proxys', message: 'subscriptionDetails.members.exportProxys', separateSheet: 'true'],
                                     'participant.exportEZProxys'    : [field: null, label: 'Export EZProxys', message: 'subscriptionDetails.members.exportEZProxys', separateSheet: 'true'],
                                     'participant.exportShibboleths' : [field: null, label: 'Export Shibboleths', message: 'subscriptionDetails.members.exportShibboleths', separateSheet: 'true'],
+                                    'participant.exportMailDomains' : [field: null, label: 'Export Mail Domains', message: 'subscriptionDetails.members.exportMailDomains', separateSheet: 'true'],
                             ]
                     ],
                     participantIdentifiers : [
@@ -159,8 +162,7 @@ class ExportClickMeService {
                             'participant.eInvoice'          : [field: 'orgs.eInvoice', label: 'eInvoice', message: 'org.eInvoice.label'],
                             'participant.eInvoicePortal'    : [field: 'orgs.eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
                             'participant.linkResolverBaseURL'    : [field: 'orgs.linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
-                            'participant.readerNumbers'    : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
-                            'participant.uuid'              : [field: 'orgs.globalUID', label: 'Laser-UUID',  message: null],
+                            'participant.readerNumbers'    : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers']
                     ]
             ],
             participantAccessPoints : [
@@ -171,6 +173,7 @@ class ExportClickMeService {
                             'participant.exportProxys'      : [field: null, label: 'Export Proxys', message: 'subscriptionDetails.members.exportProxys', separateSheet: 'true'],
                             'participant.exportEZProxys'    : [field: null, label: 'Export EZProxys', message: 'subscriptionDetails.members.exportEZProxys', separateSheet: 'true'],
                             'participant.exportShibboleths' : [field: null, label: 'Export Shibboleths', message: 'subscriptionDetails.members.exportShibboleths', separateSheet: 'true'],
+                            'participant.exportMailDomains' : [field: null, label: 'Export Mail Domains', message: 'subscriptionDetails.members.exportMailDomains', separateSheet: 'true'],
                     ]
             ],
             participantIdentifiers : [
@@ -475,7 +478,6 @@ class ExportClickMeService {
                             'participant.eInvoicePortal'    : [field: 'eInvoicePortal', label: 'eInvoice Portal', message: 'org.eInvoicePortal.label'],
                             'participant.linkResolverBaseURL'    : [field: 'linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label'],
                             'participant.readerNumbers'    : [field: null, label: 'Reader Numbers', message: 'menu.institutions.readerNumbers'],
-                            'participant.uuid'              : [field: 'globalUID', label: 'Laser-UUID',  message: null],
                     ]
             ],
             participantAccessPoints : [
@@ -486,6 +488,7 @@ class ExportClickMeService {
                             'participant.exportProxys'      : [field: null, label: 'Export Proxys', message: 'subscriptionDetails.members.exportProxys', separateSheet: 'true'],
                             'participant.exportEZProxys'    : [field: null, label: 'Export EZProxys', message: 'subscriptionDetails.members.exportEZProxys', separateSheet: 'true'],
                             'participant.exportShibboleths' : [field: null, label: 'Export Shibboleths', message: 'subscriptionDetails.members.exportShibboleths', separateSheet: 'true'],
+                            'participant.exportMailDomains' : [field: null, label: 'Export Mail Domains', message: 'subscriptionDetails.members.exportMailDomains', separateSheet: 'true'],
                     ]
             ],
             participantIdentifiers : [
@@ -516,16 +519,14 @@ class ExportClickMeService {
                     label: 'Provider',
                     message: 'default.ProviderAgency.singular',
                     fields: [
-                            'provider.name'                : [field: 'name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
-                            'provider.sortname'           : [field: 'sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
-                            'provider.altnames'            : [field: 'altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true' ],
-//                            'provider.funderType'          : [field: 'funderType', label: 'Funder Type', message: 'org.funderType.label'],
-//                            'provider.funderHskType'       : [field: 'funderHskType', label: 'Funder Hsk Type', message: 'org.funderHSK.label'],
-//                            'provider.generalContact'      : [field: null, label: 'General Contact Person', message: 'org.mainContact.label'],
-//                            'provider.billingContact'      : [field: null, label: 'Functional Contact Billing Adress', message: 'org.functionalContactBillingAdress.label'],
-//                            'provider.postAdress'          : [field: null, label: 'Post Adress', message: 'addressFormModalPostalAddress'],
-//                            'provider.billingAdress'       : [field: null, label: 'Billing Adress', message: 'addressFormModalBillingAddress'],
-//                            'provider.linkResolverBaseURL' : [field: 'linkResolverBaseURL', label: 'Link Resolver Base URL', message: 'org.linkResolverBase.label']
+                            'provider.name'                  : [field: 'name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
+                            'provider.nickname'              : [field: 'nickname', label: 'Nickame', message: 'org.nickname.label', defaultChecked: 'true'],
+                            'provider.altnames'              : [field: 'altnames', label: 'Alternative names', message: 'org.altname.label', defaultChecked: 'true' ],
+                            'provider.status'                : [field: 'status', label: 'Status', message: 'default.status.label', defaultChecked: true],
+                            'provider.homepage'              : [field: 'homepage', label: 'Homepage URL', message: 'org.homepage.label', defaultChecked: true],
+                            'provider.metadataDownloaderURL' : [field: 'metadataDownloaderURL', label: 'Metadata Downloader URL', message: 'org.metadataDownloaderURL.label', defaultChecked: true],
+                            'provider.kbartDownloaderURL'    : [field: 'kbartDownloaderURL', label: 'KBART Downloader URL', message: 'org.KBARTDownloaderURL.label', defaultChecked: true],
+                            'provider.roles'                 : [field: 'roles', label: 'Roles', message: 'org.orgRole.label', defaultChecked: true]
                     ]
             ],
             providerIdentifiers : [
@@ -1299,7 +1300,7 @@ class ExportClickMeService {
                     }
                 }
 
-                IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
+                IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_PROVIDER_NS).each {
                     exportFields.put("providerIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
                 }
 
@@ -1354,6 +1355,7 @@ class ExportClickMeService {
                 IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
                     fields.participantIdentifiers.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
                 }
+                fields.participantIdentifiers.fields << ['participant.uuid':[field: 'globalUID', label: 'Globale UUID',  message: null]]
                 fields.participantCustomerIdentifiers.fields.clear()
                 Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where ci.value != null and ci.customer in (select c.fromOrg from Combo c where c.toOrg = :ctx) order by plat.name', contextParams).each { Platform plat ->
                     fields.participantCustomerIdentifiers.fields << ["participantCustomerIdentifiers.${plat.id}":[field: null, label: plat.name]]
@@ -1369,9 +1371,10 @@ class ExportClickMeService {
                 break
             case 'provider': fields = EXPORT_PROVIDER_CONFIG as Map
                 fields.providerIdentifiers.fields.clear()
-                IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
+                IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_PROVIDER_NS, [sort: 'ns']).each {
                     fields.providerIdentifiers.fields << ["providerIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
                 }
+                fields.providerIdentifiers.fields << ['provider.uuid':[field: 'globalUID', label: 'Globale UUID',  message: null]]
                 fields.providerCustomerIdentifiers.fields.clear()
                 Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where ci.value != null and ci.customer in (select c.fromOrg from Combo c where c.toOrg = :ctx) order by plat.name', contextParams).each { Platform plat ->
                     fields.providerCustomerIdentifiers.fields << ["providerCustomerIdentifiers.${plat.id}":[field: null, label: plat.name]]
@@ -2033,6 +2036,7 @@ class ExportClickMeService {
         Locale locale = LocaleUtils.getCurrentLocale()
 
         String sheetTitle
+        Map wekbRecords = [:]
 
         switch(config) {
             case 'consortium':
@@ -2046,6 +2050,14 @@ class ExportClickMeService {
                 break
             case 'provider':
                 sheetTitle = messageSource.getMessage('default.ProviderAgency.export.label', null, locale)
+                ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+                Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/find?componentType=Org&max=10000")
+                if (queryResult.warning) {
+                    List records = queryResult.warning.records
+                    records.each { Map providerRecord ->
+                        wekbRecords.put(providerRecord.uuid, providerRecord)
+                    }
+                }
                 break
         }
 
@@ -2060,8 +2072,9 @@ class ExportClickMeService {
         List titles = _exportTitles(selectedExportFields, locale, null, null, contactSources)
 
         List exportData = []
+        //continue here with testing the export
         result.each { Org org ->
-            _setOrgRow(org, selectedExportFields, exportData, contactSources)
+            _setOrgRow(org, selectedExportFields, exportData, contactSources, wekbRecords)
         }
 
         Map sheetData = [:]
@@ -2635,7 +2648,7 @@ class ExportClickMeService {
      * @param selectedFields the fields which should appear
      * @param exportData the list containing the export rows
      */
-    private void _setOrgRow(Org result, Map<String, Object> selectedFields, List exportData, Set<String> contactSources = []){
+    private void _setOrgRow(Org result, Map<String, Object> selectedFields, List exportData, Set<String> contactSources = [], Map wekbRecords){
         List row = []
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         selectedFields.keySet().each { String fieldKey ->
@@ -2687,6 +2700,18 @@ class ExportClickMeService {
                     _setOrgFurtherInformation(result, row, fieldKey)
                 }else if (fieldKey.startsWith('participantProperty.') || fieldKey.startsWith('providerProperty.')) {
                     _setOrgFurtherInformation(result, row, fieldKey)
+                }
+                else if (fieldKey.split('\\.')[1] in Org.WEKB_PROPERTIES) {
+                    if(result.gokbId != null) {
+                        def fieldValue = wekbRecords.containsKey(result.gokbId) ? wekbRecords.get(result.gokbId)[field] : null
+
+                        if(fieldValue instanceof List)
+                            row.add([field: fieldValue.join(', ').replaceAll('"', ''), style: null])
+                        else row.add([field: fieldValue ?: '', style: null])
+                    }
+                    else {
+                        row.add([field: '', style: null])
+                    }
                 }
                 else {
                     def fieldValue = field ? result[field] : null
@@ -3097,6 +3122,16 @@ class ExportClickMeService {
 
         }
 
+        if ('participant.exportMailDomains' in selectedExportFields.keySet()) {
+            if (orgList) {
+
+                export = accessPointService.exportMailDomainsOfOrgs(orgList, true)
+                sheetName = messageSource.getMessage('subscriptionDetails.members.exportMailDomains.fileName.short', null, locale) + " (${orgList.size()})" +sheetNameAddition
+                sheetData[sheetName] = export
+            }
+
+        }
+
         return sheetData
     }
 
@@ -3236,8 +3271,16 @@ class ExportClickMeService {
                 Long id = Long.parseLong(fieldKey.split("\\.")[1])
                 List<OrgProperty> orgProperties = OrgProperty.executeQuery("select prop from OrgProperty prop where (prop.owner = :org and prop.type.id in (:propertyDefs) and prop.isPublic = true) or (prop.owner = :org and prop.type.id in (:propertyDefs) and prop.isPublic = false and prop.tenant = :contextOrg)", [org: org, propertyDefs: [id], contextOrg: contextService.getOrg()])
                 if (orgProperties) {
-                    row.add([field: orgProperties.collect { it.getValueInI10n() }.join(";"), style: null])
+                    List<String> propValues = [], propAnnotations = []
+                    orgProperties.each { OrgProperty prop ->
+                        propValues << prop.getValueInI10n()
+                        if(prop.note)
+                            propAnnotations << prop.note
+                    }
+                    row.add([field: propValues.join('\n'), style: null])
+                    row.add([field: propAnnotations.join('\n'), style: null])
                 } else {
+                    row.add([field: '', style: null])
                     row.add([field: '', style: null])
                 }
             } else {
@@ -3400,12 +3443,12 @@ class ExportClickMeService {
                     titles << messageSource.getMessage('readerNumber.note.label', null, locale)
                 }
                 else if ((fieldKey == 'participantSubCostItem' || fieldKey == 'subCostItem') && maxCostItemsElements > 0 && selectedCostItemFields.size() > 0) {
-                            for(int i = 0; i < maxCostItemsElements; i++) {
-                                titles << messageSource.getMessage("financials.costItemElement", null, locale)
-                                selectedCostItemFields.each {
-                                    titles << (it.value.message ? messageSource.getMessage("${it.value.message}", null, locale) : it.value.label)
-                                }
-                            }
+                    for(int i = 0; i < maxCostItemsElements; i++) {
+                        titles << messageSource.getMessage("financials.costItemElement", null, locale)
+                        selectedCostItemFields.each {
+                            titles << (it.value.message ? messageSource.getMessage("${it.value.message}", null, locale) : it.value.label)
+                        }
+                    }
                 }
                 else if (fieldKey == 'participantSurveyCostItem') {
                         selectedCostItemFields.each {
@@ -3413,7 +3456,11 @@ class ExportClickMeService {
                         }
                 }
                 else {
-                    titles << (fields.message ? messageSource.getMessage("${fields.message}", null, locale) : fields.label)
+                    String label = (fields.message ? messageSource.getMessage("${fields.message}", null, locale) : fields.label)
+                    titles << label
+                    if (fieldKey.contains('Property')) {
+                        titles << "${label} ${messageSource.getMessage('default.notes.plural', null, locale)}"
+                    }
                     if (fieldKey.startsWith('surveyProperty.')) {
                         titles << (messageSource.getMessage('surveyResult.participantComment', null, locale) + " " + messageSource.getMessage('renewalEvaluation.exportRenewal.to', null, locale) + " " + (fields.message ? messageSource.getMessage("${fields.message}", null, locale) : fields.label))
                     }
