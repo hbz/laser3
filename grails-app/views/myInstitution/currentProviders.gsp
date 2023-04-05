@@ -56,7 +56,7 @@
                       model="[
                               propList: propList,
                               orgRoles: orgRoles,
-                              tmplConfigShow: [['name', 'role', 'property&value'], ['privateContacts', '', '', '']],
+                              tmplConfigShow: [['name', 'property&value'], ['privateContacts', 'role', 'isMyX']],
                               tmplConfigFormFilter: true
                       ]"/>
         </g:form>
