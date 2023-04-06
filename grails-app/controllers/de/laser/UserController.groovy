@@ -46,7 +46,7 @@ class UserController {
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_ADM'])
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_ADM")
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
     })
     @Check404()
     def delete() {
@@ -136,7 +136,7 @@ class UserController {
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_ADM'])
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_ADM")
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
     })
     @Check404()
     def show() {
@@ -150,7 +150,7 @@ class UserController {
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_ADM'], wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_ADM")
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
     })
     def newPassword() {
         User.withTransaction {

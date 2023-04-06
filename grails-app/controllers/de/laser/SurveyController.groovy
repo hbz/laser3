@@ -2855,7 +2855,9 @@ class SurveyController {
      * @return the cost item editing modal
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], wtc = DebugInfo.NOT_TRANSACTIONAL)
-    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR") })
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+    })
      Map<String,Object> editSurveyCostItem() {
         println('editSurveyCostItem')
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -2889,7 +2891,9 @@ class SurveyController {
      * @return the new cost item modal
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], wtc = DebugInfo.NOT_TRANSACTIONAL)
-    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR") })
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+    })
      Object addForAllSurveyCostItem() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
@@ -3512,7 +3516,9 @@ class SurveyController {
      * @return an Excel worksheet containing the survey cost data
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'], wtc = DebugInfo.NOT_TRANSACTIONAL)
-    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_USER") })
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+    })
      def exportSurCostItems() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
@@ -3548,7 +3554,9 @@ class SurveyController {
      * @return the modal containing the participant's mail addresses
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'], wtc = DebugInfo.NOT_TRANSACTIONAL)
-    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_USER") })
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+    })
      Map<String,Object> copyEmailaddresses() {
         Map<String, Object> result = [:]
         result.modalID = params.targetId
@@ -3567,7 +3575,9 @@ class SurveyController {
      * @return a redirect to the referer
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], wtc = DebugInfo.IN_BETWEEN)
-    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR") })
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+    })
      Map<String,Object> newSurveyCostItem() {
         SimpleDateFormat dateFormat = DateUtils.getLocalizedSDF_noTime()
 

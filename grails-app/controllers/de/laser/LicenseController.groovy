@@ -64,7 +64,7 @@ class LicenseController {
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'])
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_USER")
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
     })
     @Check404()
     def show() {
@@ -206,7 +206,7 @@ class LicenseController {
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_USER")
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
     })
     @Check404()
     def tasks() {
@@ -232,7 +232,7 @@ class LicenseController {
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'])
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR")
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
     })
     def delete() {
         Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_EDIT)
@@ -252,7 +252,7 @@ class LicenseController {
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'])
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR")
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
     })
     def processAddMembers() {
         log.debug( params.toMapString() )
@@ -292,7 +292,7 @@ class LicenseController {
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'])
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR")
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
     })
     def linkToSubscription(){
         log.debug("linkToSubscription :: ${params}")
@@ -339,7 +339,7 @@ class LicenseController {
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'])
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR")
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
     })
     @Check404()
     Map<String,Object> linkLicenseToSubs() {
@@ -355,7 +355,7 @@ class LicenseController {
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'])
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_USER")
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
     })
     @Check404()
     def linkedSubs() {
@@ -450,7 +450,7 @@ class LicenseController {
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'])
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_USER")
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
     })
     @Check404()
     def members() {
@@ -506,7 +506,7 @@ class LicenseController {
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'])
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR")
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
     })
     @Check404()
     def linkMemberLicensesToSubs() {
@@ -575,7 +575,7 @@ class LicenseController {
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'])
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_USER")
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
     })
     @Check404()
     def notes() {
@@ -614,7 +614,7 @@ class LicenseController {
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'])
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR")
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
     })
     def deleteDocuments() {
         log.debug("deleteDocuments ${params}")
@@ -741,7 +741,7 @@ class LicenseController {
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'])
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR")
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
     })
     def copyElementsIntoLicense() {
         def result             = [:]

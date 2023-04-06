@@ -33,7 +33,7 @@ class ContactController  {
 	 */
 	@DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], wtc = DebugInfo.WITH_TRANSACTION)
 	@Secured(closure = {
-		ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR")
+		ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
 	})
     def create() {
 		Contact.withTransaction {
@@ -80,7 +80,7 @@ class ContactController  {
 	 */
 	@DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], wtc = DebugInfo.WITH_TRANSACTION)
 	@Secured(closure = {
-		ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR")
+		ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
 	})
     def delete() {
 		Contact.withTransaction {

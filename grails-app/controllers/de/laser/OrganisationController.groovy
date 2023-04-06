@@ -1255,7 +1255,7 @@ class OrganisationController  {
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'])
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR")
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
     })
     def editDocument() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
@@ -1280,7 +1280,7 @@ class OrganisationController  {
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'])
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR")
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
     })
     def deleteDocuments() {
         log.debug("deleteDocuments ${params}");
@@ -1300,7 +1300,7 @@ class OrganisationController  {
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'])
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_USER")
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
     })
     @Check404(domain=Org)
     def notes() {
@@ -1346,7 +1346,7 @@ class OrganisationController  {
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_ADM'])
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_ADM")
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
     })
     @Check404(domain=Org)
     def users() {
@@ -1886,7 +1886,7 @@ class OrganisationController  {
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'])
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_USER")
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
     })
     @Check404(domain=Org)
     def myPublicContacts() {

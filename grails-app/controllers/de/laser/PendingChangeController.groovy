@@ -21,7 +21,7 @@ class PendingChangeController  {
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'])
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR")
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
     })
     def accept() {
         log.debug("Accept")
@@ -62,7 +62,7 @@ class PendingChangeController  {
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'])
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR")
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
     })
     def reject() {
         log.debug("Reject")
@@ -77,7 +77,7 @@ class PendingChangeController  {
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'])
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR")
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
     })
     def processAll() {
         log.debug("processAll - ${params}")

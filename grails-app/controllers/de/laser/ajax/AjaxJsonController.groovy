@@ -879,7 +879,7 @@ class AjaxJsonController {
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_ADM'])
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_ADM")
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
     })
     def checkExistingUser() {
         Map<String, Object> result = [result: false]

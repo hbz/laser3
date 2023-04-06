@@ -108,7 +108,7 @@ class MyInstitutionController  {
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'])
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_USER")
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
     })
     def index() {
         redirect(action:'dashboard')
@@ -326,7 +326,7 @@ class MyInstitutionController  {
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'])
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_USER")
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
     })
     def currentLicenses() {
 
@@ -704,7 +704,7 @@ class MyInstitutionController  {
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'], wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_USER")
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
     })
     def processEmptyLicense() {
         License.withTransaction { TransactionStatus ts ->
@@ -804,7 +804,7 @@ class MyInstitutionController  {
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'])
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_USER")
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
     })
     def currentProviders() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -931,7 +931,7 @@ class MyInstitutionController  {
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'])
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_USER")
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
     })
     def currentSubscriptions() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -1254,7 +1254,7 @@ class MyInstitutionController  {
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'])
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR")
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
     })
     def linkObjects() {
         Map<String,Object> ctrlResult = linksGenerationService.createOrUpdateLink(params)
@@ -1269,7 +1269,7 @@ class MyInstitutionController  {
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'])
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR")
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
     })
     def unlinkObjects() {
         linksGenerationService.deleteLink(params.oid)
@@ -1302,7 +1302,7 @@ class MyInstitutionController  {
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'])
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR")
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
     })
     def deleteDocuments() {
         log.debug("deleteDocuments ${params}");
@@ -1327,7 +1327,7 @@ class MyInstitutionController  {
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'])
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_USER")
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
     })
     def currentTitles() {
 
@@ -1532,7 +1532,7 @@ class MyInstitutionController  {
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'])
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_USER")
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
     })
     def currentPackages() {
 
@@ -1640,7 +1640,7 @@ class MyInstitutionController  {
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_USER")
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
     })
     def dashboard() {
 
@@ -1661,7 +1661,7 @@ class MyInstitutionController  {
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'])
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_USER")
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
     })
     def modal_create() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -1685,7 +1685,7 @@ class MyInstitutionController  {
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'])
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_USER")
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
     })
     def changes() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -2263,7 +2263,7 @@ class MyInstitutionController  {
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_ADM'])
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_ADM")
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
     })
     def users() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -2303,7 +2303,7 @@ class MyInstitutionController  {
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_ADM'])
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_ADM")
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
     })
     def deleteUser() {
         Map<String, Object> result = userControllerService.getResultGenericsERMS3067(params)
@@ -2352,7 +2352,7 @@ class MyInstitutionController  {
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_ADM'])
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_ADM")
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
     })
     def editUser() {
         Map<String, Object> result = userControllerService.getResultGenericsERMS3067(params)
@@ -2376,7 +2376,7 @@ class MyInstitutionController  {
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_ADM'])
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_ADM")
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
     })
     def createUser() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -2394,7 +2394,7 @@ class MyInstitutionController  {
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_ADM'])
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_ADM")
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
     })
     def processCreateUser() {
         def success = userService.addNewUser(params,flash)
@@ -2418,7 +2418,7 @@ class MyInstitutionController  {
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_ADM'])
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_ADM")
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
     })
     def addAffiliation() {
         Map<String, Object> result = userControllerService.getResultGenericsERMS3067(params)
@@ -4259,7 +4259,7 @@ join sub.orgRelations or_sub where
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'])
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_USER")
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
     })
     def copyLicense() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)

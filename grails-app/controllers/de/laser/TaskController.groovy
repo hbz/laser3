@@ -36,7 +36,7 @@ class TaskController  {
 	 */
 	@DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], wtc = DebugInfo.WITH_TRANSACTION)
 	@Secured(closure = {
-		ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR")
+		ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
 	})
     def create() {
 		Task.withTransaction {
@@ -93,7 +93,7 @@ class TaskController  {
 	 */
 	@DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'], wtc = DebugInfo.WITH_TRANSACTION)
 	@Secured(closure = {
-		ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_USER")
+		ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
 	})
 	@Check404()
     def edit() {
@@ -177,7 +177,7 @@ class TaskController  {
 	 */
 	@DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], wtc = DebugInfo.WITH_TRANSACTION)
 	@Secured(closure = {
-		ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR")
+		ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
 	})
     def delete() {
 		Task.withTransaction {

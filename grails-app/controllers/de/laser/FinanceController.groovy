@@ -50,7 +50,7 @@ class FinanceController  {
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'], ctrlService = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_USER")
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
     })
     def index() {
         log.debug("FinanceController::index() ${params}")
@@ -80,7 +80,7 @@ class FinanceController  {
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'], ctrlService = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_USER")
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
     })
     def subFinancialData() {
         log.debug("FinanceController::subFinancialData() ${params}")
@@ -142,7 +142,7 @@ class FinanceController  {
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'], ctrlService = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_USER")
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
     })
     def financialsExport()  {
         log.debug("Financial Export :: ${params}")
@@ -458,7 +458,7 @@ class FinanceController  {
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], ctrlService = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR")
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
     })
     Object newCostItem() {
         Map<String, Object> result = financeControllerService.getResultGenerics(params)
@@ -480,7 +480,7 @@ class FinanceController  {
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], ctrlService = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR")
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
     })
     Object editCostItem() {
         Map<String, Object> result = financeControllerService.getResultGenerics(params)
@@ -499,9 +499,9 @@ class FinanceController  {
      * After submitting the form, a new cost item will be created which has the current one as base, taking those values
      * submitted in the modal
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'],ctrlService = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], ctrlService = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR")
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
     })
     Object copyCostItem() {
         Map<String, Object> result = financeControllerService.getResultGenerics(params)
@@ -523,7 +523,7 @@ class FinanceController  {
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR")
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
     })
     def deleteCostItem() {
         Map<String,Object> ctrlResult = financeService.deleteCostItem(params)
@@ -537,7 +537,7 @@ class FinanceController  {
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR")
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
     })
     def createOrUpdateCostItem() {
         Map<String,Object> ctrlResult = financeService.createOrUpdateCostItem(params)
