@@ -627,9 +627,9 @@ class AjaxHtmlController {
      * Retrieves the filter history and bookmarks for the given reporting view.
      * If a command is being submitted, the cache is being updated. The updated view is being rendered afterwards
      */
-    @DebugInfo(perm=CustomerTypeService.PERMS_PRO, affil="INST_USER")
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_PRO, 'INST_USER'])
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER")
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_USER')
     })
     def reporting() {
         Map<String, Object> result = [
@@ -678,9 +678,9 @@ class AjaxHtmlController {
     /**
      * Retrieves the details for the given charts
      */
-    @DebugInfo(perm=CustomerTypeService.PERMS_PRO, affil="INST_USER")
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_PRO, 'INST_USER'])
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER")
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_USER')
     })
     def chartDetails() {
         // TODO - SESSION TIMEOUTS
@@ -715,9 +715,9 @@ class AjaxHtmlController {
      *     <li>PDF</li>
      * </ul>
      */
-    @DebugInfo(perm=CustomerTypeService.PERMS_PRO, affil="INST_USER")
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_PRO, 'INST_USER'])
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER")
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_USER')
     })
     def chartDetailsExport() {
 
@@ -881,9 +881,9 @@ class AjaxHtmlController {
      *     <li>PDF</li>
      * </ul>
      */
-    @DebugInfo(perm=CustomerTypeService.PERMS_PRO, affil="INST_USER")
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_PRO, 'INST_USER'])
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER")
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_USER')
     })
     def chartQueryExport() {
 

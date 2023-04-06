@@ -429,6 +429,7 @@ class YodaController {
 
                         Annotation da = method.getAnnotation(DebugInfo)
                         if (da) {
+
                             mInfo.debug = [
                                     perm     : da.perm(),
                                     type     : da.type(),
@@ -436,6 +437,24 @@ class YodaController {
                                     specRole : da.specRole(),
                                     test     : da.test()
                             ]
+
+                            // TODO
+                            if (da.ctxPermAffiliation()) { mInfo.debug.test = da.ctxPermAffiliation().toList() }
+                            if (da.ctxInstUserCheckPerm_or_ROLEADMIN()) { mInfo.debug.test = da.ctxInstUserCheckPerm_or_ROLEADMIN().toList()  }
+                            if (da.ctxInstEditorCheckPerm_or_ROLEADMIN()) { mInfo.debug.test = da.ctxInstEditorCheckPerm_or_ROLEADMIN().toList()  }
+                            if (da.ctxInstAdmCheckPerm_or_ROLEADMIN()) { mInfo.debug.test = da.ctxInstAdmCheckPerm_or_ROLEADMIN().toList()  }
+                            if (da.ctxConsortiumCheckPermAffiliation_or_ROLEADMIN()) { mInfo.debug.test = da.ctxConsortiumCheckPermAffiliation_or_ROLEADMIN().toList()  }
+
+                            // TODO
+                            if (da.hasCtxAffiliation_or_ROLEADMIN()) { mInfo.debug.test = da.hasCtxAffiliation_or_ROLEADMIN().toList()  }
+
+                            if (controller.name.startsWith('de.laser.Compare')) {
+                                println da
+                                println da.ctxPermAffiliation()
+                                println da.ctxPermAffiliation().join(',')
+                                println mInfo
+                            }
+
                             if (da.ctrlService()) {
                                 mInfo.ctrlService = da.ctrlService()
                                 if (da.ctrlService() == DebugInfo.WITH_TRANSACTION) {
@@ -940,7 +959,6 @@ class YodaController {
             indexInfo.countDB = FTControl.executeQuery(query)[0]
             result.indices << indexInfo
         }
-
             try {
                 esclient.close()
             }
@@ -1473,5 +1491,4 @@ class YodaController {
 
         redirect action: 'dashboard'
     }
-
 }

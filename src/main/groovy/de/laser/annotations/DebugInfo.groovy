@@ -14,6 +14,20 @@ import java.lang.annotation.Target
     public static final int IN_BETWEEN         = 1
     public static final int WITH_TRANSACTION   = 2
 
+    // accessService
+
+    String[] ctxPermAffiliation() default []
+    String[] ctxInstUserCheckPerm_or_ROLEADMIN() default []
+    String[] ctxInstEditorCheckPerm_or_ROLEADMIN() default []
+    String[] ctxInstAdmCheckPerm_or_ROLEADMIN() default []
+    String[] ctxConsortiumCheckPermAffiliation_or_ROLEADMIN() default []
+
+    // user
+
+    String[] hasCtxAffiliation_or_ROLEADMIN() default []
+
+    // legacy
+
     String test() default ''
     String perm() default ''
     String type() default ''

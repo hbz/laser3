@@ -197,8 +197,8 @@ class RDStore {
     public final static RefdataValue READER_NUMBER_FTE               = getRefdataValue('FTE', RDConstants.NUMBER_TYPE)
 
     public final static RefdataValue SHARE_CONF_ALL                     = getRefdataValue('everyone', RDConstants.SHARE_CONFIGURATION)
-    public final static RefdataValue SHARE_CONF_UPLOADER_ORG            = getRefdataValue('only for author organisation', RDConstants.SHARE_CONFIGURATION) //maps to key, value is correct!
-    public final static RefdataValue SHARE_CONF_UPLOADER_AND_TARGET     = getRefdataValue('only for author and target organisation', RDConstants.SHARE_CONFIGURATION) //maps to key, value is correct!
+    public final static RefdataValue SHARE_CONF_UPLOADER_ORG            = getRefdataValue('only for author organisation', RDConstants.SHARE_CONFIGURATION)
+    public final static RefdataValue SHARE_CONF_UPLOADER_AND_TARGET     = getRefdataValue('only for author and target organisation', RDConstants.SHARE_CONFIGURATION)
     public final static RefdataValue SHARE_CONF_CONSORTIUM              = getRefdataValue('only for consortia members', RDConstants.SHARE_CONFIGURATION)
 
     public final static RefdataValue SUBSCRIPTION_CURRENT           = getRefdataValue('Current', RDConstants.SUBSCRIPTION_STATUS)

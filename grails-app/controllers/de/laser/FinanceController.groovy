@@ -556,8 +556,10 @@ class FinanceController  {
     /**
      * Marks a change done by the consortium as acknowledged by the single user who copied the given cost item
      */
-    @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_EDITOR", ctrlService = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = { ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_EDITOR") })
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')
+    })
     def acknowledgeChange() {
         PendingChange changeAccepted = PendingChange.get(params.id)
         if(changeAccepted)
