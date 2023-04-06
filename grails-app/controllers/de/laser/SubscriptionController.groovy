@@ -500,7 +500,7 @@ class SubscriptionController {
      * Call to insert a succession link between two member subscriptions
      * @return the members view
      */
-    @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
         ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
@@ -1806,7 +1806,7 @@ class SubscriptionController {
      * Call for a single user to copy private properties from a consortial member subscription into its successor instance
      * @return the reduced subscription element copy view
      */
-    @DebugInfo(perm = CustomerTypeService.ORG_INST_PRO, affil = "INST_EDITOR", specRole = "ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_INST_PRO], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
         ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_INST_PRO )
     })

@@ -1825,7 +1825,7 @@ class MyInstitutionController  {
      * Default filter setting is current year
      * @return a (filtered) list of surveys, either displayed as html or returned as Excel worksheet
      */
-    @DebugInfo(perm=CustomerTypeService.ORG_INST_BASIC, affil="INST_USER", specRole="ROLE_ADMIN")
+    @DebugInfo(ctxInstUserCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_INST_BASIC])
     @Secured(closure = {
         ctx.accessService.ctxInstUserCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )
     })
@@ -1918,7 +1918,7 @@ class MyInstitutionController  {
      * The view may be rendered as html or as Excel worksheet to download
      * @return the details view of the given survey
      */
-    @DebugInfo(perm=CustomerTypeService.ORG_INST_BASIC, affil="INST_USER", specRole="ROLE_ADMIN")
+    @DebugInfo(ctxInstUserCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_INST_BASIC])
     @Secured(closure = {
         ctx.accessService.ctxInstUserCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )
     })
@@ -2043,7 +2043,7 @@ class MyInstitutionController  {
      * pass definitively into the holding of the next year's subscription
      * @return void, returns to the survey details page ({@link #surveyInfos()})
      */
-    @DebugInfo(perm=CustomerTypeService.ORG_INST_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_INST_BASIC])
     @Secured(closure = {
         ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )
     })
@@ -2140,7 +2140,7 @@ class MyInstitutionController  {
         redirect(url: request.getHeader('referer'))
     }
 
-    @DebugInfo(perm=CustomerTypeService.ORG_INST_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_INST_BASIC])
     @Secured(closure = {
         ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )
     })
@@ -2500,7 +2500,7 @@ class MyInstitutionController  {
      * @see BudgetCode
      * @see CostItemGroup
      */
-    @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_USER", specRole="ROLE_ADMIN", wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(ctxInstUserCheckPerm_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
         ctx.accessService.ctxInstUserCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
@@ -2595,7 +2595,7 @@ class MyInstitutionController  {
      * Call for listing institutions eligible to be attached to or detached from the context consortium
      * @return a list of institutions
      */
-    @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_BASIC, affil="INST_EDITOR",specRole="ROLE_ADMIN", wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC], wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
         ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
@@ -2991,7 +2991,7 @@ class MyInstitutionController  {
      * The result may be filtered by organisational and subscription parameters
      * @return the list of consortial member institutions
      */
-    @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_BASIC, affil="INST_USER", specRole="ROLE_ADMIN", wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(ctxInstUserCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC], wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
         ctx.accessService.ctxInstUserCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
@@ -3186,7 +3186,7 @@ join sub.orgRelations or_sub where
      * @see Subscription
      * @see Org
      */
-    @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_BASIC, affil="INST_USER", specRole="ROLE_ADMIN")
+    @DebugInfo(ctxInstUserCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC])
     @Secured(closure = {
         ctx.accessService.ctxInstUserCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
@@ -3592,7 +3592,7 @@ join sub.orgRelations or_sub where
      * The result may be displayed as HTML or exported as Excel worksheet
      * @return a list of surveys the context consortium set up and the given institution is participating at
      */
-    @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_PRO, affil="INST_USER", specRole="ROLE_ADMIN")
+    @DebugInfo(ctxInstUserCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO])
     @Secured(closure = {
         ctx.accessService.ctxInstUserCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })

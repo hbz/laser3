@@ -570,7 +570,7 @@ class FinanceController  {
     /**
      * Call to process the data in the bulk editing form and to apply the changes to the picked cost items
      */
-    @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_BASIC, affil = "INST_EDITOR", specRole = "ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
         ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })

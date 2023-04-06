@@ -25,7 +25,7 @@ class CostConfigurationController {
     /**
      * Gets the current list of an institution's cost configurations
      */
-    @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_USER", specRole="ROLE_ADMIN")
+    @DebugInfo(ctxInstUserCheckPerm_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
     @Secured(closure = {
         ctx.accessService.ctxInstUserCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
