@@ -16,15 +16,15 @@ import java.lang.annotation.Target
 
     // accessService
 
-    String[] ctxPermAffiliation() default []
-    String[] ctxInstUserCheckPerm_or_ROLEADMIN() default []
-    String[] ctxInstEditorCheckPerm_or_ROLEADMIN() default []
-    String[] ctxInstAdmCheckPerm_or_ROLEADMIN() default []
-    String[] ctxConsortiumCheckPermAffiliation_or_ROLEADMIN() default []
+    String[] ctxPermAffiliation() default []                                    // [orgPerms, instUserRole]
+    String[] ctxInstUserCheckPerm_or_ROLEADMIN() default []                     // [orgPerms]
+    String[] ctxInstEditorCheckPerm_or_ROLEADMIN() default []                   // [orgPerms]
+    String[] ctxInstAdmCheckPerm_or_ROLEADMIN() default []                      // [orgPerms]
+    String[] ctxConsortiumCheckPermAffiliation_or_ROLEADMIN() default []        // [orgPerms, instUserRole]
 
     // user
 
-    String[] hasCtxAffiliation_or_ROLEADMIN() default []
+    String[] hasCtxAffiliation_or_ROLEADMIN() default []                        // [instUserRole]
 
     // legacy
 

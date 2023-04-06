@@ -431,28 +431,48 @@ class YodaController {
                         if (da) {
 
                             mInfo.debug = [
+                                    specRole : da.specRole(),
+                                    affil    : da.affil(),
                                     perm     : da.perm(),
                                     type     : da.type(),
-                                    affil    : da.affil(),
-                                    specRole : da.specRole(),
                                     test     : da.test()
                             ]
 
-                            // TODO
-                            if (da.ctxPermAffiliation()) { mInfo.debug.test = da.ctxPermAffiliation().toList() }
-                            if (da.ctxInstUserCheckPerm_or_ROLEADMIN()) { mInfo.debug.test = da.ctxInstUserCheckPerm_or_ROLEADMIN().toList()  }
-                            if (da.ctxInstEditorCheckPerm_or_ROLEADMIN()) { mInfo.debug.test = da.ctxInstEditorCheckPerm_or_ROLEADMIN().toList()  }
-                            if (da.ctxInstAdmCheckPerm_or_ROLEADMIN()) { mInfo.debug.test = da.ctxInstAdmCheckPerm_or_ROLEADMIN().toList()  }
-                            if (da.ctxConsortiumCheckPermAffiliation_or_ROLEADMIN()) { mInfo.debug.test = da.ctxConsortiumCheckPermAffiliation_or_ROLEADMIN().toList()  }
+                            if (da.ctxPermAffiliation()) {
+                                mInfo.debug.test        = 'ctxPermAffiliation()' //  + da.ctxPermAffiliation().toList()
+                                mInfo.debug.perm        = da.ctxPermAffiliation().toList()[0]
+                                mInfo.debug.affil       = da.ctxPermAffiliation().toList()[1]
+                            }
+                            if (da.ctxInstUserCheckPerm_or_ROLEADMIN()) {
+                                mInfo.debug.test        = 'ctxInstUserCheckPerm_or_ROLEADMIN()' //  + da.ctxInstUserCheckPerm_or_ROLEADMIN().toList()
+                                mInfo.debug.perm        = da.ctxInstUserCheckPerm_or_ROLEADMIN().toList()[0]
+                                mInfo.debug.affil       = 'INST_USER'
+                                mInfo.debug.specRole    = 'ROLE_ADMIN'
+                            }
+                            if (da.ctxInstEditorCheckPerm_or_ROLEADMIN()) {
+                                mInfo.debug.test        = 'ctxInstEditorCheckPerm_or_ROLEADMIN()' //  + da.ctxInstEditorCheckPerm_or_ROLEADMIN().toList()
+                                mInfo.debug.perm        = da.ctxInstEditorCheckPerm_or_ROLEADMIN().toList()[0]
+                                mInfo.debug.affil       = 'INST_EDITOR'
+                                mInfo.debug.specRole    = 'ROLE_ADMIN'
+                            }
+                            if (da.ctxInstAdmCheckPerm_or_ROLEADMIN()) {
+                                mInfo.debug.test        = 'ctxInstAdmCheckPerm_or_ROLEADMIN()' //  + da.ctxInstAdmCheckPerm_or_ROLEADMIN().toList()
+                                mInfo.debug.perm        = da.ctxInstAdmCheckPerm_or_ROLEADMIN().toList()[0]
+                                mInfo.debug.affil       = 'INST_ADM'
+                                mInfo.debug.specRole    = 'ROLE_ADMIN'
+                            }
+                            if (da.ctxConsortiumCheckPermAffiliation_or_ROLEADMIN()) {
+                                mInfo.debug.test        = 'ctxConsortiumCheckPermAffiliation_or_ROLEADMIN()' //  + da.ctxConsortiumCheckPermAffiliation_or_ROLEADMIN().toList()
+                                mInfo.debug.perm        = da.ctxConsortiumCheckPermAffiliation_or_ROLEADMIN().toList()[0]
+                                mInfo.debug.affil       = da.ctxConsortiumCheckPermAffiliation_or_ROLEADMIN().toList()[1]
+                                mInfo.debug.type        = 'Consortium'
+                                mInfo.debug.specRole    = 'ROLE_ADMIN'
+                            }
 
-                            // TODO
-                            if (da.hasCtxAffiliation_or_ROLEADMIN()) { mInfo.debug.test = da.hasCtxAffiliation_or_ROLEADMIN().toList()  }
-
-                            if (controller.name.startsWith('de.laser.Compare')) {
-                                println da
-                                println da.ctxPermAffiliation()
-                                println da.ctxPermAffiliation().join(',')
-                                println mInfo
+                            if (da.hasCtxAffiliation_or_ROLEADMIN()) {
+                                mInfo.debug.test        = 'hasCtxAffiliation_or_ROLEADMIN()' //  + da.hasCtxAffiliation_or_ROLEADMIN().toList()
+                                mInfo.debug.affil       = da.hasCtxAffiliation_or_ROLEADMIN().toList()[0]
+                                mInfo.debug.specRole    = 'ROLE_ADMIN'
                             }
 
                             if (da.ctrlService()) {
