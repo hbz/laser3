@@ -72,9 +72,6 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('privateContacts')}">
                 <th>${message(code: 'org.privateContacts.label')}</th>
             </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('currentFTEs')}">
-                <th class="la-th-wrap">${message(code: 'org.currentFTEs.label')}</th>
-            </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('numberOfSubscriptions')}">
                 <th class="la-th-wrap">${message(code: 'org.subscriptions.label')}</th>
             </g:if>
@@ -554,17 +551,6 @@
                         ]}"/>
                     </g:if>
                     --%>
-                    </g:each>
-                </td>
-            </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('currentFTEs')}">
-                <td>
-                    <g:each in="${ReaderNumber.findAllByOrgAndReferenceGroup(org, RefdataValue.getByValueAndCategory('Students', RDConstants.NUMBER_TYPE).getI10n('value'))?.sort {
-                        it.type?.getI10n("value")
-                    }}" var="fte">
-                        <g:if test="${fte.startDate <= sqlDateToday && fte.endDate >= sqlDateToday}">
-                            ${fte.type?.getI10n("value")} : ${fte.number} <br />
-                        </g:if>
                     </g:each>
                 </td>
             </g:if>

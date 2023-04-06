@@ -72,11 +72,6 @@ class AddressbookService {
         userService.checkAffiliationAndCtxOrg_or_ROLEADMIN(user, person.tenant , 'INST_EDITOR')
     }
 
-    @Deprecated
-    boolean isNumbersEditable(Numbers numbers, User user) {
-        userService.checkAffiliationAndCtxOrg_or_ROLEADMIN(user, person.tenant , 'INST_EDITOR')
-    }
-
     /**
      * Retrieves for the given page the visible persons. If it is for the addressbook page
      * (coming from {@link MyInstitutionController#addressbook()} or {@link OrganisationController#addressbook}),

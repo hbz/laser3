@@ -52,6 +52,8 @@ class RDStore {
 
     public final static RefdataValue COST_ITEM_ELEMENT_CONSORTIAL_PRICE = getRefdataValue('price: consortial price', RDConstants.COST_ITEM_ELEMENT)
 
+    public final static RefdataValue CUSTOMER_IDENTIFIER_TYPE_DEFAULT = getRefdataValue('Default', RDConstants.CUSTOMER_IDENTIFIER_TYPE)
+
     public final static RefdataValue CURRENCY_EUR   = getRefdataValue('EUR', RDConstants.CURRENCY)
     public final static RefdataValue CURRENCY_GBP   = getRefdataValue('GBP', RDConstants.CURRENCY)
     public final static RefdataValue CURRENCY_USD   = getRefdataValue('USD', RDConstants.CURRENCY)
@@ -78,6 +80,8 @@ class RDStore {
     public final static RefdataValue LICENSE_INTENDED       = getRefdataValue('Intended', RDConstants.LICENSE_STATUS)
     //public final static RefdataValue LICENSE_IN_PROGRESS  = getRefdataValue('In Progress', RDConstants.LICENSE_STATUS)
     public final static RefdataValue LICENSE_EXPIRED        = getRefdataValue('Retired', RDConstants.LICENSE_STATUS)
+
+    public final static RefdataValue LICENSE_OA_TYPE_EMPTY  = getRefdataValue('Empty', RDConstants.LICENSE_OA_TYPE)
 
     public final static RefdataValue LINKTYPE_FOLLOWS       = getRefdataValue('follows', RDConstants.LINK_TYPE)
     public final static RefdataValue LINKTYPE_LICENSE       = getRefdataValue('license', RDConstants.LINK_TYPE)
@@ -193,8 +197,8 @@ class RDStore {
     public final static RefdataValue READER_NUMBER_FTE               = getRefdataValue('FTE', RDConstants.NUMBER_TYPE)
 
     public final static RefdataValue SHARE_CONF_ALL                     = getRefdataValue('everyone', RDConstants.SHARE_CONFIGURATION)
-    public final static RefdataValue SHARE_CONF_UPLOADER_ORG            = getRefdataValue('only for author organisation', RDConstants.SHARE_CONFIGURATION) //maps to key, value is correct!
-    public final static RefdataValue SHARE_CONF_UPLOADER_AND_TARGET     = getRefdataValue('only for author and target organisation', RDConstants.SHARE_CONFIGURATION) //maps to key, value is correct!
+    public final static RefdataValue SHARE_CONF_UPLOADER_ORG            = getRefdataValue('only for author organisation', RDConstants.SHARE_CONFIGURATION)
+    public final static RefdataValue SHARE_CONF_UPLOADER_AND_TARGET     = getRefdataValue('only for author and target organisation', RDConstants.SHARE_CONFIGURATION)
     public final static RefdataValue SHARE_CONF_CONSORTIUM              = getRefdataValue('only for consortia members', RDConstants.SHARE_CONFIGURATION)
 
     public final static RefdataValue SUBSCRIPTION_CURRENT           = getRefdataValue('Current', RDConstants.SUBSCRIPTION_STATUS)
