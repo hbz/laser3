@@ -34,8 +34,10 @@ class TaskController  {
 	 * Processes the submitted input parameters and creates a new task for the given owner object
 	 * @return a redirect to the referer
 	 */
-	@DebugInfo(test='hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR")', wtc = DebugInfo.WITH_TRANSACTION)
-	@Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR") })
+	@DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], wtc = DebugInfo.WITH_TRANSACTION)
+	@Secured(closure = {
+		ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR")
+	})
     def create() {
 		Task.withTransaction {
 			Org contextOrg = contextService.getOrg()
@@ -89,8 +91,10 @@ class TaskController  {
 	 * Processes the submitted input and updates the given task instance with the given parameters
 	 * @return a redirect to the referer
 	 */
-	@DebugInfo(test='hasCtxAffiliation_or_ROLEADMIN("INST_USER")', wtc = DebugInfo.WITH_TRANSACTION)
-	@Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_USER") })
+	@DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'], wtc = DebugInfo.WITH_TRANSACTION)
+	@Secured(closure = {
+		ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_USER")
+	})
 	@Check404()
     def edit() {
 		Task.withTransaction {
@@ -171,8 +175,10 @@ class TaskController  {
 	 * Call to delete the given task instance
 	 * @return a redirect to the referer
 	 */
-	@DebugInfo(test='hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR")', wtc = DebugInfo.WITH_TRANSACTION)
-	@Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR") })
+	@DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], wtc = DebugInfo.WITH_TRANSACTION)
+	@Secured(closure = {
+		ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR")
+	})
     def delete() {
 		Task.withTransaction {
 			Task taskInstance = Task.get(params.id)

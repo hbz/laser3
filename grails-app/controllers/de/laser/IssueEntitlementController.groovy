@@ -33,8 +33,10 @@ class IssueEntitlementController {
      * Shows the given issue entitlement details
      * @return
      */
-    @DebugInfo(test = 'hasCtxAffiliation_or_ROLEADMIN("INST_USER")', wtc = DebugInfo.NOT_TRANSACTIONAL)
-    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_USER") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_USER")
+    })
     @Check404()
     def show() {
       Map<String, Object> result = [:]
@@ -119,8 +121,10 @@ class IssueEntitlementController {
       result
     }
 
-    @DebugInfo(test='hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR")', wtc = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], wtc = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR")
+    })
     def delete() {
         IssueEntitlement.withTransaction { TransactionStatus ts ->
             IssueEntitlement issueEntitlementInstance = IssueEntitlement.get(params.id)
