@@ -433,6 +433,47 @@ class AccessPointService {
     }
 
     /**
+     * Exports the mail domain settings of the given institutions
+     * @param orgs the institutions whose data should be exported
+     * @param onlyMap output the raw map or an Excel worksheet?
+     * @return a map containing the results if onlyMap is true, an Excel worksheet with the Shibboleth settings otherwise
+     */
+    def exportMailDomainsOfOrgs(List<Org> orgs, boolean onlyMap = false) {
+
+        List titles = []
+        Locale locale = LocaleUtils.getCurrentLocale()
+
+        titles.addAll([messageSource.getMessage('org.sortname.label',null, locale),
+                       'Name',
+                       messageSource.getMessage('accessPoint.mailDomain.name.label',null, locale),
+                       'Mail-Domain'
+        ])
+
+        List accessPointData = []
+        orgs.each { Org org ->
+
+            List<OrgAccessPoint> accessPoints = OrgAccessPoint.findAllByOrg(org, [sort: ["name": 'asc', "accessMethod": 'asc']])
+            accessPoints.each { OrgAccessPoint accessPoint ->
+                accessPoint.getAccessPointMailDomains().accessPointMailDomains.each { Map apd ->
+                    List row = []
+                    row.add([field: org.sortname ?: '', style: null])
+                    row.add([field: org.name ?: '', style: null])
+                    row.add([field: accessPoint.name ?: '', style: null])
+                    row.add([field: apd.mailDomain, style: null])
+                    accessPointData.add(row)
+                }
+            }
+        }
+
+        if(onlyMap){
+            return [titleRow: titles, columnData: accessPointData]
+        }else {
+            return exportService.generateXLSXWorkbook(["${messageSource.getMessage('subscriptionDetails.members.exportMailDomains.fileName',null, locale)}": [titleRow: titles, columnData: accessPointData]])
+        }
+
+    }
+
+    /**
      * Check for existing name in all supported locales and return available suggestions for IP Access Method
      * A simpler solution would be nice
      * @param org the institution whose data should be queried

@@ -54,7 +54,7 @@ class FilterService {
             }
         }
         if (params.orgStatus) {
-            List selectedStatus = listReaderWrapper(params, 'orgStatus').collect { key -> Long.parseLong(key) }
+            List selectedStatus = listReaderWrapper(params, 'orgStatus').collect { key -> key instanceof String ? Long.parseLong(key) : key }
             query << "o.status.id in (:orgStatus)"
             queryParams.orgStatus = selectedStatus
         }
