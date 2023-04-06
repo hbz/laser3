@@ -56,7 +56,15 @@ class DashboardDueDate {
             this.dueDateObject.lastUpdated = now
             this.dueDateObject.attribute_value_de = DashboardDueDate.getAttributeValue(messageSource, obj, responsibleUser, Locale.GERMAN)
             this.dueDateObject.attribute_value_en = DashboardDueDate.getAttributeValue(messageSource, obj, responsibleUser, Locale.ENGLISH)
-            this.dueDateObject.date = DashboardDueDate.getDate(obj, responsibleUser)
+
+            Date date = DashboardDueDate.getDate(obj, responsibleUser)
+
+            if(date != this.dueDateObject){
+                this.dueDateObject.isDone = false
+                this.isHidden = false
+            }
+
+            this.dueDateObject.date = date
             this.dueDateObject.save()
             this.save()
         }
@@ -150,6 +158,14 @@ class DashboardDueDate {
                 ddo = new DueDateObject(attribute_value_de, attribute_value_en, attribute_name, date, object, isDone, now, now)
                 ddo.save()
             }
+
+            if(date != ddo.date){
+                ddo.date = date
+                ddo.isDone = isDone
+                ddo.lastUpdated = now
+                ddo.save()
+            }
+
             this.dueDateObject = ddo
             this.save()
         }

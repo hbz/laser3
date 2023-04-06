@@ -79,7 +79,7 @@ class RenewSubscriptionService extends AbstractLockableService {
                             copySub.ieGroups = null
 
                             use(TimeCategory) {
-                                copySub.startDate = subscription.startDate + 1.year
+                                copySub.startDate = subscription.endDate + 1.day
                                 copySub.endDate = subscription.endDate + 1.year
                             }
 

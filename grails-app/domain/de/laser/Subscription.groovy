@@ -689,8 +689,8 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
         LocalDate endDate = DateUtils.dateToLocalDate(this.endDate)
         LocalDate startDate = DateUtils.dateToLocalDate(this.startDate)
-        // TODO Moe - date.minusDays()
-        return (this.type == RDStore.SUBSCRIPTION_TYPE_LOCAL && startDate && endDate && (DAYS.between(startDate, endDate) > 363) && (DAYS.between(startDate, endDate) < 367))
+        //return (this.type == RDStore.SUBSCRIPTION_TYPE_LOCAL && startDate && endDate && (DAYS.between(startDate, endDate) > 363) && (DAYS.between(startDate, endDate) < 367))
+        return (this.type == RDStore.SUBSCRIPTION_TYPE_LOCAL && startDate && endDate)
     }
 
     /**

@@ -10,6 +10,7 @@ import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 
 import java.text.SimpleDateFormat
+import java.time.LocalDate
 
 /**
  * This service handles due date status updates for licenses and subscriptions
@@ -34,14 +35,17 @@ class StatusUpdateService extends AbstractLockableService {
         if(!running) {
             running = true
             log.debug "processing all intended subscriptions ..."
-            Date currentDate = new Date()
+
+            LocalDate currentDate = LocalDate.now()
+
+            //Date currentDate = new Date()
             //Date currentDate = DateUtil.SDF_NoZ.parse("2020-05-30 03:00:00")
 
             Map<String,Object> updatedObjs = [:]
 
             // INTENDED -> CURRENT
 
-            Set<Long> intendedSubsIds1 = Subscription.executeQuery('select s.id from Subscription s where s.status = :status and s.startDate < :currentDate and s.isMultiYear = false',
+            Set<Long> intendedSubsIds1 = Subscription.executeQuery('select s.id from Subscription s where s.status = :status and DATE(s.startDate) <= :currentDate and s.isMultiYear = false',
             [status: RDStore.SUBSCRIPTION_INTENDED, currentDate: currentDate])
 
             log.info("Intended subscriptions reached start date and are now running (${currentDate}): " + intendedSubsIds1)
@@ -61,8 +65,8 @@ class StatusUpdateService extends AbstractLockableService {
 
             // MultiYear Sub INTENDED -> CURRENT
 
-           Set<Long> intendedSubsIds2 = Subscription.executeQuery('select s.id from Subscription s left join s.instanceOf parent where s.status = :status and ((parent != null and parent.startDate < :currentDate) or '+
-                   '(parent = null and s.startDate < :currentDate )) and s.isMultiYear = true',
+           Set<Long> intendedSubsIds2 = Subscription.executeQuery('select s.id from Subscription s left join s.instanceOf parent where s.status = :status and ((parent != null and DATE(parent.startDate) <= :currentDate) or '+
+                   '(parent = null and DATE(s.startDate) <= :currentDate )) and s.isMultiYear = true',
                    [status: RDStore.SUBSCRIPTION_INTENDED, currentDate: currentDate])
 
             log.info("Intended perennial subscriptions reached start date and are now running (${currentDate}): " + intendedSubsIds2)
@@ -82,7 +86,7 @@ class StatusUpdateService extends AbstractLockableService {
 
             // INTENDED -> EXPIRED
 
-            Set<Long> intendedSubsIds3 = Subscription.executeQuery('select s.id from Subscription s where s.status = :status and s.startDate < :currentDate and (s.endDate != null and s.endDate < :currentDate) and s.isMultiYear = false',
+            Set<Long> intendedSubsIds3 = Subscription.executeQuery('select s.id from Subscription s where s.status = :status and DATE(s.startDate) < :currentDate and (s.endDate != null and DATE(s.endDate) < :currentDate) and s.isMultiYear = false',
                     [status: RDStore.SUBSCRIPTION_INTENDED,currentDate: currentDate])
 
             log.info("Intended subscriptions reached start date and end date are now expired (${currentDate}): " + intendedSubsIds3)
@@ -102,7 +106,7 @@ class StatusUpdateService extends AbstractLockableService {
 
             // MultiYear Sub INTENDED -> EXPIRED
 
-            Set<Long> intendedSubsIds4 = Subscription.executeQuery('select s.id from Subscription s where s.status = :status and s.startDate < :currentDate and (s.endDate != null and s.endDate < :currentDate) and s.isMultiYear = true',
+            Set<Long> intendedSubsIds4 = Subscription.executeQuery('select s.id from Subscription s where s.status = :status and DATE(s.startDate) < :currentDate and (s.endDate != null and DATE(s.endDate) < :currentDate) and s.isMultiYear = true',
                     [status: RDStore.SUBSCRIPTION_INTENDED, currentDate: currentDate])
 
             log.info("Intended subscriptions reached start date and end date are now expired pernennial (${currentDate}): " + intendedSubsIds4)
@@ -122,7 +126,7 @@ class StatusUpdateService extends AbstractLockableService {
 
             // CURRENT -> EXPIRED
 
-            Set<Long> currentSubsIds = Subscription.executeQuery('select s.id from Subscription s where s.status = :status and s.startDate < :currentDate and (s.endDate != null and s.endDate < :currentDate) and s.isMultiYear = false',
+            Set<Long> currentSubsIds = Subscription.executeQuery('select s.id from Subscription s where s.status = :status and DATE(s.startDate) < :currentDate and (s.endDate != null and DATE(s.endDate) < :currentDate) and s.isMultiYear = false',
                     [status: RDStore.SUBSCRIPTION_CURRENT, currentDate: currentDate])
 
             log.info("Current subscriptions reached end date and are now expired (${currentDate}): " + currentSubsIds)
@@ -142,7 +146,7 @@ class StatusUpdateService extends AbstractLockableService {
 
             // MultiYear Sub CURRENT -> EXPIRED
 
-            Set<Long> currentSubsIds2 = Subscription.executeQuery('select s.id from Subscription s left join s.instanceOf parent where s.status = :status and s.startDate < :currentDate and (s.endDate != null and ((parent != null and parent.endDate < :currentDate) or s.endDate < :currentDate)) and s.isMultiYear = true',
+            Set<Long> currentSubsIds2 = Subscription.executeQuery('select s.id from Subscription s left join s.instanceOf parent where s.status = :status and DATE(s.startDate) < :currentDate and (s.endDate != null and ((parent != null and DATE(parent.endDate) < :currentDate) or DATE(s.endDate) < :currentDate)) and s.isMultiYear = true',
                 [status: RDStore.SUBSCRIPTION_CURRENT,currentDate: currentDate])
 
             log.info("Current subscriptions reached end date and are now expired (${currentDate}): " + currentSubsIds2)
@@ -205,13 +209,15 @@ class StatusUpdateService extends AbstractLockableService {
         if(!running) {
             running = true
             log.debug "processing all intended licenses ..."
-            Date currentDate = new Date()
+            LocalDate currentDate = LocalDate.now()
+
+            //Date currentDate = new Date()
 
             Map<String,Object> updatedObjs = [:]
 
             // INTENDED -> CURRENT
 
-            Set<Long> intendedLicsIds1 = License.executeQuery('select l.id from License l where l.status = :status and (l.startDate != null and l.startDate < :currentDate) ',
+            Set<Long> intendedLicsIds1 = License.executeQuery('select l.id from License l where l.status = :status and (l.startDate != null and DATE(l.startDate) < :currentDate) ',
                     [status: RDStore.LICENSE_INTENDED,currentDate: currentDate])
 
             log.info("Intended licenses reached start date and are now running (${currentDate}): " + intendedLicsIds1)
@@ -231,7 +237,7 @@ class StatusUpdateService extends AbstractLockableService {
 
             // CURRENT -> EXPIRED
 
-            Set<Long> currentLicsIds = License.executeQuery('select l.id from License l where l.status = :status and (l.startDate != null and l.startDate < :currentDate) and (l.endDate != null and l.endDate < :currentDate)',
+            Set<Long> currentLicsIds = License.executeQuery('select l.id from License l where l.status = :status and (l.startDate != null and DATE(l.startDate) < :currentDate) and (l.endDate != null and DATE(l.endDate) < :currentDate)',
                     [status: RDStore.LICENSE_CURRENT, currentDate: currentDate])
 
             log.info("Current licenses reached end date and are now expired (${currentDate}): " + currentLicsIds)
@@ -251,7 +257,7 @@ class StatusUpdateService extends AbstractLockableService {
 
             // INTENDED -> EXPIRED
 
-            Set<Long> intendedLicsIds2 = License.executeQuery('select l.id from License l where l.status = :status and (l.startDate != null and l.startDate < :currentDate) and (l.endDate != null and l.endDate < :currentDate)',
+            Set<Long> intendedLicsIds2 = License.executeQuery('select l.id from License l where l.status = :status and (l.startDate != null and DATE(l.startDate) < :currentDate) and (l.endDate != null and DATE(l.endDate) < :currentDate)',
                     [status: RDStore.LICENSE_INTENDED, currentDate: currentDate])
 
             log.info("Intended licenses reached start and end date and are now expired (${currentDate}): " + intendedLicsIds2)
