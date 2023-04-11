@@ -498,12 +498,19 @@ class ExportService {
 		visiblePersons.each { Person p ->
 			//lang: contactData
 			Map<String, Map<String, String>> contactData = addressesContacts.get(p)
+			int langCtr = 0
 			if(!contactData)
 				contactData = [:]
-			p.contacts.each { Contact c ->
+			p.contacts.sort{ Contact cc -> cc.content }.each { Contact c ->
 				String langKey
-				if(c.language)
+				if(c.language) {
 					langKey = c.language.getI10n('value')
+					int langCount = p.contacts.findAll { Contact cc -> cc.language == c.language }.size()
+					if(langCount > 1) {
+						langKey += langCtr
+						langCtr++
+					}
+				}
 				else langKey = Contact.PRIMARY
 				Map<String, String> contact = contactData.get(langKey)
 				if(!contact)
@@ -545,10 +552,10 @@ class ExportService {
 			Cell cell
 			int rownum = 1
 			addressesContacts.each { Person p, Map<String, Map<String, String>> contactData ->
-				for(int addressRow = 0; addressRow < Math.max(contactData.size(), p.addresses.size());addressRow++) {
+				for(int addressRow = 0; addressRow < contactData.size();addressRow++) {
 					row = sheet.createRow(rownum)
 					Map.Entry<String, Map<String, String>> contact = contactData.entrySet()[addressRow]
-                    Address a = p.addresses[addressRow]
+                    //Address a = p.addresses[addressRow]
 					columnHeaders.keySet().eachWithIndex { String fieldKey, int cellnum ->
 						cell = row.createCell(cellnum)
 						if (fieldKey == 'organisation') {
@@ -565,6 +572,7 @@ class ExportService {
 							contact?.key == Contact.PRIMARY ? cell.setCellValue(' ') : cell.setCellValue(contact.key)
 						else if (fieldKey in ['email', 'fax', 'phone', 'url'])
 							cell.setCellValue(contact?.value?.get(fieldKey))
+						/*
 						else {
 							if (a && a.hasProperty(fieldKey)) {
 								if (a[fieldKey] instanceof RefdataValue)
@@ -572,6 +580,7 @@ class ExportService {
 								else cell.setCellValue(a[fieldKey])
 							}
 						}
+						*/
 					}
 					rownum++
 				}
@@ -582,10 +591,10 @@ class ExportService {
 			List rows = []
 			List<String> row = []
 			addressesContacts.each { Person p, Map<String, Map<String, String>> contactData ->
-				for(int addressRow = 0; addressRow < Math.max(contactData.size(), p.addresses.size()); addressRow++) {
+				for(int addressRow = 0; addressRow < contactData.size(); addressRow++) {
 					row = []
 					Map.Entry<String, Map<String, String>> contact = contactData.entrySet()[addressRow]
-					Address a = p.addresses[addressRow]
+					//Address a = p.addresses[addressRow]
 					columnHeaders.keySet().each { String fieldKey ->
 						if(fieldKey == 'organisation') {
 							row << p.roleLinks.find { PersonRole pr -> pr.org != null }.org.name
@@ -594,7 +603,7 @@ class ExportService {
 							row << p.toString()
 						}
 						//first CSV column of address, used as gap-filler
-						else if(fieldKey == 'additionFirst' && !a)
+						else if(fieldKey == 'additionFirst')
 							row.addAll([' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '])
 						else if(fieldKey == 'language') {
 							if(contact?.key == Contact.PRIMARY)
@@ -606,6 +615,7 @@ class ExportService {
 								row << contact.value.get(fieldKey)
 							else row << ' '
 						}
+						/*
 						else {
 							if(a.hasProperty(fieldKey)) {
 								if(a[fieldKey]) {
@@ -616,6 +626,7 @@ class ExportService {
 								}
 							}
 						}
+						*/
 					}
 					rows << row
 				}
