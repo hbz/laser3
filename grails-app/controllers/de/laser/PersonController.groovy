@@ -345,7 +345,7 @@ class PersonController  {
                 params.list('content').eachWithIndex { content, i ->
                     if (content) {
                         RefdataValue rdvCT = RefdataValue.get(params.list('contentType.id')[i])
-                        RefdataValue contactLang = params['contactLang.id'] ? RefdataValue.get(params['contactLang.id']) : null
+                        RefdataValue contactLang = params['contactLang.id'][i] ? RefdataValue.get(params['contactLang.id'][i]) : null
                         if (RDStore.CCT_EMAIL == rdvCT) {
                             if (!formService.validateEmailAddress(content)) {
                                 flash.error = message(code: 'contact.create.email.error') as String
