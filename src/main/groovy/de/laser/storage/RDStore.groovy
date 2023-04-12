@@ -52,6 +52,8 @@ class RDStore {
 
     public final static RefdataValue COST_ITEM_ELEMENT_CONSORTIAL_PRICE = getRefdataValue('price: consortial price', RDConstants.COST_ITEM_ELEMENT)
 
+    public final static RefdataValue CUSTOMER_IDENTIFIER_TYPE_DEFAULT = getRefdataValue('Default', RDConstants.CUSTOMER_IDENTIFIER_TYPE)
+
     public final static RefdataValue CURRENCY_EUR   = getRefdataValue('EUR', RDConstants.CURRENCY)
     public final static RefdataValue CURRENCY_GBP   = getRefdataValue('GBP', RDConstants.CURRENCY)
     public final static RefdataValue CURRENCY_USD   = getRefdataValue('USD', RDConstants.CURRENCY)
@@ -64,8 +66,7 @@ class RDStore {
     public final static RefdataValue DOC_TYPE_NOTE              = getRefdataValue('Note', RDConstants.DOCUMENT_TYPE)
     public final static RefdataValue DOC_TYPE_ONIXPL            = getRefdataValue('ONIX-PL License', RDConstants.DOCUMENT_TYPE)
 
-    public final static RefdataValue IE_ACCESS_CURRENT      = getRefdataValue('Current', RDConstants.IE_ACCESS_STATUS)
-
+    public final static RefdataValue IE_ACCESS_CURRENT                      = getRefdataValue('Current', RDConstants.IE_ACCESS_STATUS)
     public final static RefdataValue IE_ACCEPT_STATUS_FIXED                 = getRefdataValue('Fixed', RDConstants.IE_ACCEPT_STATUS)
     public final static RefdataValue IE_ACCEPT_STATUS_UNDER_NEGOTIATION     = getRefdataValue('Under Negotiation', RDConstants.IE_ACCEPT_STATUS)
     public final static RefdataValue IE_ACCEPT_STATUS_UNDER_CONSIDERATION   = getRefdataValue('Under Consideration', RDConstants.IE_ACCEPT_STATUS)
@@ -79,6 +80,8 @@ class RDStore {
     public final static RefdataValue LICENSE_INTENDED       = getRefdataValue('Intended', RDConstants.LICENSE_STATUS)
     //public final static RefdataValue LICENSE_IN_PROGRESS  = getRefdataValue('In Progress', RDConstants.LICENSE_STATUS)
     public final static RefdataValue LICENSE_EXPIRED        = getRefdataValue('Retired', RDConstants.LICENSE_STATUS)
+
+    public final static RefdataValue LICENSE_OA_TYPE_EMPTY  = getRefdataValue('Empty', RDConstants.LICENSE_OA_TYPE)
 
     public final static RefdataValue LINKTYPE_FOLLOWS       = getRefdataValue('follows', RDConstants.LINK_TYPE)
     public final static RefdataValue LINKTYPE_LICENSE       = getRefdataValue('license', RDConstants.LINK_TYPE)
@@ -147,6 +150,39 @@ class RDStore {
     public final static RefdataValue PLATFORM_STATUS_DELETED    = getRefdataValue('Deleted', RDConstants.PLATFORM_STATUS)
     public final static RefdataValue PLATFORM_STATUS_REMOVED    = getRefdataValue('Removed', RDConstants.PLATFORM_STATUS)
 
+    public final static RefdataValue PRS_FUNC_CONTACT_PRS               = getRefdataValue('Contact Person', RDConstants.PERSON_FUNCTION)
+    public final static RefdataValue PRS_FUNC_FC_BILLING_ADDRESS        = getRefdataValue('Functional Contact Billing Adress', RDConstants.PERSON_FUNCTION)
+    public final static RefdataValue PRS_FUNC_FC_DELIVERY_ADDRESS       = getRefdataValue('Functional Contact Delivery Address', RDConstants.PERSON_FUNCTION)
+    public final static RefdataValue PRS_FUNC_FC_LEGAL_PATRON_ADDRESS   = getRefdataValue('Functional Contact Legal Patron Address', RDConstants.PERSON_FUNCTION)
+    public final static RefdataValue PRS_FUNC_FC_LIBRARY_ADDRESS        = getRefdataValue('Functional Contact Library Address', RDConstants.PERSON_FUNCTION)
+    public final static RefdataValue PRS_FUNC_FC_POSTAL_ADDRESS         = getRefdataValue('Functional Contact Postal Address', RDConstants.PERSON_FUNCTION)
+    public final static RefdataValue PRS_FUNC_GASCO_CONTACT             = getRefdataValue('GASCO-Contact', RDConstants.PERSON_FUNCTION)
+    public final static RefdataValue PRS_FUNC_GENERAL_CONTACT_PRS       = getRefdataValue('General contact person', RDConstants.PERSON_FUNCTION)
+    public final static RefdataValue PRS_FUNC_RESPONSIBLE_ADMIN         = getRefdataValue('Responsible Admin', RDConstants.PERSON_FUNCTION)
+    public final static RefdataValue PRS_FUNC_SERVICE_SUPPORT           = getRefdataValue('Service Support', RDConstants.PERSON_FUNCTION)
+    public final static RefdataValue PRS_FUNC_TECHNICAL_SUPPORT         = getRefdataValue('Technical Support', RDConstants.PERSON_FUNCTION)
+    public final static RefdataValue PRS_FUNC_METADATA                  = getRefdataValue('Metadata', RDConstants.PERSON_FUNCTION)
+    public final static RefdataValue PRS_FUNC_OA_CONTACT                = getRefdataValue('OA contact', RDConstants.PERSON_FUNCTION)
+    public final static RefdataValue PRS_FUNC_CUSTOMER_SERVICE          = getRefdataValue('Customer Service', RDConstants.PERSON_FUNCTION)
+    public final static RefdataValue PRS_FUNC_SALES_MARKETING           = getRefdataValue('Sales and Marketing', RDConstants.PERSON_FUNCTION)
+    public final static RefdataValue PRS_FUNC_TRAINING                  = getRefdataValue('Training', RDConstants.PERSON_FUNCTION)
+
+    public final static RefdataValue PRS_POS_ACCOUNT        = getRefdataValue('Account Manager', RDConstants.PERSON_POSITION)
+    public final static RefdataValue PRS_POS_BBL            = getRefdataValue('Bereichsbibliotheksleitung', RDConstants.PERSON_POSITION)
+    public final static RefdataValue PRS_POS_DIREKTION      = getRefdataValue('Direktion', RDConstants.PERSON_POSITION)
+    public final static RefdataValue PRS_POS_DIREKTION_ASS  = getRefdataValue('Direktionsassistenz', RDConstants.PERSON_POSITION)
+    public final static RefdataValue PRS_POS_EA             = getRefdataValue('Erwerbungsabteilung', RDConstants.PERSON_POSITION)
+    public final static RefdataValue PRS_POS_EL             = getRefdataValue('Erwerbungsleitung', RDConstants.PERSON_POSITION)
+    public final static RefdataValue PRS_POS_FACHREFERAT    = getRefdataValue('Fachreferat', RDConstants.PERSON_POSITION)
+    public final static RefdataValue PRS_POS_HEAD           = getRefdataValue('Head Access Services', RDConstants.PERSON_POSITION)
+    public final static RefdataValue PRS_POS_LD             = getRefdataValue('Library Director', RDConstants.PERSON_POSITION)
+    public final static RefdataValue PRS_POS_MB             = getRefdataValue('Medienbearbeitung', RDConstants.PERSON_POSITION)
+    public final static RefdataValue PRS_POS_RB             = getRefdataValue('Rechnungsbearbeitung', RDConstants.PERSON_POSITION)
+    public final static RefdataValue PRS_POS_SD             = getRefdataValue('Sales Director', RDConstants.PERSON_POSITION)
+    public final static RefdataValue PRS_POS_SS             = getRefdataValue('Sales Support', RDConstants.PERSON_POSITION)
+    public final static RefdataValue PRS_POS_TS             = getRefdataValue('Technical Support', RDConstants.PERSON_POSITION)
+    public final static RefdataValue PRS_POS_ZA             = getRefdataValue('Zeitschriftenabteilung', RDConstants.PERSON_POSITION)
+
     public final static RefdataValue PRS_RESP_SPEC_LIC_EDITOR   = getRefdataValue('Specific license editor', RDConstants.PERSON_RESPONSIBILITY)
     public final static RefdataValue PRS_RESP_SPEC_PKG_EDITOR   = getRefdataValue('Specific package editor', RDConstants.PERSON_RESPONSIBILITY)
     public final static RefdataValue PRS_RESP_SPEC_SUB_EDITOR   = getRefdataValue('Specific subscription editor', RDConstants.PERSON_RESPONSIBILITY)
@@ -161,8 +197,8 @@ class RDStore {
     public final static RefdataValue READER_NUMBER_FTE               = getRefdataValue('FTE', RDConstants.NUMBER_TYPE)
 
     public final static RefdataValue SHARE_CONF_ALL                     = getRefdataValue('everyone', RDConstants.SHARE_CONFIGURATION)
-    public final static RefdataValue SHARE_CONF_UPLOADER_ORG            = getRefdataValue('only for author organisation', RDConstants.SHARE_CONFIGURATION) //maps to key, value is correct!
-    public final static RefdataValue SHARE_CONF_UPLOADER_AND_TARGET     = getRefdataValue('only for author and target organisation', RDConstants.SHARE_CONFIGURATION) //maps to key, value is correct!
+    public final static RefdataValue SHARE_CONF_UPLOADER_ORG            = getRefdataValue('only for author organisation', RDConstants.SHARE_CONFIGURATION)
+    public final static RefdataValue SHARE_CONF_UPLOADER_AND_TARGET     = getRefdataValue('only for author and target organisation', RDConstants.SHARE_CONFIGURATION)
     public final static RefdataValue SHARE_CONF_CONSORTIUM              = getRefdataValue('only for consortia members', RDConstants.SHARE_CONFIGURATION)
 
     public final static RefdataValue SUBSCRIPTION_CURRENT           = getRefdataValue('Current', RDConstants.SUBSCRIPTION_STATUS)
@@ -198,7 +234,13 @@ class RDStore {
     public final static RefdataValue TASK_STATUS_DONE            = getRefdataValue('Done', RDConstants.TASK_STATUS)
     public final static RefdataValue TASK_STATUS_DEFERRED        = getRefdataValue('Deferred', RDConstants.TASK_STATUS)
 
-    public final static RefdataValue TAX_REVERSE_CHARGE     = getRefdataValue('reverse charge', RDConstants.TAX_TYPE)
+    public final static RefdataValue TAX_TYPE_NOT_APPLICABLE    = getRefdataValue('not applicable', RDConstants.TAX_TYPE)
+    public final static RefdataValue TAX_TYPE_NOT_TAXABLE       = getRefdataValue('not taxable', RDConstants.TAX_TYPE)
+    public final static RefdataValue TAX_TYPE_REVERSE_CHARGE    = getRefdataValue('reverse charge', RDConstants.TAX_TYPE)
+    public final static RefdataValue TAX_TYPE_TAXABLE           = getRefdataValue('taxable', RDConstants.TAX_TYPE)
+    public final static RefdataValue TAX_TYPE_TAXABLE_EXEMPT    = getRefdataValue('taxable tax-exempt', RDConstants.TAX_TYPE)
+    public final static RefdataValue TAX_TYPE_TAX_CONTAINED_7   = getRefdataValue('tax contained 7', RDConstants.TAX_TYPE)
+    public final static RefdataValue TAX_TYPE_TAX_CONTAINED_19  = getRefdataValue('tax contained 19', RDConstants.TAX_TYPE)
 
     public final static RefdataValue TITLE_TYPE_EBOOK       = getRefdataValue('Book', RDConstants.TITLE_MEDIUM)
     public final static RefdataValue TITLE_TYPE_JOURNAL     = getRefdataValue('Journal', RDConstants.TITLE_MEDIUM)
@@ -219,38 +261,7 @@ class RDStore {
     public final static RefdataValue TIPP_STATUS_UNKNOWN            = getRefdataValue('Unknown', RDConstants.TIPP_STATUS)
     public final static RefdataValue TIPP_STATUS_DELETED            = getRefdataValue('Deleted',  RDConstants.TIPP_STATUS)
 
-    public final static RefdataValue PRS_FUNC_CONTACT_PRS               = getRefdataValue('Contact Person', RDConstants.PERSON_FUNCTION)
-    public final static RefdataValue PRS_FUNC_FC_BILLING_ADDRESS        = getRefdataValue('Functional Contact Billing Adress', RDConstants.PERSON_FUNCTION)
-    public final static RefdataValue PRS_FUNC_FC_DELIVERY_ADDRESS       = getRefdataValue('Functional Contact Delivery Address', RDConstants.PERSON_FUNCTION)
-    public final static RefdataValue PRS_FUNC_FC_LEGAL_PATRON_ADDRESS   = getRefdataValue('Functional Contact Legal Patron Address', RDConstants.PERSON_FUNCTION)
-    public final static RefdataValue PRS_FUNC_FC_LIBRARY_ADDRESS        = getRefdataValue('Functional Contact Library Address', RDConstants.PERSON_FUNCTION)
-    public final static RefdataValue PRS_FUNC_FC_POSTAL_ADDRESS         = getRefdataValue('Functional Contact Postal Address', RDConstants.PERSON_FUNCTION)
-    public final static RefdataValue PRS_FUNC_GASCO_CONTACT             = getRefdataValue('GASCO-Contact', RDConstants.PERSON_FUNCTION)
-    public final static RefdataValue PRS_FUNC_GENERAL_CONTACT_PRS       = getRefdataValue('General contact person', RDConstants.PERSON_FUNCTION)
-    public final static RefdataValue PRS_FUNC_RESPONSIBLE_ADMIN         = getRefdataValue('Responsible Admin', RDConstants.PERSON_FUNCTION)
-    public final static RefdataValue PRS_FUNC_SERVICE_SUPPORT           = getRefdataValue('Service Support', RDConstants.PERSON_FUNCTION)
-    public final static RefdataValue PRS_FUNC_TECHNICAL_SUPPORT         = getRefdataValue('Technical Support', RDConstants.PERSON_FUNCTION)
-    public final static RefdataValue PRS_FUNC_METADATA                  = getRefdataValue('Metadata', RDConstants.PERSON_FUNCTION)
-    public final static RefdataValue PRS_FUNC_OA_CONTACT                = getRefdataValue('OA contact', RDConstants.PERSON_FUNCTION)
-    public final static RefdataValue PRS_FUNC_CUSTOMER_SERVICE          = getRefdataValue('Customer Service', RDConstants.PERSON_FUNCTION)
-    public final static RefdataValue PRS_FUNC_SALES_MARKETING           = getRefdataValue('Sales and Marketing', RDConstants.PERSON_FUNCTION)
-    public final static RefdataValue PRS_FUNC_TRAINING                  = getRefdataValue('Training', RDConstants.PERSON_FUNCTION)
-
-    public final static RefdataValue PRS_POS_ACCOUNT        = getRefdataValue('Account Manager', RDConstants.PERSON_POSITION)
-    public final static RefdataValue PRS_POS_BBL            = getRefdataValue('Bereichsbibliotheksleitung', RDConstants.PERSON_POSITION)
-    public final static RefdataValue PRS_POS_DIREKTION      = getRefdataValue('Direktion', RDConstants.PERSON_POSITION)
-    public final static RefdataValue PRS_POS_DIREKTION_ASS  = getRefdataValue('Direktionsassistenz', RDConstants.PERSON_POSITION)
-    public final static RefdataValue PRS_POS_EA             = getRefdataValue('Erwerbungsabteilung', RDConstants.PERSON_POSITION)
-    public final static RefdataValue PRS_POS_EL             = getRefdataValue('Erwerbungsleitung', RDConstants.PERSON_POSITION)
-    public final static RefdataValue PRS_POS_FACHREFERAT    = getRefdataValue('Fachreferat', RDConstants.PERSON_POSITION)
-    public final static RefdataValue PRS_POS_HEAD           = getRefdataValue('Head Access Services', RDConstants.PERSON_POSITION)
-    public final static RefdataValue PRS_POS_LD             = getRefdataValue('Library Director', RDConstants.PERSON_POSITION)
-    public final static RefdataValue PRS_POS_MB             = getRefdataValue('Medienbearbeitung', RDConstants.PERSON_POSITION)
-    public final static RefdataValue PRS_POS_RB             = getRefdataValue('Rechnungsbearbeitung', RDConstants.PERSON_POSITION)
-    public final static RefdataValue PRS_POS_SD             = getRefdataValue('Sales Director', RDConstants.PERSON_POSITION)
-    public final static RefdataValue PRS_POS_SS             = getRefdataValue('Sales Support', RDConstants.PERSON_POSITION)
-    public final static RefdataValue PRS_POS_TS             = getRefdataValue('Technical Support', RDConstants.PERSON_POSITION)
-    public final static RefdataValue PRS_POS_ZA             = getRefdataValue('Zeitschriftenabteilung', RDConstants.PERSON_POSITION)
+    public final static RefdataValue US_DASHBOARD_TAB_DUE_DATES = getRefdataValue('Due Dates', RDConstants.USER_SETTING_DASHBOARD_TAB)
 
     //public final static RefdataValue WF_CONDITION_STATUS_OPEN    = getRefdataValue('open', RDConstants.WF_CONDITION_STATUS)
     //public final static RefdataValue WF_CONDITION_STATUS_DONE    = getRefdataValue('done', RDConstants.WF_CONDITION_STATUS)

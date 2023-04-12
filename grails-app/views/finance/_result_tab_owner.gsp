@@ -119,7 +119,7 @@
                             ${ci.taxKey.taxType.getI10n("value")}
                         </g:elseif>
                         <g:elseif test="${ci.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE}">
-                            (${RDStore.TAX_REVERSE_CHARGE.getI10n("value")})
+                            (${RDStore.TAX_TYPE_REVERSE_CHARGE.getI10n("value")})
                         </g:elseif>
                     </td>
                     <td>
@@ -133,7 +133,7 @@
                             ${ci.taxKey.taxType.getI10n("value")}
                         </g:elseif>
                         <g:elseif test="${ci.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE}">
-                            (${RDStore.TAX_REVERSE_CHARGE.getI10n("value")})
+                            (${RDStore.TAX_TYPE_REVERSE_CHARGE.getI10n("value")})
                         </g:elseif>
                     </td>
                     <td>

@@ -106,8 +106,10 @@ class MyInstitutionController  {
      * The landing page after login; this is also the call when the home button is clicked
      * @return the {@link #dashboard()} view
      */
-    @DebugInfo(test='hasCtxAffiliation_or_ROLEADMIN("INST_USER")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_USER") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'])
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+    })
     def index() {
         redirect(action:'dashboard')
     }
@@ -116,9 +118,9 @@ class MyInstitutionController  {
      * Call for the reporting module
      * @return the reporting entry view
      */
-    @DebugInfo(perm=CustomerTypeService.PERMS_PRO, affil="INST_USER")
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_PRO, 'INST_USER'])
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER")
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_USER')
     })
     def reporting() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -322,8 +324,10 @@ class MyInstitutionController  {
      * query; licenses without a subscription may get lost if there is no subscription linked to it!
      * @return the license list view
      */
-    @DebugInfo(test='hasCtxAffiliation_or_ROLEADMIN("INST_USER")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_USER") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'])
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+    })
     def currentLicenses() {
 
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -337,7 +341,7 @@ class MyInstitutionController  {
 		Profiler prf = new Profiler()
 		prf.setBenchmark('init')
 
-        result.is_inst_admin = accessService.checkMinUserOrgRole_and_CtxOrg(result.user, result.institution, 'INST_ADM')
+        result.is_inst_admin = userService.checkAffiliationAndCtxOrg(result.user, result.institution, 'INST_ADM')
 
         Date date_restriction = null
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
@@ -652,9 +656,9 @@ class MyInstitutionController  {
      * Call to create a new license
      * @return the form view to enter the new license parameters
      */
-    @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_EDITOR")
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR'])
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_EDITOR")
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')
     })
     def emptyLicense() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -681,7 +685,7 @@ class MyInstitutionController  {
 
         result.defaultEndYear = sdf.format(cal.getTime())
 
-        result.is_inst_admin = accessService.checkMinUserOrgRole_and_CtxOrg(result.user, result.institution, 'INST_EDITOR')
+        result.is_inst_admin = userService.checkAffiliationAndCtxOrg(result.user, result.institution, 'INST_EDITOR')
 
         result.licenses = [] // ERMS-2431
         result.numLicenses = 0
@@ -698,8 +702,10 @@ class MyInstitutionController  {
      * Creates a new license based on the parameters submitted
      * @return the license details view ({@link LicenseController#show()}) of the new license record
      */
-    @DebugInfo(test='hasCtxAffiliation_or_ROLEADMIN("INST_USER")', wtc = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_USER") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'], wtc = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+    })
     def processEmptyLicense() {
         License.withTransaction { TransactionStatus ts ->
             User user = contextService.getUser()
@@ -713,7 +719,7 @@ class MyInstitutionController  {
             params.asOrgType = params.asOrgType ? [params.asOrgType] : defaultOrgRoleType
 
 
-            if (! accessService.checkMinUserOrgRole_and_CtxOrg(user, org, 'INST_EDITOR')) {
+            if (! userService.checkAffiliationAndCtxOrg(user, org, 'INST_EDITOR')) {
                 flash.error = message(code:'myinst.error.noAdmin', args:[org.name]) as String
                 response.sendError(HttpStatus.SC_FORBIDDEN)
                 // render(status: '403', text:"You do not have permission to access ${org.name}. Please request access on the profile page");
@@ -796,8 +802,10 @@ class MyInstitutionController  {
      * The list results may be filtered with filter parameters
      * @return a list of matching {@link Org} records, as html or as export pipe (Excel / CSV)
      */
-    @DebugInfo(test='hasCtxAffiliation_or_ROLEADMIN("INST_USER")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_USER") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'])
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+    })
     def currentProviders() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 		Profiler prf = new Profiler()
@@ -921,8 +929,10 @@ class MyInstitutionController  {
      * Default filter setting is status: current or with perpetual access
      * @return a (filtered) list of subscriptions, either as direct html output or as export stream (CSV, Excel)
      */
-    @DebugInfo(test='hasCtxAffiliation_or_ROLEADMIN("INST_USER")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_USER") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'])
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+    })
     def currentSubscriptions() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
@@ -1197,9 +1207,9 @@ class MyInstitutionController  {
      *     <li>customerIdentifiers</li>
      * </ol>
      */
-    @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_USER")
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER'])
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_USER")
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER')
     })
     def subscriptionsManagement() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -1242,8 +1252,10 @@ class MyInstitutionController  {
      * Connects the context subscription with the given pair
      * @return void, redirects to referer
      */
-    @DebugInfo(test='hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'])
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+    })
     def linkObjects() {
         Map<String,Object> ctrlResult = linksGenerationService.createOrUpdateLink(params)
         if(ctrlResult.status == LinksGenerationService.STATUS_ERROR)
@@ -1255,8 +1267,10 @@ class MyInstitutionController  {
      * Removes the given link
      * @return void, redirects to referer
      */
-    @DebugInfo(test='hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'])
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+    })
     def unlinkObjects() {
         linksGenerationService.deleteLink(params.oid)
         redirect(url: request.getHeader('referer'))
@@ -1268,9 +1282,9 @@ class MyInstitutionController  {
      * @see Doc
      * @see DocContext
      */
-    @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_USER")
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER'])
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_USER")
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER')
     })
     Map documents() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -1286,8 +1300,10 @@ class MyInstitutionController  {
      * @return the document table view ({@link #documents()})
      * @see DocstoreService#unifiedDeleteDocuments()
      */
-    @DebugInfo(test='hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'])
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+    })
     def deleteDocuments() {
         log.debug("deleteDocuments ${params}");
 
@@ -1309,8 +1325,10 @@ class MyInstitutionController  {
      * @see Platform
      * @see IssueEntitlement
      */
-    @DebugInfo(test='hasCtxAffiliation_or_ROLEADMIN("INST_USER")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_USER") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'])
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+    })
     def currentTitles() {
 
         Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -1512,8 +1530,10 @@ class MyInstitutionController  {
      * @see SubscriptionPackage
      * @see Package
      */
-    @DebugInfo(test='hasCtxAffiliation_or_ROLEADMIN("INST_USER")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_USER") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'])
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+    })
     def currentPackages() {
 
         Map<String, Object> result = [:]
@@ -1618,8 +1638,10 @@ class MyInstitutionController  {
      * The information is grouped in tabs where information is being preloaded (except changes, notifications and surveys)
      * @return the dashboard view with the prefilled tabs
      */
-    @DebugInfo(test = 'hasCtxAffiliation_or_ROLEADMIN("INST_USER")', ctrlService = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_USER") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+    })
     def dashboard() {
 
         Map<String, Object> ctrlResult = myInstitutionControllerService.dashboard(this, params)
@@ -1637,8 +1659,10 @@ class MyInstitutionController  {
      * Opens the modal to create a new task
      * @return the task creation modal
      */
-    @DebugInfo(test = 'hasCtxAffiliation_or_ROLEADMIN("INST_USER")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_USER") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'])
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+    })
     def modal_create() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
@@ -1659,8 +1683,10 @@ class MyInstitutionController  {
      * @return a list of changes to be accepted or rejected
      * @see PendingChange
      */
-    @DebugInfo(test = 'hasCtxAffiliation_or_ROLEADMIN("INST_USER")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_USER") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'])
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+    })
     def changes() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
@@ -1678,7 +1704,7 @@ class MyInstitutionController  {
      * Call for the finance import starting page; the mappings are being explained here and an example sheet for submitting data to import
      * @return the finance import entry view
      */
-    @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
     @Secured(closure = {
         ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
@@ -1695,7 +1721,7 @@ class MyInstitutionController  {
      * @see Subscription
      * @see CostItem
      */
-    @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
     @Secured(closure = {
         ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
@@ -1733,7 +1759,7 @@ class MyInstitutionController  {
      * processing whether the imported data is read correctly or not
      * @return the control view with the import preparation result
      */
-    @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN", wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
         ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
@@ -1770,7 +1796,7 @@ class MyInstitutionController  {
      * Call for the subscription import starting page; the mappings are being explained here and an example sheet for submitting data to import
      * @return the subscription import entry view
      */
-    @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
     @Secured(closure = {
         ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
@@ -1787,7 +1813,7 @@ class MyInstitutionController  {
      * processing whether the imported data is read correctly or not
      * @return the control view with the import preparation result
      */
-    @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN", wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
         ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
@@ -1825,7 +1851,7 @@ class MyInstitutionController  {
      * Default filter setting is current year
      * @return a (filtered) list of surveys, either displayed as html or returned as Excel worksheet
      */
-    @DebugInfo(perm=CustomerTypeService.ORG_INST_BASIC, affil="INST_USER", specRole="ROLE_ADMIN")
+    @DebugInfo(ctxInstUserCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_INST_BASIC])
     @Secured(closure = {
         ctx.accessService.ctxInstUserCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )
     })
@@ -1918,7 +1944,7 @@ class MyInstitutionController  {
      * The view may be rendered as html or as Excel worksheet to download
      * @return the details view of the given survey
      */
-    @DebugInfo(perm=CustomerTypeService.ORG_INST_BASIC, affil="INST_USER", specRole="ROLE_ADMIN")
+    @DebugInfo(ctxInstUserCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_INST_BASIC])
     @Secured(closure = {
         ctx.accessService.ctxInstUserCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )
     })
@@ -2043,7 +2069,7 @@ class MyInstitutionController  {
      * pass definitively into the holding of the next year's subscription
      * @return void, returns to the survey details page ({@link #surveyInfos()})
      */
-    @DebugInfo(perm=CustomerTypeService.ORG_INST_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_INST_BASIC])
     @Secured(closure = {
         ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )
     })
@@ -2140,7 +2166,7 @@ class MyInstitutionController  {
         redirect(url: request.getHeader('referer'))
     }
 
-    @DebugInfo(perm=CustomerTypeService.ORG_INST_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_INST_BASIC])
     @Secured(closure = {
         ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )
     })
@@ -2235,8 +2261,10 @@ class MyInstitutionController  {
      * @see User
      * @see de.laser.auth.UserOrgRole
      */
-    @DebugInfo(test = 'hasCtxAffiliation_or_ROLEADMIN("INST_ADM")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_ADM") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_ADM'])
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
+    })
     def users() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
@@ -2273,8 +2301,10 @@ class MyInstitutionController  {
      * Call to delete a given user
      * @return the user deletion page where the details of the given user are being enumerated
      */
-    @DebugInfo(test = 'hasCtxAffiliation_or_ROLEADMIN("INST_ADM")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_ADM") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_ADM'])
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
+    })
     def deleteUser() {
         Map<String, Object> result = userControllerService.getResultGenericsERMS3067(params)
 
@@ -2320,8 +2350,10 @@ class MyInstitutionController  {
      * Call to edit the given user
      * @return the user details view for editing the profile
      */
-    @DebugInfo(test = 'hasCtxAffiliation_or_ROLEADMIN("INST_ADM")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_ADM") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_ADM'])
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
+    })
     def editUser() {
         Map<String, Object> result = userControllerService.getResultGenericsERMS3067(params)
 
@@ -2342,8 +2374,10 @@ class MyInstitutionController  {
      * Call to create a new user for the context institution
      * @return the form to enter the new user's parameters
      */
-    @DebugInfo(test = 'hasCtxAffiliation_or_ROLEADMIN("INST_ADM")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_ADM") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_ADM'])
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
+    })
     def createUser() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
         result.orgInstance = result.institution
@@ -2358,8 +2392,10 @@ class MyInstitutionController  {
      * Processes the submitted parameters and creates a new user for the context institution
      * @return a redirect to the profile edit page on success, back to the user creation page otherwise
      */
-    @DebugInfo(test = 'hasCtxAffiliation_or_ROLEADMIN("INST_ADM")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_ADM") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_ADM'])
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
+    })
     def processCreateUser() {
         def success = userService.addNewUser(params,flash)
         //despite IntelliJ's warnings, success may be an array other than the boolean true
@@ -2380,8 +2416,10 @@ class MyInstitutionController  {
      * @return the user editing view
      * @see de.laser.auth.UserOrgRole
      */
-    @DebugInfo(test = 'hasCtxAffiliation_or_ROLEADMIN("INST_ADM")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_ADM") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_ADM'])
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
+    })
     def addAffiliation() {
         Map<String, Object> result = userControllerService.getResultGenericsERMS3067(params)
         if (! result.editable) {
@@ -2397,9 +2435,9 @@ class MyInstitutionController  {
      * Opens the internal address book for the context institution
      * @return a list view of the institution-internal contacts
      */
-    @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_USER")
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER'])
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_USER")
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER')
     })
     def addressbook() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -2500,7 +2538,7 @@ class MyInstitutionController  {
      * @see BudgetCode
      * @see CostItemGroup
      */
-    @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_USER", specRole="ROLE_ADMIN", wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(ctxInstUserCheckPerm_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
         ctx.accessService.ctxInstUserCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
@@ -2558,8 +2596,10 @@ class MyInstitutionController  {
      * @return a table view of tasks
      * @see Task
      */
-    @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_USER", wtc = DebugInfo.IN_BETWEEN)
-    @Secured(closure = { ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_USER") })
+    @DebugInfo(ctxPermAffiliation =[CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER'], wtc = DebugInfo.IN_BETWEEN)
+    @Secured(closure = {
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER')
+    })
     def tasks() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
@@ -2593,7 +2633,7 @@ class MyInstitutionController  {
      * Call for listing institutions eligible to be attached to or detached from the context consortium
      * @return a list of institutions
      */
-    @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_BASIC, affil="INST_EDITOR",specRole="ROLE_ADMIN", wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC], wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
         ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
@@ -2637,8 +2677,10 @@ class MyInstitutionController  {
         }
     }
 
-    @DebugInfo(perm=CustomerTypeService.PERMS_PRO, affil="INST_USER", ctrlService = DebugInfo.IN_BETWEEN)
-    @Secured(closure = { ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER") })
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_PRO, 'INST_USER'], ctrlService = DebugInfo.IN_BETWEEN)
+    @Secured(closure = {
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_USER')
+    })
     def currentWorkflows() {
 
         SessionCacheWrapper cache = contextService.getSessionCache()
@@ -2752,9 +2794,9 @@ class MyInstitutionController  {
      * Call for the overview of current workflows for the context institution
      * @return the entry view for the workflows, loading current cache settings
      */
-    @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_PRO, affil="INST_USER", ctrlService = DebugInfo.IN_BETWEEN)
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.ORG_CONSORTIUM_PRO, 'INST_USER'], ctrlService = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_PRO, "INST_USER")
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_PRO, 'INST_USER')
     })
     @Deprecated
     def currentWorkflowsOld() {
@@ -2987,7 +3029,7 @@ class MyInstitutionController  {
      * The result may be filtered by organisational and subscription parameters
      * @return the list of consortial member institutions
      */
-    @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_BASIC, affil="INST_USER", specRole="ROLE_ADMIN", wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(ctxInstUserCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC], wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
         ctx.accessService.ctxInstUserCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
@@ -3182,7 +3224,7 @@ join sub.orgRelations or_sub where
      * @see Subscription
      * @see Org
      */
-    @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_BASIC, affil="INST_USER", specRole="ROLE_ADMIN")
+    @DebugInfo(ctxInstUserCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC])
     @Secured(closure = {
         ctx.accessService.ctxInstUserCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
@@ -3588,7 +3630,7 @@ join sub.orgRelations or_sub where
      * The result may be displayed as HTML or exported as Excel worksheet
      * @return a list of surveys the context consortium set up and the given institution is participating at
      */
-    @DebugInfo(perm=CustomerTypeService.ORG_CONSORTIUM_PRO, affil="INST_USER", specRole="ROLE_ADMIN")
+    @DebugInfo(ctxInstUserCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO])
     @Secured(closure = {
         ctx.accessService.ctxInstUserCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
@@ -3653,9 +3695,9 @@ join sub.orgRelations or_sub where
      * editing may be done on the given property group
      * @return in every case, the list of property groups; the list may be exported as Excel with the usage data as well, then, an Excel worksheet is being returned
      */
-    @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_USER", wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER'], wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_USER")
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER')
     })
     def managePropertyGroups() {
         Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -3769,9 +3811,9 @@ join sub.orgRelations or_sub where
      * Call to display the current usage for the given property in the system
      * @return a form view of the given property definition with their usage in the context institution's objects
      */
-    @DebugInfo(perm = CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil = "INST_EDITOR")
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR'])
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_EDITOR")
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')
     })
     def manageProperties() {
         Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -3872,9 +3914,9 @@ join sub.orgRelations or_sub where
      * Call to process a bulk assign of a property definition to a given set of objects
      * @return the updated view with the assigned property definitions
      */
-    @DebugInfo(perm = CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil = "INST_EDITOR", wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR'], wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_EDITOR")
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')
     })
     def processManageProperties() {
         PropertyDefinition.withTransaction {
@@ -3985,9 +4027,9 @@ join sub.orgRelations or_sub where
      * To add a custom property definition (which is usable for every institution), the route is {@link de.laser.ajax.AjaxController#addCustomPropertyType()}
      * (but consider the annotation there!)
      */
-    @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_USER", wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER'], wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_USER")
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER')
     })
     def managePrivatePropertyDefinitions() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -4073,9 +4115,9 @@ join sub.orgRelations or_sub where
      * @return a read-only list of public / general property definitions with the usages of objects owned by the context institution
      * @see AdminController#managePropertyDefinitions()
      */
-    @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_USER", wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER'], wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, "INST_USER")
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER')
     })
     Object managePropertyDefinitions() {
         Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -4215,8 +4257,10 @@ join sub.orgRelations or_sub where
      * Call to open the license copy view
      * @return the entry point view of the license copy process
      */
-    @DebugInfo(test='hasCtxAffiliation_or_ROLEADMIN("INST_USER")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_USER") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'])
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+    })
     def copyLicense() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
@@ -4225,7 +4269,7 @@ join sub.orgRelations or_sub where
             License license = License.get(params.id)
             boolean isEditable = license.isEditableBy(result.user)
 
-            if (! (accessService.checkMinUserOrgRole_and_CtxOrg(result.user, result.institution, 'INST_EDITOR'))) {
+            if (! (userService.checkAffiliationAndCtxOrg(result.user, result.institution, 'INST_EDITOR'))) {
                 flash.error = message(code:'license.permissionInfo.noPerms') as String
                 response.sendError(HttpStatus.SC_FORBIDDEN)
                 return;

@@ -429,13 +429,52 @@ class YodaController {
 
                         Annotation da = method.getAnnotation(DebugInfo)
                         if (da) {
+
                             mInfo.debug = [
+                                    specRole : da.specRole(),
+                                    affil    : da.affil(),
                                     perm     : da.perm(),
                                     type     : da.type(),
-                                    affil    : da.affil(),
-                                    specRole : da.specRole(),
                                     test     : da.test()
                             ]
+
+                            if (da.ctxPermAffiliation()) {
+                                mInfo.debug.test        = 'ctxPermAffiliation()' //  + da.ctxPermAffiliation().toList()
+                                mInfo.debug.perm        = da.ctxPermAffiliation().toList()[0]
+                                mInfo.debug.affil       = da.ctxPermAffiliation().toList()[1]
+                            }
+                            if (da.ctxInstUserCheckPerm_or_ROLEADMIN()) {
+                                mInfo.debug.test        = 'ctxInstUserCheckPerm_or_ROLEADMIN()' //  + da.ctxInstUserCheckPerm_or_ROLEADMIN().toList()
+                                mInfo.debug.perm        = da.ctxInstUserCheckPerm_or_ROLEADMIN().toList()[0]
+                                mInfo.debug.affil       = 'INST_USER'
+                                mInfo.debug.specRole    = 'ROLE_ADMIN'
+                            }
+                            if (da.ctxInstEditorCheckPerm_or_ROLEADMIN()) {
+                                mInfo.debug.test        = 'ctxInstEditorCheckPerm_or_ROLEADMIN()' //  + da.ctxInstEditorCheckPerm_or_ROLEADMIN().toList()
+                                mInfo.debug.perm        = da.ctxInstEditorCheckPerm_or_ROLEADMIN().toList()[0]
+                                mInfo.debug.affil       = 'INST_EDITOR'
+                                mInfo.debug.specRole    = 'ROLE_ADMIN'
+                            }
+                            if (da.ctxInstAdmCheckPerm_or_ROLEADMIN()) {
+                                mInfo.debug.test        = 'ctxInstAdmCheckPerm_or_ROLEADMIN()' //  + da.ctxInstAdmCheckPerm_or_ROLEADMIN().toList()
+                                mInfo.debug.perm        = da.ctxInstAdmCheckPerm_or_ROLEADMIN().toList()[0]
+                                mInfo.debug.affil       = 'INST_ADM'
+                                mInfo.debug.specRole    = 'ROLE_ADMIN'
+                            }
+                            if (da.ctxConsortiumCheckPermAffiliation_or_ROLEADMIN()) {
+                                mInfo.debug.test        = 'ctxConsortiumCheckPermAffiliation_or_ROLEADMIN()' //  + da.ctxConsortiumCheckPermAffiliation_or_ROLEADMIN().toList()
+                                mInfo.debug.perm        = da.ctxConsortiumCheckPermAffiliation_or_ROLEADMIN().toList()[0]
+                                mInfo.debug.affil       = da.ctxConsortiumCheckPermAffiliation_or_ROLEADMIN().toList()[1]
+                                mInfo.debug.type        = 'Consortium'
+                                mInfo.debug.specRole    = 'ROLE_ADMIN'
+                            }
+
+                            if (da.hasCtxAffiliation_or_ROLEADMIN()) {
+                                mInfo.debug.test        = 'hasCtxAffiliation_or_ROLEADMIN()' //  + da.hasCtxAffiliation_or_ROLEADMIN().toList()
+                                mInfo.debug.affil       = da.hasCtxAffiliation_or_ROLEADMIN().toList()[0]
+                                mInfo.debug.specRole    = 'ROLE_ADMIN'
+                            }
+
                             if (da.ctrlService()) {
                                 mInfo.ctrlService = da.ctrlService()
                                 if (da.ctrlService() == DebugInfo.WITH_TRANSACTION) {
@@ -940,7 +979,6 @@ class YodaController {
             indexInfo.countDB = FTControl.executeQuery(query)[0]
             result.indices << indexInfo
         }
-
             try {
                 esclient.close()
             }
@@ -1473,5 +1511,4 @@ class YodaController {
 
         redirect action: 'dashboard'
     }
-
 }

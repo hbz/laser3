@@ -54,7 +54,7 @@ class FilterService {
             }
         }
         if (params.orgStatus) {
-            List selectedStatus = listReaderWrapper(params, 'orgStatus').collect { key -> Long.parseLong(key) }
+            List selectedStatus = listReaderWrapper(params, 'orgStatus').collect { key -> key instanceof String ? Long.parseLong(key) : key }
             query << "o.status.id in (:orgStatus)"
             queryParams.orgStatus = selectedStatus
         }
@@ -482,52 +482,6 @@ class FilterService {
         if(query.size() > 0)
             result.query = " and "+query.join(" and ")
         else result.query = ""
-        result.queryParams = queryParams
-        result
-    }
-
-    @Deprecated
-    Map<String,Object> getSurveyQueryConsortia(Map params, DateFormat sdFormat, Org contextOrg) {
-        Map result = [:]
-        List query = []
-        Map<String,Object> queryParams = [:]
-        if(params.name) {
-            query << "genfunc_filter_matcher(si.name, :name) = true"
-            queryParams << [name:"${params.name}"]
-        }
-        if(params.status) {
-            query << "si.status = :status"
-            queryParams << [status: RefdataValue.get(params.status)]
-        }
-        if(params.type) {
-            query << "si.type = :type"
-            queryParams << [type: RefdataValue.get(params.type)]
-        }
-        if (params.startDate && sdFormat) {
-            query << "si.startDate >= :startDate"
-            queryParams << [startDate : sdFormat.parse(params.startDate)]
-        }
-        if (params.endDate && sdFormat) {
-            query << "si.endDate <= :endDate"
-            queryParams << [endDate : sdFormat.parse(params.endDate)]
-        }
-
-        if (params.participant) {
-            query << "exists (select surConfig from SurveyConfig as surConfig where surConfig.surveyInfo = si and " +
-                    " exists (select surResult from SurveyResult as surResult where surResult.surveyConfig = surConfig and participant = :participant))"
-            queryParams << [participant : params.participant]
-        }
-
-        String defaultOrder = " order by " + (params.sort ?: " LOWER(si.name)") + " " + (params.order ?: "asc")
-
-        if (query.size() > 0) {
-            result.query = "from SurveyInfo si where si.owner = :contextOrg and " + query.join(" and ") + defaultOrder
-        } else {
-            result.query = "from SurveyInfo si where si.owner = :contextOrg" + defaultOrder
-        }
-        queryParams << [contextOrg : contextOrg]
-
-
         result.queryParams = queryParams
         result
     }

@@ -20,11 +20,12 @@ class CostConfigurationController {
     ContextService contextService
     FinanceService financeService
     GenericOIDService genericOIDService
+    UserService userService
 
     /**
      * Gets the current list of an institution's cost configurations
      */
-    @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_USER", specRole="ROLE_ADMIN")
+    @DebugInfo(ctxInstUserCheckPerm_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
     @Secured(closure = {
         ctx.accessService.ctxInstUserCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
@@ -43,7 +44,7 @@ class CostConfigurationController {
             }
         }
 
-        result.editable    =  accessService.checkMinUserOrgRole_and_CtxOrg(user, org, "INST_EDITOR")
+        result.editable = userService.checkAffiliationAndCtxOrg(user, org, 'INST_EDITOR')
         result.costItemElementConfigurations = costItemElementConfigurations
         result.costItemElements = costItemElements
         result.institution = org
@@ -54,7 +55,7 @@ class CostConfigurationController {
     /**
      * Opens the creation modal, filtering out those cost item elements for which a configuration already exists
      */
-    @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
     @Secured(closure = {
         ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
@@ -84,7 +85,7 @@ class CostConfigurationController {
      * Controller call for creating a new cost item element configuration
      * @return the list view
      */
-    @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
     @Secured(closure = {
         ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
@@ -97,7 +98,7 @@ class CostConfigurationController {
      * Controller call for deleting a cost item element configuration
      * @return the list view
      */
-    @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
     @Secured(closure = {
         ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
@@ -118,7 +119,7 @@ class CostConfigurationController {
      * the given cost item element configuration to each of them
      * @return the list view
      */
-    @DebugInfo(perm=CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
     @Secured(closure = {
         ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })

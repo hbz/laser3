@@ -157,7 +157,7 @@
                 </g:each>
             </div>
 
-                <g:if test="${fields.key == 'providerContacts' && contactSwitch == true}">
+                <g:if test="${fields.key.contains('Contacts') && contactSwitch == true}"><%--  --%>
 
                     <div class="inline fields" style="border-top:1px solid lightgrey; padding-top:1em;">%{-- tmp --}%
                         <div class="field">

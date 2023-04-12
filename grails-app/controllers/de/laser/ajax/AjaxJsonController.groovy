@@ -877,8 +877,10 @@ class AjaxJsonController {
      * Validation query; checks if the user with the given username exists
      * @return true if there is a {@link User} matching the given input query, false otherwise
      */
-    @DebugInfo(test = 'hasCtxAffiliation_or_ROLEADMIN("INST_ADM")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_ADM") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_ADM'])
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
+    })
     def checkExistingUser() {
         Map<String, Object> result = [result: false]
 
@@ -977,9 +979,9 @@ class AjaxJsonController {
      * Outputs a chart from the given report parameters
      * @return the template to output and the one of the results {@link de.laser.ReportingGlobalService#doChart(java.util.Map, grails.web.servlet.mvc.GrailsParameterMap)} or {@link de.laser.ReportingLocalService#doChart(java.util.Map, grails.web.servlet.mvc.GrailsParameterMap)}
      */
-    @DebugInfo(perm=CustomerTypeService.PERMS_PRO, affil="INST_USER")
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_PRO, 'INST_USER'])
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, "INST_USER")
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_USER')
     })
     def chart() {
         Map<String, Object> result = [:]

@@ -332,23 +332,6 @@ class SubscriptionControllerService {
         }
     }
 
-    @Deprecated
-    Map<String,Object> changes(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
-        if (!result) {
-            [result:null,status:STATUS_ERROR]
-        }
-        else {
-            SwissKnife.setPaginationParams(result, params, (User) result.user)
-            Map<String, Object> baseParams = [sub: result.subscription, stats: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED]]
-            Set<PendingChange> todoHistoryLines = PendingChange.executeQuery("select pc from PendingChange as pc where pc.subscription = :sub and pc.status in (:stats) order by pc.ts desc", baseParams)
-            result.todoHistoryLinesTotal = todoHistoryLines.size()
-            result.todoHistoryLines = todoHistoryLines.drop(result.offset).take(result.max)
-
-            [result:result,status:STATUS_OK]
-        }
-    }
-
     //--------------------------------------------- statistics section -----------------------------------------------------------
 
     /**
@@ -1318,7 +1301,7 @@ class SubscriptionControllerService {
                             }
                             if(params.customerIdentifier || params.requestorKey) {
                                 result.subscription.packages.each { SubscriptionPackage sp ->
-                                    CustomerIdentifier ci = new CustomerIdentifier(customer: cm, type: RefdataValue.getByValueAndCategory('Default', RDConstants.CUSTOMER_IDENTIFIER_TYPE), value: params.customerIdentifier, requestorKey: params.requestorKey, platform: sp.pkg.nominalPlatform, owner: result.institution, isPublic: true)
+                                    CustomerIdentifier ci = new CustomerIdentifier(customer: cm, type: RDStore.CUSTOMER_IDENTIFIER_TYPE_DEFAULT, value: params.customerIdentifier, requestorKey: params.requestorKey, platform: sp.pkg.nominalPlatform, owner: result.institution, isPublic: true)
                                     if(!ci.save())
                                         log.error(ci.errors.getAllErrors().toListString())
                                 }

@@ -7,7 +7,7 @@
     String documentMessage
     switch(ownobj.class.name) {
         case Org.class.name: documentMessage = "menu.my.documents"
-            editable = accessService.checkMinUserOrgRole_and_CtxOrg_or_ROLEADMIN(contextService.getUser(), contextOrg, 'INST_EDITOR')
+            editable = userService.checkAffiliationAndCtxOrg_or_ROLEADMIN(contextService.getUser(), contextOrg, 'INST_EDITOR')
             break
         default: documentMessage = "license.documents"
             break
@@ -99,7 +99,7 @@
                             </g:if>
 
                             <%-- 3 --%>
-                            <g:if test="${!(ownobj instanceof Org) && ownobj?.showUIShareButton() && accessService.checkMinUserOrgRole_and_CtxOrg(contextService.getUser(), docctx.owner.owner, 'INST_EDITOR')}">
+                            <g:if test="${!(ownobj instanceof Org) && ownobj?.showUIShareButton() && userService.checkAffiliationAndCtxOrg(contextService.getUser(), docctx.owner.owner, 'INST_EDITOR')}">
                                 <g:if test="${docctx?.isShared}">
                                     <span class="la-js-editmode-container">
                                         <ui:remoteLink class="ui icon green button la-modern-button js-no-wait-wheel la-popup-tooltip la-delay"
@@ -188,7 +188,7 @@
 %{--                                </div>--}%
 %{--                            </g:else>--}%
 %{--                            <%-- START Third Button --%>--}%
-%{--                            <g:if test="${!(ownobj instanceof Org) && ownobj?.showUIShareButton() && accessService.checkMinUserOrgRole_and_CtxOrg(contextService.getUser(), docctx.owner.owner, 'INST_EDITOR')}">--}%
+%{--                            <g:if test="${!(ownobj instanceof Org) && ownobj?.showUIShareButton() && userService.checkAffiliationAndCtxOrg(contextService.getUser(), docctx.owner.owner, 'INST_EDITOR')}">--}%
 %{--                                <g:if test="${docctx?.isShared}">--}%
 %{--                                    <span class="la-js-editmode-container">--}%
 %{--                                    <ui:remoteLink class="ui icon green button la-modern-button js-no-wait-wheel la-popup-tooltip la-delay"--}%

@@ -325,8 +325,10 @@ class PlatformController  {
      * @deprecated use {@link #dynamicApLink} instead
      */
     @Deprecated
-    @DebugInfo(test='hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'])
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+    })
     @Check404()
     def link() {
         Map<String, Object> result = [:]
@@ -358,8 +360,10 @@ class PlatformController  {
      * Call to link a platform to another access point
      * @return renders the available options in a modal
      */
-    @DebugInfo(test='hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN("INST_EDITOR") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'])
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+    })
     def dynamicApLink(){
         Map<String, Object> result = [:]
         Platform platformInstance = Platform.get(params.platform_id)
@@ -397,9 +401,9 @@ class PlatformController  {
      * Call to add a new derivation to the given platform
      * @return redirect to the referer
      */
-    @DebugInfo(perm=CustomerTypeService.PERMS_BASIC, affil="INST_EDITOR", ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_BASIC, 'INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_BASIC, "INST_EDITOR")
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_BASIC, 'INST_EDITOR')
     })
     def addDerivation() {
         Map<String,Object> ctrlResult = platformControllerService.addDerivation(params)
@@ -413,9 +417,9 @@ class PlatformController  {
      * Call to remove a new derivation to the given platform
      * @return redirect to the referer
      */
-    @DebugInfo(perm=CustomerTypeService.PERMS_BASIC, affil="INST_EDITOR", ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_BASIC, 'INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_BASIC, "INST_EDITOR")
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_BASIC, 'INST_EDITOR')
     })
     def removeDerivation() {
         Map<String,Object> ctrlResult = platformControllerService.removeDerivation(params)
@@ -426,9 +430,9 @@ class PlatformController  {
     }
 
     @Deprecated
-    @DebugInfo(perm=CustomerTypeService.PERMS_BASIC, affil="INST_EDITOR", ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_BASIC, 'INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_BASIC, "INST_EDITOR")
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_BASIC, 'INST_EDITOR')
     })
     def linkAccessPoint() {
         OrgAccessPoint apInstance
@@ -451,9 +455,9 @@ class PlatformController  {
     }
 
     @Deprecated
-    @DebugInfo(perm=CustomerTypeService.PERMS_BASIC, affil="INST_EDITOR", ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_BASIC, 'INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_BASIC, "INST_EDITOR")
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_BASIC, 'INST_EDITOR')
     })
     def removeAccessPoint() {
         Map<String,Object> ctrlResult = platformControllerService.removeAccessPoint(params)

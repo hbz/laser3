@@ -423,7 +423,7 @@ class DeletionService {
                     // ----- keep foreign object, change state
 
                     nonDeletedCosts.each{ tmp ->
-                        tmp.costItemStatus = RefdataValue.getByValueAndCategory('Deleted', RDConstants.COST_ITEM_STATUS)
+                        tmp.costItemStatus = RDStore.COST_ITEM_DELETED
                         tmp.sub = null
                         tmp.subPkg = null
                         tmp.issueEntitlement = null

@@ -2141,7 +2141,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         switch(rdCat) {
             case RDConstants.LICENSE_OA_TYPE:
                 openAccess.put('Blue OA', RefdataValue.getByValueAndCategory('Blue Open Access', RDConstants.LICENSE_OA_TYPE))
-                openAccess.put('Empty', RefdataValue.getByValueAndCategory('Empty', RDConstants.LICENSE_OA_TYPE))
+                openAccess.put('Empty', RDStore.LICENSE_OA_TYPE_EMPTY)
                 openAccess.put('Gold OA', RefdataValue.getByValueAndCategory('Gold Open Access', RDConstants.LICENSE_OA_TYPE))
                 openAccess.put('Green OA', RefdataValue.getByValueAndCategory('Green Open Access', RDConstants.LICENSE_OA_TYPE))
                 openAccess.put('Hybrid', RefdataValue.getByValueAndCategory('Hybrid', RDConstants.LICENSE_OA_TYPE))
