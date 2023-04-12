@@ -36,7 +36,7 @@
         </g:form>
     </ui:filter>
 
-    <g:form action="processAddMembers" params="${[id: params.id]}" controller="subscription" method="post" class="ui form">
+    <g:form action="processAddMembers" params="${[id: params.id]}" controller="subscription" method="post" class="ui form addMembers">
 
         <laser:render template="/templates/filter/orgFilterTable"
                   model="[propList         : propList,
@@ -147,8 +147,8 @@
                         </div>
                     </div>
                 </div>
-                <g:if test="${memberProperties}">
-                    <div class="ui field eight wide column">
+                <div class="ui field eight wide column">
+                    <g:if test="${memberProperties}">
                         <label><g:message code="subscription.properties.consortium"/></label>
                         <table class="ui table striped">
                             <g:each in="${memberProperties}" var="prop" status="i">
@@ -158,34 +158,44 @@
                                     <td>${prop.getI10n('name')}</td>
                                     <td>
                                         <g:if test="${prop.isIntegerType()}">
-                                            <input type="number" name="propValue${i}" placeholder="${message(code:'default.value.label')}"/>
+                                            <input type="number" name="propValue${i}" class="memberProperty" placeholder="${message(code:'default.value.label')}"/>
                                         </g:if>
                                         <g:if test="${prop.isBigDecimalType()}">
-                                            <input type="number" name="propValue${i}" step="0.001" placeholder="${message(code:'default.value.label')}"/>
+                                            <input type="number" name="propValue${i}" class="memberProperty" step="0.001" placeholder="${message(code:'default.value.label')}"/>
                                         </g:if>
                                         <g:elseif test="${prop.isDateType()}">
-                                            <input type="date" name="propValue${i}" placeholder="${message(code:'default.value.label')}"/>
+                                            <input type="date" name="propValue${i}" class="memberProperty" placeholder="${message(code:'default.value.label')}"/>
                                         </g:elseif>
                                         <g:elseif test="${prop.isURLType()}">
-                                            <input type="url" name="propValue${i}" placeholder="${message(code:'default.value.label')}"/>
+                                            <input type="url" name="propValue${i}" class="memberProperty" placeholder="${message(code:'default.value.label')}"/>
                                         </g:elseif>
                                         <g:elseif test="${prop.isRefdataValueType()}">
-                                            <ui:select class="ui dropdown search" name="propValue${i}"
+                                            <ui:select class="ui dropdown search memberPropertyDropdown" name="propValue${i}"
                                                        from="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: prop.refdataCategory])}"
                                                        optionKey="id"
                                                        optionValue="value"
                                                        noSelection="${['':message(code:'default.value.label')]}"/>
                                         </g:elseif>
                                         <g:else>
-                                            <g:textField name="propValue${i}" placeholder="${message(code:'default.value.label')}" size="10"/>
+                                            <g:textField name="propValue${i}" class="memberProperty" placeholder="${message(code:'default.value.label')}" size="10"/>
                                         </g:else>
                                     </td>
-                                    <td><g:textArea name="propNote${i}" placeholder="${message(code:'property.table.notes')}"/></td>
+                                    <td><g:textArea name="propNote${i}" class="memberProperty" placeholder="${message(code:'property.table.notes')}"/></td>
                                 </tr>
                             </g:each>
                         </table>
-                    </div>
-                </g:if>
+                    </g:if>
+                    <g:if test="${validPackages}">
+                        <label for="customerIdentifier">
+                            <g:message code="org.customerIdentifier"/>
+                        </label>
+                        <g:textField name="customerIdentifier"/>
+                        <label for="requestorKey">
+                            <g:message code="org.requestorKey"/>
+                        </label>
+                        <g:textField name="requestorKey"/>
+                    </g:if>
+                </div>
             </div>
         </g:if>
 
@@ -198,7 +208,7 @@
         </g:if>
     </g:form>
 
-    <g:if test="${accessService.checkPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR')}">
+    <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR')}">
         <hr />
 
             <ui:msg class="info" header="${message(code: 'myinst.noMembers.cons.header')}" noClose="true">
@@ -206,5 +216,66 @@
             </ui:msg>
     </g:if>
 </g:if>
+
+<laser:script file="${this.getGroovyPageFileName()}">
+    $.fn.form.settings.rules.memberAssignal = function() {
+        let isUnique = false;
+        if($("[name='selectedOrgs']:checked").length > 1) {
+            $(".memberProperty").each( function(i) {
+                isUnique = $(this).val().length === 0;
+                if(!isUnique) {
+                    return;
+                }
+            });
+            if(!isUnique)
+                return false;
+            $(".memberPropertyDropdown").each( function(i) {
+                isUnique = $(this).dropdown('get value').length === 0;
+                if(!isUnique) {
+                    return;
+                }
+            });
+            if(!isUnique)
+                return false;
+            return $('#customerIdentifier').val().length === 0 && $('#requestorId').val().length === 0
+        }
+        else return true;
+    }
+    $('.addMembers').form({
+        on: 'blur',
+        inline: true,
+        fields: {
+            <g:each in="${memberProperties}" var="prop" status="i">
+                propValue${i}: {
+                    identifier: 'propValue${i}',
+                        rules: [
+                            {
+                            type: 'memberAssignal',
+                            prompt: '<g:message code="validation.memberAssignal"/>'
+                        }
+                    ]
+                },
+            </g:each>
+            customerIdentifier: {
+                identifier: 'customerIdentifier',
+                    rules: [
+                        {
+                        type: 'memberAssignal',
+                        prompt: '<g:message code="validation.memberAssignal"/>'
+                    }
+                ]
+            },
+            requestorKey: {
+                identifier: 'requestorKey',
+                rules: [
+                    {
+                        type: 'memberAssignal',
+                        prompt: '<g:message code="validation.memberAssignal"/>'
+                    }
+                ]
+            }
+        }
+    });
+</laser:script>
 
 <laser:htmlEnd />

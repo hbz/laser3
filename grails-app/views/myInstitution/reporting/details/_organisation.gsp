@@ -64,7 +64,7 @@
                     </g:if>
                     %{--
                     <td>
-                        <g:each in="${[RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT]}" var="ft">
+                        <g:each in="${[RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_FC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT]}" var="ft">
                             <g:each in="${org.getContactPersonsByFunctionType(true, ft)}" var="person">
                                 <span>
                                     ${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')}:

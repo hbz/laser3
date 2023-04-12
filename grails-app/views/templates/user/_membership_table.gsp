@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Org; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.auth.UserOrg;" %>
+<%@ page import="de.laser.Org; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.auth.UserOrgRole;" %>
 <laser:serviceInjection />
 
 <div class="ui card">
@@ -10,7 +10,7 @@
         <tr>
             <th>${message(code: 'profile.membership.org')}</th>
             <th>${message(code: 'default.role.label')}</th>
-            <g:if test="${contextService.getUser().hasMinRole('ROLE_ADMIN')}">
+            <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
                 <th class="la-action-info">${message(code:'default.actions.label')}</th>
             </g:if>
         </tr>
@@ -21,7 +21,7 @@
             List comboOrgIds = Org.executeQuery('select c.fromOrg.id from Combo c where c.toOrg = :org', [org: contextService.getOrg()])
         %>
         <g:each in="${userInstance.affiliations}" var="aff">
-            <g:if test="${controllerName == 'profile' || (contextService.getUser().hasMinRole('ROLE_ADMIN') || (aff.org.id == contextService.getOrg().id) || (aff.org.id in comboOrgIds))}">
+            <g:if test="${controllerName == 'profile' || (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || (aff.org.id == contextService.getOrg().id) || (aff.org.id in comboOrgIds))}">
                 <% affiCount++ %>
                 <tr>
                     <td>
@@ -30,7 +30,7 @@
                     <td>
                         <%
                             boolean check = ! instAdmService.isUserLastInstAdminForOrg(userInstance, aff.org) && (
-                                    contextService.getUser().hasMinRole('ROLE_ADMIN') || (
+                                    SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || (
                                         ( aff.org.id == contextService.getOrg().id || aff.org.id in comboOrgIds ) &&
                                                 contextService.getUser().isComboInstAdminOf(aff.org)
                                     )
@@ -43,7 +43,7 @@
                             <g:message code="cv.roles.${aff.formalRole?.authority}"/>
                         </g:else>
                     </td>
-                    <g:if test="${(contextService.getUser().hasMinRole('ROLE_ADMIN'))}">
+                    <g:if test="${(SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
                         <td class="x">
                             <g:if test="${! instAdmService.isUserLastInstAdminForOrg(userInstance, aff.org)}">
                                     <g:link controller="ajax" action="deleteThrough" params='${[contextOid:"${userInstance.class.name}:${userInstance.id}",contextProperty:"affiliations",targetOid:"${aff.class.name}:${aff.id}"]}'

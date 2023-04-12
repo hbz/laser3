@@ -143,7 +143,7 @@
             %{-- TODO: overwrite for ROLE_ADMIN ? all available Orgs --}%
         </g:if>
         %{-- not found -- <g:elseif test="${availableComboConsOrgs}">
-            <g:set var="orgLabel" value="Teilnehmer" />
+            <g:set var="orgLabel" value="Einrichtung" />
             <g:set var="availableOrgs" value="${availableComboConsOrgs}" />
         </g:elseif> --}%
 

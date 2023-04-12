@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.LocaleUtils; de.laser.I10nTranslation; de.laser.*; de.laser.auth.Role; de.laser.storage.RDConstants; de.laser.RefdataValue" %>
+<%@ page import="de.laser.utils.LocaleUtils; de.laser.I10nTranslation; de.laser.*; de.laser.auth.Role; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.storage.RDStore" %>
 
 <%
     String lang = LocaleUtils.getCurrentLang()
@@ -88,6 +88,42 @@
                 </div>
             </g:if>
 
+            <g:if test="${field.equalsIgnoreCase('isMyX')}">
+                <div class="field">
+                    <label for="isMyX">
+                        <g:message code="filter.isMyX.label" />
+                    </label>
+                    <%
+                        List<Map> isMyXOptions = []
+
+                        if (actionName == 'listInstitution') {
+                            isMyXOptions.add([ id: 'ismyx_exclusive',   value: "${message(code:'filter.isMyX.exclusive', args:["${message(code:'menu.my.insts')}"])}" ])
+                            isMyXOptions.add([ id: 'ismyx_not',         value: "${message(code:'filter.isMyX.not')}" ])
+                        }
+                        else if (actionName == 'listConsortia') {
+                            isMyXOptions.add([ id: 'ismyx_exclusive',   value: "${message(code:'filter.isMyX.exclusive', args:["${message(code:'menu.my.consortia')}"])}" ])
+                            isMyXOptions.add([ id: 'ismyx_not',         value: "${message(code:'filter.isMyX.not')}" ])
+                        }
+                        else if (actionName == 'listProvider') {
+                            isMyXOptions.add([ id: 'wekb_exclusive',    value: "${message(code:'filter.wekb.exclusive')}" ])
+                            isMyXOptions.add([ id: 'wekb_not',          value: "${message(code:'filter.wekb.not')}" ])
+                            isMyXOptions.add([ id: 'ismyx_exclusive',   value: "${message(code:'filter.isMyX.exclusive', args:["${message(code:'menu.my.providers')}"])}" ])
+                            isMyXOptions.add([ id: 'ismyx_not',         value: "${message(code:'filter.isMyX.not')}" ])
+                        }
+                        else if (actionName == 'currentProviders') {
+                            isMyXOptions.add([ id: 'wekb_exclusive',    value: "${message(code:'filter.wekb.exclusive')}" ])
+                            isMyXOptions.add([ id: 'wekb_not',          value: "${message(code:'filter.wekb.not')}" ])
+                        }
+                    %>
+                    <select id="isMyX" name="isMyX" class="ui selection fluid dropdown" multiple="">
+                        <option value="">${message(code:'default.select.choose.label')}</option>
+                        <g:each in="${isMyXOptions}" var="opt">
+                            <option <%=(params.list('isMyX').contains(opt.id)) ? 'selected="selected"' : '' %> value="${opt.id}">${opt.value}</option>
+                        </g:each>
+                    </select>
+                </div>
+            </g:if>
+
             <g:if test="${field.equalsIgnoreCase('property&value')}">
                 <laser:render template="/templates/properties/genericFilter" model="[propList: propList, label:message(code: 'subscription.property.search')]"/>
             </g:if>
@@ -119,6 +155,17 @@
                 </div>
             </g:if>
 
+            <g:if test="${field.equalsIgnoreCase('orgStatus')}">
+                <div class="field">
+                    <label for="orgStatus">${message(code: 'default.status.label')}</label>
+                    <g:if test="${orgStatusSet == null || orgStatusSet.isEmpty()}">
+                        <g:set var="orgStatusSet" value="${RefdataCategory.getAllRefdataValues([RDConstants.ORG_STATUS])-RDStore.ORG_STATUS_REMOVED}" scope="request"/>
+                    </g:if>
+                    <ui:select class="ui dropdown multiple search selection" id="orgStatus" name="orgStatus"
+                               from="${orgStatusSet}" optionKey="id" optionValue="value" value="${params.orgStatus}" />
+                </div>
+            </g:if>
+
             <g:if test="${field.equalsIgnoreCase('role')}">
                 <div class="field">
                     <label for="orgRole">${message(code: 'org.orgRole.label')}</label>
@@ -132,6 +179,26 @@
                                   optionValue="value"
                                   value="${params.orgRole}"
                                   noSelection="${['':message(code:'default.select.choose.label')]}"/>
+                </div>
+            </g:if>
+
+            <g:if test="${field.equalsIgnoreCase('providerRole')}">
+                <div class="field">
+                    <label for="providerRole">${message(code: 'org.orgRole.label')}</label>
+                    <%
+                        Set<RefdataValue> providerRoles = [
+                                RefdataValue.getByValueAndCategory('Broker', RDConstants.ORG_TYPE), RefdataValue.getByValueAndCategory('Content Provider', RDConstants.ORG_TYPE),
+                                RefdataValue.getByValueAndCategory('Imprint', RDConstants.ORG_TYPE), RefdataValue.getByValueAndCategory('Issuing Body', RDConstants.ORG_TYPE),
+                                RefdataValue.getByValueAndCategory('Licensee', RDConstants.ORG_TYPE), RDStore.OT_LICENSOR, RefdataValue.getByValueAndCategory('Platform Provider', RDConstants.ORG_TYPE),
+                                RDStore.OT_PUBLISHER, RefdataValue.getByValueAndCategory('Vendor', RDConstants.ORG_TYPE)
+                        ]
+                    %>
+                    <select name="providerRole" id="providerRole" multiple="" class="ui fluid select dropdown search">
+                        <option value="">${message(code:'default.select.choose.label')}</option>
+                        <g:each in="${providerRoles}" var="providerRole">
+                            <option <%= (params.list('providerRole').contains(providerRole.id.toString())) ? 'selected="selected"' : '' %> value="${providerRole.id}">${providerRole.value}</option>
+                        </g:each>
+                    </select>
                 </div>
             </g:if>
 
@@ -190,18 +257,30 @@
                                   noSelection="${['':message(code:'default.select.choose.label')]}"/>
                 </div>
             </g:if>
+            <g:if test="${field.equalsIgnoreCase('isLegallyObligedBy')}">
+                <div class="field">
+                    <label for="legallyObligedBy">${message(code: 'org.legallyObligedBy.label')}</label>
+                    <g:set var="legalObligations" value="${Org.executeQuery('select distinct(lob) from Org o inner join o.legallyObligedBy lob where o.status != :removed order by lob.sortname', [removed: RDStore.ORG_STATUS_REMOVED])}" scope="request"/>
+                    <select id="legallyObligedBy" name="legallyObligedBy" multiple="" class="ui search select dropdown">
+                        <option value="">${message(code:'default.select.choose.label')}</option>
+                        <g:each in="${legalObligations}" var="legalObligation">
+                            <option <%=(params.list('legallyObligedBy').contains(legalObligation.id.toString())) ? 'selected="selected"' : '' %> value="${legalObligation.id}">${legalObligation.sortname}</option>
+                        </g:each>
+                    </select>
+                </div>
+            </g:if>
             <g:if test="${field.equalsIgnoreCase('customerType')}">
-            <div class="field">
-                <label for="customerType">${message(code:'org.customerType.label')}</label>
-                <ui:select id="customerType" name="customerType"
-                              from="${[Role.findByAuthority('FAKE')] + Role.findAllByRoleType('org')}"
-                              optionKey="id"
-                              optionValue="authority"
-                              value="${params.customerType}"
-                              class="ui dropdown"
-                              noSelection="${['':message(code:'default.select.choose.label')]}"
-                />
-            </div>
+                <div class="field">
+                    <label for="customerType">${message(code:'org.customerType.label')}</label>
+                    <ui:select id="customerType" name="customerType"
+                                  from="${[Role.findByAuthority('FAKE')] + Role.findAllByRoleType('org')}"
+                                  optionKey="id"
+                                  optionValue="authority"
+                                  value="${params.customerType}"
+                                  class="ui dropdown"
+                                  noSelection="${['':message(code:'default.select.choose.label')]}"
+                    />
+                </div>
             </g:if>
             <g:if test="${field.equalsIgnoreCase('providers')}">
                 <div class="field">
@@ -216,6 +295,17 @@
                             </option>
                         </g:each>
                     </select>
+                </div>
+            </g:if>
+            <g:if test="${field.equalsIgnoreCase('curatoryGroup')}">
+                <div class="field">
+                    <label for="curatoryGroup">${message(code: 'package.curatoryGroup.label')}</label>
+                    <g:select class="ui fluid search select dropdown" name="curatoryGroup"
+                              from="${curatoryGroups.sort{it.name.toLowerCase()}}"
+                              optionKey="name"
+                              optionValue="name"
+                              value="${params.curatoryGroup}"
+                              noSelection="${['' : message(code:'default.select.choose.label')]}"/>
                 </div>
             </g:if>
             <g:if test="${field.equalsIgnoreCase('subscription')}">

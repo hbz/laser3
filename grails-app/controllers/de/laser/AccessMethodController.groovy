@@ -94,7 +94,6 @@ class AccessMethodController  {
         Platform platf = accessMethod.platf
 
         [accessMethod: accessMethod, platfId: platf.id]
-
     }
 
     /**

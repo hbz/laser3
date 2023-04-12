@@ -74,13 +74,6 @@ class ESWrapperService {
         (new HttpHost(ES_Host, 9200, "http")).toString()
     }
 
-    /*
-    Object getESMapping(){
-        JSONParser jsonParser = new JSONParser(this.class.classLoader.getResourceAsStream("es_mapping.json"))
-
-        jsonParser.parse()
-    }*/
-
     /**
      * Gets the ElasticSearch setting configuration file
      * @return the parsed ElasticSearch settings

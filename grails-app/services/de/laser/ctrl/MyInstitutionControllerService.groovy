@@ -28,6 +28,7 @@ class MyInstitutionControllerService {
     FilterService filterService
     SurveyService surveyService
     TaskService taskService
+    UserService userService
     WorkflowService workflowService
 
     static final int STATUS_OK = 0
@@ -49,7 +50,7 @@ class MyInstitutionControllerService {
             return [status: STATUS_ERROR, result: result]
         }
 
-        result.is_inst_admin = accessService.checkMinUserOrgRole_and_CtxOrg(result.user, result.institution, 'INST_ADM')
+        result.is_inst_admin = userService.checkAffiliationAndCtxOrg(result.user, result.institution, 'INST_ADM')
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
         result.acceptedOffset = 0
@@ -68,7 +69,7 @@ class MyInstitutionControllerService {
 
         // changes -> to AJAX
 
-        //Map<String,Object> pendingChangeConfigMap = [contextOrg:result.institution,consortialView:accessService.checkOrgPerm(result.institution, 'ORG_CONSORTIUM_BASIC'),periodInDays:periodInDays,max:result.max,offset:result.acceptedOffset]
+        //Map<String,Object> pendingChangeConfigMap = [contextOrg:result.institution,consortialView:accessService.otherOrgPerm(result.institution, 'ORG_CONSORTIUM_BASIC'),periodInDays:periodInDays,max:result.max,offset:result.acceptedOffset]
         //pu.setBenchmark('pending changes')
         //result.putAll(pendingChangeService.getChanges(pendingChangeConfigMap))
 
@@ -87,7 +88,7 @@ class MyInstitutionControllerService {
         result.enableMyInstFormFields = true // enable special form fields
 
 
-        /*def announcement_type = RefdataValue.getByValueAndCategory('Announcement', RDConstants.DOCUMENT_TYPE)
+        /*def announcement_type = RDStore.DOC_TYPE_ANNOUNCEMENT
         result.recentAnnouncements = Doc.findAllByType(announcement_type, [max: result.max,offset:result.announcementOffset, sort: 'dateCreated', order: 'desc'])
         result.recentAnnouncementsCount = Doc.findAllByType(announcement_type).size()*/
         prf.setBenchmark('due dates')
@@ -176,23 +177,23 @@ class MyInstitutionControllerService {
         result.showConsortiaFunctions = org.isCustomerType_Consortium()
         switch (params.action) {
             case [ 'processEmptyLicense', 'currentLicenses', 'currentSurveys', 'dashboard', 'getChanges', 'getSurveys', 'emptyLicense', 'surveyInfoFinish' ]:
-                result.editable = accessService.checkMinUserOrgRole_and_CtxOrg(user, org, 'INST_EDITOR')
+                result.editable = userService.checkAffiliationAndCtxOrg(user, org, 'INST_EDITOR')
                 break
             case [ 'addressbook', 'budgetCodes', 'tasks' ]:
-                result.editable = accessService.is_ROLE_ADMIN_or_checkMinUserOrgRole_and_CtxOrg(user, org, 'INST_EDITOR')
+                result.editable = userService.checkAffiliationAndCtxOrg_or_ROLEADMIN(user, org, 'INST_EDITOR')
                 break
             case 'surveyInfos':
                 result.editable = surveyService.isEditableSurvey(org, SurveyInfo.get(params.id) ?: null)
                 break
             case 'users':
-                result.editable = user.is_ROLE_ADMIN_or_hasAffiliation('INST_ADM')
+                result.editable = user.hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
                 break
             case 'managePropertyDefinitions':
                 result.editable = false
-                result.changeProperties = user.is_ROLE_ADMIN_or_hasAffiliation('INST_EDITOR')
+                result.changeProperties = user.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
                 break
             default:
-                result.editable = accessService.is_ROLE_ADMIN_or_checkMinUserOrgRole_and_CtxOrg(user, org, 'INST_EDITOR')
+                result.editable = userService.checkAffiliationAndCtxOrg_or_ROLEADMIN(user, org, 'INST_EDITOR')
         }
 
         result

@@ -5,7 +5,7 @@
     <laser:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
     <ui:controlButtons>
-        <g:if test="${accessService.checkMinUserOrgRole_and_CtxOrg(user, institution, 'INST_EDITOR')}">
+        <g:if test="${userService.checkAffiliationAndCtxOrg(user, institution, 'INST_EDITOR')}">
             <laser:render template="actions" />
         </g:if>
     </ui:controlButtons>
@@ -74,6 +74,15 @@
                             </div>
                         </div>
                     </div>
+                </div>
+                <div class="field">
+                    <label>${message(code:'subscription.hasPerpetualAccess.label')}</label>
+                    <ui:select class="ui fluid dropdown" name="hasPerpetualAccess"
+                               from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
+                               optionKey="id"
+                               optionValue="value"
+                               value="${params.hasPerpetualAccess}"
+                               noSelection="${['' : message(code:'default.select.choose.label')]}"/>
                 </div>
                 <div class="field la-field-right-aligned">
                     <a href="${request.forwardURI}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</a>

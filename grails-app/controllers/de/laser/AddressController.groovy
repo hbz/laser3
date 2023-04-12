@@ -32,8 +32,10 @@ class AddressController  {
     /**
      * Creates a new address with the given parameters
      */
-    @DebugInfo(test='is_ROLE_ADMIN_or_hasAffiliation("INST_EDITOR")', wtc = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = { ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_EDITOR") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], wtc = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+    })
     def create() {
         Address.withTransaction {
             switch (request.method) {
@@ -84,19 +86,19 @@ class AddressController  {
         }
         String messageCode
         switch (addressInstance.type){
-            case RDStore.ADRESS_TYPE_POSTAL:
+            case RDStore.ADDRESS_TYPE_POSTAL:
                 messageCode = "addressFormModalPostalAddress"
                 break
-            case RDStore.ADRESS_TYPE_BILLING:
+            case RDStore.ADDRESS_TYPE_BILLING:
                 messageCode = "addressFormModalBillingAddress"
                 break
-            case RDStore.ADRESS_TYPE_LEGAL_PATRON:
+            case RDStore.ADDRESS_TYPE_LEGAL_PATRON:
                 messageCode = "addressFormModalLegalPatronAddress"
                 break
-            case RDStore.ADRESS_TYPE_DELIVERY:
+            case RDStore.ADDRESS_TYPE_DELIVERY:
                 messageCode = "addressFormModalDeliveryAddress"
                 break
-            case RDStore.ADRESS_TYPE_LIBRARY:
+            case RDStore.ADDRESS_TYPE_LIBRARY:
                 messageCode = "addressFormModalLibraryAddress"
                 break
         }
@@ -118,8 +120,10 @@ class AddressController  {
     /**
      * Updates the given address with the given updated data
      */
-    @DebugInfo(test='is_ROLE_ADMIN_or_hasAffiliation("INST_EDITOR")', wtc = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = { ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_EDITOR") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], wtc = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+    })
     def edit() {
         Address.withTransaction {
             Address addressInstance = Address.get(params.id)
@@ -175,8 +179,10 @@ class AddressController  {
     /**
      * Deletes the given address
      */
-    @DebugInfo(test='is_ROLE_ADMIN_or_hasAffiliation("INST_EDITOR")', wtc = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = { ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_EDITOR") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], wtc = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+    })
     def delete() {
         Address.withTransaction {
             Address addressInstance = Address.get(params.id)

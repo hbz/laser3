@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Platform; de.laser.titles.BookInstance; de.laser.remote.ApiSource; de.laser.Org;" %>
+<%@ page import="de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.Subscription; de.laser.titles.BookInstance; de.laser.remote.ApiSource; de.laser.Org;" %>
 <laser:htmlStart message="subscription.details.renewEntitlements.label" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -100,11 +100,12 @@
 
         <g:if test="${showStatisticByParticipant && surveyConfig.pickAndChoosePerpetualAccess}">
             <ui:exportDropdownItem>
-                <g:link class="item" action="renewEntitlementsWithSurvey"
+                <g:link class="item statsExport" action="renewEntitlementsWithSurvey"
                         id="${newSub.id}"
                         params="${[surveyConfigID : surveyConfig.id,
                                    exportForImport: true,
-                                   tab            : 'toBeSelectedIEs']}">
+                                   tab            : 'toBeSelectedIEs',
+                                   revision: revision]}">
                     ${message(code: 'renewEntitlementsWithSurvey.toBeSelectedIEs')} + ${message(code: 'default.stats.label')}
                 </g:link>
             </ui:exportDropdownItem>
@@ -112,11 +113,12 @@
 
         <g:if test="${showStatisticByParticipant}">
             <ui:exportDropdownItem>
-                <g:link class="item" action="renewEntitlementsWithSurvey"
+                <g:link class="item statsExport" action="renewEntitlementsWithSurvey"
                         id="${newSub.id}"
                         params="${[surveyConfigID : surveyConfig.id,
                                    exportForImport: true,
-                                   tab            : 'allIEs']}">
+                                   tab            : 'allIEs',
+                                   revision: revision]}">
                     ${message(code: 'renewEntitlementsWithSurvey.selectableTitles')} + ${message(code: 'default.stats.label')}
                 </g:link>
             </ui:exportDropdownItem>
@@ -124,24 +126,20 @@
 
         <g:if test="${showStatisticByParticipant}">
             <ui:exportDropdownItem>
-                <g:link class="item" action="renewEntitlementsWithSurvey"
+                <g:link class="item statsExport" action="renewEntitlementsWithSurvey"
                         id="${newSub.id}"
                         params="${[surveyConfigID: surveyConfig.id,
                                    exportXLSStats     : true,
                                    loadFor       : 'allIEsStats',
-                                   revision: revision,
-                                   reportType: params.reportType,
-                                   metricType: params.metricType]}">${message(code:'default.usage.exports.filtered')} "${message(code: 'default.stats.label')}"</g:link>
+                                   revision: revision]}">${message(code:'default.usage.exports.filtered')} "${message(code: 'default.stats.label')}"</g:link>
             </ui:exportDropdownItem>
             <ui:exportDropdownItem>
-                <g:link class="item" action="renewEntitlementsWithSurvey"
+                <g:link class="item statsExport" action="renewEntitlementsWithSurvey"
                         id="${newSub.id}"
                         params="${[surveyConfigID: surveyConfig.id,
                                    exportXLSStats     : true,
                                    loadFor       : 'holdingIEsStats',
-                                   revision: revision,
-                                   reportType: params.reportType,
-                                   metricType: params.metricType]}">${message(code:'default.usage.exports.filtered')} "${message(code: 'default.stats.label')}" ${message(code: 'default.stats.holding')}</g:link>
+                                   revision: revision]}">${message(code:'default.usage.exports.filtered')} "${message(code: 'default.stats.label')}" ${message(code: 'default.stats.holding')}</g:link>
             </ui:exportDropdownItem>
         </g:if>
     </ui:exportDropdown>
@@ -192,7 +190,7 @@
             <tbody>
             <tr>
                 <td>
-                    <p><strong><g:link controller="organisation" action="show" id="${choosenOrg.id}">${choosenOrg.name} (${choosenOrg.shortname})</g:link></strong></p>
+                    <p><strong><g:link controller="organisation" action="show" id="${choosenOrg.id}">${choosenOrg.name} (${choosenOrg.sortname})</g:link></strong></p>
 
                     ${choosenOrg?.libraryType?.getI10n('value')}
                 </td>
@@ -349,25 +347,29 @@
         </ui:tabs>
     </g:if>
 </g:if>--%>
-
-<g:form name="renewEntitlements" id="${newSub.id}" action="processRenewEntitlementsWithSurvey" class="ui form">
+<div class="ui bottom attached tab active segment">
+    <g:form name="renewEntitlements" id="${newSub.id}" action="processRenewEntitlementsWithSurvey" class="ui form">
     <g:hiddenField id="packageId" name="packageId" value="${params.packageId}"/>
     <g:hiddenField name="surveyConfigID" value="${surveyConfig.id}"/>
     <g:hiddenField name="tab" value="${params.tab}"/>
+        <div class="ui segment grid la-filter">
+            <div class="field" style="padding: 10px 15px">
+                <g:if test="${editable}"><input id="select-all" type="checkbox" name="chkall" ${allChecked}/></g:if>
+            </div>
+        </div>
 
-    <div class="ui segment">
 
         <g:if test="${params.tab in ['allIEsStats', 'holdingIEsStats', 'topUsed']}">
-            <g:if test="${usages}">
+            <g:if test="${usages && usages.size() > 0}">
                 <laser:render template="/templates/survey/entitlementTableSurveyWithStats"
                               model="${[stats: usages, sumsByTitle: sumsByTitle, showPackage: true, showPlattform: true]}"/>
             </g:if>
-            <g:elseif test="${params.reportType && params.metricType}">
+            <g:elseif test="${params.reportType}">
                 <g:message code="renewEntitlementsWithSurvey.noIEsStats"/>
             </g:elseif>
-            <g:elseif test="${statsAvailable}">
-                <g:message code="renewEntitlementsWithSurvey.noReportSelected"/>
-            </g:elseif>
+            <g:else>
+                <g:message code="default.stats.error.noReportSelected"/>
+            </g:else>
         </g:if>
         <g:elseif test="${params.tab == 'stats'}">
             <g:link controller="subscription" action="stats"
@@ -381,11 +383,10 @@
                       model="${[ies: [sourceIEs: sourceIEs], showPackage: true, showPlattform: true]}"/>
         </g:else>
 
-    </div>
 
-    <div class="sixteen wide column">
-        <div class="two fields">
 
+        <div class="sixteen wide column">
+            <div class="two fields">
             <g:if test="${params.tab != 'stats'}">
                 <div class="eight wide field" style="text-align: left;">
                     <g:if test="${editable && params.tab != 'selectedIEs'}">
@@ -420,7 +421,7 @@
     </div>
 
 </g:form>
-
+</div>
 <g:if test="${sourceIEs}">
     <ui:paginate action="renewEntitlementsWithSurvey" controller="subscription" params="${params}"
                     max="${max}" total="${num_ies_rows}"/>
@@ -430,8 +431,22 @@
 
 
         JSPC.app.selectAll = function () {
-            $('#select-all').is( ":checked") ? $('.bulkcheck').prop('checked', true) : $('.bulkcheck').prop('checked', false);
-            $('#select-all').is( ":checked") ? $("#surveyEntitlements tr").addClass("positive") : $("#surveyEntitlements tr").removeClass("positive");
+           if ( $('#select-all').is( ":checked") ){
+                $( '#surveyEntitlements .bulkcheck' ).each(function( index ) {
+                    $(this).prop('checked', true);
+                     $(this).parents('.la-js-checkItem').addClass("positive");
+                    console.log(  $(this));
+                });
+           }
+           else if ( $('#select-all').not( ":checked") ){
+                $( '#surveyEntitlements .bulkcheck' ).each(function( index ) {
+                    $(this).prop('checked', false);
+                    $(this).parents('.la-js-checkItem').removeClass("positive");
+                    console.log( "nein");
+                });
+           }
+           //$('#select-all').is( ":checked") ? $('.bulkcheck').prop('checked', true) : $('.bulkcheck').prop('checked', false);
+           //$('#select-all').is( ":checked") ? $("#surveyEntitlements .la-js-checkItem").addClass("positive") : $("#surveyEntitlements .la-js-checkItem").removeClass("positive");
             JSPC.app.updateSelectionCache("all",$('#select-all').prop('checked'));
         }
 
@@ -486,14 +501,43 @@
 
 
     $(".bulkcheck").change(function() {
-        var index = $(this).parents("tr").attr("data-index");
+        console.log("geklickt");
+        var index = $(this).parents(".la-js-checkItem").attr("data-index");
+
             if (this.checked) {
-                $("tr[data-index='" + index + "'").addClass("positive");
+                $("div[data-index='" + index + "'").addClass("positive");
             } else {
-                $("tr[data-index='" + index + "'").removeClass("positive");
+                $("div[data-index='" + index + "'").removeClass("positive");
             }
-        JSPC.app.updateSelectionCache($(this).parents("tr").attr("data-ieId"), $(this).prop('checked'));
+
+
+        JSPC.app.updateSelectionCache($(this).parents(".la-js-checkItem").attr("data-ieId"), $(this).prop('checked'));
     });
 
+    $(".statsExport").on('click', function(e) {
+        e.preventDefault();
+        /*
+        kept for reasons of debug
+        console.log($("#reportType").dropdown('get value'));
+        console.log($("#metricType").dropdown('get value'));
+        console.log($("#accessType").dropdown('get value'));
+        console.log($("#accessMethod").dropdown('get value'));
+        */
+        let url = $(this).attr('href')+'&reportType='+$("#reportType").dropdown('get value');
+        url+='&metricType='+$("#metricType").dropdown('get value');
+        url+='&accessType='+$("#accessType").dropdown('get value');
+        url+='&accessMethod='+$("#accessMethod").dropdown('get value');
+        if($("#platform").dropdown('get value') !== '') {
+            $.each($("#platform").dropdown('get value'), function(i, val) {
+                url+='&platform='+val;
+            });
+        }
+        else {
+            url+='&platform='+$("#platform").val();
+        }
+        //do not forget to communicate that to the users!
+        if($("#reportType").dropdown('get value') !== '')
+            window.location.href = url;
+    });
 </laser:script>
 <laser:htmlEnd />

@@ -40,10 +40,6 @@
                 <g:sortableColumn title="${message(code: 'org.sortname.label')}"
                                   property="lower(o.sortname)" params="${request.getParameterMap()}"/>
             </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('shortname')}">
-                <g:sortableColumn title="${message(code: 'org.shortname.label')}"
-                                  property="lower(o.shortname)" params="${request.getParameterMap()}"/>
-            </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('name')}">
                 <g:sortableColumn title="${message(code: 'org.fullName.label')}" property="lower(o.name)"
                                   params="${request.getParameterMap()}"/>
@@ -75,9 +71,6 @@
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('privateContacts')}">
                 <th>${message(code: 'org.privateContacts.label')}</th>
-            </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('currentFTEs')}">
-                <th class="la-th-wrap">${message(code: 'org.currentFTEs.label')}</th>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('numberOfSubscriptions')}">
                 <th class="la-th-wrap">${message(code: 'org.subscriptions.label')}</th>
@@ -253,22 +246,6 @@
                     ${org.sortname}
                 </td>
             </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('shortname')}">
-                <td>
-                    <g:if test="${tmplDisableOrgIds && (org.id in tmplDisableOrgIds)}">
-                        <g:if test="${org.shortname}">
-                            ${fieldValue(bean: org, field: "shortname")}
-                        </g:if>
-                    </g:if>
-                    <g:else>
-                        <g:link controller="organisation" action="show" id="${org.id}">
-                            <g:if test="${org.shortname}">
-                                ${fieldValue(bean: org, field: "shortname")}
-                            </g:if>
-                        </g:link>
-                    </g:else>
-                </td>
-            </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('name')}">
                 <th scope="row" class="la-th-column la-main-object">
                     <div class="la-flexbox">
@@ -279,18 +256,11 @@
                             </span>
                         </g:if>
                         <g:if test="${tmplDisableOrgIds && (org.id in tmplDisableOrgIds)}">
-                            ${fieldValue(bean: org, field: "name")} <br />
-                            <g:if test="${org.shortname && !tmplConfigItem.equalsIgnoreCase('shortname')}">
-                                (${fieldValue(bean: org, field: "shortname")})
-                            </g:if>
+                            ${fieldValue(bean: org, field: "name")}
                         </g:if>
                         <g:else>
                             <g:link controller="organisation" action="show" id="${org.id}">
                                 ${fieldValue(bean: org, field: "name")}
-                                <g:if test="${org.shortname && !tmplConfigItem.equalsIgnoreCase('shortname')}">
-                                    <br />
-                                    (${fieldValue(bean: org, field: "shortname")})
-                                </g:if>
                             </g:link>
                         </g:else>
 
@@ -401,11 +371,11 @@
                 <td class="center aligned">
                     <%
                         String instAdminIcon = '<i class="large red times icon"></i>'
-                        List<User> users = User.executeQuery('select uo.user from UserOrg uo where uo.org = :org and uo.formalRole = :instAdmin', [org: org, instAdmin: Role.findByAuthority('INST_ADM')])
+                        List<User> users = User.executeQuery('select uo.user from UserOrgRole uo where uo.org = :org and uo.formalRole = :instAdmin', [org: org, instAdmin: Role.findByAuthority('INST_ADM')])
                         if (users)
                             instAdminIcon = '<i class="large green check icon"></i>'
                     %>
-                    <g:if test="${contextService.getUser().is_ROLE_ADMIN_or_hasAffiliation('INST_ADM')}">
+                    <g:if test="${contextService.getUser().hasCtxAffiliation_or_ROLEADMIN('INST_ADM')}">
                         <br /><g:link controller="organisation" action="users"
                                     params="${[id: org.id]}">${raw(instAdminIcon)}</g:link>
                     </g:if>
@@ -581,17 +551,6 @@
                         ]}"/>
                     </g:if>
                     --%>
-                    </g:each>
-                </td>
-            </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('currentFTEs')}">
-                <td>
-                    <g:each in="${ReaderNumber.findAllByOrgAndReferenceGroup(org, RefdataValue.getByValueAndCategory('Students', RDConstants.NUMBER_TYPE).getI10n('value'))?.sort {
-                        it.type?.getI10n("value")
-                    }}" var="fte">
-                        <g:if test="${fte.startDate <= sqlDateToday && fte.endDate >= sqlDateToday}">
-                            ${fte.type?.getI10n("value")} : ${fte.number} <br />
-                        </g:if>
                     </g:each>
                 </td>
             </g:if>
@@ -976,12 +935,12 @@
                         </g:if>
                     </g:if>
                     <g:if test="${actionName == 'listInstitution'}">
-                        <g:if test="${consortiaMemberIds && (org.id in consortiaMemberIds)}">
+                        <g:if test="${currentConsortiaMemberIdList && (org.id in currentConsortiaMemberIdList)}">
                             <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.insts')}"><i class="icon yellow star"></i></span>
                         </g:if>
                     </g:if>
                     <g:if test="${actionName == 'listConsortia'}">
-                        <g:if test="${consortiaIds && (org.id in consortiaIds)}">
+                        <g:if test="${currentConsortiaIdList && (org.id in currentConsortiaIdList)}">
                             <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.consortia')}"><i class="icon yellow star"></i></span>
                         </g:if>
                     </g:if>

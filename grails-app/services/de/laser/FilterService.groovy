@@ -37,11 +37,11 @@ class FilterService {
      */
     Map<String, Object> getOrgQuery(GrailsParameterMap params) {
         Map<String, Object> result = [:]
-        ArrayList<String> query = ["o.status != :orgStatus"]
-        Map<String, Object> queryParams = ["orgStatus" : RDStore.ORG_STATUS_DELETED]
+        ArrayList<String> query = []
+        Map<String, Object> queryParams = [:]
 
         if (params.orgNameContains?.length() > 0) {
-            query << "((genfunc_filter_matcher(o.name, :orgNameContains) = true or genfunc_filter_matcher(o.shortname, :orgNameContains) = true or genfunc_filter_matcher(o.sortname, :orgNameContains) = true) or exists(select alt.id from AlternativeName alt where alt.org = o and genfunc_filter_matcher(alt.name, :orgNameContains) = true) )"
+            query << "((genfunc_filter_matcher(o.name, :orgNameContains) = true or genfunc_filter_matcher(o.sortname, :orgNameContains) = true) or exists(select alt.id from AlternativeName alt where alt.org = o and genfunc_filter_matcher(alt.name, :orgNameContains) = true) )"
              queryParams << [orgNameContains : "${params.orgNameContains}"]
         }
         if (params.orgType) {
@@ -52,6 +52,15 @@ class FilterService {
                 query << " exists (select roletype from o.orgType as roletype where roletype.id = :orgType )"
                 queryParams << [orgType: Long.parseLong(params.orgType)]
             }
+        }
+        if (params.orgStatus) {
+            List selectedStatus = listReaderWrapper(params, 'orgStatus').collect { key -> key instanceof String ? Long.parseLong(key) : key }
+            query << "o.status.id in (:orgStatus)"
+            queryParams.orgStatus = selectedStatus
+        }
+        else {
+            query << "o.status != :orgStatus"
+            queryParams.orgStatus = RDStore.ORG_STATUS_REMOVED
         }
         if (params.orgRole?.length() > 0) {
             query << " exists (select ogr from o.links as ogr where ogr.roleType.id = :orgRole )"
@@ -133,6 +142,11 @@ class FilterService {
             queryParams << [customerTypeKey : OrgSetting.KEYS.CUSTOMER_TYPE]
         }
 
+        if (params.legallyObligedBy?.length() > 0) {
+            query << "o.legallyObligedBy.id in (:legallyObligedBy)"
+            queryParams << [legallyObligedBy: listReaderWrapper(params, 'legallyObligedBy').collect { key -> Long.parseLong(key) }]
+        }
+
         if (params.platform?.length() > 0) {
             query << "exists (select plat.id from Platform plat where plat.org = o and genfunc_filter_matcher(plat.name, :platform) = true)"
             queryParams << [platform: params.platform]
@@ -180,10 +194,9 @@ class FilterService {
 
         // ERMS-1592, ERMS-1596
         if (params.orgNameContains?.length() > 0) {
-            query << "(genfunc_filter_matcher(o.name, :orgNameContains1) = true or genfunc_filter_matcher(o.shortname, :orgNameContains2) = true or genfunc_filter_matcher(o.sortname, :orgNameContains3) = true) "
+            query << "(genfunc_filter_matcher(o.name, :orgNameContains1) = true or genfunc_filter_matcher(o.sortname, :orgNameContains2) = true) "
              queryParams << [orgNameContains1 : "${params.orgNameContains}"]
              queryParams << [orgNameContains2 : "${params.orgNameContains}"]
-             queryParams << [orgNameContains3 : "${params.orgNameContains}"]
         }
         if (params.orgType?.length() > 0) {
             query << " exists (select roletype from o.orgType as roletype where roletype.id = :orgType )"
@@ -469,52 +482,6 @@ class FilterService {
         if(query.size() > 0)
             result.query = " and "+query.join(" and ")
         else result.query = ""
-        result.queryParams = queryParams
-        result
-    }
-
-    @Deprecated
-    Map<String,Object> getSurveyQueryConsortia(Map params, DateFormat sdFormat, Org contextOrg) {
-        Map result = [:]
-        List query = []
-        Map<String,Object> queryParams = [:]
-        if(params.name) {
-            query << "genfunc_filter_matcher(si.name, :name) = true"
-            queryParams << [name:"${params.name}"]
-        }
-        if(params.status) {
-            query << "si.status = :status"
-            queryParams << [status: RefdataValue.get(params.status)]
-        }
-        if(params.type) {
-            query << "si.type = :type"
-            queryParams << [type: RefdataValue.get(params.type)]
-        }
-        if (params.startDate && sdFormat) {
-            query << "si.startDate >= :startDate"
-            queryParams << [startDate : sdFormat.parse(params.startDate)]
-        }
-        if (params.endDate && sdFormat) {
-            query << "si.endDate <= :endDate"
-            queryParams << [endDate : sdFormat.parse(params.endDate)]
-        }
-
-        if (params.participant) {
-            query << "exists (select surConfig from SurveyConfig as surConfig where surConfig.surveyInfo = si and " +
-                    " exists (select surResult from SurveyResult as surResult where surResult.surveyConfig = surConfig and participant = :participant))"
-            queryParams << [participant : params.participant]
-        }
-
-        String defaultOrder = " order by " + (params.sort ?: " LOWER(si.name)") + " " + (params.order ?: "asc")
-
-        if (query.size() > 0) {
-            result.query = "from SurveyInfo si where si.owner = :contextOrg and " + query.join(" and ") + defaultOrder
-        } else {
-            result.query = "from SurveyInfo si where si.owner = :contextOrg" + defaultOrder
-        }
-        queryParams << [contextOrg : contextOrg]
-
-
         result.queryParams = queryParams
         result
     }
@@ -962,10 +929,9 @@ class FilterService {
         Map<String,Object> queryParams = [surveyConfig: surveyConfig]
 
         if (params.orgNameContains?.length() > 0) {
-            base_qry += " and (genfunc_filter_matcher(surveyOrg.org.name, :orgNameContains1) = true or genfunc_filter_matcher(surveyOrg.org.shortname, :orgNameContains2) = true or genfunc_filter_matcher(surveyOrg.org.sortname, :orgNameContains3) = true) "
+            base_qry += " and (genfunc_filter_matcher(surveyOrg.org.name, :orgNameContains1) = true or genfunc_filter_matcher(surveyOrg.org.sortname, :orgNameContains2) = true) "
             queryParams << [orgNameContains1 : "${params.orgNameContains}"]
             queryParams << [orgNameContains2 : "${params.orgNameContains}"]
-            queryParams << [orgNameContains3 : "${params.orgNameContains}"]
         }
         if (params.orgType?.length() > 0) {
             base_qry += " and exists (select roletype from surveyOrg.org.orgType as roletype where roletype.id = :orgType )"
@@ -1444,7 +1410,7 @@ class FilterService {
             base_qry += " group by tipp, ic, ie.id "
         else if(!params.bulkOperation) base_qry += " group by tipp, ic "
 
-        if ((params.sort != null) && (params.sort.length() > 0)) {
+        if (params.sort != null && params.sort.length() > 0 && params.sort != 'count') {
             if(params.sort == 'startDate')
                 base_qry += "order by ic.startDate ${params.order}, lower(ie.sortname), lower(tipp.sortname) "
             else if(params.sort == 'endDate')

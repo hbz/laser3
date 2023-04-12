@@ -43,14 +43,15 @@ class SubscriptionService {
     EscapeService escapeService
     FilterService filterService
     GenericOIDService genericOIDService
+    GokbService gokbService
     LinksGenerationService linksGenerationService
     MessageSource messageSource
     PackageService packageService
     PropertyService propertyService
     RefdataService refdataService
     SubscriptionsQueryService subscriptionsQueryService
-    GokbService gokbService
     SurveyService surveyService
+    UserService userService
 
     /**
      * ex MyInstitutionController.currentSubscriptions()
@@ -113,7 +114,7 @@ class SubscriptionService {
             date_restriction = sdf.parse(params.validOn)
         }
 
-        result.editable = accessService.checkMinUserOrgRole_and_CtxOrg(contextUser, contextOrg, 'INST_EDITOR')
+        result.editable = userService.checkAffiliationAndCtxOrg(contextUser, contextOrg, 'INST_EDITOR')
 
         if (! params.status) {
             if (params.isSiteReloaded != "yes") {
@@ -151,7 +152,7 @@ class SubscriptionService {
         /* deactivated as statistics key is submitted nowhere, as of July 16th, '20
         if (OrgSetting.get(contextOrg, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID) instanceof OrgSetting){
             result.statsWibid = contextOrg.getIdentifierByType('wibid')?.value
-            result.usageMode = accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) ? 'package' : 'institution'
+            result.usageMode = accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) ? 'package' : 'institution'
         }
          */
         prf.setBenchmark('end properties')
@@ -435,11 +436,6 @@ class SubscriptionService {
         result
     }
 
-    @Deprecated
-    Set<Org> getAllTimeSubscribersForConsortiaSubscription(Set<Subscription> entrySet) {
-        Org.executeQuery('select oo.org from OrgRole oo join oo.org org where oo.sub.instanceOf in (:entry) and oo.roleType in (:subscriberRoleTypes) order by org.sortname asc, org.name asc',[entry:entrySet,subscriberRoleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])
-    }
-
     /**
      * Gets a (filtered) list of subscriptions to which the context institution has reading rights
      * @param params the filter parameter map
@@ -454,7 +450,7 @@ class SubscriptionService {
             params.joinQuery = "join s.orgRelations so"
         }
 
-        if (accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+        if (accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
             tmpQ = _getSubscriptionsConsortiaQuery(params)
             result.addAll(Subscription.executeQuery(queryStart + tmpQ[0], tmpQ[1]))
 
@@ -483,7 +479,7 @@ class SubscriptionService {
         List result = []
         List tmpQ
 
-        if (accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+        if (accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
             tmpQ = _getSubscriptionsConsortiaQuery(params)
             result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
             if (params.showSubscriber) {
@@ -517,7 +513,7 @@ class SubscriptionService {
         List result = []
         List tmpQ
 
-        if(accessService.checkPerm(CustomerTypeService.ORG_INST_PRO)) {
+        if(accessService.ctxPerm(CustomerTypeService.ORG_INST_PRO)) {
 
             tmpQ = _getSubscriptionsConsortialLicenseQuery(params)
             result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
@@ -538,7 +534,7 @@ class SubscriptionService {
         List result = []
         List tmpQ
 
-        if(accessService.checkPerm(CustomerTypeService.ORG_INST_PRO)) {
+        if(accessService.ctxPerm(CustomerTypeService.ORG_INST_PRO)) {
 
             tmpQ = _getSubscriptionsConsortialLicenseQuery(params)
             result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
@@ -705,121 +701,6 @@ class SubscriptionService {
         ies
     }
 
-    @Deprecated
-    List getIssueEntitlementsWithFilter(Subscription subscription, params) {
-
-        if(subscription) {
-            String base_qry = null
-            Map<String,Object> qry_params = [subscription: subscription]
-
-            SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
-            def date_filter
-            if (params.asAt && params?.asAt?.length() > 0) {
-                date_filter = sdf.parse(params.asAt)
-            } else {
-                date_filter = new Date()
-            }
-
-            if (params.filter) {
-                base_qry = " from IssueEntitlement as ie where ie.subscription = :subscription "
-                if (params.mode != 'advanced') {
-                    // If we are not in advanced mode, hide IEs that are not current, otherwise filter
-                    // base_qry += "and ie.status <> ? and ( ? >= coalesce(ie.accessStartDate,subscription.startDate) ) and ( ( ? <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) )  "
-                    // qry_params.add(deleted_ie);
-                    base_qry += "and (( :startDate >= coalesce(ie.accessStartDate,subscription.startDate) ) OR ( ie.accessStartDate is null )) and ( ( :endDate <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) )  "
-                    qry_params.startDate = date_filter
-                    qry_params.endDate = date_filter
-                }
-                base_qry += "and ( ( lower(ie.name) like :title ) or ( exists ( from Identifier ident where ident.tipp.id = ie.tipp.id and ident.value like :identifier ) ) ) "
-                qry_params.title = "%${params.filter.trim().toLowerCase()}%"
-                qry_params.identifier = "%${params.filter}%"
-            } else {
-                base_qry = " from IssueEntitlement as ie where ie.subscription = :subscription "
-                if (params.mode != 'advanced') {
-                    // If we are not in advanced mode, hide IEs that are not current, otherwise filter
-
-                    base_qry += " and (( :startDate >= coalesce(ie.accessStartDate,subscription.startDate) ) OR ( ie.accessStartDate is null )) and ( ( :endDate <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) ) "
-                    qry_params.startDate = date_filter
-                    qry_params.endDate = date_filter
-                }
-            }
-
-            if(params.mode != 'advanced') {
-                base_qry += " and ie.status = :current "
-                qry_params.current = RDStore.TIPP_STATUS_CURRENT
-            }
-            else {
-                base_qry += " and ie.status != :ieStatus "
-                qry_params.ieStatus = RDStore.TIPP_STATUS_REMOVED
-            }
-
-            if(params.ieAcceptStatusFixed) {
-                base_qry += " and ie.acceptStatus = :ieAcceptStatus "
-                qry_params.ieAcceptStatus = RDStore.IE_ACCEPT_STATUS_FIXED
-            }
-
-            if(params.ieAcceptStatusNotFixed) {
-                base_qry += " and ie.acceptStatus != :ieAcceptStatus "
-                qry_params.ieAcceptStatus = RDStore.IE_ACCEPT_STATUS_FIXED
-            }
-
-            if(params.summaryOfContent) {
-                base_qry += " and lower(ie.tipp.summaryOfContent) like :summaryOfContent "
-                qry_params.summaryOfContent = "%${params.summaryOfContent.trim().toLowerCase()}%"
-            }
-
-            if (params.subject_references && params.subject_references != "" && params.list('subject_references')) {
-                Set<String> subjectQuery = []
-                params.list('subject_references').each { String subReference ->
-                    subjectQuery << "genfunc_filter_matcher(ie.tipp.subjectReference, '${subReference.toLowerCase()}') = true"
-                }
-                base_qry += " and (${subjectQuery.join(" or ")}) "
-            }
-
-            if (params.series_names && params.series_names != "" && params.list('series_names')) {
-                base_qry += " and lower(ie.tipp.seriesName) in (:series_names)"
-                qry_params.series_names = params.list('series_names').collect { ""+it.toLowerCase()+"" }
-            }
-
-            if(params.ebookFirstAutorOrFirstEditor) {
-                base_qry += " and (lower(ie.tipp.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(ie.tipp.firstEditor) like :ebookFirstAutorOrFirstEditor) "
-                qry_params.ebookFirstAutorOrFirstEditor = "%${params.ebookFirstAutorOrFirstEditor.trim().toLowerCase()}%"
-            }
-
-            if (params.pkgfilter && (params.pkgfilter != '')) {
-                base_qry += " and ie.tipp.pkg.id = :pkgId "
-                qry_params.pkgId = Long.parseLong(params.pkgfilter)
-            }
-
-            //dateFirstOnline from
-            if(params.dateFirstOnlineFrom) {
-                base_qry += " and (ie.tipp.dateFirstOnline is not null AND ie.tipp.dateFirstOnline >= :dateFirstOnlineFrom) "
-                qry_params.dateFirstOnlineFrom = sdf.parse(params.dateFirstOnlineFrom)
-
-            }
-            //dateFirstOnline to
-            if(params.dateFirstOnlineTo) {
-                base_qry += " and (ie.tipp.dateFirstOnline is not null AND ie.tipp.dateFirstOnline <= :dateFirstOnlineTo) "
-                qry_params.dateFirstOnlineTo = sdf.parse(params.dateFirstOnlineTo)
-            }
-
-            if ((params.sort != null) && (params.sort.length() > 0)) {
-                base_qry += "order by ie.${params.sort} ${params.order} "
-            } else {
-                base_qry += "order by lower(ie.sortname) asc"
-            }
-
-            List<IssueEntitlement> ies = IssueEntitlement.executeQuery("select ie " + base_qry, qry_params, [max: params.max, offset: params.offset])
-
-
-            ies.sort { it.sortname }
-            ies
-        }else{
-            List<IssueEntitlement> ies = []
-            ies
-        }
-    }
-
     /**
      * Gets issue entitlements for the given subscription which are under consideration
      * @param subscription the subscription whose titles should be returned
@@ -959,17 +840,6 @@ class SubscriptionService {
     List getCurrentIssueEntitlementIDs(Subscription subscription) {
         List<Long> ieIDs = subscription ? IssueEntitlement.executeQuery("select ie.id from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :cur and ie.acceptStatus = :fixed", [sub: subscription, cur: RDStore.TIPP_STATUS_CURRENT, fixed: RDStore.IE_ACCEPT_STATUS_FIXED]) : []
         ieIDs
-    }
-
-    @Deprecated
-    List getVisibleOrgRelationsWithoutConsortia(Subscription subscription) {
-        List visibleOrgRelations = []
-        subscription?.orgRelations?.each { OrgRole or ->
-            if (!(or.org?.id == contextService.getOrg().id) && !(or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA])) {
-                visibleOrgRelations << or
-            }
-        }
-        visibleOrgRelations.sort { it.org?.name?.toLowerCase() }
     }
 
     /**
@@ -1906,7 +1776,7 @@ class SubscriptionService {
         Org contextOrg = contextService.getOrg()
         RefdataValue comboType
         String[] parentSubType
-        if (accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+        if (accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
             comboType = RDStore.COMBO_TYPE_CONSORTIUM
             parentSubType = [RDStore.SUBSCRIPTION_KIND_CONSORTIAL.getI10n('value')]
         }
@@ -1936,7 +1806,7 @@ class SubscriptionService {
                 case "konsortiallizenz":
                 case "parent subscription":
                 case "consortial subscription":
-                    if(accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC))
+                    if(accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC))
                         colMap.instanceOf = c
                     break
                 case "status": colMap.status = c
@@ -2331,7 +2201,7 @@ class SubscriptionService {
                     sub.refresh() //needed for dependency processing
                     //create the org role associations
                     RefdataValue parentRoleType, memberRoleType
-                    if (accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+                    if (accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
                         parentRoleType = RDStore.OR_SUBSCRIPTION_CONSORTIA
                         memberRoleType = RDStore.OR_SUBSCRIBER_CONS
                     }
@@ -2386,7 +2256,7 @@ class SubscriptionService {
                     }
                     if(entry.notes) {
                         Object[] args = [sdf.format(new Date())]
-                        Doc docContent = new Doc(contentType: Doc.CONTENT_TYPE_STRING, content: entry.notes, title: messageSource.getMessage('myinst.subscriptionImport.notes.title',args,locale), type: RefdataValue.getByValueAndCategory('Note', RDConstants.DOCUMENT_TYPE), owner: contextOrg, user: contextService.getUser())
+                        Doc docContent = new Doc(contentType: Doc.CONTENT_TYPE_STRING, content: entry.notes, title: messageSource.getMessage('myinst.subscriptionImport.notes.title',args,locale), type: RDStore.DOC_TYPE_NOTE, owner: contextOrg, user: contextService.getUser())
                         if(docContent.save()) {
                             DocContext dc = new DocContext(subscription: sub, owner: docContent)
                             dc.save()
@@ -2551,13 +2421,13 @@ class SubscriptionService {
                                             case "listCurrencyCol": priceItem.listCurrency = cellEntry ? RefdataValue.getByValueAndCategory(cellEntry, RDConstants.CURRENCY) : null
                                                 break
                                             case "listPriceEurCol": priceItem.listPrice = cellEntry ? escapeService.parseFinancialValue(cellEntry) : null
-                                                priceItem.listCurrency = RefdataValue.getByValueAndCategory("EUR", RDConstants.CURRENCY)
+                                                priceItem.listCurrency = RDStore.CURRENCY_EUR
                                                 break
                                             case "listPriceUsdCol": priceItem.listPrice = cellEntry ?  escapeService.parseFinancialValue(cellEntry) : null
-                                                priceItem.listCurrency = RefdataValue.getByValueAndCategory("USD", RDConstants.CURRENCY)
+                                                priceItem.listCurrency = RDStore.CURRENCY_USD
                                                 break
                                             case "listPriceGbpCol": priceItem.listPrice = cellEntry ? escapeService.parseFinancialValue(cellEntry) : null
-                                                priceItem.listCurrency = RefdataValue.getByValueAndCategory("GBP", RDConstants.CURRENCY)
+                                                priceItem.listCurrency = RDStore.CURRENCY_GBP
                                                 break
                                             case "localPriceCol": priceItem.localPrice = cellEntry ? escapeService.parseFinancialValue(cellEntry) : null
                                                 break
@@ -2710,7 +2580,7 @@ class SubscriptionService {
     def copySpecificSubscriptionEditorOfProvideryAndAgencies(Subscription sourceSub, Subscription targetSub){
 
         sourceSub.getProviders().each { provider ->
-            RefdataValue refdataValue = RefdataValue.getByValueAndCategory('Specific subscription editor', RDConstants.PERSON_RESPONSIBILITY)
+            RefdataValue refdataValue = RDStore.PRS_RESP_SPEC_SUB_EDITOR
 
             Person.getPublicByOrgAndObjectResp(provider, sourceSub, 'Specific subscription editor').each { prs ->
 
@@ -2744,7 +2614,7 @@ class SubscriptionService {
             }
         }
         sourceSub.getAgencies().each { agency ->
-            RefdataValue refdataValue = RefdataValue.getByValueAndCategory('Specific subscription editor', RDConstants.PERSON_RESPONSIBILITY)
+            RefdataValue refdataValue = RDStore.PRS_RESP_SPEC_SUB_EDITOR
 
             Person.getPublicByOrgAndObjectResp(agency, sourceSub, 'Specific subscription editor').each { prs ->
                 if(!(agency in targetSub.orgRelations.org)){

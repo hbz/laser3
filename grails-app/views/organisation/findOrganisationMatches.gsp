@@ -44,7 +44,7 @@
 									<th>${message(code:'default.name.label')}</th>
 									<g:if test="${comboType == RDStore.COMBO_TYPE_CONSORTIUM}">
 										<th>${message(code:'identifier.plural')}</th>
-										<th>${message(code:'org.shortname.label')}</th>
+										<th>${message(code:'org.sortname.label')}</th>
 										<th>${message(code:'org.country.label')}</th>
 										<th>${message(code: 'org.consortiaToggle.label')}</th>
 									</g:if>
@@ -55,7 +55,7 @@
 								<tr>
 									<td>
 										${organisationInstance.name}
-										<g:if test="${(accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && members.get(organisationInstance.id)?.contains(institution.id) && members.get(organisationInstance.id)?.size() == 1) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
+										<g:if test="${(accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && members.get(organisationInstance.id)?.contains(institution.id) && members.get(organisationInstance.id)?.size() == 1) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
 											<g:link controller="organisation" action="show" id="${organisationInstance.id}">(${message(code:'default.button.edit.label')})</g:link>
 										</g:if>
 									</td>
@@ -83,7 +83,7 @@
 													  model="${[tipp: organisationInstance]}"/>
 
 									</td>
-									<td>${organisationInstance.shortname}</td>
+									<td>${organisationInstance.sortname}</td>
 									<td>${organisationInstance.country}</td>
 									<td>
 									<%-- here: switch if in consortia or not --%>

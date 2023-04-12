@@ -122,7 +122,7 @@
           </div>
           <div class="three fields">
           <%-- TODO [ticket=2276] provisoric, name check is in order to prevent id mismatch --%>
-              <g:if test="${accessService.checkPerm(CustomerTypeService.ORG_INST_PRO) || institution.globalUID == Org.findByName('LAS:eR Backoffice').globalUID}">
+              <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_INST_PRO) || institution.globalUID == Org.findByName('LAS:eR Backoffice').globalUID}">
                   <div class="field">
                       <fieldset id="licenseType">
                           <div class="inline fields la-filter-inline">
@@ -227,9 +227,9 @@
                               <g:if test="${licensor}">
                                   <g:link controller="organisation" action="show" id="${licensor.id}">
                                       ${fieldValue(bean: licensor, field: "name")}
-                                      <g:if test="${licensor.shortname}">
+                                      <g:if test="${licensor.sortname}">
                                           <br />
-                                          (${fieldValue(bean: licensor, field: "shortname")})
+                                          (${fieldValue(bean: licensor, field: "sortname")})
                                       </g:if>
                                   </g:link>
                               </g:if>

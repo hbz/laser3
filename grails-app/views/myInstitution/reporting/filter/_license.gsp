@@ -3,7 +3,7 @@
 
         <div class="menu ui top attached tabular la-tab-with-js">
             <a class="active item" data-tab="lic-filter-tab-1">${message(code:'license.plural')}</a>
-            %{--<a class="item" data-tab="lic-filter-tab-2">Teilnehmer</a>--}%
+            %{--<a class="item" data-tab="lic-filter-tab-2">Einrichtung</a>--}%
             <a class="item" data-tab="lic-filter-tab-3">${message(code:'license.licensor.label')}</a>
         </div><!-- .menu -->
 
@@ -34,7 +34,7 @@
 
         %{--<div class="ui bottom attached tab segment" data-tab="lic-filter-tab-2">
             <div class="field">
-                <label for="filter:member_source">Teilnehmerauswahl</label>
+                <label for="filter:member_source">Einrichtungsauswahl</label>
                 <g:set var="config" value="${BaseConfig.getCurrentConfig( BaseConfig.KEY_LICENSE ).member}" />
                 <g:select name="filter:member_source" class="ui selection dropdown la-not-clearable" from="${config.source}" optionKey="key" optionValue="value" value="${params.get('filter:member_source')}" />
             </div>

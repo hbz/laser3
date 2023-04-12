@@ -189,7 +189,7 @@ class XEditableTagLib {
 
                 String update_link = createLink(controller:'ajax', action: 'genericSetData').encodeAsHTML()
                 String id = attrs.id ?: "${oid}:${field}"
-                String cssClass = attrs.class
+                String cssClass = attrs.class ?: ''
                 String data_confirm_tokenMsg = attrs.data_confirm_tokenMsg
                 String emptyText = ' data-emptytext="' + ( attrs.emptytext ?: message(code:'default.button.edit.label') ) + '"'
 
@@ -238,7 +238,7 @@ class XEditableTagLib {
 
     /**
      *   Attributes:
-     *   owner - UserOrg
+     *   owner - UserOrgRole
      *   type - Role.roleType
      *   overwriteEditable - if existing, value overwrites global editable
      */

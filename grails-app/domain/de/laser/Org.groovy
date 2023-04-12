@@ -34,7 +34,7 @@ import org.apache.commons.lang3.StringUtils
  *     <li>institution metadata is maintained in LAS:eR directly whereas providers should curate themselves in we:kb; organisations thus have a we:kb-ID (stored as {@link #gokbId}, naming is legacy) which serves as synchronisation
  *     key between the data in the two webapps</li>
  * </ul>
- * @see UserOrg
+ * @see UserOrgRole
  * @see OrgRole
  * @see OrgSetting
  */
@@ -43,7 +43,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         implements DeleteFlag {
 
     String name
-    String shortname
     String shortcode            // Used to generate friendly semantic URLs
     String sortname
     String legalPatronName
@@ -135,7 +134,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         prsLinks:           PersonRole,
         contacts:           Contact,
         addresses:          Address,
-        affiliations:       UserOrg,
+        affiliations:       UserOrgRole,
         propertySet:        OrgProperty,
         altnames:           AlternativeName,
         orgType:            RefdataValue,
@@ -153,7 +152,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
            version          column:'org_version'
          globalUID          column:'org_guid'
               name          column:'org_name',      index:'org_name_idx'
-         shortname          column:'org_shortname', index:'org_shortname_idx'
           sortname          column:'org_sortname',  index:'org_sortname_idx'
    legalPatronName          column:'org_legal_patronname'
                url          column:'org_url'
@@ -207,7 +205,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     static constraints = {
            globalUID(nullable:true, blank:false, unique:true, maxSize:255)
                 name(blank:false, maxSize:255)
-           shortname(nullable:true, blank:true, maxSize:255)
             sortname(nullable:true, blank:true, maxSize:255)
      legalPatronName(nullable:true, blank:true, maxSize:255)
                  url(nullable:true, blank:true, maxSize:512)
@@ -242,6 +239,8 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
              gokbId (nullable:true, blank:true)
         lastUpdatedCascading (nullable: true)
     }
+
+    static final Set<String> WEKB_PROPERTIES = ['nickname', 'homepage', 'metadataDownloaderURL', 'kbartDownloaderURL', 'roles']
 
     /**
      * Checks if the organisation is marked as deleted
@@ -471,9 +470,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     List<User> getAllValidInstAdmins() {
         List<User> admins = User.executeQuery(
                 "select u from User u join u.affiliations uo where uo.org = :org and uo.formalRole = :role and u.enabled = true",
-                [
-                        org: this, role: Role.findByAuthority('INST_ADM')
-                ]
+                [org: this, role: Role.findByAuthority('INST_ADM')]
         )
         admins
     }
@@ -515,7 +512,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     /**
      * Gets the display string for this organisation; the following cascade is being checked. If one field is not set, the following is being returned:
      * <ol>
-     *     <li>shortname</li>
      *     <li>sortname</li>
      *     <li>name</li>
      *     <li>globalUID</li>
@@ -524,7 +520,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      * @return one of the fields listed above
      */
     String getDesignation() {
-        shortname ?: (sortname ?: (name ?: (globalUID ?: id)))
+        sortname ?: (name ?: (globalUID ?: id))
     }
 
     /**
@@ -542,7 +538,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         if(currentSubscriptions)
             return false
         //verification c: check if org has active users
-        UserOrg activeUsers = UserOrg.findByOrg(this)
+        UserOrgRole activeUsers = UserOrgRole.findByOrg(this)
         if(activeUsers)
             return false
         return true
@@ -622,8 +618,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         if (onlyPublic) {
             if(exWekb) {
                 Person.executeQuery(
-                        "select distinct p from Person as p inner join p.roleLinks pr where pr.org = :org and pr.functionType = :functionType " +
-                                " and p.tenant = :org",
+                        "select distinct p from Person as p inner join p.roleLinks pr where pr.org = :org and pr.functionType = :functionType and p.tenant = :org",
                         [org: this, functionType: functionType]
                 )
             }
@@ -724,7 +719,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      * @return true if there is at least one user registered as institutional administrator, false otherwise
      */
     boolean hasAccessOrg(){
-        if (UserOrg.findAllByOrgAndFormalRole(this, Role.findByAuthority('INST_ADM'))) {
+        if (UserOrgRole.findAllByOrgAndFormalRole(this, Role.findByAuthority('INST_ADM'))) {
             return true
         }
         else {
@@ -739,9 +734,9 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     Map<String, Object> hasAccessOrgListUser(){
         Map<String, Object> result = [:]
 
-        result.instAdms = UserOrg.findAllByOrgAndFormalRole(this, Role.findByAuthority('INST_ADM'))
-        result.instEditors = UserOrg.findAllByOrgAndFormalRole(this, Role.findByAuthority('INST_EDITOR'))
-        result.instUsers = UserOrg.findAllByOrgAndFormalRole(this, Role.findByAuthority('INST_USER'))
+        result.instAdms    = UserOrgRole.findAllByOrgAndFormalRole(this, Role.findByAuthority('INST_ADM'))
+        result.instEditors = UserOrgRole.findAllByOrgAndFormalRole(this, Role.findByAuthority('INST_EDITOR'))
+        result.instUsers   = UserOrgRole.findAllByOrgAndFormalRole(this, Role.findByAuthority('INST_USER'))
 
         return result
     }
@@ -764,9 +759,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         if (contextOrg.isCustomerType_Inst()){
             if (name) {
                 result += name
-            }
-            if (shortname){
-                result += ' (' + shortname + ')'
             }
         } else {
             if (sortname) {

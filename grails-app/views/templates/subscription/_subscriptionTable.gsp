@@ -34,7 +34,7 @@
                             ${message(code: 'myinst.currentSubscriptions.subscription_type', default: RDConstants.SUBSCRIPTION_TYPE)}
                         </th>
                         */ %>
-                        <g:if test="${params.orgRole in ['Subscriber'] && accessService.checkPerm(CustomerTypeService.ORG_INST_BASIC)}">
+                        <g:if test="${params.orgRole in ['Subscriber'] && accessService.ctxPerm(CustomerTypeService.ORG_INST_BASIC)}">
                             <th scope="col" rowspan="2" >${message(code: 'consortium')}</th>
                         </g:if>
                         <g:elseif test="${params.orgRole == 'Subscriber'}">
@@ -144,7 +144,7 @@
                             </g:if>
                             <g:if test="${s.isEditableBy(user) && (s.packages == null || s.packages.size() == 0)}">
                                 <i>
-                                    <g:if test="${accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )}">
+                                    <g:if test="${accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )}">
                                         <g:message code="myinst.currentSubscriptions.no_links" />
                                         <g:link controller="subscription" action="linkPackage"
                                                 id="${s.id}">${message(code: 'subscription.details.linkPackage.label')}</g:link>
@@ -161,7 +161,7 @@
                         </td>--%>
                         <g:if test="${params.orgRole == 'Subscriber'}">
                             <td>
-                                <g:if test="${accessService.checkPerm(CustomerTypeService.ORG_INST_BASIC)}">
+                                <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_INST_BASIC)}">
                                     ${s.getConsortia()?.name}
                                 </g:if>
                             </td>
@@ -170,18 +170,18 @@
                             <%-- as of ERMS-584, these queries have to be deployed onto server side to make them sortable --%>
                             <g:each in="${s.providers}" var="org">
                                 <g:link controller="organisation" action="show" id="${org.id}">${fieldValue(bean: org, field: "name")}
-                                    <g:if test="${org.shortname}">
+                                    <g:if test="${org.sortname}">
                                         <br />
-                                        (${fieldValue(bean: org, field: "shortname")})
+                                        (${fieldValue(bean: org, field: "sortname")})
                                     </g:if>
                                 </g:link><br />
                             </g:each>
                             <g:each in="${s.agencies}" var="org">
                                 <g:link controller="organisation" action="show" id="${org.id}">
                                     ${fieldValue(bean: org, field: "name")}
-                                    <g:if test="${org.shortname}">
+                                    <g:if test="${org.sortname}">
                                         <br />
-                                        (${fieldValue(bean: org, field: "shortname")})
+                                        (${fieldValue(bean: org, field: "sortname")})
                                     </g:if> (${message(code: 'default.agency.label')})
                                 </g:link><br />
                             </g:each>

@@ -7,6 +7,46 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4956    11.04.2023  dev     3.1         Andreas Bug         Auslesefehler bei Mailadressen behoben
+
+4954    05.04.2023  rc-3.0  3.0.6       Moe     Feature     allgemeine Merkmale Lizenzebene
+
+4951    04.04.2023  dev     3.1         Andreas Bug         Filter "Dauerhafter Zugriff" fehlte in Übersicht von verknüpften Lizenzen eines Vertrages
+
+4950    04.04.2023  dev     3.1         David   Feature     Filter bei "Anbieter/Lieferant" (alle und meine)
+
+4948    04.04.2023  rc-3.0  3.0.6       Moe     Bug         Lizenz erst nach Ablaufdatum auf abgelaufen setzen
+
+4947    04.04.2023  rc-3.0  3.0.6       Moe     Bug         Erinnerung an eigene Organisationsmerkmale vom Typ datum funktioniert nicht
+
+4946    04.04.2023  rc-3.0  3.0.6       Moe     Bug         Automatische Verlängerung erzeugt keine Nachfolge-Lizenz
+
+4789    31.03.2023  dev     3.1         Andreas Feature     Aktualisieren der Anbieterdaten
+
+4741    31.03.2023  dev     3.1         Andreas Feature     Zusammenführung von Einrichtungen
+
+4834    30.03.2023  dev     3.1         Andreas Feature     Umstellung der Statistikladevorgänge auf direkten Abruf vom Anbieter
+
+4904    29.03.2023  dev     3.1         David   Feature     GASCO Sicht anpassen
+
+4942    29.03.2023  dev     3.1         David   Feature     GASCO und we:kb mit separatem Tab öffnen
+
+4930    28.03.2023  dev     3.1         David   Feature     "Teilnehmer" durch "Einrichtung" ersetzen
+
+4893    28.03.2023  dev     3.1         Andreas Feature     Umgang mit leeren Reports implementiert
+
+4892    28.03.2023  dev     3.1         Andreas Feature     Reports werden kohärent angeboten
+
+4813    28.03.2023  dev     3.1         Andreas Feature     (siehe 4893) Umgang mit leeren Reports implementiert
+
+4931    27.03.2023  dev     3.1         David   Bug         Verlorene Rechte "meine Einrichtungen"
+
+4908    24.03.2023  dev     3.1         Andreas Bug         Ausschlussliste war nicht vollständig, was das Hinzufügen von Teilnehmern verhinderte
+
+4881    24.03.2023  dev     3.1         Andreas Feature     Kundennummer-Schlüsselpaare können ab jetzt auch beim Hinzufügen von Teilnehmern angelegt werden
+
+4860    24.03.2023  dev     3.1         Andreas Bug         (betraf nur DEV) Deadlock verhinderte den Übertrag von Merkmalen
+
 4911    22.03.2023  dev     3.1         David   Feature     Refactoring: Kundentyp
 
 4914    21.03.2023  rc-3.0  3.0.5       Andreas Bug         fehlendes Komma in der Abfrage ergänzt

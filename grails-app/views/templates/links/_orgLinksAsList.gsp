@@ -110,7 +110,7 @@
                                                 </div>
                                                 <div class="thirteen wide column">
                                                     <div class="ui  label">
-                                                        ${(RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)).getI10n('value')}
+                                                        ${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')}
                                                     </div>
                                                     <div class="ui header">
                                                         ${func}
@@ -156,7 +156,7 @@
                                                     </div>
                                                     <div class="thirteen wide column">
                                                         <div class="ui  label">
-                                                            ${(RefdataValue.getByValueAndCategory('Technical Support', RDConstants.PERSON_FUNCTION)).getI10n('value')}
+                                                            ${RDStore.PRS_FUNC_TECHNICAL_SUPPORT.getI10n('value')}
                                                         </div>
                                                         <div class="ui header">
                                                             ${func}
@@ -186,7 +186,7 @@
                                                     </div>
                                                     <div class="thirteen wide column">
                                                         <div class="ui  label">
-                                                            ${(RefdataValue.getByValueAndCategory('Service Support', RDConstants.PERSON_FUNCTION)).getI10n('value')}
+                                                            ${RDStore.PRS_FUNC_SERVICE_SUPPORT.getI10n('value')}
                                                         </div>
                                                         <div class="ui header">
                                                             ${func}
@@ -294,7 +294,7 @@
                                                 </div>
                                                 <div class="thirteen wide column">
                                                     <div class="ui  label">
-                                                        ${(RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)).getI10n('value')}
+                                                        ${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')}
                                                     </div>
                                                     <div class="ui header">
                                                         ${func}
@@ -320,7 +320,7 @@
                                                     </div>
                                                     <div class="thirteen wide column">
                                                         <div class="ui  label">
-                                                            ${(RefdataValue.getByValueAndCategory('Technical Support', RDConstants.PERSON_FUNCTION)).getI10n('value')}
+                                                            ${RDStore.PRS_FUNC_TECHNICAL_SUPPORT.getI10n('value')}
                                                         </div>
                                                         <div class="ui header">
                                                             ${func}
@@ -345,7 +345,7 @@
                                                     </div>
                                                     <div class="thirteen wide column">
                                                         <div class="ui  label">
-                                                            ${(RefdataValue.getByValueAndCategory('Service Support', RDConstants.PERSON_FUNCTION)).getI10n('value')}
+                                                            ${RDStore.PRS_FUNC_SERVICE_SUPPORT.getI10n('value')}
                                                         </div>
                                                         <div class="ui header">
                                                             ${func}

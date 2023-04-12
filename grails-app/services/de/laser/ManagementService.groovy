@@ -154,7 +154,7 @@ class ManagementService {
                         if(!keyPair) {
                             keyPair = new CustomerIdentifier(platform: platform,
                                     customer: customer,
-                                    type: RefdataValue.getByValueAndCategory('Default', RDConstants.CUSTOMER_IDENTIFIER_TYPE),
+                                    type: RDStore.CUSTOMER_IDENTIFIER_TYPE_DEFAULT,
                                     owner: contextService.getOrg(),
                                     isPublic: true)
                             if(!keyPair.save()) {
@@ -213,11 +213,11 @@ class ManagementService {
                 String base_qry
                 Map qry_params
 
-                if (accessService.checkPerm(CustomerTypeService.ORG_INST_PRO)) {
+                if (accessService.ctxPerm(CustomerTypeService.ORG_INST_PRO)) {
                     base_qry = "from License as l where ( exists ( select o from l.orgRelations as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :lic_org ) ) )"
                     qry_params = [roleType1:RDStore.OR_LICENSEE, roleType2:RDStore.OR_LICENSEE_CONS, lic_org:result.institution]
                 }
-                else if (accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+                else if (accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
                     base_qry = "from License as l where exists ( select o from l.orgRelations as o where ( o.roleType = :roleTypeC AND o.org = :lic_org AND l.instanceOf is null AND NOT exists ( select o2 from l.orgRelations as o2 where o2.roleType = :roleTypeL ) ) )"
                     qry_params = [roleTypeC:RDStore.OR_LICENSING_CONSORTIUM, roleTypeL:RDStore.OR_LICENSEE_CONS, lic_org:result.institution]
                 }
@@ -653,7 +653,7 @@ class ManagementService {
             }
 
             if(params.tab == 'providerAgency') {
-                result.modalPrsLinkRole = RefdataValue.getByValueAndCategory('Specific subscription editor', RDConstants.PERSON_RESPONSIBILITY)
+                result.modalPrsLinkRole = RDStore.PRS_RESP_SPEC_SUB_EDITOR
                 result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(result.institution)
                 if(result.subscription) {
                     result.visibleOrgRelations = OrgRole.executeQuery("select oo from OrgRole oo join oo.org org where oo.sub = :parent and oo.roleType in (:roleTypes) order by org.name asc", [parent: result.subscription, roleTypes: [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]])

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.OrgSubjectGroup; de.laser.OrgRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Org; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting;de.laser.Combo; de.laser.Contact; de.laser.remote.ApiSource" %>
+<%@ page import="de.laser.TitleInstancePackagePlatform; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.OrgSubjectGroup; de.laser.OrgRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Org; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting;de.laser.Combo; de.laser.Contact; de.laser.remote.ApiSource" %>
 
 <g:set var="wekbAPI" value="${ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"/>
 
@@ -75,29 +75,15 @@
                     </dl>
                     <g:if test="${!inContextOrg || isGrantedOrgRoleAdminOrOrgEditor}">
                         <dl>
-                            <dt><g:message code="org.shortname.label" /></dt>
+                            <dt><g:message code="org.sortname.label" /></dt>
                             <dd>
                                 <ui:xEditable
                                         data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
                                         data_confirm_term_how="ok"
                                         class="js-open-confirm-modal-xEditable"
-                                        owner="${orgInstance}" field="shortname" overwriteEditable="${editable && orgInstanceRecord == null}"/>
+                                        owner="${orgInstance}" field="sortname" overwriteEditable="${editable && orgInstanceRecord == null}"/>
                             </dd>
                         </dl>
-                        <g:if test="${!isProviderOrAgency}">
-                            <dl>
-                                <dt>
-                                    <g:message code="org.sortname.label" />
-                                </dt>
-                                <dd>
-                                    <ui:xEditable
-                                            data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
-                                            data_confirm_term_how="ok"
-                                            class="js-open-confirm-modal-xEditable"
-                                            owner="${orgInstance}" field="sortname"/>
-                                </dd>
-                            </dl>
-                        </g:if>
                     </g:if>
                     <dl>
                         <dt><g:message code="org.altname.label" /></dt>
@@ -478,7 +464,7 @@
                         <h2 class="ui header"><g:message code="org.contactpersons.and.addresses.label"/></h2>
                     </g:if>
 
-                        <g:if test="${(orgInstance.id == institution.id && user.is_ROLE_ADMIN_or_hasAffiliation('INST_EDITOR'))}">
+                        <g:if test="${(orgInstance.id == institution.id && user.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR'))}">
                             <g:link action="myPublicContacts" controller="organisation" params="[id: orgInstance.id, tab: 'contacts']"
                                     class="ui button">${message('code': 'org.edit.contactsAndAddresses')}</g:link>
                         </g:if>
@@ -490,7 +476,7 @@
                             <dd>
                             <laser:render template="publicContacts" model="[isProviderOrAgency: isProviderOrAgency, existsWekbRecord: orgInstanceRecord != null]"/>
 
-                            <g:if test="${isProviderOrAgency && accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_BASIC ) && !orgInstanceRecord}">
+                            <g:if test="${isProviderOrAgency && accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC ) && !orgInstanceRecord}">
                                 <div class="ui list">
 
                                     <div class="item">
@@ -514,8 +500,8 @@
 
                                     <%
                                         Set<String> typeNames = new TreeSet<String>()
-                                        typeNames.add(RDStore.ADRESS_TYPE_BILLING.getI10n('value'))
-                                        typeNames.add(RDStore.ADRESS_TYPE_POSTAL.getI10n('value'))
+                                        typeNames.add(RDStore.ADDRESS_TYPE_BILLING.getI10n('value'))
+                                        typeNames.add(RDStore.ADDRESS_TYPE_POSTAL.getI10n('value'))
                                         Map<String, List> typeAddressMap = [:]
                                         orgInstance.addresses.each {
                                             it.type.each { type ->
@@ -727,7 +713,7 @@
                         --%>
             </g:if>
 
-                <g:if test="${(user.hasMinRole('ROLE_ADMIN') || institution.isCustomerType_Consortium()) && (institution != orgInstance)}">
+                <g:if test="${(SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || institution.isCustomerType_Consortium()) && (institution != orgInstance)}">
                     <g:if test="${orgInstance.createdBy || orgInstance.legallyObligedBy}">
                         <div class="ui card">
                             <div class="content">
@@ -786,7 +772,7 @@
                     </g:if>
                 </g:if>
 
-            <g:if test="${accessService.checkPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
+            <g:if test="${accessService.ctxPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
                 <div id="new-dynamic-properties-block">
                     <laser:render template="properties" model="${[
                             orgInstance   : orgInstance,
@@ -810,7 +796,7 @@
                             <h2 class="ui header"><g:message code="org.contacts.label"/></h2>
                         </g:else>
 
-                        <g:if test="${(orgInstance.id == institution.id && user.is_ROLE_ADMIN_or_hasAffiliation('INST_EDITOR'))}">
+                        <g:if test="${(orgInstance.id == institution.id && user.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR'))}">
                             <g:link action="myPublicContacts" controller="organisation" params="[id: orgInstance.id, tab: 'contacts']"
                                     class="ui button">${message('code': 'org.edit.contactsAndAddresses')}</g:link>
                         </g:if>
@@ -864,7 +850,7 @@
                                                             </div>
                                                         </div>
                                                     </g:each>
-                                                    <g:set var="persons" value="${orgInstance.getContactPersonsByFunctionType(true, RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS)}"/>
+                                                    <g:set var="persons" value="${orgInstance.getContactPersonsByFunctionType(true, RDStore.PRS_FUNC_FC_BILLING_ADDRESS)}"/>
                                                     <g:each in="${persons}" var="prs">
                                                         <div class="row">
                                                             <div class="two wide column">
@@ -876,7 +862,7 @@
                                                                 </g:else>
                                                             </div>
                                                             <div class="fourteen wide column">
-                                                                <div class="ui label">${RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS.getI10n('value')}</div>
+                                                                <div class="ui label">${RDStore.PRS_FUNC_FC_BILLING_ADDRESS.getI10n('value')}</div>
                                                                 <div class="ui header">${prs}</div>
                                                                 <g:each in="${prs.roleLinks}" var="personRole">
                                                                     <g:if test="${personRole.org.id == orgInstance.id && personRole.positionType}">
@@ -911,8 +897,8 @@
                                 </tr>
                                 <%
                                     Set<String> typeNames = new TreeSet<String>()
-                                    typeNames.add(RDStore.ADRESS_TYPE_BILLING.getI10n('value'))
-                                    typeNames.add(RDStore.ADRESS_TYPE_POSTAL.getI10n('value'))
+                                    typeNames.add(RDStore.ADDRESS_TYPE_BILLING.getI10n('value'))
+                                    typeNames.add(RDStore.ADDRESS_TYPE_POSTAL.getI10n('value'))
                                     Map<String, List> typeAddressMap = [:]
                                     orgInstance.addresses.each {
                                         it.type.each { type ->
@@ -964,7 +950,7 @@
                             <g:set var="techSupports" value="${orgInstance.getContactPersonsByFunctionType(true, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, orgInstanceRecord != null)}"/>
                             <g:set var="serviceSupports" value="${orgInstance.getContactPersonsByFunctionType(true, RDStore.PRS_FUNC_SERVICE_SUPPORT, orgInstanceRecord != null)}"/>
                             <g:set var="metadataContacts" value="${orgInstance.getContactPersonsByFunctionType(true, RDStore.PRS_FUNC_METADATA, orgInstanceRecord != null)}"/>
-                            <g:if test="${isProviderOrAgency && accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_BASIC ) && !orgInstanceRecord}">
+                            <g:if test="${isProviderOrAgency && accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC ) && !orgInstanceRecord}">
                                 <tr>
                                     <td>
                                         <a href="#createPersonModal" class="ui button" data-ui="modal"
@@ -1007,9 +993,9 @@
                                                                         <g:each in="${prs.contacts.toSorted()}" var="contact">
                                                                             <g:if test="${contact.contentType && contact.contentType.value in ['E-Mail', 'Mail', 'Url', 'Phone', 'Mobil', 'Fax']}">
                                                                                 <laser:render template="/templates/cpa/contact" model="${[
-                                                                                        overwriteEditable   : (isProviderOrAgency && orgInstanceRecord == null && accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_BASIC )),
+                                                                                        overwriteEditable   : (isProviderOrAgency && orgInstanceRecord == null && accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )),
                                                                                         contact             : contact,
-                                                                                        tmplShowDeleteButton: (isProviderOrAgency && orgInstanceRecord == null && accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_BASIC ))
+                                                                                        tmplShowDeleteButton: (isProviderOrAgency && orgInstanceRecord == null && accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC ))
                                                                                 ]}"/>
                                                                             </g:if>
                                                                         </g:each>
@@ -1045,9 +1031,9 @@
                                                                         <g:each in="${prs.contacts.toSorted()}" var="contact">
                                                                             <g:if test="${contact.contentType && contact.contentType.value in ['E-Mail', 'Mail', 'Url', 'Phone', 'Mobil', 'Fax']}">
                                                                                 <laser:render template="/templates/cpa/contact" model="${[
-                                                                                        overwriteEditable   : (isProviderOrAgency && orgInstanceRecord == null && accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_BASIC )),
+                                                                                        overwriteEditable   : (isProviderOrAgency && orgInstanceRecord == null && accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )),
                                                                                         contact             : contact,
-                                                                                        tmplShowDeleteButton: (isProviderOrAgency && orgInstanceRecord == null && accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_BASIC ))
+                                                                                        tmplShowDeleteButton: (isProviderOrAgency && orgInstanceRecord == null && accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC ))
                                                                                 ]}"/>
                                                                             </g:if>
                                                                         </g:each>
@@ -1083,9 +1069,9 @@
                                                                         <g:each in="${prs.contacts.toSorted()}" var="contact">
                                                                             <g:if test="${contact.contentType && contact.contentType.value in ['E-Mail', 'Mail', 'Url', 'Phone', 'Mobil', 'Fax']}">
                                                                                 <laser:render template="/templates/cpa/contact" model="${[
-                                                                                        overwriteEditable   : (isProviderOrAgency && orgInstanceRecord == null && accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_BASIC )),
+                                                                                        overwriteEditable   : (isProviderOrAgency && orgInstanceRecord == null && accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )),
                                                                                         contact             : contact,
-                                                                                        tmplShowDeleteButton: (isProviderOrAgency && orgInstanceRecord == null && accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.ORG_CONSORTIUM_BASIC ))
+                                                                                        tmplShowDeleteButton: (isProviderOrAgency && orgInstanceRecord == null && accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC ))
                                                                                 ]}"/>
                                                                             </g:if>
                                                                         </g:each>
@@ -1107,21 +1093,9 @@
                                             <div class="ui grid">
                                                 <g:if test="${isProviderOrAgency}">
                                                     <%
-                                                        List visiblePersons = addressbookService.getVisiblePersons("addressbook",[org: orgInstance, sort: 'p.last_name, p.first_name'])
+                                                        List visiblePersons = addressbookService.getVisiblePersons("addressbook",[org: orgInstance, sort: 'p.last_name, p.first_name', function: [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.id]])
                                                     %>
                                                     <g:each in="${visiblePersons}" var="person">
-                                                        <%
-                                                            SortedSet<String> roles = new TreeSet<String>()
-                                                            SortedSet<String> responsibilities = new TreeSet<String>()
-                                                            person.roleLinks.each { PersonRole pr ->
-                                                                if(pr.functionType)
-                                                                    roles << pr.functionType.getI10n('value')
-                                                                if(pr.positionType)
-                                                                    roles << pr.positionType.getI10n('value')
-                                                                if(pr.responsibilityType)
-                                                                    responsibilities << pr.responsibilityType.getI10n('value')
-                                                            }
-                                                        %>
                                                         <div class="row">
                                                             <div class="two wide column">
                                                                 <g:if test="${person.isPublic}">
@@ -1132,9 +1106,8 @@
                                                                 </g:else>
                                                             </div>
                                                             <div class="fourteen wide column">
-                                                                <div class="ui label">${roles.join(' / ')}</div>
+                                                                <div class="ui label">${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')}</div>
                                                                 <div class="ui header">${person}</div>
-                                                                ${responsibilities.join('<br>')}
                                                                 <g:if test="${person.contacts}">
                                                                     <g:each in="${person.contacts.toSorted()}" var="contact">
                                                                         <g:if test="${contact.contentType && contact.contentType.value in ['E-Mail', 'Mail', 'Url', 'Phone', 'Mobil', 'Fax']}">
@@ -1167,10 +1140,106 @@
                                                             </div>
                                                         </div>
                                                     </g:each>
+                                                    <%
+                                                        List otherPersons = addressbookService.getVisiblePersons("addressbook",[org: orgInstance, sort: 'p.last_name, p.first_name'])
+                                                    %>
+                                                    <g:each in="${otherPersons}" var="person">
+                                                        <%
+                                                            SortedSet<String> roles = new TreeSet<String>()
+                                                            SortedSet<String> responsibilities = new TreeSet<String>()
+                                                            Map<String, Object> respMap = [:]
+                                                            person.roleLinks.each { PersonRole pr ->
+                                                                if(pr.functionType && pr.functionType != RDStore.PRS_FUNC_GENERAL_CONTACT_PRS)
+                                                                    roles << pr.functionType.getI10n('value')
+                                                                if(pr.positionType)
+                                                                    roles << pr.positionType.getI10n('value')
+                                                                if(pr.responsibilityType) {
+                                                                    responsibilities << pr.responsibilityType.getI10n('value')
+                                                                    List respObjects = respMap.containsKey(pr.responsibilityType.getI10n('value')) ? respMap.get(pr.responsibilityType.getI10n('value')) : []
+                                                                    List respRef = pr.getReference().split(':')
+                                                                    switch(respRef[0]) {
+                                                                        case 'sub': Subscription s = Subscription.get(respRef[1])
+                                                                            if(s.status == RDStore.SUBSCRIPTION_CURRENT) {
+                                                                                if(institution.isCustomerType_Consortium()) {
+                                                                                    if(!s.instanceOf)
+                                                                                        respObjects << s
+                                                                                }
+                                                                                else respObjects << s
+                                                                            }
+                                                                            break
+                                                                        case 'lic': License l = License.get(respRef[1])
+                                                                            if(l.status == RDStore.LICENSE_CURRENT) {
+                                                                                if(institution.isCustomerType_Consortium()) {
+                                                                                    if(!l.instanceOf)
+                                                                                        respObjects << l
+                                                                                }
+                                                                                else respObjects << l
+                                                                            }
+                                                                            break
+                                                                        case 'pkg': de.laser.Package p = de.laser.Package.get(respRef[1])
+                                                                            if(p.packageStatus != RDStore.PACKAGE_STATUS_REMOVED)
+                                                                                respObjects << p
+                                                                            break
+                                                                        case 'tipp': TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.get(respRef[1])
+                                                                            if(tipp.status == RDStore.TIPP_STATUS_CURRENT) {
+                                                                                respObjects << tipp
+                                                                            }
+                                                                            break
+                                                                    }
+                                                                    respMap.put(pr.responsibilityType.getI10n('value'), respObjects)
+                                                                }
+                                                            }
+                                                        %>
+                                                        <g:if test="${roles || responsibilities}">
+                                                            <div class="row">
+                                                                <div class="two wide column">
+                                                                    <g:if test="${person.isPublic}">
+                                                                        <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
+                                                                    </g:if>
+                                                                    <g:else>
+                                                                        <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
+                                                                    </g:else>
+                                                                </div>
+                                                                <div class="fourteen wide column">
+                                                                    <div class="ui label">${roles.join(' / ')}</div>
+                                                                    <div class="ui header">${person}</div>
+                                                                    <g:each in="${responsibilities}" var="responsibility">
+                                                                        <g:set var="respObjects" value="${respMap.get(responsibility)}"/>
+                                                                        <g:if test="${respObjects}">
+                                                                            ${responsibility}
+                                                                            <g:each in="${respObjects}" var="respObj">
+                                                                                <br>
+                                                                                <g:if test="${respObj instanceof Subscription}">
+                                                                                    (<g:link controller="subscription" action="show" id="${respObj.id}">${respObj.name}</g:link>)
+                                                                                </g:if>
+                                                                                <g:elseif test="${respObj instanceof License}">
+                                                                                    (<g:link controller="license" action="show" id="${respObj.id}">${respObj.reference}</g:link>)
+                                                                                </g:elseif>
+                                                                                <g:elseif test="${respObj instanceof de.laser.Package}">
+                                                                                    (<g:link controller="package" action="show" id="${respObj.id}">${respObj.name}</g:link>)
+                                                                                </g:elseif>
+                                                                                <g:if test="${respObj instanceof TitleInstancePackagePlatform}">
+                                                                                    (<g:link controller="tipp" action="show" id="${respObj.id}">${respObj.name}</g:link>)
+                                                                                </g:if>
+                                                                            </g:each>
+                                                                        </g:if>
+                                                                    </g:each>
+                                                                    <g:if test="${person.contacts}">
+                                                                        <g:each in="${person.contacts.toSorted()}" var="contact">
+                                                                            <g:if test="${contact.contentType && contact.contentType.value in ['E-Mail', 'Mail', 'Url', 'Phone', 'Mobil', 'Fax']}">
+                                                                                <laser:render template="/templates/cpa/contact" model="${[
+                                                                                        overwriteEditable   : false,
+                                                                                        contact             : contact,
+                                                                                        tmplShowDeleteButton: false
+                                                                                ]}"/>
+                                                                            </g:if>
+                                                                        </g:each>
+                                                                    </g:if>
+                                                                </div>
+                                                            </div>
+                                                        </g:if>
+                                                    </g:each>
                                                 </g:if>
-                                                <g:else>
-
-                                                </g:else>
                                             </div>
                                         </div>
                                     </div>

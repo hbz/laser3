@@ -186,6 +186,9 @@
                 <g:if test="${revision == AbstractReport.COUNTER_4}">
                     <ui:msg icon="ui info icon" class="info" header="${message(code: 'default.usage.counter4reportInfo.header')}" message="default.usage.counter4reportInfo.text" noClose="true"/>
                 </g:if>
+                <g:if test="${error}">
+                    <ui:msg icon="ui times icon" class="error" message="${message(code: "default.stats.error.${error}")}" noClose="true"/>
+                </g:if>
                 <g:form action="generateReport" name="stats" class="ui form" method="get">
                     <g:hiddenField name="id" value="${subscription.id}"/>
                     <g:hiddenField name="revision" value="${revision}"/>
@@ -214,14 +217,17 @@
                                 </g:if>
                             </select>
                         </div>
-
+                        <g:if test="${params.reportType}">
+                            <g:render template="/templates/filter/statsFilter"/>
+                        </g:if>
                         <%-- reports filters in COUNTER 5 count only for master reports (tr, pr, dr, ir)! COUNTER 4 has no restriction on filter usage afaik --%>
                     </div>
                     <div class="four fields">
                         <div class="field"></div>
                         <div class="field"></div>
                         <div class="field la-field-right-aligned">
-                            <input id="generateCostPerUse" type="button" class="ui secondary button" value="${message(code: 'default.stats.generateCostPerUse')}"/>
+                        <%-- deactivated as of ERMS-3996; concept needs to be clarified
+                        <input id="generateCostPerUse" type="button" class="ui secondary button" value="${message(code: 'default.stats.generateCostPerUse')}"/>--%>
                         </div>
                         <div class="field la-field-right-aligned">
                             <input type="submit" class="ui primary button" value="${message(code: 'default.stats.generateReport')}"/>
@@ -254,7 +260,7 @@
                 let fd = new FormData($('#stats')[0]);
                 console.log($('#stats')[0]);
                 $.ajax({
-                    url: "<g:createLink controller="ajaxHtml" action="generateCostPerUse"/>",
+                    url: "<g:createLink controller="ajax" action="generateCostPerUse"/>",
                     data: fd,
                     type: 'POST',
                     processData: false,

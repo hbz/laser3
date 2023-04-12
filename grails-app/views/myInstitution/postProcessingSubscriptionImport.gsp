@@ -37,7 +37,7 @@
                                             ${license.reference}
                                         </g:each>
                                     </li>
-                                    <g:if test="${accessService.checkPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && sub.instanceOf && sub.member}">
+                                    <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && sub.instanceOf && sub.member}">
                                         <li><g:message code="myinst.subscriptionImport.instanceOf" args="${parentSubType}"/>: ${genericOIDService.resolveOID(sub.instanceOf)}</li>
                                         <li><g:message code="myinst.subscriptionImport.member"/>: ${genericOIDService.resolveOID(sub.member)}</li>
                                     </g:if>

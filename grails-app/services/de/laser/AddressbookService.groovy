@@ -19,6 +19,7 @@ class AddressbookService {
     ContextService contextService
     FilterService filterService
     PropertyService propertyService
+    UserService userService
 
     /**
      * Retrieves all private contacts for the given tenant institution
@@ -47,7 +48,7 @@ class AddressbookService {
      */
     boolean isAddressEditable(Address address, User user) {
         Org org = address.getPrs()?.tenant ?: address.org
-        accessService.is_ROLE_ADMIN_or_checkMinUserOrgRole_and_CtxOrg(user, org, 'INST_EDITOR')
+        userService.checkAffiliationAndCtxOrg_or_ROLEADMIN(user, org, 'INST_EDITOR')
     }
 
     /**
@@ -58,7 +59,7 @@ class AddressbookService {
      */
     boolean isContactEditable(Contact contact, User user) {
         Org org = contact.getPrs()?.tenant ?: contact.org
-        accessService.is_ROLE_ADMIN_or_checkMinUserOrgRole_and_CtxOrg(user, org, 'INST_EDITOR')
+        userService.checkAffiliationAndCtxOrg_or_ROLEADMIN(user, org, 'INST_EDITOR')
     }
 
     /**
@@ -68,12 +69,7 @@ class AddressbookService {
      * @return true if the user is affiliated at least as INST_EDITOR with the given tenant or is a global admin, false otherwise
      */
     boolean isPersonEditable(Person person, User user) {
-        accessService.is_ROLE_ADMIN_or_checkMinUserOrgRole_and_CtxOrg(user, person.tenant , 'INST_EDITOR')
-    }
-
-    @Deprecated
-    boolean isNumbersEditable(Numbers numbers, User user) {
-        accessService.is_ROLE_ADMIN_or_checkMinUserOrgRole_and_CtxOrg(user, person.tenant , 'INST_EDITOR')
+        userService.checkAffiliationAndCtxOrg_or_ROLEADMIN(user, person.tenant , 'INST_EDITOR')
     }
 
     /**
@@ -112,7 +108,7 @@ class AddressbookService {
             qParams << [org: params.org]
         }
         else if(params.org && params.org instanceof String) {
-            qParts << "( genfunc_filter_matcher(pr.org.name, :name) = true or genfunc_filter_matcher(pr.org.shortname, :name) = true or genfunc_filter_matcher(pr.org.sortname, :name) = true )"
+            qParts << "( genfunc_filter_matcher(pr.org.name, :name) = true or genfunc_filter_matcher(pr.org.sortname, :name) = true )"
             qParams << [name: "${params.org}"]
         }
 
@@ -120,12 +116,12 @@ class AddressbookService {
             List<String> posParts = []
             if (params.function){
                 posParts << "pr.functionType.id in (:selectedFunctions) "
-                qParams << [selectedFunctions: filterService.listReaderWrapper(params, 'function').collect{Long.parseLong(it)}]
+                qParams << [selectedFunctions: filterService.listReaderWrapper(params, 'function').collect{ it -> it instanceof String ? Long.parseLong(it) : it }]
             }
 
             if (params.position){
                 posParts << "pr.positionType.id in (:selectedPositions) "
-                qParams << [selectedPositions: filterService.listReaderWrapper(params, 'position').collect{Long.parseLong(it)}]
+                qParams << [selectedPositions: filterService.listReaderWrapper(params, 'position').collect{ it -> it instanceof String ? Long.parseLong(it) : it }]
             }
             qParts << '('+posParts.join(' OR ')+')'
         }

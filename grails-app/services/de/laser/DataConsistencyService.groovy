@@ -38,10 +38,6 @@ class DataConsistencyService {
                 'SELECT org.name as name, count(org.name) as cnt FROM Org org GROUP BY org.name ORDER BY org.name'
         ).findAll{ it -> it[1] > 1}
 
-        result.Org.shortname = Org.executeQuery(
-                'SELECT org.shortname as shortname, count(org.shortname) as cnt FROM Org org GROUP BY org.shortname ORDER BY org.shortname'
-        ).findAll{ it -> it[1] > 1}
-
         result.Org.shortcode = Org.executeQuery(
                 'SELECT org.shortcode as shortcode, count(org.shortcode) as cnt FROM Org org GROUP BY org.shortcode ORDER BY org.shortcode'
         ).findAll{ it -> it[1] > 1}

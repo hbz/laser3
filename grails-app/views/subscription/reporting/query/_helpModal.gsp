@@ -6,11 +6,11 @@
     Map<String, Map> text = [
             'timeline-member' : [
                     'de' : [
-                            'Die Abfrage visualisiert die zeitliche Entwicklung der Teilnehmer für diese Lizenz',
+                            'Die Abfrage visualisiert die zeitliche Entwicklung der Einrichtungen für diese Lizenz',
                             'Gelistet werden alle relevanten Lizenzen (referenzierte Vorgänger, bzw. Nachfolger) mit ihren jeweiligen Datumsgrenzen. Für jede Lizenz sind mögliche Veränderungen, bezogen auf den Vorgänger, wie folgt erkennbar:',
-                            'Teilnehmer hinzugefügt',
-                            'Teilnehmer entfernt',
-                            'Aktuelle Teilnehmer'
+                            'Einrichtungen hinzugefügt',
+                            'Einrichtungen entfernt',
+                            'Aktuelle Einrichtungen'
                     ],
                     'en' : [
                             'The query visualizes the chronological development of the participants for this subscription.',
@@ -22,8 +22,8 @@
             ],
             'timeline-cost' : [
                     'de' : [
-                            'Die Abfrage visualisiert die zeitliche Entwicklung der Teilnehmerkosten für diese Lizenz',
-                            'Gelistet werden alle relevanten Lizenzen (referenzierte Vorgänger, bzw. Nachfolger) mit ihren jeweiligen Datumsgrenzen. Über betroffene Teilnehmerlizenzen und existierende Kosten werden folgende Informationen berechnet:',
+                            'Die Abfrage visualisiert die zeitliche Entwicklung der Einrichtungskosten für diese Lizenz',
+                            'Gelistet werden alle relevanten Lizenzen (referenzierte Vorgänger, bzw. Nachfolger) mit ihren jeweiligen Datumsgrenzen. Über betroffene Einrichtungslizenzen und existierende Kosten werden folgende Informationen berechnet:',
                             'Kumulierter Endpreis in Euro (nach Steuern)',
                             'Kumulierter Wert in Euro',
                             'Neutrale Kosten in Euro (nach Steuern)',
@@ -56,10 +56,10 @@
             ],
             'timeline-annualMember-subscription' : [
                     'de' : [
-                            'Die Abfrage visualisiert die zeitliche Entwicklung aller für diese Lizenz relevanten Teilnehmerlizenzen',
-                            'Gruppiert werden die Teilnehmerlizenzen in Jahresringen - abhängig von den jeweiligen Datumsgrenzen.',
+                            'Die Abfrage visualisiert die zeitliche Entwicklung aller für diese Lizenz relevanten Einrichtungslizenzen',
+                            'Gruppiert werden die Einrichtungslizenzen in Jahresringen - abhängig von den jeweiligen Datumsgrenzen.',
                             'TODO',
-                            'über ggf. vorhandene Vorgänger oder Nachfolger referenzierte Teilnehmerlizenzen dagegen schon.'
+                            'über ggf. vorhandene Vorgänger oder Nachfolger referenzierte Einrichtungslizenzen dagegen schon.'
                     ],
                     'en' : [
                             'The query visualizes the chronological development of all participant subscriptions relevant to this subscription',

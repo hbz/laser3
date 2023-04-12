@@ -2,4 +2,4 @@
 //
 //= require libs/jquery-3.6.3.js
 
-console.log('+ bundle: ebookCatalogue.js')
+console.log('+ bundle: ebookCatalogue.js');

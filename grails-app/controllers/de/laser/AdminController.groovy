@@ -10,7 +10,7 @@ import de.laser.utils.SwissKnife
 import de.laser.remote.FTControl
 import de.laser.auth.Role
 import de.laser.auth.User
-import de.laser.auth.UserOrg
+import de.laser.auth.UserOrgRole
 import de.laser.auth.UserRole
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
@@ -428,9 +428,9 @@ class AdminController  {
     @Transactional
     def copyUserRoles(User usrMrg, User usrKeep){
         Set<Role> mergeRoles = usrMrg.getAuthorities()
-        Set<UserOrg> mergeAffil = usrMrg.affiliations
+        Set<UserOrgRole> mergeAffil = usrMrg.affiliations
         Set<Role> currentRoles = usrKeep.getAuthorities()
-        Set<UserOrg> currentAffil = usrKeep.affiliations
+        Set<UserOrgRole> currentAffil = usrKeep.affiliations
 
         mergeRoles.each{ role ->
             if (!currentRoles.contains(role) && role.authority != 'ROLE_YODA') {
@@ -440,11 +440,11 @@ class AdminController  {
         mergeAffil.each{affil ->
             if(!currentAffil.contains(affil)){
                 // We should check that the new role does not already exist
-                UserOrg existing_affil_check = UserOrg.findByOrgAndUserAndFormalRole(affil.org,usrKeep,affil.formalRole)
+                UserOrgRole existing_affil_check = UserOrgRole.findByOrgAndUserAndFormalRole(affil.org, usrKeep, affil.formalRole)
 
         if ( existing_affil_check == null ) {
             log.debug("No existing affiliation")
-            UserOrg newAffil = new UserOrg(org:affil.org,user:usrKeep,formalRole:affil.formalRole)
+            UserOrgRole newAffil = new UserOrgRole(org:affil.org, user:usrKeep, formalRole:affil.formalRole)
             if(!newAffil.save(failOnError:true)){
                 log.error("Probem saving user roles")
                 newAffil.errors.each { e ->
@@ -1141,86 +1141,6 @@ SELECT * FROM (
         }
 
         redirect(action: 'managePropertyDefinitions')
-    }
-
-    @Deprecated
-    @Secured(['ROLE_ADMIN'])
-    def managePropertyGroups() {
-        Map<String, Object> result = [:]
-        result.editable = true // true, because action is protected
-
-        if (params.cmd == 'new') {
-            result.formUrl = g.createLink([controller: 'admin', action: 'managePropertyGroups'])
-            render template: '/templates/properties/propertyGroupModal', model: result
-            return
-        }
-        else if (params.cmd == 'edit') {
-            result.pdGroup = genericOIDService.resolveOID(params.oid)
-            result.formUrl = g.createLink([controller: 'admin', action: 'managePropertyGroups'])
-
-            render template: '/templates/properties/propertyGroupModal', model: result
-            return
-        }
-        else if (params.cmd == 'delete') {
-            def pdg = genericOIDService.resolveOID(params.oid)
-            try {
-                pdg.delete()
-                flash.message = "Die Gruppe ${pdg.name} wurde gelöscht."
-            }
-            catch (e) {
-                flash.error = "Die Gruppe ${params.oid} konnte nicht gelöscht werden."
-            }
-        }
-        else if (params.cmd == 'processing') {
-            def valid
-            def propDefGroup
-            String ownerType = PropertyDefinition.getDescrClass(params.prop_descr)
-
-            if (params.oid) {
-                propDefGroup = genericOIDService.resolveOID(params.oid)
-                propDefGroup.name = params.name ?: propDefGroup.name
-                propDefGroup.description = params.description
-                propDefGroup.ownerType = ownerType
-
-                if (propDefGroup.save()) {
-                    valid = true
-                }
-            }
-            else {
-                if (params.name && ownerType) {
-                    propDefGroup = new PropertyDefinitionGroup(
-                            name: params.name,
-                            description: params.description,
-                            tenant: null,
-                            ownerType: ownerType,
-                            isVisible: true
-                    )
-                    if (propDefGroup.save()) {
-                        valid = true
-                    }
-                }
-            }
-
-            if (valid) {
-                PropertyDefinitionGroupItem.executeUpdate(
-                        "DELETE PropertyDefinitionGroupItem pdgi WHERE pdgi.propDefGroup = :pdg",
-                        [pdg: propDefGroup]
-                )
-
-                params.list('propertyDefinition')?.each { pd ->
-
-                    new PropertyDefinitionGroupItem(
-                            propDef: pd,
-                            propDefGroup: propDefGroup
-                    ).save()
-                }
-            }
-        }
-
-        result.propDefGroups = PropertyDefinitionGroup.findAllWhere(
-                tenant: null
-        )
-        result
     }
 
     /**

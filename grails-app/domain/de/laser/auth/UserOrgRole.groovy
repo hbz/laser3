@@ -8,7 +8,11 @@ import javax.persistence.Transient
 /**
  * The affiliation link between a {@link User} and an {@link Org}, rights marked by a {@link Role}
  */
-class UserOrg implements Comparable {
+class UserOrgRole implements Comparable {
+
+    public static final String INST_USER    = 'INST_USER'
+    public static final String INST_EDITOR  = 'INST_EDITOR'
+    public static final String INST_ADM     = 'INST_ADM'
 
     Date dateCreated
     Date lastUpdated
@@ -49,7 +53,7 @@ class UserOrg implements Comparable {
      */
     @Transient
     int compareTo(obj) {
-        sortString.compareTo(((UserOrg) obj)?.getSortString())
+        sortString.compareTo(((UserOrgRole) obj)?.getSortString())
     }
 
     /**

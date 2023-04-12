@@ -56,7 +56,7 @@
                       model="[
                               propList: propList,
                               orgRoles: orgRoles,
-                              tmplConfigShow: [['name', 'role', 'property&value'], ['privateContacts', '', '', '']],
+                              tmplConfigShow: [['name', 'property&value'], ['privateContacts', 'role', 'isMyX']],
                               tmplConfigFormFilter: true
                       ]"/>
         </g:form>
@@ -67,7 +67,7 @@
         <laser:render template="/templates/filter/orgFilterTable"
                   model="[orgList: orgList,
                           tmplShowCheckbox: false,
-                          tmplConfigShow: ['lineNumber', 'shortname', 'name', 'isWekbCurated', 'altname', 'numberOfSubscriptions']
+                          tmplConfigShow: ['lineNumber', 'sortname', 'name', 'isWekbCurated', 'altname', 'numberOfSubscriptions']
                   ]"/>
         </g:if>
         <g:else>

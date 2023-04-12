@@ -129,6 +129,7 @@ reminder.unit,ReminderUnit,ReminderUnit
 reporting.contact.type,Art des Kontaktes,Contact Type
 semester,Semester,Semester
 share.configuration,Share Configuration,Share Configuration
+shibboleth.federation,Shibboleth Federation,Shibboleth Federation
 sim.user.number,Sim User Zahl,Sim-User Number
 sis.access.extensions,FID - Zugriffserweiterungen / -ergänzungen, SIS - access extensions / completions
 sis.access.kind,FID - Art der erworbenen Zugriffsrechte,SIS - kind of purchased access rights

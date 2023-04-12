@@ -106,7 +106,8 @@ class PlatformController  {
             }
         }
 
-        Map wekbResultMap = gokbService.doQuery(result, params.clone(), esQuery)
+        // overridden pagination - all uuids are required
+        Map wekbResultMap = gokbService.doQuery(result, [offset:0, max:1000, status: params.status], esQuery)
 
         // ? --- copied from myInstitutionController.currentPlatforms()
         String instanceFilter = ""
@@ -165,14 +166,57 @@ class PlatformController  {
                 }
             }
 
-            result.myPlatformIds = platformInstanceList.collect{ it.id }
+            result.myPlatformsUuids = platformInstanceList.collect{ it.gokbId }
+            result.myPlatformIds    = platformInstanceList.collect{ it.id }
         }
         // ? ---
 
-//        result.putAll(gokbService.doQuery(result, params.clone(), esQuery))
-        result.putAll(wekbResultMap)
+        if (params.isMyX) {
+            List xFilter = params.list('isMyX')
+            Set<String> f1Result = [], f2Result = []
+            boolean     f1Set = false, f2Set = false
 
-      result
+            if (xFilter.contains('ismyx_exclusive')) {
+                f1Result.addAll( wekbResultMap.records.findAll { result.myPlatformsUuids.contains(it.uuid) }.collect{ it.uuid } )
+                f1Set = true
+            }
+            if (xFilter.contains('ismyx_not')) {
+                f1Result.addAll( wekbResultMap.records.findAll { ! result.myPlatformsUuids.contains(it.uuid) }.collect{ it.uuid } )
+                f1Set = true
+            }
+            if (xFilter.contains('wekb_exclusive')) {
+                f2Result.addAll( wekbResultMap.records.findAll {
+                    if (it.providerUuid) { return true }
+                    Platform p = Platform.findByGokbId(it.uuid)
+                    if (p && p.org) { return p.org.gokbId != null } else { return false }
+                }.collect{ it.uuid } )
+                f2Set = true
+            }
+            if (xFilter.contains('wekb_not')) {
+                f2Result.addAll( wekbResultMap.records.findAll {
+                    if (it.providerUuid) { return false }
+                    return Platform.findByGokbId(it.uuid)?.org?.gokbId == null
+                }.collect{ it.uuid } )
+                f2Set = true
+            }
+
+            if (f1Set) { wekbResultMap.records = wekbResultMap.records.findAll { f1Result.contains(it.uuid) } }
+            if (f2Set) { wekbResultMap.records = wekbResultMap.records.findAll { f2Result.contains(it.uuid) } }
+
+//            if (xFilter.contains('ismyx_exclusive')) {
+//                wekbResultMap.records      = wekbResultMap.records.findAll { result.myPlatformsUuids.contains( it.uuid ) }
+//                wekbResultMap.recordsCount = wekbResultMap.records.size()
+//            }
+//            else if (xFilter.contains('ismyx_not')) {
+//                wekbResultMap.records      = wekbResultMap.records.findAll { ! result.myPlatformsUuids.contains( it.uuid ) }
+//                wekbResultMap.recordsCount = wekbResultMap.records.size()
+//            }
+        }
+        wekbResultMap.recordsCount = wekbResultMap.records.size()
+        wekbResultMap.records      = wekbResultMap.records.drop((int) result.offset).take((int) result.max) // pagination
+
+        result.putAll(wekbResultMap)
+        result
     }
 
     /**
@@ -205,7 +249,7 @@ class PlatformController  {
             result.platformInstanceRecord = records ? records[0] : [:]
             result.platformInstanceRecord.id = params.id
         }
-        result.editable = accessService.is_ROLE_ADMIN_or_INST_EDITOR_with_PERMS( CustomerTypeService.PERMS_BASIC )
+        result.editable = accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_BASIC )
 
         String hql = "select oapl from OrgAccessPointLink oapl join oapl.oap as ap " +
                     "where ap.org =:institution and oapl.active=true and oapl.platform.id=${platformInstance.id} " +
@@ -281,8 +325,10 @@ class PlatformController  {
      * @deprecated use {@link #dynamicApLink} instead
      */
     @Deprecated
-    @DebugInfo(test='is_ROLE_ADMIN_or_hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_EDITOR") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'])
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+    })
     @Check404()
     def link() {
         Map<String, Object> result = [:]
@@ -314,8 +360,10 @@ class PlatformController  {
      * Call to link a platform to another access point
      * @return renders the available options in a modal
      */
-    @DebugInfo(test='is_ROLE_ADMIN_or_hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.contextService.getUser()?.is_ROLE_ADMIN_or_hasAffiliation("INST_EDITOR") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'])
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+    })
     def dynamicApLink(){
         Map<String, Object> result = [:]
         Platform platformInstance = Platform.get(params.platform_id)
@@ -353,9 +401,9 @@ class PlatformController  {
      * Call to add a new derivation to the given platform
      * @return redirect to the referer
      */
-    @DebugInfo(perm=CustomerTypeService.PERMS_BASIC, affil="INST_EDITOR", ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_BASIC, 'INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_BASIC, "INST_EDITOR")
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_BASIC, 'INST_EDITOR')
     })
     def addDerivation() {
         Map<String,Object> ctrlResult = platformControllerService.addDerivation(params)
@@ -369,9 +417,9 @@ class PlatformController  {
      * Call to remove a new derivation to the given platform
      * @return redirect to the referer
      */
-    @DebugInfo(perm=CustomerTypeService.PERMS_BASIC, affil="INST_EDITOR", ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_BASIC, 'INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_BASIC, "INST_EDITOR")
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_BASIC, 'INST_EDITOR')
     })
     def removeDerivation() {
         Map<String,Object> ctrlResult = platformControllerService.removeDerivation(params)
@@ -382,9 +430,9 @@ class PlatformController  {
     }
 
     @Deprecated
-    @DebugInfo(perm=CustomerTypeService.PERMS_BASIC, affil="INST_EDITOR", ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_BASIC, 'INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_BASIC, "INST_EDITOR")
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_BASIC, 'INST_EDITOR')
     })
     def linkAccessPoint() {
         OrgAccessPoint apInstance
@@ -407,9 +455,9 @@ class PlatformController  {
     }
 
     @Deprecated
-    @DebugInfo(perm=CustomerTypeService.PERMS_BASIC, affil="INST_EDITOR", ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_BASIC, 'INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation(CustomerTypeService.PERMS_BASIC, "INST_EDITOR")
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_BASIC, 'INST_EDITOR')
     })
     def removeAccessPoint() {
         Map<String,Object> ctrlResult = platformControllerService.removeAccessPoint(params)

@@ -68,7 +68,6 @@ class OrganisationService {
 
         List<String> titles = [
                 messageSource.getMessage('org.sortname.label',null, locale),
-                messageSource.getMessage('org.shortname.label',null, locale),
                 'Name'
         ]
         if(addHigherEducationTitles) {
@@ -78,9 +77,9 @@ class OrganisationService {
             titles.add(messageSource.getMessage('org.region.label',null, locale))
             titles.add(messageSource.getMessage('org.country.label',null, locale))
         }
-        RefdataValue generalContact = RDStore.PRS_FUNC_GENERAL_CONTACT_PRS
-        RefdataValue responsibleAdmin = RefdataValue.getByValueAndCategory('Responsible Admin', RDConstants.PERSON_FUNCTION)
-        RefdataValue billingContact = RefdataValue.getByValueAndCategory('Functional Contact Billing Adress', RDConstants.PERSON_FUNCTION)
+        RefdataValue generalContact     = RDStore.PRS_FUNC_GENERAL_CONTACT_PRS
+        RefdataValue responsibleAdmin   = RDStore.PRS_FUNC_RESPONSIBLE_ADMIN
+        RefdataValue billingContact     = RDStore.PRS_FUNC_FC_BILLING_ADDRESS
         titles.addAll(['ISIL','WIB-ID','EZB-ID',generalContact.getI10n('value')])
         if(addHigherEducationTitles)
             titles.add(responsibleAdmin.getI10n('value'))
@@ -128,8 +127,6 @@ class OrganisationService {
                                                       billingContact: contacts[org]?.get("Functional Contact Billing Adress")?.join(";")]
                     //Sortname
                     row.add([field: org.sortname ?: '',style: null])
-                    //Shortname
-                    row.add([field: org.shortname ?: '',style: null])
                     //Name
                     row.add([field: org.name ?: '',style: null])
                     if(addHigherEducationTitles) {
@@ -172,8 +169,6 @@ class OrganisationService {
                                                       billingContact: contacts[org]?.get("Functional Contact Billing Adress")?.join(";")]
                     //Sortname
                     row.add(org.sortname ? org.sortname.replaceAll(',','') : '')
-                    //Shortname
-                    row.add(org.shortname ? org.shortname.replaceAll(',','') : '')
                     //Name
                     row.add(org.name ? org.name.replaceAll(',','') : '')
                     if(addHigherEducationTitles) {
@@ -226,14 +221,14 @@ class OrganisationService {
         Map<String,Role> customerTypes = [
                 konsorte:   Role.findByAuthority( CustomerTypeService.ORG_INST_BASIC ),
                 vollnutzer: Role.findByAuthority( CustomerTypeService.ORG_INST_PRO ),
-                konsortium: Role.findByAuthority(CustomerTypeService.ORG_CONSORTIUM_BASIC )
+                konsortium: Role.findByAuthority( CustomerTypeService.ORG_CONSORTIUM_BASIC )
         ]
-        RefdataValue institution = RefdataValue.getByValueAndCategory('Institution', RDConstants.ORG_TYPE)
-        RefdataValue consortium = RefdataValue.getByValueAndCategory('Consortium', RDConstants.ORG_TYPE)
+        RefdataValue institution = RDStore.OT_INSTITUTION
+        RefdataValue consortium = RDStore.OT_CONSORTIUM
         //create home org
         Org hbz = Org.findByName('hbz Konsortialstelle Digitale Inhalte')
         if(!hbz) {
-            hbz = createOrg([name: 'hbz Konsortialstelle Digitale Inhalte',shortname: 'hbz Konsortium', sortname: 'Köln, hbz', orgType: [consortium], sector: RDStore.O_SECTOR_HIGHER_EDU])
+            hbz = createOrg([name: 'hbz Konsortialstelle Digitale Inhalte', sortname: 'Köln, hbz', orgType: [consortium], sector: RDStore.O_SECTOR_HIGHER_EDU])
             if(!hbz.hasErrors()) {
                 OrgSetting.add(hbz,OrgSetting.KEYS.CUSTOMER_TYPE,customerTypes.konsortium)
                 ConfigMapper.getConfig('systemUsers', List)?.each { su ->
@@ -248,15 +243,15 @@ class OrganisationService {
             }
         }
         if(currentServer == AppUtils.QA) { //include SERVER_LOCAL when testing in local environment
-            Map<String,Map> modelOrgs = [konsorte: [name:'Musterkonsorte',shortname:'Muster', sortname:'Musterstadt, Muster', orgType: [institution]],
+            Map<String,Map> modelOrgs = [konsorte: [name:'Musterkonsorte', sortname:'Musterstadt, Muster', orgType: [institution]],
                                          vollnutzer: [name:'Mustereinrichtung',sortname:'Musterstadt, Uni', orgType: [institution]],
-                                         konsortium: [name:'Musterkonsortium',shortname:'Musterkonsortium',orgType: [consortium]]]
-            Map<String,Map> testOrgs = [konsorte: [name:'Testkonsorte',shortname:'Test', sortname:'Teststadt, Test',orgType: [institution]],
+                                         konsortium: [name:'Musterkonsortium',orgType: [consortium]]]
+            Map<String,Map> testOrgs = [konsorte: [name:'Testkonsorte',sortname:'Teststadt, Test',orgType: [institution]],
                                         vollnutzer: [name:'Testeinrichtung',sortname:'Teststadt, Uni',orgType: [institution]],
-                                        konsortium: [name:'Testkonsortium',shortname:'Testkonsortium',orgType: [consortium]]]
-            Map<String,Map> QAOrgs = [konsorte: [name:'QA-Konsorte',shortname:'QA', sortname:'QA-Stadt, QA',orgType: [institution]],
+                                        konsortium: [name:'Testkonsortium',orgType: [consortium]]]
+            Map<String,Map> QAOrgs = [konsorte: [name:'QA-Konsorte',sortname:'QA-Stadt, QA',orgType: [institution]],
                                       vollnutzer: [name:'QA-Einrichtung',sortname:'QA-Stadt, Uni',orgType: [institution]],
-                                      konsortium: [name:'QA-Konsortium',shortname:'QA-Konsortium',orgType: [consortium]]]
+                                      konsortium: [name:'QA-Konsortium',orgType: [consortium]]]
             [modelOrgs,testOrgs,QAOrgs].each { Map<String,Map> orgs ->
                 Map<String,Org> orgMap = [:]
                 orgs.each { String customerType, Map orgData ->
@@ -286,11 +281,11 @@ class OrganisationService {
 
     /**
      * Creates a new organisation with the given basic parameters and sets the mandatory config settings for it
-     * @param params the parameter {@link Map} containing name, shortname, sortname, type and sector
+     * @param params the parameter {@link Map} containing name, sortname, type and sector
      * @return the new {@link Org}
      */
     Org createOrg(Map params) {
-        Org obj = new Org(name: params.name,shortname: params.shortname, sortname: params.sortname, orgType: params.orgType, sector: params.orgSector)
+        Org obj = new Org(name: params.name, sortname: params.sortname, orgType: params.orgType, sector: params.orgSector)
         if(obj.save()) {
             initMandatorySettings(obj)
         }

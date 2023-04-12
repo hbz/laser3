@@ -44,7 +44,7 @@ class DashboardDueDatesService {
     String replyTo
     boolean update_running = false
 
-    public static final String QRY_ALL_ORGS_OF_USER = "select distinct o from Org as o where exists ( select uo from UserOrg as uo where uo.org = o and uo.user = :user) order by o.name"
+    public static final String QRY_ALL_ORGS_OF_USER = "select distinct o from Org as o where exists ( select uo from UserOrgRole as uo where uo.org = o and uo.user = :user) order by o.name"
 
     // TODO: refactoring; change event DBDD_SERVICE_START_2
 
@@ -143,7 +143,8 @@ class DashboardDueDatesService {
                     } else {//insert
                         das = new DashboardDueDate(messageSource, obj, user, org, false, false)
                         das.save()
-                        log.debug("DashboardDueDatesService UPDATE: " + das);
+                        dashboarEntriesToInsert << das
+                        log.debug("DashboardDueDatesService INSERT: " + das);
                     }
 
                 }
@@ -212,7 +213,7 @@ class DashboardDueDatesService {
      */
     private void _sendEmail(User user, Org org, List<DashboardDueDate> dashboardEntries) {
         String emailReceiver = user.getEmail()
-        Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', RDConstants.LANGUAGE)).value.toString())
+        Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RDStore.LANGUAGE_DE).value.toString())
         RefdataValue userLang = user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RDStore.LANGUAGE_DE).value as RefdataValue
         String currentServer = AppUtils.getCurrentServer()
         String subjectSystemPraefix = (currentServer == AppUtils.PROD) ? "LAS:eR - " : (ConfigMapper.getLaserSystemId() + " - ")
