@@ -32,7 +32,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
 
     EscapeService escapeService
     ExecutorService executorService
-    GenericOIDService genericOIDService
     GlobalService globalService
     PendingChangeService pendingChangeService
     PackageService packageService
@@ -57,9 +56,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
             ddc = [:],
             contactTypes = [:]
     Long maxTimestamp
-    Map<String,Integer> initialPackagesCounter
-    Map<String,Set<Map<String,Object>>> pkgPropDiffsContainer
     Map<String,Set<Map<String,Object>>> packagesToNotify
+    //Map<String,Integer> initialPackagesCounter
+    //Map<String,Set<Map<String,Object>>> pkgPropDiffsContainer
 
     boolean running = false
 
@@ -112,6 +111,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 */
                 switch(source.rectype) {
                     case RECTYPE_ORG: componentType = 'Org'
+                        break
+                    case RECTYPE_PACKAGE: componentType = 'Package'
                         break
                     case RECTYPE_PLATFORM: componentType = 'Platform'
                         break
@@ -198,7 +199,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 this.apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI,true)
                 String componentType = 'TitleInstancePackagePlatform'
                 //preliminary: build up list of all deleted components
-                Set<String> permanentlyDeletedTitles = getPermanentlyDeletedTitles(packageUUID)
+                Set<String> permanentlyDeletedTitles = getPermanentlyDeletedTitles()
                 /*
                     structure:
                     { packageUUID: [
@@ -267,6 +268,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
             long rectype
             switch(componentType) {
                 case 'Org': rectype = RECTYPE_ORG
+                    break
+                case 'Package': rectype = RECTYPE_PACKAGE
                     break
                 case 'Platform': rectype = RECTYPE_PLATFORM
                     break
@@ -529,20 +532,31 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             result.records.each { record ->
                                 record.platforms.each { Map platformData ->
                                     try {
-                                        createOrUpdatePlatformJSON(platformData.uuid)
+                                        createOrUpdatePlatform(platformData.uuid)
                                     }
                                     catch (SyncException e) {
                                         log.error("Error on updating platform ${platformData.uuid}: ",e)
                                         SystemEvent.createEvent("GSSS_JSON_WARNING",[platformRecordKey:platformData.uuid])
                                     }
                                 }
-                                createOrUpdateOrgJSON(record)
+                                createOrUpdateOrg(record)
+                            }
+                            break
+                        case RECTYPE_PACKAGE:
+                            result.records.each { record ->
+                                try {
+                                    createOrUpdatePackage(record)
+                                }
+                                catch (SyncException e) {
+                                    log.error("Error on updating platform ${record.uuid}: ",e)
+                                    SystemEvent.createEvent("GSSS_JSON_WARNING",[platformRecordKey:record.uuid])
+                                }
                             }
                             break
                         case RECTYPE_PLATFORM:
                             result.records.each { record ->
                                 try {
-                                    createOrUpdatePlatformJSON(record)
+                                    createOrUpdatePlatform(record)
                                 }
                                 catch (SyncException e) {
                                     log.error("Error on updating platform ${record.uuid}: ",e)
@@ -585,20 +599,20 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     result.records.each { record ->
                         record.platforms.each { Map platformData ->
                             try {
-                                createOrUpdatePlatformJSON(platformData.uuid)
+                                createOrUpdatePlatform(platformData.uuid)
                             }
                             catch (SyncException e) {
                                 log.error("Error on updating platform ${platformData.uuid}: ",e)
                                 SystemEvent.createEvent("GSSS_JSON_WARNING",[platformRecordKey:platformData.uuid])
                             }
                         }
-                        createOrUpdateOrgJSON(record)
+                        createOrUpdateOrg(record)
                     }
                     break
                 case RECTYPE_PLATFORM:
                     result.records.each { record ->
                         try {
-                            createOrUpdatePlatformJSON(record)
+                            createOrUpdatePlatform(record)
                         }
                         catch (SyncException e) {
                             log.error("Error on updating platform ${record.uuid}: ",e)
@@ -645,7 +659,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         //create or update platforms
         platformUUIDs.each { String platformUUID ->
             try {
-                platformsOnPage.put(platformUUID,createOrUpdatePlatformJSON(platformUUID))
+                platformsOnPage.put(platformUUID,createOrUpdatePlatform(platformUUID))
             }
             catch (SyncException e) {
                 log.error("Error on updating platform ${platformUUID}: ",e)
@@ -749,9 +763,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         diffsOfPackage = []
                     }
                     diffsOfPackage << diffs
+                    /*
                     if(pkgPropDiffsContainer.get(updatedTIPP.packageUUID)) {
                         diffsOfPackage.addAll(pkgPropDiffsContainer.get(updatedTIPP.packageUUID))
-                    }//test with set, otherwise make check
+                    }
+                     */
+                    //test with set, otherwise make check
                     packagesToNotify.put(updatedTIPP.packageUUID,diffsOfPackage)
                 }
                 else if(updatedTIPP.status == PERMANENTLY_DELETED) {
@@ -803,38 +820,41 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * This records the package changes so that subscription holders may decide whether they apply them or not except price changes which are auto-applied
      * @param packagesToTrack the packages to be tracked
      */
-    Map<String, Set<PendingChange>> trackPackageHistory() {
-        Map<String, Set<PendingChange>> result = [:]
+    Map<String, Set<TitleChange>> trackPackageHistory() {
+        Map<String, Set<TitleChange>> result = [:]
         //Package.withSession { Session sess ->
             //loop through all packages
             packagesToNotify.each { String packageUUID, Set<Map<String,Object>> diffsOfPackage ->
-                Set<PendingChange> packagePendingChanges = []
+                Set<TitleChange> packageChanges = []
                 //println("diffsOfPackage:"+diffsOfPackage)
                 diffsOfPackage.each { Map<String,Object> diff ->
                     log.debug(diff.toMapString())
                     //[event:update, target:de.laser.TitleInstancePackagePlatform : 196477, diffs:[[prop:price, priceDiffs:[[event:add, target:de.laser.finance.PriceItem : 10791]]]]]
                     switch(diff.event) {
-                        case 'add': packagePendingChanges << PendingChange.construct([msgToken:PendingChangeConfiguration.NEW_TITLE,target:diff.target,status:RDStore.PENDING_CHANGE_HISTORY])
+                        case 'add': packageChanges << TitleChange.construct([event:PendingChangeConfiguration.NEW_TITLE,tipp:diff.target])
                             break
+                        /* void as of ERMS-4585, comment February 27th
                         case 'update':
                             diff.diffs.each { tippDiff ->
                                 packagePendingChanges << PendingChange.construct([msgToken:PendingChangeConfiguration.TITLE_UPDATED,target:diff.target,status:RDStore.PENDING_CHANGE_HISTORY,prop:tippDiff.prop,newValue:tippDiff.newValue,oldValue:tippDiff.oldValue])
                             }
+                            break*/
+                        case 'delete': packageChanges << TitleChange.construct([event:PendingChangeConfiguration.TITLE_DELETED,tipp:diff.target,oldValue:diff.oldValue])
                             break
-                        case 'delete': packagePendingChanges << PendingChange.construct([msgToken:PendingChangeConfiguration.TITLE_DELETED,target:diff.target,oldValue:diff.oldValue,status:RDStore.PENDING_CHANGE_HISTORY])
+                        case 'remove': TitleChange.construct([event:PendingChangeConfiguration.TITLE_REMOVED,tipp:diff.target,oldValue:diff.oldValue]) //dealt elsewhere!
                             break
-                        case 'remove': PendingChange.construct([msgToken:PendingChangeConfiguration.TITLE_REMOVED,target:diff.target,status:RDStore.PENDING_CHANGE_HISTORY]) //dealt elsewhere!
-                            break
+                        /* never worked, no one seemed to miss that
                         case 'pkgPropDiffs':
                             diff.diffs.each { pkgPropDiff ->
                                 packagePendingChanges << PendingChange.construct([mskTogen: PendingChangeConfiguration.PACKAGE_PROP, target: diff.target, prop: pkgPropDiff.prop, newValue: pkgPropDiff.newValue, oldValue: pkgPropDiff.oldValue, status: RDStore.PENDING_CHANGE_HISTORY])
                             }
                             break
+                            */
                     }
                     //PendingChange.construct([msgToken,target,status,prop,newValue,oldValue])
                 }
                 //sess.flush()
-                result.put(packageUUID, packagePendingChanges)
+                result.put(packageUUID, packageChanges)
             }
         //}
         log.info("end tracking package changes")
@@ -924,20 +944,41 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * @param packageData A UUID pointing to record extract for a given package
      * @return
      */
-    Package createOrUpdatePackage(String packageUUID) throws SyncException {
-        Map<String,Object> packageJSON = fetchRecordJSON(false,[uuid: packageUUID])
-        if(packageJSON.records) {
-            Map packageRecord = (Map) packageJSON.records[0]
-            Package result = Package.findByGokbId(packageUUID)
+    Package createOrUpdatePackage(packageInput) throws SyncException {
+        Map packageJSON, packageRecord
+        if(packageInput instanceof String) {
+            packageJSON = fetchRecordJSON(false, [uuid: packageInput])
+            if(packageJSON.records)
+                packageRecord = (Map) packageJSON.records[0]
+            else if(packageJSON.error == 404) {
+                log.error("we:kb server is unavailable!")
+                throw new SyncException("we:kb server was down!")
+            }
+            else {
+                log.warn("Package ${packageInput} seems to be unexistent!")
+                //test if local record trace exists ...
+                Package result = Package.findByGokbId(packageInput)
+                if(result) {
+                    log.warn("Package found, set cascading removed ...")
+                    result.packageStatus = RDStore.PACKAGE_STATUS_REMOVED
+                    result.save()
+                    result
+                }
+            }
+        }
+        else if(packageInput instanceof Map)
+            packageRecord = packageInput
+        if(packageRecord) {
+            Package result = Package.findByGokbId(packageInput)
             Date lastUpdatedDisplay = DateUtils.parseDateGeneric(packageRecord.lastUpdatedDisplay)
             if(!result || result?.lastUpdated < lastUpdatedDisplay) {
-                log.info("package record loaded, reconciling package record for UUID ${packageUUID}")
+                log.info("package record loaded, reconciling package record for UUID ${packageInput}")
                 RefdataValue packageRecordStatus = packageRecord.status ? packageStatus.get(packageRecord.status) : null
                 RefdataValue contentType = packageRecord.contentType ? RefdataValue.getByValueAndCategory(packageRecord.contentType,RDConstants.PACKAGE_CONTENT_TYPE) : null
                 RefdataValue file = packageRecord.file ? RefdataValue.getByValueAndCategory(packageRecord.file,RDConstants.PACKAGE_FILE) : null
                 RefdataValue scope = packageRecord.scope ? RefdataValue.getByValueAndCategory(packageRecord.scope,RDConstants.PACKAGE_SCOPE) : null
                 Map<String,Object> newPackageProps = [
-                    uuid: packageUUID,
+                    uuid: packageInput,
                     name: packageRecord.name,
                     packageStatus: packageRecordStatus,
                     contentType: packageRecord.contentType,
@@ -953,7 +994,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         if(packageRecord.nominalPlatformUuid) {
                             Platform nominalPlatform = Platform.findByGokbId(packageRecord.nominalPlatformUuid)
                             if(!nominalPlatform) {
-                                nominalPlatform = createOrUpdatePlatformJSON(packageRecord.nominalPlatformUuid)
+                                nominalPlatform = createOrUpdatePlatform(packageRecord.nominalPlatformUuid)
                             }
                             if(nominalPlatform)
                                 newPackageProps.nominalPlatform = nominalPlatform
@@ -961,12 +1002,13 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         if(packageRecord.providerUuid) {
                             newPackageProps.contentProvider = Org.findByGokbId(packageRecord.providerUuid)
                         }
+                        /*
+                        not used
                         Set<Map<String,Object>> pkgPropDiffs = getPkgPropDiff(result, newPackageProps)
                         if(pkgPropDiffs) {
-                            pkgPropDiffsContainer.put(packageUUID, [event: "pkgPropUpdate", diffs: pkgPropDiffs, target: result])
+                            pkgPropDiffsContainer.put(packageInput, [event: "pkgPropUpdate", diffs: pkgPropDiffs, target: result])
                         }
 
-                        /* not used
                         if(!initialPackagesCounter.get(packageUUID))
                             initialPackagesCounter.put(packageUUID,TitleInstancePackagePlatform.executeQuery('select count(tipp.id) from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg',[pkg:result])[0] as Integer)
                          */
@@ -984,7 +1026,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     if(packageRecord.nominalPlatformUuid) {
                         Platform nominalPlatform = Platform.findByGokbId(packageRecord.nominalPlatformUuid)
                         if(!nominalPlatform) {
-                            nominalPlatform = createOrUpdatePlatformJSON(packageRecord.nominalPlatformUuid)
+                            nominalPlatform = createOrUpdatePlatform(packageRecord.nominalPlatformUuid)
                         }
                         if(nominalPlatform) {
                             result.nominalPlatform = nominalPlatform
@@ -996,7 +1038,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         try {
                             Map<String, Object> providerRecord = fetchRecordJSON(false,[uuid:packageRecord.providerUuid])
                             if(providerRecord && !providerRecord.error) {
-                                Org provider = createOrUpdateOrgJSON(providerRecord)
+                                Org provider = createOrUpdateOrg(providerRecord)
                                 createOrUpdatePackageProvider(provider,result)
                             }
                             else if(providerRecord && providerRecord.error == 404) {
@@ -1045,22 +1087,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             }
             result
         }
-        else if(packageJSON.error == 404) {
-            log.error("we:kb server is unavailable!")
-            throw new SyncException("we:kb server was down!")
-        }
-        else {
-            log.warn("Package ${packageUUID} seems to be unexistent!")
-            //test if local record trace exists ...
-            Package result = Package.findByGokbId(packageUUID)
-            if(result) {
-                log.warn("Package found, set cascading removed ...")
-                result.packageStatus = RDStore.PACKAGE_STATUS_REMOVED
-                result.save()
-                result
-            }
-            else null
-        }
+        else null
     }
 
     /**
@@ -1070,7 +1097,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * @param providerUUID the GOKb UUID of the given provider {@link Org}
      * @throws SyncException
      */
-    Org createOrUpdateOrgJSON(Map<String,Object> providerJSON) throws SyncException {
+    Org createOrUpdateOrg(Map<String,Object> providerJSON) throws SyncException {
         Map providerRecord
         if(providerJSON.records)
             providerRecord = providerJSON.records[0]
@@ -1158,7 +1185,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 providerRecord.platforms.each { Map platformData ->
                     Platform plat = Platform.findByGokbId(platformData.uuid)
                     if(!plat)
-                        plat = createOrUpdatePlatformJSON(platformData.uuid)
+                        plat = createOrUpdatePlatform(platformData.uuid)
                     if(plat) {
                         plat.org = provider
                         plat.save()
@@ -1198,7 +1225,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         if(publisherParams.gokbId && publisherParams.gokbId instanceof String) {
             Map<String, Object> publisherData = fetchRecordJSON(false, [uuid: publisherParams.gokbId])
             if(publisherData && !publisherData.error) {
-                Org publisher = createOrUpdateOrgJSON(publisherData)
+                Org publisher = createOrUpdateOrg(publisherData)
                 setupOrgRole([org: publisher, tipp: tipp, roleTypeCheckup: [RDStore.OR_PUBLISHER,RDStore.OR_CONTENT_PROVIDER], definiteRoleType: RDStore.OR_PUBLISHER])
             }
             else if(publisherData && publisherData.error) throw new SyncException("we:kb server is down")
@@ -1291,7 +1318,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * @param platformUUID the platform UUID
      * @throws SyncException
      */
-    Platform createOrUpdatePlatformJSON(platformInput) throws SyncException {
+    Platform createOrUpdatePlatform(platformInput) throws SyncException {
         Map<String,Object> platformJSON = [:], platformRecord = [:]
         if(platformInput instanceof String) {
             platformJSON = fetchRecordJSON(false, [uuid: platformInput])
@@ -1366,7 +1393,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * @param pkgA the old package (as {@link Package} which is already persisted)
      * @param pkgB the new package (as unprocessed {@link Map}
      * @return a {@link Set} of {@link Map}s with the differences
+     * @deprecated observe if needed, no one seems to have missed the result ...
      */
+    @Deprecated
     Set<Map<String,Object>> getPkgPropDiff(Package pkgA, Map<String,Object> pkgB) {
         log.info("processing package prop diffs; the respective GOKb UUIDs are: ${pkgA.gokbId} (LAS:eR) vs. ${pkgB.uuid} (remote)")
         Set<Map<String,Object>> result = []
@@ -1429,7 +1458,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         else if(tippA.status != RDStore.TIPP_STATUS_REMOVED && !(status in [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED])) {
             //process central differences which are without effect to issue entitlements
             tippA.titleType = tippB.titleType
-            //tippA.name = tippB.name //TODO include name, sortname in IssueEntitlements, then, this property may move to the controlled ones
+            tippA.name = tippB.name
             if(tippA.altnames) {
                 List<String> oldAltNames = tippA.altnames.collect { AlternativeName altname -> altname.name }
                 tippB.altnames.each { String newAltName ->
@@ -1439,6 +1468,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     }
                 }
             }
+            tippA.status = tippStatus.get(tippB.status)
+            tippA.accessType = accessType.get(tippB.accessType)
+            tippA.openAccess = openAccess.get(tippB.openAccess)
             tippA.firstAuthor = tippB.firstAuthor
             tippA.firstEditor = tippB.firstEditor
             tippA.editionStatement = tippB.editionStatement
@@ -1448,7 +1480,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
             tippA.dateFirstOnline = (Date) tippB.dateFirstOnline
             tippA.seriesName = tippB.seriesName
             tippA.subjectReference = tippB.subjectReference
-            tippA.medium?.id = titleMedium.get(tippB.medium)?.id
+            //is a test. It was necessary to update ID instead for any reason whatsoever. It may be outdated by now
+            tippA.medium = titleMedium.get(tippB.medium)
             tippA.accessStartDate = tippB.accessStartDate
             tippA.accessEndDate = tippB.accessEndDate
             tippA.volume = tippB.volume
@@ -1553,8 +1586,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
             //get to diffs that need to be notified
             //println("tippA:"+tippA)
             //println("tippB:"+tippB)
-            Set<Map<String, Object>> diffs = getTippDiff(tippA, tippB)
+            //Set<Map<String, Object>> diffs = getTippDiff(tippA, tippB)
             //includes also changes in coverage statement set
+            /* as of ERMS-4585, comment from February 27th, no changes should be recorded but handed on directly to issue entitlements instead
             if (diffs) {
                 //process actual diffs
                 diffs.each { Map<String, Object> diff ->
@@ -1583,8 +1617,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 else throw new SyncException("Error on updating TIPP with UUID ${tippA.gokbId}: ${tippA.errors}")
             }
             else [:]
+            */
         }
-        else [:]
+        [:]
     }
 
     /**
@@ -1627,7 +1662,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             platform = Platform.findByGokbId(tippData.platformUUID)
         }
         if(!platform) {
-            platform = createOrUpdatePlatformJSON(tippData.platformUUID)
+            platform = createOrUpdatePlatform(tippData.platformUUID)
         }
         newTIPP.platform = platform
         if(newTIPP.save()) {
@@ -1700,7 +1735,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * @param tippa the old TIPP (as {@link TitleInstancePackagePlatform} or {@link IssueEntitlement})
      * @param tippb the new TIPP (as {@link Map} or {@link TitleInstancePackagePlatform}
      * @return a {@link Set} of {@link Map}s with the differences
+     * @deprecated as of comment for ERMS-4585, all title changes should be handed on directly to the issue entitlements, no need to record diffs
      */
+    @Deprecated
     Set<Map<String,Object>> getTippDiff(tippa, tippb) {
         if(tippa instanceof TitleInstancePackagePlatform && tippb instanceof Map)
             log.info("processing diffs; the respective GOKb UUIDs are: ${tippa.gokbId} (LAS:eR) vs. ${tippb.uuid} (remote)")
@@ -2065,7 +2102,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         result
     }
 
-    Set<String> getPermanentlyDeletedTitles(String pkgUUID) {
+    Set<String> getPermanentlyDeletedTitles() {
         Set<String> result = []
         Map<String, Object> recordBatch = fetchRecordJSON(true, [component_type: 'TitleInstancePackagePlatform', status: PERMANENTLY_DELETED])
         boolean more = true
@@ -2127,9 +2164,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
             accessType.put(rdv.value, rdv)
         }
         buildWekbLaserRefdataMap(RDConstants.LICENSE_OA_TYPE)
-        initialPackagesCounter = [:]
-        pkgPropDiffsContainer = [:]
-        packagesToNotify = [:]
     }
 
     /**

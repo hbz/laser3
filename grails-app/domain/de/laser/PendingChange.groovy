@@ -31,8 +31,11 @@ class PendingChange {
 
     public static final String PROP_PKG = 'pkg'
     public static final String PROP_SUBSCRIPTION = 'subscription'
+    @Deprecated
     public static final String PROP_TIPP = 'tipp'
+    @Deprecated
     public static final String PROP_TIPP_COVERAGE = 'tippCoverage'
+    @Deprecated
     public static final String PROP_PRICE_ITEM = 'priceItem'
     public static final String PROP_COST_ITEM = 'costItem'
 
@@ -43,8 +46,11 @@ class PendingChange {
 
     Subscription subscription
     Package pkg
+    @Deprecated
     TitleInstancePackagePlatform tipp
+    @Deprecated
     TIPPCoverage tippCoverage
+    @Deprecated
     PriceItem priceItem
     CostItem costItem
     Date ts
@@ -128,11 +134,6 @@ class PendingChange {
      */
     static PendingChange construct(Map<String, Object> configMap) throws CreationException {
 
-        Set<String> SETTING_KEYS = [PendingChangeConfiguration.NEW_TITLE,
-                                    PendingChangeConfiguration.TITLE_UPDATED,
-                                    PendingChangeConfiguration.PACKAGE_PROP]
-        SETTING_KEYS << PendingChangeConfiguration.PACKAGE_TIPP_COUNT_CHANGED
-
         if ((configMap.target instanceof Subscription || configMap.target instanceof License || configMap.target instanceof CostItem || configMap.target instanceof Package ||
                 configMap.target instanceof TitleInstancePackagePlatform)) {
             PendingChange pc
@@ -214,6 +215,7 @@ class PendingChange {
      * @param targetClass the domain class the change is attached to
      * @return the change record, if it exists or an empty one, if not
      */
+    @Deprecated
     static PendingChange checkPendingChangeExistsForSync(Map<String, Object> configMap, String targetClass) {
         Map<String, Object> changeParams = [target  : configMap.target,
                                             msgToken: configMap.msgToken]
