@@ -805,7 +805,14 @@ class StatsSyncService {
         }
         else {
             //GParsPool.withExistingPool(pool) {
-            reportData.reports.items.eachWithIndex { Map reportItem, int t ->
+            List items = []
+            if(reportData.reports.items instanceof Map) {
+                items.addAll(reportData.reports.items.values())
+            }
+            else {
+                items.addAll(reportData.reports.items)
+            }
+            items.eachWithIndex { Map reportItem, int t ->
                 String batchQuery = "insert into counter5report (c5r_version, c5r_online_identifier, c5r_print_identifier, c5r_proprietary_identifier, c5r_isbn, c5r_doi, c5r_publisher, c5r_database_name, c5r_platform_guid, c5r_report_institution_guid, c5r_report_type, c5r_metric_type, c5r_data_type, c5r_access_type, c5r_access_method, c5r_report_from, c5r_report_to, c5r_report_count, c5r_yop, c5r_identifier_hash) " +
                         "values (:version, :onlineIdentifier, :printIdentifier, :proprietaryIdentifier, :isbn, :doi, :publisher, :databaseName, :platform, :reportInstitution, :reportType, :metricType, :dataType, :accessType, :accessMethod, :reportFrom, :reportTo, :reportCount, :yop, :identifierHash) " +
                         "on conflict (c5r_report_from, c5r_report_to, c5r_report_type, c5r_metric_type, c5r_platform_guid, c5r_report_institution_guid, c5r_identifier_hash) " +
@@ -1093,7 +1100,7 @@ class StatsSyncService {
                     result.error = "server response: ${resp.status()} - ${reader}"
             }
             HttpClientConfiguration config = new DefaultHttpClientConfiguration()
-            config.readTimeout = Duration.ofMinutes(1)
+            config.readTimeout = Duration.ofMinutes(5)
             config.maxContentLength = MAX_CONTENT_LENGTH
             BasicHttpClient http = new BasicHttpClient(url, config)
             http.get(BasicHttpClient.ResponseType.JSON, success, failure)
