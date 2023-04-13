@@ -1,7 +1,7 @@
 package de.laser
 
 import de.laser.auth.User
-import de.laser.auth.UserOrg
+import de.laser.auth.UserOrgRole
 import de.laser.config.ConfigMapper
 import de.laser.properties.PropertyDefinition
 import de.laser.storage.BeanStore
@@ -133,7 +133,7 @@ class MailSendService {
         if(surveyInfo.owner)
         {
             //Only User that approved
-            List<UserOrg> userOrgs = UserOrg.findAllByOrg(participationFinish)
+            List<UserOrgRole> userOrgs = UserOrgRole.findAllByOrg(participationFinish)
 
             //Only User with Notification by Email and for Surveys Start
             userOrgs.each { userOrg ->
@@ -230,7 +230,7 @@ class MailSendService {
         if(surveyInfo.owner)
         {
             //Only User that approved
-            List<UserOrg> userOrgs = UserOrg.findAllByOrg(surveyInfo.owner)
+            List<UserOrgRole> userOrgs = UserOrgRole.findAllByOrg(surveyInfo.owner)
 
             //Only User with Notification by Email and for Surveys Start
             userOrgs.each { userOrg ->

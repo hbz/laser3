@@ -776,6 +776,10 @@ class SurveyController {
             result.surveyLinksMessage  << message(code: 'surveyLinks.surveysNotSameEndDate')
         }
 
+        if(params.commentTab){
+            result.commentTab = params.commentTab
+        }
+
 
         if(result.surveyInfo.surveyConfigs.size() >= 1  || params.surveyConfigID) {
 
@@ -3025,7 +3029,7 @@ class SurveyController {
             }
         }
 
-        redirect(url: request.getHeader('referer'))
+        redirect(action: 'show', params: [id: params.id, surveyConfigID: result.surveyConfig.id, commentTab: params.commentTab])
 
     }
 
