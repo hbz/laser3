@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      13.04.2023  rc-3.0  3.0.7       Andreas Bug         Brücke für Statistik-Sync eingebaut
+
 4954    05.04.2023  rc-3.0  3.0.6       Moe     Feature     allgemeine Merkmale Lizenzebene
 
 4948    04.04.2023  rc-3.0  3.0.6       Moe     Bug         Lizenz erst nach Ablaufdatum auf abgelaufen setzen
