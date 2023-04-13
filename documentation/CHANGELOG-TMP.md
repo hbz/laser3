@@ -7,7 +7,9 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-4928    13.04.2023  dev     3.1         Moe     Feature     Umfragen: Bemerkungsfelder
+4955    12.04.2023  dev     3.1         Moe     Feature     Umfrage erweiteren auf 4-MJL und 5-MJL
+
+4928    12.04.2023  dev     3.1         Moe     Feature     Umfragen: Bemerkungsfelder
 
 4956    11.04.2023  dev     3.1         Andreas Bug         Auslesefehler bei Mailadressen behoben
 
