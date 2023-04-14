@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4955    12.04.2023  dev     3.1         Moe     Feature     Umfrage erweiteren auf 4-MJL und 5-MJL
+
+4928    12.04.2023  dev     3.1         Moe     Feature     Umfragen: Bemerkungsfelder
+
 4956    11.04.2023  dev     3.1         Andreas Bug         Auslesefehler bei Mailadressen behoben
 
 4954    05.04.2023  rc-3.0  3.0.6       Moe     Feature     allgemeine Merkmale Lizenzebene
@@ -60,6 +64,8 @@
 4916    20.03.2023  rc-3.0  3.0.5       Andreas Bug         hasPublishComponent wurde bei Übertrag von Teilnehmerlizenzen nicht angelegt
 
 4869    20.03.2023  rc-3.0  3.0.5       Andreas Bug         API-Version 1.7 nach RC migriert, Bugs behoben
+
+4842    17.03.2023  dev     3.1         Moe     Feature     Optimierung Reminder-Mail in Umfragen
 
 4875    14.03.2023  dev     3.1         David   Feature     Breadcumb / Seitentitel für Orgs aufräumen
 
