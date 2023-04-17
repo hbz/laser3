@@ -1,11 +1,15 @@
 package de.laser
 
+import de.laser.auth.Role
+import de.laser.auth.UserOrgRole
 import de.laser.storage.RDStore
 import de.laser.titles.BookInstance
 import de.laser.titles.DatabaseInstance
 import de.laser.titles.JournalInstance
 
 class IconTagLib {
+
+    ContextService contextService
 
     static namespace = 'ui'
 
@@ -47,6 +51,14 @@ class IconTagLib {
                 break
             case 'yoda':
                 icon = 'la-object tools'
+                break
+            case 'affiliation':
+                int level = 0
+                UserOrgRole.findAllByUserAndOrg(contextService.getUser(), contextService.getOrg()).each{
+                    if (level < 1 && it.formalRole.authority == Role.INST_USER)   { level = 1; icon = 'user bordered inverted teal la-object-extended' }
+                    if (level < 2 && it.formalRole.authority == Role.INST_EDITOR) { level = 2; icon = 'user edit bordered inverted teal la-object-extended' }
+                    if (level < 3 && it.formalRole.authority == Role.INST_ADM)    { level = 3; icon = 'user cog bordered inverted teal la-object-extended' }
+                }
                 break
         }
         }

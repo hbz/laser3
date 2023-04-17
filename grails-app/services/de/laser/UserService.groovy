@@ -180,12 +180,12 @@ class UserService {
             List<String> rolesToCheck = [instUserRole]
 
             // handling inst role hierarchy
-            if (instUserRole == 'INST_USER') {
-                rolesToCheck << 'INST_EDITOR'
-                rolesToCheck << 'INST_ADM'
+            if (instUserRole == Role.INST_USER) {
+                rolesToCheck << Role.INST_EDITOR
+                rolesToCheck << Role.INST_ADM
             }
-            else if (instUserRole == 'INST_EDITOR') {
-                rolesToCheck << 'INST_ADM'
+            else if (instUserRole == Role.INST_EDITOR) {
+                rolesToCheck << Role.INST_ADM
             }
 
             rolesToCheck.each { String rot ->
@@ -225,12 +225,12 @@ class UserService {
         List<String> rolesToCheck = [instUserRole]
 
         // handling inst role hierarchy
-        if (instUserRole == 'INST_USER') {
-            rolesToCheck << 'INST_EDITOR'
-            rolesToCheck << 'INST_ADM'
+        if (instUserRole == Role.INST_USER) {
+            rolesToCheck << Role.INST_EDITOR
+            rolesToCheck << Role.INST_ADM
         }
-        else if (instUserRole == 'INST_EDITOR') {
-            rolesToCheck << 'INST_ADM'
+        else if (instUserRole == Role.INST_EDITOR) {
+            rolesToCheck << Role.INST_ADM
         }
 
         rolesToCheck.each{ String rot ->

@@ -28,12 +28,6 @@ import java.lang.annotation.Target
 
     // legacy
 
-    String test() default ''
-    String perm() default ''
-    String type() default ''
-    String affil() default ''
-    String specRole() default ''
-
     int ctrlService() default 0
     // NOT_TRANSACTIONAL    - no use of associated controllerService
     // IN_BETWEEN           - logic is partially in controllerService
