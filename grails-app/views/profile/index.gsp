@@ -14,7 +14,7 @@
     </ui:actionsDropdown>
 </ui:controlButtons>
 
-<ui:h1HeaderWithIcon message="profile.user" />
+<ui:h1HeaderWithIcon message="profile.user" type="affiliation"/>
 
 <ui:messages data="${flash}" />
 
