@@ -9,6 +9,12 @@
  *         Website : alex-d.fr
  */
 
+/* hbz: copied from trumbowyg.css */
+
+/* hbz: reset - removed */
+
+/* hbz: dark theme - removed */
+
 #trumbowyg-icons {
   overflow: hidden;
   visibility: hidden;
@@ -32,14 +38,14 @@
 .trumbowyg-modal svg {
   width: 17px;
   height: 100%;
-  color: #222;
+  color: #222; /* hbz */
   fill: #222; }
 
 .trumbowyg-box,
 .trumbowyg-editor {
   display: block;
   position: relative;
-  border: 1px solid #dedede;
+  border: 1px solid #dedede; /* hbz */
   width: 100%;
   min-height: 300px; }
 
@@ -56,7 +62,7 @@ article.trumbowyg-editor {
   margin: 0 auto; }
 
 .trumbowyg-box.trumbowyg-fullscreen {
-  background: #fefefe;
+  background: #fefefe; /* hbz */
   border: none !important; }
 
 .trumbowyg-editor,
@@ -102,7 +108,7 @@ article.trumbowyg-editor {
   overflow: auto;
   border: none;
   font-size: 14px;
-  font-family: "Consolas", "Courier", "Courier New", monospace;
+  font-family: "Consolas", "Courier", "Courier New", monospace; /* hbz */
   line-height: 18px; }
 
 .trumbowyg-box.trumbowyg-editor-visible .trumbowyg-textarea {
@@ -133,7 +139,7 @@ article.trumbowyg-editor {
 .trumbowyg-button-pane {
   width: 100%;
   min-height: 36px;
-  background: #f4f8f9;
+  background: #f4f8f9; /* hbz */
   border-bottom: 1px solid #d7e0e2;
   margin: 0;
   padding: 0 5px;
@@ -201,7 +207,7 @@ article.trumbowyg-editor {
   .trumbowyg-button-pane button:not(.trumbowyg-disable):hover,
   .trumbowyg-button-pane button:not(.trumbowyg-disable):focus,
   .trumbowyg-button-pane button.trumbowyg-active {
-    background-color: #e3e9eb;
+    background-color: #e3e9eb; /* hbz */
     outline: none; }
   .trumbowyg-button-pane .trumbowyg-open-dropdown::after {
     display: block;
@@ -231,8 +237,8 @@ article.trumbowyg-editor {
   border: 1px solid #ecf0f1;
   padding: 5px 0;
   border-top: none;
-  background: #fff;
-  color: #222;
+  background: #fff; /* hbz */
+  color: #222; /* hbz */
   margin-left: -1px;
   -webkit-box-shadow: rgba(0, 0, 0, 0.1) 0 2px 3px;
           box-shadow: rgba(0, 0, 0, 0.1) 0 2px 3px;
@@ -243,9 +249,9 @@ article.trumbowyg-editor {
     height: 35px;
     line-height: 35px;
     text-decoration: none;
-    background: #fff;
+    background: #fff; /* hbz */
     padding: 0 20px 0 10px;
-    color: #222;
+    color: #222; /* hbz */
     border: none;
     cursor: pointer;
     text-align: left;
@@ -254,7 +260,7 @@ article.trumbowyg-editor {
     -o-transition: all 150ms;
     transition: all 150ms; }
     .trumbowyg-dropdown button:hover, .trumbowyg-dropdown button:focus {
-      background: #e3e9eb; }
+      background: #e3e9eb; } /* hbz */
     .trumbowyg-dropdown button svg {
       float: left;
       margin-right: 14px; }
@@ -288,10 +294,10 @@ article.trumbowyg-editor {
   width: calc(100% - 20px);
   padding-bottom: 45px;
   z-index: 1;
-  background-color: #fff;
+  background-color: #fff; /* hbz */
   text-align: center;
   font-size: 14px;
-  font-family: "Trebuchet MS", Helvetica, Verdana, sans-serif;
+  font-family: "Trebuchet MS", Helvetica, Verdana, sans-serif; /* hbz */
   -webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 2px 3px;
           box-shadow: rgba(0, 0, 0, 0.2) 0 2px 3px;
   -webkit-backface-visibility: hidden;
@@ -302,7 +308,7 @@ article.trumbowyg-editor {
     margin: 0 0 20px;
     padding: 15px 0 13px;
     display: block;
-    border-bottom: 1px solid #dedede; }
+    border-bottom: 1px solid #dedede; } /* hbz */
   .trumbowyg-modal-box .trumbowyg-progress {
     width: 100%;
     height: 3px;
@@ -318,7 +324,7 @@ article.trumbowyg-editor {
   .trumbowyg-modal-box .trumbowyg-input-row {
     position: relative;
     margin: 15px 12px;
-    border: 1px solid #dedede;
+    border: 1px solid #dedede; /* hbz */
     overflow: hidden; }
   .trumbowyg-modal-box .trumbowyg-input-infos {
     text-align: left;
@@ -326,7 +332,7 @@ article.trumbowyg-editor {
     -o-transition: all 150ms;
     transition: all 150ms;
     width: 150px;
-    border-right: 1px solid #dedede;
+    border-right: 1px solid #dedede; /* hbz */
     padding: 0 7px;
     background-color: #fbfcfc;
     position: absolute;
@@ -384,7 +390,7 @@ article.trumbowyg-editor {
     bottom: 10px;
     right: 0;
     text-decoration: none;
-    color: #fff;
+    color: #fff; /* hbz */
     display: block;
     width: 100px;
     height: 35px;
@@ -452,11 +458,3 @@ body.trumbowyg-body-fullscreen {
   .trumbowyg-fullscreen .trumbowyg-button-group .trumbowyg-fullscreen-button svg {
     color: #222;
     fill: transparent; }
-
-/* hbz: moved to x-reset.css */
-
-/*
- * Dark theme
- */
-
-/* hbz: removed */

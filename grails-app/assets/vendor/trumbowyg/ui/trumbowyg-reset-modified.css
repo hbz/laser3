@@ -9,7 +9,11 @@
  *         Website : alex-d.fr
  */
 
-/* hbz: moved from x-base.css */
+/* hbz: copied from trumbowyg.css */
+
+/* hbz: reset only */
+
+/* hbz: dark theme - removed */
 
 .trumbowyg-editor {
   /*
@@ -28,7 +32,7 @@
   .trumbowyg-editor canvas:focus {
     outline: none; }
   .trumbowyg-editor.trumbowyg-reset-css {
-    background: #fefefe !important;
+    background: #fefefe !important; /* hbz */
     font-family: "Trebuchet MS", Helvetica, Verdana, sans-serif !important;
     font-size: 14px !important;
     line-height: 1.45em !important;
@@ -45,7 +49,7 @@
               box-shadow: none !important;
       background: none !important;
       margin: 0 !important;
-      margin-bottom: 12px !important;
+      margin-bottom: 12px !important; /* hbz */
       line-height: 1.4em !important;
       font-family: "Trebuchet MS", Helvetica, Verdana, sans-serif !important;
       font-size: 14px !important;
@@ -87,19 +91,19 @@
       margin: 0 !important;
       padding: 0 !important;
       font-weight: bold; }
-    .trumbowyg-editor.trumbowyg-reset-css h1 {
+    .trumbowyg-editor.trumbowyg-reset-css h1 { /* hbz .. from h2 */
       font-size: 26px !important;
       line-height: 34px !important;
       margin-bottom: 15px !important; }
-    .trumbowyg-editor.trumbowyg-reset-css h2 {
+    .trumbowyg-editor.trumbowyg-reset-css h2 { /* hbz .. from h3 */
       font-size: 22px !important;
       line-height: 28px !important;
       margin-bottom: 7px !important; }
-    .trumbowyg-editor.trumbowyg-reset-css h3 {
+    .trumbowyg-editor.trumbowyg-reset-css h3 { /* hbz .. from h4 */
       font-size: 16px !important;
       line-height: 22px !important;
       margin-bottom: 7px !important; }
-    .trumbowyg-editor.trumbowyg-reset-css h4 {
+    .trumbowyg-editor.trumbowyg-reset-css h4 { /* hbz .. new */
       font-size: 14px !important;
       line-height: 20px !important;
       margin-bottom: 7px !important; }
