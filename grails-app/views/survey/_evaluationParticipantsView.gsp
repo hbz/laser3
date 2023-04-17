@@ -4,7 +4,7 @@
 <g:if test="${showOpenParticipantsAgainButtons}">
     <g:set var="mailSubject"
            value="${escapeService.replaceUmlaute(g.message(code: 'email.subject.surveys', args: ["${surveyConfig.surveyInfo.type.getI10n('value')}"]) + " " + surveyConfig.surveyInfo.name + "")}"/>
-    <g:set var="mailBody" value="${surveyService.notificationSurveyAsString(surveyConfig.surveyInfo)}"/>
+    <g:set var="mailBody" value="${surveyService.notificationSurveyAsStringInHtml(surveyConfig.surveyInfo)}"/>
     <g:set var="mailString" value=""/>
 </g:if>
 
@@ -364,11 +364,19 @@
         <div class="content">
             <div class="ui form twelve wide column">
                 <div class="two fields">
-                    <g:if test="${params.tab == 'participantsViewAllNotFinish' ? 'active' : ''}">
+                    <g:if test="${params.tab == 'participantsViewAllNotFinish'}">
                         <div class="eight wide field" style="text-align: left;">
-                            <button name="openOption" type="submit" value="ReminderMail" class="ui button">
+                            <a data-ui="modal" class="ui button"
+                               href="#generateEmailWithAddresses_ajaxModal">
                                 ${message(code: 'openParticipantsAgain.reminder.participantsHasAccess')}
-                            </button>
+                            </a>
+
+                            <laser:render template="generateEmailWithAddresses"
+                                          model="[modalID: 'generateEmailWithAddresses_ajaxModal', formUrl: processAction ?  g.createLink([controller: 'survey',action: processAction, params: [id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: params.tab]]) : '',
+                                                  messageCode: 'openParticipantsAgain.reminder.participantsHasAccess',
+                                                  submitButtonValue: 'ReminderMail',
+                                                    mailText: surveyService.notificationSurveyAsStringInText(surveyConfig.surveyInfo, true)]"/>
+
                         </div>
                     </g:if>
                 </div>

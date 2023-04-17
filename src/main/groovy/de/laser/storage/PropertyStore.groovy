@@ -54,6 +54,8 @@ class PropertyStore {
 
     public final static PropertyDefinition SURVEY_PROPERTY_PARTICIPATION   = getSurveyProperty('Participation')
     public final static PropertyDefinition SURVEY_PROPERTY_ORDER_NUMBER    = getSurveyProperty('Order number')
+    public final static PropertyDefinition SURVEY_PROPERTY_MULTI_YEAR_5    = getSurveyProperty('Multi-year term 5 years')
+    public final static PropertyDefinition SURVEY_PROPERTY_MULTI_YEAR_4    = getSurveyProperty('Multi-year term 4 years')
     public final static PropertyDefinition SURVEY_PROPERTY_MULTI_YEAR_3    = getSurveyProperty('Multi-year term 3 years')
     public final static PropertyDefinition SURVEY_PROPERTY_MULTI_YEAR_2    = getSurveyProperty('Multi-year term 2 years')
 

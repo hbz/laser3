@@ -204,16 +204,15 @@ $.ajax({
                                     var option = data[index];
                                     var optionText = option.text;
 
-                                    select += '<div class="item"
-                                                    data-value="' + option.value + '">' + optionText + '</div>';
+                                    select += '<div class="item" data-value="' + option.value + '">' + optionText + '</div>';
                                 }
 
-                                select = ' <div id="objStatusWrapper" class="ui fluid search selection dropdown">' +
-    '   <input type="hidden" id="objStatus" name="objStatus">' +
-    '   <i class="dropdown icon"></i>' +
-    '   <div class="default text">${message(code: 'default.select.choose.label')}</div>' +
-    '   <div class="menu">'
-    + select +
+                                select = '<div id="objStatusWrapper" class="ui fluid search selection dropdown">' +
+    '<input type="hidden" id="objStatus" name="objStatus">' +
+    '<i class="dropdown icon"></i>' +
+    '<div class="default text">${message(code: 'default.select.choose.label')}</div>' +
+    '<div class="menu">'+
+    select +
     '</div>' +
     '</div>';
                             $('label[for=objStatus]').next().replaceWith(select);

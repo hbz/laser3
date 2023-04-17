@@ -776,6 +776,10 @@ class SurveyController {
             result.surveyLinksMessage  << message(code: 'surveyLinks.surveysNotSameEndDate')
         }
 
+        if(params.commentTab){
+            result.commentTab = params.commentTab
+        }
+
 
         if(result.surveyInfo.surveyConfigs.size() >= 1  || params.surveyConfigID) {
 
@@ -3025,7 +3029,7 @@ class SurveyController {
             }
         }
 
-        redirect(url: request.getHeader('referer'))
+        redirect(action: 'show', params: [id: params.id, surveyConfigID: result.surveyConfig.id, commentTab: params.commentTab])
 
     }
 
@@ -4338,8 +4342,22 @@ class SurveyController {
         result.properties = []
         result.properties.addAll(SurveyConfigProperties.findAllBySurveyPropertyNotEqualAndSurveyConfig(result.participationProperty, result.surveyConfig)?.surveyProperty)
 
+        result.multiYearTermFiveSurvey = null
+        result.multiYearTermFourSurvey = null
         result.multiYearTermThreeSurvey = null
         result.multiYearTermTwoSurvey = null
+
+        if (PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_5.id in result.properties.id) {
+            result.multiYearTermFiveSurvey = PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_5
+            result.properties.remove(result.multiYearTermFiveSurvey)
+
+        }
+
+        if (PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_4.id in result.properties.id) {
+            result.multiYearTermFourSurvey = PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_4
+            result.properties.remove(result.multiYearTermFourSurvey)
+
+        }
 
         if (PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_3.id in result.properties.id) {
             result.multiYearTermThreeSurvey = PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_3
@@ -4416,6 +4434,48 @@ class SurveyController {
                         use(TimeCategory) {
                             newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
                             newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 3.year) : null
+                        }
+                        countNewSubs++
+                        result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, params))
+                    }
+                    else {
+                        use(TimeCategory) {
+                            newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
+                            newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 1.year) : null
+                        }
+                        countNewSubs++
+                        result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, false, params))
+                    }
+                }
+                //Umfrage-Merkmal MJL4
+                else if (result.multiYearTermFourSurvey) {
+
+                    SurveyResult participantPropertyFour = SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it.participant, result.institution, result.surveyConfig, result.multiYearTermFourSurvey)
+                    if (participantPropertyFour && participantPropertyFour.refValue?.id == RDStore.YN_YES.id) {
+                        use(TimeCategory) {
+                            newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
+                            newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 4.year) : null
+                        }
+                        countNewSubs++
+                        result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, params))
+                    }
+                    else {
+                        use(TimeCategory) {
+                            newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
+                            newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 1.year) : null
+                        }
+                        countNewSubs++
+                        result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, false, params))
+                    }
+                }
+                //Umfrage-Merkmal MJL5
+                else if (result.multiYearTermFiveSurvey) {
+
+                    SurveyResult participantPropertyFive = SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it.participant, result.institution, result.surveyConfig, result.multiYearTermFiveSurvey)
+                    if (participantPropertyFive && participantPropertyFive.refValue?.id == RDStore.YN_YES.id) {
+                        use(TimeCategory) {
+                            newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
+                            newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 5.year) : null
                         }
                         countNewSubs++
                         result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, params))

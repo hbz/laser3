@@ -23,6 +23,7 @@ class UserController {
     InstAdmService instAdmService
     UserControllerService userControllerService
     UserService userService
+    MailSendService mailSendService
 
     //-----
 
@@ -167,7 +168,7 @@ class UserController {
                 if (result.user.save()) {
                     flash.message = message(code: 'user.newPassword.success') as String
 
-                    instAdmService.sendMail(result.user, 'Passwortänderung',
+                    mailSendService.sendMailToUser(result.user, 'Passwortänderung',
                             '/mailTemplates/text/newPassword', [user: result.user, newPass: newPassword])
 
                     redirect url: request.getHeader('referer'), id: params.id
