@@ -702,7 +702,7 @@
                 system.profiler("${ Profiler.generateKey( webRequest )}");
 
                 <g:if test="${currentServer == AppUtils.LOCAL}">
-                console.log(JSPC);
+                console.dir(JSPC);
                 why.info(false);
                 </g:if>
 

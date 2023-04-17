@@ -1,3 +1,5 @@
+console.log('+ bundle: laser.js');
+
 // bundle: assets/javascripts/laser.js
 //
 //= require /javascript/semantic.min.js         //--> assets/themes
@@ -17,8 +19,6 @@
 //= require modules/responsiveTables.js
 //= require modules/setTextareaHeight.js
 //= require modules/system.js
-
-console.log('+ bundle: laser.js');
 
 // here we go ..
 

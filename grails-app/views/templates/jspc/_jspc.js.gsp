@@ -25,7 +25,7 @@ JSPC = {
 
         add : function (label, module) {
             if (! JSPC.modules.registry.get (label) ) {
-                console.log ('  > adding module ' + label + ' (' + (JSPC.modules.registry.size+1) + ')');
+                console.debug ('%c  > adding module ' + label + ' (' + (JSPC.modules.registry.size+1) + ')', 'color:grey');
                 JSPC.modules.registry.set (label, module);
                 if (window[label] != module) {
                     console.warn ('  > module OVERRIDES existing property ? ' + label);
@@ -39,11 +39,11 @@ JSPC = {
             let i = 0;
             for (let label of arguments) {
                 if (JSPC.modules.registry.get (label)) {
-                    console.log ('>> running module ' + label + ' (' + (++i) + ')');
+                    console.debug ('%c> running module ' + label + ' (' + (++i) + ')', 'color:grey');
                     JSPC.modules.registry.get (label).go();
-                    why.tap();
+                    if ('LOCAL' == JSPC.vars.server) { why.tap(); }
                 }
-                else { console.log ('>> module NOT found ? ' + label ); }
+                else { console.error ('> module NOT found ? ' + label ); }
             }
         }
     },
