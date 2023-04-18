@@ -53,7 +53,7 @@
                 </td>
                 <td>
                     <g:each in="${platformInstance.getContextOrgAccessPoints(contextOrg)}" var="oap" >
-                        <g:link controller="accessPoint" action="edit_${oap.accessMethod}" id="${oap.id}">${oap.name} (${oap.accessMethod.getI10n('value')})</g:link> <br />
+                        <g:link controller="accessPoint" action="edit_${oap.accessMethod.value.toLowerCase()}" id="${oap.id}">${oap.name} (${oap.accessMethod.getI10n('value')})</g:link> <br />
                     </g:each>
                 </td>
                 <td>
@@ -68,7 +68,7 @@
                                           data-content="${message(code: 'myinst.currentPlatforms.tooltip.thumbtack.content')}">
                                         <i class="icon la-thumbtack slash scale la-list-icon"></i>
                                     </span>
-                                    <g:link controller="accessPoint" action="edit_${orgap.accessMethod}"
+                                    <g:link controller="accessPoint" action="edit_${orgap.accessMethod.value.toLowerCase()}"
                                             id="${orgap.id}">${orgap.name} (${orgap.accessMethod.getI10n('value')})</g:link>
                                 </div>
                             </g:each>

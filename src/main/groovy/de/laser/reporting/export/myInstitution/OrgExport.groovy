@@ -19,7 +19,6 @@ import de.laser.oap.OrgAccessPointEzproxy
 import de.laser.oap.OrgAccessPointOA
 import de.laser.oap.OrgAccessPointProxy
 import de.laser.oap.OrgAccessPointShibboleth
-import de.laser.oap.OrgAccessPointVpn
 import de.laser.reporting.export.GlobalExportHelper
 import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.report.GenericHelper
@@ -281,7 +280,7 @@ class OrgExport extends BaseDetailsExport {
                                 entry.add(ipv6['ipInput'])
                             }
 
-                            if (oap instanceof OrgAccessPointEzproxy || org instanceof OrgAccessPointProxy || org instanceof OrgAccessPointVpn) {
+                            if (oap instanceof OrgAccessPointEzproxy || org instanceof OrgAccessPointProxy) {
                                 entry.add( oap.url )
                             }
                             else if (oap instanceof OrgAccessPointOA || oap instanceof OrgAccessPointShibboleth) {

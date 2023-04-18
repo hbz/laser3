@@ -94,8 +94,13 @@ class AccessPointController  {
         if (params.checked == "true"){
             qry += " AND s.status = ${RDStore.SUBSCRIPTION_CURRENT.id}"
         }
+
+        Org org = orgAccessPoint.org
+        Long orgId = org.id
+        Org contextOrg = contextService.getOrg()
+        boolean inContextOrg = (orgId == contextOrg.id)
         ArrayList linkedPlatformSubscriptionPackages = Platform.executeQuery(qry, [currentSubIds: currentSubIds])
-        render(template: "linked_subs_table", model: [linkedPlatformSubscriptionPackages: linkedPlatformSubscriptionPackages, params:params])
+        render(template: "linked_subs_table", model: [linkedPlatformSubscriptionPackages: linkedPlatformSubscriptionPackages, inContextOrg: inContextOrg, params:params])
     }
 
     /**
@@ -121,10 +126,15 @@ class AccessPointController  {
             if (params.checked == "true"){
                 qry2 += " AND s.status = ${RDStore.SUBSCRIPTION_CURRENT.id}"
             }
-            ArrayList linkedSubs = Subscription.executeQuery(qry2, [currentSubIds: currentSubIds])
+            ArrayList linkedSubs = Subscription.executeQuery(qry2 + ' order by s.name', [currentSubIds: currentSubIds])
             it['linkedSubs'] = linkedSubs
         }
-        render(template: "linked_platforms_table", model: [linkedPlatforms: linkedPlatforms, params:params, accessPoint: orgAccessPoint])
+        Org org = orgAccessPoint.org
+        Long orgId = org.id
+        Org contextOrg = contextService.getOrg()
+        boolean inContextOrg = (orgId == contextOrg.id)
+
+        render(template: "linked_platforms_table", model: [linkedPlatforms: linkedPlatforms, inContextOrg: inContextOrg,  params:params, accessPoint: orgAccessPoint])
     }
 
     /**
@@ -218,16 +228,6 @@ class AccessPointController  {
     }
 
     /**
-     * Handles the call for editing a VPN based access point
-     * @return the VPN editing view
-     * @see de.laser.oap.OrgAccessPointVpn
-     */
-    @Secured(['ROLE_USER'])
-    def edit_vpn() {
-        _edit("vpn")
-    }
-
-    /**
      * Handles the call for editing an OpenAthens based access point
      * @return the OpenAthens editing view
      * @see de.laser.oap.OrgAccessPointOA
@@ -306,11 +306,13 @@ class AccessPointController  {
             Map<String, Object> accessPointDataList = [:]
             Boolean autofocus = (params.autofocus) ? true : false
             Boolean activeChecksOnly = (params.checked == 'false')
+
             if(accessMethod in ['ip', 'ezproxy', 'proxy']) {
                 accessPointDataList = orgAccessPoint.getAccessPointIpRanges()
             }else if(accessMethod == 'mailDomain'){
                 accessPointDataList = orgAccessPoint.getAccessPointMailDomains()
             }
+
             List<Long> currentSubIds = orgTypeService.getCurrentSubscriptionIds(orgAccessPoint.org)
             List<HashMap> linkedPlatforms = accessPointService.getLinkedPlatforms(params, orgAccessPoint)
             linkedPlatforms.each() {
@@ -327,9 +329,10 @@ class AccessPointController  {
                 if (activeChecksOnly) {
                     qry2 += " AND s.status = ${RDStore.SUBSCRIPTION_CURRENT.id}"
                 }
-                ArrayList linkedSubs = Subscription.executeQuery(qry2, [currentSubIds: currentSubIds])
+                ArrayList linkedSubs = Subscription.executeQuery(qry2 + ' order by s.name, s.status', [currentSubIds: currentSubIds])
                 it['linkedSubs'] = linkedSubs
             }
+
             ArrayList linkedPlatformSubscriptionPackages = []
             if(currentSubIds) {
                 String qry3 = """
@@ -347,7 +350,6 @@ class AccessPointController  {
             return [
                     accessPoint                       : orgAccessPoint,
                     accessPointDataList               : accessPointDataList,
-                    rgId                              : orgId,
                     platformList                      : orgAccessPoint.getNotLinkedPlatforms(),
                     linkedPlatforms                   : linkedPlatforms,
                     linkedPlatformSubscriptionPackages: linkedPlatformSubscriptionPackages,

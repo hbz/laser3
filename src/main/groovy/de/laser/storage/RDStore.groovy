@@ -17,7 +17,6 @@ class RDStore {
     public final static RefdataValue ACCESS_POINT_TYPE_OA           = getRefdataValue('oa', RDConstants.ACCESS_POINT_TYPE)
     public final static RefdataValue ACCESS_POINT_TYPE_PROXY        = getRefdataValue('proxy', RDConstants.ACCESS_POINT_TYPE)
     public final static RefdataValue ACCESS_POINT_TYPE_SHIBBOLETH   = getRefdataValue('shibboleth', RDConstants.ACCESS_POINT_TYPE)
-    public final static RefdataValue ACCESS_POINT_TYPE_VPN          = getRefdataValue('vpn', RDConstants.ACCESS_POINT_TYPE)
 
     public final static RefdataValue ADDRESS_TYPE_POSTAL         = getRefdataValue('Postal address', RDConstants.ADDRESS_TYPE)
     public final static RefdataValue ADDRESS_TYPE_BILLING        = getRefdataValue('Billing address', RDConstants.ADDRESS_TYPE)
