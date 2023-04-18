@@ -101,6 +101,7 @@ class MyInstitutionController  {
     CustomWkhtmltoxService wkhtmltoxService
     WorkflowService workflowService
     WorkflowOldService workflowOldService
+    MailSendService mailSendService
 
     /**
      * The landing page after login; this is also the call when the home button is clicked
@@ -2158,8 +2159,8 @@ class MyInstitutionController  {
         }
 
         if(sendMailToSurveyOwner) {
-            surveyService.emailToSurveyOwnerbyParticipationFinish(surveyInfo, result.institution)
-            surveyService.emailToSurveyParticipationByFinish(surveyInfo, result.institution)
+            mailSendService.emailToSurveyOwnerbyParticipationFinish(surveyInfo, result.institution)
+            mailSendService.emailToSurveyParticipationByFinish(surveyInfo, result.institution)
         }
 
 
@@ -3904,8 +3905,6 @@ join sub.orgRelations or_sub where
         //prepare next pagination
         params.withoutPropOffset = result.withoutPropOffset
         params.withPropOffset = result.withPropOffset
-
-        println(result)
 
         result
     }

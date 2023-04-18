@@ -7,6 +7,14 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4829    18.04.2023  dev     3.1         David   Bug         Javascript Library Trumbowyg v2.26.0 funktioniert nicht mehr richtig
+
+4962    17.04.2023  dev     3.1         David   Feature     Sicherheitsabfrage bei Anmerkungen ändern
+
+4955    12.04.2023  dev     3.1         Moe     Feature     Umfrage erweiteren auf 4-MJL und 5-MJL
+
+4928    12.04.2023  dev     3.1         Moe     Feature     Umfragen: Bemerkungsfelder
+
 4956    11.04.2023  dev     3.1         Andreas Bug         Auslesefehler bei Mailadressen behoben
 
 4918    11.04.2023  dev     3.1         Andreas Feature     Titel-Status ist nicht mehr nullable
@@ -62,6 +70,8 @@
 4916    20.03.2023  rc-3.0  3.0.5       Andreas Bug         hasPublishComponent wurde bei Übertrag von Teilnehmerlizenzen nicht angelegt
 
 4869    20.03.2023  rc-3.0  3.0.5       Andreas Bug         API-Version 1.7 nach RC migriert, Bugs behoben
+
+4842    17.03.2023  dev     3.1         Moe     Feature     Optimierung Reminder-Mail in Umfragen
 
 4875    14.03.2023  dev     3.1         David   Feature     Breadcumb / Seitentitel für Orgs aufräumen
 

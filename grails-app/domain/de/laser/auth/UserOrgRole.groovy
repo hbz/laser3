@@ -10,10 +10,6 @@ import javax.persistence.Transient
  */
 class UserOrgRole implements Comparable {
 
-    public static final String INST_USER    = 'INST_USER'
-    public static final String INST_EDITOR  = 'INST_EDITOR'
-    public static final String INST_ADM     = 'INST_ADM'
-
     Date dateCreated
     Date lastUpdated
 

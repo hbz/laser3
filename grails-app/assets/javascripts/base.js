@@ -1,3 +1,5 @@
+console.log('+ bundle: base.js');
+
 // bundle: assets/javascripts/base.js
 //
 //= require libs/jquery-3.6.3.js
@@ -12,4 +14,3 @@
 //= require /trumbowyg/langs/de.js                              //--> assets/vendor
 //= require /trumbowyg/plugins/history/trumbowyg.history.js     //--> assets/vendor
 
-console.log('+ bundle: base.js');

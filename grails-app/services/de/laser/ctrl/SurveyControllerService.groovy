@@ -142,8 +142,20 @@ class SurveyControllerService {
             })
 
 
+            result.multiYearTermFiveSurvey = null
+            result.multiYearTermFourSurvey = null
             result.multiYearTermThreeSurvey = null
             result.multiYearTermTwoSurvey = null
+
+            if (PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_5.id in result.properties.id) {
+                result.multiYearTermFiveSurvey = PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_3
+                result.properties.remove(result.multiYearTermFiveSurvey)
+            }
+
+            if (PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_4.id in result.properties.id) {
+                result.multiYearTermFourSurvey = PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_3
+                result.properties.remove(result.multiYearTermFourSurvey)
+            }
 
             if (PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_3.id in result.properties.id) {
                 result.multiYearTermThreeSurvey = PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_3
@@ -308,6 +320,34 @@ class SurveyControllerService {
                         }
                     }
 
+                    if (result.multiYearTermFourSurvey) {
+                        newSurveyResult.newSubPeriodFoureStartDate = null
+                        newSurveyResult.newSubPeriodFourEndDate = null
+
+                        SurveyResult participantPropertyFour = SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(surveyResult.participant, result.institution, result.surveyConfig, result.multiYearTermFourSurvey)
+                        if (participantPropertyFour && participantPropertyFour.refValue?.id == RDStore.YN_YES.id) {
+                            use(TimeCategory) {
+                                newSurveyResult.newSubPeriodFourStartDate = newSurveyResult.sub.startDate ? (newSurveyResult.sub.endDate + 1.day) : null
+                                newSurveyResult.newSubPeriodFourEndDate = newSurveyResult.sub.endDate ? (newSurveyResult.sub.endDate + 4.year) : null
+                                newSurveyResult.participantPropertyFourComment = participantPropertyFour.comment
+                            }
+                        }
+                    }
+
+                    if (result.multiYearTermFiveSurvey) {
+                        newSurveyResult.newSubPeriodFiveStartDate = null
+                        newSurveyResult.newSubPeriodFiveEndDate = null
+
+                        SurveyResult participantPropertyFive = SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(surveyResult.participant, result.institution, result.surveyConfig, result.multiYearTermFiveSurvey)
+                        if (participantPropertyFive && participantPropertyFive.refValue?.id == RDStore.YN_YES.id) {
+                            use(TimeCategory) {
+                                newSurveyResult.newSubPeriodFiveStartDate = newSurveyResult.sub.startDate ? (newSurveyResult.sub.endDate + 1.day) : null
+                                newSurveyResult.newSubPeriodFiveEndDate = newSurveyResult.sub.endDate ? (newSurveyResult.sub.endDate + 5.year) : null
+                                newSurveyResult.participantPropertyFiveComment = participantPropertyFive.comment
+                            }
+                        }
+                    }
+
                     result.orgsContinuetoSubscription << newSurveyResult
                 }
                 if (!(surveyResult.participant.id in currentParticipantIDs) && !(surveyResult.participant.id in orgsLateCommersOrgsID) && !(surveyResult.participant.id in orgsWithMultiYearTermOrgsID)) {
@@ -339,6 +379,34 @@ class SurveyControllerService {
                                 newSurveyResult.newSubPeriodThreeStartDate = result.parentSubscription.startDate ? (result.parentSubscription.endDate + 1.day) : null
                                 newSurveyResult.newSubPeriodThreeEndDate = result.parentSubscription.endDate ? (result.parentSubscription.endDate + 3.year) : null
                                 newSurveyResult.participantPropertyThreeComment = participantPropertyThree.comment
+                            }
+                        }
+                    }
+
+                    if (result.multiYearTermFourSurvey) {
+                        newSurveyResult.newSubPeriodFourStartDate = null
+                        newSurveyResult.newSubPeriodFourEndDate = null
+
+                        SurveyResult participantPropertyFour = SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(surveyResult.participant, result.institution, result.surveyConfig, result.multiYearTermFourSurvey)
+                        if (participantPropertyFour && participantPropertyFour.refValue?.id == RDStore.YN_YES.id) {
+                            use(TimeCategory) {
+                                newSurveyResult.newSubPeriodFourStartDate = result.parentSubscription.startDate ? (result.parentSubscription.endDate + 1.day) : null
+                                newSurveyResult.newSubPeriodFourEndDate = result.parentSubscription.endDate ? (result.parentSubscription.endDate + 4.year) : null
+                                newSurveyResult.participantPropertyFourComment = participantPropertyFour.comment
+                            }
+                        }
+                    }
+
+                    if (result.multiYearTermFiveSurvey) {
+                        newSurveyResult.newSubPeriodFiveStartDate = null
+                        newSurveyResult.newSubPeriodFiveEndDate = null
+
+                        SurveyResult participantPropertyFive = SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(surveyResult.participant, result.institution, result.surveyConfig, result.multiYearTermFiveSurvey)
+                        if (participantPropertyFive && participantPropertyFive.refValue?.id == RDStore.YN_YES.id) {
+                            use(TimeCategory) {
+                                newSurveyResult.newSubPeriodFiveStartDate = result.parentSubscription.startDate ? (result.parentSubscription.endDate + 1.day) : null
+                                newSurveyResult.newSubPeriodFiveEndDate = result.parentSubscription.endDate ? (result.parentSubscription.endDate + 5.year) : null
+                                newSurveyResult.participantPropertyFiveComment = participantPropertyFive.comment
                             }
                         }
                     }

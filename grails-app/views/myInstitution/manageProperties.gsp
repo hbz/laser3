@@ -63,7 +63,13 @@
     <div class="ui segment">
         <g:form action="processManageProperties" method="post" class="ui form">
             <div class="field">
-                <h2 class="ui header"><g:if test="${filterPropDef.tenant != null}"><i class="shield alternate icon"></i></g:if><g:message code="property.manageProperties.add" args="[filterPropDef.getI10n('name')]"/></h2>${message(code: 'default.type.label')}: ${PropertyDefinition.getLocalizedValue(filterPropDef.type)}
+                <h2 class="ui header"><g:if test="${filterPropDef.tenant != null}"><i
+                        class="shield alternate icon"></i></g:if><g:message code="property.manageProperties.add"
+                                                                            args="[filterPropDef.getI10n('name')]"/>
+                </h2>
+
+                ${message(code: 'default.type.label')}: ${PropertyDefinition.getLocalizedValue(filterPropDef.type)}
+
                 <g:hiddenField name="filterPropDef" value="${genericOIDService.getOID(filterPropDef)}"/>
                 <g:if test="${filterPropDef.isRefdataValueType()}">
                     <g:set var="refdataValues" value="${[]}"/>
@@ -118,6 +124,7 @@
                                 <g:checkBox name="membersAuditListToggler" id="membersAuditListToggler" checked="false"/>
                             </th>
                         </g:if>
+                        <th>${message(code: 'sidewide.number')}</th>
                         <g:if test="${sortname}">
                             <th><g:message code="default.sortname.label"/></th>
                         </g:if>
@@ -127,12 +134,13 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <g:each in="${objectsWithoutProp}" var="objWithoutProp">
+                    <g:each in="${objectsWithoutProp}" var="objWithoutProp" status="i">
                         <tr>
                             <td><g:checkBox name="newObjects" value="${objWithoutProp.id}" checked="${objWithoutProp.id.toString() in selectedWithout ? 'true' : 'false'}"/></td>
                             <g:if test="${showConsortiaFunctions && auditable}">
                                 <td><g:checkBox name="withAudit" value="${objWithoutProp.id}" checked="${objWithoutProp.id.toString() in selectedAudit ? 'true' : 'false'}"/></td>
                             </g:if>
+                            <td>${i+1}</td>
                             <g:if test="${sortname}">
                                 <td>${objWithoutProp.sortname}</td>
                             </g:if>
