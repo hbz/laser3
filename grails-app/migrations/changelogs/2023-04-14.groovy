@@ -34,18 +34,6 @@ databaseChangeLog = {
         dropTable(tableName: "platform_access_method")
     }
 
-    changeSet(author: "djebeniani (generated)", id: "1681469132222-5") {
-        dropUniqueConstraint(constraintName: "platform_access_method_plat_guid_key", tableName: "platform_access_method")
-    }
-
-    changeSet(author: "djebeniani (generated)", id: "1681469132222-6") {
-        dropForeignKeyConstraint(baseTableName: "platform_access_method", constraintName: "fke7e3f5508055d84b")
-    }
-
-    changeSet(author: "djebeniani (generated)", id: "1681469132222-7") {
-        dropForeignKeyConstraint(baseTableName: "platform_access_method", constraintName: "fke7e3f55064d7720")
-    }
-
 
 
 
