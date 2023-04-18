@@ -1,34 +1,21 @@
 package de.laser
 
-import de.laser.base.AbstractCoverage
 import de.laser.base.AbstractLockableService
-import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.cache.SessionCacheWrapper
 import de.laser.exceptions.ChangeAcceptException
 import de.laser.finance.CostItem
-import de.laser.properties.PropertyDefinition
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
-import de.laser.utils.CodeUtils
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
-import grails.converters.JSON
 import grails.gorm.transactions.Transactional
-import grails.web.databinding.DataBindingUtils
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
-import org.grails.datastore.mapping.model.PersistentEntity
-import org.grails.datastore.mapping.model.PersistentProperty
-import org.grails.datastore.mapping.model.types.Association
-import org.grails.web.json.JSONElement
-import org.grails.web.json.JSONObject
 import org.springframework.context.MessageSource
-import org.springframework.transaction.TransactionStatus
 
 import java.sql.Array
 import java.text.SimpleDateFormat
 import java.time.Duration
-import java.time.Year
 
 /**
  * This service handles pending change processing and display
