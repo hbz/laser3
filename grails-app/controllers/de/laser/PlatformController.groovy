@@ -305,22 +305,6 @@ class PlatformController  {
     }
 
     /**
-     * Currently inaccessible
-     * Lists all access methods linked to the given platform
-     */
-    @Secured(['ROLE_USER'])
-    @Check404()
-    def accessMethods() {
-        // TODO: editable is undefined
-        def editable
-        Platform platformInstance = Platform.get(params.id)
-
-        List<PlatformAccessMethod> platformAccessMethodList = PlatformAccessMethod.findAllByPlatf(platformInstance, [sort: ["accessMethod": 'asc', "validFrom" : 'asc']])
-
-        [platformInstance: platformInstance, platformAccessMethodList: platformAccessMethodList, editable: editable, params: params]
-    }
-
-    /**
      * Call for linking the platform to an access point.
      * Is a non-modal duplicate of {@link #dynamicApLink()} -
      * @deprecated use {@link #dynamicApLink} instead

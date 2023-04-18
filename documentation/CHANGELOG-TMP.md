@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+----    18.04.2023  dev     3.1         Moe     Feature      delete PlatformAccessMethod
+
 4932    18.04.2023  dev     3.1         Moe     Feature      zugangskonfiguration anpassen
 
 4829    18.04.2023  dev     3.1         David   Bug         Javascript Library Trumbowyg v2.26.0 funktioniert nicht mehr richtig
