@@ -300,7 +300,7 @@
 }
 .chartWrapper {
     width: 100%;
-    height: 450px;
+    height: 450px; /* todo */
     margin: 20px 0;
 }
 .ui.table thead tr:first-child>th {
