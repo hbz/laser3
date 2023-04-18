@@ -31,15 +31,9 @@
 
 <body class="${controllerName}_${actionName}">
 
-    <g:if test="${currentServer == AppUtils.LOCAL}">
-        <div class="ui yellow label big la-server-label" aria-label="${message(code:'ariaLabel.serverIdentification.local')}"></div>
-    </g:if>
-    <g:if test="${currentServer == AppUtils.DEV}">
-        <div class="ui green label big la-server-label" aria-label="${message(code:'ariaLabel.serverIdentification.dev')}"></div>
-    </g:if>
-    <g:if test="${currentServer == AppUtils.QA}">
-        <div class="ui red label big la-server-label" aria-label="${message(code:'ariaLabel.serverIdentification.qa')}"></div>
-    </g:if>
+    %{-- system server indicator --}%
+
+    <g:render template="/templates/system/serverIndicator" model="${[currentServer: currentServer]}"/>
 
     <g:set var="visibilityContextOrgMenu" value="la-hide-context-orgMenu" />
 %{--    <nav aria-label="${message(code:'wcag.label.mainMenu')}">--}%
@@ -573,7 +567,6 @@
                                         <i class="exchange icon"></i>
                                     </g:link>
                                 </g:else>
-
                             </div>
                         </g:if>
                         <g:if test="${(controllerName=='subscription' && actionName=='show') || (controllerName=='dev' && actionName=='frontend')}">
@@ -596,7 +589,7 @@
 
                 <g:if test="${SystemMessage.getActiveMessages(SystemMessage.TYPE_ATTENTION)}">
                     <div id="systemMessages" class="ui message large warning">
-                        <laser:render template="/templates/systemMessages" model="${[systemMessages: SystemMessage.getActiveMessages(SystemMessage.TYPE_ATTENTION)]}" />
+                        <laser:render template="/templates/system/messages" model="${[systemMessages: SystemMessage.getActiveMessages(SystemMessage.TYPE_ATTENTION)]}" />
                     </div>
                 </g:if>
                 <g:else>
@@ -615,8 +608,7 @@
                     </g:if>
 
                     <div id="system-profiler" class="ui label hidden">
-                        <i class="clock icon"></i>
-                        <span></span>
+                        <i class="clock icon"></i> <span></span>
                     </div>
                 </sec:ifAnyGranted>
 
@@ -635,14 +627,11 @@
 
         %{-- global page dimmer --}%
 
-        <div id="pageDimmer" class="ui page dimmer"></div>
-        <style>
-            #pageDimmer { background-color: rgba(0,0,0, 0.40)}  %{-- TMP --}%
-        </style>
+        <div id="globalPageDimmer" class="ui page dimmer"></div>
 
         %{-- global loading indicator --}%
 
-        <div id="loadingIndicator" style="display: none">
+        <div id="globalLoadingIndicator">
             <div class="ui inline medium text loader active">Aktualisiere Daten ..</div>
         </div>
 
@@ -671,15 +660,9 @@
             </laser:script>
         </g:if>
 
-        %{-- maintenance --}%
+        %{-- system maintenance mode --}%
 
-        <div id="maintenance" class="${SystemSetting.findByName('MaintenanceMode').value != 'true' ? 'hidden' : ''}">
-            <div class="ui segment center aligned inverted yellow">
-                <h3 class="ui header"><i class="icon cogs"></i> ${message(code:'system.maintenanceMode.header')}</h3>
-
-                ${message(code:'system.maintenanceMode.message')}
-            </div>
-        </div>
+        <g:render template="/templates/system/maintenanceMode" />
 
         %{-- ??? --}%
 

@@ -173,7 +173,7 @@ if (! JSPC.app.reporting) {
                 beforeSend: function(xhr) {
                    $('#detailsExportModal').remove()
                    $('#detailsCopyEmailModal').remove()
-                   $('#loadingIndicator').show()
+                   $('#globalLoadingIndicator').show()
                 }
             })
             .done( function (data) {
@@ -184,7 +184,7 @@ if (! JSPC.app.reporting) {
                 $("#reporting-modal-error").modal('show')
             })
             .always(function() {
-                $('#loadingIndicator').hide()
+                $('#globalLoadingIndicator').hide()
             });
         }
     }
