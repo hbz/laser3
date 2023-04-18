@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.helper.Profiler; de.laser.utils.AppUtils; grails.util.Environment; de.laser.system.SystemActivityProfiler; de.laser.FormService; de.laser.system.SystemSetting; de.laser.UserSetting; de.laser.RefdataValue; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.Org;de.laser.auth.User;de.laser.system.SystemMessage; org.grails.orm.hibernate.cfg.GrailsHibernateUtil" %>
+<%@ page import="de.laser.config.ConfigMapper; de.laser.CustomerTypeService; de.laser.helper.Profiler; de.laser.utils.AppUtils; grails.util.Environment; de.laser.system.SystemActivityProfiler; de.laser.FormService; de.laser.system.SystemSetting; de.laser.UserSetting; de.laser.RefdataValue; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.Org;de.laser.auth.User;de.laser.system.SystemMessage; org.grails.orm.hibernate.cfg.GrailsHibernateUtil" %>
 <!doctype html>
 
 <laser:serviceInjection />
@@ -588,7 +588,7 @@
         </nav><!-- Context Bar -->
     </sec:ifAnyGranted><%-- ROLE_USER --%>
 
-    %{-- global content container --}%
+        %{-- global content container --}%
         <div class="pusher">
             <main class="ui main container ${visibilityContextOrgMenu} hidden la-js-mainContent">
 
@@ -607,15 +607,26 @@
 
                 <g:layoutBody/>
 
+                %{-- system info --}%
+
+                <sec:ifAnyGranted roles="ROLE_ADMIN">
+                    <g:if test="${ConfigMapper.getShowSystemInfo()}">
+                        <g:render template="/templates/system/info" />
+                    </g:if>
+
+                    <div id="system-profiler" class="ui label hidden">
+                        <i class="clock icon"></i>
+                        <span></span>
+                    </div>
+                </sec:ifAnyGranted>
+
             </main><!-- .main -->
         </div>
 
         %{-- footer --}%
 
         <sec:ifNotGranted roles="ROLE_USER">
-            <!-- Footer -->
             <laser:render template="/public/templates/footer" />
-            <!-- Footer End -->
         </sec:ifNotGranted>
 
         %{-- global container for modals and ajax --}%
@@ -670,18 +681,9 @@
             </div>
         </div>
 
-        %{-- system info --}%
+        %{-- ??? --}%
 
         <% if(! flash.redirectFrom) { flash.clear() } %>
-
-        <sec:ifAnyGranted roles="ROLE_ADMIN">
-            <ui:systemInfo />
-
-            <div id="system-profiler" class="ui label hidden">
-                <i class="clock icon"></i>
-                <span></span>
-            </div>
-        </sec:ifAnyGranted>
 
         %{-- ajax login --}%
 
