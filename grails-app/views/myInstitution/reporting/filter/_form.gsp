@@ -14,6 +14,6 @@
 
 <laser:script file="${this.getGroovyPageFileName()}">
     $('#filter-${filter} input[type=submit]').on('click', function() {
-        $('#loadingIndicator').show();
+        $('#globalLoadingIndicator').show();
     })
 </laser:script>

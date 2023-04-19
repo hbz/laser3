@@ -192,7 +192,7 @@
                     url: '<g:createLink controller="myInstitution" action="reporting" />',
                     data: { init: true, filter: $(this).val() },
                     dataType: 'html',
-                    beforeSend: function (xhr) { $('#loadingIndicator').show(); }
+                    beforeSend: function (xhr) { $('#globalLoadingIndicator').show(); }
                 })
                 .done (function (data) {
                     $('#filter-wrapper').html(data);
@@ -203,7 +203,7 @@
                     $('#filter-wrapper > div').removeClass('hidden');
                 })
                 .fail (function () { $("#reporting-modal-error").modal('show'); })
-                .always (function () { $('#loadingIndicator').hide(); });
+                .always (function () { $('#globalLoadingIndicator').hide(); });
             })
 
             /*-- charts --*/
@@ -233,7 +233,7 @@
                         method: 'post',
                         data: JSPC.app.reporting.current.request,
                         beforeSend: function (xhr) {
-                            $('#loadingIndicator').show();
+                            $('#globalLoadingIndicator').show();
                             $('#query-export-button, #query-help-button').attr('disabled', 'disabled');
                         }
                     })
@@ -290,7 +290,7 @@
                         $('#reporting-chart-nodata').hide();
                         $("#reporting-modal-error").modal('show');
                     })
-                    .always (function () { $('#loadingIndicator').hide(); });
+                    .always (function () { $('#globalLoadingIndicator').hide(); });
                 }
             }
 

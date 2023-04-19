@@ -1,4 +1,3 @@
-<!-- systemMessages -->
 <g:if test="${systemMessages}">
     <i class="icon exclamation large circular inverted red"></i>
     <g:if test="${systemMessages.size() > 1}">
@@ -14,4 +13,3 @@
         </div>
     </g:each>
 </g:if>
-<!-- systemMessages -->
