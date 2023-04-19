@@ -12,7 +12,7 @@
     <g:set var="subscription" value="${linkedPlatformSubscriptionPackage[2]}"/>
     <tr>
       <td><g:link controller="subscription" action="show"
-                  id="${subscription.id}">${subscription.name} ${(subscription.status != RDStore.SUBSCRIPTION_CURRENT) ? '('+ RefdataValue.getByValueAndCategory(subscription.status.value, RDConstants.SUBSCRIPTION_STATUS).getI10n('value') +')': ''}</g:link></td>
+                  id="${subscription.id}">${subscription.name} ${(subscription.status != RDStore.SUBSCRIPTION_CURRENT) ? '('+ subscription.status.getI10n('value') +')': ''}</g:link></td>
       <td><g:link controller="package" action="show"
                   id="${linkedPlatformSubscriptionPackage[1].pkg.id}">${linkedPlatformSubscriptionPackage[1].pkg.name}</g:link></td>
       <td><g:link controller="platform" action="show"

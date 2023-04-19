@@ -1705,6 +1705,8 @@ class OrganisationController  {
         List orgAccessPointList = accessPointService.getOapListWithLinkCounts(result.orgInstance)
         result.orgAccessPointList = orgAccessPointList.groupBy {it.oap.accessMethod.value}.sort {it.key}
 
+        result.activeTab = params.activeTab ?: 'ip'
+
         if (params.exportXLSX) {
 
             SXSSFWorkbook wb

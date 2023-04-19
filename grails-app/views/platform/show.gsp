@@ -233,7 +233,7 @@
                             <tr>
                                 <th scope="row" class="control-label la-js-dont-hide-this-card">${message(code: 'platform.accessPoint')}</th>
                                 <td>
-                                    <g:link controller="accessPoint" action="edit_${orgAccessPoint.oap.accessMethod}"  id="${orgAccessPoint.oap.id}">
+                                    <g:link controller="accessPoint" action="edit_${orgAccessPoint.oap.accessMethod.value.toLowerCase()}"  id="${orgAccessPoint.oap.id}">
                                         ${orgAccessPoint.oap.name}  (${orgAccessPoint.oap.accessMethod.getI10n('value')})
                                     </g:link>
                                 </td>

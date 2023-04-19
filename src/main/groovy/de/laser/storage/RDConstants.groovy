@@ -6,8 +6,6 @@ import groovy.transform.CompileStatic
 class RDConstants {
 
     public static final String ACCESS_CHOICE_REMOTE   = 'access.choice.remote'
-    public static final String ACCESS_METHOD          = 'access.method'
-    public static final String ACCESS_METHOD_IP       = 'access.method.ip'
     public static final String ACCESS_POINT_TYPE      = 'access.point.type'
     public static final String ADDRESS_TYPE           = 'address.type'
     public static final String ARCHIVING_AGENCY       = 'archiving.agency'
