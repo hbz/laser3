@@ -159,8 +159,6 @@ class AccessPointControllerService {
                     case RDStore.ACCESS_POINT_TYPE_OA: accessPoint = new OrgAccessPointOA()
                         accessPoint.entityId = params.entityId
                         break
-                    case RDStore.ACCESS_POINT_TYPE_VPN: accessPoint = new OrgAccessPointVpn()
-                        break
                     case RDStore.ACCESS_POINT_TYPE_EZPROXY: accessPoint = new OrgAccessPointEzproxy()
                         accessPoint.url = params.url
                         break

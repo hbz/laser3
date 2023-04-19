@@ -249,6 +249,7 @@ class PlatformController  {
             result.platformInstanceRecord = records ? records[0] : [:]
             result.platformInstanceRecord.id = params.id
         }
+        result.platformInstanceRecord = [:]
         result.editable = accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_BASIC )
 
         String hql = "select oapl from OrgAccessPointLink oapl join oapl.oap as ap " +
@@ -301,22 +302,6 @@ class PlatformController  {
         // ? ---
 
         result
-    }
-
-    /**
-     * Currently inaccessible
-     * Lists all access methods linked to the given platform
-     */
-    @Secured(['ROLE_USER'])
-    @Check404()
-    def accessMethods() {
-        // TODO: editable is undefined
-        def editable
-        Platform platformInstance = Platform.get(params.id)
-
-        List<PlatformAccessMethod> platformAccessMethodList = PlatformAccessMethod.findAllByPlatf(platformInstance, [sort: ["accessMethod": 'asc', "validFrom" : 'asc']])
-
-        [platformInstance: platformInstance, platformAccessMethodList: platformAccessMethodList, editable: editable, params: params]
     }
 
     /**

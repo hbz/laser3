@@ -16,7 +16,7 @@
       <td><g:link controller="platform" action="show" id="${linkedPlatform.platform.id}">${linkedPlatform.platform.name}</g:link></td>
       <td>
         <g:each in="${linkedPlatform.linkedSubs}" var="linkedSub">
-          <g:link controller="Subscription" action="show" id="${linkedSub.id}">${linkedSub.name} ${(linkedSub.status != RDStore.SUBSCRIPTION_CURRENT) ? '('+ RefdataValue.getByValueAndCategory(linkedSub.status.value, RDConstants.SUBSCRIPTION_STATUS).getI10n('value') +')': ''}</g:link><br />
+          <g:link controller="Subscription" action="show" id="${linkedSub.id}">${linkedSub.name} ${(linkedSub.status != RDStore.SUBSCRIPTION_CURRENT) ? '('+ linkedSub.status.getI10n('value') +')': ''}</g:link><br />
         </g:each>
       </td>
       <g:if test="${accessService.is_INST_EDITOR_with_PERMS_BASIC( inContextOrg )}">

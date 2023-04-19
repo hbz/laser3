@@ -262,7 +262,7 @@ class OrgExport extends BaseDetailsExport {
                                 entry.add(ipv6['ipInput'])
                             }
 
-                            if (oap instanceof OrgAccessPointEzproxy || org instanceof OrgAccessPointProxy || org instanceof OrgAccessPointVpn) {
+                            if (oap instanceof OrgAccessPointEzproxy || org instanceof OrgAccessPointProxy) {
                                 entry.add( oap.url )
                             }
                             else if (oap instanceof OrgAccessPointOA || oap instanceof OrgAccessPointShibboleth) {

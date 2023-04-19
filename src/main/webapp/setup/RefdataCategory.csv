@@ -1,8 +1,6 @@
 token,value_de,value_en
 access.choice.remote,Zugangswahl Remote,Access choice remote
 access.limitation,Zugangsbegrenzung,Access limitation
-access.method,Access Method,Access Method
-access.method.ip,Access Method IP,Access Method IP
 access.point.type,Access Point Type,Access Point Type
 address.type,Art der Adresse,Address Type
 archiving.agency,Archivierungsplattform,Archiving Agency
