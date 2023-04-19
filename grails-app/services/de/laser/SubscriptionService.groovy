@@ -838,7 +838,7 @@ class SubscriptionService {
      * @return a list of issue entitlement IDs
      */
     List getCurrentIssueEntitlementIDs(Subscription subscription) {
-        List<Long> ieIDs = subscription ? IssueEntitlement.executeQuery("select ie.id from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :cur and ie.acceptStatus = :fixed", [sub: subscription, cur: RDStore.TIPP_STATUS_CURRENT, fixed: RDStore.IE_ACCEPT_STATUS_FIXED]) : []
+        List<Long> ieIDs = subscription ? IssueEntitlement.executeQuery("select ie.id from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :cur ", [sub: subscription, cur: RDStore.TIPP_STATUS_CURRENT]) : []
         ieIDs
     }
 
@@ -896,8 +896,8 @@ class SubscriptionService {
 
         if ( createEntitlements ) {
             //List packageTitles = sql.rows("select * from title_instance_package_platform where tipp_pkg_fk = :pkgId and tipp_status_rv_fk = :current", [pkgId: pkg.id, current: RDStore.TIPP_STATUS_CURRENT.id])
-            sql.withBatch('insert into issue_entitlement (ie_version, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_medium_rv_fk, ie_status_rv_fk, ie_access_type_rv_fk, ie_open_access_rv_fk, ie_accept_status_rv_fk, ie_name, ie_sortname, ie_perpetual_access_by_sub_fk) select ' +
-                    '0, now(), now(), (select sub_id from subscription where sub_id = :subId), ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_medium_rv_fk, ie_status_rv_fk, ie_access_type_rv_fk, ie_open_access_rv_fk, ie_accept_status_rv_fk, ie_name, ie_sortname, (select case sub_has_perpetual_access when true then sub_id else null end from subscription where sub_id = :subId) from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id ' +
+            sql.withBatch('insert into issue_entitlement (ie_version, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_medium_rv_fk, ie_status_rv_fk, ie_access_type_rv_fk, ie_open_access_rv_fk, ie_name, ie_sortname, ie_perpetual_access_by_sub_fk) select ' +
+                    '0, now(), now(), (select sub_id from subscription where sub_id = :subId), ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_medium_rv_fk, ie_status_rv_fk, ie_access_type_rv_fk, ie_open_access_rv_fk, ie_name, ie_sortname, (select case sub_has_perpetual_access when true then sub_id else null end from subscription where sub_id = :subId) from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id ' +
                     'where tipp_pkg_fk = :pkgId and ie_subscription_fk = :parentId and ie_status_rv_fk != :removed') { BatchingPreparedStatementWrapper stmt ->
                 memberSubs.each { Subscription memberSub ->
                     stmt.addBatch([pkgId: pkg.id, subId: memberSub.id, parentId: subscription.id, removed: RDStore.TIPP_STATUS_REMOVED.id])
@@ -956,8 +956,8 @@ class SubscriptionService {
                         name: ie.name,
                         medium: ie.medium ?: ie.tipp.medium,
                         accessStartDate: ie.tipp.accessStartDate,
-                        accessEndDate: ie.tipp.accessEndDate,
-                        acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED
+                        accessEndDate: ie.tipp.accessEndDate
+
                 )
                 newIe.generateSortTitle()
                 if(newIe.save()) {
@@ -1122,28 +1122,26 @@ class SubscriptionService {
     }
 
     /**
-     * Substitution call for {@link #addEntitlement(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, boolean)}
+     * Substitution call for {@link #addEntitlement(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, boolean)}
      * @param sub the subscription to which the title should be added
      * @param gokbId the we:kb ID of the title
      * @param issueEntitlementOverwrite eventually cached imported local data
      * @param withPriceData should price data be added as well?
-     * @param acceptStatus the accept status of the issue entitlement
-     * @return the result of {@link #addEntitlement(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, boolean)}
+     * @return the result of {@link #addEntitlement(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, boolean)}
      */
-    boolean addEntitlement(sub, gokbId, issueEntitlementOverwrite, withPriceData, acceptStatus){
-        addEntitlement(sub, gokbId, issueEntitlementOverwrite, withPriceData, acceptStatus, false)
+    boolean addEntitlement(sub, gokbId, issueEntitlementOverwrite, withPriceData){
+        addEntitlement(sub, gokbId, issueEntitlementOverwrite, withPriceData, false)
     }
 
     /**
-     * Substitution call for {@link #addEntitlement(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, boolean)}
+     * Substitution call for {@link #addEntitlement(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, boolean)}
      * @param sub the subscription to which the title should be added
      * @param gokbId the we:kb ID of the title
      * @param issueEntitlementOverwrite eventually cached imported local data
      * @param withPriceData should price data be added as well?
-     * @param acceptStatus the accept status of the issue entitlement
      * @return true if the adding was successful, false otherwise
      */
-    boolean addEntitlement(sub, gokbId, issueEntitlementOverwrite, withPriceData, acceptStatus, pickAndChoosePerpetualAccess) throws EntitlementCreationException {
+    boolean addEntitlement(sub, gokbId, issueEntitlementOverwrite, withPriceData, pickAndChoosePerpetualAccess) throws EntitlementCreationException {
         TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGokbId(gokbId)
         if (tipp == null) {
             throw new EntitlementCreationException("Unable to tipp ${gokbId}")
@@ -1164,8 +1162,8 @@ class SubscriptionService {
                     tipp: tipp,
                     name: tipp.name,
                     medium: tipp.medium,
-                    // ieReason: 'Manually Added by User',
-                    acceptStatus: acceptStatus)
+                    // ieReason: 'Manually Added by User'
+                    )
             new_ie.generateSortTitle()
 
             //fix for renewEntitlementsWithSurvey, overwrite TIPP status if holding's status differ
@@ -1341,10 +1339,9 @@ class SubscriptionService {
      * @param issueEntitlementOverwrites the {@link Map} containing the data to submit for each issue entitlement
      * @param checkMap the {@link Map} containing identifiers of titles which have been selected for the enrichment
      * @param withPriceData should price data be added as well?
-     * @param acceptStatus the accept status reference data key
      * @param pickAndChoosePerpetualAccess are the given titles purchased perpetually?
      */
-    void bulkAddEntitlements(Subscription sub, Map<String, Object> issueEntitlementOverwrites, Map<String, String> checkMap, withPriceData, Long acceptStatus, pickAndChoosePerpetualAccess) {
+    void bulkAddEntitlements(Subscription sub, Map<String, Object> issueEntitlementOverwrites, Map<String, String> checkMap, withPriceData, pickAndChoosePerpetualAccess) {
         Sql sql = GlobalService.obtainSqlConnection()
         Object[] keys = checkMap.keySet().toArray()
         Map<String, Object> fallbackMap = [:]
@@ -1399,7 +1396,7 @@ class SubscriptionService {
                     log.debug "processing ${wekbId}"
                     List<GroovyRowResult> existingEntitlements = sql.rows('select ie_id from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where ie_subscription_fk = :subId and ie_status_rv_fk = :current and tipp_gokb_id = :key',[subId: sub.id, current: RDStore.TIPP_STATUS_CURRENT.id, key: wekbId])
                     if(existingEntitlements.size() == 0) {
-                        Map<String, Object> configMap = [wekbId: wekbId, subId: sub.id, acceptStatus: acceptStatus, removed: RDStore.TIPP_STATUS_REMOVED.id], coverageMap = [wekbId: wekbId, subId: sub.id, removed: RDStore.TIPP_STATUS_REMOVED.id], priceMap = [wekbId: wekbId, subId: sub.id, removed: RDStore.TIPP_STATUS_REMOVED.id]
+                        Map<String, Object> configMap = [wekbId: wekbId, subId: sub.id, removed: RDStore.TIPP_STATUS_REMOVED.id], coverageMap = [wekbId: wekbId, subId: sub.id, removed: RDStore.TIPP_STATUS_REMOVED.id], priceMap = [wekbId: wekbId, subId: sub.id, removed: RDStore.TIPP_STATUS_REMOVED.id]
                         if(pickAndChoosePerpetualAccess || sub.hasPerpetualAccess){
                             configMap.perpetualAccessBySub = sub.id
                         }
@@ -1455,8 +1452,8 @@ class SubscriptionService {
                     accessStartDate = "'${ configMap.accessStartDate }'"
                 if(configMap.accessEndDate)
                     accessEndDate = "'${ configMap.accessEndDate }'"
-                sql.withBatch("insert into issue_entitlement (ie_version, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_name, ie_sortname, ie_medium_rv_fk, ie_status_rv_fk, ie_accept_status_rv_fk, ie_access_start_date, ie_access_end_date, ie_perpetual_access_by_sub_fk) " +
-                        "select 0, now(), now(), ${sub.id}, tipp_id, tipp_name, tipp_sort_name, tipp_medium_rv_fk, tipp_status_rv_fk, ${configMap.acceptStatus}, ${accessStartDate}, ${accessEndDate}, ${configMap.perpetualAccessBySub} from title_instance_package_platform where tipp_gokb_id = :wekbId") { BatchingStatementWrapper stmt ->
+                sql.withBatch("insert into issue_entitlement (ie_version, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_name, ie_sortname, ie_medium_rv_fk, ie_status_rv_fk, ie_access_start_date, ie_access_end_date, ie_perpetual_access_by_sub_fk) " +
+                        "select 0, now(), now(), ${sub.id}, tipp_id, tipp_name, tipp_sort_name, tipp_medium_rv_fk, tipp_status_rv_fk, ${accessStartDate}, ${accessEndDate}, ${configMap.perpetualAccessBySub} from title_instance_package_platform where tipp_gokb_id = :wekbId") { BatchingStatementWrapper stmt ->
                     stmt.addBatch([wekbId: configMap.wekbId])
                 }
             }
@@ -1481,8 +1478,8 @@ class SubscriptionService {
                 }
             }
             ieDirectMapSet.each { Map<String, Object> configMap ->
-                sql.withBatch("insert into issue_entitlement (ie_version, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_name, ie_sortname, ie_medium_rv_fk, ie_status_rv_fk, ie_accept_status_rv_fk, ie_access_start_date, ie_access_end_date, ie_perpetual_access_by_sub_fk) " +
-                        "select 0, now(), now(), ${sub.id}, tipp_id, tipp_name, tipp_sort_name, tipp_medium_rv_fk, tipp_status_rv_fk, ${configMap.acceptStatus}, tipp_access_start_date, tipp_access_end_date, ${configMap.perpetualAccessBySub} from title_instance_package_platform where tipp_gokb_id = :wekbId") { BatchingStatementWrapper stmt ->
+                sql.withBatch("insert into issue_entitlement (ie_version, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_name, ie_sortname, ie_medium_rv_fk, ie_status_rv_fk, ie_access_start_date, ie_access_end_date, ie_perpetual_access_by_sub_fk) " +
+                        "select 0, now(), now(), ${sub.id}, tipp_id, tipp_name, tipp_sort_name, tipp_medium_rv_fk, tipp_status_rv_fk, tipp_access_start_date, tipp_access_end_date, ${configMap.perpetualAccessBySub} from title_instance_package_platform where tipp_gokb_id = :wekbId") { BatchingStatementWrapper stmt ->
                     stmt.addBatch([wekbId: configMap.wekbId])
                 }
             }
@@ -1522,7 +1519,7 @@ class SubscriptionService {
                     name: tipp.name,
                     medium: tipp.medium,
                     // ieReason: 'Manually Added by User',
-                    acceptStatus: acceptStatus)
+                    )
             new_ie.generateSortTitle()
 
             if(pickAndChoosePerpetualAccess || sub.hasPerpetualAccess){

@@ -538,14 +538,14 @@ class PendingChangeService extends AbstractLockableService {
             case PendingChangeConfiguration.NEW_TITLE:
                 if(target instanceof TitleInstancePackagePlatform) {
                     TitleInstancePackagePlatform tipp = (TitleInstancePackagePlatform) target
-                    IssueEntitlement newTitle = IssueEntitlement.construct([subscription:pc.subscription,tipp:tipp,acceptStatus:RDStore.IE_ACCEPT_STATUS_FIXED,status:tipp.status])
+                    IssueEntitlement newTitle = IssueEntitlement.construct([subscription:pc.subscription,tipp:tipp,status:tipp.status])
                     if(newTitle) {
                         done = true
                     }
                     else throw new ChangeAcceptException("problems when creating new entitlement - pending change not accepted: ${newTitle.errors}")
                 }
                 else if(target instanceof Subscription) {
-                    IssueEntitlement newTitle = IssueEntitlement.construct([subscription:target,tipp:pc.tipp,acceptStatus:RDStore.IE_ACCEPT_STATUS_FIXED,status:pc.tipp.status])
+                    IssueEntitlement newTitle = IssueEntitlement.construct([subscription:target,tipp:pc.tipp,status:pc.tipp.status])
                     if(newTitle) {
                         done = true
                     }
@@ -570,7 +570,7 @@ class PendingChangeService extends AbstractLockableService {
                     //special case of deleted title restore ...
                     if(targetTitle.status == RDStore.TIPP_STATUS_REMOVED && pc.oldValue == RDStore.TIPP_STATUS_DELETED.id.toString() && pc.newValue != RDStore.TIPP_STATUS_REMOVED.id.toString()) {
                         log.debug("restore deleted ${targetTitle}")
-                        IssueEntitlement restoredTitle = IssueEntitlement.construct([subscription:target,tipp:pc.tipp,acceptStatus:RDStore.IE_ACCEPT_STATUS_FIXED,status:pc.tipp.status])
+                        IssueEntitlement restoredTitle = IssueEntitlement.construct([subscription:target,tipp:pc.tipp,status:pc.tipp.status])
                         if(restoredTitle) {
                             done = true
                         }

@@ -735,12 +735,12 @@ class SubscriptionControllerService {
     Set fetchTitles(GrailsParameterMap params, Set<Subscription> refSubs, Set<IdentifierNamespace> namespaces, String fetchWhat) {
         Set result = []
         String query
-        Map<String, Object> queryParams = [refSubs: refSubs, current: RDStore.TIPP_STATUS_CURRENT, fixed: RDStore.IE_ACCEPT_STATUS_FIXED]//current for now
+        Map<String, Object> queryParams = [refSubs: refSubs, current: RDStore.TIPP_STATUS_CURRENT]//current for now
         if(fetchWhat == 'fullObjects')
-            query = "select tipp from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (:refSubs) and ie.status = :current and ie.acceptStatus = :fixed "
+            query = "select tipp from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (:refSubs) and ie.status = :current "
         else if(fetchWhat == 'ids') {
             //!!!!!! MAY BE A PERFORMANCE BOTTLENECK! OBSERVE CLOSELY !!!!!!!!!
-            query = "select new map(id.value as value, id.ns.ns as namespace, id.tipp as tipp) from Identifier id join id.tipp tipp where id.ns in (:namespaces) and tipp in (select ie.tipp from IssueEntitlement ie where ie.subscription in (:refSubs) and ie.status = :current and ie.acceptStatus = :fixed) "
+            query = "select new map(id.value as value, id.ns.ns as namespace, id.tipp as tipp) from Identifier id join id.tipp tipp where id.ns in (:namespaces) and tipp in (select ie.tipp from IssueEntitlement ie where ie.subscription in (:refSubs) and ie.status = :current ) "
             queryParams.namespaces = namespaces
         }
         if(params.data != 'fetchAll') {
@@ -2154,7 +2154,7 @@ class SubscriptionControllerService {
                     [sub: result.subscription, status: RDStore.PENDING_CHANGE_PENDING])
             result.pendingChanges = pendingChanges*/
 
-            params.ieAcceptStatusFixed = true
+
             params.status = params.status ?: (result.subscription.hasPerpetualAccess ? [RDStore.TIPP_STATUS_CURRENT.id.toString(), RDStore.TIPP_STATUS_RETIRED.id.toString()] : [RDStore.TIPP_STATUS_CURRENT.id.toString()])
             Map query = filterService.getIssueEntitlementQuery(params, result.subscription)
             result.filterSet = query.filterSet
@@ -2859,7 +2859,7 @@ class SubscriptionControllerService {
                 if(checked) {
                     //executorService.execute({
                         //Thread.currentThread().setName("EntitlementEnrichment_${result.subscription.id}")
-                        subscriptionService.bulkAddEntitlements(result.subscription, issueEntitlementCandidates, checked, Boolean.valueOf(params.uploadPriceInfo), RDStore.IE_ACCEPT_STATUS_FIXED.id, false)
+                        subscriptionService.bulkAddEntitlements(result.subscription, issueEntitlementCandidates, checked, Boolean.valueOf(params.uploadPriceInfo), false)
                         //IssueEntitlement.withNewTransaction { TransactionStatus ts ->
                         /*
                         checked.each { k, v ->
@@ -2930,11 +2930,11 @@ class SubscriptionControllerService {
                 try {
                     Object[] args = [TitleInstancePackagePlatform.findByGokbId(params.singleTitle)?.name]
                     if(issueEntitlementCandidates?.get(params.singleTitle) || Boolean.valueOf(params.uploadPriceInfo))  {
-                        if(subscriptionService.addEntitlement(result.subscription, params.singleTitle, issueEntitlementCandidates?.get(params.singleTitle), Boolean.valueOf(params.uploadPriceInfo), RDStore.IE_ACCEPT_STATUS_FIXED))
+                        if(subscriptionService.addEntitlement(result.subscription, params.singleTitle, issueEntitlementCandidates?.get(params.singleTitle), Boolean.valueOf(params.uploadPriceInfo)))
                             log.debug("Added tipp ${params.singleTitle} to sub ${result.subscription.id} with issue entitlement overwrites")
                         result.message = messageSource.getMessage('subscription.details.addEntitlements.titleAddToSub', args,locale)
                     }
-                    else if(subscriptionService.addEntitlement(result.subscription, params.singleTitle, null, true, RDStore.IE_ACCEPT_STATUS_FIXED))
+                    else if(subscriptionService.addEntitlement(result.subscription, params.singleTitle, null, true))
                         log.debug("Added tipp ${params.singleTitle} to sub ${result.subscription.id}")
                     result.message = messageSource.getMessage('subscription.details.addEntitlements.titleAddToSub', args,locale)
                 }
@@ -3092,7 +3092,6 @@ class SubscriptionControllerService {
             SimpleDateFormat formatter = DateUtils.getLocalizedSDF_noTime()
             boolean error = false
             if(params.chkall == 'on') {
-                params.ieAcceptStatusFixed = true
                 Map<String, Object> query = filterService.getIssueEntitlementQuery(params, result.subscription)
                 if(params.bulkOperation == "edit") {
                     if(GlobalService.isset(params, 'bulk_local_price') && GlobalService.isset(params, 'bulk_local_currency')) {
@@ -3471,7 +3470,7 @@ class SubscriptionControllerService {
             List tippsToDelete = params."tippsToDelete".split(",")
             tippsToAdd.each { tipp ->
                 try {
-                    if(subscriptionService.addEntitlement(result.subscription,tipp,null,false, RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION))
+                    if(subscriptionService.addEntitlement(result.subscription,tipp,null,false))
                         log.debug("Added tipp ${tipp} to sub ${result.subscription.id}")
                 }
                 catch (EntitlementCreationException e) {
@@ -3904,7 +3903,7 @@ class SubscriptionControllerService {
                 result.auditConfigs = auditService.getAllAuditConfigs(result.subscription.instanceOf)
             else result.auditConfigs = auditService.getAllAuditConfigs(result.subscription)
 
-            result.currentTitlesCounts = IssueEntitlement.executeQuery("select count(ie.id) from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :status and ie.acceptStatus = :acceptStatus ", [sub: result.subscription, status: RDStore.TIPP_STATUS_CURRENT, acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED])[0]
+            result.currentTitlesCounts = IssueEntitlement.executeQuery("select count(ie.id) from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :status ", [sub: result.subscription, status: RDStore.TIPP_STATUS_CURRENT])[0]
 
             if ((result.contextOrg as Org).isCustomerType_Consortium()) {
                 if(result.subscription.instanceOf){

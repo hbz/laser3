@@ -448,16 +448,16 @@ class AjaxController {
 
               List<Long> sourceTipps
 
-              Map query2 = filterService.getIssueEntitlementQuery(params+[ieAcceptStatusNotFixed: true], newSub)
+              Map query2 = filterService.getIssueEntitlementQuery(params, newSub)
               List<Long> selectedIETipps = IssueEntitlement.executeQuery("select ie.tipp.id " + query2.query, query2.queryParams)
 
-              Map query3 = filterService.getIssueEntitlementQuery(params+[ieAcceptStatusFixed: true], newSub)
+              Map query3 = filterService.getIssueEntitlementQuery(params, newSub)
               List<Long> targetIETipps = IssueEntitlement.executeQuery("select ie.tipp.id " + query3.query, query3.queryParams)
 
               List<IssueEntitlement> sourceIEs
 
               if(params.tab == 'currentIEs') {
-                  Map query = filterService.getIssueEntitlementQuery(params+[ieAcceptStatusFixed: true], previousSubscription)
+                  Map query = filterService.getIssueEntitlementQuery(params, previousSubscription)
                   List<IssueEntitlement> previousTipps = previousSubscription ? IssueEntitlement.executeQuery("select ie.tipp.id " + query.query, query.queryParams) : []
                   sourceIEs = previousTipps ? IssueEntitlement.findAllByTippInListAndSubscriptionAndStatusNotEqual(TitleInstancePackagePlatform.findAllByIdInList(previousTipps), previousSubscription, RDStore.TIPP_STATUS_REMOVED) : []
                   sourceIEs = sourceIEs + (sourceTipps ? IssueEntitlement.findAllByTippInListAndSubscriptionAndStatusNotEqual(TitleInstancePackagePlatform.findAllByIdInList(targetIETipps), newSub, RDStore.TIPP_STATUS_REMOVED) : [])
