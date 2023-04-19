@@ -21,9 +21,9 @@ system = {
                 console.log( body )
                 if (body && body.status && body.status === 'ok') {
                     if (body.maintenance) {
-                        $('#maintenance').removeClass('hidden')
+                        $('#systemMaintenanceMode').removeClass('hidden')
                     } else {
-                        $('#maintenance').addClass('hidden')
+                        $('#systemMaintenanceMode').addClass('hidden')
                     }
                     if (body.messages) {
                         $('#systemMessages').load( JSPC.vars.ajax.openMessages, function() { $('#systemMessages').removeClass('hidden') })

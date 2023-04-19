@@ -43,7 +43,7 @@
         if (! $('body').hasClass ('la-decksaver-active')) {
             $('#wfFlyout').flyout ({
                 onHide: function (e) {
-                    $('.ui.page.dimmer').dimmer ('show');
+                    $('#globalPageDimmer').dimmer ('show');
                     document.location = document.location.origin + document.location.pathname;
                 }
             });

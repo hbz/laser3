@@ -90,7 +90,7 @@
                         method: 'post',
                         data: JSPC.app.reporting.current.request,
                         beforeSend: function (xhr) {
-                            $('#loadingIndicator').show();
+                            $('#globalLoadingIndicator').show();
                             $('#query-export-button, #query-help-button').attr('disabled', 'disabled');
                         }
                     })
@@ -146,7 +146,7 @@
                         $('#reporting-chart-nodata').hide();
                         $("#reporting-modal-error").modal('show');
                     })
-                    .always (function () { $('#loadingIndicator').hide(); });
+                    .always (function () { $('#globalLoadingIndicator').hide(); });
                 }
             }
 
