@@ -431,11 +431,11 @@ class YodaController {
                         if (da) {
 
                             mInfo.debug = [
-                                    specRole : da.specRole(),
-                                    affil    : da.affil(),
-                                    perm     : da.perm(),
-                                    type     : da.type(),
-                                    test     : da.test()
+                                    specRole : '',
+                                    affil    : '',
+                                    perm     : '',
+                                    type     : '',
+                                    test     : ''
                             ]
 
                             if (da.ctxPermAffiliation()) {

@@ -65,7 +65,7 @@
         token: '${token}'
     }
     $('#filter-package input.button[type=submit]').on ('click', function () {
-        $('#loadingIndicator').show();
+        $('#globalLoadingIndicator').show();
     })
 </laser:script>
 

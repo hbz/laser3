@@ -160,11 +160,16 @@
             $.ajax({
                 url: '<g:createLink controller="ajaxHtml" action="editNote"/>?id='+id,
                 success: function(result){
-                    $("#dynamicModalContainer").empty();
-                    $("#modalEditNote").remove();
+                    $('#dynamicModalContainer').empty();
+                    $('#modalEditNote').remove();
 
-                    $("#dynamicModalContainer").html(result);
-                    $("#dynamicModalContainer .ui.modal").modal('show');
+                    $('#dynamicModalContainer').html(result);
+                    $('#dynamicModalContainer .ui.modal').modal({
+                        autofocus: false,
+                        onVisible: function() {
+                            $('#modalEditNote #title').focus();
+                        }
+                    }).modal('show');
                 }
             });
         }
@@ -172,11 +177,13 @@
             $.ajax({
                 url: '<g:createLink controller="ajaxHtml" action="readNote"/>?id='+id,
                 success: function(result){
-                    $("#dynamicModalContainer").empty();
-                    $("#modalReadNote").remove();
+                    $('#dynamicModalContainer').empty();
+                    $('#modalReadNote').remove();
 
-                    $("#dynamicModalContainer").html(result);
-                    $("#dynamicModalContainer .ui.modal").modal('show');
+                    $('#dynamicModalContainer').html(result);
+                    $('#dynamicModalContainer .ui.modal').modal({
+                        autofocus: false
+                    }).modal('show');
                 }
             });
         }

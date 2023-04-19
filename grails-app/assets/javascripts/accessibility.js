@@ -1,3 +1,5 @@
+console.log('+ bundle: accessibility.js');
+
 // bundle: assets/javascripts/accessibility.js
 //
 //= require /javascript/semantic.min.js         //--> assets/themes
@@ -17,8 +19,6 @@
 //= require modules/responsiveTables.js
 //= require modules/setTextareaHeight.js
 //= require modules/system.js
-
-console.log('+ bundle: accessibility.js');
 
 // here we go ..
 

@@ -8,7 +8,6 @@ import de.laser.config.ConfigMapper
 import de.laser.storage.RDStore
 import de.laser.utils.LocaleUtils
 import grails.gorm.transactions.Transactional
-import grails.plugins.mail.MailService
 import groovy.util.logging.Slf4j
 import org.springframework.context.MessageSource
 
@@ -21,7 +20,6 @@ class InstAdmService {
 
     AccessService accessService
     ContextService contextService
-    MailService mailService
     MessageSource messageSource
     UserService userService
 
@@ -150,37 +148,6 @@ class InstAdmService {
         }
         catch (Exception e) {
             flash?.error = messageSource.getMessage('user.affiliation.request.failed', null, loc)
-        }
-    }
-
-    /**
-     * Sends a mail to the given user
-     * @param user the user to whom the mail should be sent
-     * @param subj the subject of the mail
-     * @param view the template of the mail body
-     * @param model the parameters for the mail template
-     */
-    void sendMail(User user, String subj, String view, Map model) {
-
-        if (AppUtils.getCurrentServer() == AppUtils.LOCAL) {
-            log.info "--- instAdmService.sendMail() --- IGNORED SENDING MAIL because of SERVER_LOCAL ---"
-            return
-        }
-
-        model.serverURL = ConfigMapper.getGrailsServerURL()
-
-        try {
-
-            mailService.sendMail {
-                to      user.email
-                from    ConfigMapper.getNotificationsEmailFrom()
-                replyTo ConfigMapper.getNotificationsEmailReplyTo()
-                subject ConfigMapper.getLaserSystemId() + ' - ' + subj
-                body    view: view, model: model
-            }
-        }
-        catch (Exception e) {
-            log.error "Unable to perform email due to exception ${e.message}"
         }
     }
 }

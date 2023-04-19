@@ -184,7 +184,7 @@
                                             <div class="description">
                                                 <i class="icon globe la-list-icon"></i>
                                                 <span  class="la-popup-tooltip la-delay " data-position="right center" data-content="Diese URL aufrufen:  ${prsContact?.content}">
-                                                    <a class="la-break-all" href="${prsContact?.content}" target="_blank">${prsContact?.content}</a>
+                                                    <a class="la-break-all" href="${prsContact?.content}" target="_blank">Webseite</a>
                                                 </span>
                                             </div>
                                         </g:each>
@@ -300,7 +300,7 @@
 }
 .chartWrapper {
     width: 100%;
-    height: 450px;
+    height: 450px; /* todo */
     margin: 20px 0;
 }
 .ui.table thead tr:first-child>th {

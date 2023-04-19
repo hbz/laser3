@@ -17,7 +17,7 @@
                 </span>
             </g:if>
         </th>
-        <g:if test="${multiYearTermTwoSurvey || multiYearTermThreeSurvey}">
+        <g:if test="${multiYearTermTwoSurvey || multiYearTermThreeSurvey || multiYearTermFourSurvey || multiYearTermFiveSurvey}">
             <th>
                 <g:message code="renewalEvaluation.period"/>
             </th>
@@ -124,7 +124,7 @@
 
             </td>
 
-            <g:if test="${multiYearTermTwoSurvey || multiYearTermThreeSurvey}">
+            <g:if test="${multiYearTermTwoSurvey || multiYearTermThreeSurvey || multiYearTermFourSurvey || multiYearTermFiveSurvey}">
                 <td>
             </g:if>
 
@@ -158,7 +158,37 @@
                 </g:if>
             </g:if>
 
-            <g:if test="${multiYearTermTwoSurvey || multiYearTermThreeSurvey}">
+            <g:if test="${multiYearTermFourSurvey}">
+                <g:formatDate formatName="default.date.format.notime"
+                              date="${participantResult.newSubPeriodFourStartDate}"/>
+                <br/>
+                <g:formatDate formatName="default.date.format.notime"
+                              date="${participantResult.newSubPeriodFourEndDate}"/>
+
+                <g:if test="${participantResult.participantPropertyFourComment}">
+                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                          data-content="${participantResult.participantPropertyFourComment}">
+                        <i class="question circle icon"></i>
+                    </span>
+                </g:if>
+            </g:if>
+
+            <g:if test="${multiYearTermFiveSurvey}">
+                <g:formatDate formatName="default.date.format.notime"
+                              date="${participantResult.newSubPeriodFiveStartDate}"/>
+                <br/>
+                <g:formatDate formatName="default.date.format.notime"
+                              date="${participantResult.newSubPeriodFiveEndDate}"/>
+
+                <g:if test="${participantResult.participantPropertyFiveComment}">
+                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                          data-content="${participantResult.participantPropertyFiveComment}">
+                        <i class="question circle icon"></i>
+                    </span>
+                </g:if>
+            </g:if>
+
+            <g:if test="${multiYearTermTwoSurvey || multiYearTermThreeSurvey || multiYearTermFourSurvey || multiYearTermFiveSurvey}">
                 </td>
             </g:if>
 

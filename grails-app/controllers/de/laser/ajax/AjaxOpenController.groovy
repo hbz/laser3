@@ -50,6 +50,6 @@ class AjaxOpenController {
      */
     @Secured(['permitAll'])
     def messages() {
-        render template: '/templates/systemMessages', model: [systemMessages: SystemMessage.getActiveMessages(SystemMessage.TYPE_ATTENTION)]
+        render template: '/templates/system/messages', model: [systemMessages: SystemMessage.getActiveMessages(SystemMessage.TYPE_ATTENTION)]
     }
 }

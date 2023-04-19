@@ -137,14 +137,14 @@
                         <g:form action="setSurveyConfigComment" controller="survey" method="post"
                                 params="[surveyConfigID: surveyConfig.id, id: surveyInfo.id]">
                             <div class="ui top attached tabular menu">
-                                <a class="item active" data-tab="comment">
+                                <a class="item ${commentTab != 'commentForNewParticipants' ? 'active' : ''}" data-tab="comment">
                                     <div class="ui icon la-popup-tooltip la-delay"
                                          data-content="${message(code: "surveyconfig.comment.comment")}">
                                         ${message(code: 'surveyconfig.comment.label')}
                                         <i class="question small circular inverted icon"></i>
                                     </div>
                                 </a>
-                                <a class="item" data-tab="commentForNewParticipants">
+                                <a class="item ${commentTab == 'commentForNewParticipants' ? 'active' : ''}" data-tab="commentForNewParticipants">
                                     <div class="ui icon la-popup-tooltip la-delay"
                                          data-content="${message(code: "surveyconfig.commentForNewParticipants.comment")}">
                                         ${message(code: 'surveyconfig.commentForNewParticipants.label')}
@@ -153,7 +153,7 @@
                                 </a>
                             </div>
 
-                            <div class="ui bottom attached tab segment active" data-tab="comment">
+                            <div class="ui bottom attached tab segment ${commentTab != 'commentForNewParticipants' ? 'active' : ''}" data-tab="comment">
                                 <g:if test="${surveyConfig.dateCreated > DateUtils.getSDF_yyyyMMdd().parse('2023-01-12')}">
                                     <div id="commentDiv">
                                         <div id="comment">${raw(surveyConfig.comment)}</div>
@@ -175,11 +175,11 @@
 
                                 <div class="left aligned">
                                     <button type="submit"
-                                            class="ui button">${message(code: 'default.button.save_changes')}</button>
+                                            class="ui button" value="comment" name="commentTab">${message(code: 'default.button.save_changes')}</button>
                                 </div>
                             </div>
 
-                            <div class="ui bottom attached tab segment" data-tab="commentForNewParticipants">
+                            <div class="ui bottom attached tab segment ${commentTab == 'commentForNewParticipants' ? 'active' : ''}" data-tab="commentForNewParticipants">
                                 <g:if test="${surveyConfig.dateCreated > DateUtils.getSDF_yyyyMMdd().parse('2023-01-12')}">
                                     <div id="commentForNewParticipantsDiv">
                                         <div id="commentForNewParticipants">${raw(surveyConfig.commentForNewParticipants)}</div>
@@ -201,7 +201,7 @@
 
                                 <div class="left aligned">
                                     <button type="submit"
-                                            class="ui button">${message(code: 'default.button.save_changes')}</button>
+                                            class="ui button" value="commentForNewParticipants" name="commentTab">${message(code: 'default.button.save_changes')}</button>
                                 </div>
 
                             </div>
