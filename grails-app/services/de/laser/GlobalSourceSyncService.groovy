@@ -136,9 +136,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     if(source.rectype == RECTYPE_TIPP) {
                         if(packagesToNotify.keySet().size() > 0) {
                             log.info("notifying subscriptions ...")
-                            Map<String, Set<PendingChange>> packagePendingChanges = trackPackageHistory()
+                            Map<String, Set<TitleChange>> packageChanges = trackPackageHistory()
                             //get subscription packages and their respective holders, parent level only!
-                            packagePendingChanges.each { String packageKey, Set<PendingChange> packageChanges ->
+                            packageChanges.each { String packageKey, Set<TitleChange> changes ->
                                 String query = 'select oo.org,sp from SubscriptionPackage sp join sp.pkg pkg ' +
                                         'join sp.subscription s ' +
                                         'join s.orgRelations oo ' +
@@ -150,7 +150,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                     log.debug("processing ${row[1]}")
                                     Org org = (Org) row[0]
                                     SubscriptionPackage sp = (SubscriptionPackage) row[1]
-                                    autoAcceptPendingChanges(org, sp, packageChanges)
+                                    autoAcceptPendingChanges(org, sp, changes)
                                     //nonAutoAcceptPendingChanges(org, sp)
                                 }
                             }
@@ -224,9 +224,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     }
                     if(packagesToNotify.keySet().size() > 0) {
                         log.info("notifying subscriptions ...")
-                        Map<String, Set<PendingChange>> packagePendingChanges = trackPackageHistory()
+                        Map<String, Set<TitleChange>> packageChanges = trackPackageHistory()
                         //get subscription packages and their respective holders, parent level only!
-                        packagePendingChanges.each { String packageKey, Set<PendingChange> packageChanges ->
+                        packageChanges.each { String packageKey, Set<TitleChange> changes ->
                             String query = 'select oo.org,sp from SubscriptionPackage sp join sp.pkg pkg ' +
                                     'join sp.subscription s ' +
                                     'join s.orgRelations oo ' +
@@ -238,7 +238,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                 log.debug("processing ${row[1]}")
                                 Org org = (Org) row[0]
                                 SubscriptionPackage sp = (SubscriptionPackage) row[1]
-                                autoAcceptPendingChanges(org, sp, packageChanges)
+                                autoAcceptPendingChanges(org, sp, changes)
                                 //nonAutoAcceptPendingChanges(org, sp)
                             }
                         }
@@ -543,13 +543,22 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             }
                             break
                         case RECTYPE_PACKAGE:
-                            result.records.each { record ->
+                            result.records.eachWithIndex { record, int i ->
                                 try {
-                                    createOrUpdatePackage(record)
+                                    log.debug("now processing record #${i}, total #${i+offset}")
+                                    Package pkg = createOrUpdatePackage(record)
+                                    if(pkg.packageStatus == RDStore.PACKAGE_STATUS_REMOVED) {
+                                        log.info("${pkg.name} / ${pkg.gokbId} has been removed, mark titles in package as removed ...")
+                                        TitleInstancePackagePlatform.findAllByPkgAndStatusNotEqual(pkg, RDStore.TIPP_STATUS_REMOVED).each { TitleInstancePackagePlatform tipp ->
+                                            tipp.status = RDStore.TIPP_STATUS_REMOVED
+                                            TitleChange.construct([event: PendingChangeConfiguration.TITLE_REMOVED, tipp: tipp])
+                                            tipp.save()
+                                        }
+                                    }
                                 }
                                 catch (SyncException e) {
-                                    log.error("Error on updating platform ${record.uuid}: ",e)
-                                    SystemEvent.createEvent("GSSS_JSON_WARNING",[platformRecordKey:record.uuid])
+                                    log.error("Error on updating package ${record.uuid}: ",e)
+                                    SystemEvent.createEvent("GSSS_JSON_WARNING",[packageRecordKey: record.uuid])
                                 }
                             }
                             break
@@ -607,6 +616,30 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             }
                         }
                         createOrUpdateOrg(record)
+                    }
+                    break
+                case RECTYPE_PACKAGE:
+                    result.records.eachWithIndex { record, int i ->
+                        try {
+                            log.debug("now processing record #${i}")
+                            Package pkg = createOrUpdatePackage(record)
+                            //package may be null in case it has been marked as removed and did not exist in LAS:eR before
+                            if(pkg?.packageStatus == RDStore.PACKAGE_STATUS_REMOVED) {
+                                log.info("${pkg.name} / ${pkg.gokbId} has been removed, record status is ${record.status}, mark titles in package as removed ...")
+                                TitleInstancePackagePlatform.findAllByPkgAndStatusNotEqual(pkg, RDStore.TIPP_STATUS_REMOVED).each { TitleInstancePackagePlatform tipp ->
+                                    tipp.status = RDStore.TIPP_STATUS_REMOVED
+                                    TitleChange.construct([event: PendingChangeConfiguration.TITLE_REMOVED, tipp: tipp])
+                                    tipp.save()
+                                }
+                            }
+                            if(i % 500 == 0 && i > 0) {
+                                globalService.cleanUpGorm()
+                            }
+                        }
+                        catch (SyncException e) {
+                            log.error("Error on updating package ${record.uuid}: ",e)
+                            SystemEvent.createEvent("GSSS_JSON_WARNING",[packageRecordKey:record.uuid])
+                        }
                     }
                     break
                 case RECTYPE_PLATFORM:
@@ -867,9 +900,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * @param subPkg the {@link SubscriptionPackage} to which the changes should be applied
      * @param packageChanges the changes recorded for the package
      * @see PendingChangeConfiguration
-     * @see PendingChange
+     * @see TitleChange
      */
-    void autoAcceptPendingChanges(Org contextOrg, SubscriptionPackage subPkg, Set<PendingChange> packageChanges) {
+    void autoAcceptPendingChanges(Org contextOrg, SubscriptionPackage subPkg, Set<TitleChange> packageChanges) {
         //get for each subscription package the tokens which should be accepted
         String query = 'select pcc.settingKey from PendingChangeConfiguration pcc join pcc.subscriptionPackage sp where pcc.settingValue = :accept and sp = :sp '
         List<String> pendingChangeConfigurations = PendingChangeConfiguration.executeQuery(query,[accept:RDStore.PENDING_CHANGE_CONFIG_ACCEPT,sp:subPkg])
@@ -881,22 +914,15 @@ class GlobalSourceSyncService extends AbstractLockableService {
             newChanges.addAll(PendingChange.executeQuery('select pc from PendingChange pc join pc.tippCoverage tc join tc.tipp tipp join tipp.pkg pkg where pkg = :pkg and pc.status = :history and pc.ts > :subscriptionJoin and pc.msgToken in (:msgTokens) and not exists (select pca.id from PendingChange pca where pca.tipp = pc.tipp and pca.oid = :oid and pca.targetProperty = pc.targetProperty and pca.status = :accepted)',changeParams))
             newChanges.addAll(PendingChange.executeQuery('select pc from PendingChange pc join pc.tippCoverage tc join tc.tipp tipp join tipp.pkg pkg where pkg = :pkg and pc.status = :history and pc.ts > :subscriptionJoin and pc.msgToken in (:msgTokens) and pc.targetProperty = null and not exists (select pca.id from PendingChange pca where pca.tipp = pc.tipp and pca.oid = :oid and pca.targetProperty = null and pca.status = :accepted)',changeParams))*/
             //newChanges.addAll(PendingChange.executeQuery('select pc from PendingChange pc join pc.priceItem pi join pi.tipp tipp join tipp.pkg pkg where pkg = :pkg and pc.status = :history and pc.ts > :subscriptionJoin and pc.msgToken in (:msgTokens)',changeParams))
-            packageChanges.each { PendingChange newChange ->
-                if(newChange.msgToken in pendingChangeConfigurations) {
-                    //very dangerous ... risk of malfunction!
-                    /*boolean processed = false
-                    if(newChange.tipp) {
-                        if(newChange.targetProperty)
-                            processed = acceptedChanges.find { PendingChange accepted -> accepted.tipp == newChange.tipp && accepted.msgToken == newChange.msgToken && accepted.targetProperty == newChange.targetProperty && accepted.newValue == newChange.newValue && accepted.oldValue == newChange.oldValue } != null
-                        else
-                            processed = acceptedChanges.find { PendingChange accepted -> accepted.tipp == newChange.tipp && accepted.msgToken == newChange.msgToken } != null
-                    }*/
+            packageChanges.each { TitleChange newChange ->
+                if(newChange.event in pendingChangeConfigurations) {
 
                     //if(!processed) {
                         /*
                         get each change for each subscribed package and token, fetch issue entitlement equivalent and process the change
-                        if a change is being accepted, create a copy with target = subscription of subscription package and oid = the target of the processed change
+                        if a change is being accepted, create an issue entitlement change record pointing to that change
                          */
+                        //continue here: adapt pending change logic
                         pendingChangeService.applyPendingChange(newChange,subPkg,contextOrg)
                     //}
                 }
@@ -946,10 +972,13 @@ class GlobalSourceSyncService extends AbstractLockableService {
      */
     Package createOrUpdatePackage(packageInput) throws SyncException {
         Map packageJSON, packageRecord
+        Package result
         if(packageInput instanceof String) {
             packageJSON = fetchRecordJSON(false, [uuid: packageInput])
-            if(packageJSON.records)
+            if(packageJSON.records) {
                 packageRecord = (Map) packageJSON.records[0]
+                result = Package.findByGokbId(packageInput)
+            }
             else if(packageJSON.error == 404) {
                 log.error("we:kb server is unavailable!")
                 throw new SyncException("we:kb server was down!")
@@ -957,7 +986,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             else {
                 log.warn("Package ${packageInput} seems to be unexistent!")
                 //test if local record trace exists ...
-                Package result = Package.findByGokbId(packageInput)
+                result = Package.findByGokbId(packageInput)
                 if(result) {
                     log.warn("Package found, set cascading removed ...")
                     result.packageStatus = RDStore.PACKAGE_STATUS_REMOVED
@@ -966,13 +995,14 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 }
             }
         }
-        else if(packageInput instanceof Map)
+        else if(packageInput instanceof Map) {
             packageRecord = packageInput
+            result = Package.findByGokbId(packageRecord.uuid)
+        }
         if(packageRecord) {
-            Package result = Package.findByGokbId(packageInput)
             Date lastUpdatedDisplay = DateUtils.parseDateGeneric(packageRecord.lastUpdatedDisplay)
             if(!result || result?.lastUpdated < lastUpdatedDisplay) {
-                log.info("package record loaded, reconciling package record for UUID ${packageInput}")
+                log.info("package record loaded, reconciling package record for UUID ${packageRecord.uuid}")
                 RefdataValue packageRecordStatus = packageRecord.status ? packageStatus.get(packageRecord.status) : null
                 RefdataValue contentType = packageRecord.contentType ? RefdataValue.getByValueAndCategory(packageRecord.contentType,RDConstants.PACKAGE_CONTENT_TYPE) : null
                 RefdataValue file = packageRecord.file ? RefdataValue.getByValueAndCategory(packageRecord.file,RDConstants.PACKAGE_FILE) : null
@@ -985,6 +1015,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     file: file,
                     scope: scope
                 ]
+                if(!result && packageRecordStatus != RDStore.PACKAGE_STATUS_REMOVED) {
+                    result = new Package(gokbId: packageRecord.uuid)
+                }
                 if(result) {
                     if(packageRecordStatus == RDStore.PACKAGE_STATUS_REMOVED && result.packageStatus != RDStore.PACKAGE_STATUS_REMOVED) {
                         log.info("package #${result.id}, with GOKb id ${result.gokbId} got removed, mark as deleted and rapport!")
@@ -1013,76 +1046,73 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             initialPackagesCounter.put(packageUUID,TitleInstancePackagePlatform.executeQuery('select count(tipp.id) from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg',[pkg:result])[0] as Integer)
                          */
                     }
-                }
-                else {
-                    result = new Package(gokbId: packageRecord.uuid)
-                }
-                result.name = packageRecord.name
-                result.packageStatus?.id = packageRecordStatus?.id
-                result.contentType?.id = contentType?.id
-                result.scope?.id = scope?.id
-                result.file?.id = file?.id
-                if(result.save()) {
-                    if(packageRecord.nominalPlatformUuid) {
-                        Platform nominalPlatform = Platform.findByGokbId(packageRecord.nominalPlatformUuid)
-                        if(!nominalPlatform) {
-                            nominalPlatform = createOrUpdatePlatform(packageRecord.nominalPlatformUuid)
-                        }
-                        if(nominalPlatform) {
-                            result.nominalPlatform = nominalPlatform
-                        }
-                        if (!result.save())
-                            throw new SyncException(result.errors)
-                    }
-                    if(packageRecord.providerUuid) {
-                        try {
-                            Map<String, Object> providerRecord = fetchRecordJSON(false,[uuid:packageRecord.providerUuid])
-                            if(providerRecord && !providerRecord.error) {
-                                Org provider = createOrUpdateOrg(providerRecord)
-                                createOrUpdatePackageProvider(provider,result)
+                    result.name = packageRecord.name
+                    result.packageStatus?.id = packageRecordStatus?.id
+                    result.contentType?.id = contentType?.id
+                    result.scope?.id = scope?.id
+                    result.file?.id = file?.id
+                    if(result.save()) {
+                        if(packageRecord.nominalPlatformUuid) {
+                            Platform nominalPlatform = Platform.findByGokbId(packageRecord.nominalPlatformUuid)
+                            if(!nominalPlatform) {
+                                nominalPlatform = createOrUpdatePlatform(packageRecord.nominalPlatformUuid)
                             }
-                            else if(providerRecord && providerRecord.error == 404) {
-                                log.error("we:kb server is down")
-                                throw new SyncException("we:kb server is unvailable")
+                            if(nominalPlatform) {
+                                result.nominalPlatform = nominalPlatform
                             }
-                            else
-                                throw new SyncException("Provider loading failed for UUID ${packageRecord.providerUuid}!")
+                            if (!result.save())
+                                throw new SyncException(result.errors)
                         }
-                        catch (SyncException e) {
-                            throw e
-                        }
-                    }
-                    if(packageRecord.identifiers) {
-                        if(result.ids) {
-                            Identifier.executeUpdate('delete from Identifier i where i.pkg = :pkg',[pkg:result]) //damn those wrestlers ...
-                        }
-                        packageRecord.identifiers.each { id ->
-                            if(!(id.namespace.toLowerCase() in ['originediturl','uri'])) {
-                                Identifier.construct([namespace: id.namespace, value: id.value, name_de: id.namespaceName, reference: result, isUnique: false, nsType: Package.class.name])
+                        if(packageRecord.providerUuid) {
+                            try {
+                                Map<String, Object> providerRecord = fetchRecordJSON(false,[uuid:packageRecord.providerUuid])
+                                if(providerRecord && !providerRecord.error) {
+                                    Org provider = createOrUpdateOrg(providerRecord)
+                                    createOrUpdatePackageProvider(provider,result)
+                                }
+                                else if(providerRecord && providerRecord.error == 404) {
+                                    log.error("we:kb server is down")
+                                    throw new SyncException("we:kb server is unvailable")
+                                }
+                                else
+                                    throw new SyncException("Provider loading failed for UUID ${packageRecord.providerUuid}!")
+                            }
+                            catch (SyncException e) {
+                                throw e
                             }
                         }
+                        if(packageRecord.identifiers) {
+                            if(result.ids) {
+                                Identifier.executeUpdate('delete from Identifier i where i.pkg = :pkg',[pkg:result]) //damn those wrestlers ...
+                            }
+                            packageRecord.identifiers.each { id ->
+                                if(!(id.namespace.toLowerCase() in ['originediturl','uri'])) {
+                                    Identifier.construct([namespace: id.namespace, value: id.value, name_de: id.namespaceName, reference: result, isUnique: false, nsType: Package.class.name])
+                                }
+                            }
+                        }
+                        if(packageRecord.ddcs) {
+                            if(result.ddcs) {
+                                DeweyDecimalClassification.executeUpdate('delete from DeweyDecimalClassification ddc where ddc.pkg = :pkg',[pkg:result])
+                            }
+                            packageRecord.ddcs.each { ddcData ->
+                                if(!DeweyDecimalClassification.construct(ddc: ddc.get(ddcData.value), pkg: result))
+                                    throw new SyncException("Error on saving Dewey decimal classification! See stack trace as follows:")
+                            }
+                        }
+                        if(packageRecord.languages) {
+                            if(result.languages) {
+                                Language.executeUpdate('delete from Language lang where lang.pkg = :pkg',[pkg:result])
+                            }
+                            packageRecord.languages.each { langData ->
+                                if(!Language.construct(language: RefdataValue.getByValueAndCategory(langData.value,RDConstants.LANGUAGE_ISO), pkg: result))
+                                    throw new SyncException("Error on saving language! See stack trace as follows:")
+                            }
+                        }
                     }
-                    if(packageRecord.ddcs) {
-                        if(result.ddcs) {
-                            DeweyDecimalClassification.executeUpdate('delete from DeweyDecimalClassification ddc where ddc.pkg = :pkg',[pkg:result])
-                        }
-                        packageRecord.ddcs.each { ddcData ->
-                            if(!DeweyDecimalClassification.construct(ddc: ddc.get(ddcData.value), pkg: result))
-                                throw new SyncException("Error on saving Dewey decimal classification! See stack trace as follows:")
-                        }
+                    else {
+                        throw new SyncException(result.errors)
                     }
-                    if(packageRecord.languages) {
-                        if(result.languages) {
-                            Language.executeUpdate('delete from Language lang where lang.pkg = :pkg',[pkg:result])
-                        }
-                        packageRecord.languages.each { langData ->
-                            if(!Language.construct(language: RefdataValue.getByValueAndCategory(langData.value,RDConstants.LANGUAGE_ISO), pkg: result))
-                                throw new SyncException("Error on saving language! See stack trace as follows:")
-                        }
-                    }
-                }
-                else {
-                    throw new SyncException(result.errors)
                 }
             }
             result
@@ -2164,6 +2194,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             accessType.put(rdv.value, rdv)
         }
         buildWekbLaserRefdataMap(RDConstants.LICENSE_OA_TYPE)
+        packagesToNotify = [:]
     }
 
     /**

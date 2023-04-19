@@ -1,4 +1,4 @@
-<%@ page import="grails.converters.JSON; de.laser.PendingChangeConfiguration; de.laser.TitleInstancePackagePlatform; de.laser.Subscription;de.laser.License;de.laser.finance.CostItem;de.laser.PendingChange; de.laser.IssueEntitlement; de.laser.storage.RDStore; de.laser.RefdataValue;" %>
+<%@ page import="grails.converters.JSON; de.laser.PendingChangeConfiguration; de.laser.TitleInstancePackagePlatform; de.laser.Subscription;de.laser.License;de.laser.finance.CostItem;de.laser.PendingChange; de.laser.TitleChange; de.laser.IssueEntitlementChange; de.laser.IssueEntitlement; de.laser.storage.RDStore; de.laser.RefdataValue;" %>
 
 <laser:htmlStart message="myinst.menu.pendingChanges.label" serviceInjection="true"/>
 
@@ -95,15 +95,18 @@
             <tr>
                 <th>${message(code: 'sidewide.number')}</th>
                 <th><g:message code="profile.dashboard.changes.object"/></th>
-                <g:sortableColumn property="msgToken" title="${message(code: 'profile.dashboard.changes.event')}"
+                <g:sortableColumn property="tic.event" title="${message(code: 'profile.dashboard.changes.event')}"
                                   params="[tab: params.tab]"/>
-                <g:sortableColumn property="ts" title="${message(code: 'default.date.label')}" params="[tab: params.tab]"/>
                 <g:if test="${params.tab == 'acceptedChanges'}">
+                    <g:sortableColumn property="actionDate" title="${message(code: 'default.date.label')}" params="[tab: params.tab]"/>
                     <th><g:message code="default.status.label"/></th>
                 </g:if>
-                <g:elseif test="${editable}">
-                    <th><g:message code="default.action.label"/></th>
-                </g:elseif>
+                <g:else>
+                    <g:sortableColumn property="dateCreated" title="${message(code: 'default.date.label')}" params="[tab: params.tab]"/>
+                    <g:if test="${editable}">
+                        <th><g:message code="default.action.label"/></th>
+                    </g:if>
+                </g:else>
             </tr>
             </thead>
             <tbody>
@@ -115,26 +118,26 @@
                     <td>
 
                         <g:set var="tipp" />
+                        <g:set var="change" />
+                        <g:set var="actionDate" />
 
-                        <g:if test="${entry.tipp}">
+                        <g:if test="${entry instanceof TitleChange}">
                             <g:set var="tipp" value="${entry.tipp}"/>
+                            <g:set var="change" value="${entry}"/>
+                            <g:set var="actionDate" value="${entry.dateCreated}"/>
                         </g:if>
-                        <g:elseif test="${entry.oid}">
-                            <g:set var="object" value="${genericOIDService.resolveOID(entry.oid)}"/>
-                            <g:if test="${object instanceof IssueEntitlement}">
-                                <g:set var="tipp" value="${object.tipp}"/>
-                            </g:if>
-                            <g:if test="${object instanceof TitleInstancePackagePlatform}">
-                                <g:set var="tipp" value="${object}"/>
-                            </g:if>
+                        <g:elseif test="${entry instanceof de.laser.IssueEntitlementChange}">
+                            <g:set var="tipp" value="${entry.titleChange.tipp}"/>
+                            <g:set var="change" value="${entry.titleChange}"/>
+                            <g:set var="actionDate" value="${entry.actionDate}"/>
                         </g:elseif>
 
-                        <g:set var="ie" value="${tipp instanceof TitleInstancePackagePlatform ? IssueEntitlement.findByTippAndSubscription(tipp, subscription) : null}"/>
+                        <g:set var="ie" value="${IssueEntitlement.findByTippAndSubscription(tipp, subscription)}"/>
 
                         <g:if test="${tipp}">
 
                             <g:if test="${ie}">
-                                <g:link controller="issueEntitlement" action="show" id="${ie.id}">${ie.name}</g:link>
+                                <g:link controller="issueEntitlement" action="show" id="${ie.id}">${ie.tipp.name}</g:link>
                             </g:if>
                             <g:else>
                                 ${tipp.name}
@@ -165,30 +168,34 @@
 
                     </td>
                     <td>
-                        <g:if test="${entry.targetProperty in PendingChange.REFDATA_FIELDS}">
-                            <g:set var="oldValue" value="${RefdataValue.get(entry.oldValue)?.getI10n('value')}"/>
-                            <g:set var="newValue" value="${RefdataValue.get(entry.newValue)?.getI10n('value')}"/>
+                        <g:if test="${change.field in PendingChange.REFDATA_FIELDS}">
+                            <g:set var="oldValue" value="${RefdataValue.get(change.oldRefVal)?.getI10n('value')}"/>
+                            <g:set var="newValue" value="${RefdataValue.get(change.newRefVal)?.getI10n('value')}"/>
                         </g:if>
+                        <g:elseif test="${change.field in PendingChange.DATE_FIELDS}">
+                            <g:set var="oldValue" value="${change.oldDateVal}"/>
+                            <g:set var="newValue" value="${change.newDateVal}"/>
+                        </g:elseif>
                         <g:else>
-                            <g:set var="oldValue" value="${entry.oldValue}"/>
-                            <g:set var="newValue" value="${entry.newValue}"/>
+                            <g:set var="oldValue" value="${change.oldVal}"/>
+                            <g:set var="newValue" value="${change.newVal}"/>
                         </g:else>
 
-                        <g:if test="${entry.msgToken in [PendingChangeConfiguration.TITLE_DELETED, PendingChangeConfiguration.TITLE_REMOVED]}">
-                            <g:message code="subscription.packages.${entry.msgToken}"/>
+                        <g:if test="${change.event in [PendingChangeConfiguration.TITLE_DELETED, PendingChangeConfiguration.TITLE_REMOVED]}">
+                            <g:message code="subscription.packages.${change.event}"/>
                         </g:if>
                         <g:else>
                             <g:if test="${oldValue != null || newValue != null}">
-                                ${(message(code: 'tipp.' + entry.targetProperty) ?: '') + ': ' + message(code: 'pendingChange.change', args: [oldValue, newValue])}
+                                ${(message(code: 'tipp.' + change.field) ?: '') + ': ' + message(code: 'pendingChange.change', args: [oldValue, newValue])}
                             </g:if>
-                            <g:elseif test="${entry.targetProperty}">
-                                ${message(code: 'tipp.' + entry.targetProperty)}
+                            <g:elseif test="${change.field}">
+                                ${message(code: 'tipp.' + change.field)}
                             </g:elseif>
                         </g:else>
 
                     </td>
                     <td>
-                        <g:formatDate format="${message(code: 'default.date.format.noZ')}" date="${entry.ts}"/>
+                        <g:formatDate format="${message(code: 'default.date.format.noZ')}" date="${actionDate}"/>
                     </td>
                     <g:if test="${params.tab == 'acceptedChanges'}">
                         <td>${entry.status.getI10n('value')}</td>

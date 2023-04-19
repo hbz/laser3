@@ -150,7 +150,7 @@ class IssueEntitlement extends AbstractBase implements Comparable {
       IssueEntitlement ie = findBySubscriptionAndTippAndStatusNotEqual(subscription,tipp, RDStore.TIPP_STATUS_REMOVED)
       if(!ie) {
           ie = new IssueEntitlement(subscription: subscription, tipp: tipp, medium: tipp.medium, status:tipp.status, accessType: tipp.accessType, openAccess: tipp.openAccess, acceptStatus: configMap.acceptStatus, name: tipp.name)
-          ie.generateSortTitle()
+          //ie.generateSortTitle()
       }
       if(ie.save()) {
 

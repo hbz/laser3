@@ -24,17 +24,15 @@ databaseChangeLog = {
                 constraints(nullable: "false")
             }
 
-            column(name: "iec_status_rv_fk", type: "BIGINT") {
-                constraints(nullable: "false")
-            }
-
             column(name: "iec_owner_fk", type: "BIGINT") {
                 constraints(nullable: "false")
             }
 
-            column(name: "iec_action_date", type: "TIMESTAMP WITHOUT TIME ZONE") {
+            column(name: "iec_status_rv_fk", type: "BIGINT") {
                 constraints(nullable: "false")
             }
+
+            column(name: "iec_action_date", type: "TIMESTAMP WITHOUT TIME ZONE")
 
             column(name: "iec_tic_fk", type: "BIGINT") {
                 constraints(nullable: "false")
@@ -237,14 +235,24 @@ databaseChangeLog = {
     changeSet(author: "galffy (hand-coded)", id: "1681212470764-29") {
         grailsChange {
             change {
-                sql.execute("insert into issue_entitlement_change (iec_version, iec_tic_fk, iec_sub_fk, iec_status_rv_fk, iec_action_date, iec_owner_fk, iec_date_created, iec_last_updated) select pc_version, (select tic_id from title_change where tic_tipp_fk = pc_tipp_fk and tic_event = pc_msg_token), split_part(pc_oid, ':', 2)::bigint, pc_status_rdv_fk, case when pc_action_date is not null then pc_action_date else pc_ts end, pc_owner, pc_date_created, pc_last_updated from pending_change where pc_oid is not null and pc_msg_token = 'pendingChange.message_TP01'")
+                //PostgreSQL hangs if this analyze is not being executed prior to changeset #30
+                sql.execute("analyze title_change")
+            }
+            rollback {}
+        }
+    }
+
+    changeSet(author: "galffy (hand-coded)", id: "1681212470764-30") {
+        grailsChange {
+            change {
+                sql.execute("insert into issue_entitlement_change (iec_version, iec_tic_fk, iec_sub_fk, iec_status_rv_fk, iec_action_date, iec_owner_fk, iec_date_created, iec_last_updated) select pc_version, (select tic_id from title_change where tic_tipp_fk = pc_tipp_fk and tic_event = pc_msg_token), split_part(pc_oid, ':', 2)::bigint, pc_status_rdv_fk, case when pc_action_date is not null then pc_action_date else pc_ts end, pc_owner, pc_date_created, pc_last_updated from pending_change where pc_oid is not null and pc_msg_token = 'pendingChange.message_TP01' and pc_status_rdv_fk in (select rdv_id from refdata_value join refdata_category on rdv_owner = rdc_id where rdv_value in ('Accepted', 'Rejected') and rdc_description = 'pending.change.status')")
             }
             rollback {}
         }
     }
 
     //remap title deleted
-    changeSet(author: "galffy (hand-coded)", id: "1681212470764-30") {
+    changeSet(author: "galffy (hand-coded)", id: "1681212470764-31") {
         grailsChange {
             change {
                 sql.execute("insert into title_change (tic_version, tic_tipp_fk, tic_event, tic_old_ref_value_rv_fk, tic_date_created, tic_last_updated) select distinct on(pc_tipp_fk) pc_version, pc_tipp_fk, pc_msg_token, (select rdv_id from refdata_value join refdata_category on rdv_owner = rdc_id where rdv_value = pc_old_value and rdc_description = 'tipp.status'), pc_date_created, pc_last_updated from pending_change where pc_msg_token = 'pendingChange.message_TP03' and pc_status_rdv_fk = (select rdv_id from refdata_value join refdata_category on rdv_owner = rdc_id where rdv_value = 'History' and rdc_description = 'pending.change.status') order by pc_tipp_fk, pc_date_created desc")
@@ -253,19 +261,10 @@ databaseChangeLog = {
         }
     }
 
-    changeSet(author: "galffy (hand-coded)", id: "1681212470764-31") {
-        grailsChange {
-            change {
-                sql.execute("insert into issue_entitlement_change (iec_version, iec_tic_fk, iec_sub_fk, iec_status_rv_fk, iec_action_date, iec_owner_fk, iec_date_created, iec_last_updated) select pc_version, (select tic_id from title_change where tic_tipp_fk = pc_tipp_fk and tic_event = pc_msg_token), split_part(pc_oid, ':', 2)::bigint, pc_status_rdv_fk, case when pc_action_date is not null then pc_action_date else pc_ts end case, pc_owner, pc_date_created, pc_last_updated from pending_change where pc_oid is not null and pc_msg_token = 'pendingChange.message_TP03'")
-            }
-            rollback {}
-        }
-    }
-
     changeSet(author: "galffy (hand-coded)", id: "1681212470764-32") {
         grailsChange {
             change {
-                sql.execute("delete from pending_change where pc_tipp_fk is not null")
+                sql.execute("insert into issue_entitlement_change (iec_version, iec_tic_fk, iec_sub_fk, iec_status_rv_fk, iec_action_date, iec_owner_fk, iec_date_created, iec_last_updated) select pc_version, (select tic_id from title_change where tic_tipp_fk = pc_tipp_fk and tic_event = pc_msg_token), split_part(pc_oid, ':', 2)::bigint, pc_status_rdv_fk, case when pc_action_date is not null then pc_action_date else pc_ts end case, pc_owner, pc_date_created, pc_last_updated from pending_change where pc_oid is not null and pc_msg_token = 'pendingChange.message_TP03'")
             }
             rollback {}
         }
@@ -288,4 +287,14 @@ databaseChangeLog = {
             rollback {}
         }
     }
+
+    changeSet(author: "galffy (hand-coded)", id: "1681212470764-35") {
+        grailsChange {
+            change {
+                sql.execute("delete from pending_change where pc_tipp_fk is not null")
+            }
+            rollback {}
+        }
+    }
+
 }

@@ -2,8 +2,9 @@ package de.laser
 
 import de.laser.annotations.RefdataInfo
 import de.laser.exceptions.CreationException
-import de.laser.storage.RDConstants
+import groovy.util.logging.Slf4j
 
+@Slf4j
 class TitleChange {
 
     TitleInstancePackagePlatform tipp

@@ -35,13 +35,13 @@
 </div>
 
 
-    <g:if test="${ie && (ie.medium || showEmptyFields)}">
+    <g:if test="${ie && (ie.tipp.medium || showEmptyFields)}">
         <div class="item">
             <i class="grey medium icon la-popup-tooltip la-delay"
                data-content="${message(code: 'tipp.medium')}"></i>
 
             <div class="content">
-                ${showCompact ? '' : message(code: 'tipp.medium') + ':'} ${ie.medium?.getI10n('value')}
+                ${showCompact ? '' : message(code: 'tipp.medium') + ':'} ${ie.tipp.medium?.getI10n('value')}
             </div>
         </div>
     </g:if>
@@ -59,27 +59,27 @@
     </g:else>
 
 
-    <g:if test="${ie && (ie.status || showEmptyFields)}">
+    <g:if test="${ie}">
         <div class="item">
             <i class="grey key icon la-popup-tooltip la-delay"
                data-content="${message(code: 'default.status.label')}"></i>
 
             <div class="content">
-                ${showCompact ? '' : message(code: 'default.status.label') + ':'} ${ie.status?.getI10n('value')}
+                ${showCompact ? '' : message(code: 'default.status.label') + ':'} ${ie.tipp.status.getI10n('value')}
             </div>
         </div>
     </g:if>
     <g:else>
-        <g:if test="${(tipp.status || showEmptyFields)}">
+        <%--<g:if test="${(tipp.status || showEmptyFields)}">--%>
             <div class="item">
                 <i class="grey key icon la-popup-tooltip la-delay"
                    data-content="${message(code: 'default.status.label')}"></i>
 
                 <div class="content">
-                    ${showCompact ? '' : message(code: 'default.status.label') + ':'} ${tipp.status?.getI10n('value')}
+                    ${showCompact ? '' : message(code: 'default.status.label') + ':'} ${tipp.status.getI10n('value')}
                 </div>
             </div>
-        </g:if>
+        <%--</g:if>--%>
     </g:else>
 
     <g:if test="${ie}">
