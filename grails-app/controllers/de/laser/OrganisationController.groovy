@@ -473,16 +473,9 @@ class OrganisationController  {
 
         List orgListTotal            = Org.findAll(fsq.query, fsq.queryParams)
         result.currentProviderIdList = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies(contextService.getOrg()).toList()
-        if (params.curatoryGroup || params.providerRole) {
-            String esQuery = "?componentType=Org"
-            if(params.curatoryGroup)
-                esQuery += "&curatoryGroupExact=${params.curatoryGroup.replaceAll('&','ampersand').replaceAll('\\+','%2B').replaceAll(' ','%20')}"
-            if(params.providerRole)
-                esQuery += "&role=${RefdataValue.get(params.providerRole).value.replaceAll(' ','%20')}"
-            Map<String, Object> wekbResult = gokbService.doQuery(result, [max: 10000, offset: 0], esQuery)
-            List<String> uuids = wekbResult.records.uuid
-            orgListTotal = orgListTotal.findAll { Org org -> org.gokbId in uuids }
-        }
+        result.wekbRecords = organisationService.getWekbOrgRecords(params, result)
+        if (params.curatoryGroup || params.providerRole)
+            orgListTotal = orgListTotal.findAll { Org org -> org.gokbId in result.wekbRecords.keySet() }
 
         if (params.isMyX) {
             List xFilter = params.list('isMyX')
