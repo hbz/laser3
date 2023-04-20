@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4967    20.04.2023  dev     3.1         Andreas Feature     Auflösung des Panels orgSector und Statusanzeige
+
 ----    18.04.2023  dev     3.1         Moe     Feature      delete PlatformAccessMethod
 
 4932    18.04.2023  dev     3.1         Moe     Feature      zugangskonfiguration anpassen

@@ -269,6 +269,9 @@ class OrganisationControllerService {
         result.checklistCount   = workflowService.getWorkflowCount(result.orgInstance, result.contextOrg)
 
         result.links = linksGenerationService.getOrgLinks(result.orgInstance)
+        Map<String, List> nav = (linksGenerationService.generateNavigation(result.orgInstance, true))
+        result.navPrevOrg = nav.prevLink
+        result.navNextOrg = nav.nextLink
         result.targetCustomerType = result.orgInstance.getCustomerType()
         result.allOrgTypeIds = result.orgInstance.getAllOrgTypeIds()
         result.isProviderOrAgency = (RDStore.OT_PROVIDER.id in result.allOrgTypeIds) || (RDStore.OT_AGENCY.id in result.allOrgTypeIds)
