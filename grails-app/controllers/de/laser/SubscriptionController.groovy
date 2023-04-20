@@ -1344,57 +1344,6 @@ class SubscriptionController {
         redirect action: 'index', id: params.id
     }
 
-    @Deprecated
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
-    })
-    def showEntitlementsRenewWithSurvey() {
-        Map<String,Object> result = [user: contextService.getUser()]//subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
-        result.contextOrg = contextService.getOrg()
-        result.institution = result.contextOrg
-        SwissKnife.setPaginationParams(result,params,result.user)
-        result.surveyConfig = SurveyConfig.get(params.id)
-        result.surveyInfo = result.surveyConfig.surveyInfo
-        result.subscription =  result.surveyConfig.subscription
-        result.subscriberSub = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.institution)
-        result.subscriber = result.subscriberSub.getSubscriber()
-        result.ieIDs = subscriptionService.getIssueEntitlementIDsNotFixed(result.subscriberSub)
-        result.ies = result.ieIDs ? IssueEntitlement.findAllByIdInList(result.ieIDs.drop(result.offset).take(result.max)) : []
-        result.filename = "renewEntitlements_${escapeService.escapeString(result.subscription.dropdownNamingConvention())}"
-        if (params.exportKBart) {
-            response.setHeader("Content-disposition", "attachment; filename=${result.filename}.tsv")
-            response.contentType = "text/tsv"
-            ServletOutputStream out = response.outputStream
-            Map<String, List> tableData = exportService.generateTitleExportKBART([sub: result.subscriberSub, ieStatus: RDStore.TIPP_STATUS_CURRENT, pkgIds: result.subscriberSub.packages?.pkg?.id], IssueEntitlement.class.name)
-            out.withWriter { Writer writer ->
-                writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
-            }
-            out.flush()
-            out.close()
-        }
-        else if(params.exportXLS) {
-            response.setHeader("Content-disposition", "attachment; filename=${result.filename}.xlsx")
-            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            Map<String,List> export = exportService.generateTitleExportCustom([sub: result.subscriberSub, ieStatus: RDStore.TIPP_STATUS_CURRENT, pkgIds: result.subscriberSub.packages?.pkg?.id],IssueEntitlement.class.name)
-            Map sheetData = [:]
-            sheetData[g.message(code:'subscription.details.renewEntitlements.label')] = [titleRow:export.titles,columnData:export.rows]
-            SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
-            workbook.write(response.outputStream)
-            response.outputStream.flush()
-            response.outputStream.close()
-            workbook.dispose()
-            return
-        }
-        else {
-            withFormat {
-                html {
-                    result
-                }
-            }
-        }
-    }
-
     /**
      * Call to load the selection list for the title renewal. The list may be exported as a (configurable) Excel table with usage data for each title
      * @return the title list for selection; either as HTML table or as Excel export, configured with the given parameters

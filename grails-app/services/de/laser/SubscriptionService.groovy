@@ -716,60 +716,6 @@ class SubscriptionService {
     }
 
     /**
-     * Gets issue entitlements for the given subscription which are under negotiation
-     * @param subscription the subscription whose titles should be returned
-     * @return a sorted list of issue entitlements which are currently under negotiation
-     */
-    List getIssueEntitlementsUnderNegotiation(Subscription subscription) {
-        List<IssueEntitlement> ies = subscription?
-                IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :ieStatus",
-                        [sub: subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])
-                : []
-        ies.sort {it.sortname}
-        ies
-    }
-
-
-    /**
-     * Counts the issue entitlements for the given subscription which are not fixed
-     * @param subscription the subscription whose titles should be counted
-     * @return a sorted list of issue entitlements which are not fixed
-     */
-    Integer countIssueEntitlementsNotFixed(Subscription subscription) {
-        Integer iesCount = subscription?
-                IssueEntitlement.executeQuery("select count(ie) from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :ieStatus",
-                        [sub: subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0]
-                : 0
-        iesCount
-    }
-
-    /**
-     * Retrieves issue entitlement IDs for the given subscription which are not fixed yet
-     * @param subscription the subscription whose titles should be returned
-     * @return a list of issue entitlements IDs which are not fixed
-     */
-    List<Long> getIssueEntitlementIDsNotFixed(Subscription subscription) {
-        List<Long> ies = subscription?
-                IssueEntitlement.executeQuery("select ie.id from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :ieStatus order by ie.sortname",
-                        [sub: subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])
-                : []
-        ies
-    }
-
-    /**
-     * Counts the issue entitlements for the given subscription which are fixed
-     * @param subscription the subscription whose titles should be counted
-     * @return a sorted list of issue entitlements which are fixed
-     */
-    Integer countIssueEntitlementsFixed(Subscription subscription) {
-        Integer countIes = subscription?
-                IssueEntitlement.executeQuery("select count(ie) from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :ieStatus",
-                        [sub: subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0]
-                : 0
-        countIes
-    }
-
-    /**
      * Gets the current issue entitlements for the given subscription
      * @param subscription the subscription whose titles should be returned
      * @return a sorted list of current issue entitlements

@@ -2089,34 +2089,6 @@ class MyInstitutionController  {
 
         SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.institution, surveyConfig)
 
-        IssueEntitlement.withTransaction { TransactionStatus ts ->
-            if(surveyConfig && surveyConfig.pickAndChoose){
-
-                List ies = subscriptionService.getIssueEntitlementsUnderConsideration(surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution))
-                ies.each { ie ->
-                    ie.save()
-                }
-
-                /*if(ies.size() > 0) {*/
-
-                if (surveyOrg && surveyConfig) {
-                    surveyOrg.finishDate = new Date()
-                    if (!surveyOrg.save()) {
-                        flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccess') as String
-                    } else {
-                        flash.message = message(code: 'renewEntitlementsWithSurvey.submitSuccess') as String
-                        sendMailToSurveyOwner = true
-                    }
-                } else {
-                    flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccess') as String
-                }
-                /*}else {
-                    flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccessEmptyIEs')
-                }*/
-            }
-        }
-
-
         List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.institution, surveyConfig)
 
         boolean allResultHaveValue = true
@@ -2148,7 +2120,7 @@ class MyInstitutionController  {
                 sendMailToSurveyOwner = true
             }
         }
-        else if(!noParticipation && !allResultHaveValue){
+        else if(!noParticipation && allResultHaveValue){
             surveyOrg.finishDate = new Date()
             if (!surveyOrg.save()) {
                 flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccess') as String
