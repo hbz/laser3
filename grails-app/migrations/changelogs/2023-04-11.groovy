@@ -264,7 +264,7 @@ databaseChangeLog = {
     changeSet(author: "galffy (hand-coded)", id: "1681212470764-32") {
         grailsChange {
             change {
-                sql.execute("insert into issue_entitlement_change (iec_version, iec_tic_fk, iec_sub_fk, iec_status_rv_fk, iec_action_date, iec_owner_fk, iec_date_created, iec_last_updated) select pc_version, (select tic_id from title_change where tic_tipp_fk = pc_tipp_fk and tic_event = pc_msg_token), split_part(pc_oid, ':', 2)::bigint, pc_status_rdv_fk, case when pc_action_date is not null then pc_action_date else pc_ts end case, pc_owner, pc_date_created, pc_last_updated from pending_change where pc_oid is not null and pc_msg_token = 'pendingChange.message_TP03'")
+                sql.execute("insert into issue_entitlement_change (iec_version, iec_tic_fk, iec_sub_fk, iec_status_rv_fk, iec_action_date, iec_owner_fk, iec_date_created, iec_last_updated) select pc_version, (select tic_id from title_change where tic_tipp_fk = pc_tipp_fk and tic_event = pc_msg_token), split_part(pc_oid, ':', 2)::bigint, pc_status_rdv_fk, case when pc_action_date is not null then pc_action_date else pc_ts end, pc_owner, pc_date_created, pc_last_updated from pending_change where pc_oid is not null and pc_msg_token = 'pendingChange.message_TP03'")
             }
             rollback {}
         }
