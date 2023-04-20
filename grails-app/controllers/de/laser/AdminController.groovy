@@ -24,11 +24,13 @@ import de.laser.system.SystemMessage
 import de.laser.workflow.WfConditionPrototype
 import de.laser.workflow.WfWorkflowPrototype
 import de.laser.workflow.WfTaskPrototype
+import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import grails.plugins.mail.MailService
 import groovy.sql.Sql
+import org.grails.web.json.JSONElement
 import org.hibernate.SessionFactory
 import org.hibernate.query.NativeQuery
 import de.laser.config.ConfigMapper
@@ -514,6 +516,35 @@ class AdminController  {
         if (params.filter_limit)    { result.put('filter_limit', params.filter_limit) }
 
         result.events = SystemEvent.executeQuery('select se from SystemEvent se where se.created >= :limit order by se.created desc', [limit: limit])
+        result
+    }
+
+    @Secured(['ROLE_ADMIN'])
+    def systemEventsLW() {
+        Map<String, Object> result = [:]
+
+        result.limit = params.long('limit') ?: 30
+        Date limit = DateUtils.localDateToSqlDate( LocalDate.now().minusDays(result.limit as long) )
+
+        result.events = SystemEvent.executeQuery(
+                'select se from SystemEvent se where se.created >= :limit and se.token = :token order by se.created desc',
+                [token: 'LOGIN_WARNING', limit: limit]
+        )
+
+        result.data = []
+        result.events.each { it ->
+            JSONElement je = new JSON().parse(it.payload) as JSONElement
+            result.data << [
+                    id: it.id,
+                    created: it.created,
+                    host: je.headers[0],
+                    url: je.url,
+                    remote: je.remote,
+                    useragent: je.headers[1] ?: '',
+                    x_date: DateUtils.getLocalizedSDF_noTime().format(it.created),
+                    x_time: DateUtils.getSDF_onlyTime().format(it.created)
+            ]
+        }
         result
     }
     

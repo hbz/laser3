@@ -841,6 +841,7 @@ class MyInstitutionController  {
             fsq = propertyService.evalFilterQuery(tmpParams, fsq.query, 'o', fsq.queryParams)
         }
         List orgListTotal = Org.findAll(fsq.query, fsq.queryParams)
+        result.wekbRecords = organisationService.getWekbOrgRecords(params, result)
 
         if (params.isMyX) {
             List xFilter = params.list('isMyX')

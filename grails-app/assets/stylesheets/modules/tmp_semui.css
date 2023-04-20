@@ -141,21 +141,21 @@ body.myInstitution_dashboard .ui.tab .item .header {
     transition: 0.1s color ease, 0.1s background-color ease;
 }
 
-#maintenance *, #systemMessages {
+#systemMaintenanceMode *, #systemMessages {
     color: #2f2f2f !important;
 }
-#maintenance {
+#systemMaintenanceMode {
     position: fixed;
     width: 100%;
     bottom: 0;
     font-size: 1.1em;
     border-top: 2px solid orange;
 }
-#maintenance > .segment {
+#systemMaintenanceMode > .segment {
     padding: 3em 0;
     font-size: 1.1em;
 }
-#maintenance > .segment > .header {
+#systemMaintenanceMode > .segment > .header {
     margin-top: 0 !important;
 }
 
@@ -184,9 +184,9 @@ body.myInstitution_dashboard .ui.tab .item .header {
     outline-offset: -1px;
 }
 
-/* loadingIndicator */
+/* globalLoadingIndicator */
 
-#loadingIndicator {
+#globalLoadingIndicator {
     position: fixed;
     bottom: 3px;
     left: 3px;
@@ -194,6 +194,13 @@ body.myInstitution_dashboard .ui.tab .item .header {
     font-weight: 700;
     color: rgba(0,0,0, 0.6);
     background-color: #d3dae3;
+    display: none;
+}
+
+/* globalPageDimmer */
+
+#globalPageDimmer {
+    background-color: rgba(0,0,0, 0.40)
 }
 
 /* debug info */

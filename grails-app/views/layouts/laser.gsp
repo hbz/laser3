@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.helper.Profiler; de.laser.utils.AppUtils; grails.util.Environment; de.laser.system.SystemActivityProfiler; de.laser.FormService; de.laser.system.SystemSetting; de.laser.UserSetting; de.laser.RefdataValue; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.Org;de.laser.auth.User;de.laser.system.SystemMessage; org.grails.orm.hibernate.cfg.GrailsHibernateUtil" %>
+<%@ page import="de.laser.config.ConfigMapper; de.laser.CustomerTypeService; de.laser.helper.Profiler; de.laser.utils.AppUtils; grails.util.Environment; de.laser.system.SystemActivityProfiler; de.laser.FormService; de.laser.system.SystemSetting; de.laser.UserSetting; de.laser.RefdataValue; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.Org;de.laser.auth.User;de.laser.system.SystemMessage; org.grails.orm.hibernate.cfg.GrailsHibernateUtil" %>
 <!doctype html>
 
 <laser:serviceInjection />
@@ -31,15 +31,9 @@
 
 <body class="${controllerName}_${actionName}">
 
-    <g:if test="${currentServer == AppUtils.LOCAL}">
-        <div class="ui yellow label big la-server-label" aria-label="${message(code:'ariaLabel.serverIdentification.local')}"></div>
-    </g:if>
-    <g:if test="${currentServer == AppUtils.DEV}">
-        <div class="ui green label big la-server-label" aria-label="${message(code:'ariaLabel.serverIdentification.dev')}"></div>
-    </g:if>
-    <g:if test="${currentServer == AppUtils.QA}">
-        <div class="ui red label big la-server-label" aria-label="${message(code:'ariaLabel.serverIdentification.qa')}"></div>
-    </g:if>
+    %{-- system server indicator --}%
+
+    <g:render template="/templates/system/serverIndicator" model="${[currentServer: currentServer]}"/>
 
     <g:set var="visibilityContextOrgMenu" value="la-hide-context-orgMenu" />
 %{--    <nav aria-label="${message(code:'wcag.label.mainMenu')}">--}%
@@ -573,7 +567,6 @@
                                         <i class="exchange icon"></i>
                                     </g:link>
                                 </g:else>
-
                             </div>
                         </g:if>
                         <g:if test="${(controllerName=='subscription' && actionName=='show') || (controllerName=='dev' && actionName=='frontend')}">
@@ -588,7 +581,7 @@
         </nav><!-- Context Bar -->
     </sec:ifAnyGranted><%-- ROLE_USER --%>
 
-    %{-- global content container --}%
+        %{-- global content container --}%
         <div class="pusher">
             <main class="ui main container ${visibilityContextOrgMenu} hidden la-js-mainContent">
 
@@ -596,7 +589,7 @@
 
                 <g:if test="${SystemMessage.getActiveMessages(SystemMessage.TYPE_ATTENTION)}">
                     <div id="systemMessages" class="ui message large warning">
-                        <laser:render template="/templates/systemMessages" model="${[systemMessages: SystemMessage.getActiveMessages(SystemMessage.TYPE_ATTENTION)]}" />
+                        <laser:render template="/templates/system/messages" model="${[systemMessages: SystemMessage.getActiveMessages(SystemMessage.TYPE_ATTENTION)]}" />
                     </div>
                 </g:if>
                 <g:else>
@@ -607,15 +600,25 @@
 
                 <g:layoutBody/>
 
+                %{-- system info --}%
+
+                <sec:ifAnyGranted roles="ROLE_ADMIN">
+                    <g:if test="${ConfigMapper.getShowSystemInfo()}">
+                        <g:render template="/templates/system/info" />
+                    </g:if>
+
+                    <div id="system-profiler" class="ui label hidden">
+                        <i class="clock icon"></i> <span></span>
+                    </div>
+                </sec:ifAnyGranted>
+
             </main><!-- .main -->
         </div>
 
         %{-- footer --}%
 
         <sec:ifNotGranted roles="ROLE_USER">
-            <!-- Footer -->
             <laser:render template="/public/templates/footer" />
-            <!-- Footer End -->
         </sec:ifNotGranted>
 
         %{-- global container for modals and ajax --}%
@@ -624,14 +627,11 @@
 
         %{-- global page dimmer --}%
 
-        <div id="pageDimmer" class="ui page dimmer"></div>
-        <style>
-            #pageDimmer { background-color: rgba(0,0,0, 0.40)}  %{-- TMP --}%
-        </style>
+        <div id="globalPageDimmer" class="ui page dimmer"></div>
 
         %{-- global loading indicator --}%
 
-        <div id="loadingIndicator" style="display: none">
+        <div id="globalLoadingIndicator">
             <div class="ui inline medium text loader active">Aktualisiere Daten ..</div>
         </div>
 
@@ -660,28 +660,13 @@
             </laser:script>
         </g:if>
 
-        %{-- maintenance --}%
+        %{-- system maintenance mode --}%
 
-        <div id="maintenance" class="${SystemSetting.findByName('MaintenanceMode').value != 'true' ? 'hidden' : ''}">
-            <div class="ui segment center aligned inverted yellow">
-                <h3 class="ui header"><i class="icon cogs"></i> ${message(code:'system.maintenanceMode.header')}</h3>
+        <g:render template="/templates/system/maintenanceMode" />
 
-                ${message(code:'system.maintenanceMode.message')}
-            </div>
-        </div>
-
-        %{-- system info --}%
+        %{-- ??? --}%
 
         <% if(! flash.redirectFrom) { flash.clear() } %>
-
-        <sec:ifAnyGranted roles="ROLE_ADMIN">
-            <ui:systemInfo />
-
-            <div id="system-profiler" class="ui label hidden">
-                <i class="clock icon"></i>
-                <span></span>
-            </div>
-        </sec:ifAnyGranted>
 
         %{-- ajax login --}%
 

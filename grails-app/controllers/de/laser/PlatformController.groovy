@@ -240,6 +240,7 @@ class PlatformController  {
         result.editUrl = apiSource.editUrl.endsWith('/') ? apiSource.editUrl : apiSource.editUrl+'/'
 
         result.flagContentGokb = true // gokbService.queryElasticsearch
+        result.platformInstanceRecord = [:]
         Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/find?uuid=${platformInstance.gokbId}")
         if (queryResult.error && queryResult.error == 404) {
             flash.error = message(code:'wekb.error.404') as String
@@ -249,7 +250,6 @@ class PlatformController  {
             result.platformInstanceRecord = records ? records[0] : [:]
             result.platformInstanceRecord.id = params.id
         }
-        result.platformInstanceRecord = [:]
         result.editable = accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_BASIC )
 
         String hql = "select oapl from OrgAccessPointLink oapl join oapl.oap as ap " +

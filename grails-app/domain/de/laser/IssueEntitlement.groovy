@@ -39,19 +39,24 @@ class IssueEntitlement extends AbstractBase implements Comparable {
     Date accessStartDate
     Date accessEndDate
 
+    @Deprecated
     String name
+    @Deprecated
     String sortname
     String notes
 
     Subscription perpetualAccessBySub
 
     //merged as the difference between an IssueEntitlement and a TIPP is mainly former's attachment to a subscription, otherwise, they are functionally identical, even dependent upon each other. So why keep different refdata categories?
+    @Deprecated
     @RefdataInfo(cat = RDConstants.TIPP_STATUS)
     RefdataValue status
 
+    @Deprecated
     @RefdataInfo(cat = RDConstants.TIPP_ACCESS_TYPE)
     RefdataValue accessType
 
+    @Deprecated
     @RefdataInfo(cat = RDConstants.LICENSE_OA_TYPE)
     RefdataValue openAccess
 
@@ -79,9 +84,10 @@ class IssueEntitlement extends AbstractBase implements Comparable {
 
     int compareTo(obj) {
         int cmp
-        if(sortname && obj.sortname)
-            cmp = sortname <=> obj.sortname
-        else if(name && obj.name) cmp = name <=> obj.name
+        if(tipp.sortname && obj.tipp.sortname)
+            cmp = tipp.sortname <=> obj.tipp.sortname
+        else if(tipp.name && obj.tipp.name)
+            cmp = tipp.name <=> obj.tipp.name
         if(cmp == 0)
             return id.compareTo(obj.id)
         return cmp
@@ -144,7 +150,7 @@ class IssueEntitlement extends AbstractBase implements Comparable {
       IssueEntitlement ie = findBySubscriptionAndTippAndStatusNotEqual(subscription,tipp, RDStore.TIPP_STATUS_REMOVED)
       if(!ie) {
           ie = new IssueEntitlement(subscription: subscription, tipp: tipp, medium: tipp.medium, status:tipp.status, accessType: tipp.accessType, openAccess: tipp.openAccess, acceptStatus: configMap.acceptStatus, name: tipp.name)
-          ie.generateSortTitle()
+          //ie.generateSortTitle()
       }
       if(ie.save()) {
 
@@ -208,40 +214,6 @@ class IssueEntitlement extends AbstractBase implements Comparable {
       BeanStore.getDeletionService().deleteDocumentFromIndex(this.globalUID, this.class.simpleName)
   }
 
-    /**
-     * Removes stopwords from the title and generates a sortable title string.
-     * @see Normalizer.Form#NFKD
-     */
-    void generateSortTitle() {
-        if ( name ) {
-            sortname = Normalizer.normalize(name, Normalizer.Form.NFKD).trim().toLowerCase()
-            sortname = sortname.replaceFirst('^copy of ', '')
-            sortname = sortname.replaceFirst('^the ', '')
-            sortname = sortname.replaceFirst('^a ', '')
-            sortname = sortname.replaceFirst('^der ', '')
-            sortname = sortname.replaceFirst('^die ', '')
-            sortname = sortname.replaceFirst('^das ', '')
-        }
-    }
-
-  @Deprecated
-  Date getDerivedAccessStartDate() {
-      if(accessStartDate)
-          accessStartDate
-      else if(subscription.startDate)
-          subscription.startDate
-      else if(tipp.accessStartDate)
-          tipp.accessStartDate
-  }
-  @Deprecated
-  Date getDerivedAccessEndDate() {
-      if(accessEndDate)
-          accessEndDate
-      else if(subscription.endDate)
-          subscription.endDate
-      else if(tipp.accessEndDate)
-          tipp.accessEndDate
-  }
 
   @Transient
   int compare(IssueEntitlement ieB){
@@ -253,49 +225,5 @@ class IssueEntitlement extends AbstractBase implements Comparable {
     if(noChange) return 0;
     return 1;
   }
-
-    /**
-     * Currently unused, is subject of refactoring.
-     * Retrieves usage details for the title to which this issue entitlement is linked
-     * @param date the month for which usage should be retrieved
-     * @param subscriber the subscriber institution ({@link Org}) whose report should be retrieved
-     * @return the first available usage report, TODO: extend with metricType and reportType
-     */
-    def getCounterReport(Date date, Org subscriber){
-        String sort = 'r.reportCount desc'
-
-        String dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
-
-        Calendar filterTime = GregorianCalendar.getInstance()
-        filterTime.setTime(date)
-        filterTime.set(Calendar.DATE, filterTime.getActualMinimum(Calendar.DAY_OF_MONTH))
-        Date startDate = filterTime.getTime()
-        filterTime.set(Calendar.DATE, filterTime.getActualMaximum(Calendar.DAY_OF_MONTH))
-        Date endDate = filterTime.getTime()
-
-        Map<String, Object> queryParams = [customer: subscriber, platform: this.tipp.platform, startDate: startDate, endDate: endDate, title: this.tipp]
-
-        List counterReports
-
-
-        counterReports = Counter5Report.executeQuery('select r from Counter5Report r where r.reportInstitution = :customer and r.platform = :platform and r.title = :title'+dateRange+' order by '+sort, queryParams)
-
-        if(counterReports.size() > 0){
-            //println(counterReports.size())
-            return counterReports[0]
-        }
-
-        counterReports =  Counter4Report.executeQuery('select r from Counter4Report r where r.reportInstitution = :customer and r.platform = :platform and r.title = :title'+dateRange+' order by '+sort, queryParams)
-
-        if(counterReports.size() > 0){
-            //println(counterReports.size())
-            return counterReports[0]
-        }
-
-        if(!counterReports) {
-            return null
-        }
-
-    }
 
 }

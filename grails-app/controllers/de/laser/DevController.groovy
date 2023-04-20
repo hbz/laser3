@@ -16,7 +16,21 @@ class DevController  {
      */
     @Secured(['ROLE_ADMIN'])
     def frontend() {
-        Map<String, Object> result = [test:123, user: contextService.getUser(), institution: contextService.getOrg()]
+        Map<String, Object> result = [user: contextService.getUser(), institution: contextService.getOrg()]
+        result
+    }
+
+    /**
+     * @return the frontend view with sample area for frontend developing and showcase
+     */
+    @Secured(['ROLE_ADMIN'])
+    def laserPlan() {
+        Map<String, Object> result = [user: contextService.getUser(), institution: contextService.getOrg()]
+        result.mappingColsBasic = ["licence","asService", "accessRights"]
+        result.mappingColsPro = ["erms", "propertiesUse", "propertiesCreation", "cost", "ie", "docs", "tasks", "notifications", "address", "budget", "reporting", "testSystem", "community", "wekb", "api"]
+        result.mappingColsServiceBasic = ["support", "help", "handbook", "progression", "trainingFundamentals"]
+        result.mappingColsServicePro = ["trainingIndividual", "userMeeting"]
+
         result
     }
 

@@ -36,7 +36,7 @@ bb8 = {
         $.ajax({
             url: url,
             beforeSend: function (xhr) {
-                $('#loadingIndicator').show()
+                $('#globalLoadingIndicator').show()
                 if (before) { eval(before) }
             }
         })
@@ -60,7 +60,7 @@ bb8 = {
                 if (fail) { eval(fail) }
             })
             .always(function () {
-                $('#loadingIndicator').hide()
+                $('#globalLoadingIndicator').hide()
                 if (always) { eval(always) }
             });
     },
@@ -79,7 +79,7 @@ bb8 = {
             url: url,
             data : data,
             beforeSend: function (xhr) {
-                $('#loadingIndicator').show()
+                $('#globalLoadingIndicator').show()
                 if (before) { eval(before) }
             }
         })
@@ -103,7 +103,7 @@ bb8 = {
                 if (fail) { eval(fail) }
             })
             .always(function () {
-                $('#loadingIndicator').hide()
+                $('#globalLoadingIndicator').hide()
                 if (always) { eval(always) }
             });
     },

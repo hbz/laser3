@@ -10,6 +10,7 @@ import de.laser.storage.RDStore
 import de.laser.utils.AppUtils
 import de.laser.utils.LocaleUtils
 import grails.gorm.transactions.Transactional
+import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
 
 /**
@@ -321,6 +322,20 @@ class OrganisationService {
         Map<String, Object> result = gokbService.doQuery([user: contextService.getUser(), editUrl: apiSource.editUrl], [max: '1000', offset: '0'], "?componentType=Platform&status=Current")
         uuids.addAll(result.records.collect { Map platRecord -> platRecord.uuid })
         Platform.executeQuery('select p from Platform p join p.org o where p.gokbId in (:uuids) and p.org is not null order by o.name, o.sortname, p.name', [uuids: uuids])
+    }
+
+    Map<String, Map> getWekbOrgRecords(GrailsParameterMap params, Map result) {
+        String esQuery = "?componentType=Org"
+        if (params.curatoryGroup || params.providerRole) {
+            if(params.curatoryGroup)
+                esQuery += "&curatoryGroupExact=${params.curatoryGroup.replaceAll('&','ampersand').replaceAll('\\+','%2B').replaceAll(' ','%20')}"
+            if(params.providerRole)
+                esQuery += "&role=${RefdataValue.get(params.providerRole).value.replaceAll(' ','%20')}"
+        }
+        Map<String, Object> wekbResult = gokbService.doQuery(result, [max: 10000, offset: 0], esQuery)
+        if(wekbResult.recordsCount > 0)
+            wekbResult.records.collectEntries { Map wekbRecord -> [wekbRecord.uuid, wekbRecord] }
+        else [:]
     }
 
 }

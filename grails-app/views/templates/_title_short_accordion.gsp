@@ -2,7 +2,7 @@
 <div class="item">
     <ui:listIcon type="${tipp.titleType}"/>
     <g:if test="${ie}">
-        <g:link controller="issueEntitlement" id="${ie.id}" action="show"><strong>${ie.name}</strong>
+        <g:link controller="issueEntitlement" id="${ie.id}" action="show"><strong>${ie.tipp.name}</strong>
         </g:link>
     </g:if>
     <g:else>

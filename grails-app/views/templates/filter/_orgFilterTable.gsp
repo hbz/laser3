@@ -243,7 +243,12 @@
 
             <g:if test="${tmplConfigItem.equalsIgnoreCase('sortname')}">
                 <td>
-                    ${org.sortname}
+                    <g:if test="${wekbRecords?.containsKey(org.gokbId)}">
+                        ${wekbRecords.get(org.gokbId).abbreviatedName}
+                    </g:if>
+                    <g:elseif test="${!org.gokbId}">
+                        ${org.sortname}
+                    </g:elseif>
                 </td>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('name')}">

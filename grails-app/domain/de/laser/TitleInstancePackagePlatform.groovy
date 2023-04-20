@@ -174,7 +174,6 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
     static constraints = {
         globalUID(nullable:true, blank:false, unique:true, maxSize:255)
         gokbId (blank:false, unique: true, maxSize:511)
-        status      (nullable:true)
         name        (nullable:true)
         sortname    (nullable:true)
         normName    (nullable:true)

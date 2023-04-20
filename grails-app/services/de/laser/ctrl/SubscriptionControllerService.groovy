@@ -2241,47 +2241,59 @@ class SubscriptionControllerService {
                     pendingOrWithNotification.addAll(keysWithPendingOrNotification.keySet())
                 }
             }
-            /*OLD
-            if(pkgList && pendingOrWithNotification) {
-                String query1 = 'select pc.id from PendingChange pc join pc.tipp.pkg pkg where pkg in (:packages) and pc.oid = null and pc.status = :history and pc.msgToken in (:pendingOrWithNotification)',
-                       query2 = 'select pc.id from PendingChange pc join pc.tippCoverage.tipp.pkg pkg where pkg in (:packages) and pc.oid = null and pc.status = :history and pc.msgToken in (:pendingOrWithNotification)',
-                       query3 = 'select pc.id from PendingChange pc join pc.priceItem.tipp.pkg pkg where pkg in (:packages) and pc.oid = null and pc.status = :history and pc.msgToken in (:pendingOrWithNotification)',
-                       query1a = 'select pc.id,pc.tipp from PendingChange pc join pc.tipp.pkg pkg where pkg in (:packages) and pc.oid = (:subOid) and pc.status = :accepted',
-                       query2a = 'select pc.id,pc.tippCoverage from PendingChange pc join pc.tippCoverage.tipp.pkg pkg where pkg in (:packages) and pc.oid = (:subOid) and pc.status = :accepted',
-                       query3a = 'select pc.id,pc.priceItem from PendingChange pc join pc.priceItem.tipp.pkg pkg where pkg in (:packages) and pc.oid = (:subOid) and pc.status = :accepted'
-                packageHistory.addAll(PendingChange.executeQuery(query1,[packages:pkgList,history:RDStore.PENDING_CHANGE_HISTORY,pendingOrWithNotification:pendingOrWithNotification]))
-                packageHistory.addAll(PendingChange.executeQuery(query2,[packages:pkgList,history:RDStore.PENDING_CHANGE_HISTORY,pendingOrWithNotification:pendingOrWithNotification]))
-                packageHistory.addAll(PendingChange.executeQuery(query3,[packages:pkgList,history:RDStore.PENDING_CHANGE_HISTORY,pendingOrWithNotification:pendingOrWithNotification]))
-                subscriptionHistory.addAll(PendingChange.executeQuery(query1a,[packages:pkgList,accepted:RDStore.PENDING_CHANGE_ACCEPTED,subOid:genericOIDService.getOID(result.subscription)]))
-                subscriptionHistory.addAll(PendingChange.executeQuery(query2a,[packages:pkgList,accepted:RDStore.PENDING_CHANGE_ACCEPTED,subOid:genericOIDService.getOID(result.subscription)]))
-                subscriptionHistory.addAll(PendingChange.executeQuery(query3a,[packages:pkgList,accepted:RDStore.PENDING_CHANGE_ACCEPTED,subOid:genericOIDService.getOID(result.subscription)]))
-                changesOfPage.addAll(PendingChange.findAllByIdInList(packageHistory,[sort:'ts',order:'asc']))
-                subscriptionHistory.each { row ->
-                    accepted << changesOfPage.find { PendingChange pc -> row[1] in [pc.tipp,pc.tippCoverage,pc.priceItem] }?.id
-                }
-            }*/
 
-            params.sort = params.sort ?: 'ts'
+            if(!params.sort) {
+                if(params.tab == 'acceptedChanges') {
+                    params.sort = 'iec.actionDate'
+                }
+                else if(params.tab == 'changes') {
+                    params.sort = 'tic.dateCreated'
+                }
+            }
+
             params.order = params.order ?: 'desc'
             if(!params.eventType) {
                 if(params.tab == 'acceptedChanges') {
-                    params.eventType = PendingChangeConfiguration.TITLE_UPDATED
+                    params.eventType = PendingChangeConfiguration.NEW_TITLE
                 }
                 else if(params.tab == 'changes') {
                     params.eventType = PendingChangeConfiguration.TITLE_REMOVED
                 }
             }
             else if(params.eventType == PendingChangeConfiguration.TITLE_REMOVED && params.tab == 'acceptedChanges')
-                params.eventType = PendingChangeConfiguration.TITLE_UPDATED
-            String order = " order by pc.${params.sort} ${params.order}"
+                params.eventType = PendingChangeConfiguration.NEW_TITLE
+            String order = " order by ${params.sort} ${params.order}"
+            params.tab = params.tab ?: 'changes'
             if(pkgSettingMap && pendingOrWithNotification) {
                 pkgSettingMap.each { SubscriptionPackage sp, Map<String, RefdataValue> settings ->
-                    Package pkg = sp.pkg
-                    Date entryDate = sp.dateCreated
+                    Set titleChanges = []
+                    if(params.tab == 'changes') {
+                        switch(params.eventType) {
+                            case PendingChangeConfiguration.TITLE_REMOVED:
+                                titleChanges.addAll(TitleChange.executeQuery('select tic from TitleChange tic join tic.tipp tipp where tic.event = :event and tipp.pkg = :pkg and not exists (select ie.id from IssueEntitlement ie where ie.status = :removed and ie.tipp = tipp and ie.subscription = :sub) and tic.dateCreated >= :entryDate '+order,
+                                    [pkg: sp.pkg, sub: sp.subscription, event: PendingChangeConfiguration.TITLE_REMOVED, removed: RDStore.TIPP_STATUS_REMOVED, entryDate: sp.dateCreated]))
+                                break
+                            case PendingChangeConfiguration.NEW_TITLE:
+                                titleChanges.addAll(TitleChange.executeQuery('select tic from TitleChange tic join tic.tipp tipp where tic.event = :event and tipp.pkg = :pkg and not exists (select iec.id from IssueEntitlementChange iec where iec.status in (:processed) and iec.titleChange = tic and iec.subscription = :sub) and not exists (select ie.id from IssueEntitlement ie where ie.tipp = tipp and ie.status != :removed and ie.subscription = :sub) and tic.dateCreated >= :entryDate '+order,
+                                    [pkg: sp.pkg, sub: sp.subscription, event: params.eventType, processed: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED, RDStore.PENDING_CHANGE_SUPERSEDED], removed: RDStore.TIPP_STATUS_REMOVED, entryDate: sp.dateCreated]))
+                                break
+                            case PendingChangeConfiguration.TITLE_DELETED:
+                                titleChanges.addAll(TitleChange.executeQuery('select tic from TitleChange tic join tic.tipp tipp where tic.event = :event and tipp.pkg = :pkg and not exists (select iec.id from IssueEntitlementChange iec where iec.status in (:processed) and iec.titleChange = tic and iec.subscription = :sub) and tic.dateCreated >= :entryDate '+order,
+                                    [pkg: sp.pkg, sub: sp.subscription, event: params.eventType, processed: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED, RDStore.PENDING_CHANGE_SUPERSEDED], entryDate: sp.dateCreated]))
+                                break
+                        }
+                    }
+                    else if(params.tab == 'acceptedChanges') {
+                        titleChanges.addAll(IssueEntitlementChange.executeQuery('select iec from IssueEntitlementChange iec join iec.titleChange tic join tic.tipp tipp where tic.event = :event and tipp.pkg = :pkg and iec.subscription = :sub and iec.status = :accepted '+order,
+                                [pkg: sp.pkg, sub: sp.subscription, event: params.eventType, accepted: RDStore.PENDING_CHANGE_ACCEPTED]))
+                    }
+                    result.changes = titleChanges.drop(result.offset).take(result.max)
+                    result.num_change_rows = titleChanges.size()
+                /* OLD
+
                     String query1a = 'select pc.id from PendingChange pc join pc.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken = :eventType and pc.oid = :subOid and pc.status in (:pendingStatus)'
                     //query3a = 'select pc.id,pc.priceItem from PendingChange pc join pc.priceItem.tipp.pkg pkg where pkg = :package and pc.oid = (:subOid) and pc.status in (:pendingStatus)',
                     String query1b, query1c
-                    PendingChangeConfiguration pcc = sp.pendingChangeConfig.find { PendingChangeConfiguration pcc -> pcc.settingKey == params.eventType }
                     if (params.eventType == PendingChangeConfiguration.NEW_TITLE)
                         query1b = 'select pc.id from PendingChange pc join pc.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken = :eventType and pc.tipp.status != :removed and (not exists (select pca.id from PendingChange pca join pca.tipp tippA where tippA = pc.tipp and pca.oid = :subOid and pca.status in (:pendingStatus)) and not exists (select ie.id from IssueEntitlement ie where ie.tipp = pc.tipp and ie.subscription = :subscription and ie.status != :removed)) and pc.status = :packageHistory'
                     else if (params.eventType == PendingChangeConfiguration.TITLE_UPDATED)
@@ -2307,15 +2319,16 @@ class SubscriptionControllerService {
                         changesOfPage.addAll(PendingChange.executeQuery(query1c+order,[package: pkg, eventType: params.eventType, subscription: sp.subscription, removed: RDStore.TIPP_STATUS_REMOVED]))
                     //changesOfPage.addAll(PendingChange.executeQuery(query3b,[packages: pkgList, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_HISTORY, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription)]))
                     changesOfPage.addAll(PendingChange.executeQuery(query1d+order,[pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED], eventType: params.eventType, subscription: result.subscription]))
+
+                */
                 }
             }
-
-            params.tab = params.tab ?: 'changes'
             params.max = result.max
             params.offset = result.offset
 
             result.putAll(pendingChangeService.getCountsForPackages(pkgSettingMap))
 
+            /*
             if(params.tab == 'changes') {
                 result.changes = changesOfPage ? PendingChange.executeQuery('select pc from PendingChange pc where pc.id in (:changesOfPage) order by '+params.sort+' '+params.order, [changesOfPage: changesOfPage.drop(result.offset).take(result.max)]) : []
                 result.num_change_rows = changesOfPage.size()
@@ -2325,6 +2338,7 @@ class SubscriptionControllerService {
                 result.changes = subscriptionHistory ? PendingChange.executeQuery('select pc from PendingChange pc where pc.id in (:subscriptionHistory) order by '+params.sort+' '+params.order, [subscriptionHistory: subscriptionHistory.drop(result.offset).take(result.max)]) : []
                 result.num_change_rows = subscriptionHistory.size()
             }
+            */
 
             result.apisources = ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
 
