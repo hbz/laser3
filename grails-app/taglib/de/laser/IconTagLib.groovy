@@ -52,12 +52,15 @@ class IconTagLib {
             case 'yoda':
                 icon = 'la-object tools'
                 break
+            case 'user':
+                icon = 'user bordered inverted grey la-object-extended'
+                break
             case 'affiliation':
                 int level = 0
                 UserOrgRole.findAllByUserAndOrg(contextService.getUser(), contextService.getOrg()).each{
-                    if (level < 1 && it.formalRole.authority == Role.INST_USER)   { level = 1; icon = 'user bordered inverted teal la-object-extended' }
-                    if (level < 2 && it.formalRole.authority == Role.INST_EDITOR) { level = 2; icon = 'user edit bordered inverted teal la-object-extended' }
-                    if (level < 3 && it.formalRole.authority == Role.INST_ADM)    { level = 3; icon = 'user cog bordered inverted teal la-object-extended' }
+                    if (level < 1 && it.formalRole.authority == Role.INST_USER)   { level = 1; icon = 'user bordered inverted grey la-object-extended' }
+                    if (level < 2 && it.formalRole.authority == Role.INST_EDITOR) { level = 2; icon = 'user edit bordered inverted grey la-object-extended' }
+                    if (level < 3 && it.formalRole.authority == Role.INST_ADM)    { level = 3; icon = 'user cog bordered inverted grey la-object-extended' }
                 }
                 break
         }
