@@ -83,13 +83,21 @@
         .mk-userMeeting:before {
             content: "\f51c";
         }
+%{--        .ui.table>tbody>tr>td {
+            padding: 1.0em 1.4em;
+            font-size:1.2em;
+            line-height: 1.7em;
+        }
+        i.icon.la-list-icon {
+            margin: 0.3rem 0.5rem 0 0;
+        }--}%
     </style>
 
 </laser:htmlStart> %{-- </head><body>--}%
 
 <h1 class="ui icon header la-clear-before left floated aligned la-positionRelative"><i class="icon blue icon la-laser la-object"></i> Die LAS:eR Vorteile</h1>
 
-<table class="ui striped structured la-table table">
+<table class="ui large striped structured la-table table">
     <thead>
     <tr>
         <th class="two wide" rowspan="2">Die LAS:eR Vorteile</th>
@@ -132,11 +140,11 @@
                     ${message(code:"marketing.featureList.${mpg}")}
                 </div>
             </td>
-%{--            <td>
-                <button class="ui icon blue button la-modern-button la-modal" >
-                    <i class="film icon"></i>
-                </button>
-            </td>--}%
+         <td>
+             %{--   <button class="ui icon blue button la-modern-button la-modal" >
+                 <i class="film icon"></i>
+             </button>--}%
+            </td>
             <td class="four wide center aligned">
 
             </td>
@@ -151,7 +159,7 @@
             <td class="four wide">
 
             </td>
-
+            <td></td>
             <td class="center aligned">
 
             </td>
@@ -166,10 +174,11 @@
 </table>
 <h1 class="ui icon header la-clear-before left floated aligned la-positionRelative"><i class="icon blue icon la-laser la-object"></i>Der LAS:eR-Service</h1>
 
-<table class="ui striped structured la-table table">
+<table class="ui large striped structured la-table table">
     <thead>
     <tr>
         <th class="two wide" rowspan="2">Der LAS:eR-Service</th>
+        <th></th>
         %{--        <th class="center aligned"  rowspan="2"></th>--}%
         <th class="center aligned" colspan="2">Las:eR</th>
     </tr>
@@ -188,11 +197,11 @@
                     ${message(code:"marketing.featureList.${mpg}")}
                 </div>
             </td>
-                %{--            <td>
-                                <button class="ui icon blue button la-modern-button la-modal" >
-                                    <i class="film icon"></i>
-                                </button>
-                            </td>--}%
+                       <td>
+                           %{--     <button class="ui icon blue button la-modern-button la-modal" >
+                               <i class="film icon"></i>
+                           </button>--}%
+                       </td>
             <td class="four wide center aligned">
                 <i class="large green checkmark icon"></i>
             </td>
@@ -209,11 +218,11 @@
                     ${message(code:"marketing.featureList.${mpg}")}
                 </div>
             </td>
-                %{--            <td>
+                            <td>%{--
                                 <button class="ui icon blue button la-modern-button la-modal" >
                                     <i class="film icon"></i>
-                                </button>
-                            </td>--}%
+                                </button>--}%
+                            </td>
             <td class="four wide center aligned">
 
             </td>
@@ -228,7 +237,7 @@
             <td class="four wide">
 
             </td>
-
+            <td></td>
             <td class="center aligned">
 
             </td>
