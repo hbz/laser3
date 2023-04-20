@@ -83,14 +83,6 @@
         .mk-userMeeting:before {
             content: "\f51c";
         }
-%{--        .ui.table>tbody>tr>td {
-            padding: 1.0em 1.4em;
-            font-size:1.2em;
-            line-height: 1.7em;
-        }
-        i.icon.la-list-icon {
-            margin: 0.3rem 0.5rem 0 0;
-        }--}%
     </style>
 
 </laser:htmlStart> %{-- </head><body>--}%
@@ -250,16 +242,21 @@
 
     </tfooter>
 </table>
-<div class="ui large modal">
+<g:each in="${mappingColsBasic}" var="mpg">
 
-    <div class="content">
-        <button class="ui right floated button la-animatedGif-redo ">Animation wiederholen</button>
-        <img width="100%" alt="" class="la-animatedGif-img la-padding-top-1em" src="${resource(dir: 'images', file: 'licence.gif')}"/>
-    </div>
-    <div class="actions">
-        <a href="#" class="ui positive button" >Schließen</a>
-    </div>
-</div>
+    <g:if test="${mpg === 'licence'}">
+        <div class="ui large modal">
+
+            <div class="content">${mpg}
+            <button class="ui right floated button la-animatedGif-redo ">Animation wiederholen</button>
+                <img width="100%" alt="" class="la-animatedGif-img la-padding-top-1em" src="${resource(dir: 'images', file: '${mpg}.gif')}"/>
+            </div>
+            <div class="actions">
+                <a href="#" class="ui positive button" >Schließen</a>
+            </div>
+        </div>
+    </g:if>
+</g:each>
 <laser:script file="${this.getGroovyPageFileName()}">
     $('.la-modal').click(function(){
         $('.large.modal')
