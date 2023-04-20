@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4967    20.04.2023  dev     3.1         Andreas Feature     Auflösung des Panels orgSector und Statusanzeige
+
 4922    20.04.2023  dev     3.1         Andreas Feature     Shibboleth-Federations in LAS:eR angezeigt
 
 ----    18.04.2023  dev     3.1         Moe     Feature     delete PlatformAccessMethod

@@ -579,13 +579,17 @@ class UiTagLib {
         }
         out << '<div class="ui large label la-annual-rings">'
 
-        if (object.startDate) {
-            startDate = g.formatDate(date: object.startDate, format: ddf_notime)
+        if (object.hasProperty('startDate') && object.hasProperty('endDate')) {
+            if (object.startDate) {
+                startDate = g.formatDate(date: object.startDate, format: ddf_notime)
+            }
+            if (object.endDate) {
+                dash = '–'
+                endDate = g.formatDate(date: object.endDate, format: ddf_notime)
+            }
         }
-        if (object.endDate) {
-            dash = '–'
-            endDate = g.formatDate(date: object.endDate, format: ddf_notime)
-        }
+        else if(object.hasProperty('retirementDate'))
+            startDate = g.formatDate(date: object.retirementDate, format: ddf_notime)
         if (prev) {
             if (prev.size() == 1) {
                 prev.each { p ->
@@ -601,11 +605,13 @@ class UiTagLib {
                 out << '<div class="ui right pointing dropdown"> <i class="arrow left icon"></i> <div class="menu">'
 
                 prev.each { p ->
-                    if (p.startDate) {
-                        prevStartDate = g.formatDate(date: p.startDate, format: ddf_notime)
-                    }
-                    if (p.endDate) {
-                        prevEndDate = g.formatDate(date: p.endDate, format: ddf_notime)
+                    if (p.hasProperty('startDate') && p.hasProperty('endDate')) {
+                        if (p.startDate) {
+                            prevStartDate = g.formatDate(date: p.startDate, format: ddf_notime)
+                        }
+                        if (p.endDate) {
+                            prevEndDate = g.formatDate(date: p.endDate, format: ddf_notime)
+                        }
                     }
                     if (attrs.mapping) {
                         out << g.link("<strong>${p instanceof License ? p.reference : p.name}:</strong> " + "${prevStartDate}" + "${dash}" + "${prevEndDate}", controller: attrs.controller, action: attrs.action, class: "item", params: [sub: p.id], mapping: attrs.mapping)
@@ -638,11 +644,13 @@ class UiTagLib {
                 out << '<div class="ui left pointing dropdown"> <i class="arrow right icon"></i> <div class="menu">'
 
                 next.each { n ->
-                    if (n.startDate) {
-                        nextStartDate = g.formatDate(date: n.startDate, format: ddf_notime)
-                    }
-                    if (n.endDate) {
-                        nextEndDate = g.formatDate(date: n.endDate, format: ddf_notime)
+                    if (n.hasProperty('startDate') && n.hasProperty('endDate')) {
+                        if (n.startDate) {
+                            nextStartDate = g.formatDate(date: n.startDate, format: ddf_notime)
+                        }
+                        if (n.endDate) {
+                            nextEndDate = g.formatDate(date: n.endDate, format: ddf_notime)
+                        }
                     }
                     if (attrs.mapping) {
                         out << g.link("<strong>${n instanceof License ? n.reference : n.name}:</strong> " + "${nextStartDate}" + "${dash}" + "${nextEndDate}", controller: attrs.controller, action: attrs.action, class: "item", params: [sub: n.id], mapping: attrs.mapping)
