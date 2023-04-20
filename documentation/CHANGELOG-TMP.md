@@ -21,6 +21,8 @@
 
 4956    11.04.2023  dev     3.1         Andreas Bug         Auslesefehler bei Mailadressen behoben
 
+4918    11.04.2023  dev     3.1         Andreas Feature     Titel-Status ist nicht mehr nullable
+
 4954    05.04.2023  rc-3.0  3.0.6       Moe     Feature     allgemeine Merkmale Lizenzebene
 
 4951    04.04.2023  dev     3.1         Andreas Bug         Filter "Dauerhafter Zugriff" fehlte in Übersicht von verknüpften Lizenzen eines Vertrages

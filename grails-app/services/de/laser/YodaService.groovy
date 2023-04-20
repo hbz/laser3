@@ -240,7 +240,7 @@ class YodaService {
                             TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGokbId(key)
                             if (tipp) {
                                 tipp.status = RDStore.TIPP_STATUS_REMOVED
-                                PendingChange.construct([msgToken: PendingChangeConfiguration.TITLE_REMOVED, target: tipp, status: RDStore.PENDING_CHANGE_HISTORY])
+                                TitleChange.construct([msgToken: PendingChangeConfiguration.TITLE_REMOVED, target: tipp, status: RDStore.PENDING_CHANGE_HISTORY])
                                 tipp.save()
                             }
                         }

@@ -28,6 +28,7 @@
                 </tr>
             </thead>
             <tbody>
+            <%--
             <g:each in="${pending}" var="entry">
                 <g:set var="row" value="${pendingChangeService.printRow(PendingChange.get(entry.changeId))}" />
                 <g:set var="event" value="${row.eventData}"/>
@@ -91,6 +92,7 @@
                 </tr>
 
             </g:each>
+            --%>
             </tbody>
         </table>
 

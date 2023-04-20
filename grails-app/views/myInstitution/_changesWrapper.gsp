@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore" %>
+<%@ page import="de.laser.PendingChangeConfiguration; de.laser.storage.RDStore" %>
 <laser:serviceInjection/>
 <div id="pendingChangesWrapper">
 <%--<div class="la-float-right">
@@ -23,16 +23,16 @@
             </div><!-- .column -->
         </div>
         <g:each in="${pending}" var="entry">
+            <g:set var="event" value="${entry.event}"/>
             <div class="row">
-                <%--${notification}--%>
                 <div class="six wide column">
-                    <g:if test="${entry.packageSubscription}">
-                        <g:link controller="subscription" action="index" id="${entry.packageSubscription.id}">${entry.packageSubscription.name}</g:link>
+                    <g:if test="${event in PendingChangeConfiguration.TITLE_CHANGES}">
+                        <g:link controller="subscription" action="index" id="${entry.subscription.id}">${entry.subscription.name} (${entry.subscription.status.getI10n("value")})</g:link>
                     </g:if>
-                    <g:elseif test="${entry.costItemSubscription}">
-                        <g:link controller="subscription" action="index" mapping="subfinance" params="${[sub:entry.costItemSubscription.id]}">${entry.costItemSubscription.name}</g:link>
+                    <g:elseif test="${event in PendingChangeConfiguration.COST_ITEM_CHANGES}">
+                        <g:link controller="subscription" action="index" mapping="subfinance" params="${[sub:entry.subscription.id]}">${entry.subscription.name} (${entry.subscription.status.getI10n("value")})</g:link>
                     </g:elseif>
-                    <g:elseif test="${entry.subscription}">
+                    <g:elseif test="${event == PendingChangeConfiguration.NEW_SUBSCRIPTION}">
                         <div class="right aligned wide column">
                             <g:link controller="subscription" action="show" id="${entry.subscription.id}">
                                 ${entry.subscription.name}
@@ -41,28 +41,27 @@
                     </g:elseif>
                 </div><!-- .column -->
                 <div class="ten wide column">
-                    <g:if test="${entry.packageSubscription}">
-                        <g:link controller="subscription" action="entitlementChanges" id="${entry.packageSubscription.id}" params="[tab: 'changes', eventType: entry.msgToken]">${raw(entry.eventString)}</g:link>
+                    <g:if test="${event in PendingChangeConfiguration.TITLE_CHANGES}">
+                        <g:link controller="subscription" action="entitlementChanges" id="${entry.subscription.id}" params="[tab: 'changes', eventType: event]"><g:message code="${event}" args="${[entry.count]}"/></g:link>
                     </g:if>
                     <g:else>
-                        ${raw(entry.eventString)}
+                        <g:message code="${event}" args="${entry.args}"/>
                     </g:else>
                     <g:if test="${editable}">
-                        <g:if test="${entry.subscription}">
+                        <g:if test="${event == PendingChangeConfiguration.NEW_SUBSCRIPTION}">
                             <div class="right aligned wide column">
-                                <g:link class="ui button" controller="subscription" action="copyMyElements" params="${[sourceObjectId: entry.subscription.source, targetObjectId: entry.subscription.target]}">
+                                <g:link class="ui button" controller="subscription" action="copyMyElements" params="${[sourceObjectId: entry.source, targetObjectId: entry.target]}">
                                     <g:message code="myinst.copyMyElements"/>
                                 </g:link>
-
                                 <div class="ui grid">
                                     <div class="right aligned wide column">
                                         <g:link controller="pendingChange" action="accept" id="${entry.changeId}" class="ui icon positive button la-modern-button js-open-confirm-modal"
-                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.changes.accept")}"
-                                                data-confirm-term-how="ok"
-                                                role="button"
-                                                aria-label="${message(code: 'ariaLabel.check.universal')}">
-                                                <i class="checkmark icon"></i>
-                                            <!--${message(code: 'default.button.accept.label')}-->
+                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.changes.accept")}"
+                                            data-confirm-term-how="ok"
+                                            role="button"
+                                            aria-label="${message(code: 'ariaLabel.check.universal')}">
+                                            <i class="checkmark icon"></i>
+                                        <!--${message(code: 'default.button.accept.label')}-->
                                         </g:link>
                                         <g:link controller="pendingChange" action="reject" id="${entry.changeId}" class="ui icon negative button la-modern-button js-open-confirm-modal"
                                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.changes.reject")}"
@@ -76,7 +75,7 @@
                                 </div>
                             </div>
                         </g:if>
-                        <g:elseif test="${entry.costItem}">
+                        <g:elseif test="${event in PendingChangeConfiguration.COST_ITEM_CHANGES}">
                             <div class="right aligned wide column">
                                 <g:link controller="finance" action="acknowledgeChange" id="${entry.changeId}" class="ui icon primary button la-modern-button js-open-confirm-modal"
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.changes.acknowledge")}"
@@ -109,35 +108,35 @@
                 <g:message code="profile.dashboard.changes.event"/>
             </div><!-- .column -->
         </div>
-        <g:each in="${notifications}" var="notification">
+        <g:each in="${notifications}" var="entry">
+            <g:set var="event" value="${entry.event}"/>
             <div class="row">
                 <%--${notification}--%>
                 <div class="six wide column">
-                    <g:if test="${notification.packageSubscription}">
-                        <g:link controller="subscription" action="index" id="${notification.packageSubscription.id}">${notification.packageSubscription.name}</g:link>
+                    <g:if test="${event in PendingChangeConfiguration.TITLE_CHANGES}">
+                        <g:link controller="subscription" action="index" id="${entry.subscription.id}">${entry.subscription.name} (${entry.subscription.status.getI10n("value")})</g:link>
                     </g:if>
-                    <g:elseif test="${notification.costItemSubscription}">
-                        <g:link controller="subscription" action="index" mapping="subfinance" params="${[sub:notification.costItemSubscription.id]}">${notification.costItemSubscription.name}</g:link>
+                    <g:elseif test="${event in PendingChangeConfiguration.COST_ITEM_CHANGES}">
+                        <g:link controller="subscription" action="index" mapping="subfinance" params="${[sub:entry.subscription.id]}">${entry.subscription.name} (${entry.subscription.status.getI10n("value")})</g:link>
                     </g:elseif>
-                    <g:elseif test="${notification.subscription}">
+                    <g:elseif test="${event == PendingChangeConfiguration.NEW_SUBSCRIPTION}">
                         <div class="right aligned wide column">
-                            <g:link controller="subscription" action="show" id="${notification.subscription.id}">
-                                ${notification.subscription.name}
+                            <g:link controller="subscription" action="show" id="${entry.subscription.id}">
+                                ${entry.subscription.name}
                             </g:link>
                         </div>
                     </g:elseif>
                 </div><!-- .column -->
                 <div class="ten wide column">
-                    <g:if test="${notification.packageSubscription}">
-                        <g:link controller="subscription" action="entitlementChanges" id="${notification.packageSubscription.id}" params="[tab: 'acceptedChanges', eventType: notification.msgToken]">${raw(notification.eventString)}</g:link>
+                    <g:if test="${event in PendingChangeConfiguration.TITLE_CHANGES}">
+                        <g:link controller="subscription" action="entitlementChanges" id="${entry.subscription.id}" params="[tab: 'acceptedChanges', eventType: event]"><g:message code="${event}" args="${[entry.count]}"/></g:link>
                     </g:if>
                     <g:else>
-                        ${raw(notification.eventString)}
+                        <g:message code="${event}" args="${entry.args}"/>
                     </g:else>
-
-                    <g:if test="${notification.subscription}">
+                    <g:if test="${event == PendingChangeConfiguration.NEW_SUBSCRIPTION}">
                         <div class="right aligned wide column">
-                            <g:link class="ui button" controller="subscription" action="copyMyElements" params="${[sourceObjectId: notification.subscription.source, targetObjectId: notification.subscription.target]}">
+                            <g:link class="ui button" controller="subscription" action="copyMyElements" params="${[sourceObjectId: entry.source, targetObjectId: entry.target]}">
                                 <g:message code="myinst.copyMyElements"/>
                             </g:link>
                         </div>
