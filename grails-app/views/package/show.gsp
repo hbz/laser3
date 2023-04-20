@@ -231,6 +231,16 @@
                                             <dd>${platformInstanceRecord.shibbolethAuthentication ? RefdataValue.getByValueAndCategory(platformInstanceRecord.shibbolethAuthentication, RDConstants.Y_N).getI10n("value") : message(code: 'default.not.available')}</dd>
                                         </dl>
                                         <dl>
+                                            <dt><g:message code="platform.auth.shibboleth.federations"/></dt>
+                                            <dd>
+                                                <ul>
+                                                    <g:each in="${platformInstanceRecord.federations}" var="fedRec">
+                                                        <li>${fedRec.federation}</li>
+                                                    </g:each>
+                                                </ul>
+                                            </dd>
+                                        </dl>
+                                        <dl>
                                             <dt><g:message code="platform.auth.userPass.supported"/></dt>
                                             <dd>${platformInstanceRecord.passwordAuthentication ? RefdataValue.getByValueAndCategory(platformInstanceRecord.passwordAuthentication, RDConstants.Y_N).getI10n("value") : message(code: 'default.not.available')}</dd>
                                         </dl>

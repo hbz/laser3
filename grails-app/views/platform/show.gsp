@@ -77,8 +77,13 @@
                     </dl>
                     <dl>
                         <dt><g:message code="platform.auth.shibboleth.federations"/></dt>
-                        <%-- we:kb structure missing - TODO! --%>
-                        <dd>${platformInstanceRecord.shibbolethFederations ? RefdataValue.getByValueAndCategory(platformInstanceRecord.shibbolethFederations, RDConstants.SHIBBOLETH_FEDERATION).getI10n("value") : message(code: 'default.not.available')}</dd>
+                        <dd>
+                            <ul>
+                                <g:each in="${platformInstanceRecord.federations}" var="fedRec">
+                                    <li>${fedRec.federation}</li>
+                                </g:each>
+                            </ul>
+                        </dd>
                     </dl>
                     <dl>
                         <dt><g:message code="platform.auth.userPass.supported"/></dt>
