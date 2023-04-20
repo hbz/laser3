@@ -258,7 +258,7 @@
                 <br />
                 <br />
             <div class="field">
-                <div class="three fields contactField" id="contactFields${personInstance.contacts ? personInstance.contacts.size()+1 : 1}">
+                <div class="three fields contactField" id="contactFields${personInstance?.contacts ? personInstance.contacts.size()+1 : 1}">
                     <div class="field wide four">
                         <label></label>
                         <ui:select class="ui dropdown" name="contentType.id"
