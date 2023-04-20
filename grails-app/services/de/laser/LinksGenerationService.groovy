@@ -44,6 +44,10 @@ class LinksGenerationService {
             prevLink.addAll(Links.executeQuery('select li.destinationLicense'+id+' from Links li where li.sourceLicense = :context and li.linkType = :linkType',[context:context,linkType:RDStore.LINKTYPE_FOLLOWS]))
             nextLink.addAll(Links.executeQuery('select li.sourceLicense'+id+' from Links li where li.destinationLicense = :context and li.linkType = :linkType',[context:context,linkType:RDStore.LINKTYPE_FOLLOWS]))
         }
+        else if(context instanceof Org) {
+            prevLink.addAll(Combo.executeQuery('select c.toOrg'+id+' from Combo c where c.fromOrg = :context and c.type = :type',[context:context,type:RDStore.COMBO_TYPE_FOLLOWS]))
+            nextLink.addAll(Combo.executeQuery('select c.fromOrg'+id+' from Combo c where c.toOrg = :context and c.type = :type',[context:context,type:RDStore.COMBO_TYPE_FOLLOWS]))
+        }
         return [prevLink:prevLink,nextLink:nextLink]
     }
 

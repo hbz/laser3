@@ -7,9 +7,13 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-----    18.04.2023  dev     3.1         Moe     Feature      delete PlatformAccessMethod
+4967    20.04.2023  dev     3.1         Andreas Feature     Auflösung des Panels orgSector und Statusanzeige
 
-4932    18.04.2023  dev     3.1         Moe     Feature      zugangskonfiguration anpassen
+4922    20.04.2023  dev     3.1         Andreas Feature     Shibboleth-Federations in LAS:eR angezeigt
+
+----    18.04.2023  dev     3.1         Moe     Feature     delete PlatformAccessMethod
+
+4932    18.04.2023  dev     3.1         Moe     Feature     zugangskonfiguration anpassen
 
 4829    18.04.2023  dev     3.1         David   Bug         Javascript Library Trumbowyg v2.26.0 funktioniert nicht mehr richtig
 
@@ -20,6 +24,8 @@
 4928    12.04.2023  dev     3.1         Moe     Feature     Umfragen: Bemerkungsfelder
 
 4956    11.04.2023  dev     3.1         Andreas Bug         Auslesefehler bei Mailadressen behoben
+
+4918    11.04.2023  dev     3.1         Andreas Feature     Titel-Status ist nicht mehr nullable
 
 4954    05.04.2023  rc-3.0  3.0.6       Moe     Feature     allgemeine Merkmale Lizenzebene
 

@@ -23,6 +23,8 @@
 </ui:controlButtons>
 
 <ui:h1HeaderWithIcon text="${orgInstance.name}" />
+<ui:anualRings object="${orgInstance}" controller="organisation" action="show" navNext="${navNextOrg}"
+               navPrev="${navPrevOrg}"/>
 
 <g:if test="${missing.size() > 0}">
     <div class="ui icon message warning">
@@ -85,6 +87,14 @@
                             </dd>
                         </dl>
                     </g:if>
+                    <g:elseif test="${isProviderOrAgency && orgInstanceRecord}">
+                        <dl>
+                            <dt><g:message code="org.nickname.label" /></dt>
+                            <dd>
+                                ${orgInstanceRecord.nickname}
+                            </dd>
+                        </dl>
+                    </g:elseif>
                     <dl>
                         <dt><g:message code="org.altname.label" /></dt>
                         <dd>
@@ -238,6 +248,7 @@
                 </div><!-- .card -->
             </g:if>
 
+            <%--
             <div class="ui card">
                 <div class="content">
                     <dl>
@@ -262,6 +273,7 @@
                     </g:if>
                 </div>
             </div><!-- .card -->
+            --%>
 
             <g:if test="${links || isGrantedOrgRoleAdminOrOrgEditor}">
                 <div class="ui card">

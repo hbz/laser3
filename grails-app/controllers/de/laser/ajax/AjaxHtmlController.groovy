@@ -11,7 +11,6 @@ import de.laser.WorkflowService
 import de.laser.config.ConfigDefaults
 import de.laser.config.ConfigMapper
 import de.laser.ctrl.SubscriptionControllerService
-import de.laser.interfaces.CalculatedType
 import de.laser.remote.ApiSource
 import de.laser.CacheService
 import de.laser.ContextService
@@ -152,7 +151,7 @@ class AjaxHtmlController {
         result.pendingOffset = params.pendingOffset ? params.int("pendingOffset") : result.offset
         def periodInDays = result.user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)
         Map<String, Object> pendingChangeConfigMap = [contextOrg:result.institution, consortialView:accessService.otherOrgPerm(result.institution, 'ORG_CONSORTIUM_BASIC'), periodInDays:periodInDays, max:result.max, acceptedOffset:result.acceptedOffset, pendingOffset: result.pendingOffset]
-        Map<String, Object> changes = pendingChangeService.getChanges(pendingChangeConfigMap)
+        Map<String, Object> changes = pendingChangeService.getSubscriptionChanges(pendingChangeConfigMap)
         changes.max = result.max
         changes.editable = result.editable
         render template: '/myInstitution/changesWrapper', model: changes
