@@ -708,8 +708,8 @@ class SubscriptionService {
      */
     List getIssueEntitlementsUnderConsideration(Subscription subscription) {
         List<IssueEntitlement> ies = subscription?
-                IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus",
-                        [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION, ieStatus: RDStore.TIPP_STATUS_CURRENT])
+                IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :ieStatus",
+                        [sub: subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])
                 : []
         ies.sort {it.sortname}
         ies
@@ -722,26 +722,13 @@ class SubscriptionService {
      */
     List getIssueEntitlementsUnderNegotiation(Subscription subscription) {
         List<IssueEntitlement> ies = subscription?
-                IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus",
-                        [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_UNDER_NEGOTIATION, ieStatus: RDStore.TIPP_STATUS_CURRENT])
+                IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :ieStatus",
+                        [sub: subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])
                 : []
         ies.sort {it.sortname}
         ies
     }
 
-    /**
-     * Gets issue entitlements for the given subscription which are not fixed yet
-     * @param subscription the subscription whose titles should be returned
-     * @return a sorted list of issue entitlements which are not fixed
-     */
-    List getIssueEntitlementsNotFixed(Subscription subscription) {
-        List<IssueEntitlement> ies = subscription?
-                IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus != :acceptStat and ie.status = :ieStatus",
-                        [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])
-                : []
-        ies.sort {it.sortname}
-        ies
-    }
 
     /**
      * Counts the issue entitlements for the given subscription which are not fixed
@@ -750,8 +737,8 @@ class SubscriptionService {
      */
     Integer countIssueEntitlementsNotFixed(Subscription subscription) {
         Integer iesCount = subscription?
-                IssueEntitlement.executeQuery("select count(ie) from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus != :acceptStat and ie.status = :ieStatus",
-                        [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0]
+                IssueEntitlement.executeQuery("select count(ie) from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :ieStatus",
+                        [sub: subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0]
                 : 0
         iesCount
     }
@@ -763,23 +750,9 @@ class SubscriptionService {
      */
     List<Long> getIssueEntitlementIDsNotFixed(Subscription subscription) {
         List<Long> ies = subscription?
-                IssueEntitlement.executeQuery("select ie.id from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus != :acceptStat and ie.status = :ieStatus order by ie.sortname",
-                        [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])
+                IssueEntitlement.executeQuery("select ie.id from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :ieStatus order by ie.sortname",
+                        [sub: subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])
                 : []
-        ies
-    }
-
-    /**
-     * Gets issue entitlements for the given subscription which are fixed
-     * @param subscription the subscription whose titles should be returned
-     * @return a sorted list of issue entitlements which are fixed
-     */
-    List getIssueEntitlementsFixed(Subscription subscription) {
-        List<IssueEntitlement> ies = subscription?
-                IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus",
-                        [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])
-                : []
-        ies.sort {it.sortname}
         ies
     }
 
@@ -790,32 +763,10 @@ class SubscriptionService {
      */
     Integer countIssueEntitlementsFixed(Subscription subscription) {
         Integer countIes = subscription?
-                IssueEntitlement.executeQuery("select count(ie) from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus",
-                        [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0]
+                IssueEntitlement.executeQuery("select count(ie) from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :ieStatus",
+                        [sub: subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0]
                 : 0
         countIes
-    }
-
-    /**
-     * Gets issue entitlement IDs for the given subscription which are fixed
-     * @param subscription the subscription whose titles should be returned
-     * @return a sorted list of issue entitlement IDs which are fixed
-     */
-    List<Long> getIssueEntitlementIDsFixed(Subscription subscription) {
-        List<Long> ies = subscription?
-                IssueEntitlement.executeQuery("select ie.id from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus",
-                        [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])
-                : []
-        ies
-    }
-
-    @Deprecated
-    List<Long> getTippIDsFixed(Subscription subscription) {
-        List<Long> tipps = subscription?
-                IssueEntitlement.executeQuery("select ie.tipp.id from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus",
-                        [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])
-                : []
-        tipps
     }
 
     /**
@@ -830,6 +781,19 @@ class SubscriptionService {
                 : []
         ies.sort {it.sortname}
         ies
+    }
+
+    /**
+     * Gets the current issue entitlements for the given subscription
+     * @param subscription the subscription whose titles should be returned
+     * @return integer of current issue entitlements
+     */
+    Integer countCurrentIssueEntitlements(Subscription subscription) {
+        Integer countIes = subscription ?
+                IssueEntitlement.executeQuery("select count(ie) from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :ieStatus",
+                        [sub: subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0]
+                : 0
+        countIes
     }
 
     /**
@@ -1127,21 +1091,22 @@ class SubscriptionService {
      * @param gokbId the we:kb ID of the title
      * @param issueEntitlementOverwrite eventually cached imported local data
      * @param withPriceData should price data be added as well?
-     * @return the result of {@link #addEntitlement(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, boolean)}
+     * @return the result of {@link #addEntitlement(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, boolean, java.lang.Object,)}
      */
     boolean addEntitlement(sub, gokbId, issueEntitlementOverwrite, withPriceData){
-        addEntitlement(sub, gokbId, issueEntitlementOverwrite, withPriceData, false)
+        addEntitlement(sub, gokbId, issueEntitlementOverwrite, withPriceData, false, null)
     }
 
     /**
-     * Substitution call for {@link #addEntitlement(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, boolean)}
+     * Substitution call for {@link #addEntitlement(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, boolean, java.lang.Object)}
      * @param sub the subscription to which the title should be added
      * @param gokbId the we:kb ID of the title
      * @param issueEntitlementOverwrite eventually cached imported local data
      * @param withPriceData should price data be added as well?
+     * @param set ie in issueEntitlementGroup
      * @return true if the adding was successful, false otherwise
      */
-    boolean addEntitlement(sub, gokbId, issueEntitlementOverwrite, withPriceData, pickAndChoosePerpetualAccess) throws EntitlementCreationException {
+    boolean addEntitlement(sub, gokbId, issueEntitlementOverwrite, withPriceData, pickAndChoosePerpetualAccess, issueEntitlementGroup) throws EntitlementCreationException {
         TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGokbId(gokbId)
         if (tipp == null) {
             throw new EntitlementCreationException("Unable to tipp ${gokbId}")
@@ -1203,6 +1168,13 @@ class SubscriptionService {
             new_ie.accessStartDate = accessStartDate
             new_ie.accessEndDate = accessEndDate
             if (new_ie.save()) {
+
+                IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(ie: new_ie, ieGroup: issueEntitlementGroup)
+
+                if(!issueEntitlementGroupItem.save()) {
+                    throw new EntitlementCreationException(issueEntitlementGroupItem.errors)
+                }
+
                 Set coverageStatements
                 Set fallback = tipp.coverages
                 if(issueEntitlementOverwrite?.coverages) {
@@ -2551,9 +2523,9 @@ class SubscriptionService {
                                                 boolean allowedToSelect = false
                                                 if (surveyConfig.pickAndChoosePerpetualAccess) {
                                                     boolean participantPerpetualAccessToTitle = surveyService.hasParticipantPerpetualAccessToTitle2(subscriptionIDs, tipp)
-                                                    allowedToSelect = !(participantPerpetualAccessToTitle) && (!ieInNewSub || (ieInNewSub && (ieInNewSub.acceptStatus == RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION || contextOrg.id == surveyConfig.surveyInfo.owner.id)))
+                                                    allowedToSelect = !(participantPerpetualAccessToTitle) && (!ieInNewSub || (ieInNewSub && (contextOrg.id == surveyConfig.surveyInfo.owner.id)))
                                                 } else {
-                                                    allowedToSelect = !ieInNewSub || (ieInNewSub && (ieInNewSub.acceptStatus == RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION || contextOrg.id == surveyConfig.surveyInfo.owner.id))
+                                                    allowedToSelect = !ieInNewSub || (ieInNewSub && (contextOrg.id == surveyConfig.surveyInfo.owner.id))
                                                 }
 
                                                 if(!ieInNewSub && allowedToSelect) {

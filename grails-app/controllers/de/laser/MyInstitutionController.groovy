@@ -2024,12 +2024,12 @@ class MyInstitutionController  {
                /* result.iesFixListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
                         'where p.listPrice is not null and ie.subscription = :sub and ie.status = :ieStatus',
                         [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0 */
-                result.countSelectedIEs = subscriptionService.countIssueEntitlementsNotFixed(result.subscription)
+                result.countSelectedIEs = surveyService.countIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig)
 
                 if (result.surveyConfig.pickAndChoosePerpetualAccess) {
                     result.countCurrentIEs = surveyService.countPerpetualAccessTitlesBySub(result.subscription)
                 } else {
-                    result.countCurrentIEs = (result.previousSubscription ? subscriptionService.countIssueEntitlementsFixed(result.previousSubscription) : 0) + subscriptionService.countIssueEntitlementsFixed(result.subscription)
+                    result.countCurrentIEs = (result.previousSubscription ? subscriptionService.countCurrentIssueEntitlements(result.previousSubscription) : 0) + subscriptionService.countCurrentIssueEntitlements(result.subscription)
                 }
 
 
@@ -2094,7 +2094,6 @@ class MyInstitutionController  {
 
                 List ies = subscriptionService.getIssueEntitlementsUnderConsideration(surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution))
                 ies.each { ie ->
-                    ie.acceptStatus = RDStore.IE_ACCEPT_STATUS_UNDER_NEGOTIATION
                     ie.save()
                 }
 

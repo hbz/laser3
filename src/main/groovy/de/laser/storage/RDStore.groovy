@@ -66,9 +66,6 @@ class RDStore {
     public final static RefdataValue DOC_TYPE_ONIXPL            = getRefdataValue('ONIX-PL License', RDConstants.DOCUMENT_TYPE)
 
     public final static RefdataValue IE_ACCESS_CURRENT                      = getRefdataValue('Current', RDConstants.IE_ACCESS_STATUS)
-    public final static RefdataValue IE_ACCEPT_STATUS_FIXED                 = getRefdataValue('Fixed', RDConstants.IE_ACCEPT_STATUS)
-    public final static RefdataValue IE_ACCEPT_STATUS_UNDER_NEGOTIATION     = getRefdataValue('Under Negotiation', RDConstants.IE_ACCEPT_STATUS)
-    public final static RefdataValue IE_ACCEPT_STATUS_UNDER_CONSIDERATION   = getRefdataValue('Under Consideration', RDConstants.IE_ACCEPT_STATUS)
 
     public final static RefdataValue LANGUAGE_DE            = getRefdataValue('de', RDConstants.LANGUAGE)
     

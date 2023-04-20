@@ -2,6 +2,7 @@ package de.laser.survey
 
 import de.laser.Doc
 import de.laser.DocContext
+import de.laser.IssueEntitlementGroup
 import de.laser.Org
 import de.laser.Subscription
 import de.laser.finance.CostItem
@@ -72,6 +73,8 @@ class SurveyConfig {
 
     boolean pickAndChoosePerpetualAccess = false
 
+    String issueEntitlementGroupName
+
     String transferWorkflow
 
     static hasMany = [
@@ -85,6 +88,8 @@ class SurveyConfig {
     static constraints = {
         subscription        (nullable: true)
         surveyProperty      (nullable: true)
+
+        issueEntitlementGroupName (nullable: true, blank: false)
 
         header(nullable: true, blank: false)
         comment(nullable: true, blank: true)
@@ -133,6 +138,8 @@ class SurveyConfig {
         configOrder column: 'surconf_config_order'
 
         transferWorkflow column: 'surconf_transfer_workflow', type:'text'
+
+        issueEntitlementGroupName column: 'surconf_ie_group_name'
     }
 
     def afterDelete() {

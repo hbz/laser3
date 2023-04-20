@@ -1040,7 +1040,7 @@ class SubscriptionController {
         result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
         result.editable = surveyService.isEditableSurvey(result.institution, result.surveyConfig.surveyInfo)
         if (result.subscription) {
-            if(params.singleTitle) {
+            if(result.editable && params.singleTitle) {
                 IssueEntitlement ie = IssueEntitlement.get(params.singleTitle)
                 TitleInstancePackagePlatform tipp = ie.tipp
 
@@ -1061,13 +1061,15 @@ class SubscriptionController {
                 if(tippExistsInParentSub) {
                     try {
 
-                        RefdataValue acceptStatus = RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION
+                        IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, result.subscription)
 
-                        if(result.contextOrg.id == result.surveyConfig.surveyInfo.owner.id && SurveyOrg.findBySurveyConfigAndOrg(result.surveyConfig, result.subscription.subscriber).finishDate != null){
-                            acceptStatus = RDStore.IE_ACCEPT_STATUS_UNDER_NEGOTIATION
+                        if(!issueEntitlementGroup) {
+                            IssueEntitlementGroup.withTransaction {
+                                issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: result.subscription, name: result.surveyConfig.issueEntitlementGroupName).save()
+                            }
                         }
 
-                        if (subscriptionService.addEntitlement(result.subscription, tipp.gokbId, ie, (ie.priceItems != null), acceptStatus, result.surveyConfig.pickAndChoosePerpetualAccess)) {
+                        if (issueEntitlementGroup && subscriptionService.addEntitlement(result.subscription, tipp.gokbId, ie, (ie.priceItems != null), result.surveyConfig.pickAndChoosePerpetualAccess, issueEntitlementGroup)) {
                             flash.message = message(code: 'subscription.details.addEntitlements.titleAddToSub', args: [tipp.name]) as String
                         }
                     }
@@ -1096,8 +1098,25 @@ class SubscriptionController {
         Map<String, Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
         result.editable = surveyService.isEditableSurvey(result.institution, result.surveyConfig.surveyInfo)
-        if(subscriptionService.deleteEntitlementbyID(result.subscription,params.singleTitle))
-            log.debug("Deleted ie ${params.singleTitle} from sub ${result.subscription.id}")
+
+        if(result.editable){
+
+            IssueEntitlement issueEntitlement = IssueEntitlement.findById(Long.parseLong(params.singleTitle))
+            IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, result.subscription)
+            if(issueEntitlement && issueEntitlementGroup) {
+                IssueEntitlementGroupItem issueEntitlementGroupItem = IssueEntitlementGroupItem.findByIeGroupAndIe(issueEntitlementGroup, issueEntitlement)
+                if(issueEntitlementGroupItem) {
+                    IssueEntitlementGroup.withTransaction {
+                        issueEntitlementGroupItem.delete()
+                    }
+
+                    if (subscriptionService.deleteEntitlementbyID(result.subscription, params.singleTitle))
+                        log.debug("Deleted ie ${params.singleTitle} from sub ${result.subscription.id}")
+                }
+            }
+        }
+
+
         redirect(url: request.getHeader("referer"))
     }
 
@@ -1338,16 +1357,16 @@ class SubscriptionController {
         result.surveyConfig = SurveyConfig.get(params.id)
         result.surveyInfo = result.surveyConfig.surveyInfo
         result.subscription =  result.surveyConfig.subscription
-        result.newSub = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.institution)
-        result.subscriber = result.newSub.getSubscriber()
-        result.ieIDs = subscriptionService.getIssueEntitlementIDsNotFixed(result.newSub)
+        result.subscriberSub = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.institution)
+        result.subscriber = result.subscriberSub.getSubscriber()
+        result.ieIDs = subscriptionService.getIssueEntitlementIDsNotFixed(result.subscriberSub)
         result.ies = result.ieIDs ? IssueEntitlement.findAllByIdInList(result.ieIDs.drop(result.offset).take(result.max)) : []
         result.filename = "renewEntitlements_${escapeService.escapeString(result.subscription.dropdownNamingConvention())}"
         if (params.exportKBart) {
             response.setHeader("Content-disposition", "attachment; filename=${result.filename}.tsv")
             response.contentType = "text/tsv"
             ServletOutputStream out = response.outputStream
-            Map<String, List> tableData = exportService.generateTitleExportKBART([sub: result.newSub, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT, pkgIds: result.newSub.packages?.pkg?.id], IssueEntitlement.class.name)
+            Map<String, List> tableData = exportService.generateTitleExportKBART([sub: result.subscriberSub, ieStatus: RDStore.TIPP_STATUS_CURRENT, pkgIds: result.subscriberSub.packages?.pkg?.id], IssueEntitlement.class.name)
             out.withWriter { Writer writer ->
                 writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
             }
@@ -1357,7 +1376,7 @@ class SubscriptionController {
         else if(params.exportXLS) {
             response.setHeader("Content-disposition", "attachment; filename=${result.filename}.xlsx")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            Map<String,List> export = exportService.generateTitleExportCustom([sub: result.newSub, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT, pkgIds: result.newSub.packages?.pkg?.id],IssueEntitlement.class.name)
+            Map<String,List> export = exportService.generateTitleExportCustom([sub: result.subscriberSub, ieStatus: RDStore.TIPP_STATUS_CURRENT, pkgIds: result.subscriberSub.packages?.pkg?.id],IssueEntitlement.class.name)
             Map sheetData = [:]
             sheetData[g.message(code:'subscription.details.renewEntitlements.label')] = [titleRow:export.titles,columnData:export.rows]
             SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
@@ -1418,7 +1437,7 @@ class SubscriptionController {
             Map queryMap = [:]
             String filename
             if(params.tab == 'allIEs') {
-                queryMap = [sub: ctrlResult.result.subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT, pkgIds: ctrlResult.result.subscription.packages?.pkg?.id]
+                queryMap = [sub: ctrlResult.result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT, pkgIds: ctrlResult.result.subscription.packages?.pkg?.id]
                 if(params.reportType)
                     queryMap.reportType = params.reportType
                 if(params.metricType)
@@ -1431,37 +1450,37 @@ class SubscriptionController {
                 filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.selectableTitles') + '_' + ctrlResult.result.subscription.dropdownNamingConvention())
             }
             if(params.tab == 'selectedIEs') {
-                queryMap = [sub: ctrlResult.result.newSub, ieAcceptStatusNotFixed: true, ieStatus: RDStore.TIPP_STATUS_CURRENT, pkgIds: ctrlResult.result.subscription.packages?.pkg?.id]
-                filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.currentTitlesSelect') + '_' + ctrlResult.result.newSub.dropdownNamingConvention())
+                queryMap = [sub: ctrlResult.result.subscriberSub, ieStatus: RDStore.TIPP_STATUS_CURRENT, pkgIds: ctrlResult.result.subscription.packages?.pkg?.id, titleGroup: ctrlResult.result.titleGroup]
+                filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.currentTitlesSelect') + '_' + ctrlResult.result.subscriberSub.dropdownNamingConvention())
             }
 
             if(params.tab == 'currentIEs' && ctrlResult.result.previousSubscription) {
                 Set<Subscription> subscriptions = []
                 Set<Long> packageIds = []
                 if(ctrlResult.result.surveyConfig.pickAndChoosePerpetualAccess) {
-                    subscriptions = linksGenerationService.getSuccessionChain(ctrlResult.result.newSub, 'sourceSubscription')
+                    subscriptions = linksGenerationService.getSuccessionChain(ctrlResult.result.subscriberSub, 'sourceSubscription')
                     subscriptions.each {
                         packageIds.addAll(it.packages?.pkg?.id)
                     }
-                    subscriptions << ctrlResult.result.newSub
-                    packageIds.addAll(ctrlResult.result.newSub.packages?.pkg?.id)
+                    subscriptions << ctrlResult.result.subscriberSub
+                    packageIds.addAll(ctrlResult.result.subscriberSub.packages?.pkg?.id)
                 }else {
                     subscriptions << ctrlResult.result.previousSubscription
                     packageIds.addAll(ctrlResult.result.previousSubscription.packages?.pkg?.id)
                 }
 
-                queryMap = [subscriptions: subscriptions, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT, pkgIds: packageIds]
+                queryMap = [subscriptions: subscriptions, ieStatus: RDStore.TIPP_STATUS_CURRENT, pkgIds: packageIds]
                 filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.currentTitles') + '_' + ctrlResult.result.previousSubscription.dropdownNamingConvention())
             }
 
             List<Long> toBeSelectedTippIDs = []
             if(params.tab == 'toBeSelectedIEs') {
-                List<Long> allTippIDs = IssueEntitlement.executeQuery("select ie.tipp.id from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus", [sub: ctrlResult.result.subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])
+                List<Long> allTippIDs = IssueEntitlement.executeQuery("select ie.tipp.id from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :ieStatus", [sub: ctrlResult.result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])
 
-                List<Long> selectedTippIDs =  IssueEntitlement.executeQuery("select ie.tipp.id from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus != :acceptStat and ie.status = :ieStatus ", [sub: ctrlResult.result.newSub, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])
+                List<Long> selectedTippIDs =  IssueEntitlement.executeQuery("select ie.tipp.id from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :ieStatus ", [sub: ctrlResult.result.subscriberSub, ieStatus: RDStore.TIPP_STATUS_CURRENT])
                 toBeSelectedTippIDs.addAll(allTippIDs - selectedTippIDs)
                 if(toBeSelectedTippIDs.size()) {
-                    queryMap = [sub: ctrlResult.result.subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT, tippIds: toBeSelectedTippIDs, pkgIds: ctrlResult.result.subscription.packages?.pkg?.id]
+                    queryMap = [sub: ctrlResult.result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT, tippIds: toBeSelectedTippIDs, pkgIds: ctrlResult.result.subscription.packages?.pkg?.id]
                     if(params.reportType)
                         queryMap.reportType = params.reportType
                     if(params.metricType)
@@ -1472,7 +1491,7 @@ class SubscriptionController {
                         queryMap.accessMethods = params.accessMethod
                     queryMap.platform = Platform.get(params.platform)
                 }
-                filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.toBeSelectedIEs') + '_' + ctrlResult.result.newSub.dropdownNamingConvention())
+                filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.toBeSelectedIEs') + '_' + ctrlResult.result.subscriberSub.dropdownNamingConvention())
             }
 
             if (params.exportKBart) {
@@ -1491,12 +1510,12 @@ class SubscriptionController {
                 List monthsInRing = []
                 if(ctrlResult.result.showStatisticByParticipant) {
                     Calendar startTime = GregorianCalendar.getInstance(), endTime = GregorianCalendar.getInstance()
-                    if (ctrlResult.result.newSub.startDate && ctrlResult.result.newSub.endDate) {
-                        startTime.setTime(ctrlResult.result.newSub.startDate)
-                        if (ctrlResult.result.newSub.endDate < new Date())
-                            endTime.setTime(ctrlResult.result.newSub.endDate)
-                    } else if (ctrlResult.result.newSub.startDate) {
-                        startTime.setTime(ctrlResult.result.newSub.startDate)
+                    if (ctrlResult.result.subscriberSub.startDate && ctrlResult.result.subscriberSub.endDate) {
+                        startTime.setTime(ctrlResult.result.subscriberSub.startDate)
+                        if (ctrlResult.result.subscriberSub.endDate < new Date())
+                            endTime.setTime(ctrlResult.result.subscriberSub.endDate)
+                    } else if (ctrlResult.result.subscriberSub.startDate) {
+                        startTime.setTime(ctrlResult.result.subscriberSub.startDate)
                         endTime.setTime(new Date())
                     }
                     while (startTime.before(endTime)) {
@@ -1504,8 +1523,8 @@ class SubscriptionController {
                         startTime.add(Calendar.MONTH, 1)
                     }
                 }
-                List<String> perpetuallyPurchasedTitleURLs = TitleInstancePackagePlatform.executeQuery('select tipp.hostPlatformURL from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (select oo.sub from OrgRole oo where oo.org = :org and oo.roleType in (:roleTypes)) and ie.acceptStatus = :acceptStatus and tipp.status = :tippStatus and ie.status = :tippStatus and ie.perpetualAccessBySub is not null',
-                [org: ctrlResult.result.subscriber, acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED, tippStatus: RDStore.TIPP_STATUS_CURRENT, roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS]])
+                List<String> perpetuallyPurchasedTitleURLs = TitleInstancePackagePlatform.executeQuery('select tipp.hostPlatformURL from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (select oo.sub from OrgRole oo where oo.org = :org and oo.roleType in (:roleTypes)) and tipp.status = :tippStatus and ie.status = :tippStatus and ie.perpetualAccessBySub is not null',
+                [org: ctrlResult.result.subscriber, tippStatus: RDStore.TIPP_STATUS_CURRENT, roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS]])
 
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -1522,8 +1541,8 @@ class SubscriptionController {
                 return
             }
             else if (params.exportXLS) {
-                List<String> perpetuallyPurchasedTitleURLs = TitleInstancePackagePlatform.executeQuery('select tipp.hostPlatformURL from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (select oo.sub from OrgRole oo where oo.org = :org and oo.roleType in (:roleTypes)) and ie.acceptStatus = :acceptStatus and tipp.status = :tippStatus and ie.status = :tippStatus and ie.perpetualAccessBySub is not null',
-                        [org: ctrlResult.result.subscriber, acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED, tippStatus: RDStore.TIPP_STATUS_CURRENT, roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS]])
+                List<String> perpetuallyPurchasedTitleURLs = TitleInstancePackagePlatform.executeQuery('select tipp.hostPlatformURL from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (select oo.sub from OrgRole oo where oo.org = :org and oo.roleType in (:roleTypes)) and tipp.status = :tippStatus and ie.status = :tippStatus and ie.perpetualAccessBySub is not null',
+                        [org: ctrlResult.result.subscriber, tippStatus: RDStore.TIPP_STATUS_CURRENT, roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS]])
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 Map<String, List> export = exportService.generateTitleExportCustom(queryMap, IssueEntitlement.class.name, [], null, perpetuallyPurchasedTitleURLs)

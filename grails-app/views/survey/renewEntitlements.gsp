@@ -143,7 +143,6 @@
                         </td>
                         <td>${counter++}</td>
                         <td class="titleCell">
-                            <ui:ieAcceptStatusIcon status="${ie.acceptStatus}"/>
 
                             <!-- START TEMPLATE -->
                             <laser:render template="/templates/title_short"
