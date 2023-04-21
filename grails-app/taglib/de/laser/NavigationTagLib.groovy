@@ -61,14 +61,6 @@ class NavigationTagLib {
 
     }
 
-    // <ui:crumbAsBadge message="default.editable" class="orange" />
-
-    def crumbAsBadge = { attrs, body ->
-
-        def (lbText, lbMessage) = SwissKnife.getTextAndMessage(attrs)
-        out << '<div class="ui horizontal label ' + attrs.class + '">' + lbMessage + '</div>'
-    }
-
     //<ui:paginate .. />
     // copied from twitter.bootstrap.scaffolding.PaginationTagLib
 

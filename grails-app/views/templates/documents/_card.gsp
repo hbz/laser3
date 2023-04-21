@@ -85,6 +85,12 @@
                             <ui:documentIcon doc="${docctx.owner}" showText="false" showTooltip="true"/>
                         </div>
                         <div class="right aligned eight wide column la-column-left-lessPadding">
+
+                        <g:if test="${! (editable || editable2)}">
+                            <%-- 1 --%>
+                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button la-js-dont-hide-button" target="_blank"><i class="download icon"></i></g:link>
+                        </g:if>
+                        <g:else>
                             <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                 <%-- 1 --%>
                                 <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button la-js-dont-hide-button" target="_blank"><i class="download icon"></i></g:link>
@@ -95,7 +101,8 @@
                                         data-ui="modal"
                                         data-href="#modalEditDocument_${docctx.id}"
                                         aria-label="${message(code: 'ariaLabel.change.universal')}">
-                                    <i class="pencil icon"></i></button>
+                                    <i class="pencil icon"></i>
+                                </button>
                             </g:if>
 
                             <%-- 3 --%>
@@ -146,6 +153,7 @@
                                     <i class="coffe icon"></i><%-- Hidden Fake Button --%>
                                 </div>
                             </g:else>
+                        </g:else>%{-- (editable || editable2) --}%
                         </div>
 
                                 %{-- old --}%

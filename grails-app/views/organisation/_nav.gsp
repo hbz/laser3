@@ -28,8 +28,13 @@
             <ui:securedSubNavItem affiliation="INST_USER" controller="organisation" action="accessPoints" params="${breadcrumbParams}" message="org.nav.accessPoints"/>
         </g:else>
     </g:if>
-    <g:if test="${(inContextOrg || isProviderOrAgency) && workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
-        <ui:subNavItem controller="organisation" action="workflows" counts="${checklistCount}" params="${breadcrumbParams}" message="workflow.plural" />
+    <g:if test="${(inContextOrg || isProviderOrAgency) && accessService.ctxPerm(CustomerTypeService.PERMS_BASIC)}"><!-- TODO: workflows-permissions -->
+        <g:if test="${accessService.ctxPerm(CustomerTypeService.PERMS_PRO)}">
+            <ui:subNavItem controller="organisation" action="workflows" counts="${checklistCount}" params="${breadcrumbParams}" message="workflow.plural"/>
+        </g:if>
+        <g:else>
+            <ui:subNavItem controller="organisation" action="workflows" counts="${checklistCount}" params="${breadcrumbParams}" message="workflow.plural" disabled="disabled"/>
+        </g:else>
     </g:if>
 
     <ui:securedSubNavItem controller="organisation" action="tasks" params="${breadcrumbParams}" counts="${tasksCount}" affiliation="INST_USER" orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" message="menu.institutions.tasks"/>
