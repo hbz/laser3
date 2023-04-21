@@ -1,4 +1,4 @@
-<%@ page import="de.laser.config.ConfigMapper; de.laser.CustomerTypeService; de.laser.helper.Profiler; de.laser.utils.AppUtils; grails.util.Environment; de.laser.system.SystemActivityProfiler; de.laser.FormService; de.laser.system.SystemSetting; de.laser.UserSetting; de.laser.RefdataValue; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.Org;de.laser.auth.User;de.laser.system.SystemMessage; org.grails.orm.hibernate.cfg.GrailsHibernateUtil" %>
+<%@ page import="de.laser.auth.UserOrgRole; de.laser.config.ConfigMapper; de.laser.CustomerTypeService; de.laser.helper.Profiler; de.laser.utils.AppUtils; grails.util.Environment; de.laser.system.SystemActivityProfiler; de.laser.FormService; de.laser.system.SystemSetting; de.laser.UserSetting; de.laser.RefdataValue; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.Org;de.laser.auth.User;de.laser.system.SystemMessage; org.grails.orm.hibernate.cfg.GrailsHibernateUtil" %>
 <!doctype html>
 
 <laser:serviceInjection />
@@ -46,11 +46,12 @@
                 <sec:ifAnyGranted roles="ROLE_USER">
 
                     <g:if test="${contextOrg}">
-                        <div class="ui dropdown item" role="menuitem" aria-haspopup="true">
-                            <a class="title">
-                                ${message(code:'menu.public')} <i class="dropdown icon"></i>
-                            </a>
-                            <div class="menu" role="menu">
+                            %{-- menu: public --}%
+                            <div class="ui dropdown item" role="menuitem" aria-haspopup="true">
+                                <a class="title">
+                                    ${message(code:'menu.public')} <i class="dropdown icon"></i>
+                                </a>
+                                <div class="menu" role="menu">
                                     <ui:link generateElementId="true" class="item" role="menuitem" controller="package" action="index">${message(code:'menu.public.all_pkg')}</ui:link>
                                     <ui:link generateElementId="true" class="item" role="menuitem" controller="title" action="index">${message(code:'menu.public.all_titles')}</ui:link>
 
@@ -71,9 +72,10 @@
                                     <div class="divider"></div>
                                     <ui:link generateElementId="true" target="_blank" onclick="JSPC.app.workaround_targetBlank(event)" class="item" role="menuitem" controller="gasco">${message(code:'menu.public.gasco_monitor')}</ui:link>
                                     <a id="wekb" href="${message(code:'url.wekb.' + currentServer)}" target="_blank" onclick="JSPC.app.workaround_targetBlank(event)" class="item" role="menuitem"><i class="ui icon la-gokb"></i> we:kb</a>
+                                </div>
                             </div>
-                        </div>
 
+                        %{-- menu: my objects --}%
                         <div class="ui dropdown item" role="menuitem" aria-haspopup="true">
                             <a class="title">
                                 ${message(code:'menu.my')} <i class="dropdown icon"></i>
@@ -104,14 +106,18 @@
                                     <div class="divider"></div>
                                     <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentSurveys" message="menu.my.surveys" />
                                 </g:if>
+                                <g:elseif test="${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
+                                    <div class="divider"></div>
+                                    <ui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="${CustomerTypeService.ORG_CONSORTIUM_PRO}" affiliation="INST_USER" controller="survey" action="workflowsSurveysConsortia" message="menu.my.surveys" />
+                                </g:elseif>
 
                                 <div class="divider"></div>
                                 <ui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="${CustomerTypeService.PERMS_PRO}" affiliation="INST_USER" controller="myInstitution" action="currentWorkflows" message="menu.my.workflows" />
 
-                                <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
-                                    <div class="divider"></div>
-                                    <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="survey" action="workflowsSurveysConsortia" message="menu.my.surveys" />
-                                </g:if>
+%{--                                <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)}">--}%
+%{--                                    <div class="divider"></div>--}%
+%{--                                    <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="survey" action="workflowsSurveysConsortia" message="menu.my.surveys" />--}%
+%{--                                </g:if>--}%
 
                                 <div class="divider"></div>
                                 <ui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" affiliation="INST_USER" controller="compare" action="compareSubscriptions" message="menu.my.comp_sub" />
@@ -119,6 +125,7 @@
                             </div>
                         </div>
 
+                        %{-- menu: my institution --}%
                         <div class="ui dropdown item" role="menuitem" aria-haspopup="true">
                             <a class="title">
                                 ${message(code:'menu.institutions.myInst')} <i class="dropdown icon"></i>
@@ -146,18 +153,8 @@
                         </div>
                     </g:if>
 
-%{--                    <sec:ifAnyGranted roles="ROLE_ADMIN">--}%
-%{--                        <div class="ui dropdown item" role="menuitem" aria-haspopup="true">--}%
-%{--                            <a class="title">--}%
-%{--                                ${message(code:'menu.datamanager')} <i class="dropdown icon"></i>--}%
-%{--                            </a>--}%
-%{--                            <div class="menu" role="menu">--}%
-%{--                                    <ui:link generateElementId="true" class="item" role="menuitem" controller="dataManager" action="index">${message(code:'default.dashboard')}</ui:link>--}%
-%{--                            </div>--}%
-%{--                        </div>--}%
-%{--                    </sec:ifAnyGranted>--}%
-
                     <sec:ifAnyGranted roles="ROLE_ADMIN">
+                        %{-- menu: admin --}%
                         <div class="ui dropdown item" role="menuitem" aria-haspopup="true">
                             <a class="title">
                                 ${message(code:'menu.admin')} <i class="dropdown icon"></i>
@@ -228,6 +225,7 @@
                     </sec:ifAnyGranted>
 
                     <sec:ifAnyGranted roles="ROLE_YODA">
+                        %{-- menu: yoda --}%
                         <div class="ui dropdown item" role="menuitem" aria-haspopup="true">
                             <a class="title">
                                 ${message(code:'menu.yoda')} <i class="dropdown icon"></i>
@@ -405,6 +403,7 @@
                         </div>
                     </sec:ifAnyGranted>
 
+                    %{-- menu: global search --}%
                     <div class="right menu la-right-menuPart">
                         <div role="search" id="mainSearch" class="ui category search spotlight">
                             <div class="ui icon input">
@@ -434,7 +433,7 @@
                                     <g:set var="usaf" value="${contextUser.getAffiliationOrgs()}" />
                                     <g:if test="${usaf && usaf.size() > 0}">
                                         <g:each in="${usaf}" var="orgRaw">
-                                            <g:set var="org" value="${(Org) GrailsHibernateUtil.unwrapIfProxy(orgRaw)}"></g:set>
+                                            <g:set var="org" value="${(Org) GrailsHibernateUtil.unwrapIfProxy(orgRaw)}" />
                                             <g:if test="${org.id == contextOrg?.id}">
                                                 <ui:link generateElementId="true" class="item active" role="menuitem" controller="myInstitution" action="switchContext" params="${[oid:"${org.class.name}:${org.id}"]}">${org.name}</ui:link>
                                             </g:if>
@@ -477,11 +476,18 @@
 %{--    </nav>--}%
 
     <sec:ifAnyGranted roles="ROLE_USER">
+        %{-- menu: context menu --}%
         <g:set var="visibilityContextOrgMenu" value="la-show-context-orgMenu" />
         <nav class="ui fixed menu la-contextBar" aria-label="${message(code:'wcag.label.modeNavigation')}" >
             <div class="ui container">
                 <button class="ui button big la-menue-button la-modern-button" style="display:none"><i class="bars icon"></i></button>
-                <div class="ui sub header item la-context-org">${contextOrg?.name}</div>
+                <div class="ui sub header item la-context-org">
+                    ${contextOrg?.name}
+                    <g:if test="${contextOrg && contextUser && currentServer == AppUtils.LOCAL}">
+                        - ${contextOrg.getCustomerTypeI10n()}
+                        - ${UserOrgRole.findByUserAndOrg(contextUser as User, contextOrg as Org).formalRole.getI10n('authority')}
+                    </g:if>
+                </div>
 
                 <div class="right menu la-advanced-view">
                     <div class="item">

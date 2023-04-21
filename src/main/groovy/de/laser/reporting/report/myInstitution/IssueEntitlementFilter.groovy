@@ -44,8 +44,8 @@ class IssueEntitlementFilter extends BaseFilter {
 
                 queryParams.issueEntitlementIdList = IssueEntitlement.executeQuery(
                         'select distinct(ie.id) from IssueEntitlement ie join ie.subscription sub where sub.id in (:subscriptionIdList) ' +
-                                'and ie.status in (:ieStatus) and ie.acceptStatus = :ieAcceptStatus',
-                        [subscriptionIdList: subIdList, ieAcceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: [
+                                'and ie.status in (:ieStatus)',
+                        [subscriptionIdList: subIdList, ieStatus: [
                                 RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_EXPECTED, RDStore.TIPP_STATUS_RETIRED ]
                         ]
                 )

@@ -325,10 +325,10 @@
                                    value="${surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)}"/>
                             <div class="ui circular label">
                             <g:if test="${surveyConfig.pickAndChoosePerpetualAccess}">
-                                ${surveyService.countPerpetualAccessTitlesBySub(subParticipant)} / ${subscriptionService.countIssueEntitlementsNotFixed(subParticipant)}
+                                ${surveyService.countPerpetualAccessTitlesBySub(subParticipant)} / ${surveyService.countIssueEntitlementsByIEGroup(subParticipant, surveyConfig)}
                             </g:if>
                             <g:else>
-                                ${subscriptionService.countIssueEntitlementsFixed(subParticipant)} / ${subscriptionService.countIssueEntitlementsNotFixed(subParticipant)}
+                                ${subscriptionService.countCurrentIssueEntitlements(subParticipant)} / ${surveyService.countIssueEntitlementsByIEGroup(subParticipant, surveyConfig)}
                             </g:else>
                             </div>
 
@@ -579,7 +579,12 @@
                             <g:set var="subParticipant"
                                    value="${surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)}"/>
                             <div class="ui circular label">
-                                ${subscriptionService.countIssueEntitlementsFixed(subParticipant)} / ${subscriptionService.countIssueEntitlementsNotFixed(subParticipant)}
+                                <g:if test="${surveyConfig.pickAndChoosePerpetualAccess}">
+                                    ${surveyService.countPerpetualAccessTitlesBySub(subParticipant)} / ${surveyService.countIssueEntitlementsByIEGroup(subParticipant, surveyConfig)}
+                                </g:if>
+                                <g:else>
+                                    ${subscriptionService.countCurrentIssueEntitlements(subParticipant)} / ${surveyService.countIssueEntitlementsByIEGroup(subParticipant, surveyConfig)}
+                                </g:else>
                             </div>
 
                         </td>

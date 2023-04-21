@@ -7,7 +7,7 @@
         <laser:render template="/user/global/actions" />
     </ui:controlButtons>
 
-    <ui:h1HeaderWithIcon message="user.delete.label" />
+    <ui:h1HeaderWithIcon message="user.delete.label" type="user" />
     <h2 class="ui header la-noMargin-top">${user.username} - ${user.displayName ?: 'Nutzer unbekannt'}</h2>
 
     <g:if test="${delResult}">

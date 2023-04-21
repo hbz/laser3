@@ -397,18 +397,16 @@ class WorkflowService {
     }
 
     boolean hasUserPerm_read() {
-        _innerPermissionCheck('INST_USER')
-    }
-    boolean hasUserPerm_edit() {
-        _innerPermissionCheck('INST_EDITOR')
+        Org ctxOrg = contextService.getOrg()
+        if (ctxOrg.isCustomerType_Pro() && contextService.getUser().hasOrgAffiliation_or_ROLEADMIN(ctxOrg, 'INST_USER')) {
+            return true
+        }
+        false
     }
 
-    private boolean _innerPermissionCheck(String instUserRole) {
-//        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
-//            return true
-//        }
+    boolean hasUserPerm_edit() {
         Org ctxOrg = contextService.getOrg()
-        if (instUserRole && ctxOrg.isCustomerType_Pro() && contextService.getUser().hasOrgAffiliation_or_ROLEADMIN(ctxOrg, instUserRole)) {
+        if (ctxOrg.isCustomerType_Pro() && contextService.getUser().hasOrgAffiliation_or_ROLEADMIN(ctxOrg, 'INST_EDITOR')) {
             return true
         }
         false

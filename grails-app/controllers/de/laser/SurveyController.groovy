@@ -711,6 +711,12 @@ class SurveyController {
             }
         }
 
+        if(params.issueEntitlementGroupNew == ''){
+            flash.error = g.message(code: "createSurvey.create.fail.issueEntitlementGroupNew")
+            redirect(action: 'addSubtoIssueEntitlementsSurvey', params: params)
+            return
+        }
+
         SurveyInfo surveyInfo
         SurveyInfo.withTransaction { TransactionStatus ts ->
             surveyInfo = new SurveyInfo(
@@ -738,7 +744,8 @@ class SurveyController {
                         surveyInfo: surveyInfo,
                         subSurveyUseForTransfer: false,
                         pickAndChoose: true,
-                        pickAndChoosePerpetualAccess: params.pickAndChoosePerpetualAccess ? true : false
+                        pickAndChoosePerpetualAccess: params.pickAndChoosePerpetualAccess ? true : false,
+                        issueEntitlementGroupName: params.issueEntitlementGroupNew
                 )
                 surveyConfig.save()
                 surveyService.addSubMembers(surveyConfig)
@@ -899,7 +906,6 @@ class SurveyController {
         qry_params.startDate = date_filter
         qry_params.endDate = date_filter*/
 
-        params.ieAcceptStatusFixed = true
         def query = filterService.getIssueEntitlementQuery(params, result.surveyConfig.subscription)
         result.filterSet = query.filterSet
 
@@ -1750,19 +1756,6 @@ class SurveyController {
                 if(openAndSendMail || open) {
                     SurveyOrg.withTransaction { TransactionStatus ts ->
                         SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(org, result.surveyConfig)
-                        if (result.surveyConfig.pickAndChoose) {
-
-                            result.subscription = result.surveyConfig.subscription
-
-                            List<IssueEntitlement> ies = subscriptionService.getIssueEntitlementsUnderNegotiation(result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(org))
-
-                            ies.each { ie ->
-                                ie.acceptStatus = RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION
-                                ie.save()
-                            }
-
-
-                        }
 
                         surveyOrg.finishDate = null
                         surveyOrg.save()
@@ -1805,72 +1798,6 @@ class SurveyController {
     }
 
     /**
-     * Call to list the titles attached to the given survey. The list may be exported as KBART or Excel worksheet
-     * @return a list view of titles, either as HTML view or as KBART / Excel worksheet
-     */
-    @DebugInfo(ctxInstUserCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
-    @Secured(closure = {
-        ctx.accessService.ctxInstUserCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
-    })
-     def renewEntitlements() {
-        Map<String, Object> result = [:]
-        result.institution = contextService.getOrg()
-        result.user = contextService.getUser()
-        SwissKnife.setPaginationParams(result,params,result.user)
-        result.participant = params.participant ? Org.get(params.participant) : null
-
-        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
-        result.surveyInfo = result.surveyConfig.surveyInfo
-
-        result.editable = result.surveyInfo.isEditable() ?: false
-
-        if (!result.editable) {
-            flash.error = g.message(code: "default.notAutorized.message")
-            redirect(url: request.getHeader('referer'))
-        }
-
-        result.surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.participant, result.surveyConfig)
-
-        result.subscriptionParticipant = result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.participant)
-
-        List<Long> ies = subscriptionService.getIssueEntitlementIDsNotFixed(result.subscriptionParticipant)
-        result.ies = ies ? IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.tipp tipp where ie.id in (:ies) order by tipp.sortname asc', [ies: ies]) : []
-
-        String filename = "renewEntitlements_${escapeService.escapeString(result.surveyConfig.subscription.dropdownNamingConvention(result.participant))}"
-
-        if (params.exportKBart) {
-            response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
-            response.contentType = "text/tsv"
-            ServletOutputStream out = response.outputStream
-            Map<String, List> tableData = exportService.generateTitleExportKBART([sub: result.subscriptionParticipant, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT, pkgIds: result.subscriptionParticipant.packages?.pkg?.id] ,IssueEntitlement.class.name)
-            out.withWriter { writer ->
-                writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
-            }
-            out.flush()
-            out.close()
-        }else if(params.exportXLSX) {
-            response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
-            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            Map<String,List> export = exportService.generateTitleExportCustom([sub: result.subscriptionParticipant, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT, pkgIds: result.subscriptionParticipant.packages?.pkg?.id] ,IssueEntitlement.class.name)
-            Map sheetData = [:]
-            sheetData[g.message(code:'subscription.details.renewEntitlements.label')] = [titleRow:export.titles,columnData:export.rows]
-            SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
-            workbook.write(response.outputStream)
-            response.outputStream.flush()
-            response.outputStream.close()
-            workbook.dispose()
-            return
-        }
-        else {
-            withFormat {
-                html {
-                    result
-                }
-            }
-        }
-    }
-
-    /**
      * Reopens the given survey for the given participant
      * @return a redirect to the referer
      */
@@ -1896,17 +1823,6 @@ class SurveyController {
 
         SurveyOrg.withTransaction { TransactionStatus ts ->
             SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.participant, result.surveyConfig)
-
-            if (surveyOrg && result.surveyConfig.pickAndChoose) {
-
-                List<IssueEntitlement> ies = subscriptionService.getIssueEntitlementsUnderNegotiation(result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.participant))
-
-                ies.each { ie ->
-                    ie.acceptStatus = RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION
-                    ie.save()
-                }
-
-            }
 
             surveyOrg.finishDate = null
             surveyOrg.save()
@@ -1943,104 +1859,11 @@ class SurveyController {
         SurveyOrg.withTransaction { TransactionStatus ts ->
             SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.participant, result.surveyConfig)
 
-            if (surveyOrg && result.surveyConfig.pickAndChoose) {
-
-                List<IssueEntitlement> ies = subscriptionService.getIssueEntitlementsUnderConsideration(result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.participant))
-
-                ies.each { ie ->
-                    ie.acceptStatus = RDStore.IE_ACCEPT_STATUS_UNDER_NEGOTIATION
-                    ie.save()
-                }
-
-            }
-
             surveyOrg.finishDate = new Date()
             surveyOrg.save()
         }
 
         redirect(url: request.getHeader('referer'))
-
-    }
-
-    /**
-     * Finalises the title selection for the given participant
-     * @return redirects to the survey titles view
-     */
-    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
-    @Secured(closure = {
-        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
-    })
-     Map<String,Object> completeIssueEntitlementsSurveyforParticipant() {
-        Map<String, Object> result = [:]
-        result.institution = contextService.getOrg()
-        result.user = contextService.getUser()
-        result.participant = params.participant ? Org.get(params.participant) : null
-
-        result.surveyConfig = SurveyConfig.get(params.id)
-        result.surveyInfo = result.surveyConfig.surveyInfo
-
-        result.editable = result.surveyInfo.isEditable() ?: false
-
-        if (!result.editable) {
-            flash.error = g.message(code: "default.notAutorized.message")
-            redirect(url: request.getHeader('referer'))
-        }
-
-        Subscription participantSub = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.participant)
-
-
-        if(params.process == "preliminary" && params.list('selectedIEs')) {
-            if(participantSub.packages.size() == 0){
-                flash.error = message(code: 'renewEntitlementsWithSurvey.noPackagesYetAdded')
-            }else {
-                IssueEntitlementGroup issueEntitlementGroup
-                if (params.issueEntitlementGroupNew) {
-
-                    IssueEntitlementGroup.withTransaction {
-                        issueEntitlementGroup = IssueEntitlementGroup.findBySubAndName(participantSub, params.issueEntitlementGroupNew) ?: new IssueEntitlementGroup(sub: participantSub, name: params.issueEntitlementGroupNew).save()
-                    }
-                }
-
-
-                if (params.issueEntitlementGroupID && params.issueEntitlementGroupID != '') {
-                    issueEntitlementGroup = IssueEntitlementGroup.findById(Long.parseLong(params.issueEntitlementGroupID))
-                }
-
-                params.list('selectedIEs').each { String ieID ->
-                    IssueEntitlement.withTransaction { TransactionStatus ts ->
-                        IssueEntitlement ie = IssueEntitlement.findById(Long.parseLong(ieID))
-                        ie.acceptStatus = RDStore.IE_ACCEPT_STATUS_FIXED
-                        ie.save()
-
-                        if (issueEntitlementGroup && !IssueEntitlementGroupItem.findByIe(ie)) {
-                            //println(issueEntitlementGroup)
-                            IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
-                                    ie: ie,
-                                    ieGroup: issueEntitlementGroup)
-
-                            if (!issueEntitlementGroupItem.save()) {
-                                log.error("Problem saving IssueEntitlementGroupItem by Survey ${issueEntitlementGroupItem.errors}")
-                            }
-                        }
-                    }
-                }
-
-                flash.message = message(code: 'completeIssueEntitlementsSurvey.forParticipant.accept', args: [params.list('selectedIEs').size()]) as String
-            }
-        }
-
-        if(params.process == "reject" && params.list('selectedIEs')) {
-            params.list('selectedIEs').each { String ieID ->
-                IssueEntitlement.withTransaction { TransactionStatus ts ->
-                    IssueEntitlement ie = IssueEntitlement.findById(Long.parseLong(ieID))
-                    ie.delete()
-
-                }
-            }
-            flash.message = message(code: 'completeIssueEntitlementsSurvey.forParticipant.reject', args: [params.list('selectedIEs').size()]) as String
-        }
-
-        redirect(action: 'renewEntitlements', id: result.surveyInfo.id, params:[surveyConfigID: result.surveyConfig.id, participant: result.participant.id])
 
     }
 
@@ -2116,26 +1939,26 @@ class SurveyController {
                     /*result.previousIesListPriceSum = 0
                    if(result.previousSubscription){
                        result.previousIesListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
-                               'where p.listPrice is not null and ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus',
-                       [sub: result.previousSubscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0
+                               'where p.listPrice is not null and ie.subscription = :sub and ie.status = :ieStatus',
+                       [sub: result.previousSubscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0
 
                    }*/
 
                     result.iesListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
-                            'where p.listPrice is not null and ie.subscription = :sub and ie.acceptStatus != :acceptStat and ie.status = :ieStatus',
-                            [sub: result.subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0
+                            'where p.listPrice is not null and ie.subscription = :sub and ie.status = :ieStatus',
+                            [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0
 
 
                     /* result.iesFixListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
-                             'where p.listPrice is not null and ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus',
-                             [sub: result.subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0 */
+                             'where p.listPrice is not null and ie.subscription = :sub and ie.status = :ieStatus',
+                             [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0 */
 
-                    result.countSelectedIEs = subscriptionService.countIssueEntitlementsNotFixed(result.subscription)
+                    result.countSelectedIEs = surveyService.countIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig)
 
                     if (result.surveyConfig.pickAndChoosePerpetualAccess) {
                         result.countCurrentIEs = surveyService.countPerpetualAccessTitlesBySub(result.subscription)
                     } else {
-                        result.countCurrentIEs = (result.previousSubscription ? subscriptionService.countIssueEntitlementsFixed(result.previousSubscription) : 0) + subscriptionService.countIssueEntitlementsFixed(result.subscription)
+                        result.countCurrentIEs = (result.previousSubscription ? subscriptionService.countCurrentIssueEntitlements(result.previousSubscription) : 0) + subscriptionService.countCurrentIssueEntitlements(result.subscription)
                     }
 
                     result.subscriber = result.participant
@@ -2219,25 +2042,25 @@ class SurveyController {
                     /*result.previousIesListPriceSum = 0
                    if(result.previousSubscription){
                        result.previousIesListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
-                               'where p.listPrice is not null and ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus',
-                       [sub: result.previousSubscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0
+                               'where p.listPrice is not null and ie.subscription = :sub and ie.status = :ieStatus',
+                       [sub: result.previousSubscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0
 
                    }*/
 
                     result.iesListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
-                            'where p.listPrice is not null and ie.subscription = :sub and ie.acceptStatus != :acceptStat and ie.status = :ieStatus',
-                            [sub: result.subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0
+                            'where p.listPrice is not null and ie.subscription = :sub and ie.status = :ieStatus',
+                            [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0
 
 
                     /* result.iesFixListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
-                             'where p.listPrice is not null and ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus',
-                             [sub: result.subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0 */
+                             'where p.listPrice is not null and ie.subscription = :sub and ie.status = :ieStatus',
+                             [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0 */
 
-                    result.countSelectedIEs = subscriptionService.countIssueEntitlementsNotFixed(result.subscription)
+                    result.countSelectedIEs = surveyService.countIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig)
                     if (result.surveyConfig.pickAndChoosePerpetualAccess) {
                         result.countCurrentIEs = surveyService.countPerpetualAccessTitlesBySub(result.subscription)
                     } else {
-                        result.countCurrentIEs = (result.previousSubscription ? subscriptionService.countIssueEntitlementsFixed(result.previousSubscription) : 0) + subscriptionService.countIssueEntitlementsFixed(result.subscription)
+                        result.countCurrentIEs = (result.previousSubscription ? subscriptionService.countCurrentIssueEntitlements(result.previousSubscription) : 0) + subscriptionService.countCurrentIssueEntitlements(result.subscription)
                     }
                     result.subscriber = result.participant
 

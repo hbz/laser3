@@ -1,6 +1,7 @@
 package de.laser
 
 import de.laser.storage.RDStore
+import de.laser.survey.SurveyConfig
 
 /**
  * Issue entitlements may be organised in groups; this is the grouping unit where issue entitlements may be sorted in.
@@ -19,6 +20,8 @@ class IssueEntitlementGroup {
     String name
     String description
 
+    SurveyConfig surveyConfig
+
     static belongsTo = [sub: Subscription]
 
     static hasMany = [items: IssueEntitlementGroupItem]
@@ -27,6 +30,7 @@ class IssueEntitlementGroup {
         name        (blank: false, unique: 'sub')
         description (nullable: true, blank: true)
         sub         (unique: 'name')
+        surveyConfig (nullable: true, blank: false)
     }
 
     static mapping = {
@@ -37,6 +41,7 @@ class IssueEntitlementGroup {
         name        column: 'ig_name'
         description column: 'ig_description', type: 'text'
         sub         column: 'ig_sub_fk'
+        surveyConfig column: 'ig_survey_config_fk'
     }
 
     int countCurrentTitles(){

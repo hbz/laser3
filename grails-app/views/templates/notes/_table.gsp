@@ -33,7 +33,7 @@
                             <span class="sc_darkgrey"><g:formatDate format="${message(code:'default.date.format.notime')}" date="${docctx.owner.dateCreated}"/></span>
                         </g:if>
                     </td>
-                    <td class="x">
+                    <td class="center aligned">
                         <g:if test="${docctx.sharedFrom}">
                             <span  class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.on')}">
                                 <i class="grey alternate share icon"></i>
@@ -60,8 +60,8 @@
                         </g:if>
 
                         <g:if test="${! docctx.sharedFrom}">
-                            <a onclick="JSPC.app.editNote(${docctx.owner.id});" class="ui icon button blue la-modern-button"
-                               role="button"
+                        <g:if test="${userService.checkAffiliationAndCtxOrg(contextService.getUser(), contextService.getOrg(), 'INST_EDITOR')}">
+                            <a onclick="JSPC.app.editNote(${docctx.owner.id});" class="ui icon button blue la-modern-button" role="button"
                                aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                 <i aria-hidden="true" class="write icon"></i>
                             </a>
@@ -74,6 +74,13 @@
                                 <i class="trash alternate outline icon"></i>
                             </g:link>
                         </g:if>
+                        <g:else>
+                            <a onclick="JSPC.app.readNote(${docctx.owner.id});" class="ui icon button blue la-modern-button" role="button"
+                               aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                                <i aria-hidden="true" class="search icon"></i>
+                            </a>
+                        </g:else>
+                        </g:if>
                     </td>
                 </tr>
         </g:each>
@@ -82,7 +89,6 @@
 
 <laser:script file="${this.getGroovyPageFileName()}">
     JSPC.app.editNote = function (id) {
-
         $.ajax({
             url: '<g:createLink controller="ajaxHtml" action="editNote"/>?id='+id,
             success: function(result){
@@ -99,4 +105,18 @@
             }
         });
     }
+    JSPC.app.readNote = function (id) {
+            $.ajax({
+                url: '<g:createLink controller="ajaxHtml" action="readNote"/>?id='+id,
+                success: function(result){
+                    $('#dynamicModalContainer').empty();
+                    $('#modalReadNote').remove();
+
+                    $('#dynamicModalContainer').html(result);
+                    $('#dynamicModalContainer .ui.modal').modal({
+                        autofocus: false
+                    }).modal('show');
+                }
+            });
+        }
 </laser:script>

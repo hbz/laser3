@@ -52,12 +52,15 @@ class IconTagLib {
             case 'yoda':
                 icon = 'la-object tools'
                 break
+            case 'user':
+                icon = 'user bordered inverted grey la-object-extended'
+                break
             case 'affiliation':
                 int level = 0
                 UserOrgRole.findAllByUserAndOrg(contextService.getUser(), contextService.getOrg()).each{
-                    if (level < 1 && it.formalRole.authority == Role.INST_USER)   { level = 1; icon = 'user bordered inverted teal la-object-extended' }
-                    if (level < 2 && it.formalRole.authority == Role.INST_EDITOR) { level = 2; icon = 'user edit bordered inverted teal la-object-extended' }
-                    if (level < 3 && it.formalRole.authority == Role.INST_ADM)    { level = 3; icon = 'user cog bordered inverted teal la-object-extended' }
+                    if (level < 1 && it.formalRole.authority == Role.INST_USER)   { level = 1; icon = 'user bordered inverted grey la-object-extended' }
+                    if (level < 2 && it.formalRole.authority == Role.INST_EDITOR) { level = 2; icon = 'user edit bordered inverted grey la-object-extended' }
+                    if (level < 3 && it.formalRole.authority == Role.INST_ADM)    { level = 3; icon = 'user cog bordered inverted grey la-object-extended' }
                 }
                 break
         }
@@ -176,53 +179,6 @@ class IconTagLib {
         out << '<i aria-hidden="true" class="icon ' + icon + ' la-list-icon"></i>'
         if (hideSurroundingMarkup) {
             out << '</div>'
-        }
-    }
-
-    def ieAcceptStatusIcon = { attrs, body ->
-        boolean hideTooltip = attrs.hideTooltip ? false : true
-
-        switch (attrs.status) {
-
-            case 'Fixed':
-                out << '<div class="ui label la-iconStrip">'
-                out << '<span class="la-inline-flexbox la-popup-tooltip la-delay" '
-                if (hideTooltip) {
-                    out << 'data-content="' + message(code: 'issueEntitlement.acceptStatus.fixed') + '" data-position="left center" data-variation="tiny">'
-                }
-                out << '<i class="icon certificate green"></i>'
-                out << '</span>'
-                out << '<i class="icon hourglass end disabled "></i>'
-                out << '<i class="icon hourglass start disabled"></i>'
-                out << '</div>'
-                break
-            case 'Under Negotiation':
-                out << '<div class="ui label la-iconStrip">'
-                out << '<i class="icon certificate disabled"></i>'
-                out << '<span class="la-inline-flexbox la-popup-tooltip la-delay" '
-                if (hideTooltip) {
-                    out << 'data-content="' + message(code: 'issueEntitlement.acceptStatus.underNegotiation') + '" data-position="left center" data-variation="tiny">'
-                }
-                out << '<i class="icon hourglass end yellow "></i>'
-                out << '</span>'
-                out << '<i class="icon hourglass start disabled"></i>'
-                out << '</div>'
-                break
-            case 'Under Consideration':
-                out << '<div class="ui label la-iconStrip">'
-                out << '<i class="icon certificate disabled"></i>'
-                out << '<i class="icon hourglass end disabled"></i>'
-                out << '<span class="la-inline-flexbox la-popup-tooltip la-delay" '
-                if (hideTooltip) {
-                    out << 'data-content="' + message(code: 'issueEntitlement.acceptStatus.underConsideration') + '" data-position="left center" data-variation="tiny">'
-                }
-                out << '<i class="icon hourglass start red"></i>'
-                out << '</span>'
-                out << '</div>'
-                break
-            default:
-                out << ''
-                break
         }
     }
 

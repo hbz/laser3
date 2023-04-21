@@ -640,7 +640,7 @@ class PendingChangeService extends AbstractLockableService {
                     //special case of deleted title restore ...
                     if(targetTitle.status == RDStore.TIPP_STATUS_REMOVED && pc.oldValue == RDStore.TIPP_STATUS_DELETED.id.toString() && pc.newValue != RDStore.TIPP_STATUS_REMOVED.id.toString()) {
                         log.debug("restore deleted ${targetTitle}")
-                        IssueEntitlement restoredTitle = IssueEntitlement.construct([subscription:target,tipp:pc.tipp,acceptStatus:RDStore.IE_ACCEPT_STATUS_FIXED,status:pc.tipp.status])
+                        IssueEntitlement restoredTitle = IssueEntitlement.construct([subscription:target,tipp:pc.tipp,status:pc.tipp.status])
                         if(restoredTitle) {
                             done = true
                         }

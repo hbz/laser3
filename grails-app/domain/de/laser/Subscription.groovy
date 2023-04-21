@@ -279,7 +279,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
                 && changes.newMap.containsKey('hasPerpetualAccess')
                 && changes.oldMap.hasPerpetualAccess != changes.newMap.hasPerpetualAccess) {
             if(changes.newMap.hasPerpetualAccess == true) {
-                List<Long> ieIDs = IssueEntitlement.executeQuery('select ie.id from IssueEntitlement ie where ie.subscription = :sub and ie.status = :status and ie.acceptStatus = :acceptStatus and ie.perpetualAccessBySub is null', [sub: this, status: RDStore.TIPP_STATUS_CURRENT, acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED])
+                List<Long> ieIDs = IssueEntitlement.executeQuery('select ie.id from IssueEntitlement ie where ie.subscription = :sub and ie.status = :status and ie.perpetualAccessBySub is null', [sub: this, status: RDStore.TIPP_STATUS_CURRENT])
                 if (ieIDs.size() > 0) {
                     log.debug("beforeUpdate() set perpetualAccessBySub of ${ieIDs.size()} IssueEntitlements to sub:" + this)
                     ieIDs.collate(32767).each {
@@ -287,7 +287,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
                     }
                 }
             }else {
-                List<Long> ieIDs = IssueEntitlement.executeQuery('select ie.id from IssueEntitlement ie where ie.subscription = :sub and ie.status = :status and ie.acceptStatus = :acceptStatus and ie.perpetualAccessBySub is not null', [sub: this, status: RDStore.TIPP_STATUS_CURRENT, acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED])
+                List<Long> ieIDs = IssueEntitlement.executeQuery('select ie.id from IssueEntitlement ie where ie.subscription = :sub and ie.status = :status and ie.perpetualAccessBySub is not null', [sub: this, status: RDStore.TIPP_STATUS_CURRENT])
                 if (ieIDs.size() > 0) {
                     log.debug("beforeUpdate() set perpetualAccessBySub of ${ieIDs.size()} IssueEntitlements to null:" + this)
                     ieIDs.collate(32767).each {
