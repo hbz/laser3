@@ -15,7 +15,7 @@
             </div>
         </div>
 
-        <g:if test="${ie && (ie.medium || showEmptyFields)}">
+        <g:if test="${ie && (ie.tipp.medium || showEmptyFields)}">
             <div class="item">
                 <i class="grey medium icon la-popup-tooltip la-delay"
                    data-content="${message(code: 'tipp.medium')}"></i>
@@ -26,7 +26,7 @@
                     </div>
 
                     <div class="description">
-                        ${ie.medium?.getI10n('value')}
+                        ${ie.tipp.medium?.getI10n('value')}
                     </div>
                 </div>
             </div>
@@ -50,7 +50,8 @@
             </g:if>
         </g:else>
 
-        <g:if test="${ie && (ie.status || showEmptyFields)}">
+        <%-- status is not nullable any more, see ERMS-4918 --%>
+        <g:if test="${ie}">
             <div class="item">
                 <i class="grey key icon la-popup-tooltip la-delay"
                    data-content="${message(code: 'default.status.label')}"></i>
@@ -61,13 +62,13 @@
                     </div>
 
                     <div class="description">
-                        ${ie.status?.getI10n('value')}
+                        ${ie.tipp.status.getI10n('value')}
                     </div>
                 </div>
             </div>
         </g:if>
         <g:else>
-            <g:if test="${(tipp.status || showEmptyFields)}">
+            <%--<g:if test="${(tipp.status || showEmptyFields)}">--%>
                 <div class="item">
                     <i class="grey key icon la-popup-tooltip la-delay"
                        data-content="${message(code: 'default.status.label')}"></i>
@@ -78,11 +79,11 @@
                         </div>
 
                         <div class="description">
-                            ${tipp.status?.getI10n('value')}
+                            ${tipp.status.getI10n('value')}
                         </div>
                     </div>
                 </div>
-            </g:if>
+            <%--</g:if>--%>
         </g:else>
 
         <g:if test="${(tipp.titleType == 'Book') && (tipp.volume || showEmptyFields)}">

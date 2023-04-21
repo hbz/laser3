@@ -340,6 +340,7 @@ class StatusUpdateService extends AbstractLockableService {
                     diffs.add([event: 'removed', target: tippB])
                 else if(ieA.status != RDStore.TIPP_STATUS_DELETED && tippB.status == RDStore.TIPP_STATUS_DELETED)
                     diffs.add([event: 'delete', oldValue: ieA.status, target: tippB])
+                /*
                 else if(ieA.status != RDStore.TIPP_STATUS_REMOVED && tippB.status != RDStore.TIPP_STATUS_REMOVED) {
                     Set<Map<String, Object>> tippDiffs = getTippDiff(ieA, tippB)
                     if(tippDiffs) {
@@ -347,14 +348,16 @@ class StatusUpdateService extends AbstractLockableService {
                         diffs.add([event: 'update', target: tippB, diffs: tippDiffs])
                     }
                 }
+                */
             }
-            Set<PendingChange> packagePendingChanges = []
+            Set<PendingChange> packageChanges = []
             diffs.each { Map<String, Object> diff ->
                 log.debug(diff.toMapString())
                 switch(diff.event) {
                     //new operator because object should not be persisted!
-                    case 'add': packagePendingChanges << new PendingChange(msgToken:PendingChangeConfiguration.NEW_TITLE, tipp: diff.target)
+                    case 'add': packageChanges << new PendingChange(msgToken:PendingChangeConfiguration.NEW_TITLE, tipp: diff.target)
                         break
+                    /*
                     case 'update':
                         diff.diffs.each { tippDiff ->
                             def oldValue, newValue
@@ -374,14 +377,15 @@ class StatusUpdateService extends AbstractLockableService {
                             packagePendingChanges << new PendingChange(msgToken:PendingChangeConfiguration.TITLE_UPDATED,tipp:diff.target,targetProperty: tippDiff.prop,newValue:newValue,oldValue:oldValue)
                         }
                         break
-                    case 'delete': packagePendingChanges << new PendingChange(msgToken:PendingChangeConfiguration.TITLE_DELETED,tipp:diff.target,oldValue:diff.oldValue,status:RDStore.PENDING_CHANGE_HISTORY)
+                    */
+                    case 'delete': packageChanges << new TitleChange(msgToken:PendingChangeConfiguration.TITLE_DELETED,tipp:diff.target,oldValue:diff.oldValue,status:RDStore.PENDING_CHANGE_HISTORY)
                         break
-                    case 'remove': PendingChange.construct([msgToken:PendingChangeConfiguration.TITLE_REMOVED,target:diff.target,status:RDStore.PENDING_CHANGE_HISTORY]) //dealt elsewhere!
+                    case 'remove': TitleChange.construct([msgToken:PendingChangeConfiguration.TITLE_REMOVED,target:diff.target,status:RDStore.PENDING_CHANGE_HISTORY]) //dealt elsewhere!
                         break
                 }
             }
             Org org = Org.executeQuery('select oo.org from OrgRole oo where oo.sub = :sub and oo.roleType in (:roleTypes)', [sub: sp.subscription, roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA]])[0]
-            globalSourceSyncService.autoAcceptPendingChanges(org, sp, packagePendingChanges)
+            globalSourceSyncService.autoAcceptPendingChanges(org, sp, packageChanges)
         }
     }
 
