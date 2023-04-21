@@ -109,8 +109,9 @@
                         <g:if test="${!(controllerName == 'myInstitution' && actionName == 'subscriptionsManagement')}">
                             <td class="center aligned">
                                 <g:if test="${docctx.owner.owner.id == contextService.getOrg().id && !docctx.sharedFrom}">
-                                    <g:set var="blukEnabled" value="${true}" />
-                                    <g:checkBox id="bulk_doc_${docctx.owner.id}" name="bulk_doc" value="${docctx.owner.id}" checked="false"/>
+                                    <g:if test="${editable}">
+                                        <g:checkBox id="bulk_doc_${docctx.owner.id}" name="bulk_doc" value="${docctx.owner.id}" checked="false"/>
+                                    </g:if>
                                 </g:if>
                             </td>
                         </g:if>
@@ -175,7 +176,7 @@
                             </td>
                         --%>
                         </g:if>
-                        <td class="x">
+                        <td class="center aligned">
                             <g:if test="${docctx.isDocAFile()}">
                                 <g:if test="${instance?.respondsTo('showUIShareButton')}">
                                     <g:if test="${docctx.sharedFrom}">
@@ -226,7 +227,7 @@
                 </g:if>
             </g:each>
         </tbody>
-        <g:if test="${blukEnabled}">
+        <g:if test="${editable}">
             <tfoot>
                 <tr>
                     <td class="center aligned">
