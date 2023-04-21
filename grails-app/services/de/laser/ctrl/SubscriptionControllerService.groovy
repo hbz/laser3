@@ -670,7 +670,9 @@ class SubscriptionControllerService {
             //dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
             if(!params.containsKey('tabStat') || params.tabStat == 'total') {
                 dateRangeParams.startDate = subscription.startDate
-                dateRangeParams.endDate = subscription.endDate
+                if(subscription.endDate <= Date.from(now.withDayOfMonth(now.getMonth().length(now.isLeapYear())).atStartOfDay(ZoneId.systemDefault()).toInstant()))
+                    dateRangeParams.endDate = subscription.endDate
+                else dateRangeParams.endDate = Date.from(now.withDayOfMonth(now.getMonth().length(now.isLeapYear())).atStartOfDay(ZoneId.systemDefault()).toInstant())
             }
             else {
                 LocalDate filterDate = LocalDate.parse(params.tabStat+'-01', DateTimeFormatter.ofPattern('yyyy-MM-dd'))
@@ -857,7 +859,7 @@ class SubscriptionControllerService {
             if(!tipp)
                 tipp = titles[propIdNamespace]?.get(report.proprietaryIdentifier)
         }
-        GrailsHibernateUtil.unwrapIfProxy(tipp)
+        GrailsHibernateUtil.unwrapIfProxy(tipp) as TitleInstancePackagePlatform
     }
 
     SortedSet getAvailableReports(Set<Platform> subscribedPlatforms, Map<String, Object> configMap) {
@@ -1597,7 +1599,7 @@ class SubscriptionControllerService {
                     Map<String, Map<String, TitleInstancePackagePlatform>> titles = [:] //structure: namespace -> value -> tipp
                     Set<TitleInstancePackagePlatform> titlesSorted = [] //fallback structure to preserve sorting
                     fetchTitles(params, refSubs, namespaces, 'ids').each { Map titleMap ->
-                        titlesSorted << GrailsHibernateUtil.unwrapIfProxy(titleMap.tipp)
+                        titlesSorted << titleMap.tipp
                         Map<String, TitleInstancePackagePlatform> innerMap = titles.get(titleMap.namespace)
                         if(!innerMap)
                             innerMap = [:]
@@ -1622,20 +1624,44 @@ class SubscriptionControllerService {
                         queryParams.startDate = dateRanges.startDate
                         queryParams.endDate = dateRanges.endDate
                         Map<String, Object> requestResponse = exportService.getReports(queryParams)
-                        for(Map reportItem : requestResponse.items) {
-                            Map<String, String> identifierMap = exportService.buildIdentifierMap(reportItem, AbstractReport.COUNTER_5)
-                            TitleInstancePackagePlatform tipp = matchReport(titles, propIdNamespace, identifierMap)
-                            if(tipp) {
-                                for(Map performance : reportItem.Performance) {
-                                    for(Map instance : performance.Instance) {
-                                        Map<String, Integer> metrics = usages.containsKey(tipp) ? usages.get(tipp): [:]
-                                        Integer topCount = usageTopList.containsKey(tipp) ? usageTopList.get(tipp) : 0
-                                        Integer metricCount = metrics.get(instance.Metric_Type) ?: 0, count = instance.Count as Integer
-                                        metricCount += count
-                                        metrics.put(instance.Metric_Type, metricCount)
-                                        if(metricCount > topCount)
-                                            usageTopList.put(tipp, metricCount)
-                                        usages.put(tipp, metrics)
+                        if(result.platformInstanceRecords.get(platform.gokbId).counterR5SushiApiSupported == "Yes") {
+                            for(Map reportItem : requestResponse.items) {
+                                Map<String, String> identifierMap = exportService.buildIdentifierMap(reportItem, AbstractReport.COUNTER_5)
+                                TitleInstancePackagePlatform tipp = matchReport(titles, propIdNamespace, identifierMap)
+                                if(tipp) {
+                                    for(Map performance : reportItem.Performance) {
+                                        for(Map instance : performance.Instance) {
+                                            Map<String, Integer> metrics = usages.containsKey(tipp) ? usages.get(tipp): [:]
+                                            Integer topCount = usageTopList.containsKey(tipp) ? usageTopList.get(tipp) : 0
+                                            Integer metricCount = metrics.get(instance.Metric_Type) ?: 0, count = instance.Count as Integer
+                                            metricCount += count
+                                            metrics.put(instance.Metric_Type, metricCount)
+                                            if(metricCount > topCount)
+                                                usageTopList.put(tipp, metricCount)
+                                            usages.put(tipp, metrics)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        else if(result.platformInstanceRecords.get(platform.gokbId).counterR4SushiApiSupported == RDStore.YN_YES.value) {
+                            for(GPathResult reportItem : requestResponse.reports) {
+                                Map<String, String> identifierMap = exportService.buildIdentifierMap(reportItem, AbstractReport.COUNTER_4)
+                                TitleInstancePackagePlatform tipp = matchReport(titles, propIdNamespace, identifierMap)
+                                if(tipp) {
+                                    for(GPathResult performance : reportItem.'ns2:ItemPerformance') {
+                                        for(GPathResult instance : performance.'ns2:Instance') {
+                                            Map<String, Integer> metrics = usages.containsKey(tipp) ? usages.get(tipp): [:]
+                                            Integer topCount = usageTopList.containsKey(tipp) ? usageTopList.get(tipp) : 0
+                                            if((params.metricType && params.metricType == instance.'ns2:MetricType'.text()) || !params.metricType) {
+                                                Integer metricCount = metrics.get(instance.'ns2:MetricType') ?: 0, count = Integer.parseInt(instance.'ns2:Count'.text())
+                                                metricCount += count
+                                                metrics.put(instance.'ns2:MetricType', metricCount)
+                                                if(metricCount > topCount)
+                                                    usageTopList.put(tipp, metricCount)
+                                                usages.put(tipp, metrics)
+                                            }
+                                        }
                                     }
                                 }
                             }

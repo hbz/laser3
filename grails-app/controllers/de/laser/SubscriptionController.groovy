@@ -1392,7 +1392,7 @@ class SubscriptionController {
             if(params.reportType) {
                 exportResult = exportService.generateReport(params, true,  true, true)
             }
-            if(exportResult.result) {
+            if(exportResult) {
                 wb = exportResult.result
                 ctrlResult = [status: SubscriptionControllerService.STATUS_OK]
             }
@@ -1427,13 +1427,13 @@ class SubscriptionController {
                     queryMap.accessTypes = params.accessType
                 if(params.accessMethod)
                     queryMap.accessMethods = params.accessMethod
-                queryMap.platform = Platform.get(params.platform)
                 filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.selectableTitles') + '_' + ctrlResult.result.subscription.dropdownNamingConvention())
             }
             if(params.tab == 'selectedIEs') {
                 queryMap = [sub: ctrlResult.result.newSub, ieAcceptStatusNotFixed: true, ieStatus: RDStore.TIPP_STATUS_CURRENT, pkgIds: ctrlResult.result.subscription.packages?.pkg?.id]
                 filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.currentTitlesSelect') + '_' + ctrlResult.result.newSub.dropdownNamingConvention())
             }
+            queryMap.platform = Platform.get(params.platform)
 
             if(params.tab == 'currentIEs' && ctrlResult.result.previousSubscription) {
                 Set<Subscription> subscriptions = []
