@@ -550,7 +550,7 @@ class MyInstitutionController  {
                 g.message(code:'license.details.reference'),
                 g.message(code:'license.details.linked_subs'),
                 g.message(code:'consortium'),
-                g.message(code:'license.licensor.label'),
+                g.message(code:'default.ProviderAgency.singular'),
                 g.message(code:'license.startDate.label'),
                 g.message(code:'license.endDate.label')
         ]

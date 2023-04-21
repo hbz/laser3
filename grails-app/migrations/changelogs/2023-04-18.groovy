@@ -114,7 +114,7 @@ databaseChangeLog = {
     changeSet(author: "djebeniani (hand-coded)", id: "1681829852450-13") {
         grailsChange {
             change {
-                sql.execute("delete from refdata_category where rdc_description = 'ie.accept.status')")
+                sql.execute("delete from refdata_category where rdc_description = 'ie.accept.status'")
             }
             rollback {}
         }
