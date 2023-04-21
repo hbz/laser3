@@ -127,6 +127,18 @@
 
                             </dl>
 
+                            <dl>
+                                <dt class="control-label">${message(code: 'issueEntitlementGroup.entitlementsRenew.selected.new')}</dt>
+                                <dd>
+                                    <g:if test="${surveyInfo.status.id in [RDStore.SURVEY_IN_PROCESSING.id, RDStore.SURVEY_READY.id]}">
+                                        <ui:xEditable owner="${surveyInfo.surveyConfigs[0]}" field="issueEntitlementGroupName"/>
+                                    </g:if><g:else>
+                                        <ui:xEditable owner="${surveyInfo.surveyConfigs[0]}" field="issueEntitlementGroupName" overwriteEditable="false"/>
+                                    </g:else>
+                                </dd>
+
+                            </dl>
+
                         </g:if>
 
                     </div>

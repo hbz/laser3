@@ -158,8 +158,8 @@ class SubscriptionReport {
 
                     timeline.eachWithIndex { s, i ->
                         ieIdLists.add(IssueEntitlement.executeQuery(
-                                'select ie.id from IssueEntitlement ie where ie.subscription = :sub and ie.status = :status and ie.acceptStatus = :acceptStatus',
-                                [sub: s, status: RDStore.TIPP_STATUS_CURRENT, acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED]
+                                'select ie.id from IssueEntitlement ie where ie.subscription = :sub and ie.status = :status',
+                                [sub: s, status: RDStore.TIPP_STATUS_CURRENT]
                         ))
                         List data = [
                                 s.id,
@@ -279,8 +279,8 @@ class SubscriptionReport {
             else if (prefix == 'tipp') {
 
                 List<Long> idList = TitleInstancePackagePlatform.executeQuery(
-                        'select tipp.id from IssueEntitlement ie join ie.tipp tipp where ie.subscription.id = :id and ie.status = :status and ie.acceptStatus = :acceptStatus',
-                        [id: id, status: RDStore.TIPP_STATUS_CURRENT, acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED]
+                        'select tipp.id from IssueEntitlement ie join ie.tipp tipp where ie.subscription.id = :id and ie.status = :status ',
+                        [id: id, status: RDStore.TIPP_STATUS_CURRENT]
                 )
 
                 if (params.query == 'tipp-seriesName') {

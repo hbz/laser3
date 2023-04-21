@@ -109,7 +109,7 @@ class SubscriptionPackage implements Comparable {
    * @return a {@link Set} of {@link IssueEntitlement}s in the {@link Subscription}'s holding which are current and accepted
    */
   Set getIssueEntitlementsofPackage(){
-    this.subscription.issueEntitlements.findAll{(it.status?.id == RDStore.TIPP_STATUS_CURRENT.id) && (it.acceptStatus?.id == RDStore.IE_ACCEPT_STATUS_FIXED.id)}
+    this.subscription.issueEntitlements.findAll{(it.status?.id == RDStore.TIPP_STATUS_CURRENT.id)}
   }
 
   /**
@@ -131,7 +131,7 @@ class SubscriptionPackage implements Comparable {
    */
   String getIEandPackageSize(){
 
-    return '(<span data-tooltip="Titel in der Lizenz"><i class="ui icon archive"></i></span>' + executeQuery('select count(ie.id) from IssueEntitlement ie join ie.subscription s join s.packages sp where sp = :ctx and ie.status = :current and ie.acceptStatus = :fixed',[ctx:this,current:RDStore.TIPP_STATUS_CURRENT,fixed:RDStore.IE_ACCEPT_STATUS_FIXED])[0] + ' / <span data-tooltip="Titel im Paket"><i class="ui icon book"></i></span>' + executeQuery('select count(tipp.id) from TitleInstancePackagePlatform tipp join tipp.pkg pkg where pkg = :ctx and tipp.status = :current',[ctx:this.pkg,current:RDStore.TIPP_STATUS_CURRENT])[0] + ')'
+    return '(<span data-tooltip="Titel in der Lizenz"><i class="ui icon archive"></i></span>' + executeQuery('select count(ie.id) from IssueEntitlement ie join ie.subscription s join s.packages sp where sp = :ctx and ie.status = :current',[ctx:this,current:RDStore.TIPP_STATUS_CURRENT])[0] + ' / <span data-tooltip="Titel im Paket"><i class="ui icon book"></i></span>' + executeQuery('select count(tipp.id) from TitleInstancePackagePlatform tipp join tipp.pkg pkg where pkg = :ctx and tipp.status = :current',[ctx:this.pkg,current:RDStore.TIPP_STATUS_CURRENT])[0] + ')'
   }
 
   /**

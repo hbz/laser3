@@ -53,7 +53,7 @@ class RDConstants {
 
     public static final String GENDER                 = 'gender'
 
-    public static final String IE_ACCEPT_STATUS       = 'ie.accept.status'
+
     public static final String IE_ACCESS_STATUS       = 'ie.access.status'
     public static final String IE_MEDIUM              = 'ie.medium'
     public static final String ILL_CODE               = 'ill.code'

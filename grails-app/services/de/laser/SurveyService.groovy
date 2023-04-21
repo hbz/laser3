@@ -1453,12 +1453,10 @@ class SurveyService {
                     'tipp.hostPlatformURL = :hostPlatformURL and ' +
                     'tipp.status != :tippStatus and ' +
                     'ie.status != :tippStatus and ' +
-                    'ie.acceptStatus = :acceptStatus and ' +
                     'ie.subscription.id in (:subscriptionIDs)',
                     [hostPlatformURL: tipp.hostPlatformURL,
                      tippStatus: RDStore.TIPP_STATUS_REMOVED,
-                     subscriptionIDs: subscriptionIDs,
-                     acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED])[0]
+                     subscriptionIDs: subscriptionIDs])[0]
 
             if(countIes > 0){
                 return true
@@ -1598,8 +1596,8 @@ class SurveyService {
         Sql sql = GlobalService.obtainSqlConnection()
         Connection connection = sql.dataSource.getConnection()
 
-        List newIes = sql.executeInsert("insert into issue_entitlement (ie_version, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_medium_rv_fk, ie_status_rv_fk, ie_accept_status_rv_fk, ie_name, ie_sortname, ie_perpetual_access_by_sub_fk) " +
-                "select 0, now(), now(), ${participantSub.id},  ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_medium_rv_fk, ie_status_rv_fk, ${RDStore.IE_ACCEPT_STATUS_FIXED.id}, ie_name, ie_sortname, ie_perpetual_access_by_sub_fk from issue_entitlement where ie_tipp_fk not in (select ie_tipp_fk from issue_entitlement where ie_subscription_fk = ${participantSub.id}) and ie_id = any(:ieIds)", [ieIds: connection.createArrayOf('bigint', entitlementsToTake.toArray())])
+        List newIes = sql.executeInsert("insert into issue_entitlement (ie_version, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_medium_rv_fk, ie_status_rv_fk, ie_name, ie_sortname, ie_perpetual_access_by_sub_fk) " +
+                "select 0, now(), now(), ${participantSub.id},  ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_medium_rv_fk, ie_status_rv_fk, ie_name, ie_sortname, ie_perpetual_access_by_sub_fk from issue_entitlement where ie_tipp_fk not in (select ie_tipp_fk from issue_entitlement where ie_subscription_fk = ${participantSub.id}) and ie_id = any(:ieIds)", [ieIds: connection.createArrayOf('bigint', entitlementsToTake.toArray())])
 
         if(newIes.size() > 0){
 
@@ -1636,14 +1634,13 @@ class SurveyService {
             Sql sql = GlobalService.obtainSqlConnection()
             Connection connection = sql.dataSource.getConnection()
             def ieIds = sql.rows("select ie.ie_id from issue_entitlement ie join title_instance_package_platform tipp on tipp.tipp_id = ie.ie_tipp_fk " +
-                    "where ie.ie_subscription_fk = any(:subs) and ie.ie_accept_status_rv_fk = :acceptStatus " +
+                    "where ie.ie_subscription_fk = any(:subs) " +
                     "and tipp.tipp_status_rv_fk = :tippStatus and ie.ie_status_rv_fk = :tippStatus " +
                     "and tipp.tipp_host_platform_url in " +
                     "(select tipp2.tipp_host_platform_url from issue_entitlement ie2 join title_instance_package_platform tipp2 on tipp2.tipp_id = ie2.ie_tipp_fk " +
                     "where ie2.ie_subscription_fk = any(:subs) " +
                     "and ie2.ie_perpetual_access_by_sub_fk = any(:subs) " +
-                    "and ie2.ie_accept_status_rv_fk = :acceptStatus " +
-                    "and tipp2.tipp_status_rv_fk = :tippStatus and ie2.ie_status_rv_fk = :tippStatus)", [subs: connection.createArrayOf('bigint', subIds.toArray()), acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED.id, tippStatus: RDStore.TIPP_STATUS_CURRENT.id])
+                    "and tipp2.tipp_status_rv_fk = :tippStatus and ie2.ie_status_rv_fk = :tippStatus)", [subs: connection.createArrayOf('bigint', subIds.toArray()), tippStatus: RDStore.TIPP_STATUS_CURRENT.id])
 
             issueEntitlements = ieIds.size() > 0 ? IssueEntitlement.executeQuery("select ie from IssueEntitlement ie where ie.id in (:ieIDs)", [ieIDs: ieIds.ie_id]) : []
         }
@@ -1661,14 +1658,13 @@ class SurveyService {
             Sql sql = GlobalService.obtainSqlConnection()
             Connection connection = sql.dataSource.getConnection()
             def ieIds = sql.rows("select ie.ie_id from issue_entitlement ie join title_instance_package_platform tipp on tipp.tipp_id = ie.ie_tipp_fk " +
-                    "where ie.ie_subscription_fk = any(:subs) and ie.ie_accept_status_rv_fk = :acceptStatus " +
+                    "where ie.ie_subscription_fk = any(:subs) " +
                     " and ie.ie_status_rv_fk = :tippStatus " +
                     "and tipp.tipp_host_platform_url in " +
                     "(select tipp2.tipp_host_platform_url from issue_entitlement ie2 join title_instance_package_platform tipp2 on tipp2.tipp_id = ie2.ie_tipp_fk " +
                     "where ie2.ie_subscription_fk = any(:subs) " +
                     "and ie2.ie_perpetual_access_by_sub_fk = any(:subs) " +
-                    "and ie2.ie_accept_status_rv_fk = :acceptStatus " +
-                    " and ie2.ie_status_rv_fk = :tippStatus)", [subs: connection.createArrayOf('bigint', subIds.toArray()), acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED.id, tippStatus: RDStore.TIPP_STATUS_CURRENT.id])
+                    " and ie2.ie_status_rv_fk = :tippStatus)", [subs: connection.createArrayOf('bigint', subIds.toArray()), tippStatus: RDStore.TIPP_STATUS_CURRENT.id])
 
             issueEntitlementIds = ieIds.ie_id
         }
@@ -1686,22 +1682,38 @@ class SurveyService {
             Sql sql = GlobalService.obtainSqlConnection()
             Connection connection = sql.dataSource.getConnection()
             /*def titles = sql.rows("select count(tipp.tipp_id) from issue_entitlement ie join title_instance_package_platform tipp on tipp.tipp_id = ie.ie_tipp_fk " +
-                    "where ie.ie_subscription_fk = any(:subs) and ie.ie_accept_status_rv_fk = :acceptStatus " +
+                    "where ie.ie_subscription_fk = any(:subs)  " +
                     "and tipp.tipp_status_rv_fk = :tippStatus and ie.ie_status_rv_fk = :tippStatus " +
                     "and tipp.tipp_host_platform_url in " +
                     "(select tipp2.tipp_host_platform_url from issue_entitlement ie2 join title_instance_package_platform tipp2 on tipp2.tipp_id = ie2.ie_tipp_fk " +
                     " where ie2.ie_perpetual_access_by_sub_fk = any(:subs)" +
-                    " and ie2.ie_accept_status_rv_fk = :acceptStatus" +
-                    " and tipp2.tipp_status_rv_fk = :tippStatus and ie2.ie_status_rv_fk = :tippStatus) group by tipp.tipp_id", [subs: connection.createArrayOf('bigint', subIds.toArray()), acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED.id, tippStatus: RDStore.TIPP_STATUS_CURRENT.id])*/
+                    " and tipp2.tipp_status_rv_fk = :tippStatus and ie2.ie_status_rv_fk = :tippStatus) group by tipp.tipp_id", [subs: connection.createArrayOf('bigint', subIds.toArray()), tippStatus: RDStore.TIPP_STATUS_CURRENT.id])*/
 
             def titles = sql.rows("select count(tipp2.tipp_host_platform_url) from issue_entitlement ie2 join title_instance_package_platform tipp2 on tipp2.tipp_id = ie2.ie_tipp_fk " +
                     " where ie2.ie_subscription_fk = any(:subs) and ie2.ie_perpetual_access_by_sub_fk = any(:subs)" +
-                    " and ie2.ie_accept_status_rv_fk = :acceptStatus" +
-                    " and ie2.ie_status_rv_fk = :tippStatus group by tipp2.tipp_host_platform_url", [subs: connection.createArrayOf('bigint', subIds.toArray()), acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED.id, tippStatus: RDStore.TIPP_STATUS_CURRENT.id])
+                    " and ie2.ie_status_rv_fk = :tippStatus group by tipp2.tipp_host_platform_url", [subs: connection.createArrayOf('bigint', subIds.toArray()), tippStatus: RDStore.TIPP_STATUS_CURRENT.id])
 
             count = titles.size()
         }
         return count
+    }
+
+    Integer countIssueEntitlementsByIEGroup(Subscription subscription, SurveyConfig surveyConfig) {
+        IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfig(surveyConfig)
+        Integer countIes = issueEntitlementGroup ?
+                IssueEntitlementGroupItem.executeQuery("select count(igi) from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup",
+                        [ieGroup: issueEntitlementGroup])[0]
+                : 0
+        countIes
+    }
+
+    List<IssueEntitlement> issueEntitlementsByIEGroup(Subscription subscription, SurveyConfig surveyConfig) {
+        IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfig(surveyConfig)
+        List<IssueEntitlement> ies = issueEntitlementGroup ?
+                IssueEntitlementGroupItem.executeQuery("select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup",
+                        [ieGroup: issueEntitlementGroup])
+                : []
+        ies
     }
 
     String notificationSurveyAsStringInHtml(SurveyInfo surveyInfo, boolean reminder = false) {
