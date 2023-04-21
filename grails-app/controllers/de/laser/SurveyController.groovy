@@ -728,7 +728,7 @@ class SurveyController {
                     status: RDStore.SURVEY_IN_PROCESSING,
                     comment: params.comment ?: null,
                     isSubscriptionSurvey: true,
-                    isMandatory: params.mandatory ? true : false,
+                    isMandatory: params.mandatory ? true : false
             )
             if (!(surveyInfo.save())) {
                 flash.error = g.message(code: "createSubscriptionSurvey.create.fail")

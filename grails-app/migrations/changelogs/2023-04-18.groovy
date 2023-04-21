@@ -102,4 +102,22 @@ databaseChangeLog = {
         addForeignKeyConstraint(baseColumnNames: "ig_survey_config_fk", baseTableName: "issue_entitlement_group", constraintName: "FKj64bd5sm3lppyronesa1g9xt7", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "surconf_id", referencedTableName: "survey_config", validate: "true")
     }
 
+    changeSet(author: "djebeniani (hand-coded)", id: "1681829852450-12") {
+        grailsChange {
+            change {
+                sql.execute("delete from refdata_value where rdv_owner = (select rdc_id from refdata_category where rdc_description = 'ie.accept.status')")
+            }
+            rollback {}
+        }
+    }
+
+    changeSet(author: "djebeniani (hand-coded)", id: "1681829852450-13") {
+        grailsChange {
+            change {
+                sql.execute("delete from refdata_category where rdc_description = 'ie.accept.status')")
+            }
+            rollback {}
+        }
+    }
+
 }
