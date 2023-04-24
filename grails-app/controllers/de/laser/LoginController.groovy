@@ -186,12 +186,28 @@ class LoginController {
         if (user.save()) {
           flash.message = message(code: 'user.newPassword.successNoOutput') as String
 
-          mailSendService.sendMailToUser(user, 'Passwortänderung', '/mailTemplates/text/newPassword', [user: user, newPass: newPassword])
+          mailSendService.sendMailToUser(user, message(code: 'email.subject.forgottenPassword'), '/mailTemplates/text/newPassword', [user: user, newPass: newPassword])
         }
       }
       else flash.error = g.message(code:'menu.user.forgottenPassword.userError') as String
     }
     redirect action: 'auth'
+  }
+
+    @Transactional
+  def getForgottenUsername() {
+        if(!params.forgotten_username_mail) {
+            flash.error = g.message(code:'menu.user.forgottenUsername.userMissing') as String
+        }
+        else {
+            User user = User.findByEmail(params.forgotten_username_mail)
+            if (user) {
+                flash.message = message(code: 'menu.user.forgottenUsername.success') as String
+                mailSendService.sendMailToUser(user, message(code: 'email.subject.forgottenUsername'), '/mailTemplates/text/forgotUserName', [user: user])
+            }
+            else flash.error = g.message(code:'menu.user.forgottenUsername.userError') as String
+        }
+        redirect action: 'auth'
   }
 
     private boolean _fuzzyCheck(DefaultSavedRequest savedRequest) {
