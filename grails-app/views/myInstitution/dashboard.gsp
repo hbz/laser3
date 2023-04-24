@@ -8,15 +8,6 @@
 
         <ui:h1HeaderWithIcon text="${institution.name}" />
 
-%{--<pre>--}%
-%{--    ORG_CONSORTIUM_BASIC: ${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}--}%
-%{--    ORG_CONSORTIUM_PRO: ${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)}--}%
-%{--    ORG_INST_BASIC: ${accessService.ctxPerm(CustomerTypeService.ORG_INST_BASIC)}--}%
-%{--    ORG_INST_PRO: ${accessService.ctxPerm(CustomerTypeService.ORG_INST_PRO)}--}%
-
-%{--    getCustomerType: ${institution.getCustomerType()}--}%
-%{--</pre>--}%
-
         <div class="ui equal width grid la-clear-before">
             <div class="row">
 
@@ -46,9 +37,9 @@
 
                 <div class="column">
                     <div class="ui divided relaxed list">
-                        <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="tasks" message="task.plural" />
-                        <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="addressbook" message="menu.institutions.myAddressbook" />
-                        <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="managePrivatePropertyDefinitions" message="menu.institutions.manage_props" />
+                        <ui:securedMainNavItem affiliation="INST_USER" orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="tasks" message="task.plural" />
+                        <ui:securedMainNavItem affiliation="INST_USER" orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="addressbook" message="menu.institutions.myAddressbook" />
+                        <ui:securedMainNavItem affiliation="INST_USER" orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="managePrivatePropertyDefinitions" message="menu.institutions.manage_props" />
                     </div>
                 </div>
             </div>

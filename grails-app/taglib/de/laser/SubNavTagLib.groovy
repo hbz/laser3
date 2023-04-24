@@ -112,7 +112,7 @@ class SubNavTagLib {
             if (attrs.affiliation && contextService.getUser().hasCtxAffiliation_or_ROLEADMIN(attrs.affiliation)) {
                 out << '<div class="item disabled la-popup-tooltip la-delay" data-position="left center" data-content="' + message(code:'tooltip.onlyFullMembership') + '" role="menuitem">' + linkBody + '</div>'
             }
-            else out << '<div class="item disabled la-popup-tooltip la-delay" data-position="left center" role="menuitem">' + linkBody + '</div>'
+//            else out << '<div class="item disabled la-popup-tooltip la-delay" data-position="left center" role="menuitem">' + linkBody + '</div>'
         }
     }
 }
