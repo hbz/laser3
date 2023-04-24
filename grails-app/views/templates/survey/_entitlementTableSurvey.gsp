@@ -1,4 +1,4 @@
-<%@ page import="de.laser.titles.BookInstance; de.laser.storage.RDStore; de.laser.remote.ApiSource" %>
+<%@ page import="de.laser.IssueEntitlementGroup; de.laser.titles.BookInstance; de.laser.storage.RDStore; de.laser.remote.ApiSource" %>
 <div class="sixteen wide column">
     <g:set var="counter" value="${offset + 1}"/>
     <g:set var="sumlistPrice" value="${0}"/>
@@ -11,16 +11,16 @@
 
             <g:set var="tipp" value="${ie.tipp}"/>
             <g:set var="ieInNewSub"
-                   value="${surveyService.titleContainedBySubscription(newSub, tipp)}"/>
+                   value="${surveyService.titleContainedBySubscription(subscriberSub, tipp)}"/>
             <g:if test="${surveyConfig.pickAndChoosePerpetualAccess}">
                 <g:set var="participantPerpetualAccessToTitle"
                        value="${surveyService.hasParticipantPerpetualAccessToTitle2(subscriptionIDs, tipp)}"/>
                 <g:set var="allowedToSelect"
-                       value="${!(participantPerpetualAccessToTitle) && (!ieInNewSub || (ieInNewSub && (ieInNewSub.acceptStatus == RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION || contextOrg.id == surveyConfig.surveyInfo.owner.id)))}"/>
+                       value="${!(participantPerpetualAccessToTitle) && (!ieInNewSub)}"/>
             </g:if>
             <g:else>
                 <g:set var="allowedToSelect"
-                       value="${!ieInNewSub || (ieInNewSub && (ieInNewSub.acceptStatus == RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION || contextOrg.id == surveyConfig.surveyInfo.owner.id))}"/>
+                       value="${!ieInNewSub}"/>
             </g:else>
 
             <div class="ui raised segments la-accordion-segments">
@@ -36,7 +36,7 @@
                                 <input type="checkbox" name="bulkflag"
                                        class="bulkcheck" ${checkedCache ? checkedCache[ie.id.toString()] : ''}>
                             </g:if>
-                            <g:elseif test="${editable && allowedToSelect && params.tab == 'selectedIEs'}">
+                            <g:elseif test="${editable && params.tab == 'selectedIEs' && ieInNewSub && de.laser.IssueEntitlementGroupItem.findByIeAndIeGroup(ieInNewSub, de.laser.IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscriberSub))}">
                                 <input type="checkbox" name="bulkflag"
                                        class="bulkcheck" ${checkedCache ? checkedCache[ie.id.toString()] : ''}>
                             </g:elseif>
@@ -49,11 +49,11 @@
 
                         <div class="column">
                             <div class="ui list">
-                                <g:if test="${(params.tab != 'currentIEs' && ieInNewSub && ieInNewSub.acceptStatus == RDStore.IE_ACCEPT_STATUS_FIXED) ||
+                                <g:if test="${(params.tab != 'currentIEs') ||
                                             participantPerpetualAccessToTitle ||
-                                            (participantPerpetualAccessToTitle && previousSubscription && surveyService.titleContainedBySubscription(previousSubscription, tipp)?.acceptStatus == RDStore.IE_ACCEPT_STATUS_FIXED)}">
+                                            (participantPerpetualAccessToTitle && previousSubscription && surveyService.titleContainedBySubscription(previousSubscription, tipp))}">
                                     <div class="ui label la-iconStrip">
-                                        <g:if test="${params.tab != 'currentIEs' && ieInNewSub && ieInNewSub.acceptStatus == RDStore.IE_ACCEPT_STATUS_FIXED}">
+                                        <g:if test="${params.tab != 'currentIEs' && ieInNewSub}">
                                             <span class="la-popup-tooltip la-delay"
                                                   data-content="${message(code: 'renewEntitlementsWithSurvey.ie.existsInSub')}"
                                                   data-position="left center" data-variation="tiny">
@@ -75,7 +75,7 @@
                                             <i class="shopping basket icon disabled"></i>
                                         </g:else>
 
-                                        <g:if test="${!participantPerpetualAccessToTitle && previousSubscription && surveyService.titleContainedBySubscription(previousSubscription, tipp)?.acceptStatus == RDStore.IE_ACCEPT_STATUS_FIXED}">
+                                        <g:if test="${!participantPerpetualAccessToTitle && previousSubscription && surveyService.titleContainedBySubscription(previousSubscription, tipp)}">
                                             <span class="la-popup-tooltip la-delay"
                                                   data-content="${message(code: 'renewEntitlementsWithSurvey.ie.existsInPreviousSubscription')}"
                                                   data-position="left center" data-variation="tiny">
@@ -86,9 +86,6 @@
                                             <i class="shopping basket icon disabled"></i>
                                         </g:else>
                                     </div>
-                                </g:if>
-                                <g:if test="${ieInNewSub}">
-                                    <ui:ieAcceptStatusIcon status="${ieInNewSub.acceptStatus}"/>
                                 </g:if>
                                 <!-- START TEMPLATE -->
                                 <laser:render
@@ -173,20 +170,20 @@
                                 <div class="ui icon blue button la-modern-button "><i
                                         class="ui angle double down icon"></i>
                                 </div>
-                                <g:if test="${(params.tab == 'allIEs' || params.tab == 'selectedIEs' || params.tab == 'toBeSelectedIEs') && editable && ieInNewSub && allowedToSelect}">
+                                <g:if test="${(params.tab == 'allIEs' || params.tab == 'selectedIEs') && editable && ieInNewSub && de.laser.IssueEntitlementGroupItem.findByIeAndIeGroup(ieInNewSub, de.laser.IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscriberSub))}">
                                     <g:link class="ui icon button blue la-modern-button la-popup-tooltip la-delay"
                                             action="processRemoveIssueEntitlementsSurvey"
-                                            params="${[id: newSub.id, singleTitle: ieInNewSub.id, packageId: packageId, surveyConfigID: surveyConfig?.id]}"
+                                            params="${[id: subscriberSub.id, singleTitle: ieInNewSub.id, packageId: packageId, surveyConfigID: surveyConfig?.id]}"
                                             data-content="${message(code: 'subscription.details.addEntitlements.remove_now')}">
                                         <i class="shopping basket icon"></i>
                                     </g:link>
                                 </g:if>
 
 
-                                <g:if test="${(params.tab == 'allIEs' || params.tab == 'currentIEs' || params.tab == 'toBeSelectedIEs') && editable && !ieInNewSub && allowedToSelect}">
+                                <g:if test="${(params.tab == 'allIEs' || params.tab == 'toBeSelectedIEs') && editable && !ieInNewSub && allowedToSelect}">
                                     <g:link class="ui icon negative button la-modern-button la-popup-tooltip la-delay"
                                             action="processAddIssueEntitlementsSurvey"
-                                            params="${[id: newSub.id, singleTitle: ie.id, surveyConfigID: surveyConfig?.id]}"
+                                            params="${[id: subscriberSub.id, singleTitle: ie.id, surveyConfigID: surveyConfig?.id]}"
                                             data-content="${message(code: 'subscription.details.addEntitlements.add_now')}">
                                         <i class="la-basket-shopping slash icon"></i>
                                     </g:link>

@@ -45,7 +45,6 @@ filter.fake.values,filter.fake.values,filter.fake.values
 funder.type,Trägerschaft,Funder Type
 funder.hsk.type,Trägerschaft,Funder Type HSK
 gender,Geschlecht,Gender
-ie.accept.status,IE Accept Status,IE Accept Status
 ie.access.status,IE Access Status,IE Access Status
 ie.medium,IEMedium,IEMedium
 ill.code,Fernleihindikator,Ill code

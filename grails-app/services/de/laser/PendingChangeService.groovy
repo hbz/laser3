@@ -83,7 +83,7 @@ class PendingChangeService extends AbstractLockableService {
             //Set<Map> changes = pending.containsKey(sp.subscription) ? pending.get(sp.subscription) : []
             //changes.addAll(
             TitleChange.executeQuery('select new map(count(tic.id) as count, tic.event as event) from TitleChange tic join tic.tipp tipp join tipp.pkg pkg where tic.event in (:keys) and pkg = :pkg and tic.dateCreated >= :startDate ' +
-                    'and not exists(select iec from IssueEntitlementChange iec where iec.titleChange = tic and iec.subscription = :sub and iec.status not in (:processed)) '+
+                    'and not exists(select iec from IssueEntitlementChange iec where iec.titleChange = tic and iec.subscription = :sub and iec.status in (:processed)) '+
                     'group by tic.event ' +
                     'order by tic.event',
                     [keys: keys, pkg: sp.pkg, startDate: sp.dateCreated, sub: sp.subscription, processed: processed]).each { change ->
@@ -483,11 +483,11 @@ class PendingChangeService extends AbstractLockableService {
             if((PendingChangeConfiguration.NEW_TITLE in settings.keySet() && (settings.get(PendingChangeConfiguration.NEW_TITLE) == null || settings.get(PendingChangeConfiguration.NEW_TITLE) == RDStore.PENDING_CHANGE_CONFIG_PROMPT)) ||
                     (PendingChangeConfiguration.TITLE_DELETED in settings.keySet() && (settings.get(PendingChangeConfiguration.TITLE_DELETED) == null || settings.get(PendingChangeConfiguration.TITLE_DELETED) == RDStore.PENDING_CHANGE_CONFIG_PROMPT))) {
                 //if(params.eventType == PendingChangeConfiguration.NEW_TITLE)
-                pendingTitleCounts.addAll(TitleChange.executeQuery('select count(tic.id), tic.event from TitleChange tic join tic.tipp.pkg pkg where pkg = :package and tic.dateCreated >= :entryDate and tic.event in (:eventTypes) and tic.tipp.status != :removed and not exists (select iec.id from IssueEntitlementChange iec where iec.titleChange = tic and iec.subscription = :subscription and iec.status in (:processed)) group by pc.msgToken, pc.tipp', [package: sp.pkg, entryDate: sp.dateCreated, eventTypes: [PendingChangeConfiguration.NEW_TITLE, PendingChangeConfiguration.TITLE_DELETED], subscription: sp.subscription, processed: processed]))
+                pendingTitleCounts.addAll(TitleChange.executeQuery('select count(tic.id), tic.event from TitleChange tic join tic.tipp tipp join tipp.pkg pkg where pkg = :package and tic.dateCreated >= :entryDate and tic.event in (:eventTypes) and tipp.status != :removed and not exists (select iec.id from IssueEntitlementChange iec where iec.titleChange = tic and iec.subscription = :subscription and iec.status in (:processed)) group by tic.event, tipp', [package: sp.pkg, entryDate: sp.dateCreated, removed: RDStore.TIPP_STATUS_REMOVED, eventTypes: [PendingChangeConfiguration.NEW_TITLE, PendingChangeConfiguration.TITLE_DELETED], subscription: sp.subscription, processed: processed]))
             }
             if(PendingChangeConfiguration.TITLE_REMOVED in settings.keySet()) {
                 //else if(params.eventType == PendingChangeConfiguration.TITLE_REMOVED)
-                pendingTitleCounts.addAll(PendingChange.executeQuery('select count(pc.id), pc.msgToken from PendingChange pc join pc.tipp tipp where tipp in (select ie.tipp from IssueEntitlement ie where ie.subscription = :sub and ie.status != :removed) and tipp.pkg = :pkg and pc.msgToken = :eventType group by pc.msgToken', [sub: sp.subscription, pkg: sp.pkg, removed: RDStore.TIPP_STATUS_REMOVED, eventType: PendingChangeConfiguration.TITLE_REMOVED]))
+                pendingTitleCounts.addAll(PendingChange.executeQuery('select count(tic.id), tic.event from TitleChange tic join tic.tipp tipp where tipp in (select ie.tipp from IssueEntitlement ie where ie.subscription = :sub and ie.status != :removed) and tipp.pkg = :pkg and tic.event = :eventType group by tic.event', [sub: sp.subscription, pkg: sp.pkg, removed: RDStore.TIPP_STATUS_REMOVED, eventType: PendingChangeConfiguration.TITLE_REMOVED]))
             }
             /*
             List acceptedTitleCounts = PendingChange.executeQuery('select count(pc.id), pc.msgToken from PendingChange pc join pc.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken in (:eventTypes) and pc.oid = :subOid and pc.status in (:pendingStatus) group by pc.msgToken', [package: sp.pkg, entryDate: sp.dateCreated, subOid: genericOIDService.getOID(sp.subscription), eventTypes: [PendingChangeConfiguration.NEW_TITLE, PendingChangeConfiguration.TITLE_UPDATED, PendingChangeConfiguration.TITLE_DELETED], pendingStatus: pendingStatus])
@@ -640,7 +640,7 @@ class PendingChangeService extends AbstractLockableService {
                     //special case of deleted title restore ...
                     if(targetTitle.status == RDStore.TIPP_STATUS_REMOVED && pc.oldValue == RDStore.TIPP_STATUS_DELETED.id.toString() && pc.newValue != RDStore.TIPP_STATUS_REMOVED.id.toString()) {
                         log.debug("restore deleted ${targetTitle}")
-                        IssueEntitlement restoredTitle = IssueEntitlement.construct([subscription:target,tipp:pc.tipp,acceptStatus:RDStore.IE_ACCEPT_STATUS_FIXED,status:pc.tipp.status])
+                        IssueEntitlement restoredTitle = IssueEntitlement.construct([subscription:target,tipp:pc.tipp,status:pc.tipp.status])
                         if(restoredTitle) {
                             done = true
                         }

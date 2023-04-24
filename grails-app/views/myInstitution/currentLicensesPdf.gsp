@@ -52,7 +52,7 @@
                             <g:if test="${'memberLicenses' in licenseFilterTable}">
                                 <th><g:message code="license.details.incoming.childs"/></th>
                             </g:if>
-                            <th><g:message code="license.licensor.label"/></th>
+                            <th><g:message code="default.ProviderAgency.singular"/></th>
                             <g:if test="${'licensingConsortium' in licenseFilterTable}">
                                 <th><g:message code="consortium"/></th>
                             </g:if>

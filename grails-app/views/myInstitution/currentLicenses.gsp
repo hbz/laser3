@@ -81,7 +81,7 @@
                                 noSelection="${['' : message(code:'default.select.choose.label')]}"/>
               </div>
               <div class="field">
-                  <label for="licensor"><g:message code="license.licensor.label"/></label>
+                  <label for="licensor"><g:message code="default.ProviderAgency.singular"/></label>
                   <select id="licensor" name="licensor" multiple="" class="ui search selection fluid dropdown">
                       <option value=""><g:message code="default.select.choose.label"/></option>
                       <g:each in="${orgs.licensors}" var="licensor">
@@ -180,7 +180,7 @@
                               </span>
                           </th>
                       </g:if>
-                      <th rowspan="2"><g:message code="license.licensor.label"/></th>
+                      <th rowspan="2"><g:message code="default.ProviderAgency.singular"/></th>
                       <g:if test="${'licensingConsortium' in licenseFilterTable}">
                           <th rowspan="2"><g:message code="consortium"/></th>
                       </g:if>

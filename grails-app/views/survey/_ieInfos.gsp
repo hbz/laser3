@@ -38,7 +38,7 @@
                                         <div class="content">
                                             <dl>
                                                 <dt class="control-label">${message(code: 'myinst.selectPackages.pkg_titles')}</dt>
-                                                <dd>${subscriptionService.countIssueEntitlementsFixed(subscription)}</dd>
+                                                <dd>${subscriptionService.countCurrentIssueEntitlements(subscription)}</dd>
                                             </dl>
                                         </div>
                                     </div>

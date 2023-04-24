@@ -7,6 +7,14 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4963    21.04.2023  dev     3.1         Andreas Bug         Bug im Titelexport behoben
+
+4951    21.04.2023  dev     3.1         Andreas Feature     verschiedene Umstellungen im Vertrag-Lizenz-Filter
+
+4958    20.04.2023  dev     3.1         Moe     Featur      Titelumfrage Zwischenebene überarbeiten
+
+4968    20.04.2023  dev     3.1         Moe     Feature     Remove AcceptStatus
+
 4969    20.04.2023  dev     3.1         Andreas Feature     Umgestaltung des Kontaktpanels bei Anbieter
 
 4967    20.04.2023  dev     3.1         Andreas Feature     Auflösung des Panels orgSector und Statusanzeige

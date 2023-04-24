@@ -27,7 +27,6 @@ class IssueEntitlementExport extends BaseDetailsExport {
                                     '@-entitlement-tippName'              : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
                                     '@-entitlement-tippTitleType'         : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
                                     'medium'                              : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
-                                    'acceptStatus'                        : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
                                     'status'                              : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
                                     '@-entitlement-tippFirstAuthor'       : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
                                     '@-entitlement-tippEditionStatement'  : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],

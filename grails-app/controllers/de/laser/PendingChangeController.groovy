@@ -31,6 +31,20 @@ class PendingChangeController  {
     }
 
     /**
+     * Call to accept the given title change and to trigger processing of the changes stored in the record
+     */
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'])
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+    })
+    def acceptTitleChange() {
+        log.debug("Accept")
+        TitleChange tic = TitleChange.get(params.id)
+        pendingChangeService.applyPendingChange(tic, SubscriptionPackage.executeQuery('select sp from SubscriptionPackage sp where sp.pkg = :pkg and sp.subscription.id = :subId', [pkg: tic.tipp.pkg, subId: params.long('subId')]), contextService.getOrg())
+        redirect(url: request.getHeader('referer'))
+    }
+
+    /**
      * Call to reject the given change
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'])
@@ -41,6 +55,20 @@ class PendingChangeController  {
         log.debug("Reject")
         PendingChange pc = PendingChange.get(params.long('id'))
         pendingChangeService.reject(pc, params.subId)
+        redirect(url: request.getHeader('referer'))
+    }
+
+    /**
+     * Call to reject the given change
+     */
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'])
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+    })
+    def rejectTitleChange() {
+        log.debug("Reject")
+        TitleChange tic = TitleChange.get(params.id)
+        IssueEntitlementChange.construct([titleChange: tic, subscription: Subscription.get(params.subId), status: RDStore.PENDING_CHANGE_REJECTED, owner: contextService.getOrg()])
         redirect(url: request.getHeader('referer'))
     }
 
@@ -99,7 +127,7 @@ class PendingChangeController  {
                         else if(rejectAll) {
                             //log.info("is acceptAll simultaneously set? ${params.acceptAll}")
                             //PendingChange toReject = PendingChange.construct([target: target, oid: genericOIDService.getOID(sp.subscription), newValue: pc.newValue, oldValue: pc.oldValue, prop: pc.targetProperty, msgToken: pc.msgToken, status: RDStore.PENDING_CHANGE_PENDING, owner: contextService.getOrg()])
-                            pendingChangeService.reject(tic, sp.subscription.id)
+                            IssueEntitlementChange.construct([titleChange: tic, subscription: sp.subscription, status: RDStore.PENDING_CHANGE_REJECTED, owner: contextService.getOrg()])
                         }
                     }
                 }

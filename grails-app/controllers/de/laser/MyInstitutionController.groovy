@@ -550,7 +550,7 @@ class MyInstitutionController  {
                 g.message(code:'license.details.reference'),
                 g.message(code:'license.details.linked_subs'),
                 g.message(code:'consortium'),
-                g.message(code:'license.licensor.label'),
+                g.message(code:'default.ProviderAgency.singular'),
                 g.message(code:'license.startDate.label'),
                 g.message(code:'license.endDate.label')
         ]
@@ -2011,25 +2011,25 @@ class MyInstitutionController  {
                 /*result.previousIesListPriceSum = 0
                 if(result.previousSubscription){
                     result.previousIesListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
-                            'where p.listPrice is not null and ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus',
-                    [sub: result.previousSubscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0
+                            'where p.listPrice is not null and ie.subscription = :sub and ie.status = :ieStatus',
+                    [sub: result.previousSubscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0
 
                 }*/
 
                 result.iesListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
-                        'where p.listPrice is not null and ie.subscription = :sub and ie.acceptStatus != :acceptStat and ie.status = :ieStatus',
-                        [sub: result.subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0
+                        'where p.listPrice is not null and ie.subscription = :sub and ie.status = :ieStatus',
+                        [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0
 
 
                /* result.iesFixListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
-                        'where p.listPrice is not null and ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus',
-                        [sub: result.subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0 */
-                result.countSelectedIEs = subscriptionService.countIssueEntitlementsNotFixed(result.subscription)
+                        'where p.listPrice is not null and ie.subscription = :sub and ie.status = :ieStatus',
+                        [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0 */
+                result.countSelectedIEs = surveyService.countIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig)
 
                 if (result.surveyConfig.pickAndChoosePerpetualAccess) {
                     result.countCurrentIEs = surveyService.countPerpetualAccessTitlesBySub(result.subscription)
                 } else {
-                    result.countCurrentIEs = (result.previousSubscription ? subscriptionService.countIssueEntitlementsFixed(result.previousSubscription) : 0) + subscriptionService.countIssueEntitlementsFixed(result.subscription)
+                    result.countCurrentIEs = (result.previousSubscription ? subscriptionService.countCurrentIssueEntitlements(result.previousSubscription) : 0) + subscriptionService.countCurrentIssueEntitlements(result.subscription)
                 }
 
 
@@ -2089,35 +2089,6 @@ class MyInstitutionController  {
 
         SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.institution, surveyConfig)
 
-        IssueEntitlement.withTransaction { TransactionStatus ts ->
-            if(surveyConfig && surveyConfig.pickAndChoose){
-
-                List ies = subscriptionService.getIssueEntitlementsUnderConsideration(surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution))
-                ies.each { ie ->
-                    ie.acceptStatus = RDStore.IE_ACCEPT_STATUS_UNDER_NEGOTIATION
-                    ie.save()
-                }
-
-                /*if(ies.size() > 0) {*/
-
-                if (surveyOrg && surveyConfig) {
-                    surveyOrg.finishDate = new Date()
-                    if (!surveyOrg.save()) {
-                        flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccess') as String
-                    } else {
-                        flash.message = message(code: 'renewEntitlementsWithSurvey.submitSuccess') as String
-                        sendMailToSurveyOwner = true
-                    }
-                } else {
-                    flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccess') as String
-                }
-                /*}else {
-                    flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccessEmptyIEs')
-                }*/
-            }
-        }
-
-
         List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.institution, surveyConfig)
 
         boolean allResultHaveValue = true
@@ -2149,7 +2120,7 @@ class MyInstitutionController  {
                 sendMailToSurveyOwner = true
             }
         }
-        else if(!noParticipation && !allResultHaveValue){
+        else if(!noParticipation && allResultHaveValue){
             surveyOrg.finishDate = new Date()
             if (!surveyOrg.save()) {
                 flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccess') as String

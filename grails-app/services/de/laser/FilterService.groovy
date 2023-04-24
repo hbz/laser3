@@ -1280,16 +1280,6 @@ class FilterService {
             qry_params.deleted = RDStore.TIPP_STATUS_REMOVED
         }*/
 
-        if(params.ieAcceptStatusFixed) {
-            base_qry += " and ie.acceptStatus = :ieAcceptStatus "
-            qry_params.ieAcceptStatus = RDStore.IE_ACCEPT_STATUS_FIXED
-        }
-
-        if(params.ieAcceptStatusNotFixed) {
-            base_qry += " and ie.acceptStatus != :ieAcceptStatus "
-            qry_params.ieAcceptStatus = RDStore.IE_ACCEPT_STATUS_FIXED
-        }
-
         if (params.pkgfilter && (params.pkgfilter != '')) {
             base_qry += " and tipp.pkg.id = :pkgId "
             qry_params.pkgId = Long.parseLong(params.pkgfilter)
@@ -1627,13 +1617,12 @@ class FilterService {
         /*
         currently existing config parameters:
         configMap.sub
-        configMap.acceptStat
         configMap.ieStatus
         configMap.tippIds
         as defined in filterService.getTippQuery(), filterServie.getIssueEntitlementQuery()
         as defined in myInstitutionController.currentTitles()
          */
-        String query = "", join = "", where = "", orderClause = "", refdata_value_col = configMap.format == 'kbart' ? 'rdv_value' : I10nTranslation.getRefdataValueColumn(LocaleUtils.getCurrentLocale())
+        String query = "", join = "", subJoin = "", where = "", orderClause = "", refdata_value_col = configMap.format == 'kbart' ? 'rdv_value' : I10nTranslation.getRefdataValueColumn(LocaleUtils.getCurrentLocale())
         Map<String, Object> params = [:]
         Connection connection = sql.dataSource.getConnection()
         //sql.withTransaction {
@@ -1716,6 +1705,10 @@ class FilterService {
                         break
                 }
                 query = "select ${columns.join(',')} from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id"
+                if((configMap.asAt != null && !configMap.asAt.isEmpty()) || configMap.validOn != null || (configMap.filterSub != null && !configMap.filterSub.isEmpty())) {
+                    subJoin += " join subscription on ie_subscription_fk = sub_id"
+                    query += subJoin
+                }
                 if(configMap.pkgfilter != null && !configMap.pkgfilter.isEmpty()) {
                     params.pkgId = Long.parseLong(configMap.pkgfilter)
                     where = " tipp_pkg_fk = :pkgId"
@@ -1753,18 +1746,6 @@ class FilterService {
                 if(configMap.validOn != null) {
                     params.validOn = new Timestamp(configMap.validOn)
                     where += ' and ( (:validOn >= coalesce(ie_access_start_date, sub_start_date, tipp_access_start_date) or (ie_access_start_date is null and sub_start_date is null and tipp_access_start_date is null) ) and ( :validOn <= coalesce(ie_access_end_date, sub_end_date, tipp_access_end_date) or (ie_access_end_date is null and sub_end_date is null and tipp_access_end_date is null) ) or sub_has_perpetual_access = true)'
-                }
-                if(configMap.acceptStat) {
-                    params.acceptStat = configMap.acceptStat.id
-                    where += " and ie_accept_status_rv_fk = :acceptStat"
-                }
-                else if(configMap.ieAcceptStatusFixed) {
-                    params.ieAcceptStatus = RDStore.IE_ACCEPT_STATUS_FIXED.id
-                    where += " and ie_accept_status_rv_fk = :ieAcceptStatus"
-                }
-                else if(configMap.ieAcceptStatusNotFixed) {
-                    params.ieAcceptStatus = RDStore.IE_ACCEPT_STATUS_FIXED.id
-                    where += " and ie_accept_status_rv_fk != :ieAcceptStatus"
                 }
                 if(configMap.ieStatus) {
                     params.ieStatus = configMap.ieStatus.id
@@ -1938,7 +1919,7 @@ class FilterService {
             }
             */
         //}
-        [query: query, join: join, where: where, order: orderClause, params: params]
+        [query: query, join: join, where: where, order: orderClause, params: params, subJoin: subJoin]
     }
 
     List listReaderWrapper(Map params, String key) {

@@ -767,7 +767,7 @@ class ExportService {
 			subscriptionControllerService.fetchTitles(params, refSubs, namespaces, 'ids').each { Map titleMap ->
 				//debug only! DO NOT COMMIT!
 				//if(titleMap.tipp.id == 862496) {
-				titlesSorted << GrailsHibernateUtil.unwrapIfProxy(titleMap.tipp)
+				titlesSorted << titleMap.tipp
 				Map<String, TitleInstancePackagePlatform> innerMap = titles.get(titleMap.namespace)
 				if(!innerMap)
 					innerMap = [:]
@@ -779,7 +779,7 @@ class ExportService {
 		//reportTypes.each { String reportType ->
 		Set<String> columnHeaders = []
 		SortedSet<String> monthHeaders = new TreeSet<String>()
-		Map<TitleInstancePackagePlatform, Map> titleRows = [:]
+		Map<Long, Map> titleRows = [:]
 		Map<String, Object> sumsPerYOP
 		int rowno = 0
 		//revision 4
@@ -879,7 +879,7 @@ class ExportService {
                             }
                             */
 							if(dateRangeParams.containsKey('startDate') && dateRangeParams.containsKey('endDate')) {
-								monthHeaders.addAll(dateRangeParams.monthsInRing.collect { Date month -> DateUtils.getSDF_yyyyMM().format(month) })
+								monthHeaders.addAll(dateRangeParams.monthsInRing.collect { Date month -> DateUtils.getLocalizedSDF_MMMyyyy(LocaleUtils.localeEN).format(month) })
 								columnHeaders.addAll(monthHeaders)
 							}
 						}
@@ -1085,7 +1085,17 @@ class ExportService {
 								break
 							case Counter4Report.PLATFORM_REPORT_1:
 								rowno = 9
-								int totalCount = 0
+								Map<String, Map<String, Object>> data = prepareDataWithDatabases(requestResponse, reportType)
+								data.each { String databaseName, Map<String, Object> databaseMetrics ->
+									databaseMetrics.each { String databaseMetricType, Map<String, Object> metricRow ->
+										columnHeaders.eachWithIndex { String colHeader, int c ->
+											cell = row.createCell(c)
+											cell.setCellValue(metricRow.get(colHeader))
+										}
+									}
+									row = sheet.createRow(rowno)
+									rowno++
+								}
 								/*
                                 TODO migrate
                                 Counter4Report.withNewSession {
@@ -1121,18 +1131,18 @@ class ExportService {
                                         totalCount += countPerMonth.count
                                     }
                                 }
-                                 */
 								cell = row.createCell(3)
 								cell.setCellValue(totalCount)
 								rowno++
 								row = sheet.createRow(rowno)
+								*/
 								break
 						}
 						int i = 0
 						prf.setBenchmark('loop through assembled rows')
 						for(TitleInstancePackagePlatform title: titlesSorted) {
 							Instant start = Instant.now().truncatedTo(ChronoUnit.MICROS)
-							Map metricRow = titleRows.get(title)
+							Map metricRow = titleRows.get(title.id)
 							if(metricRow) {
 								Map titleRow = metricRow.get(metricType)
 								if(titleRow) {
@@ -1412,7 +1422,7 @@ class ExportService {
 					prf.setBenchmark('loop through assembled rows')
 					for(TitleInstancePackagePlatform title: titlesSorted) {
 						Instant start = Instant.now().truncatedTo(ChronoUnit.MICROS)
-						Map titleMetrics = titleRows.get(title)
+						Map titleMetrics = titleRows.get(title.id)
 						for(Map.Entry titleMetric: titleMetrics) {
 							Map titleAccessTypes = titleMetric.getValue()
 							for(Map.Entry titleAccessType: titleAccessTypes) {
@@ -1486,7 +1496,7 @@ class ExportService {
 	 * @return a map of titles with the row containing the columns as specified for the given report
 	 */
 	Map<String, Object> prepareDataWithTitles(Map<String, Map<String, TitleInstancePackagePlatform>> titles, IdentifierNamespace propIdNamespace, String reportType, requestResponse, Boolean showPriceDate = false, Boolean showOtherData = false) {
-		Map<TitleInstancePackagePlatform, Map<String, Map>> titleRows = [:]
+		Map<Long, Map<String, Map>> titleRows = [:]
 		Map<String, Object> result = [:]
 		Calendar limit = GregorianCalendar.getInstance()
 		limit.set(2000, 0, 1)
@@ -1500,7 +1510,7 @@ class ExportService {
 					Set<PriceItem> priceItems = []
 					if(showPriceDate)
 						priceItems.addAll(tipp.priceItems)
-					String isbn = identifierMap.printIdentifier
+					String isbn = identifierMap.isbn ?: identifierMap.printIdentifier
 					String eisbn = identifierMap.onlineIdentifier
 					String issn = identifierMap.printIdentifier
 					String eissn = identifierMap.onlineIdentifier
@@ -1510,7 +1520,7 @@ class ExportService {
 						for(Map instance : performance.Instance) {
 							int periodTotal = 0
 							String yopKey = reportItem.containsKey('YOP') && reportItem.get('YOP') != 'null' && reportItem.get('YOP') != null ? reportItem.get('YOP') : 'empty'
-							Map<String, Map<String, Object>> titleMetrics = titleRows.get(tipp)
+							Map<String, Map<String, Object>> titleMetrics = titleRows.get(tipp.id)
 							if(!titleMetrics)
 								titleMetrics = [:]
 							Map<String, Map<String, Object>> titlesByAccessType = titleMetrics.get(instance.Metric_Type)
@@ -1606,7 +1616,7 @@ class ExportService {
 							titlesByYop.put(yopKey, titleRow)
 							titlesByAccessType.put(reportItem.Access_Type, titlesByYop)
 							titleMetrics.put(instance.Metric_Type, titlesByAccessType)
-							titleRows.put(tipp, titleMetrics)
+							titleRows.put(tipp.id, titleMetrics)
 						}
 					}
 				}
@@ -1646,7 +1656,7 @@ class ExportService {
 							countPerMonth += count
 							metricSums.put(reportFrom, countPerMonth)
 							countsPerMonth.put(metricType, metricSums)
-							Map<String, Map<String, Object>> titleMetrics = titleRows.get(tipp)
+							Map<String, Map<String, Object>> titleMetrics = titleRows.get(tipp.id)
 							if(!titleMetrics)
 								titleMetrics = [:]
 							Map<String, Object> titleRow = titleMetrics.get(metricType)
@@ -1731,7 +1741,7 @@ class ExportService {
 									break
 							}
 							titleMetrics.put(metricType, titleRow)
-							titleRows.put(tipp, titleMetrics)
+							titleRows.put(tipp.id, titleMetrics)
 						}
 					}
 				}
@@ -1878,6 +1888,7 @@ class ExportService {
 			for (GPathResult reportItem: requestResponse.reports) {
 				String databaseName = reportItem.'ns2:ItemName'.text()
 				for (GPathResult performance: reportItem.'ns2:ItemPerformance') {
+					Date reportMonth = DateUtils.parseDateGeneric(performance.'ns2:Period'.'ns2:Begin'.text())
 					for (GPathResult instance: performance.'ns2:Instance') {
 						String metricType = instance.'ns2:MetricType'.text()
 						int periodTotal = 0, count = Integer.parseInt(instance.'ns2:Count'.text())
@@ -1906,12 +1917,13 @@ class ExportService {
 							metricRow = ['Database': databaseName, 'Publisher': reportItem.'ns2:ItemPublisher'.text(), 'Platform': reportItem.'ns2:ItemPlatform'.text()]
 						}
 						else periodTotal = metricRow.get('Reporting Period Total')
-						if(reportType == Counter4Report.DATABASE_REPORT_1)
-							metricRow.put('User Activity', metricHumanReadable)
-						else if(reportType == Counter4Report.DATABASE_REPORT_2)
+						if(reportType == Counter4Report.DATABASE_REPORT_2)
 							metricRow.put('Access denied category', metricHumanReadable)
+						else
+							metricRow.put('User Activity', metricHumanReadable)
 						periodTotal += count
 						metricRow.put('Reporting Period Total', periodTotal)
+						metricRow.put(DateUtils.getLocalizedSDF_MMMyyyy(LocaleUtils.localeEN).format(reportMonth), count)
 						databaseRow.put(metricType, metricRow)
 						databaseRows.put(databaseName, databaseRow)
 					}
@@ -1975,11 +1987,13 @@ class ExportService {
 		else if(platformRecord.counterR4SushiApiSupported == "Yes") {
 			revision = 'counter4'
 			statsUrl = platformRecord.counterR4SushiServerUrl
+			/*
 			if (!platformRecord.counterR4SushiServerUrl.contains('reports')) {
 				if (platformRecord.counterR4SushiServerUrl.endsWith('/'))
 					statsUrl = platformRecord.counterR4SushiServerUrl + 'reports'
 				else statsUrl = platformRecord.counterR4SushiServerUrl + '/reports'
 			}
+			*/
 		}
 		[revision: revision, statsUrl: statsUrl]
 	}
@@ -2037,6 +2051,7 @@ class ExportService {
 							}
 						}
 					}
+					//log.debug(requestBody.toString())
 					result.putAll(statsSyncService.fetchXMLData(statsSource.statsUrl, requestBody))
 				}
 				else if(statsSource.revision == 'counter5') {
@@ -3549,16 +3564,16 @@ class ExportService {
 			priceItemMap.putAll(preprocessPriceItemRows(priceItems, 'pi_tipp_fk'))
 		}
 		else if(entitlementInstance == IssueEntitlement.class.name) {
-			identifiers = sql.rows("select id_tipp_fk, id_value, idns_ns from identifier join identifier_namespace on id_ns_fk = idns_id join issue_entitlement on ie_tipp_fk = id_tipp_fk join title_instance_package_platform on ie_tipp_fk = tipp_id where ${queryData.where}", queryData.params)
-			coverages = sql.rows("select ic_ie_fk, ic_start_date as startDate, ic_start_volume as startVolume, ic_start_issue as startIssue, ic_end_date as endDate, ic_end_volume as endVolume, ic_end_issue as endIssue, ic_coverage_note as coverageNote, ic_coverage_depth as coverageDepth, ic_embargo as embargo from issue_entitlement_coverage join issue_entitlement on ic_ie_fk = ie_id join title_instance_package_platform on ie_tipp_fk = tipp_id where ${queryData.where}", queryData.params)
-			priceItems = sql.rows("select pi_ie_fk, pi_list_price, (select rdv_value from refdata_value where rdv_id = pi_list_currency_rv_fk) as pi_list_currency, pi_local_price, (select rdv_value from refdata_value where rdv_id = pi_local_currency_rv_fk) as pi_local_currency from price_item join issue_entitlement on pi_ie_fk = ie_id join title_instance_package_platform on ie_tipp_fk = tipp_id where ${queryData.where}", queryData.params)
-			coreTitleIdentifierNamespaces = sql.rows("select distinct idns_ns from identifier_namespace join identifier on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id join issue_entitlement on ie_tipp_fk = tipp_id where idns_ns in ('${coreTitleNSrestricted.join("','")}') and ${queryData.where}", queryData.params)
-			otherTitleIdentifierNamespaces = sql.rows("select distinct idns_ns from identifier_namespace join identifier on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id join issue_entitlement on ie_tipp_fk = tipp_id where idns_ns not in ('${IdentifierNamespace.CORE_TITLE_NS.join("','")}') and ${queryData.where}", queryData.params)
+			identifiers = sql.rows("select id_tipp_fk, id_value, idns_ns from identifier join identifier_namespace on id_ns_fk = idns_id join issue_entitlement on ie_tipp_fk = id_tipp_fk ${queryData.subJoin} join title_instance_package_platform on ie_tipp_fk = tipp_id where ${queryData.where}", queryData.params)
+			coverages = sql.rows("select ic_ie_fk, ic_start_date as startDate, ic_start_volume as startVolume, ic_start_issue as startIssue, ic_end_date as endDate, ic_end_volume as endVolume, ic_end_issue as endIssue, ic_coverage_note as coverageNote, ic_coverage_depth as coverageDepth, ic_embargo as embargo from issue_entitlement_coverage join issue_entitlement on ic_ie_fk = ie_id ${queryData.subJoin} join title_instance_package_platform on ie_tipp_fk = tipp_id where ${queryData.where}", queryData.params)
+			priceItems = sql.rows("select pi_ie_fk, pi_list_price, (select rdv_value from refdata_value where rdv_id = pi_list_currency_rv_fk) as pi_list_currency, pi_local_price, (select rdv_value from refdata_value where rdv_id = pi_local_currency_rv_fk) as pi_local_currency from price_item join issue_entitlement on pi_ie_fk = ie_id ${queryData.subJoin} join title_instance_package_platform on ie_tipp_fk = tipp_id where ${queryData.where}", queryData.params)
+			coreTitleIdentifierNamespaces = sql.rows("select distinct idns_ns from identifier_namespace join identifier on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id join issue_entitlement on ie_tipp_fk = tipp_id ${queryData.subJoin} where idns_ns in ('${coreTitleNSrestricted.join("','")}') and ${queryData.where}", queryData.params)
+			otherTitleIdentifierNamespaces = sql.rows("select distinct idns_ns from identifier_namespace join identifier on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id join issue_entitlement on ie_tipp_fk = tipp_id ${queryData.subJoin} where idns_ns not in ('${IdentifierNamespace.CORE_TITLE_NS.join("','")}') and ${queryData.where}", queryData.params)
 			identifierMap.putAll(preprocessIdentifierRows(identifiers))
 			coverageMap.putAll(preprocessRows(coverages, 'ic_ie_fk'))
 			priceItemMap.putAll(preprocessPriceItemRows(priceItems, 'pi_ie_fk'))
 			if(showStatsInMonthRings && subscriber) {
-				List<GroovyRowResult> platformData = sql.rows("select plat_title_namespace, plat_guid from platform join title_instance_package_platform on plat_id = tipp_plat_fk join issue_entitlement on ie_tipp_fk = tipp_id where ${queryData.where} group by plat_guid, plat_title_namespace", queryData.params)
+				List<GroovyRowResult> platformData = sql.rows("select plat_title_namespace, plat_guid from platform join title_instance_package_platform on plat_id = tipp_plat_fk join issue_entitlement on ie_tipp_fk = tipp_id ${queryData.subJoin} where ${queryData.where} group by plat_guid, plat_title_namespace", queryData.params)
 				List<Object> platforms = []
 				Set<String> propIdNamespaces = []
 				platformData.each { GroovyRowResult row ->
@@ -3628,7 +3643,7 @@ class ExportService {
 							Map<String, Integer> titlePerformance = reportMap.containsKey(titleMatch) ? reportMap.get(titleMatch) : [:]
 							for(GPathResult performance: reportItem.'ns2:ItemPerformance') {
 								Date reportFrom = DateUtils.parseDateGeneric(performance.'ns2:Period'.'ns2:Begin'.text())
-								for(GPathResult instance: performance.'ns2:Instance'.findAll { instCand -> instCand.'ns2:MetricType' == configMap.metricType }) {
+								for(GPathResult instance: performance.'ns2:Instance'.findAll { instCand -> instCand.'ns2:MetricType'.text() == configMap.metricTypes }) {
 									titlePerformance.put(DateUtils.getSDF_yyyyMM().format(reportFrom), Integer.parseInt(instance.'ns2:Count'.text()))
 								}
 							}

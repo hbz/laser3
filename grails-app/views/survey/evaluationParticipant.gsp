@@ -21,11 +21,6 @@
             </ui:exportDropdownItem>
         </ui:exportDropdown>
     <ui:actionsDropdown>
-        <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT}">
-            <ui:actionsDropdownItem action="renewEntitlements" controller="survey"
-                                       id="${surveyConfig.id}" params="[surveyConfigID: surveyConfig.id, participant: participant.id]"
-                                       message="renewEntitlementsWithSurvey.renewEntitlements"/>
-        </g:if>
         <g:if test="${surveyInfo.status.id in [RDStore.SURVEY_SURVEY_STARTED.id, RDStore.SURVEY_SURVEY_COMPLETED.id]}">
 
             <g:if test="${surveyConfig.isResultsSetFinishByOrg(participant)}">

@@ -64,9 +64,6 @@ class IssueEntitlement extends AbstractBase implements Comparable {
     @RefdataInfo(cat = RDConstants.TITLE_MEDIUM)
     RefdataValue medium // legacy; was distinguished back then; I see no reason why I should still do so. Is legacy.
 
-    @RefdataInfo(cat = RDConstants.IE_ACCEPT_STATUS)
-    RefdataValue acceptStatus
-
     Date dateCreated
     Date lastUpdated
 
@@ -112,7 +109,6 @@ class IssueEntitlement extends AbstractBase implements Comparable {
     accessStartDate column:'ie_access_start_date'
      accessEndDate column:'ie_access_end_date'
          coverages sort: 'startDate', order: 'asc'
-      acceptStatus column:'ie_accept_status_rv_fk', index: 'ie_accept_status_idx, ie_status_accept_status_idx, ie_tipp_status_accept_status_idx'
 
     dateCreated column: 'ie_date_created'
     lastUpdated column: 'ie_last_updated'
@@ -130,7 +126,6 @@ class IssueEntitlement extends AbstractBase implements Comparable {
         medium         (nullable:true)
         accessStartDate(nullable:true)
         accessEndDate  (nullable:true)
-        acceptStatus   (nullable:true)
 
         lastUpdated (nullable: true)
         perpetualAccessBySub (nullable: true)
@@ -149,7 +144,7 @@ class IssueEntitlement extends AbstractBase implements Comparable {
       TitleInstancePackagePlatform tipp = (TitleInstancePackagePlatform) configMap.tipp
       IssueEntitlement ie = findBySubscriptionAndTippAndStatusNotEqual(subscription,tipp, RDStore.TIPP_STATUS_REMOVED)
       if(!ie) {
-          ie = new IssueEntitlement(subscription: subscription, tipp: tipp, medium: tipp.medium, status:tipp.status, accessType: tipp.accessType, openAccess: tipp.openAccess, acceptStatus: configMap.acceptStatus, name: tipp.name)
+          ie = new IssueEntitlement(subscription: subscription, tipp: tipp, medium: tipp.medium, status:tipp.status, accessType: tipp.accessType, openAccess: tipp.openAccess, name: tipp.name)
           //ie.generateSortTitle()
       }
       if(ie.save()) {
