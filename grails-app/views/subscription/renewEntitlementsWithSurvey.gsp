@@ -19,7 +19,7 @@
     <ui:exportDropdown>
 
         <div class="header">KBART Exports</div>
-        <g:if test="${surveyConfig.pickAndChoosePerpetualAccess}">
+%{--        <g:if test="${surveyConfig.pickAndChoosePerpetualAccess}">
             <ui:exportDropdownItem>
                 <g:link class="item" action="renewEntitlementsWithSurvey"
                         id="${subscriberSub.id}"
@@ -27,7 +27,7 @@
                                    exportKBart   : true,
                                    tab           : 'toBeSelectedIEs']}">${message(code: 'renewEntitlementsWithSurvey.toBeSelectedIEs')}</g:link>
             </ui:exportDropdownItem>
-        </g:if>
+        </g:if>--}%
 
         <ui:exportDropdownItem>
             <g:link class="item" action="renewEntitlementsWithSurvey"
@@ -60,7 +60,7 @@
 
         <div class="header">${message(code: 'default.button.exports.xls')}s</div>
 
-        <g:if test="${surveyConfig.pickAndChoosePerpetualAccess}">
+%{--        <g:if test="${surveyConfig.pickAndChoosePerpetualAccess}">
             <ui:exportDropdownItem>
                 <g:link class="item" action="renewEntitlementsWithSurvey"
                         id="${subscriberSub.id}"
@@ -68,7 +68,7 @@
                                    exportXLS     : true,
                                    tab           : 'toBeSelectedIEs']}">${message(code: 'renewEntitlementsWithSurvey.toBeSelectedIEs')}</g:link>
             </ui:exportDropdownItem>
-        </g:if>
+        </g:if>--}%
 
         <ui:exportDropdownItem>
             <g:link class="item" action="renewEntitlementsWithSurvey"
@@ -98,7 +98,7 @@
                                tab           : 'selectedIEs']}">${message(code: 'renewEntitlementsWithSurvey.currentTitlesSelect')}</g:link>
         </ui:exportDropdownItem>--}%
 
-        <g:if test="${showStatisticByParticipant && surveyConfig.pickAndChoosePerpetualAccess}">
+%{--        <g:if test="${showStatisticByParticipant && surveyConfig.pickAndChoosePerpetualAccess}">
             <ui:exportDropdownItem>
                 <g:link class="item statsExport" action="renewEntitlementsWithSurvey"
                         id="${subscriberSub.id}"
@@ -109,7 +109,7 @@
                     ${message(code: 'renewEntitlementsWithSurvey.toBeSelectedIEs')} + ${message(code: 'default.stats.label')}
                 </g:link>
             </ui:exportDropdownItem>
-        </g:if>
+        </g:if>--}%
 
         <g:if test="${showStatisticByParticipant}">
             <ui:exportDropdownItem>
@@ -303,12 +303,12 @@
                     params="[id: subscriberSub.id, surveyConfigID: surveyConfig.id, tab: 'allIEs']"
                     text="${message(code: "renewEntitlementsWithSurvey.selectableTitles")}" tab="allIEs"
                     counts="${countAllIEs}"/>
-    <g:if test="${surveyConfig.pickAndChoosePerpetualAccess}">
+%{--    <g:if test="${surveyConfig.pickAndChoosePerpetualAccess}">
         <ui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
                         params="[id: subscriberSub.id, surveyConfigID: surveyConfig.id, tab: 'toBeSelectedIEs']"
                         text="${message(code: "renewEntitlementsWithSurvey.toBeSelectedIEs")}" tab="toBeSelectedIEs"
                         counts="${toBeSelectedIEs}"/>
-    </g:if>
+    </g:if>--}%
     <ui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
                     params="[id: subscriberSub.id, surveyConfigID: surveyConfig.id, tab: 'selectedIEs']"
                     text="${message(code: "renewEntitlementsWithSurvey.currentTitlesSelect")}" tab="selectedIEs"

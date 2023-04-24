@@ -37,7 +37,7 @@
 
                 <div class="column">
                     <div class="ui divided relaxed list">
-                        <ui:securedMainNavItem affiliation="INST_USER" orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="tasks" message="task.plural" />
+                        <ui:securedMainNavItem affiliation="INST_USER" orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="tasks" message="task.plural" />
                         <ui:securedMainNavItem affiliation="INST_USER" orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="addressbook" message="menu.institutions.myAddressbook" />
                         <ui:securedMainNavItem affiliation="INST_USER" orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="managePrivatePropertyDefinitions" message="menu.institutions.manage_props" />
                     </div>
@@ -92,7 +92,7 @@
             </a>
         </g:if>
 
-        <g:if test="${accessService.ctxPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
+        <g:if test="${accessService.ctxPerm(CustomerTypeService.PERMS_PRO)}">
             <a class="${us_dashboard_tab.value == 'Tasks' ? 'active item':'item'}" data-tab="tasks">
                 <i class="calendar check outline icon large"></i>
                 ${tasksCount} ${message(code:'myinst.dash.task.label')}
@@ -160,7 +160,7 @@
             </g:if>
         </div>
 
-        <g:if test="${accessService.ctxPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
+        <g:if test="${accessService.ctxPerm(CustomerTypeService.PERMS_PRO)}">
         <div class="ui bottom attached tab ${us_dashboard_tab.value == 'Tasks' ? 'active':''}" data-tab="tasks">
 
             <g:if test="${editable}">
