@@ -140,9 +140,16 @@
                             <g:if test="${orgInstance.url}">
                                 <ui:linkWithIcon href="${orgInstance.url}" />
                             </g:if>
-                            <br />&nbsp<br />&nbsp<br />
                         </dd>
                     </dl>
+                    <g:if test="${orgInstance.getCustomerType()}">
+                        <dl>
+                            <dt><g:message code="org.customerType.label"/></dt>
+                            <dd>
+                                ${orgInstance.getCustomerTypeI10n()}
+                            </dd>
+                        </dl>
+                    </g:if>
                     <g:if test="${orgInstance.isCustomerType_Inst_Pro()}">
                         <dl>
                             <dt>

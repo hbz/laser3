@@ -55,13 +55,13 @@
         </g:else>
         <g:if test="${inContextOrg}">
             <ui:securedSubNavItem controller="organisation" action="settings" params="${breadcrumbParams}"
-                                     message="org.nav.options" affiliation="INST_ADM" affiliationOrg="${orgInstance}"/>
+                                     message="org.nav.dataTransfer" affiliation="INST_ADM" affiliationOrg="${orgInstance}"/>
         </g:if>
         <g:elseif test="${accessService.otherOrgAndComboCheckPermAffiliation_or_ROLEADMIN(orgInstance, CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_ADM')}">
-            <ui:subNavItem controller="organisation" action="settings" params="${breadcrumbParams}" message="org.nav.options"/>
+            <ui:subNavItem controller="organisation" action="settings" params="${breadcrumbParams}" message="org.nav.dataTransfer"/>
         </g:elseif>
         <g:else>
-            <ui:subNavItem disabled="disabled" message="org.nav.options"/>
+            <ui:subNavItem disabled="disabled" message="org.nav.dataTransfer"/>
         </g:else>
     </g:if>
 </ui:subNav>
