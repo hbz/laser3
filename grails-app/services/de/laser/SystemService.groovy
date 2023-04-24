@@ -9,7 +9,6 @@ import de.laser.system.SystemSetting
 import de.laser.utils.AppUtils
 import de.laser.utils.DateUtils
 import grails.gorm.transactions.Transactional
-import grails.plugin.springsecurity.SpringSecurityUtils
 import groovy.json.JsonOutput
 import org.elasticsearch.action.index.IndexRequest
 import org.elasticsearch.action.index.IndexResponse

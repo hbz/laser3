@@ -4,7 +4,6 @@ import de.laser.finance.CostItem
 import de.laser.oap.OrgAccessPointLink
 import de.laser.storage.RDStore
 import de.laser.utils.LocaleUtils
-import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.web.mapping.LinkGenerator
 import groovy.sql.Sql

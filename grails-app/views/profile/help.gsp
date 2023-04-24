@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue;de.laser.auth.Role;de.laser.auth.UserOrgRole" %>
+<%@ page import="de.laser.RefdataValue;de.laser.auth.Role;" %>
 <laser:htmlStart message="menu.user.help" />
 
 <ui:breadcrumbs>
