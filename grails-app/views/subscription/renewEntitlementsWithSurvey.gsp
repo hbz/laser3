@@ -525,10 +525,13 @@
         console.log($("#accessMethod").dropdown('get value'));
         */
         let url = $(this).attr('href')+'&reportType='+$("#reportType").dropdown('get value');
-        url+='&metricType='+$("#metricType").dropdown('get value');
-        url+='&accessType='+$("#accessType").dropdown('get value');
-        url+='&accessMethod='+$("#accessMethod").dropdown('get value');
-        if($("#platform").dropdown('get value') !== '') {
+        if($("#metricType").dropdown('get value').length > 0)
+            url+='&metricType='+$("#metricType").dropdown('get value');
+        if($("#accessType").dropdown('get value').length > 0)
+            url+='&accessType='+$("#accessType").dropdown('get value');
+        if($("#accessMethod").dropdown('get value').length > 0)
+            url+='&accessMethod='+$("#accessMethod").dropdown('get value');
+        if($("#platform").dropdown('get value').length > 0) {
             $.each($("#platform").dropdown('get value'), function(i, val) {
                 url+='&platform='+val;
             });
