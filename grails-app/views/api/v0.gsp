@@ -82,7 +82,7 @@
 
     <asset:stylesheet src="swagger.css"/><laser:javascript src="swagger.js"/>%{-- dont move --}%
 
-    <tmpl:/layouts/favicon />
+    <g:render template="/layouts/favicon" />
 </head>
 
 <body>
