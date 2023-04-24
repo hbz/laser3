@@ -143,8 +143,8 @@ class OrganisationController  {
         result.settings = []
 
         switch(params.tab) {
-            case 'general': // result.settings.addAll(allSettings.findAll { OrgSetting os -> os.key in generalSet })
-                break
+//            case 'general': result.settings.addAll(allSettings.findAll { OrgSetting os -> os.key in generalSet })
+//                break
             case 'api': result.settings.addAll(allSettings.findAll { OrgSetting os -> os.key in apiSet })
                 break
             case 'ezb': result.settings.addAll(allSettings.findAll { OrgSetting os -> os.key in ezbSet })

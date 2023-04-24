@@ -23,11 +23,11 @@
         <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentPlatforms" message="menu.my.platforms" />
         <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentPackages" message="menu.my.packages" />
         <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentTitles" message="menu.my.titles" />
-        <ui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" affiliation="INST_USER" controller="myInstitution" action="documents" message="menu.my.documents" />
+        <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="documents" message="menu.my.documents" />
 
         <div class="divider"></div>
 
-        <ui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" affiliation="INST_USER" controller="myInstitution" action="subscriptionsManagement" message="menu.my.subscriptionsManagement" />
+        <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="subscriptionsManagement" message="menu.my.subscriptionsManagement" />
 
         <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_INST_BASIC)}">
             <div class="divider"></div>
@@ -35,11 +35,11 @@
         </g:if>
         <g:elseif test="${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
             <div class="divider"></div>
-            <ui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="${CustomerTypeService.ORG_CONSORTIUM_PRO}" affiliation="INST_USER" controller="survey" action="workflowsSurveysConsortia" message="menu.my.surveys" />
+            <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" orgPerm="${CustomerTypeService.ORG_CONSORTIUM_PRO}" controller="survey" action="workflowsSurveysConsortia" message="menu.my.surveys" />
         </g:elseif>
 
         <div class="divider"></div>
-        <ui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="${CustomerTypeService.PERMS_PRO}" affiliation="INST_USER" controller="myInstitution" action="currentWorkflows" message="menu.my.workflows" />
+        <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="currentWorkflows" message="menu.my.workflows" />
 
         %{--                                <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)}">--}%
         %{--                                    <div class="divider"></div>--}%
@@ -47,7 +47,7 @@
         %{--                                </g:if>--}%
 
         <div class="divider"></div>
-        <ui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" affiliation="INST_USER" controller="compare" action="compareSubscriptions" message="menu.my.comp_sub" />
-        <ui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" affiliation="INST_USER" controller="compare" action="compareLicenses" message="menu.my.comp_lic" />
+        <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="compare" action="compareSubscriptions" message="menu.my.comp_sub" />
+        <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="compare" action="compareLicenses" message="menu.my.comp_lic" />
     </div>
 </div>
