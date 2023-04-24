@@ -350,7 +350,7 @@
         </g:if>
         <article>
             <header>
-                <h2><g:message code="license.licensor.label"/></h2>
+                <h2><g:message code="default.ProviderAgency.singular"/></h2>
                 <table>
                     <g:each in="${visibleOrgRelations}" var="role">
                         <g:if test="${role.org}">
