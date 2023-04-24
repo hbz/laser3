@@ -167,6 +167,11 @@ class SubscriptionPackage implements Comparable {
    * @return the {@link PendingChangeConfiguration} for the given config key and this subscription package
    */
   PendingChangeConfiguration getPendingChangeConfig(String config) {
-    PendingChangeConfiguration.findBySubscriptionPackageAndSettingKey(this,config)
+    if(this.subscription.instanceOf) {
+      if(AuditConfig.getConfig(this.subscription.instanceOf, config))
+        PendingChangeConfiguration.executeQuery('select pcc from PendingChangeConfiguration pcc join pcc.subscriptionPackage sp where sp.subscription.instanceOf = :sub and sp.settingKey = :config', [sub: this.subscription.instanceOf, config: config]).get(0)
+    }
+    else
+      PendingChangeConfiguration.findBySubscriptionPackageAndSettingKey(this,config)
   }
 }

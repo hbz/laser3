@@ -616,7 +616,7 @@ class PendingChangeService extends AbstractLockableService {
             //pendingChange.message_TP01 (newTitle)
             case PendingChangeConfiguration.NEW_TITLE:
                 TitleInstancePackagePlatform target = iec.titleChange.tipp
-                IssueEntitlement newTitle = IssueEntitlement.construct([subscription:iec.subscription,tipp:target,acceptStatus:RDStore.IE_ACCEPT_STATUS_FIXED,status:target.status])
+                IssueEntitlement newTitle = IssueEntitlement.construct([subscription:iec.subscription,tipp:target,status:target.status])
                 if(newTitle) {
                     done = true
                 }
@@ -689,6 +689,11 @@ class PendingChangeService extends AbstractLockableService {
                 IssueEntitlement.executeUpdate("update IssueEntitlement ie set ie.status = :removed where ie.tipp = :title and ie.subscription in (select s from Subscription s where :subscription in (s.id, s.instanceOf.id))", [removed: RDStore.TIPP_STATUS_REMOVED, title: iec.titleChange.tipp, subscription: iec.subscription])
                 //else throw new ChangeAcceptException("no instance of IssueEntitlement stored: ${pc.oid}! Pending change is void!")
                 break
+        }
+        if(done) {
+            iec.status = RDStore.PENDING_CHANGE_ACCEPTED
+            iec.actionDate = new Date()
+            iec.save()
         }
         done
     }
