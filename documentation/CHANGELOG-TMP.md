@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4927    24.04.2023  dev     3.1         Moe     Feature    Betreff E-Mails aus LAS:eR
+
+4878    24.04.2023  dev     3.1         Moe     Feature  Titelumfrage: Auswählbare Titel
+
+4906    24.04.2023  dev     3.1         Moe     Feature     Titelumfrage Export: Extra Spalte für Titel im Bestand
+
 4963    21.04.2023  dev     3.1         Andreas Bug         Bug im Titelexport behoben
 
 4951    21.04.2023  dev     3.1         Andreas Feature     verschiedene Umstellungen im Vertrag-Lizenz-Filter

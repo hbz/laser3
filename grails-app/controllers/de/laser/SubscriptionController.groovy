@@ -1423,7 +1423,7 @@ class SubscriptionController {
             }
 
             List<Long> toBeSelectedTippIDs = []
-            if(params.tab == 'toBeSelectedIEs') {
+            /*if(params.tab == 'toBeSelectedIEs') {
                 List<Long> allTippIDs = IssueEntitlement.executeQuery("select ie.tipp.id from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :ieStatus", [sub: ctrlResult.result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])
 
                 List<Long> selectedTippIDs =  IssueEntitlement.executeQuery("select ie.tipp.id from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :ieStatus ", [sub: ctrlResult.result.subscriberSub, ieStatus: RDStore.TIPP_STATUS_CURRENT])
@@ -1441,7 +1441,7 @@ class SubscriptionController {
                     queryMap.platform = Platform.get(params.platform)
                 }
                 filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.toBeSelectedIEs') + '_' + ctrlResult.result.subscriberSub.dropdownNamingConvention())
-            }
+            }*/
 
             if (params.exportKBart) {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
@@ -1496,6 +1496,20 @@ class SubscriptionController {
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 Map<String, List> export = exportService.generateTitleExportCustom(queryMap, IssueEntitlement.class.name, [], null, perpetuallyPurchasedTitleURLs)
                 Map sheetData = [:]
+
+                export.titles << message(code: 'renewEntitlementsWithSurvey.toBeSelectedIEs.export')
+                export.titles << "Pick"
+
+                String refYes = RDStore.YN_YES.getI10n('value')
+                String refNo = RDStore.YN_NO.getI10n('value')
+                export.rows.eachWithIndex { def field, int index ->
+                    if(export.rows[index][0] && export.rows[index][0].style == 'negative'){
+                        export.rows[index] << [field: refNo, style: 'negative']
+                    }else {
+                        export.rows[index] << [field: refYes, style: null]
+                    }
+
+                }
                 sheetData[g.message(code: 'renewEntitlementsWithSurvey.selectableTitles')] = [titleRow: export.titles, columnData: export.rows]
                 wb = exportService.generateXLSXWorkbook(sheetData)
                 wb.write(response.outputStream)
