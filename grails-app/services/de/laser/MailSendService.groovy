@@ -5,7 +5,6 @@ import de.laser.auth.UserOrgRole
 import de.laser.config.ConfigMapper
 import de.laser.properties.PropertyDefinition
 import de.laser.storage.BeanStore
-import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyInfo
 import de.laser.survey.SurveyOrg
@@ -15,9 +14,7 @@ import de.laser.system.SystemEvent
 import de.laser.utils.AppUtils
 import grails.gorm.transactions.Transactional
 import grails.plugins.mail.MailService
-import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
-import org.springframework.transaction.TransactionStatus
 
 @Transactional
 class MailSendService {

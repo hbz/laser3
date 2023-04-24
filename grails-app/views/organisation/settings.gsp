@@ -1,7 +1,7 @@
 <%@ page import="de.laser.OrgSetting; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.Org; de.laser.auth.Role; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
 <%@ page import="de.laser.CustomerTypeService; grails.plugin.springsecurity.SpringSecurityUtils" %>
 
-<laser:htmlStart message="org.nav.options" serviceInjection="true" />
+<laser:htmlStart message="org.nav.dataTransfer" serviceInjection="true" />
 
         <laser:render template="breadcrumb"
               model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView]}"/>
@@ -27,9 +27,10 @@
         </ui:tabs>
 
         <div class="ui bottom attached tab active segment">
-
                 <div class="la-inline-lists">
-                    <div class="ui ${params.tab == 'general' ? 'card ' : ''}la-dl-no-table la-js-hideable">
+
+                    <g:if test="${params.tab != 'general'}">
+                    <div class="ui la-dl-no-table la-js-hideable">
                         <div class="content">
 
                             <table class="ui la-js-responsive-table la-table table">
@@ -48,11 +49,9 @@
                                     }).on('shown', function() {
                                         r2d2.initDynamicUiStuff('body');
                                         $(".table").trigger('reflow');
-                                        $('.ui.dropdown')
-                                                .dropdown({
+                                        $('.ui.dropdown').dropdown({
                                             clearable: true
-                                        })
-                                        ;
+                                        });
                                     }).on('hidden', function() {
                                         $(".table").trigger('reflow')
                                     });
@@ -62,11 +61,9 @@
                                     }).on('shown', function() {
                                         r2d2.initDynamicUiStuff('body');
                                         $(".table").trigger('reflow');
-                                        $('.ui.dropdown')
-                                                .dropdown({
+                                        $('.ui.dropdown').dropdown({
                                             clearable: true
-                                        })
-                                        ;
+                                        });
                                     }).on('hidden', function() {
                                         $(".table").trigger('reflow')
                                     });
@@ -76,11 +73,9 @@
                                     }).on('shown', function() {
                                         r2d2.initDynamicUiStuff('body');
                                         $(".table").trigger('reflow');
-                                        $('.ui.dropdown')
-                                                .dropdown({
+                                        $('.ui.dropdown').dropdown({
                                             clearable: true
-                                        })
-                                        ;
+                                        });
                                     }).on('hidden', function() {
                                         $(".table").trigger('reflow')
                                     });
@@ -107,7 +102,6 @@
                                             </g:elseif>
                                         </td>
                                         <td>
-
                                             <g:if test="${editable && os.key in OrgSetting.getEditableSettings()}">
                                                 <g:if test="${OrgSetting.KEYS.NATSTAT_SERVER_ACCESS == os.key}">
                                                     <ui:xEditableRefData owner="${os}"
@@ -171,7 +165,6 @@
                                                 </g:else>
 
                                             </g:else>
-
                                         </td>
                                     </tr>
                                 </g:each>
@@ -179,8 +172,11 @@
                         </table>
                         </div><!-- .content -->
                     </div>
+                    </g:if>
 
                     <g:if test="${params.tab == 'general'}">
+                        <ui:flagDeprecated />
+
                         <div class="ui card la-dl-no-table la-js-hideable">
                             <div class="content">
                                 <h2 class="ui header">

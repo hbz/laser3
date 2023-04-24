@@ -3,8 +3,6 @@ package de.laser
 import de.laser.auth.User
 import de.laser.storage.RDStore
 import grails.gorm.transactions.Transactional
-import grails.plugin.springsecurity.SpringSecurityUtils
-import org.codehaus.groovy.syntax.Numbers
 
 /**
  * This service handles retrieval and processing of contact data

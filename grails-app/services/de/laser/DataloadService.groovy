@@ -882,8 +882,7 @@ class DataloadService {
      */
     private void _updateES(Class domainClass, int bulkSize, Closure recgen_closure) {
         String logPrefix = "updateES ( ${domainClass.name} )"
-
-        log.info ( "${logPrefix}")
+//        log.info ( "${logPrefix}")
 
         RestHighLevelClient esclient = ESWrapperService.getNewClient(true)
         Map es_indices = ESWrapperService.ES_Indices

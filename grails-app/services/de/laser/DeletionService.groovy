@@ -4,7 +4,6 @@ package de.laser
 import de.laser.auth.User
 import de.laser.finance.*
 import de.laser.stats.Fact
-import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.oap.OrgAccessPoint
 import de.laser.properties.*
@@ -13,8 +12,6 @@ import de.laser.survey.SurveyConfigProperties
 import de.laser.survey.SurveyInfo
 import de.laser.survey.SurveyOrg
 import de.laser.survey.SurveyResult
-import de.laser.stats.Counter4Report
-import de.laser.stats.Counter5Report
 import de.laser.system.SystemProfiler
 import de.laser.titles.TitleHistoryEvent
 import de.laser.titles.TitleHistoryEventParticipant

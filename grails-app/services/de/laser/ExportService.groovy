@@ -9,7 +9,6 @@ import de.laser.finance.CostItemGroup
 import de.laser.finance.PriceItem
 import de.laser.helper.Profiler
 import de.laser.remote.ApiSource
-import de.laser.storage.RDConstants
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.base.AbstractCoverage
