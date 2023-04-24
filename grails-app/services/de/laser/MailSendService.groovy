@@ -55,7 +55,7 @@ class MailSendService {
 
             String emailReceiver = user.getEmail()
             String currentServer = AppUtils.getCurrentServer()
-            String subjectSystemPraefix = (currentServer == AppUtils.PROD) ? "LAS:eR - " : (ConfigMapper.getLaserSystemId() + " - ")
+            String subjectSystemPraefix = (currentServer == AppUtils.PROD) ? "" : (ConfigMapper.getLaserSystemId() + " - ")
 
             surveyEntries.each { survey ->
                 try {
@@ -80,8 +80,13 @@ class MailSendService {
 
                         replyTo = (generalContactsEMails.size() > 0) ? generalContactsEMails[0].toString() : null
                         Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RDStore.LANGUAGE_DE).value.toString())
-                        Object[] args = ["${survey.type.getI10n('value', language)}"]
-                        String mailSubject = escapeService.replaceUmlaute(subjectSystemPraefix + (reminderMail ? messageSource.getMessage('email.subject.surveysReminder', args, language)  : messageSource.getMessage('email.subject.surveys', args, language)) + " " + survey.name + "")
+                        String mailSubject = subjectSystemPraefix
+                        if(reminderMail) {
+                            mailSubject = mailSubject + ' ' + messageSource.getMessage('email.subject.surveysReminder', language)
+                        }
+
+                        mailSubject = mailSubject + ' ' + survey.name + ' ('+survey.type.getI10n('value', language)+')'
+                        mailSubject = escapeService.replaceUmlaute(mailSubject)
 
                         if (isNotificationCCbyEmail && ccAddress) {
                             mailService.sendMail {
@@ -243,12 +248,17 @@ class MailSendService {
                     String emailReceiver = user.getEmail()
                     String currentServer = AppUtils.getCurrentServer()
                     String subjectSystemPraefix = (currentServer == AppUtils.PROD)? "" : (ConfigMapper.getLaserSystemId() + " - ")
-                    String mailSubject = escapeService.replaceUmlaute(subjectSystemPraefix + surveyInfo.type.getI10n('value', language) + ": " + surveyInfo.name +  " (" + participationFinish.sortname + ")")
+                    String mailSubject = subjectSystemPraefix
 
                     SurveyOrg surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(surveyInfo.surveyConfigs[0], participationFinish)
                     if(surveyOrg && surveyOrg.orgInsertedItself) {
-                        mailSubject = escapeService.replaceUmlaute(subjectSystemPraefix + " " +messageSource.getMessage('default.new', null, language) + " " +surveyInfo.type.getI10n('value', language) + ": " + surveyInfo.name + " (" + participationFinish.sortname + ")")
+                        mailSubject = mailSubject + messageSource.getMessage('default.new', null, language) + ' '
                     }
+
+                    mailSubject = mailSubject + surveyInfo.name +  ' (' + surveyInfo.type.getI10n('value', language) + ') ['
+                    mailSubject = mailSubject + participationFinish.sortname + ']'
+
+                    mailSubject = escapeService.replaceUmlaute(mailSubject)
 
                     try {
                         if (emailReceiver == null || emailReceiver.isEmpty()) {
@@ -307,7 +317,7 @@ class MailSendService {
         Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RDStore.LANGUAGE_DE).value.toString())
 
         String currentServer = AppUtils.getCurrentServer()
-        String subjectSystemPraefix = (currentServer == AppUtils.PROD) ? "LAS:eR - " : (ConfigMapper.getLaserSystemId() + " - ")
+        String subjectSystemPraefix = (currentServer == AppUtils.PROD) ? "" : (ConfigMapper.getLaserSystemId() + " - ")
         String mailSubject = subjectSystemPraefix + messageSource.getMessage('email.subject.sysAnnouncement', null, language)
 
         boolean isRemindCCbyEmail = user.getSetting(UserSetting.KEYS.IS_REMIND_CC_BY_EMAIL, RDStore.YN_NO)?.rdValue == RDStore.YN_YES
