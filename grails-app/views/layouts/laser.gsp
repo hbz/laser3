@@ -206,7 +206,7 @@
         %{-- footer --}%
 
         <sec:ifNotGranted roles="ROLE_USER">
-            <laser:render template="/public/templates/footer" />
+            <laser:render template="/public/footer" />
         </sec:ifNotGranted>
 
         %{-- global container for modals and ajax --}%
