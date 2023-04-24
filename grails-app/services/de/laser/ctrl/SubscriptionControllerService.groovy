@@ -1512,7 +1512,7 @@ class SubscriptionControllerService {
 
             }
 
-            if(params.tab == 'toBeSelectedIEs') {
+/*            if(params.tab == 'toBeSelectedIEs') {
                 GrailsParameterMap parameterMap = params.clone()
                 Map allQuery = filterService.getIssueEntitlementQuery(params, baseSub)
                 List<Long> allTippIDs = IssueEntitlement.executeQuery("select ie.tipp.id " + allQuery.query, allQuery.queryParams)
@@ -1532,7 +1532,7 @@ class SubscriptionControllerService {
                 if(toBeSelectedTippIDs.size() > 0)
                     sourceIEs = IssueEntitlement.executeQuery("select ie.id " + allQuery.query, allQuery.queryParams)
 
-            }
+            }*/
 
             if (result.hasPerpetualAccess) {
                 params.hasPerpetualAccess = result.hasPerpetualAccess
@@ -1542,10 +1542,10 @@ class SubscriptionControllerService {
             result.countAllIEs = subscriptionService.countCurrentIssueEntitlements(baseSub)
             if (result.surveyConfig.pickAndChoosePerpetualAccess) {
                 result.countCurrentIEs = surveyService.countPerpetualAccessTitlesBySub(result.subscription)
-                result.toBeSelectedIEs = result.countAllIEs - (result.countSelectedIEs + result.countCurrentIEs)
+                //result.toBeSelectedIEs = result.countAllIEs - (result.countSelectedIEs + result.countCurrentIEs)
             } else {
                 result.countCurrentIEs = (previousSubscription ? subscriptionService.countCurrentIssueEntitlements(previousSubscription) : 0) + subscriptionService.countCurrentIssueEntitlements(result.subscription)
-                result.toBeSelectedIEs = result.countAllIEs - result.countSelectedIEs
+                //result.toBeSelectedIEs = result.countAllIEs - result.countSelectedIEs
             }
 
 

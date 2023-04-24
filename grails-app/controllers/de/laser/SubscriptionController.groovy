@@ -1423,7 +1423,7 @@ class SubscriptionController {
             }
 
             List<Long> toBeSelectedTippIDs = []
-            if(params.tab == 'toBeSelectedIEs') {
+            /*if(params.tab == 'toBeSelectedIEs') {
                 List<Long> allTippIDs = IssueEntitlement.executeQuery("select ie.tipp.id from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :ieStatus", [sub: ctrlResult.result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])
 
                 List<Long> selectedTippIDs =  IssueEntitlement.executeQuery("select ie.tipp.id from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :ieStatus ", [sub: ctrlResult.result.subscriberSub, ieStatus: RDStore.TIPP_STATUS_CURRENT])
@@ -1441,7 +1441,7 @@ class SubscriptionController {
                     queryMap.platform = Platform.get(params.platform)
                 }
                 filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.toBeSelectedIEs') + '_' + ctrlResult.result.subscriberSub.dropdownNamingConvention())
-            }
+            }*/
 
             if (params.exportKBart) {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
