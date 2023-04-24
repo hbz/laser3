@@ -8,7 +8,7 @@
             <thead>
             <tr>
                 <th class="two wide" rowspan="2" scope="col">${message(code: 'task.endDate.label')}</th>
-                <th class="six wide" rowspan="2" scope="col">
+                <th class="five wide" rowspan="2" scope="col">
                     ${message(code: 'default.title.label')}
                     <g:if test="${controllerName == 'myInstitution'}">
                         / ${message(code: 'task.object.label')}
@@ -20,7 +20,7 @@
                 <th rowspan="2" scope="col">${message(code: 'task.status.label')}</th>
                 <th class="two wide" rowspan="2" scope="col">${message(code: 'task.creator.label')}</th>
                 <th class="two wide la-smaller-table-head" scope="col">${message(code: 'default.lastUpdated.label')}</th>
-                <th class="one wide la-action-info" rowspan="2" scope="col">${message(code:'default.actions.label')}</th>
+                <th class="two wide la-action-info" rowspan="2" scope="col">${message(code:'default.actions.label')}</th>
             </tr>
             <tr>
                 <th class="two wide la-smaller-table-head" scope="col">${message(code: 'default.dateCreated.label')}</th>

@@ -4,7 +4,6 @@ import de.laser.finance.CostItem
 import de.laser.finance.PriceItem
 import de.laser.config.ConfigDefaults
 import de.laser.config.ConfigMapper
-import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.base.AbstractLockableService
 import de.laser.interfaces.CalculatedType
