@@ -138,7 +138,7 @@
                                 <ui:link generateElementId="true" class="item" role="menuitem" controller="organisation" action="show" params="[id: contextOrg?.id]">${message(code:'menu.institutions.org_info')}</ui:link>
 
                                 <ui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" affiliation="INST_USER" controller="myInstitution" action="addressbook" message="menu.institutions.myAddressbook" />
-                                <ui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" affiliation="INST_USER" controller="myInstitution" action="tasks" message="task.plural" />
+                                <ui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="${CustomerTypeService.PERMS_PRO}" affiliation="INST_USER" controller="myInstitution" action="tasks" message="task.plural" />
                                 <%--<ui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="${CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC}" affiliation="INST_USER" controller="myInstitution" action="changes" message="menu.institutions.changes" />--%>
                                 <ui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" affiliation="INST_USER" controller="myInstitution" action="managePrivatePropertyDefinitions" message="menu.institutions.manage_props" />
                                 <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="finance" message="menu.institutions.finance" />
