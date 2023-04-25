@@ -62,7 +62,7 @@
     <g:set var="visibilityContextOrgMenu" value="la-hide-context-orgMenu" />
         <div id="mainMenue" class="ui fixed inverted  menu la-js-verticalNavi" role="menubar" >
             <div class="ui container" role="none">
-                <ui:link generateElementId="true" role="menuitem" controller="home" aria-label="${message(code:'default.home.label')}" class="header item la-logo-item">
+                <ui:link addItemAttributes="true" controller="home" aria-label="${message(code:'default.home.label')}" class="header item la-logo-item">
                     <img alt="Logo Laser" class="logo" src="${resource(dir: 'images', file: 'laser.svg')}"/>
                 </ui:link>
 
@@ -101,7 +101,7 @@
                             <div class="results" style="overflow-y:scroll;max-height: 400px;"></div>
                         </div>
 
-                        <ui:link generateElementId="true" class="la-search-advanced la-popup-tooltip la-delay" controller="search" action="index"
+                        <ui:link addItemAttributes="true" class="la-search-advanced la-popup-tooltip la-delay" controller="search" action="index"
                                  data-content="${message(code: 'search.advancedSearch.tooltip')}">
                             <i class="large icons">
                                 <i class="search icon"></i>
@@ -123,23 +123,23 @@
                                         <g:each in="${usaf}" var="orgRaw">
                                             <g:set var="org" value="${(Org) GrailsHibernateUtil.unwrapIfProxy(orgRaw)}" />
                                             <g:if test="${org.id == contextOrg?.id}">
-                                                <ui:link generateElementId="true" class="item active" role="menuitem" controller="myInstitution" action="switchContext" params="${[oid:"${org.class.name}:${org.id}"]}">${org.name}</ui:link>
+                                                <ui:link addItemAttributes="true" class="item active" controller="myInstitution" action="switchContext" params="${[oid:"${org.class.name}:${org.id}"]}">${org.name}</ui:link>
                                             </g:if>
                                             <g:else>
-                                                <ui:link generateElementId="true" class="item" role="menuitem" controller="myInstitution" action="switchContext" params="${[oid:"${org.class.name}:${org.id}"]}">${org.name}</ui:link>
+                                                <ui:link addItemAttributes="true" controller="myInstitution" action="switchContext" params="${[oid:"${org.class.name}:${org.id}"]}">${org.name}</ui:link>
                                             </g:else>
                                         </g:each>
                                     </g:if>
 
                                     <div class="divider"></div>
 
-                                    <ui:link generateElementId="true" class="item" role="menuitem" controller="profile" action="index">${message(code:'profile.user')}</ui:link>
-                                    <ui:link generateElementId="true" class="item" role="menuitem" controller="profile" action="help">${message(code:'menu.user.help')}</ui:link>
-                                    <ui:link generateElementId="true" class="item" role="menuitem" controller="profile" action="dsgvo">${message(code:'privacyNotice')}</ui:link>
+                                    <ui:link addItemAttributes="true" controller="profile" action="index">${message(code:'profile.user')}</ui:link>
+                                    <ui:link addItemAttributes="true" controller="profile" action="help">${message(code:'menu.user.help')}</ui:link>
+                                    <ui:link addItemAttributes="true" controller="profile" action="dsgvo">${message(code:'privacyNotice')}</ui:link>
 
                                     <div class="divider"></div>
 
-                                    <ui:link generateElementId="true" class="item" role="menuitem" controller="logout">${message(code:'menu.user.logout')}</ui:link>
+                                    <ui:link addItemAttributes="true" controller="logout">${message(code:'menu.user.logout')}</ui:link>
                                     <div class="divider"></div>
                                     <div class="header">Version: ${AppUtils.getMeta('info.app.version')} – ${AppUtils.getMeta('info.app.build.date')}</div>
                                     <div class="header">
@@ -154,7 +154,7 @@
 
                 <sec:ifNotGranted roles="ROLE_USER">
                     <sec:ifLoggedIn>
-                        <ui:link generateElementId="true" class="item" controller="logout">${message(code:'menu.user.logout')}</ui:link>
+                        <ui:link addItemAttributes="true" controller="logout">${message(code:'menu.user.logout')}</ui:link>
                     </sec:ifLoggedIn>
                 </sec:ifNotGranted>
 
