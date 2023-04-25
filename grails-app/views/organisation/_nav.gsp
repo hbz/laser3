@@ -37,15 +37,15 @@
         </g:else>
     </g:if>
 
-    <ui:securedSubNavItem controller="organisation" action="tasks" params="${breadcrumbParams}" counts="${tasksCount}" affiliation="INST_USER" orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" message="menu.institutions.tasks"/>
-    <ui:securedSubNavItem controller="organisation" action="documents" params="${breadcrumbParams}" affiliation="INST_USER" orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" message="menu.my.documents" />
+    <ui:securedSubNavItem affiliation="INST_USER" orgPerm="${CustomerTypeService.PERMS_PRO}" controller="organisation" action="tasks" params="${breadcrumbParams}" counts="${tasksCount}" message="menu.institutions.tasks"/>
+    <ui:securedSubNavItem affiliation="INST_USER" orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="organisation" action="documents" params="${breadcrumbParams}" message="menu.my.documents" />
     <ui:subNavItem controller="organisation" action="notes" params="${breadcrumbParams}" counts="${notesCount}" message="default.notes.label"/>
     <g:if test="${!inContextOrg && contextCustomerType in ['ORG_INST_PRO','ORG_CONSORTIUM_BASIC','ORG_CONSORTIUM_PRO']}">
         <ui:subNavItem controller="organisation" action="addressbook" params="${breadcrumbParams}" message="menu.institutions.myAddressbook"/>
     </g:if>
     <g:if test="${!isProviderOrAgency}">
         <g:if test="${inContextOrg}">
-            <ui:securedSubNavItem controller="myInstitution" action="users" message="org.nav.users" affiliation="INST_ADM"/>
+            <ui:securedSubNavItem affiliation="INST_ADM" controller="myInstitution" action="users" message="org.nav.users" />
         </g:if>
         <g:else>
             <%-- this kind of check is necessary because it should not be displayed at all if user has no specRole --%>
@@ -54,8 +54,8 @@
             </sec:ifAnyGranted>
         </g:else>
         <g:if test="${inContextOrg}">
-            <ui:securedSubNavItem controller="organisation" action="settings" params="${breadcrumbParams}"
-                                     message="org.nav.dataTransfer" affiliation="INST_ADM" affiliationOrg="${orgInstance}"/>
+            <ui:securedSubNavItem affiliation="INST_ADM" affiliationOrg="${orgInstance}"
+                                  controller="organisation" action="settings" params="${breadcrumbParams}" message="org.nav.dataTransfer" />
         </g:if>
         <g:elseif test="${accessService.otherOrgAndComboCheckPermAffiliation_or_ROLEADMIN(orgInstance, CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_ADM')}">
             <ui:subNavItem controller="organisation" action="settings" params="${breadcrumbParams}" message="org.nav.dataTransfer"/>

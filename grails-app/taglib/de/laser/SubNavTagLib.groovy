@@ -85,7 +85,7 @@ class SubNavTagLib {
         String cssClass = ((this.pageScope.variables?.actionName == attrs.action) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
 
         String tooltip = attrs.tooltip ?: ""
-        boolean check = SwissKnife.checkAndCacheNavPerms(attrs, request)
+        boolean check = SwissKnife.checkAndCacheNavPermsForCurrentRequest(attrs, request)
 
         if (tooltip != "") {
             linkBody = '<div data-tooltip="' + tooltip + '" data-position="bottom center">' + linkBody + '</div>'
@@ -112,7 +112,7 @@ class SubNavTagLib {
             if (attrs.affiliation && contextService.getUser().hasCtxAffiliation_or_ROLEADMIN(attrs.affiliation)) {
                 out << '<div class="item disabled la-popup-tooltip la-delay" data-position="left center" data-content="' + message(code:'tooltip.onlyFullMembership') + '" role="menuitem">' + linkBody + '</div>'
             }
-            else out << '<div class="item disabled la-popup-tooltip la-delay" data-position="left center" role="menuitem">' + linkBody + '</div>'
+//            else out << '<div class="item disabled la-popup-tooltip la-delay" data-position="left center" role="menuitem">' + linkBody + '</div>'
         }
     }
 }

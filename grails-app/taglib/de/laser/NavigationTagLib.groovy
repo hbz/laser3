@@ -264,10 +264,11 @@ class NavigationTagLib {
         def (lbText, lbMessage) = SwissKnife.getTextAndMessage(attrs)
         String linkBody  = (lbText && lbMessage) ? lbText + " - " + lbMessage : lbText + lbMessage
 
-        boolean check = SwissKnife.checkAndCacheNavPerms(attrs, request)
+        boolean check = SwissKnife.checkAndCacheNavPermsForCurrentRequest(attrs, request)
 
-        if (attrs.generateElementId) {
+        if (attrs.addItemAttributes) {
             attrs.elementId = _generateElementId(attrs)
+            attrs.role      = 'menuitem'
         }
 
         if (check) {
@@ -276,28 +277,29 @@ class NavigationTagLib {
                     action: attrs.action,
                     params: attrs.params,
                     class: 'item' + (attrs.class ? " ${attrs.class}" : ''),
-                    elementId: attrs.elementId,
-                    role: attrs.role
+                    elementId:  attrs.elementId,
+                    role:       attrs.role
             )
         }
         else {
             if (attrs.affiliation && contextService.getUser().hasCtxAffiliation_or_ROLEADMIN(attrs.affiliation)) {
                 out << '<div class="item disabled la-popup-tooltip la-delay" data-position="left center" data-content="' + message(code:'tooltip.onlyFullMembership') + '" role="menuitem">' + linkBody + '</div>'
             }
-            else out << '<div class="item disabled la-popup-tooltip la-delay" data-position="left center" role="menuitem">' + linkBody + '</div>'
+//            else out << '<div class="item disabled la-popup-tooltip la-delay" data-position="left center" role="menuitem">' + linkBody + '</div>'
         }
     }
 
     def link = { attrs, body ->
 
         Map<Object, Object> filteredAttrs = attrs.findAll{ it ->
-            ! (it.key in ['generateElementId', 'class'])
+            ! (it.key in ['addItemAttributes', 'class'])
         }
         String css = attrs.class ? (attrs.class != 'item' ? attrs.class + ' item' : attrs.class) : 'item'
         filteredAttrs.put('class', css)
 
-        if (attrs.generateElementId) {
+        if (attrs.addItemAttributes) {
             filteredAttrs.put('elementId', _generateElementId(attrs))
+            filteredAttrs.put('role', 'menuitem')
         }
 
         out << g.link(filteredAttrs, body)

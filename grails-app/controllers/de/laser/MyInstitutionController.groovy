@@ -2569,7 +2569,7 @@ class MyInstitutionController  {
      * @return a table view of tasks
      * @see Task
      */
-    @DebugInfo(ctxPermAffiliation =[CustomerTypeService.PERMS_PRO, 'INST_USER'], wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_PRO, 'INST_USER'], wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
         ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_USER')
     })
