@@ -2416,6 +2416,8 @@ class SubscriptionService {
                     break
                 case "online identifier": colMap.onlineIdentifierCol = c
                     break
+                case "doi": colMap.doiTitleCol = c
+                    break
                 case "pick": colMap.pick = c
                     break
             }
@@ -2460,7 +2462,7 @@ class SubscriptionService {
                                 String cellEntry = cols[colNo].trim()
                                     switch (colName) {
                                         case "pick":
-                                            if(cellEntry.toLowerCase() == RDStore.YN_YES.value_de.toLowerCase() || cellEntry == RDStore.YN_YES.value_en.toLowerCase()) {
+                                            if(cellEntry.toLowerCase() == RDStore.YN_YES.value_de.toLowerCase() || cellEntry.toLowerCase() == RDStore.YN_YES.value_en.toLowerCase()) {
                                                 TitleInstancePackagePlatform tipp = issueEntitlement.tipp
                                                 IssueEntitlement ieInNewSub = surveyService.titleContainedBySubscription(newSub, tipp)
                                                 boolean allowedToSelect = false
