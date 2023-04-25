@@ -1402,17 +1402,17 @@ class FilterService {
 
         if (params.sort != null && params.sort.length() > 0 && params.sort != 'count') {
             if(params.sort == 'startDate')
-                base_qry += "order by ic.startDate ${params.order}, lower(ie.sortname), lower(tipp.sortname) "
+                base_qry += "order by ic.startDate ${params.order}, lower(tipp.sortname) "
             else if(params.sort == 'endDate')
-                base_qry += "order by ic.endDate ${params.order}, lower(ie.sortname), lower(tipp.sortname) "
+                base_qry += "order by ic.endDate ${params.order}, lower(tipp.sortname) "
             else {
                 if(params.sort.contains("sortname"))
-                    base_qry += "order by ie.sortname ${params.order}, ie.name ${params.order}, tipp.sortname ${params.order}, tipp.name ${params.order}"
+                    base_qry += "order by tipp.sortname ${params.order}, tipp.name ${params.order}"
                 else base_qry += "order by ie.${params.sort} ${params.order} "
             }
         }
         else if(!params.forCount && !params.bulkOperation){
-            base_qry += "order by ie.sortname"
+            base_qry += "order by tipp.sortname"
         }
 
 

@@ -2188,7 +2188,7 @@ class SubscriptionControllerService {
             params.status = params.status ?: (result.subscription.hasPerpetualAccess ? [RDStore.TIPP_STATUS_CURRENT.id.toString(), RDStore.TIPP_STATUS_RETIRED.id.toString()] : [RDStore.TIPP_STATUS_CURRENT.id.toString()])
             Map query = filterService.getIssueEntitlementQuery(params, result.subscription)
             result.filterSet = query.filterSet
-            Set entitlements = IssueEntitlement.executeQuery("select new map(ie.id as id, ie.sortname as sortname) " + query.query, query.queryParams)
+            Set entitlements = IssueEntitlement.executeQuery("select new map(ie.id as id, tipp.sortname as sortname) " + query.query, query.queryParams)
             result.entitlementIDs = entitlements
             if(params.kbartPreselect) {
                 MultipartFile kbartFile = params.kbartPreselect
@@ -2207,15 +2207,15 @@ class SubscriptionControllerService {
             }
             result.num_ies_rows = entitlements.size()
             if(entitlements) {
-                String orderClause = 'order by ie.sortname'
+                String orderClause = 'order by tipp.sortname'
                 if(params.sort){
                     if(params.sort == 'startDate')
-                        orderClause = "order by ic.startDate ${params.order}, lower(ie.sortname), lower(ie.tipp.sortname) "
+                        orderClause = "order by ic.startDate ${params.order}, lower(tipp.sortname) "
                     else if(params.sort == 'endDate')
-                        orderClause = "order by ic.endDate ${params.order}, lower(ie.sortname), lower(ie.tipp.sortname) "
+                        orderClause = "order by ic.endDate ${params.order}, lower(tipp.sortname) "
                     else {
                         if(params.sort.contains('sortname'))
-                            orderClause = "order by ie.sortname ${params.order}, ie.name ${params.order}, tipp.sortname ${params.order}, tipp.name ${params.order} "
+                            orderClause = "order by tipp.sortname ${params.order}, tipp.name ${params.order} "
                         else
                             orderClause = "order by ${params.sort} ${params.order} "
                     }
@@ -3137,7 +3137,7 @@ class SubscriptionControllerService {
             boolean error = false
             if(params.chkall == 'on') {
                 Map<String, Object> query = filterService.getIssueEntitlementQuery(params, result.subscription)
-                if(params.bulkOperation == "edit") {
+                //if(params.bulkOperation == "edit") {
                     if(GlobalService.isset(params, 'bulk_local_price') && GlobalService.isset(params, 'bulk_local_currency')) {
                         NumberFormat format = NumberFormat.getInstance( LocaleUtils.getCurrentLocale() )
                         BigDecimal localPrice = format.parse(params.bulk_local_price).doubleValue()
@@ -3167,6 +3167,20 @@ class SubscriptionControllerService {
                                 case 'bulk_notes':
                                     String updateQuery = "update IssueEntitlement e set e.notes = :notes where e.id in (select ie.id ${query.query})"
                                     IssueEntitlement.executeUpdate(updateQuery, query.queryParams+[notes: params.bulk_notes])
+                                    break
+                                case 'bulk_perpetual_access':
+                                    if(RefdataValue.get(params.bulk_perpetual_access) == RDStore.YN_YES) {
+                                        String updateQuery = "update IssueEntitlement e set e.perpetualAccessBySub = :sub where e.id in (select ie.id ${query.query})"
+                                        IssueEntitlement.executeUpdate(updateQuery, [sub: result.subscription])
+                                        result.subscription.hasPerpetualAccess = true
+                                        result.subscription.save()
+                                    }
+                                    else {
+                                        String updateQuery = "update IssueEntitlement e set e.perpetualAccessBySub = null where e.id in (select ie.id ${query.query})"
+                                        IssueEntitlement.executeUpdate(updateQuery, query.queryParams)
+                                        result.subscription.hasPerpetualAccess = false
+                                        result.subscription.save()
+                                    }
                                     break
                                 case 'titleGroupInsert':
                                     Sql sql = GlobalService.obtainSqlConnection()
@@ -3220,7 +3234,8 @@ class SubscriptionControllerService {
                             }
                         }
                     }
-                }
+                //}
+                /*
                 else if(params.bulkOperation in ["remove", "removeWithChildren"]) {
                     if(params.bulkOperation == "removeWithChildren") {
                         //case statement fails to evaluate with parameters ... so, let's go the hard-coded way!
@@ -3233,23 +3248,36 @@ class SubscriptionControllerService {
                         IssueEntitlement.executeUpdate(deleteQuery, query.queryParams)
                     }
                 }
+                */
             }
             else {
                 params.each { Map.Entry<Object,Object> p ->
                     if (p.key.startsWith('_bulkflag.') && (p.value == 'on')) {
                         String ie_to_edit = p.key.substring(10)
                         IssueEntitlement ie = IssueEntitlement.get(ie_to_edit)
-                        if (params.bulkOperation == "edit") {
-                            if (params.bulk_access_start_date) {
+                        //if (params.bulkOperation == "edit") {
+                            if (params.bulk_access_start_date.length() > 0) {
                                 ie.accessStartDate = formatter.parse(params.bulk_access_start_date)
                             }
-                            if (params.bulk_access_end_date) {
+                            if (params.bulk_access_end_date.length() > 0) {
                                 ie.accessEndDate = formatter.parse(params.bulk_access_end_date)
                             }
-                            if (params.bulk_notes) {
+                            if (params.bulk_notes.length() > 0) {
                                 ie.notes = params.bulk_notes
                             }
-                            if (params.bulk_local_price && params.bulk_local_currency) {
+                        log.debug(params.bulk_perpetual_access.length())
+                            if (params.bulk_perpetual_access.length() > 0) {
+                                if(RefdataValue.get(params.bulk_perpetual_access) == RDStore.YN_YES) {
+                                    ie.perpetualAccessBySub = result.subscription
+                                    ie.subscription.hasPerpetualAccess = true
+                                }
+                                else {
+                                    ie.perpetualAccessBySub = null
+                                    ie.subscription.hasPerpetualAccess = false
+                                }
+                                ie.subscription.save()
+                            }
+                            if (params.bulk_local_price.length() > 0 && params.bulk_local_currency.length() > 0) {
                                 NumberFormat format = NumberFormat.getInstance( LocaleUtils.getCurrentLocale() )
                                 BigDecimal localPrice = format.parse(params.bulk_local_price).doubleValue()
                                 RefdataValue localCurrency = RefdataValue.get(params.bulk_local_currency)
@@ -3277,32 +3305,33 @@ class SubscriptionControllerService {
                                     }
                                 }
                             }
-                            if (params.bulk_start_date) {
+                            if (params.bulk_start_date.length() > 0) {
                                 IssueEntitlementCoverage.executeUpdate('update IssueEntitlementCoverage ic set ic.startDate = :startDate where ic.issueEntitlement = :ie', [ie: ie, startDate: formatter.parse(params.bulk_start_date)])
                             }
-                            if (params.bulk_start_volume) {
+                            if (params.bulk_start_volume.length() > 0) {
                                 IssueEntitlementCoverage.executeUpdate('update IssueEntitlementCoverage ic set ic.startVolume = :startVolume where ic.issueEntitlement = :ie', [ie: ie, startVolume: params.bulk_start_volume])
                             }
-                            if (params.bulk_start_issue) {
+                            if (params.bulk_start_issue.length() > 0) {
                                 IssueEntitlementCoverage.executeUpdate('update IssueEntitlementCoverage ic set ic.startIssue = :startIssue where ic.issueEntitlement = :ie', [ie: ie, startIssue: params.bulk_start_issue])
                             }
-                            if (params.bulk_end_date) {
+                            if (params.bulk_end_date.length() > 0) {
                                 IssueEntitlementCoverage.executeUpdate('update IssueEntitlementCoverage ic set ic.endDate = :endDate where ic.issueEntitlement = :ie', [ie: ie, endDate: formatter.parse(params.bulk_end_date)])
                             }
-                            if (params.bulk_end_volume) {
+                            if (params.bulk_end_volume.length() > 0) {
                                 IssueEntitlementCoverage.executeUpdate('update IssueEntitlementCoverage ic set ic.endVolume = :endVolume where ic.issueEntitlement = :ie', [ie: ie, endVolume: params.bulk_end_volume])
                             }
-                            if (params.bulk_end_issue) {
+                            if (params.bulk_end_issue.length() > 0) {
                                 IssueEntitlementCoverage.executeUpdate('update IssueEntitlementCoverage ic set ic.endIssue = :endIssue where ic.issueEntitlement = :ie', [ie: ie, endIssue: params.bulk_end_issue])
                             }
-                            if (params.bulk_embargo) {
+                            if (params.bulk_embargo.length() > 0) {
                                 IssueEntitlementCoverage.executeUpdate('update IssueEntitlementCoverage ic set ic.embargo = :embargo where ic.issueEntitlement = :ie', [ie: ie, embargo: params.bulk_embargo])
                             }
                             if (!ie.save()) {
                                 log.error("Problem saving ${ie.errors.getAllErrors().toListString()}")
                                 error = true
                             }
-                        }
+                        //}
+                        /*
                         else if (params.bulkOperation in ["remove", "removeWithChildren"]) {
                             if(ie.tipp.status == RDStore.TIPP_STATUS_REMOVED) {
                                 log.debug("Updating ie ${ie.id} status to removed")
@@ -3321,6 +3350,7 @@ class SubscriptionControllerService {
                                 error = true
                             }
                         }
+                        */
                     }
                 }
             }

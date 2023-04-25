@@ -107,7 +107,7 @@
                         <g:form controller="subscription" action="setupPendingChangeConfiguration" params="[id:sp.subscription.id,pkg:sp.pkg.id]">
                             <table class="ui table stackable la-noSticky">
                                 <thead>
-                                <g:if test="${customerTypeService.isConsortium( contextCustomerType )}">
+                                <g:if test="${customerTypeService.isConsortium( contextCustomerType ) && !subscription.instanceOf}">
                                     <tr>
                                         <th></th>
                                         <th></th>
@@ -122,12 +122,12 @@
                                     <th class="control-label">
                                         <g:message code="subscription.packages.setting.label"/>
                                     </th>
-                                    <th class="control-label">
-                                        <span class="la-popup-tooltip la-delay" data-content="${message(code:"subscription.packages.notification.label")}">
-                                            <i class="ui large icon bullhorn"></i>
-                                        </span>
-                                    </th>
-                                    <g:if test="${customerTypeService.isConsortium( contextCustomerType )}">
+                                    <g:if test="${customerTypeService.isConsortium( contextCustomerType ) && !subscription.instanceOf}">
+                                        <th class="control-label">
+                                            <span class="la-popup-tooltip la-delay" data-content="${message(code:"subscription.packages.notification.label")}">
+                                                <i class="ui large icon bullhorn"></i>
+                                            </span>
+                                        </th>
                                         <th class="control-label la-border-left" >
                                             <span class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.packages.auditable')}">
                                                 <i class="ui large icon thumbtack"></i>
@@ -151,28 +151,33 @@
                                             <g:message code="subscription.packages.${settingKey}"/>
                                         </th>
                                         <td>
-                                            <g:if test="${!(settingKey in excludes)}">
-                                                <g:if test="${editmode}">
-                                                    <ui:select class="ui dropdown"
-                                                               name="${settingKey}!§!setting" from="${RefdataCategory.getAllRefdataValues(RDConstants.PENDING_CHANGE_CONFIG_SETTING)}"
-                                                               optionKey="id" optionValue="value"
-                                                               value="${(pcc && pcc.settingValue) ? pcc.settingValue.id : RDStore.PENDING_CHANGE_CONFIG_PROMPT.id}"
-                                                    />
-                                                </g:if>
-                                                <g:else>
-                                                    ${(pcc && pcc.settingValue) ? pcc.settingValue.getI10n("value") : RDStore.PENDING_CHANGE_CONFIG_PROMPT.getI10n("value")}
-                                                </g:else>
-                                            </g:if>
-                                        </td>
-                                        <td>
-                                            <g:if test="${editmode}">
-                                                <g:checkBox class="ui checkbox" name="${settingKey}!§!notification" checked="${pcc?.withNotification}"/>
+                                            <g:if test="${subscription.instanceOf}">
+                                                ${(pcc && pcc.settingValue) ? pcc.settingValue.getI10n("value") : "Einstellung wird nicht geerbt"}
                                             </g:if>
                                             <g:else>
-                                                ${(pcc && pcc.withNotification) ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")}
+                                                <g:if test="${!(settingKey in excludes)}">
+                                                    <g:if test="${editmode}">
+                                                        <ui:select class="ui dropdown"
+                                                                   name="${settingKey}!§!setting" from="${RefdataCategory.getAllRefdataValues(RDConstants.PENDING_CHANGE_CONFIG_SETTING)}"
+                                                                   optionKey="id" optionValue="value"
+                                                                   value="${(pcc && pcc.settingValue) ? pcc.settingValue.id : RDStore.PENDING_CHANGE_CONFIG_PROMPT.id}"
+                                                        />
+                                                    </g:if>
+                                                    <g:else>
+                                                        ${(pcc && pcc.settingValue) ? pcc.settingValue.getI10n("value") : RDStore.PENDING_CHANGE_CONFIG_PROMPT.getI10n("value")}
+                                                    </g:else>
+                                                </g:if>
                                             </g:else>
                                         </td>
-                                        <g:if test="${customerTypeService.isConsortium( contextCustomerType )}">
+                                        <g:if test="${customerTypeService.isConsortium( contextCustomerType ) && !subscription.instanceOf}">
+                                            <td>
+                                                <g:if test="${editmode}">
+                                                    <g:checkBox class="ui checkbox" name="${settingKey}!§!notification" checked="${pcc?.withNotification}"/>
+                                                </g:if>
+                                                <g:else>
+                                                    ${(pcc && pcc.withNotification) ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")}
+                                                </g:else>
+                                            </td>
                                             <td class="la-border-left">
                                                 <g:if test="${!(settingKey in excludes)}">
                                                     <g:if test="${editmode}">
@@ -201,15 +206,21 @@
                                         <g:message code="subscription.packages.freezeHolding"/> <span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.packages.freezeHolding.expl')}"><i class="ui question circle icon"></i></span>
                                     </th>
                                     <td>
-                                        <g:if test="${editmode}">
-                                            <g:checkBox class="ui checkbox" name="freezeHolding" checked="${sp.freezeHolding}"/>
+                                        <g:if test="${!subscription.instanceOf}">
+                                            <g:if test="${editmode}">
+                                                <g:checkBox class="ui checkbox" name="freezeHolding" checked="${sp.freezeHolding}"/>
+                                            </g:if>
+                                            <g:else>
+                                                ${sp.freezeHolding ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")}
+                                            </g:else>
                                         </g:if>
                                         <g:else>
-                                            ${sp.freezeHolding ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")}
+                                            <g:set var="parentSp" value="${SubscriptionPackage.findBySubscriptionAndPkg(subscription.instanceOf, sp.pkg)}"/>
+                                            ${parentSp.freezeHolding ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")}
                                         </g:else>
                                     </td>
-                                    <td></td>
-                                    <g:if test="${customerTypeService.isConsortium( contextCustomerType )}">
+                                    <%--
+                                    <g:if test="${customerTypeService.isConsortium( contextCustomerType ) && !subscription.instanceOf}">
                                         <td class="la-border-left">
                                             <g:if test="${editmode}">
                                                 <g:checkBox class="ui checkbox" name="freezeHoldingAudit" checked="${auditService.getAuditConfig(subscription, SubscriptionPackage.FREEZE_HOLDING)}"/>
@@ -220,8 +231,9 @@
                                         </td>
                                         <td></td>
                                     </g:if>
+                                    --%>
                                 </tr>
-                                <g:if test="${editmode}">
+                                <g:if test="${editmode && !subscription.instanceOf}">
                                     <tr>
                                         <td colspan="2" class="control-label"><g:submitButton class="ui button btn-primary" name="${message(code:'subscription.packages.submit.label')}"/></td>
                                         <g:set var="now" value="${new Date()}"/>

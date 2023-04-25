@@ -255,6 +255,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
      * @return the normalised name string
      * @see Normalizer.Form#NFKD
      */
+    @Deprecated
   static String generateSortName(String input_title) {
     if (!input_title) return null
     String s1 = Normalizer.normalize(input_title, Normalizer.Form.NFKD).trim().toLowerCase()
