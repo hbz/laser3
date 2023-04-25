@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4840    25.04.2023  dev     3.1         Andreas Feature     Datenkommunikation mit we:kb auf api2 umgerüstet
+
 4927    24.04.2023  dev     3.1         Moe     Feature     Betreff E-Mails aus LAS:eR
 
 4878    24.04.2023  dev     3.1         Moe     Feature     Titelumfrage: Auswählbare Titel

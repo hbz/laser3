@@ -864,8 +864,16 @@ class SubscriptionControllerService {
 
     SortedSet getAvailableReports(Set<Platform> subscribedPlatforms, Map<String, Object> configMap) {
         SortedSet<String> allAvailableReports = new TreeSet<String>()
+        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         subscribedPlatforms.each { Platform platform ->
-            Map<String, Object> platformRecord = configMap.platformInstanceRecords.get(platform.gokbId)
+            Map<String, Object> queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/sushiSources?uuid=${platform.gokbId}")
+            Map platformRecord
+            if (queryResult.warning) {
+                List records = queryResult.warning.records
+                if(records[0]) {
+                    platformRecord = records[0]
+                }
+            }
             CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(configMap.subscription.getSubscriber(), platform)
             configMap.putAll(exportService.prepareSushiCall(platformRecord))
             if(configMap.revision && configMap.statsUrl) {

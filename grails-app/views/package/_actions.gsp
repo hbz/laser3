@@ -199,7 +199,7 @@
 </g:if>
 
 %{--
-<g:if test="${(editable || accessService.ctxPermAffiliation(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')) && ! ['list'].contains(actionName)}">
+<g:if test="${(editable && accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_EDITOR')) && ! ['list'].contains(actionName)}">
     <laser:render template="/templates/documents/modal" model="${[ownobj: packageInstance, institution: contextService.getOrg(), owntp: 'pkg']}"/>
     <laser:render template="/templates/tasks/modal_create" model="${[ownobj:packageInstance, owntp:'pkg']}"/>
 </g:if>
