@@ -296,7 +296,7 @@ class PackageController {
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         result.editUrl = apiSource.editUrl.endsWith('/') ? apiSource.editUrl : apiSource.editUrl+'/'
 
-        Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/find?uuid=${packageInstance.gokbId}")
+        Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/searchApi?uuid=${packageInstance.gokbId}")
         if (queryResult.error && queryResult.error == 404) {
             flash.error = message(code:'wekb.error.404') as String
         }
@@ -307,7 +307,7 @@ class PackageController {
         if(packageInstance.nominalPlatform) {
             //record filled with LAS:eR and we:kb data
             Map<String, Object> platformInstanceRecord = [:]
-            queryResult = gokbService.queryElasticsearch(apiSource.baseUrl+apiSource.fixToken+"/find?uuid=${packageInstance.nominalPlatform.gokbId}")
+            queryResult = gokbService.queryElasticsearch(apiSource.baseUrl+apiSource.fixToken+"/searchApi?uuid=${packageInstance.nominalPlatform.gokbId}")
             if(queryResult.warning) {
                 List records = queryResult.warning.records
                 if(records)

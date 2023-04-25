@@ -241,7 +241,7 @@ class PlatformController  {
 
         result.flagContentGokb = true // gokbService.queryElasticsearch
         result.platformInstanceRecord = [:]
-        Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/find?uuid=${platformInstance.gokbId}")
+        Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/searchApi?uuid=${platformInstance.gokbId}")
         if (queryResult.error && queryResult.error == 404) {
             flash.error = message(code:'wekb.error.404') as String
         }

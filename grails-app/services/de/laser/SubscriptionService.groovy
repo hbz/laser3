@@ -1598,7 +1598,7 @@ class SubscriptionService {
         boolean result = false
         subscribedPlatforms.each { Platform platformInstance ->
             if(!result) {
-                Map queryResult = gokbService.queryElasticsearch(wekbSource.baseUrl + wekbSource.fixToken + "/find?uuid=${platformInstance.gokbId}")
+                Map queryResult = gokbService.queryElasticsearch(wekbSource.baseUrl + wekbSource.fixToken + "/searchApi?uuid=${platformInstance.gokbId}")
                 if (queryResult.warning) {
                     List records = queryResult.warning.records
                     if(records) {

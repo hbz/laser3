@@ -205,7 +205,7 @@ class GokbService {
      */
     Map geElasticsearchFindings(final String apiUrl, final String query, final String type,
                                 final String role, final Integer max) {
-        String url = _buildUri(apiUrl+'/find', query, type, role, max)
+        String url = _buildUri(apiUrl+'/searchApi', query, type, role, max)
         queryElasticsearch(url)
     }
 
@@ -222,9 +222,9 @@ class GokbService {
         Map<String, String> pagination = setupPaginationParams(ctrlResult, params)
 
         Set records = []
-        Map queryResult = queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/find' + esQuery + pagination.sort + pagination.order + pagination.max + pagination.offset)
+        Map queryResult = queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/searchApi' + esQuery + pagination.sort + pagination.order + pagination.max + pagination.offset)
         if (queryResult.warning) {
-            records.addAll(queryResult.warning.records)
+            records.addAll(queryResult.warning.result)
             result.recordsCount = queryResult.warning.count
             result.records = records
         }

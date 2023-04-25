@@ -1584,7 +1584,7 @@ class SubscriptionControllerService {
                 result.platformsJSON = subscribedPlatforms.globalUID as JSON
                 ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
                 subscribedPlatforms.each { Platform platformInstance ->
-                    Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/find?uuid=${platformInstance.gokbId}")
+                    Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/searchApi?uuid=${platformInstance.gokbId}")
                     if (queryResult.error && queryResult.error == 404) {
                         result.wekbServerUnavailable = message(code: 'wekb.error.404')
                     }
@@ -2015,7 +2015,7 @@ class SubscriptionControllerService {
                 result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
 
                 Set records = []
-                Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/find' + esQuery + sort + order + max + offset)
+                Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/searchApi' + esQuery + sort + order + max + offset)
                 if (queryResult.warning) {
                     records.addAll(queryResult.warning.records)
                     result.recordsCount = queryResult.warning.count
