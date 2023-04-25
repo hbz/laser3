@@ -225,3 +225,10 @@
 
         </div><!-- .fields -->
     </div><!-- .form -->
+
+<laser:script file="${this.getGroovyPageFileName()}">
+    $('form').submit(function(e){
+        e.preventDefault();
+        alert("event listener successfully hooked up, please continue implementing!");
+    });
+</laser:script>
