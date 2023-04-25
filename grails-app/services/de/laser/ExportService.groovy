@@ -2001,7 +2001,7 @@ class ExportService {
 		Map<String, Object> result = [:]
 		ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
 		SimpleDateFormat monthFormatter = DateUtils.getSDF_yyyyMM()
-		Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/find?uuid=${configMap.platform.gokbId}")
+		Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/sushiSources?uuid=${configMap.platform.gokbId}")
 		Map platformRecord
 		if (queryResult.warning) {
 			List records = queryResult.warning.records
