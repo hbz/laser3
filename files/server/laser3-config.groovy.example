@@ -75,3 +75,5 @@ systemInsightJobActive  = false
 
 testJobActivate = false
 
+wekbApiUsername = 'user'
+wekbApiPassword = 'password'
