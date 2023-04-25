@@ -219,8 +219,8 @@
 
             <div class="wide eight field">
                 <br>
-                <button class="ui button positive right floated"
-                        id="export-as-excel">${exportButtonName ?: 'Export Excel'}</button>
+                <button class="ui button positive right floated" id="export-as-excel" value="exportClickMeExcel">${exportExcelButtonName ?: 'Export Excel'}</button>
+                <button class="ui button positive right floated" id="export-as-csv" value="exportClickMeCSV">${exportCSVButtonName ?: 'Export CSV'}</button>
             </div>
 
         </div><!-- .fields -->
