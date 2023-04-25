@@ -111,6 +111,8 @@ class PackageController {
         }
 
         Map queryCuratoryGroups = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/groups')
+        if(!params.sort)
+            params.sort = 'name'
         if(queryCuratoryGroups.error == 404) {
             result.error = message(code:'wekb.error.'+queryCuratoryGroups.error) as String
         }
@@ -120,7 +122,6 @@ class PackageController {
                 result.curatoryGroups = recordsCuratoryGroups?.findAll { it.status == "Current" }
             }
             result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
-
             result.putAll(gokbService.doQuery(result, params.clone(), esQuery))
         }
 
@@ -301,7 +302,7 @@ class PackageController {
             flash.error = message(code:'wekb.error.404') as String
         }
         else if (queryResult.warning) {
-            List records = queryResult.warning.records
+            List records = queryResult.warning.result
             result.packageInstanceRecord = records ? records[0] : [:]
         }
         if(packageInstance.nominalPlatform) {
@@ -309,7 +310,7 @@ class PackageController {
             Map<String, Object> platformInstanceRecord = [:]
             queryResult = gokbService.queryElasticsearch(apiSource.baseUrl+apiSource.fixToken+"/searchApi?uuid=${packageInstance.nominalPlatform.gokbId}")
             if(queryResult.warning) {
-                List records = queryResult.warning.records
+                List records = queryResult.warning.result
                 if(records)
                     platformInstanceRecord.putAll(records[0])
                 platformInstanceRecord.name = packageInstance.nominalPlatform.name

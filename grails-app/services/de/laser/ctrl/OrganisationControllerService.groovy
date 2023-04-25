@@ -231,7 +231,7 @@ class OrganisationControllerService {
                     result.error = messageSource.getMessage('wekb.error.404', null, LocaleUtils.getCurrentLocale())
                 }
                 else if (queryResult.warning) {
-                    List records = queryResult.warning.records
+                    List records = queryResult.warning.result
                     result.orgInstanceRecord = records ? records[0] : [:]
                 }
             }

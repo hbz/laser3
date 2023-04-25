@@ -1600,7 +1600,7 @@ class SubscriptionService {
             if(!result) {
                 Map queryResult = gokbService.queryElasticsearch(wekbSource.baseUrl + wekbSource.fixToken + "/searchApi?uuid=${platformInstance.gokbId}")
                 if (queryResult.warning) {
-                    List records = queryResult.warning.records
+                    List records = queryResult.warning.result
                     if(records) {
                         if(records[0].statisticsFormat != null)
                             result = true

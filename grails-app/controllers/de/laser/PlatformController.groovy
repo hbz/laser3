@@ -246,7 +246,7 @@ class PlatformController  {
             flash.error = message(code:'wekb.error.404') as String
         }
         else if (queryResult.warning) {
-            List records = queryResult.warning.records
+            List records = queryResult.warning.result
             result.platformInstanceRecord = records ? records[0] : [:]
             result.platformInstanceRecord.id = params.id
         }

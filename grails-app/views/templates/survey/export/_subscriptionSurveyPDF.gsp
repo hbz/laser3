@@ -221,7 +221,7 @@
 
                 Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/searchApi?uuid=${subscriptionPackage.pkg.gokbId}")
                 if (queryResult.warning) {
-                    List records = queryResult.warning.records
+                    List records = queryResult.warning.result
                     packageInfos.packageInstanceRecord = records ? records[0] : [:]
                 }
                 packages << packageInfos

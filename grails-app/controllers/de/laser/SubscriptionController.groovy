@@ -129,7 +129,7 @@ class SubscriptionController {
                 result.wekbServerUnavailable = message(code: 'wekb.error.404')
             }
             else if (queryResult.warning) {
-                List records = queryResult.warning.records
+                List records = queryResult.warning.result
                 if(records[0]) {
                     records[0].lastRun = platformInstance.counter5LastRun ?: platformInstance.counter4LastRun
                     records[0].id = platformInstance.id
