@@ -14,7 +14,9 @@
                 <ui:actionsDropdownItem controller="organisation" action="findProviderMatches" message="org.create_new_provider.label"/>
             </g:if>
             <g:if test="${actionName == 'show'}">
-                <ui:actionsDropdownItem data-ui="modal" href="#modalCreateTask" message="task.create.new"/>
+                <g:if test="${editable && accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_EDITOR')}">
+                    <ui:actionsDropdownItem data-ui="modal" href="#modalCreateTask" message="task.create.new"/>
+                </g:if>
                 <ui:actionsDropdownItem data-ui="modal" href="#modalCreateDocument" message="template.documents.add"/>
                 <ui:actionsDropdownItem data-ui="modal" href="#modalCreateNote" message="template.notes.add"/>
 
@@ -125,7 +127,7 @@
 </g:elseif>
 <%-- secure against listInstitution, where no orgId is given --%>
 <g:if test="${createModal}">
-    <g:if test="${editable || accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')}">
+    <g:if test="${editable && accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_EDITOR')}">
         <laser:render template="/templates/tasks/modal_create" model="${[ownobj: orgInstance, owntp: 'org']}"/>
         <laser:render template="/templates/documents/modal" model="${[ownobj: orgInstance, institution: institution, owntp: 'org']}"/>
     </g:if>
