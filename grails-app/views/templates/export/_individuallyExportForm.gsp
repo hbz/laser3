@@ -219,16 +219,22 @@
 
             <div class="wide eight field">
                 <br>
-                <button class="ui button positive right floated" id="export-as-excel" value="exportClickMeExcel">${exportExcelButtonName ?: 'Export Excel'}</button>
-                <button class="ui button positive right floated" id="export-as-csv" value="exportClickMeCSV">${exportCSVButtonName ?: 'Export CSV'}</button>
+                <g:hiddenField name="format" value=""/>
+                <g:hiddenField name="exportClickMeExcel" value=""/>
+                <button class="ui button positive right floated exportButton" id="export-as-excel" value="exportClickMeExcel">${exportExcelButtonName ?: 'Export Excel'}</button>
+                <button class="ui button positive right floated exportButton" id="export-as-csv" value="exportClickMeCSV">${exportCSVButtonName ?: 'Export CSV'}</button>
             </div>
 
         </div><!-- .fields -->
     </div><!-- .form -->
 
 <laser:script file="${this.getGroovyPageFileName()}">
-    $('form').submit(function(e){
-        e.preventDefault();
-        alert("event listener successfully hooked up, please continue implementing!");
+    $('.exportButton').click(function(){
+        if($(this).attr('id') === 'export-as-excel') {
+            $('#exportClickMeExcel').val('true');
+        }
+        else if($(this).attr('id') === 'export-as-csv') {
+            $('#format').val('csv');
+        }
     });
 </laser:script>
