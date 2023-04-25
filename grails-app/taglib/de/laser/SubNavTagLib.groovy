@@ -85,7 +85,7 @@ class SubNavTagLib {
         String cssClass = ((this.pageScope.variables?.actionName == attrs.action) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
 
         String tooltip = attrs.tooltip ?: ""
-        boolean check = SwissKnife.checkAndCacheNavPerms(attrs, request)
+        boolean check = SwissKnife.checkAndCacheNavPermsForCurrentRequest(attrs, request)
 
         if (tooltip != "") {
             linkBody = '<div data-tooltip="' + tooltip + '" data-position="bottom center">' + linkBody + '</div>'
