@@ -124,10 +124,10 @@ class OrganisationController  {
                 OrgSetting.KEYS.API_KEY,
                 OrgSetting.KEYS.API_PASSWORD
         ]
-        List<OrgSetting.KEYS> generalSet = [
-                OrgSetting.KEYS.CUSTOMER_TYPE,
-                OrgSetting.KEYS.GASCO_ENTRY
-        ]
+//        List<OrgSetting.KEYS> generalSet = [
+//                OrgSetting.KEYS.CUSTOMER_TYPE,
+//                OrgSetting.KEYS.GASCO_ENTRY
+//        ]
         List<OrgSetting.KEYS> ezbSet = [
                 OrgSetting.KEYS.EZB_SERVER_ACCESS
         ]
@@ -143,8 +143,8 @@ class OrganisationController  {
         result.settings = []
 
         switch(params.tab) {
-            case 'general': result.settings.addAll(allSettings.findAll { OrgSetting os -> os.key in generalSet })
-                break
+//            case 'general': result.settings.addAll(allSettings.findAll { OrgSetting os -> os.key in generalSet })
+//                break
             case 'api': result.settings.addAll(allSettings.findAll { OrgSetting os -> os.key in apiSet })
                 break
             case 'ezb': result.settings.addAll(allSettings.findAll { OrgSetting os -> os.key in ezbSet })
@@ -1186,9 +1186,9 @@ class OrganisationController  {
      * @return the task table view
      * @see Task
      */
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER'])
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_PRO, 'INST_USER'])
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER')
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_USER')
     })
     @Check404(domain=Org)
     def tasks() {

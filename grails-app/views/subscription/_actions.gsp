@@ -72,7 +72,9 @@
 <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')}">
     <ui:actionsDropdown>
         <%--<g:if test="${editable}">--%>
-            <ui:actionsDropdownItem message="task.create.new" data-ui="modal" href="#modalCreateTask" />
+            <g:if test="${editable && accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_EDITOR')}">
+                <ui:actionsDropdownItem message="task.create.new" data-ui="modal" href="#modalCreateTask" />
+            </g:if>
             <ui:actionsDropdownItem message="template.documents.add" data-ui="modal" href="#modalCreateDocument" />
         <%--</g:if>--%>
         <ui:actionsDropdownItem message="template.addNote" data-ui="modal" href="#modalCreateNote" />
@@ -199,7 +201,7 @@
         </g:if>
     </ui:actionsDropdown>
 </g:if>
-<g:if test="${editable || accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')}">
+<g:if test="${editable && accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_EDITOR')}">
     <laser:render template="/templates/documents/modal" model="${[ownobj: subscription, owntp: 'subscription']}"/>
     <laser:render template="/templates/tasks/modal_create" model="${[ownobj: subscription, owntp: 'subscription']}"/>
 </g:if>

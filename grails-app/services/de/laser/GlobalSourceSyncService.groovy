@@ -2,6 +2,7 @@ package de.laser
 
 import de.laser.base.AbstractCoverage
 import de.laser.base.AbstractLockableService
+import de.laser.config.ConfigMapper
 import de.laser.exceptions.SyncException
 import de.laser.finance.PriceItem
 import de.laser.http.BasicHttpClient
@@ -312,6 +313,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 case "identifier": triggeredTypes = ['Package','Org','TitleInstancePackagePlatform']
                     max = 100
                     break
+                case "sortTitle": triggeredTypes = ['Package', 'TitleInstancePackagePlatform']
+                    max = 100
+                    break
                 case "ddc": triggeredTypes = ['TitleInstancePackagePlatform']
                     RefdataCategory.getAllRefdataValues(RDConstants.DDC).each { RefdataValue rdv ->
                         ddc.put(rdv.value, rdv)
@@ -358,16 +362,22 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                             log.debug("from current page, ${packages.size()} packages exist in LAS:eR")
                                             packages.eachWithIndex { Package pkg, int idx ->
                                                 log.debug("now processing package ${idx} with uuid ${pkg.gokbId}, total entry: ${offset+idx}")
-                                                List identifiers = result.records.find { record -> record.uuid == pkg.gokbId }.identifiers
-                                                if(identifiers) {
-                                                    if(pkg.ids) {
-                                                        Identifier.executeUpdate('delete from Identifier i where i.pkg = :pkg',[pkg:pkg]) //damn those wrestlers ...
-                                                    }
-                                                    identifiers.each { id ->
-                                                        if(!(id.namespace.toLowerCase() in ['originediturl','uri'])) {
-                                                            Identifier.construct([namespace: id.namespace, value: id.value, name_de: id.namespaceName, reference: pkg, isUnique: false, nsType: Package.class.name])
+                                                if(dataToLoad == 'identifier') {
+                                                    List identifiers = result.records.find { record -> record.uuid == pkg.gokbId }.identifiers
+                                                    if(identifiers) {
+                                                        if(pkg.ids) {
+                                                            Identifier.executeUpdate('delete from Identifier i where i.pkg = :pkg',[pkg:pkg]) //damn those wrestlers ...
+                                                        }
+                                                        identifiers.each { id ->
+                                                            if(!(id.namespace.toLowerCase() in ['originediturl','uri'])) {
+                                                                Identifier.construct([namespace: id.namespace, value: id.value, name_de: id.namespaceName, reference: pkg, isUnique: false, nsType: Package.class.name])
+                                                            }
                                                         }
                                                     }
+                                                }
+                                                else if(dataToLoad == 'sortTitle') {
+                                                    pkg.sortname = escapeService.generateSortTitle(pkg.name)
+                                                    pkg.save()
                                                 }
                                             }
                                             break
@@ -463,6 +473,11 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                                     case "openAccess":
                                                         String newOpenAccess = result.records.find { record -> record.uuid == tipp.gokbId }.openAccess
                                                         tipp.openAccess = openAccess.get(newOpenAccess)
+                                                        tipp.save()
+                                                        break
+                                                    case "sortTitle":
+                                                        tipp.name = result.records.find { record -> record.uuid == tipp.gokbId }.name
+                                                        tipp.sortname = escapeService.generateSortTitle(tipp.name)
                                                         tipp.save()
                                                         break
                                                 }
@@ -1047,6 +1062,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                          */
                     }
                     result.name = packageRecord.name
+                    result.sortname = escapeService.generateSortTitle(packageRecord.name)
                     result.packageStatus?.id = packageRecordStatus?.id
                     result.contentType?.id = contentType?.id
                     result.scope?.id = scope?.id
@@ -1489,6 +1505,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             //process central differences which are without effect to issue entitlements
             tippA.titleType = tippB.titleType
             tippA.name = tippB.name
+            tippA.sortname = escapeService.generateSortTitle(tippB.name)
             if(tippA.altnames) {
                 List<String> oldAltNames = tippA.altnames.collect { AlternativeName altname -> altname.name }
                 tippB.altnames.each { String newAltName ->
@@ -1499,6 +1516,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 }
             }
             tippA.status = tippStatus.get(tippB.status)
+            //temp solution until 3.2
+            IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.status = :newStatus where ie.tipp = :tipp and ie.status != :removed', [newStatus: tippStatus.get(tippB.status), tipp: tippA, removed: RDStore.TIPP_STATUS_REMOVED])
             tippA.accessType = accessType.get(tippB.accessType)
             tippA.openAccess = openAccess.get(tippB.openAccess)
             tippA.firstAuthor = tippB.firstAuthor
@@ -2097,6 +2116,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
         HttpClientConfiguration config = new DefaultHttpClientConfiguration()
         config.readTimeout = Duration.ofMinutes(1)
         config.maxContentLength = MAX_CONTENT_LENGTH
+        queryParams.username = ConfigMapper.getWekbApiUsername()
+        queryParams.password = ConfigMapper.getWekbApiPassword()
         if(useScroll) {
             http = new BasicHttpClient(uri + 'scroll', config)
             String debugString = uri+'scroll?'

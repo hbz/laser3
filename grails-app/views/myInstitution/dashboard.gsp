@@ -8,15 +8,6 @@
 
         <ui:h1HeaderWithIcon text="${institution.name}" />
 
-%{--<pre>--}%
-%{--    ORG_CONSORTIUM_BASIC: ${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}--}%
-%{--    ORG_CONSORTIUM_PRO: ${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)}--}%
-%{--    ORG_INST_BASIC: ${accessService.ctxPerm(CustomerTypeService.ORG_INST_BASIC)}--}%
-%{--    ORG_INST_PRO: ${accessService.ctxPerm(CustomerTypeService.ORG_INST_PRO)}--}%
-
-%{--    getCustomerType: ${institution.getCustomerType()}--}%
-%{--</pre>--}%
-
         <div class="ui equal width grid la-clear-before">
             <div class="row">
 
@@ -40,15 +31,15 @@
                             <g:link controller="org" action="show" id="${institution.id}">${message(code: 'menu.institutions.org_info')}</g:link>
                         </div>
                         <ui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="finance" message="menu.institutions.finance" />
-                        <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" affiliation="INST_USER" controller="myInstitution" action="reporting" message="myinst.reporting" />
+                        <ui:securedMainNavItem affiliation="INST_USER" orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="reporting" message="myinst.reporting" />
                     </div>
                 </div>
 
                 <div class="column">
                     <div class="ui divided relaxed list">
-                        <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="tasks" message="task.plural" />
-                        <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="addressbook" message="menu.institutions.myAddressbook" />
-                        <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="managePrivatePropertyDefinitions" message="menu.institutions.manage_props" />
+                        <ui:securedMainNavItem affiliation="INST_USER" orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="tasks" message="task.plural" />
+                        <ui:securedMainNavItem affiliation="INST_USER" orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="addressbook" message="menu.institutions.myAddressbook" />
+                        <ui:securedMainNavItem affiliation="INST_USER" orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="managePrivatePropertyDefinitions" message="menu.institutions.manage_props" />
                     </div>
                 </div>
             </div>
@@ -101,7 +92,7 @@
             </a>
         </g:if>
 
-        <g:if test="${accessService.ctxPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
+        <g:if test="${accessService.ctxPerm(CustomerTypeService.PERMS_PRO)}">
             <a class="${us_dashboard_tab.value == 'Tasks' ? 'active item':'item'}" data-tab="tasks">
                 <i class="calendar check outline icon large"></i>
                 ${tasksCount} ${message(code:'myinst.dash.task.label')}
@@ -169,7 +160,7 @@
             </g:if>
         </div>
 
-        <g:if test="${accessService.ctxPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
+        <g:if test="${accessService.ctxPerm(CustomerTypeService.PERMS_PRO)}">
         <div class="ui bottom attached tab ${us_dashboard_tab.value == 'Tasks' ? 'active':''}" data-tab="tasks">
 
             <g:if test="${editable}">

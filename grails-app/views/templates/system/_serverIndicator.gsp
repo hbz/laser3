@@ -1,3 +1,4 @@
+%{-- model: currentServer --}%
 <%@ page import="de.laser.utils.AppUtils" %>
 
 <g:if test="${currentServer == AppUtils.LOCAL}">

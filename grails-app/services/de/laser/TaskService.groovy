@@ -21,7 +21,6 @@ class TaskService {
     AccessService accessService
     ContextService contextService
     MessageSource messageSource
-    UserService userService
 
     static final String SELECT_WITH_JOIN = 'select t from Task t LEFT JOIN t.responsibleUser ru '
     static final String WITHOUT_TENANT_ONLY = "WITHOUT_TENANT_ONLY"

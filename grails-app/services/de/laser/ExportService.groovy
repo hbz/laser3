@@ -9,7 +9,6 @@ import de.laser.finance.CostItemGroup
 import de.laser.finance.PriceItem
 import de.laser.helper.Profiler
 import de.laser.remote.ApiSource
-import de.laser.storage.RDConstants
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.base.AbstractCoverage
@@ -2002,7 +2001,7 @@ class ExportService {
 		Map<String, Object> result = [:]
 		ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
 		SimpleDateFormat monthFormatter = DateUtils.getSDF_yyyyMM()
-		Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/find?uuid=${configMap.platform.gokbId}")
+		Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/sushiSources?uuid=${configMap.platform.gokbId}")
 		Map platformRecord
 		if (queryResult.warning) {
 			List records = queryResult.warning.records

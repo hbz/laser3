@@ -20,7 +20,7 @@
 
     <g:layoutHead/>
 
-    <tmpl:/layouts/favicon />
+    <g:render template="/layouts/favicon" />
 </head>
 
     <body class="public">

@@ -2,7 +2,6 @@ package de.laser
 
 
 import de.laser.storage.RDConstants
-import de.laser.storage.RDStore
 import grails.gorm.transactions.Transactional
 
 /**

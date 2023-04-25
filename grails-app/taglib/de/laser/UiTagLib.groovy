@@ -419,6 +419,16 @@ class UiTagLib {
         out << '</div>'
     }
 
+    def flagDeprecated = { attrs, body ->
+
+        out << '<div class="ui icon message error">'
+        out << '<i class="icon exclamation triangle"></i>'
+        out << '<div class="content">'
+        out << 'Diese Funktionalität wird demnächst entfernt.<br/>Bitte nicht mehr verwenden und ggfs. Daten migrieren.'
+        out << '</div>'
+        out << '</div>'
+    }
+
     /**
      * @attr hideWrapper Renders only the &lt;form&gt; without a &lt;div&gt; wrapper
      * @attr action The name of the action to use in the link, if not specified the default action will be linked
