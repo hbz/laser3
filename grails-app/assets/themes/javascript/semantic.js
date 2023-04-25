@@ -1,5 +1,5 @@
 /*
- * # Fomantic UI - ^2.9.1
+ * # Fomantic UI - ^2.9.2
  * https://github.com/fomantic/Fomantic-UI
  * https://fomantic-ui.com/
  *
@@ -9,7 +9,7 @@
  *
  */
 /*!
- * # Fomantic-UI ^2.9.1 - Site
+ * # Fomantic-UI ^2.9.2 - Site
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -463,7 +463,7 @@
 })(jQuery, window, document);
 
 /*!
- * # Fomantic-UI ^2.9.1 - Form Validation
+ * # Fomantic-UI ^2.9.2 - Form Validation
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -657,7 +657,7 @@
                             $prompt      = $fieldGroup.find(selector.prompt),
                             $calendar    = $field.closest(selector.uiCalendar),
                             defaultValue = $field.data(metadata.defaultValue) || '',
-                            isCheckbox   = $element.is(selector.uiCheckbox),
+                            isCheckbox   = $field.is(selector.checkbox),
                             isDropdown   = $element.is(selector.uiDropdown) && module.can.useElement('dropdown'),
                             isCalendar   = $calendar.length > 0 && module.can.useElement('calendar'),
                             isErrored    = $fieldGroup.hasClass(className.error)
@@ -691,7 +691,7 @@
                             $calendar    = $field.closest(selector.uiCalendar),
                             $prompt      = $fieldGroup.find(selector.prompt),
                             defaultValue = $field.data(metadata.defaultValue),
-                            isCheckbox   = $element.is(selector.uiCheckbox),
+                            isCheckbox   = $field.is(selector.checkbox),
                             isDropdown   = $element.is(selector.uiDropdown) && module.can.useElement('dropdown'),
                             isCalendar   = $calendar.length > 0 && module.can.useElement('calendar'),
                             isErrored    = $fieldGroup.hasClass(className.error)
@@ -708,7 +708,7 @@
                             module.verbose('Resetting dropdown value', $element, defaultValue);
                             $element.dropdown('restore defaults', true);
                         } else if (isCheckbox) {
-                            module.verbose('Resetting checkbox value', $element, defaultValue);
+                            module.verbose('Resetting checkbox value', $field, defaultValue);
                             $field.prop('checked', defaultValue);
                         } else if (isCalendar) {
                             $calendar.calendar('set date', defaultValue);
@@ -997,14 +997,12 @@
                                 : rule.prompt || settings.prompt[ruleName] || settings.text.unspecifiedRule,
                             requiresValue = prompt.search('{value}') !== -1,
                             requiresName  = prompt.search('{name}') !== -1,
-                            $label,
-                            name,
                             parts,
                             suffixPrompt
                         ;
-                        if (ancillary && ['integer', 'decimal', 'number'].indexOf(ruleName) >= 0 && ancillary.indexOf('..') >= 0) {
+                        if (ancillary && ['integer', 'decimal', 'number', 'size'].indexOf(ruleName) >= 0 && ancillary.indexOf('..') >= 0) {
                             parts = ancillary.split('..', 2);
-                            if (!rule.prompt) {
+                            if (!rule.prompt && ruleName !== 'size') {
                                 suffixPrompt = parts[0] === ''
                                     ? settings.prompt.maxValue.replace(/{ruleValue}/g, '{max}')
                                     : (parts[1] === ''
@@ -1015,15 +1013,14 @@
                             prompt = prompt.replace(/{min}/g, parts[0]);
                             prompt = prompt.replace(/{max}/g, parts[1]);
                         }
+                        if (ancillary && ['match', 'different'].indexOf(ruleName) >= 0) {
+                            prompt = prompt.replace(/{ruleValue}/g, module.get.fieldLabel(ancillary, true));
+                        }
                         if (requiresValue) {
                             prompt = prompt.replace(/{value}/g, $field.val());
                         }
                         if (requiresName) {
-                            $label = $field.closest(selector.group).find('label').eq(0);
-                            name = $label.length === 1
-                                ? $label.text()
-                                : $field.prop('placeholder') || settings.text.unspecifiedField;
-                            prompt = prompt.replace(/{name}/g, name);
+                            prompt = prompt.replace(/{name}/g, module.get.fieldLabel($field));
                         }
                         prompt = prompt.replace(/{identifier}/g, field.identifier);
                         prompt = prompt.replace(/{ruleValue}/g, ancillary);
@@ -1063,7 +1060,7 @@
                         // refresh selector cache
                         (instance || module).refresh();
                     },
-                    field: function (identifier) {
+                    field: function (identifier, strict) {
                         module.verbose('Finding field with identifier', identifier);
                         identifier = module.escape.string(identifier);
                         var t;
@@ -1085,17 +1082,28 @@
                         }
                         module.error(error.noField.replace('{identifier}', identifier));
 
-                        return $('<input/>');
+                        return strict ? $() : $('<input/>');
                     },
-                    fields: function (fields) {
+                    fields: function (fields, strict) {
                         var
                             $fields = $()
                         ;
                         $.each(fields, function (index, name) {
-                            $fields = $fields.add(module.get.field(name));
+                            $fields = $fields.add(module.get.field(name, strict));
                         });
 
                         return $fields;
+                    },
+                    fieldLabel: function (identifier, useIdAsFallback) {
+                        var $field = typeof identifier === 'string'
+                                ? module.get.field(identifier)
+                                : identifier,
+                            $label = $field.closest(selector.group).find('label').eq(0)
+                        ;
+
+                        return $label.length === 1
+                            ? $label.text()
+                            : $field.prop('placeholder') || (useIdAsFallback ? identifier : settings.text.unspecifiedField);
                     },
                     validation: function ($field) {
                         var
@@ -1119,20 +1127,22 @@
 
                         return fieldValidation || false;
                     },
-                    value: function (field) {
+                    value: function (field, strict) {
                         var
                             fields = [],
-                            results
+                            results,
+                            resultKeys
                         ;
                         fields.push(field);
-                        results = module.get.values.call(element, fields);
+                        results = module.get.values.call(element, fields, strict);
+                        resultKeys = Object.keys(results);
 
-                        return results[field];
+                        return resultKeys.length > 0 ? results[resultKeys[0]] : undefined;
                     },
-                    values: function (fields) {
+                    values: function (fields, strict) {
                         var
-                            $fields = Array.isArray(fields)
-                                ? module.get.fields(fields)
+                            $fields = Array.isArray(fields) && fields.length > 0
+                                ? module.get.fields(fields, strict)
                                 : $field,
                             values = {}
                         ;
@@ -1250,16 +1260,8 @@
 
                     field: function (identifier) {
                         module.verbose('Checking for existence of a field with identifier', identifier);
-                        identifier = module.escape.string(identifier);
-                        if (typeof identifier !== 'string') {
-                            module.error(error.identifier, identifier);
-                        }
 
-                        return (
-                            $field.filter('#' + identifier).length > 0
-                                || $field.filter('[name="' + identifier + '"]').length > 0
-                                || $field.filter('[data-' + metadata.validate + '="' + identifier + '"]').length > 0
-                        );
+                        return module.get.field(identifier, true).length > 0;
                     },
 
                 },
@@ -1283,6 +1285,22 @@
                     },
                 },
 
+                checkErrors: function (errors, internal) {
+                    if (!errors || errors.length === 0) {
+                        if (!internal) {
+                            module.error(settings.error.noErrorMessage);
+                        }
+
+                        return false;
+                    }
+                    if (!internal) {
+                        errors = typeof errors === 'string'
+                            ? [errors]
+                            : errors;
+                    }
+
+                    return errors;
+                },
                 add: {
                     // alias
                     rule: function (name, rules) {
@@ -1326,15 +1344,16 @@
                         module.refreshEvents();
                     },
                     prompt: function (identifier, errors, internal) {
+                        errors = module.checkErrors(errors);
+                        if (errors === false) {
+                            return;
+                        }
                         var
                             $field       = module.get.field(identifier),
                             $fieldGroup  = $field.closest($group),
                             $prompt      = $fieldGroup.children(selector.prompt),
                             promptExists = $prompt.length > 0
                         ;
-                        errors = typeof errors === 'string'
-                            ? [errors]
-                            : errors;
                         module.verbose('Adding field error state', identifier);
                         if (!internal) {
                             $fieldGroup
@@ -1352,7 +1371,7 @@
                                 .html(settings.templates.prompt(errors))
                             ;
                             if (!promptExists) {
-                                if (settings.transition && module.can.useElement('transition') && $module.transition('is supported')) {
+                                if (settings.transition && module.can.useElement('transition')) {
                                     module.verbose('Displaying error with css transition', settings.transition);
                                     $prompt.transition(settings.transition + ' in', settings.duration);
                                 } else {
@@ -1367,11 +1386,40 @@
                         }
                     },
                     errors: function (errors) {
+                        errors = module.checkErrors(errors);
+                        if (errors === false) {
+                            return;
+                        }
                         module.debug('Adding form error messages', errors);
                         module.set.error();
-                        $message
-                            .html(settings.templates.error(errors))
+                        var customErrors = [],
+                            tempErrors
                         ;
+                        if ($.isPlainObject(errors)) {
+                            $.each(Object.keys(errors), function (i, id) {
+                                if (module.checkErrors(errors[id], true) !== false) {
+                                    if (settings.inline) {
+                                        module.add.prompt(id, errors[id]);
+                                    } else {
+                                        tempErrors = module.checkErrors(errors[id]);
+                                        if (tempErrors !== false) {
+                                            $.each(tempErrors, function (index, tempError) {
+                                                customErrors.push(settings.prompt.addErrors
+                                                    .replace(/{name}/g, module.get.fieldLabel(id))
+                                                    .replace(/{error}/g, tempError));
+                                            });
+                                        }
+                                    }
+                                }
+                            });
+                        } else {
+                            customErrors = errors;
+                        }
+                        if (customErrors.length > 0) {
+                            $message
+                                .html(settings.templates.error(customErrors))
+                            ;
+                        }
                     },
                 },
 
@@ -1448,7 +1496,7 @@
                         ;
                         if (settings.inline && $prompt.is(':visible')) {
                             module.verbose('Removing prompt for field', identifier);
-                            if (settings.transition && module.can.useElement('transition') && $module.transition('is supported')) {
+                            if (settings.transition && module.can.useElement('transition')) {
                                 $prompt.transition(settings.transition + ' out', settings.duration, function () {
                                     $prompt.remove();
                                 });
@@ -1476,15 +1524,19 @@
                                 $el        = $(el),
                                 $parent    = $el.parent(),
                                 isCheckbox = $el.filter(selector.checkbox).length > 0,
-                                isDropdown = $parent.is(selector.uiDropdown) && module.can.useElement('dropdown'),
-                                $calendar   = $el.closest(selector.uiCalendar),
-                                isCalendar  = $calendar.length > 0 && module.can.useElement('calendar'),
+                                isDropdown = ($parent.is(selector.uiDropdown) || $el.is(selector.uiDropdown)) && module.can.useElement('dropdown'),
+                                $calendar  = $el.closest(selector.uiCalendar),
+                                isCalendar = $calendar.length > 0 && module.can.useElement('calendar'),
                                 value      = isCheckbox
                                     ? $el.is(':checked')
                                     : $el.val()
                             ;
                             if (isDropdown) {
-                                $parent.dropdown('save defaults');
+                                if ($parent.is(selector.uiDropdown)) {
+                                    $parent.dropdown('save defaults');
+                                } else {
+                                    $el.dropdown('save defaults');
+                                }
                             } else if (isCalendar) {
                                 $calendar.calendar('refresh');
                             }
@@ -1784,7 +1836,7 @@
                                         ? String(value + '').trim()
                                         : String(value + ''));
 
-                                return ruleFunction.call(field, value, ancillary, $module);
+                                return ruleFunction.call(field, value, ancillary, module);
                             }
                         ;
                         if (!isFunction(ruleFunction)) {
@@ -2045,17 +2097,19 @@
             notExactly: '{name} cannot be set to exactly "{ruleValue}"',
             contain: '{name} must contain "{ruleValue}"',
             containExactly: '{name} must contain exactly "{ruleValue}"',
-            doesntContain: '{name} cannot contain  "{ruleValue}"',
+            doesntContain: '{name} cannot contain "{ruleValue}"',
             doesntContainExactly: '{name} cannot contain exactly "{ruleValue}"',
             minLength: '{name} must be at least {ruleValue} characters',
             exactLength: '{name} must be exactly {ruleValue} characters',
             maxLength: '{name} cannot be longer than {ruleValue} characters',
+            size: '{name} must have a length between {min} and {max} characters',
             match: '{name} must match {ruleValue} field',
             different: '{name} must have a different value than {ruleValue} field',
             creditCard: '{name} must be a valid credit card number',
             minCount: '{name} must have at least {ruleValue} choices',
             exactCount: '{name} must have exactly {ruleValue} choices',
             maxCount: '{name} must have {ruleValue} or less choices',
+            addErrors: '{name}: {error}',
         },
 
         selector: {
@@ -2084,11 +2138,11 @@
         },
 
         error: {
-            identifier: 'You must specify a string identifier for each field',
             method: 'The method you called is not defined.',
             noRule: 'There is no rule matching the one you specified',
             noField: 'Field identifier {identifier} not found',
             noElement: 'This module requires ui {element}',
+            noErrorMessage: 'No error message provided',
         },
 
         templates: {
@@ -2210,7 +2264,7 @@
             integer: function (value, range) {
                 return $.fn.form.settings.rules.range(value, range, 'integer');
             },
-            range: function (value, range, regExp) {
+            range: function (value, range, regExp, testLength) {
                 if (typeof regExp === 'string') {
                     regExp = $.fn.form.settings.regExp[regExp];
                 }
@@ -2238,6 +2292,9 @@
                     if (regExp.test(parts[1])) {
                         max = parts[1] - 0;
                     }
+                }
+                if (testLength) {
+                    value = value.length;
                 }
 
                 return (
@@ -2324,51 +2381,27 @@
             },
 
             // is at least string length
-            minLength: function (value, requiredLength) {
-                return value !== undefined
-                    ? value.length >= requiredLength
-                    : false;
+            minLength: function (value, minLength) {
+                return $.fn.form.settings.rules.range(value, minLength + '..', 'integer', true);
             },
 
             // is exactly length
             exactLength: function (value, requiredLength) {
-                return value !== undefined
-                    ? value.length === Number(requiredLength)
-                    : false;
+                return $.fn.form.settings.rules.range(value, requiredLength + '..' + requiredLength, 'integer', true);
             },
 
             // is less than length
             maxLength: function (value, maxLength) {
-                return value !== undefined
-                    ? value.length <= maxLength
-                    : false;
+                return $.fn.form.settings.rules.range(value, '..' + maxLength, 'integer', true);
+            },
+
+            size: function (value, range) {
+                return $.fn.form.settings.rules.range(value, range, 'integer', true);
             },
 
             // matches another field
-            match: function (value, identifier, $module) {
-                var
-                    matchingValue,
-                    matchingElement
-                ;
-                matchingElement = $module.find('[data-validate="' + identifier + '"]');
-                if (matchingElement.length > 0) {
-                    matchingValue = matchingElement.val();
-                } else {
-                    matchingElement = $module.find('#' + identifier);
-                    if (matchingElement.length > 0) {
-                        matchingValue = matchingElement.val();
-                    } else {
-                        matchingElement = $module.find('[name="' + identifier + '"]');
-                        if (matchingElement.length > 0) {
-                            matchingValue = matchingElement.val();
-                        } else {
-                            matchingElement = $module.find('[name="' + identifier + '[]"]');
-                            if (matchingElement.length > 0) {
-                                matchingValue = matchingElement;
-                            }
-                        }
-                    }
-                }
+            match: function (value, identifier, module) {
+                var matchingValue = module.get.value(identifier, true);
 
                 return matchingValue !== undefined
                     ? value.toString() === matchingValue.toString()
@@ -2376,31 +2409,8 @@
             },
 
             // different than another field
-            different: function (value, identifier, $module) {
-                // use either id or name of field
-                var
-                    matchingValue,
-                    matchingElement
-                ;
-                matchingElement = $module.find('[data-validate="' + identifier + '"]');
-                if (matchingElement.length > 0) {
-                    matchingValue = matchingElement.val();
-                } else {
-                    matchingElement = $module.find('#' + identifier);
-                    if (matchingElement.length > 0) {
-                        matchingValue = matchingElement.val();
-                    } else {
-                        matchingElement = $module.find('[name="' + identifier + '"]');
-                        if (matchingElement.length > 0) {
-                            matchingValue = matchingElement.val();
-                        } else {
-                            matchingElement = $module.find('[name="' + identifier + '[]"]');
-                            if (matchingElement.length > 0) {
-                                matchingValue = matchingElement;
-                            }
-                        }
-                    }
-                }
+            different: function (value, identifier, module) {
+                var matchingValue = module.get.value(identifier, true);
 
                 return matchingValue !== undefined
                     ? value.toString() !== matchingValue.toString()
@@ -2559,7 +2569,7 @@
 })(jQuery, window, document);
 
 /*!
- * # Fomantic-UI ^2.9.1 - Accordion
+ * # Fomantic-UI ^2.9.2 - Accordion
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -2735,7 +2745,7 @@
                         .addClass(className.animating)
                     ;
                     if (settings.animateChildren) {
-                        if ($.fn.transition !== undefined && $module.transition('is supported')) {
+                        if ($.fn.transition !== undefined) {
                             $activeContent
                                 .children()
                                 .transition({
@@ -2799,7 +2809,7 @@
                             .addClass(className.animating)
                         ;
                         if (settings.animateChildren) {
-                            if ($.fn.transition !== undefined && $module.transition('is supported')) {
+                            if ($.fn.transition !== undefined) {
                                 $activeContent
                                     .children()
                                     .transition({
@@ -2868,7 +2878,7 @@
                             .stop(true, true)
                         ;
                         if (settings.animateChildren) {
-                            if ($.fn.transition !== undefined && $module.transition('is supported')) {
+                            if ($.fn.transition !== undefined) {
                                 $openContents
                                     .children()
                                     .transition({
@@ -3157,7 +3167,7 @@
 })(jQuery, window, document);
 
 /*!
- * # Fomantic-UI ^2.9.1 - Calendar
+ * # Fomantic-UI ^2.9.2 - Calendar
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -5173,7 +5183,7 @@
 })(jQuery, window, document);
 
 /*!
- * # Fomantic-UI ^2.9.1 - Checkbox
+ * # Fomantic-UI ^2.9.2 - Checkbox
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -6058,7 +6068,7 @@
 })(jQuery, window, document);
 
 /*!
- * # Fomantic-UI ^2.9.1 - Dimmer
+ * # Fomantic-UI ^2.9.2 - Dimmer
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -6288,7 +6298,7 @@
                         callback = isFunction(callback)
                             ? callback
                             : function () {};
-                        if (settings.useCSS && $.fn.transition !== undefined && $dimmer.transition('is supported')) {
+                        if (settings.useCSS && $.fn.transition !== undefined) {
                             if (settings.useFlex) {
                                 module.debug('Using flex dimmer');
                                 module.remove.legacy();
@@ -6347,7 +6357,7 @@
                         callback = isFunction(callback)
                             ? callback
                             : function () {};
-                        if (settings.useCSS && $.fn.transition !== undefined && $dimmer.transition('is supported')) {
+                        if (settings.useCSS && $.fn.transition !== undefined) {
                             module.verbose('Hiding dimmer with css');
                             $dimmer
                                 .transition({
@@ -6793,7 +6803,7 @@
 })(jQuery, window, document);
 
 /*!
- * # Fomantic-UI ^2.9.1 - Dropdown
+ * # Fomantic-UI ^2.9.2 - Dropdown
  * http://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -11170,7 +11180,7 @@
 
 })( jQuery, window, document );
 /*!
- * # Fomantic-UI ^2.9.1 - Dropdown
+ * # Fomantic-UI ^2.9.2 - Dropdown
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -14808,7 +14818,7 @@
                                     displayType: module.get.displayType(),
                                 }).transition('show');
                                 callback.call(element);
-                            } else if (module.can.useElement('transition') && $module.transition('is supported')) {
+                            } else if (module.can.useElement('transition')) {
                                 $currentMenu
                                     .transition({
                                         animation: transition + ' in',
@@ -14850,7 +14860,7 @@
                                     displayType: module.get.displayType(),
                                 }).transition('hide');
                                 callback.call(element);
-                            } else if ($.fn.transition !== undefined && $module.transition('is supported')) {
+                            } else if ($.fn.transition !== undefined) {
                                 $currentMenu
                                     .transition({
                                         animation: transition + ' out',
@@ -15505,7 +15515,7 @@
 })(jQuery, window, document);
 
 /*!
- * # Fomantic-UI ^2.9.1 - Embed
+ * # Fomantic-UI ^2.9.2 - Embed
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -16161,7 +16171,7 @@
                 return ''
                     + '<iframe src="' + deQuote(src) + '"'
                     + ' width="100%" height="100%"'
-                    + ' webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>';
+                    + ' msallowFullScreen allowFullScreen></iframe>';
             },
             placeholder: function (image, icon) {
                 var
@@ -16189,7 +16199,7 @@
 })(jQuery, window, document);
 
 /*!
- * # Fomantic-UI ^2.9.1 - Flyout
+ * # Fomantic-UI ^2.9.2 - Flyout
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -16270,8 +16280,8 @@
                 elementNamespace,
                 id,
                 observer,
+                observeAttributes = false,
                 currentScroll,
-                transitionEvent,
 
                 module
             ;
@@ -16334,8 +16344,6 @@
                             }));
                         });
                     }
-
-                    transitionEvent = module.get.transitionEvent();
 
                     // avoids locking rendering if initialized in onReady
                     if (settings.delaySetup) {
@@ -16688,7 +16696,7 @@
                             ;
                             mutations.every(function (mutation) {
                                 if (mutation.type === 'attributes') {
-                                    if (mutation.attributeName === 'disabled' || $(mutation.target).find(':input').addBack(':input')) {
+                                    if (observeAttributes && (mutation.attributeName === 'disabled' || $(mutation.target).find(':input').addBack(':input').length > 0)) {
                                         shouldRefreshInputs = true;
                                     }
                                 } else {
@@ -16739,13 +16747,14 @@
                     if (!settings.dimPage) {
                         return;
                     }
-                    $inputs = $module.find('[tabindex], :input:enabled').filter(':visible').filter(function () {
+                    $inputs = $module.find('a[href], [tabindex], :input:enabled').filter(':visible').filter(function () {
                         return $(this).closest('.disabled').length === 0;
                     });
-                    $module.removeAttr('tabindex');
                     if ($inputs.length === 0) {
                         $inputs = $module;
                         $module.attr('tabindex', -1);
+                    } else {
+                        $module.removeAttr('tabindex');
                     }
                     $inputs.first()
                         .on('keydown' + elementNamespace, module.event.inputKeyDown.first)
@@ -16842,6 +16851,7 @@
                             }
                         }
                         module.set.dimmerStyles();
+                        module.set.observeAttributes(false);
                         module.pushPage(function () {
                             callback.call(element);
                             settings.onVisible.call(element);
@@ -16850,6 +16860,7 @@
                             }
                             module.save.focus();
                             module.refreshInputs();
+                            requestAnimationFrame(module.set.observeAttributes);
                         });
                         settings.onChange.call(element);
                     } else {
@@ -16870,6 +16881,7 @@
                     if (module.is.visible() || module.is.animating()) {
                         module.debug('Hiding flyout', callback);
                         module.refreshFlyouts();
+                        module.set.observeAttributes(false);
                         module.pullPage(function () {
                             callback.call(element);
                             if (isFunction(settings.onHidden)) {
@@ -16942,13 +16954,13 @@
                     };
                     transitionEnd = function (event) {
                         if (event.target === $module[0]) {
-                            $module.off(transitionEvent + elementNamespace, transitionEnd);
+                            $module.off('transitionend' + elementNamespace, transitionEnd);
                             module.remove.animating();
                             callback.call(element);
                         }
                     };
-                    $module.off(transitionEvent + elementNamespace);
-                    $module.on(transitionEvent + elementNamespace, transitionEnd);
+                    $module.off('transitionend' + elementNamespace);
+                    $module.on('transitionend' + elementNamespace, transitionEnd);
                     requestAnimationFrame(animate);
                     if (settings.dimPage && !module.othersVisible()) {
                         requestAnimationFrame(dim);
@@ -16983,7 +16995,7 @@
                     };
                     transitionEnd = function (event) {
                         if (event.target === $module[0]) {
-                            $module.off(transitionEvent + elementNamespace, transitionEnd);
+                            $module.off('transitionend' + elementNamespace, transitionEnd);
                             module.remove.animating();
                             module.remove.closing();
                             module.remove.overlay();
@@ -16997,8 +17009,8 @@
                             callback.call(element);
                         }
                     };
-                    $module.off(transitionEvent + elementNamespace);
-                    $module.on(transitionEvent + elementNamespace, transitionEnd);
+                    $module.off('transitionend' + elementNamespace);
+                    $module.on('transitionend' + elementNamespace, transitionEnd);
                     requestAnimationFrame(animate);
                 },
 
@@ -17021,6 +17033,9 @@
                 },
 
                 set: {
+                    observeAttributes: function (state) {
+                        observeAttributes = state !== false;
+                    },
                     autofocus: function () {
                         var
                             $autofocus = $inputs.filter('[autofocus]'),
@@ -17162,23 +17177,6 @@
                         }
 
                         return className.left;
-                    },
-                    transitionEvent: function () {
-                        var
-                            element     = document.createElement('element'),
-                            transitions = {
-                                transition: 'transitionend',
-                                OTransition: 'oTransitionEnd',
-                                MozTransition: 'transitionend',
-                                WebkitTransition: 'webkitTransitionEnd',
-                            },
-                            transition
-                        ;
-                        for (transition in transitions) {
-                            if (element.style[transition] !== undefined) {
-                                return transitions[transition];
-                            }
-                        }
                     },
                     id: function () {
                         return id;
@@ -17769,7 +17767,7 @@
 })(jQuery, window, document);
 
 /*!
- * # Fomantic-UI ^2.9.1 - Modal
+ * # Fomantic-UI ^2.9.2 - Modal
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -17852,6 +17850,7 @@
                 elementEventNamespace,
                 id,
                 observer,
+                observeAttributes = false,
                 module
             ;
             module = {
@@ -18035,7 +18034,7 @@
                             ;
                             mutations.every(function (mutation) {
                                 if (mutation.type === 'attributes') {
-                                    if (mutation.attributeName === 'disabled' || $(mutation.target).find(':input').addBack(':input')) {
+                                    if (observeAttributes && (mutation.attributeName === 'disabled' || $(mutation.target).find(':input').addBack(':input').length > 0)) {
                                         shouldRefreshInputs = true;
                                     }
                                 } else {
@@ -18094,10 +18093,11 @@
                     $inputs = $module.find('a[href], [tabindex], :input:enabled').filter(':visible').filter(function () {
                         return $(this).closest('.disabled').length === 0;
                     });
-                    $module.removeAttr('tabindex');
                     if ($inputs.length === 0) {
                         $inputs = $module;
                         $module.attr('tabindex', -1);
+                    } else {
+                        $module.removeAttr('tabindex');
                     }
                     $inputs.first()
                         .on('keydown' + elementEventNamespace, module.event.inputKeyDown.first)
@@ -18374,8 +18374,9 @@
                                     $module.detach().appendTo($dimmer);
                                 }
                             }
-                            if (settings.transition && $.fn.transition !== undefined && $module.transition('is supported')) {
+                            if (settings.transition && $.fn.transition !== undefined) {
                                 module.debug('Showing modal with css animations');
+                                module.set.observeAttributes(false);
                                 $module
                                     .transition({
                                         debug: settings.debug,
@@ -18393,6 +18394,7 @@
                                             module.save.focus();
                                             module.set.active();
                                             module.refreshInputs();
+                                            requestAnimationFrame(module.set.observeAttributes);
                                             callback();
                                         },
                                     })
@@ -18422,8 +18424,9 @@
 
                     if (module.is.animating() || module.is.active()) {
                         module.debug('Hiding modal');
-                        if (settings.transition && $.fn.transition !== undefined && $module.transition('is supported')) {
+                        if (settings.transition && $.fn.transition !== undefined) {
                             module.remove.active();
+                            module.set.observeAttributes(false);
                             $module
                                 .transition({
                                     debug: settings.debug,
@@ -18443,6 +18446,7 @@
                                     },
                                     onComplete: function () {
                                         module.unbind.scrollLock();
+                                        module.remove.active();
                                         if (settings.allowMultiple) {
                                             $previousModal.addClass(className.front);
                                             $module.removeClass(className.front);
@@ -18758,9 +18762,7 @@
                         return module.cache.isIE;
                     },
                     animating: function () {
-                        return $module.transition('is supported')
-                            ? $module.transition('is animating')
-                            : $module.is(':visible');
+                        return $module.transition('is animating');
                     },
                     scrolling: function () {
                         return $dimmable.hasClass(className.scrolling);
@@ -18803,6 +18805,9 @@
                 },
 
                 set: {
+                    observeAttributes: function (state) {
+                        observeAttributes = state !== false;
+                    },
                     autofocus: function () {
                         var
                             $autofocus = $inputs.filter('[autofocus]'),
@@ -19384,7 +19389,7 @@
 })(jQuery, window, document);
 
 /*!
- * # Fomantic-UI ^2.9.1 - Nag
+ * # Fomantic-UI ^2.9.2 - Nag
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -19937,7 +19942,7 @@
 })(jQuery, window, document);
 
 /*!
- * # Fomantic-UI ^2.9.1 - Popup
+ * # Fomantic-UI ^2.9.2 - Popup
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -20063,9 +20068,9 @@
                         }
                     }
                     if (settings.popup) {
-                        $popup.addClass(className.loading);
+                        module.set.invisible();
                         $offsetParent = module.get.offsetParent();
-                        $popup.removeClass(className.loading);
+                        module.remove.invisible();
                         if (settings.movePopup && module.has.popup() && module.get.offsetParent($popup)[0] !== $offsetParent[0]) {
                             module.debug('Moving popup to the same offset parent as target');
                             $popup
@@ -20352,7 +20357,7 @@
                 animate: {
                     show: function (callback) {
                         callback = isFunction(callback) ? callback : function () {};
-                        if (settings.transition && module.can.useElement('transition') && $module.transition('is supported')) {
+                        if (settings.transition && module.can.useElement('transition')) {
                             module.set.visible();
                             $popup
                                 .transition({
@@ -20374,7 +20379,7 @@
                     hide: function (callback) {
                         callback = isFunction(callback) ? callback : function () {};
                         module.debug('Hiding pop-up');
-                        if (settings.transition && $.fn.transition !== undefined && $module.transition('is supported')) {
+                        if (settings.transition && $.fn.transition !== undefined) {
                             $popup
                                 .transition({
                                     animation: (settings.transition.hideMethod || settings.transition) + ' out',
@@ -20839,8 +20844,8 @@
                             .css(positioning)
                             .removeClass(className.position)
                             .addClass(position)
-                            .addClass(className.loading)
                         ;
+                        module.set.invisible();
 
                         popupOffset = module.get.popupOffset();
 
@@ -20864,7 +20869,7 @@
                                 module.debug('Popup could not find a position to display', $popup);
                                 module.error(error.cannotPlace, element);
                                 module.remove.attempts();
-                                module.remove.loading();
+                                module.remove.invisible();
                                 module.reset();
                                 settings.onUnplaceable.call($popup, element);
 
@@ -20873,7 +20878,7 @@
                         }
                         module.debug('Position is on stage', position);
                         module.remove.attempts();
-                        module.remove.loading();
+                        module.remove.invisible();
                         if (settings.setFluidWidth && module.is.fluid()) {
                             module.set.fluidWidth(calculations);
                         }
@@ -20885,6 +20890,14 @@
                         calculations = calculations || module.get.calculations();
                         module.debug('Automatically setting element width to parent width', calculations.parent.width);
                         $popup.css('width', calculations.container.width);
+                    },
+
+                    loading: function () {
+                        $popup.addClass(className.loading);
+                    },
+
+                    invisible: function () {
+                        $popup.addClass(className.invisible);
                     },
 
                     variation: function (variation) {
@@ -20903,6 +20916,9 @@
                 remove: {
                     loading: function () {
                         $popup.removeClass(className.loading);
+                    },
+                    invisible: function () {
+                        $popup.removeClass(className.invisible);
                     },
                     variation: function (variation) {
                         variation = variation || module.get.variation();
@@ -21413,6 +21429,7 @@
             basic: 'basic',
             animating: 'animating',
             dropdown: 'dropdown',
+            invisible: 'invisible',
             fluid: 'fluid',
             loading: 'loading',
             popup: 'ui popup',
@@ -21473,7 +21490,7 @@
 })(jQuery, window, document);
 
 /*!
- * # Fomantic-UI ^2.9.1 - Progress
+ * # Fomantic-UI ^2.9.2 - Progress
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -21533,7 +21550,6 @@
                 instance        = $module.data(moduleNamespace),
 
                 animating = false,
-                transitionEnd,
                 module
             ;
             module = {
@@ -21589,7 +21605,6 @@
 
                 initialize: function () {
                     module.set.duration();
-                    module.set.transitionEvent();
                     module.debug(element);
 
                     module.read.metadata();
@@ -21669,17 +21684,14 @@
 
                 bind: {
                     transitionEnd: function (callback) {
-                        var
-                            transitionEnd = module.get.transitionEnd()
-                        ;
                         $bars
-                            .one(transitionEnd + eventNamespace, function (event) {
+                            .one('transitionend' + eventNamespace, function (event) {
                                 clearTimeout(module.failSafeTimer);
                                 callback.call(this, event);
                             })
                         ;
                         module.failSafeTimer = setTimeout(function () {
-                            $bars.triggerHandler(transitionEnd);
+                            $bars.triggerHandler('transitionend');
                         }, settings.duration + settings.failSafeDelay);
                         module.verbose('Adding fail safe timer', module.timer);
                     },
@@ -21802,24 +21814,6 @@
                                 ? +value.replace(/[^\d.]/g, '')
                                 : false)
                             : value;
-                    },
-
-                    transitionEnd: function () {
-                        var
-                            element     = document.createElement('element'),
-                            transitions = {
-                                transition: 'transitionend',
-                                OTransition: 'oTransitionEnd',
-                                MozTransition: 'transitionend',
-                                WebkitTransition: 'webkitTransitionEnd',
-                            },
-                            transition
-                        ;
-                        for (transition in transitions) {
-                            if (element.style[transition] !== undefined) {
-                                return transitions[transition];
-                            }
-                        }
                     },
 
                     // gets current displayed percentage (if animating values this is the intermediary value)
@@ -22161,9 +22155,6 @@
                             settings.onError.call(element, module.value, module.total);
                         });
                     },
-                    transitionEvent: function () {
-                        transitionEnd = module.get.transitionEnd();
-                    },
                     total: function (totalValue) {
                         module.total = totalValue;
                     },
@@ -22482,7 +22473,7 @@
 })(jQuery, window, document);
 
 /*!
- * # Fomantic-UI ^2.9.1 - Slider
+ * # Fomantic-UI ^2.9.2 - Slider
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -23835,7 +23826,7 @@
 })(jQuery, window, document);
 
 /*!
- * # Fomantic-UI ^2.9.1 - Rating
+ * # Fomantic-UI ^2.9.2 - Rating
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -24378,7 +24369,7 @@
 })(jQuery, window, document);
 
 /*!
- * # Fomantic-UI ^2.9.1 - Search
+ * # Fomantic-UI ^2.9.2 - Search
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -24787,7 +24778,7 @@
                         return module.is.focused() && !module.is.visible() && !module.is.empty();
                     },
                     transition: function () {
-                        return settings.transition && $.fn.transition !== undefined && $module.transition('is supported');
+                        return settings.transition && $.fn.transition !== undefined;
                     },
                 },
 
@@ -25959,7 +25950,7 @@
 })(jQuery, window, document);
 
 /*!
- * # Fomantic-UI ^2.9.1 - Shape
+ * # Fomantic-UI ^2.9.2 - Shape
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -26076,33 +26067,29 @@
                         module.set.active();
                     };
                     settings.onBeforeChange.call($nextSide[0]);
-                    if (module.get.transitionEvent()) {
-                        module.verbose('Starting CSS animation');
+                    module.verbose('Starting CSS animation');
+                    $module
+                        .addClass(className.animating)
+                    ;
+                    $sides
+                        .css(propertyObject)
+                        .one('transitionend', callback)
+                    ;
+                    module.set.duration(settings.duration);
+                    requestAnimationFrame(function () {
                         $module
                             .addClass(className.animating)
                         ;
-                        $sides
-                            .css(propertyObject)
-                            .one(module.get.transitionEvent(), callback)
+                        $activeSide
+                            .addClass(className.hidden)
                         ;
-                        module.set.duration(settings.duration);
-                        requestAnimationFrame(function () {
-                            $module
-                                .addClass(className.animating)
-                            ;
-                            $activeSide
-                                .addClass(className.hidden)
-                            ;
-                        });
-                    } else {
-                        callback();
-                    }
+                    });
                 },
 
                 queue: function (method) {
                     module.debug('Queueing animation of', method);
                     $sides
-                        .one(module.get.transitionEvent(), function () {
+                        .one('transitionend', function () {
                             module.debug('Executing queued animation');
                             setTimeout(function () {
                                 $module.shape(method);
@@ -26370,24 +26357,6 @@
                                 transform: 'translateX(' + translate.x + 'px) rotateY(-180deg)',
                             };
                         },
-                    },
-
-                    transitionEvent: function () {
-                        var
-                            element     = document.createElement('element'),
-                            transitions = {
-                                transition: 'transitionend',
-                                OTransition: 'oTransitionEnd',
-                                MozTransition: 'transitionend',
-                                WebkitTransition: 'webkitTransitionEnd',
-                            },
-                            transition
-                        ;
-                        for (transition in transitions) {
-                            if (element.style[transition] !== undefined) {
-                                return transitions[transition];
-                            }
-                        }
                     },
 
                     nextSide: function () {
@@ -26781,7 +26750,7 @@
 })(jQuery, window, document);
 
 /*!
- * # Fomantic-UI ^2.9.1 - Sidebar
+ * # Fomantic-UI ^2.9.2 - Sidebar
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -26851,7 +26820,6 @@
                 elementNamespace,
                 id,
                 currentScroll,
-                transitionEvent,
                 initialBodyMargin = '',
                 tempBodyMargin = '',
                 hadScrollbar = false,
@@ -26865,8 +26833,6 @@
                     module.debug('Initializing sidebar', parameters);
 
                     module.create.id();
-
-                    transitionEvent = module.get.transitionEvent();
 
                     // avoids locking rendering if initialized in onReady
                     if (settings.delaySetup) {
@@ -27274,13 +27240,13 @@
                     };
                     transitionEnd = function (event) {
                         if (event.target === $transition[0]) {
-                            $transition.off(transitionEvent + elementNamespace, transitionEnd);
+                            $transition.off('transitionend' + elementNamespace, transitionEnd);
                             module.remove.animating();
                             callback.call(element);
                         }
                     };
-                    $transition.off(transitionEvent + elementNamespace);
-                    $transition.on(transitionEvent + elementNamespace, transitionEnd);
+                    $transition.off('transitionend' + elementNamespace);
+                    $transition.on('transitionend' + elementNamespace, transitionEnd);
                     requestAnimationFrame(animate);
                     if (settings.dimPage && !module.othersVisible()) {
                         requestAnimationFrame(dim);
@@ -27314,7 +27280,7 @@
                     };
                     transitionEnd = function (event) {
                         if (event.target === $transition[0]) {
-                            $transition.off(transitionEvent + elementNamespace, transitionEnd);
+                            $transition.off('transitionend' + elementNamespace, transitionEnd);
                             module.remove.animating();
                             module.remove.closing();
                             module.remove.transition();
@@ -27328,8 +27294,8 @@
                             callback.call(element);
                         }
                     };
-                    $transition.off(transitionEvent + elementNamespace);
-                    $transition.on(transitionEvent + elementNamespace, transitionEnd);
+                    $transition.off('transitionend' + elementNamespace);
+                    $transition.on('transitionend' + elementNamespace, transitionEnd);
                     requestAnimationFrame(animate);
                 },
 
@@ -27503,23 +27469,6 @@
                         module.verbose('Determined transition', transition);
 
                         return transition;
-                    },
-                    transitionEvent: function () {
-                        var
-                            element     = document.createElement('element'),
-                            transitions = {
-                                transition: 'transitionend',
-                                OTransition: 'oTransitionEnd',
-                                MozTransition: 'transitionend',
-                                WebkitTransition: 'webkitTransitionEnd',
-                            },
-                            transition
-                        ;
-                        for (transition in transitions) {
-                            if (element.style[transition] !== undefined) {
-                                return transitions[transition];
-                            }
-                        }
                     },
                 },
                 has: {
@@ -27877,7 +27826,7 @@
 })(jQuery, window, document);
 
 /*!
- * # Fomantic-UI ^2.9.1 - Sticky
+ * # Fomantic-UI ^2.9.2 - Sticky
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -28792,7 +28741,7 @@
 })(jQuery, window, document);
 
 /*!
- * # Fomantic-UI ^2.9.1 - Tab
+ * # Fomantic-UI ^2.9.2 - Tab
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -29748,7 +29697,7 @@
 })(jQuery, window, document);
 
 /*!
- * # Fomantic-UI ^2.9.1 - Toast
+ * # Fomantic-UI ^2.9.2 - Toast
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -30146,7 +30095,7 @@
                 animate: {
                     show: function (callback) {
                         callback = isFunction(callback) ? callback : function () {};
-                        if (settings.transition && module.can.useElement('transition') && $module.transition('is supported')) {
+                        if (settings.transition && module.can.useElement('transition')) {
                             module.set.visible();
                             $toastBox
                                 .transition({
@@ -30166,7 +30115,7 @@
                     },
                     close: function (callback) {
                         callback = isFunction(callback) ? callback : function () {};
-                        if (settings.transition && $.fn.transition !== undefined && $module.transition('is supported')) {
+                        if (settings.transition && $.fn.transition !== undefined) {
                             $toastBox
                                 .transition({
                                     animation: settings.transition.hideMethod + ' out',
@@ -30701,7 +30650,7 @@
 })(jQuery, window, document);
 
 /*!
- * # Fomantic-UI ^2.9.1 - Transition
+ * # Fomantic-UI ^2.9.2 - Transition
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -30748,7 +30697,6 @@
                 error,
                 className,
                 metadata,
-                animationEnd,
 
                 moduleNamespace,
                 eventNamespace,
@@ -30770,9 +30718,6 @@
                     eventNamespace = '.' + settings.namespace;
                     moduleNamespace = 'module-' + settings.namespace;
                     instance = $module.data(moduleNamespace) || module;
-
-                    // get vendor specific events
-                    animationEnd = module.get.animationEndEvent();
 
                     if (methodInvoked) {
                         methodInvoked = module.invoke(query);
@@ -30854,11 +30799,7 @@
 
                 animate: function (overrideSettings) {
                     settings = overrideSettings || settings;
-                    if (!module.is.supported()) {
-                        module.error(error.support);
 
-                        return false;
-                    }
                     module.debug('Preparing animation', settings.animation);
                     if (module.is.animating()) {
                         if (settings.queue) {
@@ -30897,7 +30838,7 @@
                     module.debug('Queueing animation of', animation);
                     module.queuing = true;
                     $module
-                        .one(animationEnd + '.queue' + eventNamespace, function () {
+                        .one('animationend.queue' + eventNamespace, function () {
                             module.queuing = false;
                             module.repaint();
                             module.animate.apply(this, settings);
@@ -30918,7 +30859,7 @@
                             module.restore.conditions();
                             module.hide();
                         } else if (module.is.inward()) {
-                            module.verbose('Animation is outward, showing element');
+                            module.verbose('Animation is inward, showing element');
                             module.restore.conditions();
                             module.show();
                         } else {
@@ -31077,7 +31018,7 @@
                         module.debug('Starting tween', animationClass);
                         $module
                             .addClass(animationClass)
-                            .one(animationEnd + '.complete' + eventNamespace, module.complete)
+                            .one('animationend.complete' + eventNamespace, module.complete)
                         ;
                         if (settings.useFailSafe) {
                             module.add.failSafe();
@@ -31126,7 +31067,7 @@
                             duration = module.get.duration()
                         ;
                         module.timer = setTimeout(function () {
-                            $module.triggerHandler(animationEnd);
+                            $module.triggerHandler('animationend');
                         }, duration + settings.failSafeDelay);
                         module.verbose('Adding fail safe timer', module.timer);
                     },
@@ -31314,45 +31255,6 @@
                     transitionExists: function (animation) {
                         return $.fn.transition.exists[animation];
                     },
-                    animationStartEvent: function () {
-                        var
-                            element     = document.createElement('div'),
-                            animations  = {
-                                animation: 'animationstart',
-                                OAnimation: 'oAnimationStart',
-                                MozAnimation: 'mozAnimationStart',
-                                WebkitAnimation: 'webkitAnimationStart',
-                            },
-                            animation
-                        ;
-                        for (animation in animations) {
-                            if (element.style[animation] !== undefined) {
-                                return animations[animation];
-                            }
-                        }
-
-                        return false;
-                    },
-                    animationEndEvent: function () {
-                        var
-                            element     = document.createElement('div'),
-                            animations  = {
-                                animation: 'animationend',
-                                OAnimation: 'oAnimationEnd',
-                                MozAnimation: 'mozAnimationEnd',
-                                WebkitAnimation: 'webkitAnimationEnd',
-                            },
-                            animation
-                        ;
-                        for (animation in animations) {
-                            if (element.style[animation] !== undefined) {
-                                return animations[animation];
-                            }
-                        }
-
-                        return false;
-                    },
-
                 },
 
                 can: {
@@ -31452,7 +31354,8 @@
                         return $module.css('visibility') === 'hidden';
                     },
                     supported: function () {
-                        return animationEnd !== false;
+                        // keep method for backward compatibility until 2.10.0
+                        return true;
                     },
                 },
 
@@ -31503,13 +31406,13 @@
 
                 stop: function () {
                     module.debug('Stopping current animation');
-                    $module.triggerHandler(animationEnd);
+                    $module.triggerHandler('animationend');
                 },
 
                 stopAll: function () {
                     module.debug('Stopping all animation');
                     module.remove.queueCallback();
-                    $module.triggerHandler(animationEnd);
+                    $module.triggerHandler('animationend');
                 },
 
                 clear: {
@@ -31647,8 +31550,7 @@
                         $.each(query, function (depth, value) {
                             var camelCaseValue = depth !== maxDepth
                                 ? value + query[depth + 1].charAt(0).toUpperCase() + query[depth + 1].slice(1)
-                                : query
-                            ;
+                                : query;
                             if ($.isPlainObject(object[camelCaseValue]) && (depth !== maxDepth)) {
                                 object = object[camelCaseValue];
                             } else if (object[camelCaseValue] !== undefined) {
@@ -31662,8 +31564,6 @@
 
                                 return false;
                             } else {
-                                module.error(error.method, query);
-
                                 return false;
                             }
                         });
@@ -31779,15 +31679,13 @@
         // possible errors
         error: {
             noAnimation: 'Element is no longer attached to DOM. Unable to animate.  Use silent setting to suppress this warning in production.',
-            method: 'The method you called is not defined',
-            support: 'This browser does not support CSS animations',
         },
 
     };
 })(jQuery, window, document);
 
 /*!
- * # Fomantic-UI ^2.9.1 - API
+ * # Fomantic-UI ^2.9.2 - API
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -33002,7 +32900,7 @@
 })(jQuery, window, document);
 
 /*!
- * # Fomantic-UI ^2.9.1 - State
+ * # Fomantic-UI ^2.9.2 - State
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -33695,7 +33593,7 @@
 })(jQuery, window, document);
 
 /*!
- * # Fomantic-UI ^2.9.1 - Visibility
+ * # Fomantic-UI ^2.9.2 - Visibility
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
