@@ -4,12 +4,9 @@ import de.laser.helper.FactoryResult
 import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.storage.BeanStore
 import de.laser.titles.TitleInstance
-import de.laser.utils.LocaleUtils
-import grails.converters.JSON
 import grails.plugins.orm.auditable.Auditable
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.util.logging.Slf4j
-import org.grails.web.json.JSONElement
 
 /**
  * A class to retain identifiers for objects. Identifiers may be for example ISBNs for books ISSNs for journals, ISILs for packages, VIAF or other normed tokens for organisations.
@@ -304,17 +301,23 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
      * @return the value as an URL, prefixed by {@link IdentifierNamespace#urlPrefix}
      */
     String getURL() {
-        if (ns.urlPrefix && value && value != IdentifierNamespace.UNKNOWN) {
-            if (ns.urlPrefix.endsWith('=')) {
-                return "${ns.urlPrefix}${value}"
+        if(value && value != IdentifierNamespace.UNKNOWN) {
+            if (ns.urlPrefix) {
+                if (ns.urlPrefix.endsWith('=')) {
+                    return "${ns.urlPrefix}${value}"
+                }
+                else if (ns.urlPrefix.endsWith('/')) {
+                    return "${ns.urlPrefix}${value}"
+                }
+                else {
+                    return "${ns.urlPrefix}/${value}"
+                }
             }
-            else if (ns.urlPrefix.endsWith('/')) {
-                return "${ns.urlPrefix}${value}"
-            }
-            else {
-                return "${ns.urlPrefix}/${value}"
+            else if(value.startsWith('http')) {
+                return value
             }
         }
+
         null
     }
 
