@@ -336,6 +336,7 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
      * @param s the string to decode
      * @return the ASCII-decoded string
      */
+    @Deprecated
     private static String _asciify(String s) {
         char[] c = s.toCharArray()
         StringBuffer b = new StringBuffer()
@@ -351,6 +352,7 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
      * @param c the character to translate
      * @return the ASCII representation of the char
      */
+    @Deprecated
     static char translateChar(char c) {
         switch(c) {
             case '\u00C0':

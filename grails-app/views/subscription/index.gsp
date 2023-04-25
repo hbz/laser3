@@ -296,7 +296,7 @@
                         </div>
                     </g:if>
                     <div class="row">
-                        <div class="three wide column">
+                        <div class="four wide column">
                             <div class="field">
                                 <label><g:message code="subscription.details.access_dates"/></label>
                                 <ui:datepicker hideLabel="true"
@@ -305,7 +305,7 @@
                                                name="bulk_access_start_date"/>
                             </div>
                         </div>
-                        <div class="three wide column">
+                        <div class="four wide column">
                             <div class="field la-field-noLabel">
                                 <ui:datepicker hideLabel="true"
                                                placeholder="${message(code: 'default.to')}"
@@ -314,26 +314,37 @@
 
                             </div>
                         </div>
-                        <div class="three wide column">
+                        <div class="four wide column">
                             <div class="field">
                                 <label><g:message code="tipp.price.localPrice"/></label>
                                 <input class="ui input" type="text" name="bulk_local_price"/>
                             </div>
                         </div>
-                        <div class="three wide column">
+                        <div class="four wide column">
                             <div class="field la-field-noLabel">
                                 <ui:select class="ui dropdown" name="bulk_local_currency" title="${message(code: 'financials.addNew.currencyType')}"
                                     optionKey="id" optionValue="value" from="${RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.CURRENCY)}"/>
                             </div>
                         </div>
-                        <div class="two wide column">
+
+
+                    </div>
+                    <div class="row">
+
+                        <div class="four wide column">
                             <div class="field">
                                 <label><g:message code="issueEntitlement.myNotes"/></label>
                                 <input class="ui input" type="text" name="bulk_notes"/>
                             </div>
                         </div>
-                        <g:if test="${subscription.ieGroups.size() > 0}">
-                            <div class="two wide column">
+                        <div class="four wide column">
+                            <div class="field">
+                                <label><g:message code="issueEntitlement.perpetualAccessBySub.label"/></label>
+                                <ui:select class="ui dropdown" name="bulk_perpetual_access" title="${message(code:'issueEntitlement.perpetualAccessBySub.label')}" optionKey="id" optionValue="value" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"/>
+                            </div>
+                        </div>
+                        <div class="four wide column">
+                            <g:if test="${subscription.ieGroups.size() > 0}">
                                 <div class="field">
                                     <label><g:message code="subscription.details.ieGroups"/></label>
                                     <select class="ui dropdown" name="titleGroupInsert" id="titleGroupInsert">
@@ -343,18 +354,9 @@
                                         </g:each>
                                     </select>
                                 </div>
-                            </div>
-                        </g:if>
-
-
-                    </div>
-                    <div class="row">
-                        <div class="ten wide column">
-                            <div class="field la-field-noLabel">
-                                <input id="select-all" type="checkbox" name="chkall" onClick="JSPC.app.selectAll()"/>
-                            </div>
+                            </g:if>
                         </div>
-                        <div class="four wide column">
+                        <%--<div class="four wide column">
                             <div class="field la-field-noLabel">
                                 <div class="ui selection dropdown la-clearable">
                                     <input type="hidden" id="bulkOperationSelect" name="bulkOperation">
@@ -375,14 +377,21 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>--%>
+                    </div>
+                    <div class="row">
+                        <div class="one wide column">
+                            <div class="field la-field-noLabel">
+                                <input id="select-all" type="checkbox" name="chkall" onClick="JSPC.app.selectAll()"/>
+                            </div>
                         </div>
-                        <div class="two wide column">
-                            <div class="field">
-                                <label><g:message code="default.button.apply_batch.label"/></label>
+                        <div class="twelve wide column"></div>
+                        <div class="three wide column">
+                            <div class="field right align">
                                 <button data-position="top right"
                                         data-content="${message(code: 'default.button.apply_batch.label')}"
                                         type="submit" onClick="return JSPC.app.confirmSubmit()"
-                                        class="ui icon button la-popup-tooltip la-delay"><i class="check icon"></i>
+                                        class="ui icon button la-popup-tooltip la-delay"><g:message code="default.button.apply_batch.label"/>
                                 </button>
                             </div>
                         </div>

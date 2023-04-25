@@ -329,7 +329,7 @@
 
                                         <div class="content">
                                             <div class="ui list">
-                                                <g:each in="${titleGroup.items?.sort { it.ie.sortname }}"
+                                                <g:each in="${titleGroup.items?.sort { it.ie.tipp.sortname }}"
                                                         var="item">
                                                     <div class="item">
                                                         <ui:listIcon hideTooltip="true" type="${item.ie.tipp.titleType}"/>

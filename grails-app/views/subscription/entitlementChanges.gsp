@@ -181,7 +181,7 @@
                             <g:set var="newValue" value="${change.newVal}"/>
                         </g:else>
 
-                        <g:if test="${change.event in [PendingChangeConfiguration.TITLE_DELETED, PendingChangeConfiguration.TITLE_REMOVED]}">
+                        <g:if test="${change.event in [PendingChangeConfiguration.NEW_TITLE, PendingChangeConfiguration.TITLE_DELETED, PendingChangeConfiguration.TITLE_REMOVED]}">
                             <g:message code="subscription.packages.${change.event}"/>
                         </g:if>
                         <g:else>
