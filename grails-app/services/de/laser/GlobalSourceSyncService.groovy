@@ -2,6 +2,7 @@ package de.laser
 
 import de.laser.base.AbstractCoverage
 import de.laser.base.AbstractLockableService
+import de.laser.config.ConfigMapper
 import de.laser.exceptions.SyncException
 import de.laser.finance.PriceItem
 import de.laser.http.BasicHttpClient
@@ -2115,6 +2116,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
         HttpClientConfiguration config = new DefaultHttpClientConfiguration()
         config.readTimeout = Duration.ofMinutes(1)
         config.maxContentLength = MAX_CONTENT_LENGTH
+        queryParams.username = ConfigMapper.getWekbApiUsername()
+        queryParams.password = ConfigMapper.getWekbApiPassword()
         if(useScroll) {
             http = new BasicHttpClient(uri + 'scroll', config)
             String debugString = uri+'scroll?'

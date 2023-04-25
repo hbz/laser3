@@ -56,6 +56,8 @@ class ConfigMapper {
     static final List SYSTEM_INSIGHT_JOB_ACTIVE = ['systemInsightJobActive', Boolean]
 
     static final List TEST_JOB_ACTIVE       = ['testJobActivate', Boolean]
+    static final List WEKB_API_USERNAME     = ['wekbApiUsername', String]
+    static final List WEKB_API_PASSWORD     = ['wekbApiPassword', String]
 
     static final List<List> CONTROLLED_CONFIGURATION_LIST = [
 
@@ -215,6 +217,12 @@ class ConfigMapper {
     }
     static boolean getTestJobActive(int output = LOGGER) {
         readConfig( TEST_JOB_ACTIVE, output )
+    }
+    static String getWekbApiUsername(int output = LOGGER) {
+        readConfig( WEKB_API_USERNAME, output )
+    }
+    static String getWekbApiPassword(int output = LOGGER) {
+        readConfig( WEKB_API_PASSWORD, output )
     }
 
     // -- raw --
