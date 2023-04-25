@@ -11,8 +11,8 @@ UPDATE "user" SET
 WHERE usr_id NOT IN (
     SELECT DISTINCT u.usr_id
     FROM "user" u
-             JOIN user_org uo ON u.usr_id = uo.uo_user_fk
-             JOIN org o ON o.org_id = uo.uo_org_fk
+             JOIN user_org_role uro ON u.usr_id = uro.uo_user_fk
+             JOIN org o ON o.org_id = uro.uo_org_fk
     WHERE o.org_name ILIKE 'hbz%' OR o.org_name ILIKE '%backoffice' OR u.usr_username = 'anonymous'
 );
 
@@ -23,8 +23,8 @@ WHERE us_string_value != ''
     AND us_user_fk NOT IN (
         SELECT DISTINCT u.usr_id
         FROM "user" u
-            JOIN user_org uo ON u.usr_id = uo.uo_user_fk
-            JOIN org o ON o.org_id = uo.uo_org_fk
+            JOIN user_org_role uro ON u.usr_id = uro.uo_user_fk
+            JOIN org o ON o.org_id = uro.uo_org_fk
         WHERE o.org_name ILIKE 'hbz%' OR o.org_name ILIKE '%backoffice' OR u.usr_username = 'anonymous'
     );
 
