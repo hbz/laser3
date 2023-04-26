@@ -41,7 +41,7 @@
 </ui:tabs>
 
 <div class="ui bottom attached active tab segment">
-    <h2 class="ui header la-noMargin-top"><g:message code="default.edit.label" args="[accessPoint.accessMethod.getI10n('value')]"/></h2>
+
 
 
     <div class="la-inline-lists">
