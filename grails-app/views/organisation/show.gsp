@@ -79,16 +79,11 @@
                         <dl>
                             <dt><g:message code="org.sortname.label" /></dt>
                             <dd>
-                                <g:if test="${isProviderOrAgency && orgInstanceRecord}">
-                                    ${orgInstanceRecord.abbreviatedName}
-                                </g:if>
-                                <g:elseif test="${!isProviderOrAgency}">
-                                    <ui:xEditable
-                                            data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
-                                            data_confirm_term_how="ok"
-                                            class="js-open-confirm-modal-xEditable"
-                                            owner="${orgInstance}" field="sortname" overwriteEditable="${editable}"/>
-                                </g:elseif>
+                                <ui:xEditable
+                                        data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                        data_confirm_term_how="ok"
+                                        class="js-open-confirm-modal-xEditable"
+                                        owner="${orgInstance}" field="sortname" overwriteEditable="${editable && !orgInstance.gokbId}"/>
                             </dd>
                         </dl>
                     </g:if>
