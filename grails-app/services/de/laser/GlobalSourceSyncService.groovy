@@ -529,93 +529,82 @@ class GlobalSourceSyncService extends AbstractLockableService {
     void processScrollPage(Map<String, Object> result, String componentType, String changedSince, String pkgFilter = null, Set<String> permanentlyDeletedTitles = []) throws SyncException {
         if(result.count >= 10000) {
             int offset = 0, max = 10000
-            Map<String, Object> queryParams = [component_type: componentType, max: max]
+            Map<String, Object> queryParams = [componentType: componentType, offset: offset, max: max]
             if(changedSince) {
                 queryParams.changedSince = changedSince
                 //queryParams.changedBefore = "2022-09-27 00:00:00" //debug only
             }
             if(pkgFilter)
                 queryParams.pkg = pkgFilter
-            String scrollId
-            boolean more = true
-            while(more) {
-                //actually, scrollId alone should do the trick but tests revealed that other parameters are necessary, too, because of current workaround solution
-                //log.debug("using scrollId ${scrollId}")
-                if(scrollId) {
-                    result = fetchRecordJSON(false, queryParams+[scrollId: scrollId])
-                }
-                else {
+            if(!result.containsKey('error')) {
+                while(result.currentPage < result.lastPage) {
+                    //actually, scrollId alone should do the trick but tests revealed that other parameters are necessary, too, because of current workaround solution
+                    //log.debug("using scrollId ${scrollId}")
                     result = fetchRecordJSON(false, queryParams)
-                }
-                if(result.error && result.error == 404) {
-                    more = false
-                }
-                else if(result.count > 0) {
-                    switch (source.rectype) {
-                        case RECTYPE_ORG:
-                            result.records.each { record ->
-                                record.platforms.each { Map platformData ->
-                                    try {
-                                        createOrUpdatePlatform(platformData.uuid)
-                                    }
-                                    catch (SyncException e) {
-                                        log.error("Error on updating platform ${platformData.uuid}: ",e)
-                                        SystemEvent.createEvent("GSSS_JSON_WARNING",[platformRecordKey:platformData.uuid])
-                                    }
-                                }
-                                createOrUpdateOrg(record)
-                            }
-                            break
-                        case RECTYPE_PACKAGE:
-                            result.records.eachWithIndex { record, int i ->
-                                try {
-                                    log.debug("now processing record #${i}, total #${i+offset}")
-                                    Package pkg = createOrUpdatePackage(record)
-                                    if(pkg.packageStatus == RDStore.PACKAGE_STATUS_REMOVED) {
-                                        log.info("${pkg.name} / ${pkg.gokbId} has been removed, mark titles in package as removed ...")
-                                        TitleInstancePackagePlatform.findAllByPkgAndStatusNotEqual(pkg, RDStore.TIPP_STATUS_REMOVED).each { TitleInstancePackagePlatform tipp ->
-                                            tipp.status = RDStore.TIPP_STATUS_REMOVED
-                                            TitleChange.construct([event: PendingChangeConfiguration.TITLE_REMOVED, tipp: tipp])
-                                            tipp.save()
+                    if(result.count > 0) {
+                        switch (source.rectype) {
+                            case RECTYPE_ORG:
+                                result.records.each { record ->
+                                    record.platforms.each { Map platformData ->
+                                        try {
+                                            createOrUpdatePlatform(platformData.uuid)
+                                        }
+                                        catch (SyncException e) {
+                                            log.error("Error on updating platform ${platformData.uuid}: ",e)
+                                            SystemEvent.createEvent("GSSS_JSON_WARNING",[platformRecordKey:platformData.uuid])
                                         }
                                     }
+                                    createOrUpdateOrg(record)
                                 }
-                                catch (SyncException e) {
-                                    log.error("Error on updating package ${record.uuid}: ",e)
-                                    SystemEvent.createEvent("GSSS_JSON_WARNING",[packageRecordKey: record.uuid])
+                                break
+                            case RECTYPE_PACKAGE:
+                                result.records.eachWithIndex { record, int i ->
+                                    try {
+                                        log.debug("now processing record #${i}, total #${i+offset}")
+                                        Package pkg = createOrUpdatePackage(record)
+                                        if(pkg.packageStatus == RDStore.PACKAGE_STATUS_REMOVED) {
+                                            log.info("${pkg.name} / ${pkg.gokbId} has been removed, mark titles in package as removed ...")
+                                            TitleInstancePackagePlatform.findAllByPkgAndStatusNotEqual(pkg, RDStore.TIPP_STATUS_REMOVED).each { TitleInstancePackagePlatform tipp ->
+                                                tipp.status = RDStore.TIPP_STATUS_REMOVED
+                                                TitleChange.construct([event: PendingChangeConfiguration.TITLE_REMOVED, tipp: tipp])
+                                                tipp.save()
+                                            }
+                                        }
+                                    }
+                                    catch (SyncException e) {
+                                        log.error("Error on updating package ${record.uuid}: ",e)
+                                        SystemEvent.createEvent("GSSS_JSON_WARNING",[packageRecordKey: record.uuid])
+                                    }
                                 }
-                            }
-                            break
-                        case RECTYPE_PLATFORM:
-                            result.records.each { record ->
-                                try {
-                                    createOrUpdatePlatform(record)
+                                break
+                            case RECTYPE_PLATFORM:
+                                result.records.each { record ->
+                                    try {
+                                        createOrUpdatePlatform(record)
+                                    }
+                                    catch (SyncException e) {
+                                        log.error("Error on updating platform ${record.uuid}: ",e)
+                                        SystemEvent.createEvent("GSSS_JSON_WARNING",[platformRecordKey:record.uuid])
+                                    }
                                 }
-                                catch (SyncException e) {
-                                    log.error("Error on updating platform ${record.uuid}: ",e)
-                                    SystemEvent.createEvent("GSSS_JSON_WARNING",[platformRecordKey:record.uuid])
-                                }
-                            }
-                            break
-                        case RECTYPE_TIPP: if(offset == 0) updateRecords(result.records, offset, permanentlyDeletedTitles)
+                                break
+                            case RECTYPE_TIPP: if(offset == 0) updateRecords(result.records, offset, permanentlyDeletedTitles)
                             else updateRecords(result.records, offset)
-                            break
-                    }
-                    if(result.currentPage < result.lastPage) {
-                        //scrollId = result.scrollId
-                        //flush after 50000 records ... seems that Grails 3 onwards fills memory, too!
-                        offset += max
-                        if(offset % 50000 == 0 && offset > 0) {
-                            globalService.cleanUpGorm()
+                                break
+                        }
+                        if(result.currentPage < result.lastPage) {
+                            //scrollId = result.scrollId
+                            //flush after 50000 records ... seems that Grails 3 onwards fills memory, too!
+                            offset += max
+                            queryParams.offset = offset
+                            if(offset % 50000 == 0 && offset > 0) {
+                                globalService.cleanUpGorm()
+                            }
                         }
                     }
                     else {
-                        more = false
+                        log.info("no records updated - leaving everything as is ...")
                     }
-                }
-                else {
-                    more = false
-                    log.info("no records updated - leaving everything as is ...")
                 }
             }
         }
@@ -1018,7 +1007,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
         if(packageRecord) {
             Date lastUpdatedDisplay = DateUtils.parseDateGeneric(packageRecord.lastUpdatedDisplay)
-            if(!result || result?.lastUpdated < lastUpdatedDisplay) {
+            //if(!result || result?.lastUpdated < lastUpdatedDisplay) {
                 log.info("package record loaded, reconciling package record for UUID ${packageRecord.uuid}")
                 RefdataValue packageRecordStatus = packageRecord.status ? packageStatus.get(packageRecord.status) : null
                 RefdataValue contentType = packageRecord.contentType ? RefdataValue.getByValueAndCategory(packageRecord.contentType,RDConstants.PACKAGE_CONTENT_TYPE) : null
@@ -1065,10 +1054,10 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     }
                     result.name = packageRecord.name
                     result.sortname = escapeService.generateSortTitle(packageRecord.name)
-                    result.packageStatus?.id = packageRecordStatus?.id
-                    result.contentType?.id = contentType?.id
-                    result.scope?.id = scope?.id
-                    result.file?.id = file?.id
+                    result.packageStatus = packageRecordStatus
+                    result.contentType = contentType
+                    result.scope = scope
+                    result.file = file
                     if(result.save()) {
                         if(packageRecord.nominalPlatformUuid) {
                             Platform nominalPlatform = Platform.findByGokbId(packageRecord.nominalPlatformUuid)
@@ -1132,7 +1121,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         throw new SyncException(result.errors)
                     }
                 }
-            }
+            //}
             result
         }
         else null
@@ -2162,13 +2151,11 @@ class GlobalSourceSyncService extends AbstractLockableService {
 
     Set<String> getPermanentlyDeletedTitles() {
         Set<String> result = []
-        Map<String, Object> recordBatch = fetchRecordJSON(true, [component_type: 'TitleInstancePackagePlatform', status: PERMANENTLY_DELETED])
-        boolean more = true
-        while(more) {
+        Map<String, Object> recordBatch = fetchRecordJSON(false, [componentType: 'TitleInstancePackagePlatform', status: PERMANENTLY_DELETED])
+        for(int i = 0;i < recordBatch.count; i+=10000) {
             result.addAll(recordBatch.records.collect { record -> record.uuid })
-            more = recordBatch.hasMoreRecords
-            if(more)
-                recordBatch = fetchRecordJSON(true, [component_type: 'TitleInstancePackagePlatform', scrollId: recordBatch.scrollId])
+            if(recordBatch.currentPage < recordBatch.lastPage)
+                recordBatch = fetchRecordJSON(false, [componentType: 'TitleInstancePackagePlatform'])
         }
         result
     }
