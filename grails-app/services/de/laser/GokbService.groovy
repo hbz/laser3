@@ -225,7 +225,7 @@ class GokbService {
         Map queryResult = queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/searchApi' + esQuery + pagination.sort + pagination.order + pagination.max + pagination.offset)
         if (queryResult.warning) {
             records.addAll(queryResult.warning.result)
-            result.recordsCount = queryResult.warning.count
+            result.recordsCount = queryResult.warning.result_count_total
             result.records = records
         }
         else {

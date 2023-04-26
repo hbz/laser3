@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4944    26.04.2023  dev     3.1         Andreas Feature     Paketsynchronisationsmechanismus eingebaut
+
+4802    26.04.2023  dev     3.1         Andreas Feature     Massenbearbeitung von Beständen angepasst
+
 4979    25.04.2023  dev     3.1         Andreas Bug         Nutzerzahl ließ sich nicht löschen
 
 4840    25.04.2023  dev     3.1         Andreas Feature     Datenkommunikation mit we:kb auf api2 umgerüstet

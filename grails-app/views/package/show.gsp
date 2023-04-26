@@ -76,20 +76,52 @@
                                     </g:if>
                                 </dd>
                             </dl>
+                            <g:if test="${packageInstanceRecord.source}">
+                                <dl>
+                                    <dt>${message(code: 'package.source.label')}</dt>
+                                    <dd>
+                                        ${packageInstanceRecord.source.name}<ui:linkWithIcon href="${editUrl}resource/show/${packageInstanceRecord.source.uuid}"/>
+                                    </dd>
+                                </dl>
+                                <dl>
+                                    <dt><g:message code="package.source.url.label"/></dt>
+                                    <dd>
+                                        <g:if test="${packageInstanceRecord.source.url}">
+                                            <g:message code="package.source.url"/><ui:linkWithIcon target="_blank" href="${packageInstanceRecord.source.url}"/>
+                                        </g:if>
+                                    </dd>
+                                </dl>
+                                <dl>
+                                    <dt><g:message code="package.source.frequency"/></dt>
+                                    <dd>${packageInstanceRecord.source.frequency ? RefdataValue.getByValueAndCategory(packageInstanceRecord.source.frequency, RDConstants.PLATFORM_STATISTICS_FREQUENCY)?.getI10n('value') : packageInstanceRecord.source.frequency}</dd>
+                                </dl>
+                                <dl>
+                                    <dt><g:message code="package.source.automaticUpdates"/></dt>
+                                    <dd>${Boolean.valueOf(packageInstanceRecord.source.automaticUpdates) ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}</dd>
+                                </dl>
+                                <dl>
+                                    <dt><g:message code="package.source.lastRun"/></dt>
+                                    <dd>
+                                        <g:if test="${packageInstanceRecord.source.lastRun}">
+                                            <g:set var="sourceLastRun" value="${DateUtils.parseDateGeneric(packageInstanceRecord.source.lastRun)}"/>
+                                            <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${sourceLastRun}"/>
+                                        </g:if>
+                                    </dd>
+                                </dl>
+                            </g:if>
+                            <g:else>
+                                <dl>
+                                    <dt><g:message code="package.source.automaticUpdates"/></dt>
+                                    <dd><g:message code="package.index.result.noAutomaticUpdates"/></dd>
+                                </dl>
+                            </g:else>
                             <dl>
-                                <dt>${message(code: 'package.source.label')}</dt>
-                                <dd>
-                                    <g:if test="${packageInstanceRecord.source?.automaticUpdates}">
-                                        <g:message code="package.index.result.automaticUpdates"/>
-                                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                              data-content="${packageInstanceRecord.source.frequency}">
-                                            <i class="question circle icon"></i>
-                                        </span>
-                                    </g:if>
-                                    <g:else>
-                                        <g:message code="package.index.result.noAutomaticUpdates"/>
-                                    </g:else>
-                                </dd>
+                                <dt>${message(code: 'package.breakable')}</dt>
+                                <dd>${packageInstanceRecord.breakable ? RefdataValue.getByValueAndCategory(packageInstanceRecord.breakable, RDConstants.PACKAGE_BREAKABLE).getI10n("value") : message(code: 'default.not.available')}</dd>
+                            </dl>
+                            <dl>
+                                <dt>${message(code: 'package.contentType.label')}</dt>
+                                <dd>${packageInstance.contentType?.getI10n("value")}</dd>
                             </dl>
                             <dl>
                                 <dt>${message(code: 'package.file')}</dt>
@@ -100,14 +132,6 @@
 
                     <div class="ui card">
                         <div class="content">
-                            <dl>
-                                <dt>${message(code: 'package.contentType.label')}</dt>
-                                <dd>${packageInstance.contentType?.getI10n("value")}</dd>
-                            </dl>
-                            <dl>
-                                <dt>${message(code: 'package.breakable')}</dt>
-                                <dd>${packageInstanceRecord.breakable ? RefdataValue.getByValueAndCategory(packageInstanceRecord.breakable, RDConstants.PACKAGE_BREAKABLE).getI10n("value") : message(code: 'default.not.available')}</dd>
-                            </dl>
                             <%--<dl>
                                 <dt>${message(code: 'package.consistent')}</dt>
                                 <dd>${packageInstanceRecord.consistent ? RefdataValue.getByValueAndCategory(packageInstanceRecord.consistent, RDConstants.PACKAGE_CONSISTENT).getI10n("value") : message(code: 'default.not.available')}</dd>
