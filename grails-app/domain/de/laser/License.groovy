@@ -356,6 +356,16 @@ class License extends AbstractBaseWithCalculatedLastUpdated
     }
 
     /**
+     * Retrieves the providers and agencies for this license
+     * @return a set of {@link Org}s
+     */
+    Set<Org> getProviderAgency() {
+        orgRelations.findAll { OrgRole or ->
+            or.roleType in [RDStore.OR_LICENSOR, RDStore.OR_AGENCY]
+        }.org
+    }
+
+    /**
      * Retrieves the licensee org of this license. Is intended to use for licenses where only one licensee is linked (e.g. local licenses);
      * if there are more than one licensees to this license (this is the case if members share one member license instance), the FIRST one is being returned
      * (which may be random)

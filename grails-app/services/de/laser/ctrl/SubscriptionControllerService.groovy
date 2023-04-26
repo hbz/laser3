@@ -869,7 +869,7 @@ class SubscriptionControllerService {
             Map<String, Object> queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/sushiSources?uuid=${platform.gokbId}")
             Map platformRecord
             if (queryResult.warning) {
-                List records = queryResult.warning.records
+                List records = queryResult.warning.result
                 if(records[0]) {
                     platformRecord = records[0]
                 }
@@ -1584,12 +1584,12 @@ class SubscriptionControllerService {
                 result.platformsJSON = subscribedPlatforms.globalUID as JSON
                 ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
                 subscribedPlatforms.each { Platform platformInstance ->
-                    Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/find?uuid=${platformInstance.gokbId}")
+                    Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/searchApi?uuid=${platformInstance.gokbId}")
                     if (queryResult.error && queryResult.error == 404) {
                         result.wekbServerUnavailable = message(code: 'wekb.error.404')
                     }
                     else if (queryResult.warning) {
-                        List records = queryResult.warning.records
+                        List records = queryResult.warning.result
                         if(records[0]) {
                             records[0].lastRun = platformInstance.counter5LastRun ?: platformInstance.counter4LastRun
                             records[0].id = platformInstance.id
@@ -2015,9 +2015,9 @@ class SubscriptionControllerService {
                 result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
 
                 Set records = []
-                Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/find' + esQuery + sort + order + max + offset)
+                Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/searchApi' + esQuery + sort + order + max + offset)
                 if (queryResult.warning) {
-                    records.addAll(queryResult.warning.records)
+                    records.addAll(queryResult.warning.result)
                     result.recordsCount = queryResult.warning.count
                     result.records = records
                 }

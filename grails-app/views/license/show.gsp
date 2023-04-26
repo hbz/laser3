@@ -150,19 +150,35 @@
                                                     showPersons: true
                                           ]}" />
 
-                                <laser:render template="/templates/links/orgLinksSimpleModal"
-                                          model="${[linkType: license.class.name,
-                                                    parent: license.class.name + ':' + license.id,
-                                                    property: 'orgRelations',
-                                                    recip_prop: 'lic',
-                                                    tmplRole: RDStore.OR_LICENSOR,
-                                                    tmplEntity: message(code:'license.details.tmplEntity'),
-                                                    tmplText: message(code:'license.details.tmplText'),
-                                                    tmplButtonText: message(code:'license.details.tmplButtonText'),
-                                                    tmplModalID:'osel_add_modal_lizenzgeber',
-                                                    tmplType: RDStore.OT_LICENSOR,
-                                                    editmode: editable
-                                          ]}" />
+                                <div class="ui la-vertical buttons la-js-hide-this-card">
+                                    <laser:render template="/templates/links/orgLinksSimpleModal"
+                                              model="${[linkType: license.class.name,
+                                                        parent: license.class.name + ':' + license.id,
+                                                        property: 'orgRelations',
+                                                        recip_prop: 'lic',
+                                                        tmplRole: RDStore.OR_LICENSOR,
+                                                        tmplEntity: message(code:'license.details.tmplEntity'),
+                                                        tmplText: message(code:'license.details.tmplText'),
+                                                        tmplButtonText: message(code:'license.details.tmplLinkProviderText'),
+                                                        tmplModalID:'osel_add_modal_lizenzgeber',
+                                                        tmplType: RDStore.OT_LICENSOR,
+                                                        editmode: editable
+                                              ]}" />
+
+                                    <laser:render template="/templates/links/orgLinksSimpleModal"
+                                              model="${[linkType: license.class.name,
+                                                        parent: license.class.name + ':' + license.id,
+                                                        property: 'orgRelations',
+                                                        recip_prop: 'lic',
+                                                        tmplRole: RDStore.OR_AGENCY,
+                                                        tmplEntity: message(code:'license.details.linkAgency.tmplEntity'),
+                                                        tmplText: message(code:'license.details.linkAgency.tmplText'),
+                                                        tmplButtonText: message(code:'license.details.tmplLinkAgencyText'),
+                                                        tmplModalID:'osel_add_modal_agency',
+                                                        tmplType: RDStore.OT_AGENCY,
+                                                        editmode: editable
+                                              ]}" />
+                                </div>
                             </div>
                         </div>
                     </div>

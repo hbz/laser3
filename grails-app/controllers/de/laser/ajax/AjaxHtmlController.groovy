@@ -249,11 +249,11 @@ class AjaxHtmlController {
 
             packageInfos.packageInstance = subscriptionPackage.pkg
 
-            Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/find?uuid=${subscriptionPackage.pkg.gokbId}")
+            Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/searchApi?uuid=${subscriptionPackage.pkg.gokbId}")
             if (queryResult.error && queryResult.error == 404) {
                 flash.error = message(code: 'wekb.error.404') as String
             } else if (queryResult.warning) {
-                List records = queryResult.warning.records
+                List records = queryResult.warning.result
                 packageInfos.packageInstanceRecord = records ? records[0] : [:]
             }
             result.packages << packageInfos

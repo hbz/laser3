@@ -425,13 +425,13 @@ class MyInstitutionController  {
         }
 
         if(params.licensor) {
-            base_qry += " and ( exists ( select o from l.orgRelations as o where o.roleType = :licCons and o.org.id in (:licensors) ) ) "
+            base_qry += " and ( exists ( select o from l.orgRelations as o where o.roleType in (:licCons) and o.org.id in (:licensors) ) ) "
             List<Long> licensors = []
             List<String> selLicensors = params.list('licensor')
             selLicensors.each { String sel ->
                 licensors << Long.parseLong(sel)
             }
-            qry_params += [licCons:RDStore.OR_LICENSOR,licensors:licensors]
+            qry_params += [licCons:[RDStore.OR_LICENSOR, RDStore.OR_AGENCY],licensors:licensors]
         }
 
         if(params.categorisation) {
