@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.auth.Role
 import de.laser.utils.SwissKnife
 import de.laser.storage.BeanStore
 import org.springframework.context.MessageSource
@@ -264,6 +265,10 @@ class NavigationTagLib {
         def (lbText, lbMessage) = SwissKnife.getTextAndMessage(attrs)
         String linkBody  = (lbText && lbMessage) ? lbText + " - " + lbMessage : lbText + lbMessage
 
+        if (!attrs.affiliation) {
+            attrs.affiliation = Role.INST_USER // new default
+        }
+
         boolean check = SwissKnife.checkAndCacheNavPermsForCurrentRequest(attrs, request)
 
         if (attrs.addItemAttributes) {
@@ -282,7 +287,7 @@ class NavigationTagLib {
             )
         }
         else {
-            if (attrs.affiliation && contextService.getUser().hasCtxAffiliation_or_ROLEADMIN(attrs.affiliation)) {
+            if (contextService.getUser().hasCtxAffiliation_or_ROLEADMIN(attrs.affiliation)) {
                 out << '<div class="item disabled la-popup-tooltip la-delay" data-position="left center" data-content="' + message(code:'tooltip.onlyFullMembership') + '" role="menuitem">' + linkBody + '</div>'
             }
 //            else out << '<div class="item disabled la-popup-tooltip la-delay" data-position="left center" role="menuitem">' + linkBody + '</div>'
