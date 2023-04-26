@@ -1,5 +1,5 @@
 /*
- * # Fomantic UI - ^2.9.1
+ * # Fomantic UI - ^2.9.2
  * https://github.com/fomantic/Fomantic-UI
  * https://fomantic-ui.com/
  *
@@ -9,7 +9,7 @@
  *
  */
 /*!
- * # Fomantic-UI ^2.9.1 - Reset
+ * # Fomantic-UI ^2.9.2 - Reset
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -913,7 +913,7 @@ template {
   display: none;
 }
 /*!
- * # Fomantic-UI ^2.9.1 - Site
+ * # Fomantic-UI ^2.9.2 - Site
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -1109,23 +1109,12 @@ body .ui.inverted:not(.dimmer) {
 
 /* Site */
 
-::-webkit-selection {
-  background-color: #CCE2FF;
-  color: #1B1C1D;
-}
-
 ::selection {
   background-color: #CCE2FF;
   color: #1B1C1D;
 }
 
 /* Form */
-
-textarea::-webkit-selection,
-input::-webkit-selection {
-  background-color: rgba(100, 100, 100, 0.4);
-  color: #1B1C1D;
-}
 
 textarea::selection,
 input::selection {
@@ -1869,7 +1858,7 @@ i.icon.la-list-icon:before {
   cursor: pointer;
 }
 /*!
- * # Fomantic-UI ^2.9.1 - Button
+ * # Fomantic-UI ^2.9.2 - Button
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -6741,7 +6730,7 @@ a i.circular.la-gokb:hover {
   background-color: #004678;
 }
 /*!
- * # Fomantic-UI ^2.9.1 - Container
+ * # Fomantic-UI ^2.9.2 - Container
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -7027,7 +7016,7 @@ a i.circular.la-gokb:hover {
   }
 }
 /*!
- * # Fomantic-UI ^2.9.1 - Divider
+ * # Fomantic-UI ^2.9.2 - Divider
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -7355,12 +7344,12 @@ a i.circular.la-gokb:hover {
   margin: 0.6rem 0;
 }
 /*!
- * # Fomantic UI - Emoji
+ * # Fomantic-UI ^2.9.2 - Emoji
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
  * Released under the MIT license
- * https://github.com/fomantic/Fomantic-UI/blob/master/LICENSE.md
+ * https://opensource.org/licenses/MIT
  *
  */
 
@@ -25170,7 +25159,7 @@ em[data-emoji="regional_indicator_a"]::before {
              Emojis
 *******************************/
 /*!
- * # Fomantic-UI ^2.9.1 - Flag
+ * # Fomantic-UI ^2.9.2 - Flag
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -26578,7 +26567,7 @@ i.flag.united.nations::before {
          Theme Overrides
 *******************************/
 /*!
- * # Fomantic-UI ^2.9.1 - Header
+ * # Fomantic-UI ^2.9.2 - Header
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -27713,7 +27702,7 @@ body[class*="platform"] .ui.icon.header .icon.la-object:before {
   position: relative;
 }
 /*!
- * # Fomantic-UI ^2.9.1 - Icon
+ * # Fomantic-UI ^2.9.2 - Icon
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -42839,7 +42828,7 @@ i.orange.icon.la-subscriptionIsChild.fixed {
   right: 0;
 }
 /*!
- * # Fomantic-UI ^2.9.1 - Image
+ * # Fomantic-UI ^2.9.2 - Image
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -43176,7 +43165,7 @@ img.ui.bordered.image {
          Theme Overrides
 *******************************/
 /*!
- * # Fomantic-UI ^2.9.1 - Input
+ * # Fomantic-UI ^2.9.2 - Input
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -43236,12 +43225,19 @@ img.ui.bordered.image {
 
 /* browsers require these rules separate */
 
-.ui.input > input::-webkit-input-placeholder {
+.ui.input > input:-ms-input-placeholder {
+  color: #585c5f;
+}
+
+.ui.input > input::-ms-input-placeholder {
+  color: #585c5f;
+}
+
+.ui.input > input::placeholder {
   color: #585c5f;
 }
 
 .ui.input > input::-moz-placeholder {
-  color: #585c5f;
   opacity: 1;
 }
 
@@ -43321,13 +43317,18 @@ img.ui.bordered.image {
   box-shadow: none;
 }
 
-.ui.input.focus > input::-webkit-input-placeholder,
-.ui.input > input:focus::-webkit-input-placeholder {
+.ui.input.focus > input:-ms-input-placeholder,
+.ui.input > input:focus:-ms-input-placeholder {
   color: #8b8f93;
 }
 
-.ui.input.focus > input::-moz-placeholder,
-.ui.input > input:focus::-moz-placeholder {
+.ui.input.focus > input::-ms-input-placeholder,
+.ui.input > input:focus::-ms-input-placeholder {
+  color: #8b8f93;
+}
+
+.ui.input.focus > input::placeholder,
+.ui.input > input:focus::placeholder {
   color: #8b8f93;
 }
 
@@ -43370,11 +43371,15 @@ img.ui.bordered.image {
 
 /* Placeholder */
 
-.ui.input.error > input::-webkit-input-placeholder {
+.ui.input.error > input:-ms-input-placeholder {
   color: #7e8286;
 }
 
-.ui.input.error > input::-moz-placeholder {
+.ui.input.error > input::-ms-input-placeholder {
+  color: #7e8286;
+}
+
+.ui.input.error > input::placeholder {
   color: #7e8286;
 }
 
@@ -43384,11 +43389,15 @@ img.ui.bordered.image {
 
 /* Focused Placeholder */
 
-.ui.input.error > input:focus::-webkit-input-placeholder {
+.ui.input.error > input:focus:-ms-input-placeholder {
   color: #65696c;
 }
 
-.ui.input.error > input:focus::-moz-placeholder {
+.ui.input.error > input:focus::-ms-input-placeholder {
+  color: #65696c;
+}
+
+.ui.input.error > input:focus::placeholder {
   color: #65696c;
 }
 
@@ -43405,11 +43414,15 @@ img.ui.bordered.image {
 
 /* Placeholder */
 
-.ui.input.info > input::-webkit-input-placeholder {
+.ui.input.info > input:-ms-input-placeholder {
   color: #7e8286;
 }
 
-.ui.input.info > input::-moz-placeholder {
+.ui.input.info > input::-ms-input-placeholder {
+  color: #7e8286;
+}
+
+.ui.input.info > input::placeholder {
   color: #7e8286;
 }
 
@@ -43419,11 +43432,15 @@ img.ui.bordered.image {
 
 /* Focused Placeholder */
 
-.ui.input.info > input:focus::-webkit-input-placeholder {
+.ui.input.info > input:focus:-ms-input-placeholder {
   color: #65696c;
 }
 
-.ui.input.info > input:focus::-moz-placeholder {
+.ui.input.info > input:focus::-ms-input-placeholder {
+  color: #65696c;
+}
+
+.ui.input.info > input:focus::placeholder {
   color: #65696c;
 }
 
@@ -43440,11 +43457,15 @@ img.ui.bordered.image {
 
 /* Placeholder */
 
-.ui.input.success > input::-webkit-input-placeholder {
+.ui.input.success > input:-ms-input-placeholder {
   color: #7e8286;
 }
 
-.ui.input.success > input::-moz-placeholder {
+.ui.input.success > input::-ms-input-placeholder {
+  color: #7e8286;
+}
+
+.ui.input.success > input::placeholder {
   color: #7e8286;
 }
 
@@ -43454,11 +43475,15 @@ img.ui.bordered.image {
 
 /* Focused Placeholder */
 
-.ui.input.success > input:focus::-webkit-input-placeholder {
+.ui.input.success > input:focus:-ms-input-placeholder {
   color: #65696c;
 }
 
-.ui.input.success > input:focus::-moz-placeholder {
+.ui.input.success > input:focus::-ms-input-placeholder {
+  color: #65696c;
+}
+
+.ui.input.success > input:focus::placeholder {
   color: #65696c;
 }
 
@@ -43475,11 +43500,15 @@ img.ui.bordered.image {
 
 /* Placeholder */
 
-.ui.input.warning > input::-webkit-input-placeholder {
+.ui.input.warning > input:-ms-input-placeholder {
   color: #7e8286;
 }
 
-.ui.input.warning > input::-moz-placeholder {
+.ui.input.warning > input::-ms-input-placeholder {
+  color: #7e8286;
+}
+
+.ui.input.warning > input::placeholder {
   color: #7e8286;
 }
 
@@ -43489,11 +43518,15 @@ img.ui.bordered.image {
 
 /* Focused Placeholder */
 
-.ui.input.warning > input:focus::-webkit-input-placeholder {
+.ui.input.warning > input:focus:-ms-input-placeholder {
   color: #65696c;
 }
 
-.ui.input.warning > input:focus::-moz-placeholder {
+.ui.input.warning > input:focus::-ms-input-placeholder {
+  color: #65696c;
+}
+
+.ui.input.warning > input:focus::placeholder {
   color: #65696c;
 }
 
@@ -43549,11 +43582,15 @@ img.ui.bordered.image {
   color: inherit;
 }
 
-.ui.transparent.inverted.input > input::-webkit-input-placeholder {
+.ui.transparent.inverted.input > input:-ms-input-placeholder {
   color: rgba(255, 255, 255, 0.5);
 }
 
-.ui.transparent.inverted.input > input::-moz-placeholder {
+.ui.transparent.inverted.input > input::-ms-input-placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.ui.transparent.inverted.input > input::placeholder {
   color: rgba(255, 255, 255, 0.5);
 }
 
@@ -45036,7 +45073,7 @@ input[type="file"].ui.black.file.input::file-selector-button:hover,
          Theme Overrides
 *******************************/
 /*!
- * # Fomantic-UI ^2.9.1 - Label
+ * # Fomantic-UI ^2.9.2 - Label
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -47755,7 +47792,7 @@ a .ui.circular.label:focus {
   display: inline-flex !important;
 }
 /*!
- * # Fomantic-UI ^2.9.1 - List
+ * # Fomantic-UI ^2.9.2 - List
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -49013,7 +49050,7 @@ dd {
   font-weight: normal;
 }
 /*!
- * # Fomantic-UI ^2.9.1 - Loader
+ * # Fomantic-UI ^2.9.2 - Loader
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -49877,7 +49914,7 @@ dd {
          Theme Overrides
 *******************************/
 /*!
- * # Fomantic-UI ^2.9.1 - Loader
+ * # Fomantic-UI ^2.9.2 - Placeholder
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -50144,7 +50181,7 @@ dd {
          Theme Overrides
 *******************************/
 /*!
- * # Fomantic-UI ^2.9.1 - Rail
+ * # Fomantic-UI ^2.9.2 - Rail
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -50302,7 +50339,7 @@ dd {
          Theme Overrides
 *******************************/
 /*!
- * # Fomantic-UI ^2.9.1 - Reveal
+ * # Fomantic-UI ^2.9.2 - Reveal
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -50609,7 +50646,7 @@ dd {
          Theme Overrides
 *******************************/
 /*!
- * # Fomantic-UI ^2.9.1 - Segment
+ * # Fomantic-UI ^2.9.2 - Segment
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -51449,7 +51486,7 @@ dd {
   border: 1px solid #D4D4D5;
 }
 
-.ui.attached:not(.message):not(.text) + .ui.attached.segment:not(.top) {
+.ui.attached:not(.message):not(.text) + .ui.attached.segment:not(.top):not([class*="left attached"]):not([class*="right attached"]) {
   border-top: none;
 }
 
@@ -51488,6 +51525,35 @@ dd {
 
 .ui.tab.segment[class*="bottom attached"]:last-child {
   margin-bottom: 1rem;
+}
+
+.ui[class*="left attached"].segment {
+  margin-right: 0;
+}
+
+.ui[class*="right attached"].segment {
+  margin-left: 0;
+}
+
+.ui.seamless.attached.segment:not(.top):not(.bottom):not([class*="right attached"]):not([class*="left attached"]) {
+  border-top: none;
+  border-bottom: none;
+}
+
+.ui.seamless.attached.segment.top {
+  border-bottom: none;
+}
+
+.ui.seamless.attached.segment.bottom {
+  border-top: none;
+}
+
+.ui.seamless.attached.segment[class*="left attached"] {
+  border-right: none;
+}
+
+.ui.seamless.attached.segment[class*="right attached"] {
+  border-left: none;
 }
 
 /* --------------
@@ -51801,7 +51867,7 @@ aside.la-metabox + .la-metabox-spacer {
   box-shadow: none;
 }
 /*!
- * # Fomantic-UI ^2.9.1 - Step
+ * # Fomantic-UI ^2.9.2 - Step
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -51949,7 +52015,7 @@ aside.la-metabox + .la-metabox-spacer {
 .ui.steps .step > i.icon ~ .content {
   display: block;
   flex: 0 1 auto;
-  align-self: middle;
+  align-self: center;
 }
 
 /* Horizontal Icon */
@@ -51982,7 +52048,7 @@ aside.la-metabox + .la-metabox-spacer {
   position: static;
   text-align: center;
   content: counter(ordered);
-  align-self: middle;
+  align-self: center;
   margin-right: 1rem;
   font-size: 2.5em;
   counter-increment: ordered;
@@ -51992,7 +52058,7 @@ aside.la-metabox + .la-metabox-spacer {
 
 .ui.ordered.steps .step > * {
   display: block;
-  align-self: middle;
+  align-self: center;
 }
 
 /* --------------
@@ -52530,12 +52596,12 @@ aside.la-metabox + .la-metabox-spacer {
   justify-content: space-evenly;
 }
 /*!
- * # Fomantic-UI ^2.9.1 - Text
+ * # Fomantic-UI ^2.9.2 - Text
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
  * Released under the MIT license
- * https://github.com/fomantic/Fomantic-UI/blob/master/LICENSE.md
+ * https://opensource.org/licenses/MIT
  *
  */
 
@@ -52725,7 +52791,7 @@ span.ui.massive.text {
          Theme Overrides
 *******************************/
 /*!
- * # Fomantic-UI ^2.9.1 - Breadcrumb
+ * # Fomantic-UI ^2.9.2 - Breadcrumb
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -52885,7 +52951,7 @@ span.ui.massive.text {
   color: #54C8FF;
 }
 /*!
- * # Fomantic-UI ^2.9.1 - Form
+ * # Fomantic-UI ^2.9.2 - Form
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -53287,7 +53353,15 @@ span.ui.massive.text {
 
 /* browsers require these rules separate */
 
-.ui.form ::-webkit-input-placeholder {
+.ui.form :-ms-input-placeholder {
+  color: #585c5f;
+}
+
+.ui.form ::-ms-input-placeholder {
+  color: #585c5f;
+}
+
+.ui.form ::placeholder {
   color: #585c5f;
 }
 
@@ -53295,21 +53369,20 @@ span.ui.massive.text {
   color: #585c5f !important;
 }
 
-.ui.form ::-moz-placeholder {
-  color: #585c5f;
-  opacity: 1;
+.ui.form :focus:-ms-input-placeholder {
+  color: #8b8f93;
 }
 
-.ui.form :focus::-webkit-input-placeholder {
+.ui.form :focus::-ms-input-placeholder {
+  color: #8b8f93;
+}
+
+.ui.form :focus::placeholder {
   color: #8b8f93;
 }
 
 .ui.form :focus:-ms-input-placeholder {
   color: #8b8f93 !important;
-}
-
-.ui.form :focus::-moz-placeholder {
-  color: #8b8f93;
 }
 
 /* --------------------
@@ -53563,7 +53636,15 @@ span.ui.massive.text {
 
 /* Placeholder */
 
-.ui.form .error ::-webkit-input-placeholder {
+.ui.form .error :-ms-input-placeholder {
+  color: #7e8286;
+}
+
+.ui.form .error ::-ms-input-placeholder {
+  color: #7e8286;
+}
+
+.ui.form .error ::placeholder {
   color: #7e8286;
 }
 
@@ -53571,20 +53652,20 @@ span.ui.massive.text {
   color: #7e8286 !important;
 }
 
-.ui.form .error ::-moz-placeholder {
-  color: #7e8286;
+.ui.form .error :focus:-ms-input-placeholder {
+  color: #65696c;
 }
 
-.ui.form .error :focus::-webkit-input-placeholder {
+.ui.form .error :focus::-ms-input-placeholder {
+  color: #65696c;
+}
+
+.ui.form .error :focus::placeholder {
   color: #65696c;
 }
 
 .ui.form .error :focus:-ms-input-placeholder {
   color: #65696c !important;
-}
-
-.ui.form .error :focus::-moz-placeholder {
-  color: #65696c;
 }
 
 /*------------------
@@ -53811,7 +53892,15 @@ span.ui.massive.text {
 
 /* Placeholder */
 
-.ui.form .info ::-webkit-input-placeholder {
+.ui.form .info :-ms-input-placeholder {
+  color: #7e8286;
+}
+
+.ui.form .info ::-ms-input-placeholder {
+  color: #7e8286;
+}
+
+.ui.form .info ::placeholder {
   color: #7e8286;
 }
 
@@ -53819,20 +53908,20 @@ span.ui.massive.text {
   color: #7e8286 !important;
 }
 
-.ui.form .info ::-moz-placeholder {
-  color: #7e8286;
+.ui.form .info :focus:-ms-input-placeholder {
+  color: #65696c;
 }
 
-.ui.form .info :focus::-webkit-input-placeholder {
+.ui.form .info :focus::-ms-input-placeholder {
+  color: #65696c;
+}
+
+.ui.form .info :focus::placeholder {
   color: #65696c;
 }
 
 .ui.form .info :focus:-ms-input-placeholder {
   color: #65696c !important;
-}
-
-.ui.form .info :focus::-moz-placeholder {
-  color: #65696c;
 }
 
 /*------------------
@@ -54059,7 +54148,15 @@ span.ui.massive.text {
 
 /* Placeholder */
 
-.ui.form .success ::-webkit-input-placeholder {
+.ui.form .success :-ms-input-placeholder {
+  color: #7e8286;
+}
+
+.ui.form .success ::-ms-input-placeholder {
+  color: #7e8286;
+}
+
+.ui.form .success ::placeholder {
   color: #7e8286;
 }
 
@@ -54067,20 +54164,20 @@ span.ui.massive.text {
   color: #7e8286 !important;
 }
 
-.ui.form .success ::-moz-placeholder {
-  color: #7e8286;
+.ui.form .success :focus:-ms-input-placeholder {
+  color: #65696c;
 }
 
-.ui.form .success :focus::-webkit-input-placeholder {
+.ui.form .success :focus::-ms-input-placeholder {
+  color: #65696c;
+}
+
+.ui.form .success :focus::placeholder {
   color: #65696c;
 }
 
 .ui.form .success :focus:-ms-input-placeholder {
   color: #65696c !important;
-}
-
-.ui.form .success :focus::-moz-placeholder {
-  color: #65696c;
 }
 
 /*------------------
@@ -54307,7 +54404,15 @@ span.ui.massive.text {
 
 /* Placeholder */
 
-.ui.form .warning ::-webkit-input-placeholder {
+.ui.form .warning :-ms-input-placeholder {
+  color: #7e8286;
+}
+
+.ui.form .warning ::-ms-input-placeholder {
+  color: #7e8286;
+}
+
+.ui.form .warning ::placeholder {
   color: #7e8286;
 }
 
@@ -54315,20 +54420,20 @@ span.ui.massive.text {
   color: #7e8286 !important;
 }
 
-.ui.form .warning ::-moz-placeholder {
-  color: #7e8286;
+.ui.form .warning :focus:-ms-input-placeholder {
+  color: #65696c;
 }
 
-.ui.form .warning :focus::-webkit-input-placeholder {
+.ui.form .warning :focus::-ms-input-placeholder {
+  color: #65696c;
+}
+
+.ui.form .warning :focus::placeholder {
   color: #65696c;
 }
 
 .ui.form .warning :focus:-ms-input-placeholder {
   color: #65696c !important;
-}
-
-.ui.form .warning :focus::-moz-placeholder {
-  color: #65696c;
 }
 
 /*------------------
@@ -55084,7 +55189,7 @@ legend {
   }
 }
 /*!
- * # Fomantic-UI ^2.9.1 - Grid
+ * # Fomantic-UI ^2.9.2 - Grid
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -57332,6 +57437,14 @@ legend {
   padding: 0.5em;
 }
 
+.ui.grid .left.attached.column {
+  padding-right: 0;
+}
+
+.ui.grid .right.attached.column {
+  padding-left: 0;
+}
+
 /*******************************
          Theme Overrides
 *******************************/
@@ -57492,12 +57605,11 @@ legend {
   background: #fcfff5;
   color: #2c662d;
 }
-/*
- * # Fomantic - Menu
+/*!
+ * # Fomantic-UI ^2.9.2 - Menu
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
- * Copyright 2015 Contributor
  * Released under the MIT license
  * https://opensource.org/licenses/MIT
  *
@@ -58340,7 +58452,7 @@ Floated Menu / Item
   border-radius: 0 0.28571429rem 0.28571429rem 0;
 }
 
-.ui.pagination.menu .item:last-child::before {
+.ui.pagination.menu:not(.wrapping) .item:last-child::before {
   display: none;
 }
 
@@ -59140,11 +59252,17 @@ Floated Menu / Item
   margin: 0 0 0 0.5rem;
 }
 
-.ui.center.aligned.menu,
-.ui.centered.menu {
+.ui.center.aligned.menu:not(.fluid),
+.ui.centered.menu:not(.fluid) {
   display: inline-flex;
   transform: translateX(-50%);
   margin-left: 50%;
+}
+
+.ui.center.aligned.menu .item,
+.ui.centered.menu .item {
+  flex: 1 0 auto;
+  justify-content: center;
 }
 
 /* --------------
@@ -59834,6 +59952,32 @@ Floated Menu / Item
   width: 100%;
 }
 
+.ui.wrapping.menu {
+  flex-wrap: wrap;
+}
+
+.ui.wrapping.menu .item::before {
+  right: auto;
+  left: 0;
+}
+
+.ui.wrapping.menu .item:first-child::before {
+  display: none;
+}
+
+.ui.wrapping.menu:not(.tabular) .item:last-of-type,
+.ui.wrapping.menu:not(.tabular) .item:last-child {
+  border-right: 1px solid rgba(34, 36, 38, 0.1);
+}
+
+.ui.wrapped.menu:not(.tabular) .item:first-child {
+  border-bottom-left-radius: 0;
+}
+
+.ui.wrapped.menu:not(.tabular) .item:last-child {
+  border-top-right-radius: 0;
+}
+
 /* --------------
      Sizes
 --------------- */
@@ -60116,7 +60260,7 @@ Floated Menu / Item
   overflow-y: hidden;
 }
 /*!
- * # Fomantic-UI ^2.9.1 - Message
+ * # Fomantic-UI ^2.9.2 - Message
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -60856,7 +61000,7 @@ Floated Menu / Item
          Theme Overrides
 *******************************/
 /*!
- * # Fomantic-UI ^2.9.1 - Table
+ * # Fomantic-UI ^2.9.2 - Table
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -62349,7 +62493,7 @@ Floated Menu / Item
   margin-top: 0;
   top: 0;
   margin-bottom: 1em;
-  box-shadow: none, none;
+  box-shadow: none;
   border-radius: 0 0 0.28571429rem 0.28571429rem;
 }
 
@@ -65306,7 +65450,7 @@ Floated Menu / Item
   }
 }
 /*!
- * # Fomantic-UI ^2.9.1 - Ad
+ * # Fomantic-UI ^2.9.2 - Ad
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -65590,7 +65734,7 @@ Floated Menu / Item
          Theme Overrides
 *******************************/
 /*!
- * # Fomantic-UI ^2.9.1 - Card
+ * # Fomantic-UI ^2.9.2 - Card
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -67938,7 +68082,7 @@ a.inverted.ui.card:hover,
   padding-left: 0.7em;
 }
 /*!
- * # Fomantic-UI ^2.9.1 - Comment
+ * # Fomantic-UI ^2.9.2 - Comment
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -68245,7 +68389,7 @@ a.inverted.ui.card:hover,
          Theme Overrides
 *******************************/
 /*!
- * # Fomantic-UI ^2.9.1 - Feed
+ * # Fomantic-UI ^2.9.2 - Feed
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -68590,7 +68734,7 @@ a.inverted.ui.card:hover,
   margin: 0;
 }
 /*!
- * # Fomantic-UI ^2.9.1 - Item
+ * # Fomantic-UI ^2.9.2 - Item
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -68772,7 +68916,7 @@ a.inverted.ui.card:hover,
 
 .ui.items > .item > .content > .description {
   margin-top: 0.6em;
-  max-width: auto;
+  max-width: none;
   font-size: 1em;
   line-height: 1.4285em;
   color: #1B1C1D;
@@ -69197,7 +69341,7 @@ a.inverted.ui.card:hover,
          Theme Overrides
 *******************************/
 /*!
- * # Fomantic-UI ^2.9.1 - Statistic
+ * # Fomantic-UI ^2.9.2 - Statistic
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -69871,7 +70015,7 @@ a.inverted.ui.card:hover,
          Theme Overrides
 *******************************/
 /*!
- * # Fomantic-UI ^2.9.1 - Accordion
+ * # Fomantic-UI ^2.9.2 - Accordion
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -70312,7 +70456,7 @@ a.inverted.ui.card:hover,
   color: #FFFFFF;
 }
 /*!
- * # Fomantic-UI ^2.9.1 - Calendar
+ * # Fomantic-UI ^2.9.2 - Calendar
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -70525,7 +70669,7 @@ a.inverted.ui.card:hover,
          Theme Overrides
 *******************************/
 /*!
- * # Fomantic-UI ^2.9.1 - Checkbox
+ * # Fomantic-UI ^2.9.2 - Checkbox
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -70949,11 +71093,11 @@ a.inverted.ui.card:hover,
 /* Active */
 
 .ui.slider.checkbox input:checked ~ label {
-  color: rgba(0, 0, 0, 0.95) !important;
+  color: rgba(0, 0, 0, 0.95);
 }
 
 .ui.slider.checkbox input:checked ~ label::before {
-  background-color: #545454 !important;
+  background-color: #545454;
 }
 
 .ui.slider.checkbox input:checked ~ label::after {
@@ -70963,11 +71107,11 @@ a.inverted.ui.card:hover,
 /* Active Focus */
 
 .ui.slider.checkbox input:focus:checked ~ label {
-  color: rgba(0, 0, 0, 0.95) !important;
+  color: rgba(0, 0, 0, 0.95);
 }
 
 .ui.slider.checkbox input:focus:checked ~ label::before {
-  background-color: #000000 !important;
+  background-color: #000000;
 }
 
 .ui.right.aligned.slider.checkbox label {
@@ -71070,11 +71214,11 @@ a.inverted.ui.card:hover,
 /* Active */
 
 .ui.toggle.checkbox input:checked ~ label {
-  color: rgba(0, 0, 0, 0.95) !important;
+  color: rgba(0, 0, 0, 0.95);
 }
 
 .ui.toggle.checkbox input:checked ~ label::before {
-  background-color: #1B1C1D !important;
+  background-color: #1B1C1D;
 }
 
 .ui.toggle.checkbox input:checked ~ label::after {
@@ -71085,11 +71229,11 @@ a.inverted.ui.card:hover,
 /* Active Focus */
 
 .ui.toggle.checkbox input:focus:checked ~ label {
-  color: rgba(0, 0, 0, 0.95) !important;
+  color: rgba(0, 0, 0, 0.95);
 }
 
 .ui.toggle.checkbox input:focus:checked ~ label::before {
-  background-color: #070808 !important;
+  background-color: #070808;
 }
 
 .ui.right.aligned.toggle.checkbox label {
@@ -71116,8 +71260,8 @@ a.inverted.ui.card:hover,
          Fitted
     --------------- */
 
-.ui.fitted.checkbox label {
-  padding-left: 0 !important;
+.ui.ui.fitted.checkbox label {
+  padding-left: 0;
 }
 
 .ui.fitted.toggle.checkbox {
@@ -71132,15 +71276,15 @@ a.inverted.ui.card:hover,
          Inverted
     --------------- */
 
-.ui.inverted.checkbox label,
-.ui.inverted.checkbox + label {
-  color: rgba(255, 255, 255, 0.9) !important;
+.ui.ui.ui.inverted.checkbox label,
+.ui.ui.ui.inverted.checkbox + label {
+  color: rgba(255, 255, 255, 0.9);
 }
 
 /* Hover */
 
-.ui.inverted.checkbox label:hover {
-  color: #ffffff !important;
+.ui.ui.inverted.checkbox label:hover {
+  color: #ffffff;
 }
 
 .ui.inverted.checkbox label:hover::before {
@@ -71155,66 +71299,66 @@ a.inverted.ui.card:hover,
 
 /* Slider Line */
 
-.ui.inverted.slider.checkbox label::before {
-  background-color: rgba(255, 255, 255, 0.5) !important;
+.ui.ui.inverted.slider.checkbox label::before {
+  background-color: rgba(255, 255, 255, 0.5);
 }
 
 /* Slider Hover */
 
-.ui.inverted.slider.checkbox label:hover::before {
-  background: rgba(255, 255, 255, 0.7) !important;
+.ui.ui.inverted.slider.checkbox label:hover::before {
+  background: rgba(255, 255, 255, 0.7);
 }
 
 /* Slider Active */
 
-.ui.inverted.slider.checkbox input:checked ~ label {
-  color: #ffffff !important;
+.ui.ui.inverted.slider.checkbox input:checked ~ label {
+  color: #ffffff;
 }
 
-.ui.inverted.slider.checkbox input:checked ~ label::before {
-  background-color: rgba(255, 255, 255, 0.8) !important;
+.ui.ui.inverted.slider.checkbox input:checked ~ label::before {
+  background-color: rgba(255, 255, 255, 0.8);
 }
 
 /* Slider Active Focus */
 
-.ui.inverted.slider.checkbox input:focus:checked ~ label {
-  color: #ffffff !important;
+.ui.ui.inverted.slider.checkbox input:focus:checked ~ label {
+  color: #ffffff;
 }
 
-.ui.inverted.slider.checkbox input:focus:checked ~ label::before {
-  background-color: rgba(255, 255, 255, 0.8) !important;
+.ui.ui.inverted.slider.checkbox input:focus:checked ~ label::before {
+  background-color: rgba(255, 255, 255, 0.8);
 }
 
 /* Toggle Switch */
 
-.ui.inverted.toggle.checkbox label::before {
-  background-color: rgba(255, 255, 255, 0.9) !important;
+.ui.ui.inverted.toggle.checkbox label::before {
+  background-color: rgba(255, 255, 255, 0.9);
 }
 
 /* Toggle Hover */
 
-.ui.inverted.toggle.checkbox label:hover::before {
-  background: #ffffff !important;
+.ui.ui.inverted.toggle.checkbox label:hover::before {
+  background: #ffffff;
 }
 
 /* Toggle Active */
 
-.ui.inverted.toggle.checkbox input:checked ~ label {
-  color: #ffffff !important;
+.ui.ui.inverted.toggle.checkbox input:checked ~ label {
+  color: #ffffff;
 }
 
-.ui.inverted.toggle.checkbox input:checked ~ label::before {
-  background-color: #1B1C1D !important;
+.ui.ui.inverted.toggle.checkbox input:checked ~ label::before {
+  background-color: #1B1C1D;
 }
 
 /* Toggle Active Focus */
 
-.ui.inverted.toggle.checkbox input:focus:checked ~ label {
-  color: #ffffff !important;
+.ui.ui.inverted.toggle.checkbox input:focus:checked ~ label {
+  color: #ffffff;
 }
 
-.ui.inverted.toggle.checkbox input:focus:checked ~ label::before {
-  background-color: #070808 !important;
+.ui.ui.inverted.toggle.checkbox input:focus:checked ~ label::before {
+  background-color: #070808;
 }
 
 /* --------------------
@@ -71553,7 +71697,7 @@ table tr td div.willBeReplacedStrong {
   margin-top: 30px;
 }
 /*!
- * # Fomantic-UI ^2.9.1 - Dimmer
+ * # Fomantic-UI ^2.9.2 - Dimmer
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -71955,7 +72099,7 @@ body.dimmable > .dimmer {
          Theme Overrides
 *******************************/
 /*!
- * # Fomantic-UI ^2.9.1 - Dropdown
+ * # Fomantic-UI ^2.9.2 - Dropdown
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -72396,6 +72540,15 @@ select.ui.dropdown {
 
 .ui.compact.selection.dropdown {
   min-width: 0;
+}
+
+.ui.compact.selection.dropdown > .menu {
+  width: auto;
+}
+
+.ui.compact.selection.dropdown > .menu:not(.multiline) {
+  width: -webkit-max-content;
+  width: max-content;
 }
 
 /* Selection Menu */
@@ -74101,12 +74254,6 @@ select.ui.dropdown {
 
 /* Selection for form elements */
 
-.ui.inverted.dropdown textarea::-webkit-selection,
-.ui.inverted.dropdown input::-webkit-selection {
-  background-color: rgba(255, 255, 255, 0.25);
-  color: rgba(255, 255, 255, 0.8);
-}
-
 .ui.inverted.dropdown textarea::selection,
 .ui.inverted.dropdown input::selection {
   background-color: rgba(255, 255, 255, 0.25);
@@ -74293,7 +74440,7 @@ select.ui.dropdown {
   min-width: auto!important;
 }
 /*!
- * # Fomantic-UI ^2.9.1 - Video
+ * # Fomantic-UI ^2.9.2 - Embed
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -74353,7 +74500,7 @@ select.ui.dropdown {
   display: block;
   width: 100%;
   height: 100%;
-  background-color: radial-gradient(transparent 45%, rgba(0, 0, 0, 0.3));
+  background: radial-gradient(transparent 45%, rgba(0, 0, 0, 0.3));
 }
 
 /* --------------
@@ -74449,7 +74596,7 @@ select.ui.dropdown {
         Video Overrides
 *******************************/
 /*!
- * # Fomantic-UI ^2.9.1 - Flyout
+ * # Fomantic-UI ^2.9.2 - Flyout
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -75076,7 +75223,7 @@ body.pushable > .pusher {
          Theme Overrides
 *******************************/
 /*!
- * # Fomantic-UI ^2.9.1 - Modal
+ * # Fomantic-UI ^2.9.2 - Modal
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -75958,7 +76105,7 @@ body.pushable > .pusher {
          Theme Overrides
 *******************************/
 /*!
- * # Fomantic-UI ^2.9.1 - Nag
+ * # Fomantic-UI ^2.9.2 - Nag
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -76289,7 +76436,7 @@ a.ui.nag {
          Theme Overrides
 *******************************/
 /*!
- * # Fomantic-UI ^2.9.1 - Popup
+ * # Fomantic-UI ^2.9.2 - Popup
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -76964,8 +77111,36 @@ a.ui.nag {
 *******************************/
 
 .ui.loading.popup {
+  cursor: default;
+  pointer-events: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.ui.loading.popup * {
+  opacity: 0.3;
+}
+
+.ui.loading.popup::after {
+  position: absolute;
+  content: "";
+  top: 50%;
+  left: 50%;
+  margin: -1em 0 0 -1em;
+  width: 2em;
+  height: 2em;
+  animation: loader 0.6s infinite linear;
+  border: 0.2em solid #767676;
+  border-radius: 500rem;
+  box-shadow: 0 0 0 1px transparent;
+  visibility: visible;
+  z-index: 101;
+}
+
+.ui.invisible.popup {
   display: block;
-  visibility: hidden;
+  visibility: hidden !important;
   z-index: -1;
 }
 
@@ -77051,7 +77226,7 @@ a.ui.nag {
 }
 
 .ui.inverted.popup .header {
-  background-color: none;
+  background: none;
   color: #FFFFFF;
 }
 
@@ -77069,6 +77244,11 @@ a.ui.nag {
   border: none;
 }
 
+.ui.ui.ui.primary.loading.popup::before,
+.ui.primary.loading.popup {
+  background: #65696c;
+}
+
 .ui.ui.ui.primary.popup::before,
 [data-tooltip][data-variation~="primary"]::before {
   box-shadow: none;
@@ -77082,6 +77262,11 @@ a.ui.nag {
   color: #1B1C1D;
 }
 
+.ui.ui.ui.inverted.primary.loading.popup::before,
+.ui.inverted.primary.loading.popup {
+  background: #007eba;
+}
+
 .ui.ui.ui.secondary.popup::before,
 .ui.secondary.popup,
 [data-tooltip][data-variation~="secondary"]::after,
@@ -77089,6 +77274,11 @@ a.ui.nag {
   background: #fa820a;
   color: #FFFFFF;
   border: none;
+}
+
+.ui.ui.ui.secondary.loading.popup::before,
+.ui.secondary.loading.popup {
+  background: #fdcfa0;
 }
 
 .ui.ui.ui.secondary.popup::before,
@@ -77104,6 +77294,11 @@ a.ui.nag {
   color: #1B1C1D;
 }
 
+.ui.ui.ui.inverted.secondary.loading.popup::before,
+.ui.inverted.secondary.loading.popup {
+  background: #080808;
+}
+
 .ui.ui.ui.red.popup::before,
 .ui.red.popup,
 [data-tooltip][data-variation~="red"]::after,
@@ -77111,6 +77306,11 @@ a.ui.nag {
   background: #BB1600;
   color: #FFFFFF;
   border: none;
+}
+
+.ui.ui.ui.red.loading.popup::before,
+.ui.red.loading.popup {
+  background: #ff6955;
 }
 
 .ui.ui.ui.red.popup::before,
@@ -77126,6 +77326,11 @@ a.ui.nag {
   color: #1B1C1D;
 }
 
+.ui.ui.ui.inverted.red.loading.popup::before,
+.ui.inverted.red.loading.popup {
+  background: #c40d00;
+}
+
 .ui.ui.ui.orange.popup::before,
 .ui.orange.popup,
 [data-tooltip][data-variation~="orange"]::after,
@@ -77133,6 +77338,11 @@ a.ui.nag {
   background: #fa820a;
   color: #FFFFFF;
   border: none;
+}
+
+.ui.ui.ui.orange.loading.popup::before,
+.ui.orange.loading.popup {
+  background: #fdcfa0;
 }
 
 .ui.ui.ui.orange.popup::before,
@@ -77148,6 +77358,11 @@ a.ui.nag {
   color: #1B1C1D;
 }
 
+.ui.ui.ui.inverted.orange.loading.popup::before,
+.ui.inverted.orange.loading.popup {
+  background: #813c00;
+}
+
 .ui.ui.ui.yellow.popup::before,
 .ui.yellow.popup,
 [data-tooltip][data-variation~="yellow"]::after,
@@ -77155,6 +77370,11 @@ a.ui.nag {
   background: #FBBD08;
   color: #FFFFFF;
   border: none;
+}
+
+.ui.ui.ui.yellow.loading.popup::before,
+.ui.yellow.loading.popup {
+  background: #fde59f;
 }
 
 .ui.ui.ui.yellow.popup::before,
@@ -77170,6 +77390,11 @@ a.ui.nag {
   color: #1B1C1D;
 }
 
+.ui.ui.ui.inverted.yellow.loading.popup::before,
+.ui.inverted.yellow.loading.popup {
+  background: #857400;
+}
+
 .ui.ui.ui.olive.popup::before,
 .ui.olive.popup,
 [data-tooltip][data-variation~="olive"]::after,
@@ -77177,6 +77402,11 @@ a.ui.nag {
   background: #B5CC18;
   color: #FFFFFF;
   border: none;
+}
+
+.ui.ui.ui.olive.loading.popup::before,
+.ui.olive.loading.popup {
+  background: #e4f18c;
 }
 
 .ui.ui.ui.olive.popup::before,
@@ -77192,6 +77422,11 @@ a.ui.nag {
   color: #1B1C1D;
 }
 
+.ui.ui.ui.inverted.olive.loading.popup::before,
+.ui.inverted.olive.loading.popup {
+  background: #97a81e;
+}
+
 .ui.ui.ui.green.popup::before,
 .ui.green.popup,
 [data-tooltip][data-variation~="green"]::after,
@@ -77199,6 +77434,11 @@ a.ui.nag {
   background: #98B500;
   color: #FFFFFF;
   border: none;
+}
+
+.ui.ui.ui.green.loading.popup::before,
+.ui.green.loading.popup {
+  background: #e3ff4f;
 }
 
 .ui.ui.ui.green.popup::before,
@@ -77214,6 +77454,11 @@ a.ui.nag {
   color: #1B1C1D;
 }
 
+.ui.ui.ui.inverted.green.loading.popup::before,
+.ui.inverted.green.loading.popup {
+  background: #124f19;
+}
+
 .ui.ui.ui.teal.popup::before,
 .ui.teal.popup,
 [data-tooltip][data-variation~="teal"]::after,
@@ -77221,6 +77466,11 @@ a.ui.nag {
   background: #00B5AD;
   color: #FFFFFF;
   border: none;
+}
+
+.ui.ui.ui.teal.loading.popup::before,
+.ui.teal.loading.popup {
+  background: #4ffff7;
 }
 
 .ui.ui.ui.teal.popup::before,
@@ -77236,6 +77486,11 @@ a.ui.nag {
   color: #1B1C1D;
 }
 
+.ui.ui.ui.inverted.teal.loading.popup::before,
+.ui.inverted.teal.loading.popup {
+  background: #00d3d3;
+}
+
 .ui.ui.ui.blue.popup::before,
 .ui.blue.popup,
 [data-tooltip][data-variation~="blue"]::after,
@@ -77243,6 +77498,11 @@ a.ui.nag {
   background: #004678;
   color: #FFFFFF;
   border: none;
+}
+
+.ui.ui.ui.blue.loading.popup::before,
+.ui.blue.loading.popup {
+  background: #129cff;
 }
 
 .ui.ui.ui.blue.popup::before,
@@ -77258,6 +77518,11 @@ a.ui.nag {
   color: #1B1C1D;
 }
 
+.ui.ui.ui.inverted.blue.loading.popup::before,
+.ui.inverted.blue.loading.popup {
+  background: #007eba;
+}
+
 .ui.ui.ui.violet.popup::before,
 .ui.violet.popup,
 [data-tooltip][data-variation~="violet"]::after,
@@ -77265,6 +77530,11 @@ a.ui.nag {
   background: #76007A;
   color: #FFFFFF;
   border: none;
+}
+
+.ui.ui.ui.violet.loading.popup::before,
+.ui.violet.loading.popup {
+  background: #f714ff;
 }
 
 .ui.ui.ui.violet.popup::before,
@@ -77280,6 +77550,11 @@ a.ui.nag {
   color: #1B1C1D;
 }
 
+.ui.ui.ui.inverted.violet.loading.popup::before,
+.ui.inverted.violet.loading.popup {
+  background: #2d09ea;
+}
+
 .ui.ui.ui.purple.popup::before,
 .ui.purple.popup,
 [data-tooltip][data-variation~="purple"]::after,
@@ -77287,6 +77562,11 @@ a.ui.nag {
   background: #2185d0;
   color: #FFFFFF;
   border: none;
+}
+
+.ui.ui.ui.purple.loading.popup::before,
+.ui.purple.loading.popup {
+  background: #9bcbef;
 }
 
 .ui.ui.ui.purple.popup::before,
@@ -77302,6 +77582,11 @@ a.ui.nag {
   color: #1B1C1D;
 }
 
+.ui.ui.ui.inverted.purple.loading.popup::before,
+.ui.inverted.purple.loading.popup {
+  background: #a300d9;
+}
+
 .ui.ui.ui.pink.popup::before,
 .ui.pink.popup,
 [data-tooltip][data-variation~="pink"]::after,
@@ -77309,6 +77594,11 @@ a.ui.nag {
   background: #E03997;
   color: #FFFFFF;
   border: none;
+}
+
+.ui.ui.ui.pink.loading.popup::before,
+.ui.pink.loading.popup {
+  background: #f5bddc;
 }
 
 .ui.ui.ui.pink.popup::before,
@@ -77324,6 +77614,11 @@ a.ui.nag {
   color: #1B1C1D;
 }
 
+.ui.ui.ui.inverted.pink.loading.popup::before,
+.ui.inverted.pink.loading.popup {
+  background: #f400af;
+}
+
 .ui.ui.ui.brown.popup::before,
 .ui.brown.popup,
 [data-tooltip][data-variation~="brown"]::after,
@@ -77331,6 +77626,11 @@ a.ui.nag {
   background: #6b1d1d;
   color: #FFFFFF;
   border: none;
+}
+
+.ui.ui.ui.brown.loading.popup::before,
+.ui.brown.loading.popup {
+  background: #d05151;
 }
 
 .ui.ui.ui.brown.popup::before,
@@ -77346,6 +77646,11 @@ a.ui.nag {
   color: #1B1C1D;
 }
 
+.ui.ui.ui.inverted.brown.loading.popup::before,
+.ui.inverted.brown.loading.popup {
+  background: #4f2e0a;
+}
+
 .ui.ui.ui.grey.popup::before,
 .ui.grey.popup,
 [data-tooltip][data-variation~="grey"]::after,
@@ -77353,6 +77658,11 @@ a.ui.nag {
   background: #767676;
   color: #FFFFFF;
   border: none;
+}
+
+.ui.ui.ui.grey.loading.popup::before,
+.ui.grey.loading.popup {
+  background: #c3c3c3;
 }
 
 .ui.ui.ui.grey.popup::before,
@@ -77368,6 +77678,11 @@ a.ui.nag {
   color: #1B1C1D;
 }
 
+.ui.ui.ui.inverted.grey.loading.popup::before,
+.ui.inverted.grey.loading.popup {
+  background: #8d9194;
+}
+
 .ui.ui.ui.black.popup::before,
 .ui.black.popup,
 [data-tooltip][data-variation~="black"]::after,
@@ -77375,6 +77690,11 @@ a.ui.nag {
   background: #1B1C1D;
   color: #FFFFFF;
   border: none;
+}
+
+.ui.ui.ui.black.loading.popup::before,
+.ui.black.loading.popup {
+  background: #65696c;
 }
 
 .ui.ui.ui.black.popup::before,
@@ -77388,6 +77708,11 @@ a.ui.nag {
 [data-tooltip][data-inverted][data-variation~="black"]::before {
   background: #545454;
   color: #1B1C1D;
+}
+
+.ui.ui.ui.inverted.black.loading.popup::before,
+.ui.inverted.black.loading.popup {
+  background: #080808;
 }
 
 /* --------------
@@ -77487,7 +77812,7 @@ a.ui.nag {
   text-transform: none;
 }
 /*!
- * # Fomantic-UI ^2.9.1 - Progress Bar
+ * # Fomantic-UI ^2.9.2 - Progress
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -78351,9 +78676,15 @@ a.ui.nag {
 /*******************************
             Progress
 *******************************/
-/*******************************
-             Theme
- *******************************/
+/*!
+ * # Fomantic-UI ^2.9.2 - Slider
+ * https://github.com/fomantic/Fomantic-UI/
+ *
+ *
+ * Released under the MIT license
+ * https://opensource.org/licenses/MIT
+ *
+ */
 
 .ui.slider:not(.vertical):not(.checkbox) {
   width: 100%;
@@ -79279,7 +79610,7 @@ a.ui.nag {
         Slider Overrides
 *******************************/
 /*!
- * # Fomantic-UI ^2.9.1 - Rating
+ * # Fomantic-UI ^2.9.2 - Rating
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -79741,7 +80072,7 @@ a.ui.nag {
          Theme Overrides
 *******************************/
 /*!
- * # Fomantic-UI ^2.9.1 - Search
+ * # Fomantic-UI ^2.9.2 - Search
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -80307,7 +80638,7 @@ a.ui.nag {
          Theme Overrides
 *******************************/
 /*!
- * # Fomantic-UI ^2.9.1 - Shape
+ * # Fomantic-UI ^2.9.2 - Shape
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -80452,7 +80783,7 @@ a.ui.nag {
          Theme Overrides
 *******************************/
 /*!
- * # Fomantic-UI ^2.9.1 - Sidebar
+ * # Fomantic-UI ^2.9.2 - Sidebar
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -81064,7 +81395,7 @@ body.pushable > .pusher {
          Theme Overrides
 *******************************/
 /*!
- * # Fomantic-UI ^2.9.1 - Sticky
+ * # Fomantic-UI ^2.9.2 - Sticky
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -81129,7 +81460,7 @@ body.pushable > .pusher {
          Theme Overrides
 *******************************/
 /*!
- * # Fomantic-UI ^2.9.1 - Tab
+ * # Fomantic-UI ^2.9.2 - Tab
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -81207,7 +81538,7 @@ body.pushable > .pusher {
          Tab Overrides
 *******************************/
 /*!
- * # Fomantic-UI ^2.9.1 - Toast
+ * # Fomantic-UI ^2.9.2 - Toast
  * https://github.com/fomantic/Fomantic-UI/
  *
  *
@@ -82126,7 +82457,7 @@ body.pushable > .pusher {
          Theme Overrides
 *******************************/
 /*!
- * # Fomantic-UI ^2.9.1 - Transition
+ * # Fomantic-UI ^2.9.2 - Transition
  * https://github.com/fomantic/Fomantic-UI/
  *
  *

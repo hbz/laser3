@@ -8,7 +8,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "fomantic-ui": "^2.9.1",
+    "fomantic-ui": "^2.9.2",
     "gulp": "^4.0.2"
   },
   "devDependencies": {},
