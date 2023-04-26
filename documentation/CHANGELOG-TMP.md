@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4979    25.04.2023  dev     3.1         Andreas Bug         Nutzerzahl ließ sich nicht löschen
+
+4840    25.04.2023  dev     3.1         Andreas Feature     Datenkommunikation mit we:kb auf api2 umgerüstet
+
 4927    24.04.2023  dev     3.1         Moe     Feature     Betreff E-Mails aus LAS:eR
 
 4894    24.04.2023  dev     3.1         Moe     Feature     Neue Funktion: Benachrichtigung Benutzername 

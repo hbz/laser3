@@ -8,15 +8,6 @@
 
         <ui:h1HeaderWithIcon text="${institution.name}" />
 
-%{--<pre>--}%
-%{--    ORG_CONSORTIUM_BASIC: ${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}--}%
-%{--    ORG_CONSORTIUM_PRO: ${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)}--}%
-%{--    ORG_INST_BASIC: ${accessService.ctxPerm(CustomerTypeService.ORG_INST_BASIC)}--}%
-%{--    ORG_INST_PRO: ${accessService.ctxPerm(CustomerTypeService.ORG_INST_PRO)}--}%
-
-%{--    getCustomerType: ${institution.getCustomerType()}--}%
-%{--</pre>--}%
-
         <div class="ui equal width grid la-clear-before">
             <div class="row">
 
@@ -39,8 +30,8 @@
                         <div class="item">
                             <g:link controller="org" action="show" id="${institution.id}">${message(code: 'menu.institutions.org_info')}</g:link>
                         </div>
-                        <ui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="finance" message="menu.institutions.finance" />
-                        <ui:securedMainNavItem affiliation="INST_USER" orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="reporting" message="myinst.reporting" />
+                        <ui:securedMainNavItem controller="myInstitution" action="finance" message="menu.institutions.finance" />
+                        <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="reporting" message="myinst.reporting" />
                     </div>
                 </div>
 

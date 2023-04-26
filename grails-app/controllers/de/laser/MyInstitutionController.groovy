@@ -425,13 +425,13 @@ class MyInstitutionController  {
         }
 
         if(params.licensor) {
-            base_qry += " and ( exists ( select o from l.orgRelations as o where o.roleType = :licCons and o.org.id in (:licensors) ) ) "
+            base_qry += " and ( exists ( select o from l.orgRelations as o where o.roleType in (:licCons) and o.org.id in (:licensors) ) ) "
             List<Long> licensors = []
             List<String> selLicensors = params.list('licensor')
             selLicensors.each { String sel ->
                 licensors << Long.parseLong(sel)
             }
-            qry_params += [licCons:RDStore.OR_LICENSOR,licensors:licensors]
+            qry_params += [licCons:[RDStore.OR_LICENSOR, RDStore.OR_AGENCY],licensors:licensors]
         }
 
         if(params.categorisation) {
@@ -2569,7 +2569,7 @@ class MyInstitutionController  {
      * @return a table view of tasks
      * @see Task
      */
-    @DebugInfo(ctxPermAffiliation =[CustomerTypeService.PERMS_PRO, 'INST_USER'], wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_PRO, 'INST_USER'], wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
         ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_USER')
     })

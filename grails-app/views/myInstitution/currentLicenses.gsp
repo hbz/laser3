@@ -223,16 +223,16 @@
                               </td>
                           </g:if>
                           <td>
-                              <g:set var="licensor" value="${l.getLicensor()}"/>
-                              <g:if test="${licensor}">
+                              <g:set var="licensors" value="${l.getProviderAgency()}"/>
+                              <g:each in="${licensors}" var="licensor">
                                   <g:link controller="organisation" action="show" id="${licensor.id}">
                                       ${fieldValue(bean: licensor, field: "name")}
                                       <g:if test="${licensor.sortname}">
-                                          <br />
                                           (${fieldValue(bean: licensor, field: "sortname")})
                                       </g:if>
                                   </g:link>
-                              </g:if>
+                                  <br>
+                              </g:each>
                           </td>
                           <g:if test="${'licensingConsortium' in licenseFilterTable}">
                               <td>${l.getLicensingConsortium()?.name}</td>

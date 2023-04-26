@@ -46,11 +46,11 @@
             <ui:subNavItem controller="subscription" action="stats" params="${[id:params.id]}" message="default.stats.label" />
         </g:if>
         <g:else>
-            <ui:subNavItem disabled="disabled" message="default.stats.label" tooltip="${message(code: 'default.stats.noStatsForSubscription')}"/>
+            <ui:subNavItem message="default.stats.label" tooltip="${message(code: 'default.stats.noStatsForSubscription')}" disabled="disabled" />
         </g:else>
     </g:if>
     <g:else>
-        <ui:subNavItem disabled="disabled" message="default.stats.label" tooltip="${message(code: 'default.stats.noPackage')}"/>
+        <ui:subNavItem message="default.stats.label" tooltip="${message(code: 'default.stats.noPackage')}" disabled="disabled" />
     </g:else>
 
 
@@ -61,7 +61,7 @@
         <ui:subNavItem controller="subscription" action="workflows" counts="${checklistCount}" params="${[id:params.id]}" message="workflow.plural" />
     </g:if>
 
-    <ui:securedSubNavItem orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="subscription" action="tasks" params="${[id:params.id]}" counts="${tasksCount}" message="task.plural" />
+    <ui:securedSubNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="subscription" action="tasks" params="${[id:params.id]}" counts="${tasksCount}" message="task.plural" />
     <ui:securedSubNavItem orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="subscription" action="documents" params="${[id:params.id]}" message="default.documents.label" />
     <ui:subNavItem controller="subscription" action="notes" params="${[id:params.id]}" counts="${notesCount}" message="default.notes.label" />
 

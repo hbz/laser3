@@ -161,7 +161,7 @@ class YodaService {
             Set<Map> titles = []
             HttpClientConfiguration config = new DefaultHttpClientConfiguration()
             config.maxContentLength = 1024 * 1024 * 20
-            BasicHttpClient http = new BasicHttpClient(grs.uri+'/find', config) //we presume that the count will never get beyond 10000
+            BasicHttpClient http = new BasicHttpClient(grs.uri+'/searchApi', config) //we presume that the count will never get beyond 10000
             Closure success = { resp, json ->
                 if(resp.code() == 200) {
                     json.records.each{ Map record ->

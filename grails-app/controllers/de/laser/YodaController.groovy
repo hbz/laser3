@@ -6,6 +6,7 @@ import de.laser.auth.Role
 import de.laser.auth.UserRole
 import de.laser.base.AbstractJob
 import de.laser.config.ConfigDefaults
+import de.laser.config.ConfigMapper
 import de.laser.finance.CostItem
 import de.laser.properties.LicenseProperty
 import de.laser.properties.OrgProperty
@@ -101,7 +102,10 @@ class YodaController {
         Map result = [:]
 
         result.blacklist = [
-                'jira', 'dataSource', ConfigDefaults.DATASOURCE_DEFAULT + '.password', ConfigDefaults.DATASOURCE_STORAGE + '.password'
+                'dataSource',
+                ConfigDefaults.DATASOURCE_DEFAULT + '.password',
+                ConfigDefaults.DATASOURCE_STORAGE + '.password',
+                ConfigMapper.WEKB_API_PASSWORD[0]
         ]
         result.editable = true
         result.currentConfig = grails.util.Holders.config.findAll { ! it.key.matches("[A-Z|_]*") }
@@ -645,7 +649,7 @@ class YodaController {
                 flagContentGokb : true // gokbService.queryElasticsearch
         ]
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
-        Map allPlatforms = gokbService.queryElasticsearch(apiSource.baseUrl+apiSource.fixToken+"/find?componentType=Platform&max=10000&status=Current")
+        Map allPlatforms = gokbService.queryElasticsearch(apiSource.baseUrl+apiSource.fixToken+"/searchApi?componentType=Platform&max=10000&status=Current")
         if (allPlatforms.error && allPlatforms.error == 404) {
             result.wekbServerUnavailable = message(code: 'wekb.error.404')
         }

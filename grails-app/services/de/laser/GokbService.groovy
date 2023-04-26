@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.config.ConfigMapper
 import de.laser.http.BasicHttpClient
 import de.laser.remote.ApiSource
 import grails.gorm.transactions.Transactional
@@ -204,7 +205,7 @@ class GokbService {
      */
     Map geElasticsearchFindings(final String apiUrl, final String query, final String type,
                                 final String role, final Integer max) {
-        String url = _buildUri(apiUrl+'/find', query, type, role, max)
+        String url = _buildUri(apiUrl+'/searchApi', query, type, role, max)
         queryElasticsearch(url)
     }
 
@@ -221,9 +222,9 @@ class GokbService {
         Map<String, String> pagination = setupPaginationParams(ctrlResult, params)
 
         Set records = []
-        Map queryResult = queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/find' + esQuery + pagination.sort + pagination.order + pagination.max + pagination.offset)
+        Map queryResult = queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/searchApi' + esQuery + pagination.sort + pagination.order + pagination.max + pagination.offset)
         if (queryResult.warning) {
-            records.addAll(queryResult.warning.records)
+            records.addAll(queryResult.warning.result)
             result.recordsCount = queryResult.warning.count
             result.records = records
         }
@@ -260,7 +261,8 @@ class GokbService {
 
         BasicHttpClient http
         try {
-            http = new BasicHttpClient( url.replaceAll(" ", "+") )
+            url = url.contains('?') ? url.replaceAll(" ", "+")+"&username=${ConfigMapper.getWekbApiUsername()}&password=${ConfigMapper.getWekbApiPassword()}" : url.replaceAll(" ", "+")+"?username=${ConfigMapper.getWekbApiUsername()}&password=${ConfigMapper.getWekbApiPassword()}"
+            http = new BasicHttpClient( url )
 
             Closure success = { resp, json ->
                 log.debug ("server response: ${resp.getStatus().getReason()}, server: ${resp.getHeaders().get('Server')}, content length: ${resp.getHeaders().get('Content-Length')}")
