@@ -200,10 +200,12 @@ class LoginController {
             flash.error = g.message(code:'menu.user.forgottenUsername.userMissing') as String
         }
         else {
-            User user = User.findByEmail(params.forgotten_username_mail)
-            if (user) {
+            List<User> users = User.findAllByEmail(params.forgotten_username_mail)
+            if (users.size() > 0) {
                 flash.message = message(code: 'menu.user.forgottenUsername.success') as String
-                mailSendService.sendMailToUser(user, message(code: 'email.subject.forgottenUsername'), '/mailTemplates/text/forgotUserName', [user: user])
+                users.each {User user ->
+                    mailSendService.sendMailToUser(user, message(code: 'email.subject.forgottenUsername'), '/mailTemplates/text/forgotUserName', [user: user])
+                }
             }
             else flash.error = g.message(code:'menu.user.forgottenUsername.userError') as String
         }

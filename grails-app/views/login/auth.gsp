@@ -35,8 +35,8 @@
                 <a data-ui="modal" href="#forgottenUsername">${message(code:"menu.user.forgottenUsername")}</a>
             </div>
 
-            <ui:modal id="forgottenPassword" message="menu.user.forgottenPassword" msgSave="default.button.submit.label">
-                <g:form class="ui form" name="forgottenPassword" id="forgottenPassword" action="resetForgottenPassword" method="post">
+            <ui:modal id="forgottenPassword" message="menu.user.forgottenPassword" msgSave="${message(code: 'default.button.submit.label')}">
+                <g:form class="ui form" name="forgottenPassword" id="forgottenPassword" controller="login" action="resetForgottenPassword" method="post">
                     <div class="field required">
                         <label for="forgotten_username"><g:message code="menu.user.forgottenPassword.username"/>:</label>
                         <input type="text" class="text_" name="forgotten_username" id="forgotten_username"/>
@@ -44,8 +44,8 @@
                 </g:form>
             </ui:modal>
 
-            <ui:modal id="forgottenUsername" message="menu.user.forgottenUsername" msgSave="default.button.submit.label">
-                <g:form class="ui form" name="forgottenUsername" id="forgottenUsername" action="getForgottenUsername" method="post">
+            <ui:modal id="forgottenUsername" message="menu.user.forgottenUsername" msgSave="${message(code: 'default.button.submit.label')}">
+                <g:form class="ui form" name="forgottenUsername" id="forgottenUsername" controller="login" action="getForgottenUsername" method="post">
                     <div class="field required">
                         <label for="forgotten_username_mail"><g:message code="menu.user.forgottenUsername.email"/>:</label>
                         <input type="text" class="text_" name="forgotten_username_mail" id="forgotten_username_mail"/>

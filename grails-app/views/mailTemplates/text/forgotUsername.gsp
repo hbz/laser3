@@ -16,4 +16,4 @@ an den LAS:eR-Support unter laser@hbz-nrw.de
 Weiterführende Informationen finden Sie im LAS:eR-wiki unter
 https://service-wiki.hbz-nrw.de/display/LAS
 
-<laser:render template="/mailTemplates/text/signature" />
+<g:render template="/mailTemplates/text/signature" />
