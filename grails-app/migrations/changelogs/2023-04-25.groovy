@@ -24,7 +24,7 @@ databaseChangeLog = {
     changeSet(author: "galffy (hand-coded)", id: "1682412652800-3") {
         grailsChange {
             change {
-                sql.executeUpdate("update api_source set as_fix_token = '/api2/' where as_fix_token like '/api%'")
+                sql.executeUpdate("update api_source set as_fix_token = '/api2' where as_fix_token like '/api%'")
             }
             rollback {}
         }

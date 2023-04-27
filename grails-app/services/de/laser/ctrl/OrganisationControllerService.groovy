@@ -226,12 +226,12 @@ class OrganisationControllerService {
             if(result.orgInstance.gokbId) {
                 ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
                 result.editUrl = apiSource.editUrl.endsWith('/') ? apiSource.editUrl : apiSource.editUrl+'/'
-                Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/find?uuid=${result.orgInstance.gokbId}")
+                Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/searchApi?uuid=${result.orgInstance.gokbId}")
                 if (queryResult.error && queryResult.error == 404) {
                     result.error = messageSource.getMessage('wekb.error.404', null, LocaleUtils.getCurrentLocale())
                 }
                 else if (queryResult.warning) {
-                    List records = queryResult.warning.records
+                    List records = queryResult.warning.result
                     result.orgInstanceRecord = records ? records[0] : [:]
                 }
             }

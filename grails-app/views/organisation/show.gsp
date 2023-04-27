@@ -79,16 +79,11 @@
                         <dl>
                             <dt><g:message code="org.sortname.label" /></dt>
                             <dd>
-                                <g:if test="${isProviderOrAgency && orgInstanceRecord}">
-                                    ${orgInstanceRecord.abbreviatedName}
-                                </g:if>
-                                <g:elseif test="${!isProviderOrAgency}">
-                                    <ui:xEditable
-                                            data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
-                                            data_confirm_term_how="ok"
-                                            class="js-open-confirm-modal-xEditable"
-                                            owner="${orgInstance}" field="sortname" overwriteEditable="${editable}"/>
-                                </g:elseif>
+                                <ui:xEditable
+                                        data_confirm_tokenMsg="${message(code: 'confirmation.content.central')}"
+                                        data_confirm_term_how="ok"
+                                        class="js-open-confirm-modal-xEditable"
+                                        owner="${orgInstance}" field="sortname" overwriteEditable="${editable && !orgInstance.gokbId}"/>
                             </dd>
                         </dl>
                     </g:if>
@@ -97,9 +92,9 @@
                         <dd>
                             <div id="altnames" class="ui divided middle aligned selection list la-flex-list accordion">
                                 <g:if test="${orgInstance.altnames}">
-                                    <div class="title" id="altname_title"><g:message code="org.altname.show"/> <i class="dropdown icon"></i></div>
+                                    <div class="title" id="altname_title">${orgInstance.altnames[0].name} <i class="dropdown icon"></i></div>
                                     <div class="content">
-                                        <g:each in="${orgInstance.altnames}" var="altname">
+                                        <g:each in="${orgInstance.altnames.drop(1)}" var="altname">
                                             <div class="ui item" data-objId="${altname.id}">
                                                 <div class="content la-space-right">
                                                     <ui:xEditable
@@ -802,8 +797,7 @@
     </div>
     <aside class="five wide column la-sidekick">
         <div class="ui one cards">
-            <%--<g:if test="${PersonRole.executeQuery('select pr from Person p join p.roleLinks pr where pr.org = :org and ((p.isPublic = false and p.tenant = :ctx) or p.isPublic = true)', [org: orgInstance, ctx: institution])}">--%>
-                <div id="container-contacts">
+                <div id="container-provider">
                     <div class="ui card">
                         <div class="content">
                             <div class="header">
@@ -837,6 +831,7 @@
                                         class="ui button">${message('code': 'org.edit.contactsAndAddresses')}</g:link>
                             </g:if>
                             --%>
+                            <g:if test="${PersonRole.executeQuery('select pr from Person p join p.roleLinks pr where pr.org = :org and ((p.isPublic = false and p.tenant = :ctx) or p.isPublic = true)', [org: orgInstance, ctx: institution])}">
                             <table class="ui compact table">
                                 <g:if test="${!isProviderOrAgency}">
                                     <tr>
@@ -1285,10 +1280,10 @@
                                     </td>
                                 </tr>
                             </table>
+                            </g:if>
                         </div>
                     </div>
                 </div>
-            <%--</g:if>--%>
             <laser:render template="/templates/aside1" model="${[ownobj: orgInstance, owntp: 'organisation']}"/>
         </div>
     </aside>
