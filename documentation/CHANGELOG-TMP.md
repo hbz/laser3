@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4989    27.04.2023  dev     3.1         Moe     Feature     AsynchronousMail Plugin in LASER hinzufügen
+
 4985    27.04.2023  dev     3.1         Andreas Bug         fehlender Referenzwert nachgetragen
 
 4935    26.04.2023  dev     3.1         Moe     Feature     Umfrageübersicht: Bei Kostenangabe Bezug zu aktuellem Lizenzjahr visualisieren
