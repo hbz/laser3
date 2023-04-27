@@ -7,7 +7,13 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4985    27.04.2023  dev     3.1         Andreas Bug         fehlender Referenzwert nachgetragen
+
 4935    26.04.2023  dev     3.1         Moe     Feature     Umfrageübersicht: Bei Kostenangabe Bezug zu aktuellem Lizenzjahr visualisieren
+
+4944    26.04.2023  dev     3.1         Andreas Feature     Paketsynchronisationsmechanismus eingebaut
+
+4802    26.04.2023  dev     3.1         Andreas Feature     Massenbearbeitung von Beständen angepasst
 
 4979    25.04.2023  dev     3.1         Andreas Bug         Nutzerzahl ließ sich nicht löschen
 

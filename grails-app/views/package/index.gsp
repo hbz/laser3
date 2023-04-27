@@ -47,7 +47,7 @@
                     <g:sortableColumn property="nominalPlatformName" title="${message(code: 'platform.label')}"
                                       params="${params}"/>
                     <th>${message(code: 'package.curatoryGroup.label')}</th>
-                    <th>${message(code: 'package.source.label')}</th>
+                    <th>${message(code: 'package.source.automaticUpdates')}</th>
                     <g:sortableColumn property="lastUpdatedDisplay" title="${message(code: 'package.lastUpdated.label')}"
                                       params="${params}" defaultOrder="desc"/>
                     <sec:ifAllGranted roles="ROLE_YODA">
