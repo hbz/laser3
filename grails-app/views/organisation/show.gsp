@@ -92,10 +92,7 @@
                         <dd>
                             <div id="altnames" class="ui divided middle aligned selection list la-flex-list accordion">
                                 <g:if test="${orgInstance.altnames}">
-                                    <%
-                                        String firstAltName = orgInstance.altnames[0].name
-                                    %>
-                                    <div class="title" id="altname_title">${firstAltName} <i class="dropdown icon"></i></div>
+                                    <div class="title" id="altname_title">${orgInstance.altnames[0].name} <i class="dropdown icon"></i></div>
                                     <div class="content">
                                         <g:each in="${orgInstance.altnames.drop(1)}" var="altname">
                                             <div class="ui item" data-objId="${altname.id}">
