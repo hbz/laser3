@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4985    27.04.2023  dev     3.1         Andreas Bug         fehlender Referenzwert nachgetragen
+
 4944    26.04.2023  dev     3.1         Andreas Feature     Paketsynchronisationsmechanismus eingebaut
 
 4802    26.04.2023  dev     3.1         Andreas Feature     Massenbearbeitung von Beständen angepasst
