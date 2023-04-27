@@ -60,7 +60,7 @@
     %{-- main menu --}%
 
     <g:set var="visibilityContextOrgMenu" value="la-hide-context-orgMenu" />
-        <div id="mainMenue" class="ui fixed inverted  menu la-js-verticalNavi" role="menubar" >
+        <div id="mainMenue" class="ui fixed inverted menu la-js-verticalNavi" role="menubar">
             <div class="ui container" role="none">
                 <ui:link addItemAttributes="true" controller="home" aria-label="${message(code:'default.home.label')}" class="header item la-logo-item">
                     <img alt="Logo Laser" class="logo" src="${resource(dir: 'images', file: 'laser.svg')}"/>

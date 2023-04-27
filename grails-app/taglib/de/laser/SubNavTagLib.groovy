@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.auth.Role
 import de.laser.utils.SwissKnife
 
 class SubNavTagLib {
@@ -68,7 +69,7 @@ class SubNavTagLib {
                     controller: attrs.controller,
                     action: attrs.action,
                     params: attrs.params,
-                    role: "Tab"
+                    role: 'tab'
             )
         }
         else {
@@ -76,15 +77,19 @@ class SubNavTagLib {
         }
     }
 
-    // affiliation="INST_EDITOR" affiliationOrg="${orgToShow}"
+    // affiliationOrg="${orgToShow}"
 
     def securedSubNavItem = { attrs, body ->
 
         def (lbText, lbMessage) = SwissKnife.getTextAndMessage(attrs)
         String linkBody = (lbText && lbMessage) ? lbText + " - " + lbMessage : lbText + lbMessage
         String cssClass = ((this.pageScope.variables?.actionName == attrs.action) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
-
         String tooltip = attrs.tooltip ?: ""
+
+        if (!attrs.affiliation) {
+            attrs.affiliation = Role.INST_USER // new default
+        }
+
         boolean check = SwissKnife.checkAndCacheNavPermsForCurrentRequest(attrs, request)
 
         if (tooltip != "") {
@@ -101,7 +106,8 @@ class SubNavTagLib {
                         class: cssClass,
                         controller: attrs.controller,
                         action: attrs.action,
-                        params: attrs.params
+                        params: attrs.params,
+                        role: 'tab'
                 )
             }
             else {
@@ -110,9 +116,9 @@ class SubNavTagLib {
         }
         else {
             if (attrs.affiliation && contextService.getUser().hasCtxAffiliation_or_ROLEADMIN(attrs.affiliation)) {
-                out << '<div class="item disabled la-popup-tooltip la-delay" data-position="left center" data-content="' + message(code:'tooltip.onlyFullMembership') + '" role="menuitem">' + linkBody + '</div>'
+                out << '<div class="item disabled la-popup-tooltip la-delay" data-position="left center" data-content="' + message(code:'tooltip.onlyFullMembership') + '" role="tab">' + linkBody + '</div>'
             }
-//            else out << '<div class="item disabled la-popup-tooltip la-delay" data-position="left center" role="menuitem">' + linkBody + '</div>'
+//            else out << '<div class="item disabled la-popup-tooltip la-delay" data-position="left center" role="tab">' + linkBody + '</div>'
         }
     }
 }

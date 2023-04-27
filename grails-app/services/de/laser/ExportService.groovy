@@ -2004,7 +2004,7 @@ class ExportService {
 		Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/sushiSources?uuid=${configMap.platform.gokbId}")
 		Map platformRecord
 		if (queryResult.warning) {
-			List records = queryResult.warning.records
+			List records = queryResult.warning.result
 			if(records[0]) {
 				platformRecord = records[0]
 			}

@@ -77,7 +77,7 @@
                                                         </dd>
                                                     </dl>
                                                     <dl>
-                                                        <dt>${message(code: 'package.source.label')}</dt>
+                                                        <dt>${message(code: 'package.source.automaticUpdates')}</dt>
                                                         <dd>
                                                             <g:if test="${pkgInfo.packageInstanceRecord.source?.automaticUpdates}">
                                                                 <g:message code="package.index.result.automaticUpdates"/>

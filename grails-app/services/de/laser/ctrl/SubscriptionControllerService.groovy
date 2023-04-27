@@ -869,7 +869,7 @@ class SubscriptionControllerService {
             Map<String, Object> queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/sushiSources?uuid=${platform.gokbId}")
             Map platformRecord
             if (queryResult.warning) {
-                List records = queryResult.warning.records
+                List records = queryResult.warning.result
                 if(records[0]) {
                     platformRecord = records[0]
                 }
@@ -1584,12 +1584,12 @@ class SubscriptionControllerService {
                 result.platformsJSON = subscribedPlatforms.globalUID as JSON
                 ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
                 subscribedPlatforms.each { Platform platformInstance ->
-                    Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/find?uuid=${platformInstance.gokbId}")
+                    Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/searchApi?uuid=${platformInstance.gokbId}")
                     if (queryResult.error && queryResult.error == 404) {
                         result.wekbServerUnavailable = message(code: 'wekb.error.404')
                     }
                     else if (queryResult.warning) {
-                        List records = queryResult.warning.records
+                        List records = queryResult.warning.result
                         if(records[0]) {
                             records[0].lastRun = platformInstance.counter5LastRun ?: platformInstance.counter4LastRun
                             records[0].id = platformInstance.id
@@ -1995,7 +1995,7 @@ class SubscriptionControllerService {
                     esQuery += "&curatoryGroupType=other" //setting to this includes also missing ones, this is already implemented in we:kb
             }
 
-            String sort = params.sort ? "&sort="+params.sort: "&sort=sortname"
+            String sort = params.sort ? "&sort="+params.sort: "&sort=name"
             String order = params.order ? "&order="+params.order: "&order=asc"
             String max = params.max ? "&max=${params.max}": "&max=${result.max}"
             String offset = params.offset ? "&offset=${params.offset}": "&offset=${result.offset}"
@@ -2015,10 +2015,10 @@ class SubscriptionControllerService {
                 result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
 
                 Set records = []
-                Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/find' + esQuery + sort + order + max + offset)
+                Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/searchApi' + esQuery + sort + order + max + offset)
                 if (queryResult.warning) {
-                    records.addAll(queryResult.warning.records)
-                    result.recordsCount = queryResult.warning.count
+                    records.addAll(queryResult.warning.result)
+                    result.recordsCount = queryResult.warning.result_count_total
                     result.records = records
                 }
                 [result:result,status:STATUS_OK]
@@ -3176,20 +3176,6 @@ class SubscriptionControllerService {
                                     String updateQuery = "update IssueEntitlement e set e.notes = :notes where e.id in (select ie.id ${query.query})"
                                     IssueEntitlement.executeUpdate(updateQuery, query.queryParams+[notes: params.bulk_notes])
                                     break
-                                case 'bulk_perpetual_access':
-                                    if(RefdataValue.get(params.bulk_perpetual_access) == RDStore.YN_YES) {
-                                        String updateQuery = "update IssueEntitlement e set e.perpetualAccessBySub = :sub where e.id in (select ie.id ${query.query})"
-                                        IssueEntitlement.executeUpdate(updateQuery, [sub: result.subscription])
-                                        result.subscription.hasPerpetualAccess = true
-                                        result.subscription.save()
-                                    }
-                                    else {
-                                        String updateQuery = "update IssueEntitlement e set e.perpetualAccessBySub = null where e.id in (select ie.id ${query.query})"
-                                        IssueEntitlement.executeUpdate(updateQuery, query.queryParams)
-                                        result.subscription.hasPerpetualAccess = false
-                                        result.subscription.save()
-                                    }
-                                    break
                                 case 'titleGroupInsert':
                                     Sql sql = GlobalService.obtainSqlConnection()
                                     params.select = 'bulkInsertTitleGroup'
@@ -3272,18 +3258,6 @@ class SubscriptionControllerService {
                             }
                             if (params.bulk_notes.length() > 0) {
                                 ie.notes = params.bulk_notes
-                            }
-                        log.debug(params.bulk_perpetual_access.length())
-                            if (params.bulk_perpetual_access.length() > 0) {
-                                if(RefdataValue.get(params.bulk_perpetual_access) == RDStore.YN_YES) {
-                                    ie.perpetualAccessBySub = result.subscription
-                                    ie.subscription.hasPerpetualAccess = true
-                                }
-                                else {
-                                    ie.perpetualAccessBySub = null
-                                    ie.subscription.hasPerpetualAccess = false
-                                }
-                                ie.subscription.save()
                             }
                             if (params.bulk_local_price.length() > 0 && params.bulk_local_currency.length() > 0) {
                                 NumberFormat format = NumberFormat.getInstance( LocaleUtils.getCurrentLocale() )

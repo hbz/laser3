@@ -34,9 +34,9 @@
         </g:elseif>
         <g:else>
             ${id.value == IdentifierNamespace.UNKNOWN ? "" : id.value}
-                <g:if test="${id.getURL()}">
-                    <ui:linkWithIcon href="${id.getURL()}" />
-                </g:if>
+            <g:if test="${id.getURL()}">
+                <ui:linkWithIcon href="${id.getURL()}" />
+            </g:if>
         </g:else>
     </td>
     <g:if test="${ ! showGlobalUid && ! showWekbId}">
