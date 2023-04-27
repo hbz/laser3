@@ -175,7 +175,6 @@ class YodaController {
     }
 
     @Secured(['ROLE_YODA'])
-    @Transactional
     def systemOddments() {
         Map<String, Object> result = [:]
 

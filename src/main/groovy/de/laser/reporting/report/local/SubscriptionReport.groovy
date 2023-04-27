@@ -546,7 +546,6 @@ class SubscriptionReport {
             tmp = getNext(tmp)
             if (tmp) { result.push(tmp) }
         }
-//
         result
     }
 
