@@ -338,12 +338,6 @@
                             </div>
                         </div>
                         <div class="four wide column">
-                            <div class="field">
-                                <label><g:message code="issueEntitlement.perpetualAccessBySub.label"/></label>
-                                <ui:select class="ui dropdown" name="bulk_perpetual_access" title="${message(code:'issueEntitlement.perpetualAccessBySub.label')}" optionKey="id" optionValue="value" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"/>
-                            </div>
-                        </div>
-                        <div class="four wide column">
                             <g:if test="${subscription.ieGroups.size() > 0}">
                                 <div class="field">
                                     <label><g:message code="subscription.details.ieGroups"/></label>
@@ -598,21 +592,6 @@
 
                                                         <div class="ui list">
                                                             <g:if test="${ie}">
-                                                                <div class="item">
-                                                                    <i class="grey save icon la-popup-tooltip la-delay"
-                                                                       data-content="${message(code: 'issueEntitlement.perpetualAccessBySub.label')}"></i>
-
-                                                                    <div class="content">
-                                                                        <div class="header">
-                                                                            ${showCompact ? '' : message(code: 'issueEntitlement.perpetualAccessBySub.label') + ':'}
-                                                                        </div>
-
-                                                                        <div class="description">
-                                                                            <ui:xEditableBoolean owner="${subscription}"
-                                                                                                 field="hasPerpetualAccess"/>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
                                                                 <div class="item">
                                                                     <i class="grey icon edit la-popup-tooltip la-delay"
                                                                        data-content="${message(code: 'issueEntitlement.myNotes')}"></i>
