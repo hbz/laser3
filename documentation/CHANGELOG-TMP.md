@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4984    27.04.2023  dev     3.1         David   Feature     Reporting "Bestand": Sortierung und Beschränkung
+
 4972    26.04.2023  dev     3.1         David   Feature     Zugriffs- und Bearbeitungsrechte
 
 4971    26.04.2023  dev     3.1         David   Feature     Hauptnavigation anpassen
