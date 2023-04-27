@@ -13,7 +13,7 @@
         <g:form action="manageOrganisations" method="get" class="ui form">
             <laser:render template="/templates/filter/orgFilter"
                       model="[
-                              tmplConfigShow: [['name', 'identifier', 'type'],
+                              tmplConfigShow: [['name', 'identifier', 'type', 'customerType'],
                                                ['country&region', 'libraryNetwork', 'sector', 'libraryType']],
                               tmplConfigFormFilter: true
                       ]"/>
@@ -326,7 +326,7 @@
                           from="${[Role.findByAuthority('FAKE')] + Role.findAllByRoleType('org')}"
                           optionKey="id"
                           optionValue="authority"
-                          class="ui dropdown"
+                          class="ui dropdown la-not-clearable"
                 />
             </div>
         </g:form>
@@ -369,7 +369,7 @@
                 <label for="apiLevel">${message(code:'org.apiLevel.label')}</label>
                 <g:select id="apiLevel" name="apiLevel"
                           from="${['Kein Zugriff'] + ApiToolkit.getAllApiLevels()}"
-                          class="ui dropdown"
+                          class="ui dropdown la-not-clearable"
                 />
             </div>
         </g:form>

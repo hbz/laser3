@@ -905,6 +905,8 @@ class AdminController  {
             }
             target.lastUpdated = new Date()
             target.save()
+
+            ApiToolkit.removeApiLevel(target)
         }
         else if (params.cmd == 'changeCustomerType') {
             Org target = (Org) genericOIDService.resolveOID(params.target)
@@ -924,6 +926,13 @@ class AdminController  {
             }
             target.lastUpdated = new Date()
             target.save()
+
+            if (target.isCustomerType_Pro()) {
+                ApiToolkit.setApiLevel(target, ApiToolkit.API_LEVEL_READ)
+            }
+            else if (target.isCustomerType_Basic()){
+                ApiToolkit.removeApiLevel(target)
+            }
         }
         else if (params.cmd == 'changeGascoEntry') {
             Org target = (Org) genericOIDService.resolveOID(params.target)
