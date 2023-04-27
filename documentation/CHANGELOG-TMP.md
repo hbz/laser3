@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4972    26.04.2023  dev     3.1         David   Feature     Zugriffs- und Bearbeitungsrechte
+
+4971    26.04.2023  dev     3.1         David   Feature     Hauptnavigation anpassen
+
+4970    26.04.2023  dev     3.1         David   Feature     Subnavigation anpassen
+
 4840    25.04.2023  dev     3.1         Andreas Feature     Datenkommunikation mit we:kb auf api2 umgerüstet
 
 4927    24.04.2023  dev     3.1         Moe     Feature     Betreff E-Mails aus LAS:eR
