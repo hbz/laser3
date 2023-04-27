@@ -26,6 +26,8 @@ class SubscriptionReport {
     static String NO_STARTDATE = 'Ohne Laufzeit-Beginn'
     static String NO_ENDDATE = 'Ohne Laufzeit-Ende'
 
+    static int NUMBER_OF_TIMELINE_ELEMENTS = 4
+
     static Map<String, Object> getCurrentConfig(Subscription sub) {
 
         String calcType = sub._getCalculatedType()
@@ -274,6 +276,10 @@ class SubscriptionReport {
                     }
                     result.data = newData
                 }
+
+                // keep all data for correct processing and only then limit
+                result.data = (result.data as List).takeRight(NUMBER_OF_TIMELINE_ELEMENTS)
+                result.dataDetails = (result.dataDetails as List).takeRight(NUMBER_OF_TIMELINE_ELEMENTS)
             }
 
             else if (prefix == 'tipp') {
@@ -540,7 +546,6 @@ class SubscriptionReport {
             tmp = getNext(tmp)
             if (tmp) { result.push(tmp) }
         }
-
         result
     }
 
