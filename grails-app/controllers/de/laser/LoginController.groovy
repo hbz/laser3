@@ -194,7 +194,6 @@ class LoginController {
     redirect action: 'auth'
   }
 
-    @Transactional
   def getForgottenUsername() {
         if(!params.forgotten_username_mail) {
             flash.error = g.message(code:'menu.user.forgottenUsername.userMissing') as String
