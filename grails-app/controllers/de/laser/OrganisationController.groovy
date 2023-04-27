@@ -45,7 +45,7 @@ class OrganisationController  {
     DeletionService deletionService
     DocstoreService docstoreService
     ExportClickMeService exportClickMeService
-    FilterService filterService
+    FilterService filterService 
     GenericOIDService genericOIDService
     GokbService gokbService
     IdentifierService identifierService

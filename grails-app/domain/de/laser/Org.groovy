@@ -3,7 +3,6 @@ package de.laser
 import de.laser.annotations.RefdataInfo
 import de.laser.auth.*
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
-import de.laser.CustomerTypeService
 import de.laser.finance.CostItem
 import de.laser.interfaces.DeleteFlag
 import de.laser.oap.OrgAccessPoint

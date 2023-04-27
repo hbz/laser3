@@ -88,7 +88,7 @@ class OrganisationControllerService {
                 orgInstance.save()
                 Combo newMember = new Combo(fromOrg:orgInstance,toOrg:result.institution,type: RDStore.COMBO_TYPE_CONSORTIUM)
                 newMember.save()
-                orgInstance.setDefaultCustomerType()
+                orgInstance.setDefaultCustomerType() 
                 orgInstance.addToOrgType(RDStore.OT_INSTITUTION) //RDStore adding causes a DuplicateKeyException - RefdataValue.getByValueAndCategory('Institution', RDConstants.ORG_TYPE)
                 result.orgInstance = orgInstance
                 Object[] args = [messageSource.getMessage('org.institution.label',null,locale), orgInstance.name]
