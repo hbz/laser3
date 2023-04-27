@@ -9,6 +9,8 @@
 
 4985    27.04.2023  dev     3.1         Andreas Bug         fehlender Referenzwert nachgetragen
 
+4935    26.04.2023  dev     3.1         Moe     Feature     Umfrageübersicht: Bei Kostenangabe Bezug zu aktuellem Lizenzjahr visualisieren
+
 4407    27.04.2023  dev     3.1         David   Feature     API_LEVEL_READ automatisch für Vollnutzer setzen
 
 4984    27.04.2023  dev     3.1         David   Feature     Reporting "Bestand": Sortierung und Beschränkung
@@ -26,6 +28,10 @@
 4979    25.04.2023  dev     3.1         Andreas Bug         Nutzerzahl ließ sich nicht löschen
 
 4840    25.04.2023  dev     3.1         Andreas Feature     Datenkommunikation mit we:kb auf api2 umgerüstet
+
+4927    24.04.2023  dev     3.1         Moe     Feature     Betreff E-Mails aus LAS:eR
+
+4894    24.04.2023  dev     3.1         Moe     Feature     Neue Funktion: Benachrichtigung Benutzername 
 
 4927    24.04.2023  dev     3.1         Moe     Feature     Betreff E-Mails aus LAS:eR
 

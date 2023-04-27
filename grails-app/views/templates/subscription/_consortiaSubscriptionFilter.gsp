@@ -163,6 +163,22 @@
                 </div>
             </div>
             <div class="field">
+                <g:if test="${'withCostItems' in tableConfig}">
+                    <label for="filterPvd">${message(code: 'menu.my.providers')}</label>
+                    <select id="filterPvd" name="filterPvd" multiple="" class="ui search selection fluid dropdown">
+                        <option value="">${message(code: 'default.select.choose.label')}</option>
+
+                        <g:each in="${providers.sort { it.name }}" var="provider">
+                            <option <%=(params.list('filterPvd').contains(provider.id.toString())) ? 'selected="selected"' : ''%>
+                                    value="${provider.id}">
+                                ${provider.name}
+                            </option>
+                        </g:each>
+                    </select>
+
+                </g:if>
+            </div>
+            <div class="field">
                 <g:if test="${institution.globalUID == Org.findByName('LAS:eR Backoffice').globalUID}">
                     <fieldset id="subscritionType">
                         <label>${message(code: 'myinst.currentSubscriptions.subscription_type')}</label>
@@ -185,6 +201,7 @@
                     </fieldset>
                 </g:if>
             </div>
+        </div>
             <div class="field la-field-right-aligned">
                 <g:if test="${license && !request.forwardURI.contains(license.id.toString())}">
                     <g:set var="returnURL" value="${request.forwardURI+"/"+license.id}"/>
@@ -196,8 +213,6 @@
                 <g:hiddenField name="filterSet" value="true"/>
                 <input type="submit" class="ui primary button" value="${message(code:'default.button.filter.label')}">
             </div>
-
-        </div>
     </g:form>
 </ui:filter>
 

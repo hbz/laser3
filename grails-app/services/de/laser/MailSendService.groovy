@@ -45,7 +45,7 @@ class MailSendService {
     void sendSurveyEmail(User user, Org org, List<SurveyInfo> surveyEntries, boolean reminderMail) {
 
         if (ConfigMapper.getConfig('grails.mail.disabled', Boolean) == true) {
-            log.debug 'SurveyService.sendSurveyEmail() failed due grails.mail.disabled = true'
+            log.error 'SurveyService.sendSurveyEmail() failed due grails.mail.disabled = true'
         }else {
 
             String replyTo
@@ -128,7 +128,7 @@ class MailSendService {
     def emailToSurveyParticipationByFinish(SurveyInfo surveyInfo, Org participationFinish){
 
         if (ConfigMapper.getConfig('grails.mail.disabled', Boolean) == true) {
-            log.debug 'surveyService.emailToSurveyParticipationByFinish() failed due grails.mail.disabled = true'
+            log.error 'surveyService.emailToSurveyParticipationByFinish() failed due grails.mail.disabled = true'
             return false
         }
 
@@ -225,7 +225,7 @@ class MailSendService {
     def emailToSurveyOwnerbyParticipationFinish(SurveyInfo surveyInfo, Org participationFinish){
 
         if (ConfigMapper.getConfig('grails.mail.disabled', Boolean) == true) {
-            log.debug 'surveyService.emailToSurveyOwnerbyParticipationFinish() failed due grails.mail.disabled = true'
+            log.error 'surveyService.emailToSurveyOwnerbyParticipationFinish() failed due grails.mail.disabled = true'
             return false
         }
 
@@ -310,6 +310,11 @@ class MailSendService {
      */
     void sendSystemAnnouncementMail(User user, SystemAnnouncement systemAnnouncement) throws Exception {
 
+        if (ConfigMapper.getConfig('grails.mail.disabled', Boolean) == true) {
+            log.error 'sendSystemAnnouncementMail failed due grails.mail.disabled = true'
+            return
+        }
+
         MessageSource messageSource = BeanStore.getMessageSource()
         Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RDStore.LANGUAGE_DE).value.toString())
 
@@ -355,8 +360,8 @@ class MailSendService {
      */
     void sendMailToUser(User user, String subj, String view, Map model) {
 
-        if (AppUtils.getCurrentServer() == AppUtils.LOCAL) {
-            log.info "--- instAdmService.sendMail() --- IGNORED SENDING MAIL because of SERVER_LOCAL ---"
+        if (ConfigMapper.getConfig('grails.mail.disabled', Boolean) == true) {
+            log.error 'sendMailToUser failed due grails.mail.disabled = true'
             return
         }
 
