@@ -9,6 +9,16 @@
 
 4985    27.04.2023  dev     3.1         Andreas Bug         fehlender Referenzwert nachgetragen
 
+4407    27.04.2023  dev     3.1         David   Feature     API_LEVEL_READ automatisch für Vollnutzer setzen
+
+4984    27.04.2023  dev     3.1         David   Feature     Reporting "Bestand": Sortierung und Beschränkung
+
+4972    26.04.2023  dev     3.1         David   Feature     Zugriffs- und Bearbeitungsrechte
+
+4971    26.04.2023  dev     3.1         David   Feature     Hauptnavigation anpassen
+
+4970    26.04.2023  dev     3.1         David   Feature     Subnavigation anpassen
+
 4944    26.04.2023  dev     3.1         Andreas Feature     Paketsynchronisationsmechanismus eingebaut
 
 4802    26.04.2023  dev     3.1         Andreas Feature     Massenbearbeitung von Beständen angepasst
