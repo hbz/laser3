@@ -76,6 +76,9 @@
                         <g:link controller="yoda" action="systemCache" target="_blank">${message(code:'menu.yoda.systemCache')}</g:link>
                     </div>
                     <div class="item">
+                        <g:link controller="yoda" action="systemOddments" target="_blank">${message(code:'menu.yoda.systemOddments')}</g:link>
+                    </div>
+                    <div class="item">
                         <g:link controller="admin" action="appInfo" target="_blank">${message(code:'menu.admin.appInfo')}</g:link> <span class="ui mini label">Admin</span>
                     </div>
                 </div>

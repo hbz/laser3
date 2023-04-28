@@ -2423,7 +2423,7 @@ class SurveyController {
                 result.surveyConfigs.each { config ->
                     config.orgs.org.each { org ->
                         if(result.surveyInfo.type == RDStore.SURVEY_TYPE_TITLE_SELECTION){
-                            Subscription subscription = config.subscription.getDerivedSubscriptionBySubscribers(result.participant)
+                            Subscription subscription = config.subscription.getDerivedSubscriptionBySubscribers(org)
 
                             if(subscription.packages.size() == 0){
                                 openFailByTitleSelection = true

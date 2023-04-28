@@ -611,7 +611,7 @@ class PropertyService {
          }
          else if(accessService.ctxPerm(CustomerTypeService.ORG_INST_BASIC)) {
              orgFilterClause += 'and ot in (:providerAgency)'
-             orgFilterParams.providerAgency = [RDStore.OT_AGENCY, RDStore.OT_PROVIDER, RefdataValue.getByValueAndCategory('Broker', RDConstants.ORG_TYPE), RefdataValue.getByValueAndCategory('Content Provider',RDConstants.ORG_TYPE), RefdataValue.getByValueAndCategory('Vendor',RDConstants.ORG_TYPE)]
+             orgFilterParams.providerAgency = [RDStore.OT_AGENCY, RDStore.OT_PROVIDER, RDStore.OT_BROKER, RDStore.OT_CONTENT_PROVIDER, RDStore.OT_VENDOR]
          }
          switch(propDef.descr) {
              case PropertyDefinition.SUB_PROP:

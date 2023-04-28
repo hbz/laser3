@@ -376,12 +376,33 @@ class SubscriptionService {
         if('withCostItems' in tableConf) {
             prf.setBenchmark('costs init')
 
-            Set costs = CostItem.executeQuery(
+            if (params.filterPvd && params.filterPvd != "" && params.list('filterPvd')) {
+                query = query + " and exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.sub.id = subT.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and exists (select orgRole from OrgRole orgRole where orgRole.sub = sub and orgRole.org.id in (:filterPvd))) "
+                qarams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIA, context: contextOrg, filterPvd: params.list('filterPvd').collect { Long.parseLong(it) }]
+            }
+
+
+                Set costs = CostItem.executeQuery(
                     query + " " + orderQuery, qarams
             )
             prf.setBenchmark('read off costs')
             //post filter; HQL cannot filter that parameter out
             result.costs = costs
+
+            Map queryParamsProviders = [
+                    subOrg      : contextOrg,
+                    subRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA],
+                    paRoleTypes : [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]
+            ]
+
+            String queryProviders = '''select distinct(or_pa.org) from OrgRole or_pa 
+join or_pa.sub sub 
+join sub.orgRelations or_sub where
+    ( sub = or_sub.sub and or_sub.org = :subOrg ) and
+    ( or_sub.roleType in (:subRoleTypes) ) and
+        ( or_pa.roleType in (:paRoleTypes) )'''
+
+            result.providers = Org.executeQuery(queryProviders + " and sub in (:subs)", queryParamsProviders+[subs: costs.sub])
             result.totalCount = costs.size()
             result.totalMembers = []
             costs.each { row ->
@@ -2416,6 +2437,8 @@ class SubscriptionService {
                     break
                 case "online identifier": colMap.onlineIdentifierCol = c
                     break
+                case "doi": colMap.doiTitleCol = c
+                    break
                 case "pick": colMap.pick = c
                     break
             }
@@ -2460,7 +2483,7 @@ class SubscriptionService {
                                 String cellEntry = cols[colNo].trim()
                                     switch (colName) {
                                         case "pick":
-                                            if(cellEntry.toLowerCase() == RDStore.YN_YES.value_de.toLowerCase() || cellEntry == RDStore.YN_YES.value_en.toLowerCase()) {
+                                            if(cellEntry.toLowerCase() == RDStore.YN_YES.value_de.toLowerCase() || cellEntry.toLowerCase() == RDStore.YN_YES.value_en.toLowerCase()) {
                                                 TitleInstancePackagePlatform tipp = issueEntitlement.tipp
                                                 IssueEntitlement ieInNewSub = surveyService.titleContainedBySubscription(newSub, tipp)
                                                 boolean allowedToSelect = false

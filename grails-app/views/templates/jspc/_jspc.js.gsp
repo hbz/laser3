@@ -14,10 +14,10 @@ JSPC = {
             jsonLookup: "<g:createLink controller='ajaxJson' action='lookup'/>",
             htmlDocumentPreview: "<g:createLink controller='ajaxHtml' action='documentPreview'/>"
         },
-        ws: {
-            stompUrl: "${createLink(uri: de.laser.custom.CustomWebSocketMessageBrokerConfig.WS_STOMP)}",
-            topicStatusUrl: "${de.laser.custom.CustomWebSocketMessageBrokerConfig.WS_TOPIC_STATUS}",
-        }
+%{--        ws: {--}%
+%{--            stompUrl: "${createLink(uri: de.laser.custom.CustomWebSocketMessageBrokerConfig.WS_STOMP)}",--}%
+%{--            topicStatusUrl: "${de.laser.custom.CustomWebSocketMessageBrokerConfig.WS_TOPIC_STATUS}",--}%
+%{--        }--}%
     },
 
     modules : { // -- module registry
