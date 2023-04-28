@@ -577,7 +577,7 @@
                         %>
                         <g:if test="${actionName == 'manageMembers'}">
                             <g:link controller="myInstitution" action="manageConsortiaSubscriptions"
-                                    params="${[member: org.id, status: params.subStatus ?: null, validOn: params.subValidOn, filterSet: true]}">
+                                    params="${[member: org.id, status: params.subStatus ?: null, validOn: params.subValidOn, filterSet: true, filterPvd: params.list('filterPvd')]}">
                                 <div class="ui blue circular label">
                                     ${numberOfSubscriptions}
                                 </div>

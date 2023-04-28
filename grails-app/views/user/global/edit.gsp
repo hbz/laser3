@@ -60,6 +60,15 @@
                         </div>
                     </g:form>
 
+                    <g:form controller="user" action="sendUsername" params="${[id: user.id]}">
+                        <div class="ui two fields">
+                            <div class="ui field">
+                                <label>${message(code:'user.username.label')}</label>
+                                <input type="submit" class="ui button orange" value="${message(code:'menu.user.forgottenUsername.send')}">
+                            </div>
+                        </div>
+                    </g:form>
+
                 </g:if>
 
             </div>

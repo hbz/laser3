@@ -168,7 +168,7 @@ class UserController {
                 if (result.user.save()) {
                     flash.message = message(code: 'user.newPassword.success') as String
 
-                    mailSendService.sendMailToUser(result.user, 'Passwortänderung',
+                    mailSendService.sendMailToUser(result.user, message(code: 'email.subject.forgottenPassword'),
                             '/mailTemplates/text/newPassword', [user: result.user, newPass: newPassword])
 
                     redirect url: request.getHeader('referer'), id: params.id
@@ -177,6 +177,40 @@ class UserController {
             }
 
             flash.error = message(code: 'user.newPassword.fail') as String
+            redirect url: request.getHeader('referer'), id: params.id
+            return
+        }
+    }
+
+    /**
+     * get username and sends that via mail to the address registered to the account
+     * @return a redirect to the referer
+     */
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_ADM'], wtc = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
+    })
+    def sendUsername() {
+        User.withTransaction {
+            Map<String, Object> result = userControllerService.getResultGenerics(params)
+
+            if (!result.editable) {
+                flash.error = message(code: 'default.noPermissions') as String
+                redirect url: request.getHeader('referer'), id: params.id
+                return
+            }
+            if (result.user) {
+                User user = User.findByEmail(params.forgotten_username_mail)
+                if (user) {
+                    flash.message = message(code: 'menu.user.forgottenUsername.success') as String
+                    mailSendService.sendMailToUser(user, message(code: 'email.subject.forgottenUsername'), '/mailTemplates/text/forgotUserName', [user: user])
+
+                    redirect url: request.getHeader('referer'), id: params.id
+                    return
+                }
+            }
+
+            flash.error = message(code: 'menu.user.forgottenUsername.fail') as String
             redirect url: request.getHeader('referer'), id: params.id
             return
         }
