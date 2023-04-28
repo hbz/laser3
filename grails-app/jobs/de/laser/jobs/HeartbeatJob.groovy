@@ -6,13 +6,13 @@ import de.laser.config.ConfigMapper
 import de.laser.system.SystemActivityProfiler
 import de.laser.base.AbstractJob
 import groovy.util.logging.Slf4j
-import org.springframework.messaging.simp.SimpMessagingTemplate
+//import org.springframework.messaging.simp.SimpMessagingTemplate
 
 @Slf4j
 class HeartbeatJob extends AbstractJob {
 
     SystemService systemService
-    SimpMessagingTemplate brokerMessagingTemplate
+//    SimpMessagingTemplate brokerMessagingTemplate
 
     static final int HEARTBEAT_IN_SECONDS = 5 * 60
 

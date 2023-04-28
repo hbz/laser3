@@ -99,7 +99,7 @@
                 $('#dynamicModalContainer .ui.modal').modal({
                     autofocus: false,
                     onVisible: function() {
-                        $('#modalEditNote #title').focus();
+                        r2d2.helper.focusFirstFormElement(this);
                     }
                 }).modal('show');
             }

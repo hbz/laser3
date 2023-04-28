@@ -577,9 +577,11 @@ r2d2 = {
                 onVisible: function() {
                     $(this).find('.datepicker').calendar(r2d2.configs.datepicker);
                     $(this).find('.yearpicker').calendar(r2d2.configs.yearpicker);
+
+                    r2d2.helper.focusFirstFormElement(this);
                 },
                 detachable: true,
-                autofocus: true,
+                autofocus: false,
                 closable: false,
                 transition: 'scale',
                 onApprove : function() {
@@ -983,27 +985,43 @@ r2d2 = {
         });
     },
 
-    resetModalForm : function (modalCssSel) {
-        let $modal = $(modalCssSel);
-        let $form = $modal.find('.content form');
+    helper : {
 
-        $form.form('reset');
-        $form.find('.field > input[type=text][name]').val('');
-        $form.find('.field > input[type=file][name]').val('');
-        $form.find('.field > textarea[name]').val('');
-        $form.find('.field > .dropdown > select[name]').dropdown('restore defaults');
-        $form.find('.field > .calendar').calendar('clear');
+        focusFirstFormElement: function (elem) {
+            console.log('r2d2.helper.focusFirstFormElement: #' + $(elem).attr('id') + ' .(' + $(elem).attr('class') + ')');
 
-        // documents/_modal - todo
+            let ffe = $(elem).find('input:not([disabled]):not([type=hidden]), textarea:not([disabled]):not([type=hidden])').first();
+            if (ffe) {
+                ffe.focus();
+            }
+        },
 
-        $form.find('dl > dd input[type=text][name]').val('');
-        $form.find('dl > dd input[type=file][name]').val('');
-        $form.find('dl > dd input[type=checkbox][name]').prop('checked', '')
-        $form.find('dl > dd .dropdown > select[name]').dropdown('restore defaults');
-    },
+        resetModalForm: function (modalCssSel) {
+            console.log('r2d2.helper.resetModalForm: ' + modalCssSel);
 
-    clearGlobalModalsContainer : function() {
-        $( '.ui.dimmer.modals.page' ).empty();
+            let $modal = $(modalCssSel);
+            let $form = $modal.find('.content form');
+
+            $form.form('reset');
+            $form.find('.field > input[type=text][name]').val('');
+            $form.find('.field > input[type=file][name]').val('');
+            $form.find('.field > textarea[name]').val('');
+            $form.find('.field > .dropdown > select[name]').dropdown('restore defaults');
+            $form.find('.field > .calendar').calendar('clear');
+
+            // documents/_modal - todo
+
+            $form.find('dl > dd input[type=text][name]').val('');
+            $form.find('dl > dd input[type=file][name]').val('');
+            $form.find('dl > dd input[type=checkbox][name]').prop('checked', '')
+            $form.find('dl > dd .dropdown > select[name]').dropdown('restore defaults');
+        },
+
+        clearGlobalModalsContainer: function () {
+            console.log('r2d2.helper.clearGlobalModalsContainer: ' + modalCssSel);
+
+            $('.ui.dimmer.modals.page').empty();
+        }
     }
 }
 

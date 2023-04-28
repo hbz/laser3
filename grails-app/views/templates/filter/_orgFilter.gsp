@@ -187,10 +187,8 @@
                     <label for="providerRole">${message(code: 'org.orgRole.label')}</label>
                     <%
                         Set<RefdataValue> providerRoles = [
-                                RefdataValue.getByValueAndCategory('Broker', RDConstants.ORG_TYPE), RefdataValue.getByValueAndCategory('Content Provider', RDConstants.ORG_TYPE),
-                                RefdataValue.getByValueAndCategory('Imprint', RDConstants.ORG_TYPE), RefdataValue.getByValueAndCategory('Issuing Body', RDConstants.ORG_TYPE),
-                                RefdataValue.getByValueAndCategory('Licensee', RDConstants.ORG_TYPE), RDStore.OT_LICENSOR, RefdataValue.getByValueAndCategory('Platform Provider', RDConstants.ORG_TYPE),
-                                RDStore.OT_PUBLISHER, RefdataValue.getByValueAndCategory('Vendor', RDConstants.ORG_TYPE)
+                                RDStore.OT_BROKER, RDStore.OT_CONTENT_PROVIDER, RDStore.OT_IMPRINT, RDStore.OT_ISSUING_BODY,
+                                RDStore.OT_LICENSEE, RDStore.OT_LICENSOR, RDStore.OT_PLATFORM_PROVIDER, RDStore.OT_PUBLISHER, RDStore.OT_VENDOR
                         ]
                     %>
                     <select name="providerRole" id="providerRole" multiple="" class="ui fluid select dropdown search">
