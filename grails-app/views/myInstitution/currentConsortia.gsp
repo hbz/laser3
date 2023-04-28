@@ -10,9 +10,10 @@
 <ui:controlButtons>
     <ui:exportDropdown>
         <ui:exportDropdownItem>
-            <a class="item" data-ui="modal" href="#individuallyExportModal">Click Me Excel Export</a>
+            <a class="item" data-ui="modal" href="#individuallyExportModal">Click Me Export</a>
         </ui:exportDropdownItem>
         <g:if test="${filterSet}">
+            <%--
             <ui:exportDropdownItem>
                 <g:link class="item js-open-confirm-modal"
                         data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
@@ -21,6 +22,7 @@
                     ${message(code:'default.button.exports.xls')}
                 </g:link>
             </ui:exportDropdownItem>
+            --%>
             <ui:exportDropdownItem>
                 <g:link class="item js-open-confirm-modal"
                         data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
@@ -31,9 +33,11 @@
             </ui:exportDropdownItem>
         </g:if>
         <g:else>
+            <%--
             <ui:exportDropdownItem>
                 <g:link class="item" action="currentConsortia" params="${params+[exportXLS:true]}">${message(code:'default.button.exports.xls')}</g:link>
             </ui:exportDropdownItem>
+            --%>
             <ui:exportDropdownItem>
                 <g:link class="item" action="currentConsortia" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link>
             </ui:exportDropdownItem>

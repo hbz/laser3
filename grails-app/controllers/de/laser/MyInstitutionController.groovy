@@ -869,7 +869,7 @@ class MyInstitutionController  {
 		List bm = prf.stopBenchmark()
 		result.benchMark = bm
 
-        if ( params.exportXLS ) {
+        /*if ( params.exportXLS ) {
             try {
                 SXSSFWorkbook wb = (SXSSFWorkbook) organisationService.exportOrg(orgListTotal, message, true, "xls")
                 // Write the output to a file
@@ -889,18 +889,21 @@ class MyInstitutionController  {
                 return
             }
         }
-        else if(params.exportClickMeExcel) {
+        else */
+        Map<String, Object> selectedFields = [:]
+        Set<String> contactSwitch = []
+
+        if(params.exportClickMeExcel || params.format) {
             if (params.filename) {
                 filename = params.filename
             }
-
             Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
-            Map<String, Object> selectedFields = [:]
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
-
-            Set<String> contactSwitch = []
             contactSwitch.addAll(params.list("contactSwitch"))
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(orgListTotal, selectedFields, 'provider', contactSwitch)
+        }
+
+        if(Boolean.valueOf(params.exportClickMeExcel)) {
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(orgListTotal, selectedFields, 'provider', ExportClickMeService.FORMAT.XLS, contactSwitch)
 
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -919,7 +922,7 @@ class MyInstitutionController  {
                 response.contentType = "text/csv"
                 ServletOutputStream out = response.outputStream
                 out.withWriter { writer ->
-                    writer.write((String) organisationService.exportOrg(orgListTotal,message,true,"csv"))
+                    writer.write((String) exportClickMeService.exportOrgs(orgListTotal,selectedFields, 'provider',ExportClickMeService.FORMAT.CSV,contactSwitch))
                 }
                 out.close()
             }
@@ -952,7 +955,27 @@ class MyInstitutionController  {
 
 		//List bm = prf.stopBenchmark()
 		//result.benchMark = bm
+        Map<String, Object> selectedFields = [:]
 
+        if(params.exportClickMeExcel || params.format) {
+            if (params.filename) {
+                filename =params.filename
+            }
+            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+        }
+
+        if(Boolean.valueOf(params.exportClickMeExcel)) {
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportSubscriptions(result.allSubscriptions, selectedFields, result.institution, ExportClickMeService.FORMAT.XLS)
+            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
+            return
+        }
+        /*
         if ( params.exportXLS ) {
 
             //if(wb instanceof XSSFWorkbook) file += "x";
@@ -965,25 +988,7 @@ class MyInstitutionController  {
             wb.dispose()
 
             return
-        }else if(params.exportClickMeExcel) {
-            if (params.filename) {
-                filename =params.filename
-            }
-
-            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
-            Map<String, Object> selectedFields = [:]
-            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
-
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportSubscriptions(result.allSubscriptions, selectedFields, result.institution)
-
-            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
-            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            wb.write(response.outputStream)
-            response.outputStream.flush()
-            response.outputStream.close()
-            wb.dispose()
-            return
-        }
+        }else*/
 
         withFormat {
             html {
@@ -994,7 +999,8 @@ class MyInstitutionController  {
                 response.contentType = "text/csv"
                 ServletOutputStream out = response.outputStream
                 out.withWriter { writer ->
-                    writer.write((String) _exportcurrentSubscription(result.allSubscriptions,"csv", result.institution))
+                    //writer.write((String) _exportcurrentSubscription(result.allSubscriptions,"csv", result.institution))
+                    writer.write((String) exportClickMeService.exportSubscriptions(result.allSubscriptions, selectedFields, result.institution, ExportClickMeService.FORMAT.CSV))
                 }
                 out.close()
             }
@@ -2419,8 +2425,13 @@ class MyInstitutionController  {
         params.sort = params.sort ?: 'pr.org.name'
 
         List visiblePersons = []
-        if(params.exportClickMeExcel) {
-            Map<String, Object> configMap = [function:[], position: [], sort: 'pr.org.name'], selectedFields = [:]
+        Map<String, Object> selectedFields = [:]
+        String filename = escapeService.escapeString("${message(code: 'menu.institutions.myAddressbook')}_${DateUtils.getSDF_yyyyMMdd().format(new Date())}")
+        if(params.exportClickMeExcel || params.format) {
+            if (params.filename) {
+                filename = params.filename
+            }
+            Map<String, Object> configMap = [function:[], position: [], sort: 'pr.org.name']
             Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('ief:') }
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('ief:', ''), it.value ) }
             selectedFields.each { String key, value ->
@@ -2435,6 +2446,10 @@ class MyInstitutionController  {
                 }
             }
             visiblePersons.addAll(addressbookService.getVisiblePersons("addressbook", configMap))
+            selectedFieldsRaw.clear()
+            selectedFields.clear()
+            selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
         }
         else
             visiblePersons.addAll(addressbookService.getVisiblePersons("addressbook",params))
@@ -2456,7 +2471,7 @@ class MyInstitutionController  {
                     [persons: visiblePersons, contentType: RDStore.CCT_EMAIL])
         }
 
-        String filename = escapeService.escapeString("${message(code: 'menu.institutions.myAddressbook')}_${DateUtils.getSDF_yyyyMMdd().format(new Date())}")
+        /*
         if(params.exportXLS) {
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -2468,16 +2483,10 @@ class MyInstitutionController  {
 
             return
         }
-        else if(params.exportClickMeExcel) {
-            if (params.filename) {
-                filename = params.filename
-            }
+        else */
+        if(Boolean.valueOf(params.exportClickMeExcel)) {
 
-            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
-            Map<String, Object> selectedFields = [:]
-            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
-
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportAddresses(visiblePersons, selectedFields, params.exportOnlyContactPersonForInstitution == 'true', params.exportOnlyContactPersonForProviderAgency == 'true')
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportAddresses(visiblePersons, selectedFields, params.exportOnlyContactPersonForInstitution == 'true', params.exportOnlyContactPersonForProviderAgency == 'true', ExportClickMeService.FORMAT.XLS)
 
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -2947,7 +2956,18 @@ class MyInstitutionController  {
 
 		List bm = prf.stopBenchmark()
 		result.benchMark = bm
+        Map<String, Object> selectedFields = [:]
+        Set<String> contactSwitch = []
+        if(params.exportClickMeExcel || params.format) {
+            if (params.filename) {
+                file = params.filename
+            }
+            contactSwitch.addAll(params.list("contactSwitch"))
+            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+        }
 
+        /*
         if ( params.exportXLS ) {
 
             SXSSFWorkbook wb = (SXSSFWorkbook) organisationService.exportOrg(totalConsortia, header, true, 'xls')
@@ -2959,17 +2979,9 @@ class MyInstitutionController  {
             wb.dispose()
             return
         }
-        else if(params.exportClickMeExcel) {
-            if (params.filename) {
-                file = params.filename
-            }
-            Set<String> contactSwitch = []
-            contactSwitch.addAll(params.list("contactSwitch"))
-            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
-            Map<String, Object> selectedFields = [:]
-            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
-
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(totalConsortia, selectedFields, 'consortium', contactSwitch)
+        else */
+        if(Boolean.valueOf(params.exportClickMeExcel)) {
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(totalConsortia, selectedFields, 'consortium', ExportClickMeService.FORMAT.XLS, contactSwitch)
 
             response.setHeader "Content-disposition", "attachment; filename=\"${file}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -3139,8 +3151,18 @@ join sub.orgRelations or_sub where
 
 		List bm = prf.stopBenchmark()
 		result.benchMark = bm
+        Map<String, Object> selectedFields = [:]
+        Set<String> contactSwitch = []
+        if(params.exportClickMeExcel || params.format) {
+            if (params.filename) {
+                file = params.filename
+            }
+            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+            contactSwitch.addAll(params.list("contactSwitch"))
+        }
 
-        if ( params.exportXLS ) {
+        /*if ( params.exportXLS ) {
             SXSSFWorkbook wb = (SXSSFWorkbook) organisationService.exportOrg(totalMembers, header, true, 'xls')
             response.setHeader "Content-disposition", "attachment; filename=\"${file}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -3150,18 +3172,9 @@ join sub.orgRelations or_sub where
             wb.dispose()
             return //IntelliJ cannot know that the return prevents an obsolete redirect
         }
-        else if(params.exportClickMeExcel) {
-            if (params.filename) {
-                file =params.filename
-            }
-
-            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
-            Map<String, Object> selectedFields = [:]
-            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
-
-            Set<String> contactSwitch = []
-            contactSwitch.addAll(params.list("contactSwitch"))
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(totalMembers, selectedFields, 'member', contactSwitch)
+        else */
+        if(Boolean.valueOf(params.exportClickMeExcel)) {
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(totalMembers, selectedFields, 'member', ExportClickMeService.FORMAT.XLS, contactSwitch)
 
             response.setHeader "Content-disposition", "attachment; filename=\"${file}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -3181,7 +3194,7 @@ join sub.orgRelations or_sub where
                     response.contentType = "text/csv"
                     ServletOutputStream out = response.outputStream
                     out.withWriter { writer ->
-                        writer.write((String) organisationService.exportOrg(totalMembers,header,true,"csv"))
+                        writer.write((String) exportClickMeService.exportOrgs(totalMembers, selectedFields, 'member', ExportClickMeService.FORMAT.CSV, contactSwitch))
                     }
                     out.close()
                 }
