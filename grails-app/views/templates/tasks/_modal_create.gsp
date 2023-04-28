@@ -221,7 +221,7 @@
     <laser:script file="${this.getGroovyPageFileName()}">
 
         JSPC.callbacks.modal.show.modalCreateTask = function (trigger) {
-            r2d2.resetModalForm ('#modalCreateTask');
+            r2d2.helper.resetModalForm ('#modalCreateTask');
 
             $('#modalCreateTask #radioresponsibleOrg').prop ('checked', true);
             JSPC.app.toggleResponsibleUser();
