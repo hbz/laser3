@@ -95,8 +95,8 @@ dependencies {
     implementation 'org.grails.plugins:gsp'
 
     implementation 'io.micronaut:micronaut-http-client'
-    implementation 'org.springframework:spring-websocket'
-    implementation 'org.springframework:spring-messaging'
+//    implementation 'org.springframework:spring-websocket'     // tmp deactivated
+//    implementation 'org.springframework:spring-messaging'     // tmp deactivated
 
     profile 'org.grails.profiles:web'
 
@@ -218,7 +218,7 @@ assets {
             'bulma/**',
             'crypto-js-4.1.1/**',
             'echarts/**',
-            'spring-websocket/**',
+            // 'spring-websocket/**', // tmp deactivated
             'swagger-ui/**',
     ]
 }
