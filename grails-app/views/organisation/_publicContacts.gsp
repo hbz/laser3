@@ -154,7 +154,7 @@
                     <g:set var="serviceSupports"
                            value="${orgInstance.getContactPersonsByFunctionType(showOnlyPublic, RDStore.PRS_FUNC_METADATA, existsWekbRecord)}"/>
                     <g:each in="${serviceSupports}" var="prs">
-                        <g:render template="/templates/cpa/person_full_details" model="${[
+                        <laser:render template="/templates/cpa/person_full_details" model="${[
                                 person                 : prs,
                                 personRole             : PersonRole.findByOrgAndFunctionTypeAndPrs(orgInstance, RDStore.PRS_FUNC_METADATA, prs),
                                 personContext          : orgInstance,

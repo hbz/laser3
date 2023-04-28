@@ -1,7 +1,7 @@
 <%@ page import="de.laser.workflow.WfCheckpoint; de.laser.workflow.WfChecklist; de.laser.WorkflowService; de.laser.utils.AppUtils; de.laser.utils.DateUtils; de.laser.storage.RDStore" %>
 <laser:serviceInjection />
 
-<g:render template="/templates/workflow/status" model="${[cmd: cmd, status: status]}" />
+<laser:render template="/templates/workflow/status" model="${[cmd: cmd, status: status]}" />
 
 %{-- CHECKLISTS --}%
 <g:if test="${checklists}">
