@@ -9,6 +9,7 @@
 %>
     <g:if test="${actionName in ['index','addEntitlements']}">
         <ui:exportDropdown>
+            <%--
             <ui:exportDropdownItem>
                 <g:if test="${filterSet}">
                     <g:link class="item js-open-confirm-modal"
@@ -22,16 +23,18 @@
                     <g:link class="item" action="${actionName}" params="${params + [format: 'csv']}">CSV Export</g:link>
                 </g:else>
             </ui:exportDropdownItem>
+            --%>
             <g:if test="${actionName == 'index'}">
                 <ui:exportDropdownItem>
-                    <a class="item" data-ui="modal" href="#individuallyExportIEsModal">Click Me Excel Export</a>
+                    <a class="item" data-ui="modal" href="#individuallyExportIEsModal">Click Me Export</a>
                 </ui:exportDropdownItem>
             </g:if>
             <g:if test="${actionName == 'addEntitlements'}">
                 <ui:exportDropdownItem>
-                    <a class="item" data-ui="modal" href="#individuallyExportTippsModal">Click Me Excel Export</a>
+                    <a class="item" data-ui="modal" href="#individuallyExportTippsModal">Click Me Export</a>
                 </ui:exportDropdownItem>
             </g:if>
+            <%--
             <ui:exportDropdownItem>
                 <g:if test="${filterSet}">
                     <g:link class="item js-open-confirm-modal"
@@ -47,6 +50,7 @@
                     </g:link>
                 </g:else>
             </ui:exportDropdownItem>
+            --%>
             <ui:exportDropdownItem>
                 <g:if test="${filterSet}">
                     <g:link  class="item js-open-confirm-modal"

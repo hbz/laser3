@@ -11,6 +11,10 @@
     }
 %>
 
+    <%-- if commanded by Micha, that the notice gets moved into the form: ui.form info.msg has display:none, contact Ingrid in that case! --%>
+    <g:if test="${formFields.keySet().contains('participantAccessPoints')}">
+        <ui:msg icon="ui exclamation icon" class="warning" message="exportClickMe.exportCSV.noAccessPoints" noClose="true"/>
+    </g:if>
     <div class="ui form">
         <div class="field">
             <label><g:message code="exportClickMe.fieldsToExport"/></label>
@@ -30,8 +34,8 @@
         </div>
 
         <g:each in="${filterFields}" var="fields" status="i">
-            <div class="ui bottom attached ${("tab-${i}" == "tab-0") ? 'active' : ''} tab segment"
-                 data-tab="tab-${i}">
+            <div class="ui bottom attached ${("tab-${i}" == "tab-0") ? 'active' : ''} tab segment" data-tab="tab-${i}">
+
             <div class="inline fields">
                 <g:each in="${fields.value.fields}" var="field" status="fc">
 
@@ -221,8 +225,13 @@
                 <br>
                 <g:hiddenField name="format" value=""/>
                 <g:hiddenField name="exportClickMeExcel" value=""/>
-                <button class="ui button positive right floated exportButton" id="export-as-excel" value="exportClickMeExcel">${exportExcelButtonName ?: 'Export Excel'}</button>
-                <button class="ui button positive right floated exportButton" id="export-as-csv" value="exportClickMeCSV">${exportCSVButtonName ?: 'Export CSV'}</button>
+                <g:if test="${multiMap}">
+                    <button class="ui button positive right floated exportButton" id="export-as-excel" value="exportClickMeExcel">Export</button>
+                </g:if>
+                <g:else>
+                    <button class="ui button positive right floated exportButton" id="export-as-excel" value="exportClickMeExcel">${exportExcelButtonName ?: 'Export Excel'}</button>
+                    <button class="ui button positive right floated exportButton" id="export-as-csv" value="exportClickMeCSV">${exportCSVButtonName ?: 'Export CSV'}</button>
+                </g:else>
             </div>
 
         </div><!-- .fields -->
@@ -232,8 +241,10 @@
     $('.exportButton').click(function(){
         if($(this).attr('id') === 'export-as-excel') {
             $('#exportClickMeExcel').val('true');
+            $('#format').val(null);
         }
         else if($(this).attr('id') === 'export-as-csv') {
+            $('#exportClickMeExcel').val('false');
             $('#format').val('csv');
         }
     });

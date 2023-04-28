@@ -10,6 +10,7 @@
 
 <ui:controlButtons>
     <ui:exportDropdown>
+        <%--
         <ui:exportDropdownItem>
             <g:if test="${filterSet}">
                 <g:link class="item js-open-confirm-modal"
@@ -23,9 +24,11 @@
                 <g:link class="item" action="current" params="${params + [format: 'csv']}">CSV Export</g:link>
             </g:else>
         </ui:exportDropdownItem>
+        --%>
         <ui:exportDropdownItem>
-            <a class="item" data-ui="modal" href="#individuallyExportTippsModal">Click Me Excel Export</a>
+            <a class="item" data-ui="modal" href="#individuallyExportTippsModal">Click Me Export</a>
         </ui:exportDropdownItem>
+        <%--
         <ui:exportDropdownItem>
             <g:if test="${filterSet}">
                 <g:link class="item js-open-confirm-modal"
@@ -41,6 +44,7 @@
                 </g:link>
             </g:else>
         </ui:exportDropdownItem>
+        --%>
         <ui:exportDropdownItem>
             <g:if test="${filterSet}">
                 <g:link class="item js-open-confirm-modal"

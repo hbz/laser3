@@ -295,7 +295,7 @@ class AccessPointController  {
             String filename = "${datetoday}_" + escapeService.escapeString(orgAccessPoint.name)
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            wb = (SXSSFWorkbook) accessPointService.exportAccessPoints([orgAccessPoint], contextService.getOrg())
+            wb = (SXSSFWorkbook) accessPointService.exportAccessPoints([orgAccessPoint], ExportClickMeService.FORMAT.XLS)
             wb.write(response.outputStream)
             response.outputStream.flush()
             response.outputStream.close()
