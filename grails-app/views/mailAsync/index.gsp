@@ -1,38 +1,45 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta name="layout" content="main" />
-        <g:set var="entityName" value="\${message(code: '${propertyName}.label', default: '${className}')}" />
-        <title><g:message code="default.list.label" args="[entityName]" /></title>
-    </head>
-    <body>
-    <div id="content" role="main">
-        <div class="container">
-            <section class="row">
-                <a href="#list-${propertyName}" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
-                <div class="nav" role="navigation">
-                    <ul>
-                        <li><a class="home" href="\${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
-                        <li><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
-                    </ul>
-                </div>
-            </section>
-            <section class="row">
-                <div id="list-${propertyName}" class="col-12 content scaffold-list" role="main">
-                    <h1><g:message code="default.list.label" args="[entityName]" /></h1>
-                    <g:if test="\${flash.message}">
-                        <div class="message" role="status">\${flash.message}</div>
-                    </g:if>
-                    <f:table collection="\${${propertyName}List}" />
+<g:set var="entityName" value="${message(code: 'menu.yoda.mailAysnc.list')}" />
+<laser:htmlStart text="${message(code:"default.list.label", args:[entityName])}" />
+<ui:breadcrumbs>
+    <ui:crumb message="menu.yoda" controller="yoda" action="index"/>
+    <ui:crumb message="menu.yoda.mailAysnc.list" class="active"/>
+</ui:breadcrumbs>
 
-                    <g:if test="\${${propertyName}Count > params.int('max')}">
-                    <div class="pagination">
-                        <g:paginate total="\${${propertyName}Count ?: 0}" />
-                    </div>
-                    </g:if>
-                </div>
-            </section>
-        </div>
-    </div>
-    </body>
-</html>
+<ui:h1HeaderWithIcon message="menu.yoda.mailAysnc.list" type="yoda" />
+
+    <g:render template="flashMessage"/>
+
+<table class="ui sortable celled la-js-responsive-table la-hover-table la-table compact table">
+            <thead>
+            <tr>
+                <g:sortableColumn property="id" title="Id"/>
+                <g:sortableColumn property="subject" title="Subject"/>
+                <th>To</th>
+                <g:sortableColumn property="createDate" title="Create Date"/>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <g:each in="${resultList}" status="i" var="message">
+                <tr>
+                    <td>${message.id}</td>
+                    <td><g:link action="show" id="${message.id}">${fieldValue(bean: message, field: 'subject')}</g:link></td>
+                    <td><g:render template="listAddr" bean="${message.to}"/></td>
+                    <td><g:formatDate date="${message.createDate}" format="yyyy-MM-dd HH:mm:ss"/></td>
+                    <td>${fieldValue(bean: message, field: 'status')}</td>
+                    <td>
+                        <g:link class="ui button" action="show" id="${message.id}"><g:message code="default.show.label" args="['Mail']"/></g:link>
+                        <g:if test="${message.abortable}">
+                            <g:link class="ui button" action="abort" id="${message.id}"
+                                    onclick="return confirm('Are you sure?');">abort</g:link>
+                        </g:if>
+                        <g:link class="ui button" action="delete" id="${message.id}"
+                                onclick="return confirm('Are you sure?');">Delete</g:link>
+                    </td>
+                </tr>
+            </g:each>
+            </tbody>
+        </table>
+
+<laser:htmlEnd/>

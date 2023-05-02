@@ -40,6 +40,15 @@
             </div>
         </div>
 
+        <div class="item" role="menuitem" aria-haspopup="true">
+            <div class="title">
+                <i class="paper plane icon"></i> ${message(code:'menu.yoda.mail.label')} <i class="dropdown icon"></i>
+            </div>
+            <div class="menu" role="menu">
+                <ui:link addItemAttributes="true" controller="mailAsync" action="index">${message(code:'menu.yoda.mailAysnc.list')}</ui:link>
+            </div>
+        </div>
+
         <div class="divider"></div>
 
         <div class="item" role="menuitem" aria-haspopup="true">

@@ -2,7 +2,9 @@ package de.laser
 
 import grails.plugin.asyncmail.AsynchronousMailMessage
 import grails.plugin.asyncmail.enums.MessageStatus
+import grails.plugin.springsecurity.annotation.Secured
 
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class MailAsyncController {
     static defaultAction = 'index'
 
@@ -11,6 +13,7 @@ class MailAsyncController {
     /**
      * List messages.
      */
+    @Secured(['ROLE_YODA'])
     def index() {
         params.max = Math.min(params.max ? params.max.toInteger() : 10, 100)
         params.sort = params.sort ?: 'createDate'
@@ -32,24 +35,27 @@ class MailAsyncController {
     /**
      * Show message data.
      */
+    @Secured(['ROLE_YODA'])
     def show() {
         withMessage {AsynchronousMailMessage message ->
             return [message: message]
         }
     }
 
-    /**
+  /*  *//**
      * Edit message data.
-     */
+     *//*
+    @Secured(['ROLE_YODA'])
     def edit() {
         withMessage {AsynchronousMailMessage message ->
             return [message: message]
         }
-    }
+    }*/
 
     /**
      * Update message.
-     */
+     *//*
+    @Secured(['ROLE_YODA'])
     def update() {
         withMessage {AsynchronousMailMessage message ->
             bindData(
@@ -74,11 +80,12 @@ class MailAsyncController {
                 render(view: 'edit', model: [message: message])
             }
         }
-    }
+    }*/
 
     /**
      * Abort message sending.
      */
+    @Secured(['ROLE_YODA'])
     def abort() {
         withMessage {AsynchronousMailMessage message ->
             if (message.abortable) {
@@ -100,6 +107,7 @@ class MailAsyncController {
     /**
      * Delete message.
      */
+    @Secured(['ROLE_YODA'])
     def delete() {
         withMessage {AsynchronousMailMessage message ->
             try {
