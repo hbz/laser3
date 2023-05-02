@@ -14,10 +14,10 @@ JSPC = {
             jsonLookup: "<g:createLink controller='ajaxJson' action='lookup'/>",
             htmlDocumentPreview: "<g:createLink controller='ajaxHtml' action='documentPreview'/>"
         },
-        ws: {
-            stompUrl: "${createLink(uri: de.laser.custom.CustomWebSocketMessageBrokerConfig.WS_STOMP)}",
-            topicStatusUrl: "${de.laser.custom.CustomWebSocketMessageBrokerConfig.WS_TOPIC_STATUS}",
-        }
+%{--        ws: {--}%
+%{--            stompUrl: "${createLink(uri: de.laser.custom.CustomWebSocketMessageBrokerConfig.WS_STOMP)}",--}%
+%{--            topicStatusUrl: "${de.laser.custom.CustomWebSocketMessageBrokerConfig.WS_TOPIC_STATUS}",--}%
+%{--        }--}%
     },
 
     modules : { // -- module registry
@@ -53,10 +53,9 @@ JSPC = {
 
     callbacks : {
         modal : { // -- dynamic storage; search modalCallbackFunction@r2d2.js for more information
-            show : {
-            }
-        },
-        dynPostFunc : function () { console.log('JSPC.callbacks.dynPostFunc - default') }
+            onShow : {},
+            onVisible : {}
+        }
     },
 
     dict : { // -- js translations

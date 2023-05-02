@@ -134,6 +134,17 @@ class SubscriptionController {
                     records[0].lastRun = platformInstance.counter5LastRun ?: platformInstance.counter4LastRun
                     records[0].id = platformInstance.id
                     result.platformInstanceRecords[platformInstance.gokbId] = records[0]
+                    if(records[0].statisticsFormat == 'COUNTER' && records[0].counterR4SushiServerUrl == null && records[0].counterR5SushiServerUrl == null) {
+                        result.error = 'noSushiSource'
+                        ArrayList<Object> errorArgs = ["${apiSource.editUrl}/resource/show/${platformInstance.gokbId}", platformInstance.name]
+                        result.errorArgs = errorArgs.toArray()
+                    }
+                    else {
+                        CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(result.subscription.getSubscriber(), platformInstance)
+                        if(!ci?.value) {
+                            result.error = 'noCustomerId'
+                        }
+                    }
                 }
             }
         }
@@ -408,39 +419,41 @@ class SubscriptionController {
             SimpleDateFormat sdf = DateUtils.getSDF_yyyyMMdd()
             String datetoday = sdf.format(new Date())
             String filename = escapeService.escapeString(ctrlResult.result.subscription.name) + "_" + message(code:'subscriptionDetails.members.members') + "_" + datetoday
-            if(params.exportXLS || params.exportShibboleths || params.exportEZProxys || params.exportProxys || params.exportIPs || params.exportClickMeExcel) {
+            Map<String, Object> selectedFields = [:]
+            Set<String> contactSwitch = []
+            if(params.exportClickMeExcel || params.format) {
+                if (params.filename) {
+                    filename =params.filename
+                }
+                Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+                selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+                contactSwitch.addAll(params.list("contactSwitch"))
+            }
+            if(params.exportXLS || params.exportShibboleths || params.exportEZProxys || params.exportProxys || params.exportIPs || Boolean.valueOf(params.exportClickMeExcel)) {
                 SXSSFWorkbook wb
+                /*
                 if(params.exportXLS) {
                     wb = (SXSSFWorkbook) exportService.exportOrg(ctrlResult.result.orgs, filename, true, 'xlsx')
                 }
-                if(params.exportClickMeExcel) {
-                    if (params.filename) {
-                        filename =params.filename
-                    }
-
-                    Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
-                    Map<String, Object> selectedFields = [:]
-                    selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
-                    Set<String> contactSwitch = []
-                    contactSwitch.addAll(params.list("contactSwitch"))
-
-                    wb = (SXSSFWorkbook) exportClickMeService.exportSubscriptionMembers(ctrlResult.result.filteredSubChilds, selectedFields, ctrlResult.result.subscription, ctrlResult.result.institution, contactSwitch)
+                */
+                if(Boolean.valueOf(params.exportClickMeExcel)) {
+                    wb = (SXSSFWorkbook) exportClickMeService.exportSubscriptionMembers(ctrlResult.result.filteredSubChilds, selectedFields, ctrlResult.result.subscription, ctrlResult.result.institution, contactSwitch, ExportClickMeService.FORMAT.XLS)
                 }
                 else if (params.exportIPs) {
                     filename = "${datetoday}_" + escapeService.escapeString(message(code: 'subscriptionDetails.members.exportIPs.fileName'))
-                    wb = (SXSSFWorkbook) accessPointService.exportIPsOfOrgs(ctrlResult.result.filteredSubChilds.orgs.flatten())
+                    wb = (SXSSFWorkbook) accessPointService.exportIPsOfOrgs(ctrlResult.result.filteredSubChilds.orgs.flatten(), ExportClickMeService.FORMAT.XLS)
                 }else if (params.exportProxys) {
                     filename = "${datetoday}_" + escapeService.escapeString(message(code: 'subscriptionDetails.members.exportProxys.fileName'))
-                    wb = (SXSSFWorkbook) accessPointService.exportProxysOfOrgs(ctrlResult.result.filteredSubChilds.orgs.flatten())
+                    wb = (SXSSFWorkbook) accessPointService.exportProxysOfOrgs(ctrlResult.result.filteredSubChilds.orgs.flatten(), ExportClickMeService.FORMAT.XLS)
                 }else if (params.exportEZProxys) {
                     filename = "${datetoday}_" + escapeService.escapeString(message(code: 'subscriptionDetails.members.exportEZProxys.fileName'))
-                    wb = (SXSSFWorkbook) accessPointService.exportEZProxysOfOrgs(ctrlResult.result.filteredSubChilds.orgs.flatten())
+                    wb = (SXSSFWorkbook) accessPointService.exportEZProxysOfOrgs(ctrlResult.result.filteredSubChilds.orgs.flatten(), ExportClickMeService.FORMAT.XLS)
                 }else if (params.exportShibboleths) {
                     filename = "${datetoday}_" + escapeService.escapeString(message(code: 'subscriptionDetails.members.exportShibboleths.fileName'))
-                    wb = (SXSSFWorkbook) accessPointService.exportShibbolethsOfOrgs(ctrlResult.result.filteredSubChilds.orgs.flatten())
+                    wb = (SXSSFWorkbook) accessPointService.exportShibbolethsOfOrgs(ctrlResult.result.filteredSubChilds.orgs.flatten(), ExportClickMeService.FORMAT.XLS)
                 }else if (params.exportMailDomains) {
                     filename = "${datetoday}_" + escapeService.escapeString(message(code: 'subscriptionDetails.members.exportMailDomains.fileName'))
-                    wb = (SXSSFWorkbook) accessPointService.exportMailDomainsOfOrgs(ctrlResult.result.filteredSubChilds.orgs.flatten())
+                    wb = (SXSSFWorkbook) accessPointService.exportMailDomainsOfOrgs(ctrlResult.result.filteredSubChilds.orgs.flatten(), ExportClickMeService.FORMAT.XLS)
                 }
                 if(wb) {
                     response.setHeader "Content-disposition", "attachment; filename=${filename}.xlsx"
@@ -462,7 +475,7 @@ class SubscriptionController {
                         response.contentType = "text/csv"
                         ServletOutputStream out = response.outputStream
                         out.withWriter { writer ->
-                            writer.write((String) exportService.exportOrg(ctrlResult.result.orgs, filename, true, "csv"))
+                            writer.write((String) exportClickMeService.exportSubscriptionMembers(ctrlResult.result.filteredSubChilds, selectedFields, ctrlResult.result.subscription, ctrlResult.result.institution, contactSwitch, ExportClickMeService.FORMAT.CSV))
                         }
                         out.close()
                     }
@@ -764,6 +777,16 @@ class SubscriptionController {
         }
         else {
             String filename = "${escapeService.escapeString(ctrlResult.result.subscription.dropdownNamingConvention())}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
+            ArrayList<IssueEntitlement> issueEntitlements = []
+            Map<String, Object> selectedFields = [:]
+            if(params.exportClickMeExcel || params.format) {
+                if (params.filename) {
+                    filename = params.filename
+                }
+                issueEntitlements.addAll(IssueEntitlement.findAllByIdInList(ctrlResult.result.entitlementIDs.id,[sort:'tipp.sortname']))
+                Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+                selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+            }
             if (params.exportKBart) {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
                 response.contentType = "text/tab-separated-values"
@@ -779,7 +802,7 @@ class SubscriptionController {
                 out.flush()
                 out.close()
             }
-            else if(params.exportXLSX) {
+            /*else if(params.exportXLSX) {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 Map<String, Object> configMap = [:]
@@ -795,18 +818,9 @@ class SubscriptionController {
                 response.outputStream.close()
                 workbook.dispose()
                 return
-            }
-            else if(params.exportClickMeExcel) {
-                if (params.filename) {
-                    filename =params.filename
-                }
-
-                ArrayList<IssueEntitlement> issueEntitlements = ctrlResult.result.entitlementIDs ? IssueEntitlement.findAllByIdInList(ctrlResult.result.entitlementIDs.id,[sort:'tipp.sortname']) : [:]
-
-                Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
-                Map<String, Object> selectedFields = [:]
-                selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
-                SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportIssueEntitlements(issueEntitlements, selectedFields)
+            }*/
+            else if(Boolean.valueOf(params.exportClickMeExcel)) {
+                SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportIssueEntitlements(issueEntitlements, selectedFields, ExportClickMeService.FORMAT.XLS)
                 response.setHeader "Content-disposition", "attachment; filename=${filename}.xlsx"
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 wb.write(response.outputStream)
@@ -825,9 +839,8 @@ class SubscriptionController {
                         response.setHeader("Content-disposition", "attachment; filename=${filename}.csv")
                         response.contentType = "text/csv"
                         ServletOutputStream out = response.outputStream
-                        Map<String,List> tableData = exportService.generateTitleExportCSV(ctrlResult.result.entitlementIDs.id,IssueEntitlement.class.name)
                         out.withWriter { writer ->
-                            writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.rows,';'))
+                            writer.write((String) exportClickMeService.exportIssueEntitlements(issueEntitlements, selectedFields, ExportClickMeService.FORMAT.CSV))
                         }
                         out.close()
                     }
@@ -882,6 +895,13 @@ class SubscriptionController {
             configMap.putAll(params)
             configMap.remove("subscription")
             configMap.pkgIds = ctrlResult.result.subscription.packages?.pkg?.id //GORM sometimes does not initialise the sorted set
+            ArrayList<TitleInstancePackagePlatform> tipps = []
+            Map<String, Object> selectedFields = [:]
+            if(params.exportClickMeExcel || params.format) {
+                tipps.addAll(TitleInstancePackagePlatform.findAllByIdInList(ctrlResult.result.tipps,[sort:'sortname']))
+                Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+                selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+            }
             if(params.exportKBart) {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
                 response.contentType = "text/tsv"
@@ -893,7 +913,7 @@ class SubscriptionController {
                 out.flush()
                 out.close()
             }
-            else if(params.exportXLSX) {
+            /*else if(params.exportXLSX) {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 Map<String,List> export = exportService.generateTitleExportCustom(configMap, TitleInstancePackagePlatform.class.name) //subscription given
@@ -905,17 +925,9 @@ class SubscriptionController {
                 response.outputStream.close()
                 workbook.dispose()
                 return
-            }else if(params.exportClickMeExcel) {
-                if (params.filename) {
-                    filename =params.filename
-                }
-
-                ArrayList<IssueEntitlement> tipps = ctrlResult.result.tipps ? TitleInstancePackagePlatform.findAllByIdInList(ctrlResult.result.tipps,[sort:'tipp.sortname']) : [:]
-
-                Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
-                Map<String, Object> selectedFields = [:]
-                selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
-                SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportTipps(tipps, selectedFields)
+            }*/
+            else if(Boolean.valueOf(params.exportClickMeExcel)) {
+                SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportTipps(tipps, selectedFields, ExportClickMeService.FORMAT.XLS)
                 response.setHeader "Content-disposition", "attachment; filename=${filename}.xlsx"
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 wb.write(response.outputStream)
@@ -934,9 +946,8 @@ class SubscriptionController {
                     response.setHeader("Content-disposition", "attachment; filename=${filename}.csv")
                     response.contentType = "text/csv"
                     ServletOutputStream out = response.outputStream
-                    Map<String,List> tableData = exportService.generateTitleExportCSV(ctrlResult.result.tipps,TitleInstancePackagePlatform.class.name)
                     out.withWriter { writer ->
-                        writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.rows,';'))
+                        writer.write((String) exportClickMeService.exportTipps(tipps, selectedFields, ExportClickMeService.FORMAT.CSV))
                     }
                     out.flush()
                     out.close()

@@ -7,11 +7,11 @@
 <ui:modal id="${modalID}" text="Excel-Export" refreshModal="true" hideSubmitButton="true">
 
     <g:form controller="survey" action="renewalEvaluation" id="${surveyInfo.id}"
-            params="[surveyConfigID: surveyConfig.id, exportClickMeExcel: true]">
+            params="[surveyConfigID: surveyConfig.id]">
 
         <laser:render template="/templates/export/individuallyExportForm"
                   model="${[formFields: formFields, exportFileName: escapeService.escapeString(surveyConfig.getSurveyName()) + "_" + message(code:'renewalexport.renewals'),
-                            exportButtonName: message(code: 'renewalEvaluation.exportExcelRenewal')]}"/>
+                            exportExcelButtonName: message(code: 'renewalEvaluation.exportExcelRenewal'), exportCSVButtonName: message(code: 'renewalEvaluation.exportCSVRenewal')]}"/>
 
     </g:form>
 

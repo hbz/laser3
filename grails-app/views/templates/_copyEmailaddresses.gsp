@@ -92,7 +92,7 @@
             });
         }
 
-        JSPC.callbacks.modal.show.${modalID} = function(trigger) {
+        JSPC.callbacks.modal.onShow['${modalID}'] = function(trigger) {
             if ($(trigger).attr('data-orgIdList')) {
                 JSPC.app.jsonOrgIdList = $(trigger).attr('data-orgIdList').split(',');
             } else {
