@@ -589,7 +589,7 @@ r2d2 = {
                     return false;
                 },
                 onShow : function() {
-                    var modalCallbackFunction = JSPC.callbacks.modal.show[$(this).attr('id')];
+                    var modalCallbackFunction = JSPC.callbacks.modal.onShow[$(this).attr('id')];
                     a11yModal.go({
                         el: document.getElementById($(this).attr('id')),
                         focusElement: '',

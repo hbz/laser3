@@ -64,7 +64,7 @@
                 </dl>
 
                 <laser:script file="${this.getGroovyPageFileName()}">
-                    JSPC.callbacks.modal.show.${modalId} = function(trigger) {
+                    JSPC.callbacks.modal.onShow['${modalId}'] = function(trigger) {
                         r2d2.helper.resetModalForm ('#${modalId}');
                         $('#${modalId} input[name=upload_file_placeholder]').val('');
                     };
