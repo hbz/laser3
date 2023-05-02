@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4986    27.04.2023  dev     3.1         Moe     Feature     Konzept: Schaltpult und Paketverknüpfung + Bestandsreiter
+
 4993    02.05.2023  dev     3.1         David   Feature     Javascript: JSPC - dynPostFunc entfernen
 
 4977    02.05.2023  dev     3.1         Andreas Bug         Unterbinden der Statistikgeneration wenn keine SUSHI-Quelle vorhanden
