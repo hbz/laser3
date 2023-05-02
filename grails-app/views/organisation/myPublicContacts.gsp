@@ -198,13 +198,13 @@
 <laser:script file="${this.getGroovyPageFileName()}">
     JSPC.app.personCreate = function (contactFor) {
         var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor=' + contactFor + '&showAddresses=false&showContacts=true';
-        var func = bb8.ajax4SimpleModalFunction("#personModal", url, false);
+        var func = bb8.ajax4SimpleModalFunction("#personModal", url);
         func();
     }
 
     JSPC.app.addresscreate_org = function (orgId) {
         var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>?orgId=' + orgId;
-        var func = bb8.ajax4SimpleModalFunction("#addressFormModal", url, false);
+        var func = bb8.ajax4SimpleModalFunction("#addressFormModal", url);
         func();
     }
 </laser:script>

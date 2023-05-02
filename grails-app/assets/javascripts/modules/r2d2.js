@@ -126,7 +126,7 @@ r2d2 = {
         r2d2.initDynamicUiStuff('body');
         r2d2.initDynamicXEditableStuff('body');
 
-        $("html").css("cursor", "auto");
+        $('html').css('cursor', 'auto');
     },
 
     initGlobalAjaxLogin : function() {
@@ -553,7 +553,7 @@ r2d2 = {
         tooltip.init(ctxSel);
 
         $(ctxSel + " a[href], " + ctxSel + " input.js-wait-wheel").not("a[href^='#'], a[href*='ajax'], a[target='_blank'], .js-open-confirm-modal, a[data-tab], a[data-content], a.la-ctrls , .close, .js-no-wait-wheel, .trigger-modal").click(function() {
-            $("html").css("cursor", "wait");
+            $('html').css('cursor', 'wait');
         });
 
         // selectable table to avoid button is showing when focus after modal closed

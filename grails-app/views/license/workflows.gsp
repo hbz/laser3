@@ -23,7 +23,7 @@
 %{--    <laser:script file="${this.getGroovyPageFileName()}">--}%
 %{--        $('.wfModalLink').on('click', function(e) {--}%
 %{--            e.preventDefault();--}%
-%{--            var func = bb8.ajax4SimpleModalFunction("#wfModal", $(e.currentTarget).attr('href'), false);--}%
+%{--            var func = bb8.ajax4SimpleModalFunction("#wfModal", $(e.currentTarget).attr('href'));--}%
 %{--            func();--}%
 %{--        });--}%
 %{--        $('button[data-wfId]').on('click', function(e) {--}%

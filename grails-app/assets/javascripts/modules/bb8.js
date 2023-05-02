@@ -108,7 +108,7 @@ bb8 = {
             });
     },
 
-    ajax4SimpleModalFunction : function (cssId, url, callDynPostFunc) {
+    ajax4SimpleModalFunction : function (cssId, url, callDynPostFunc = false) {
         console.log("bb8.ajaxSimpleModalFunction( " + cssId + ", " + url + ", " + callDynPostFunc + " )")
 
         return function () {
