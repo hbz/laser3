@@ -99,21 +99,21 @@
 
     <laser:script file="${this.getGroovyPageFileName()}">
 
-        JSPC.callbacks.dynPostFunc = function () {
-            console.log('dynPostFunc @ tasks/_modal_edit.gsp');
+        JSPC.callbacks.modal.onVisible.modalEditTask = function () {
+            console.log('JSPC.callbacks.modal.onVisible.modalEditTask @ tasks/_modal_edit.gsp');
 
-        $("#radioresponsibleOrgEdit").change(function () { JSPC.app.toggleResponsibleUserEdit() });
-        $("#radioresponsibleUserEdit").change(function () { JSPC.app.toggleResponsibleUserEdit() });
+            $("#radioresponsibleOrgEdit").change(function () { JSPC.app.toggleResponsibleUserEdit() });
+            $("#radioresponsibleUserEdit").change(function () { JSPC.app.toggleResponsibleUserEdit() });
 
-        JSPC.app.toggleResponsibleUserEdit = function () {
-            if ($("#radioresponsibleUserEdit").is(':checked')) {
-                $("#responsibleUserWrapperEdit").show()
-            } else {
-                $("#responsibleUserWrapperEdit").hide()
+            JSPC.app.toggleResponsibleUserEdit = function () {
+                if ($("#radioresponsibleUserEdit").is(':checked')) {
+                    $("#responsibleUserWrapperEdit").show()
+                } else {
+                    $("#responsibleUserWrapperEdit").hide()
+                }
             }
-        }
 
-        JSPC.app.toggleResponsibleUserEdit();
+            JSPC.app.toggleResponsibleUserEdit();
 
             $.fn.form.settings.rules.responsibleUserInputEdit = function() {
                 if($("#radioresponsibleUserEdit").is(":checked")) {

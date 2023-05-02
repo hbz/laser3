@@ -1033,8 +1033,6 @@
                             onVisible: function () {
                                 r2d2.initDynamicUiStuff('#costItem_ajaxModal');
                                 r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
-
-                                JSPC.callbacks.dynPostFunc();
                             },
                             detachable: true,
                             closable: false,

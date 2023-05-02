@@ -771,7 +771,6 @@
                         r2d2.initDynamicUiStuff('#editEntitlementGroupItemModal');
                         r2d2.initDynamicXEditableStuff('#editEntitlementGroupItemModal');
                         $("html").css("cursor", "auto");
-                        JSPC.callbacks.dynPostFunc()
                     },
                     detachable: true,
                     autofocus: false,
