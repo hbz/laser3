@@ -134,6 +134,17 @@ class SubscriptionController {
                     records[0].lastRun = platformInstance.counter5LastRun ?: platformInstance.counter4LastRun
                     records[0].id = platformInstance.id
                     result.platformInstanceRecords[platformInstance.gokbId] = records[0]
+                    if(records[0].statisticsFormat == 'COUNTER' && records[0].counterR4SushiServerUrl == null && records[0].counterR5SushiServerUrl == null) {
+                        result.error = 'noSushiSource'
+                        ArrayList<Object> errorArgs = ["${apiSource.editUrl}/resource/show/${platformInstance.gokbId}", platformInstance.name]
+                        result.errorArgs = errorArgs.toArray()
+                    }
+                    else {
+                        CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(result.subscription.getSubscriber(), platformInstance)
+                        if(!ci?.value) {
+                            result.error = 'noCustomerId'
+                        }
+                    }
                 }
             }
         }

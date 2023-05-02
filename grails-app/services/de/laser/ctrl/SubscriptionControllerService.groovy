@@ -24,7 +24,6 @@ import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
-import de.laser.survey.SurveyOrg
 import de.laser.config.ConfigMapper
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
@@ -669,7 +668,12 @@ class SubscriptionControllerService {
         if(subscription.startDate && subscription.endDate) {
             //dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
             if(!params.containsKey('tabStat') || params.tabStat == 'total') {
-                dateRangeParams.startDate = subscription.startDate
+                if(subscription.startDate > new Date()) {
+                    LocalDate lastMonth = LocalDate.now()
+                    lastMonth.minusMonths(1)
+                    dateRangeParams.startDate = Date.from(lastMonth.withDayOfMonth(now.getMonth().length(now.isLeapYear())).atStartOfDay(ZoneId.systemDefault()).toInstant())
+                }
+                else dateRangeParams.startDate = subscription.startDate
                 if(subscription.endDate <= Date.from(now.withDayOfMonth(now.getMonth().length(now.isLeapYear())).atStartOfDay(ZoneId.systemDefault()).toInstant()))
                     dateRangeParams.endDate = subscription.endDate
                 else dateRangeParams.endDate = Date.from(now.withDayOfMonth(now.getMonth().length(now.isLeapYear())).atStartOfDay(ZoneId.systemDefault()).toInstant())
@@ -866,30 +870,59 @@ class SubscriptionControllerService {
         SortedSet<String> allAvailableReports = new TreeSet<String>()
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         subscribedPlatforms.each { Platform platform ->
-            Map<String, Object> queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/sushiSources?uuid=${platform.gokbId}")
+            Map<String, Object> queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/sushiSources")
             Map platformRecord
             if (queryResult.warning) {
-                List records = queryResult.warning.result
-                if(records[0]) {
-                    platformRecord = records[0]
+                Map<String, Object> records = queryResult.warning
+                if(records.counter4ApiSources.containsKey(platform.gokbId)) {
+                    platformRecord = records.counter4ApiSources.get(platform.gokbId)
+                }
+                else if(records.counter5ApiSources.containsKey(platform.gokbId)) {
+                    platformRecord = records.counter5ApiSources.get(platform.gokbId)
                 }
             }
-            CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(configMap.subscription.getSubscriber(), platform)
-            configMap.putAll(exportService.prepareSushiCall(platformRecord))
-            if(configMap.revision && configMap.statsUrl) {
-                if(configMap.revision == AbstractReport.COUNTER_5) {
-                    String apiKey = platform.centralApiKey ?: ci.requestorKey
-                    String queryArguments = "?customer_id=${ci.value}"
-                    if(ci.requestorKey || apiKey)
-                        queryArguments += "&requestor_id=${ci.requestorKey}&api_key=${apiKey}"
-                    Map<String, Object> availableReports = statsSyncService.fetchJSONData(configMap.statsUrl + queryArguments, true)
-                    if(availableReports && availableReports.list) {
-                        allAvailableReports.addAll(availableReports.list.collect { listEntry -> listEntry["Report_ID"].toLowerCase() })
+            if(platformRecord) {
+                CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(configMap.subscription.getSubscriber(), platform)
+                configMap.putAll(exportService.prepareSushiCall(platformRecord))
+                if(configMap.revision && configMap.statsUrl && ci.value) {
+                    if(configMap.revision == AbstractReport.COUNTER_5) {
+                        String apiKey = platform.centralApiKey ?: ci.requestorKey
+                        String queryArguments = "?customer_id=${ci.value}"
+                        switch(platformRecord.sushiApIAuthenticationMethod) {
+                            case AbstractReport.API_AUTH_CUSTOMER_REQUESTOR:
+                                if(ci.requestorKey) {
+                                    queryArguments += "&requestor_id=${ci.requestorKey}"
+                                }
+                                break
+                            case AbstractReport.API_AUTH_CUSTOMER_API:
+                            case AbstractReport.API_AUTH_REQUESTOR_API:
+                                if(ci.requestorKey) {
+                                    queryArguments += "&api_key=${ci.requestorKey}"
+                                }
+                                break
+                            case AbstractReport.API_AUTH_CUSTOMER_REQUESTOR_API:
+                                if(ci.requestorKey && platform.centralApiKey) {
+                                    queryArguments += "&requestor_id=${ci.requestorKey}&api_key=${platform.centralApiKey}"
+                                }
+                                break
+                            case AbstractReport.API_IP_WHITELISTING:
+                                break
+                            default:
+                                if(ci.requestorKey || apiKey) {
+                                    queryArguments += "&requestor_id=${ci.requestorKey}&api_key=${apiKey}"
+                                }
+                                break
+                        }
+
+                        Map<String, Object> availableReports = statsSyncService.fetchJSONData(configMap.statsUrl + queryArguments, true)
+                        if(availableReports && availableReports.list) {
+                            allAvailableReports.addAll(availableReports.list.collect { listEntry -> listEntry["Report_ID"].toLowerCase() })
+                        }
                     }
-                }
-                else if(configMap.revision == AbstractReport.COUNTER_4) {
-                    //unfortunately! I need to alert that there is no possibility to check whether the API supports the report!
-                    allAvailableReports.addAll(Counter4Report.COUNTER_4_REPORTS)
+                    else if(configMap.revision == AbstractReport.COUNTER_4) {
+                        //unfortunately! I need to alert that there is no possibility to check whether the API supports the report!
+                        allAvailableReports.addAll(Counter4Report.COUNTER_4_REPORTS)
+                    }
                 }
             }
         }
