@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4997    02.05.2023  dev     3.1         David   Feature     Sicherheitsabfrage Merkmale umbennen
+
 4994    02.05.2023  dev     3.1         David   Feature     DEV: Workflow braucht noch Sicherheitsabfrage
 
 4993    02.05.2023  dev     3.1         David   Feature     Javascript: JSPC - dynPostFunc entfernen
