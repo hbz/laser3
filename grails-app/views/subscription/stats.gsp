@@ -218,7 +218,7 @@
                             </select>
                         </div>
                         <g:if test="${params.reportType}">
-                            <g:render template="/templates/filter/statsFilter"/>
+                            <laser:render template="/templates/filter/statsFilter"/>
                         </g:if>
                         <%-- reports filters in COUNTER 5 count only for master reports (tr, pr, dr, ir)! COUNTER 4 has no restriction on filter usage afaik --%>
                     </div>

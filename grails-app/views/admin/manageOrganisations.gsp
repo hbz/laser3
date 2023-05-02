@@ -240,7 +240,7 @@
         </g:form>
 
         <laser:script file="${this.getGroovyPageFileName()}">
-            JSPC.callbacks.modal.show.gascoEntryModal = function(trigger) {
+            JSPC.callbacks.modal.onShow.gascoEntryModal = function(trigger) {
                 $('#gascoEntryModal #orgName_gasco').attr('value', $(trigger).attr('data-orgName'))
                 $('#gascoEntryModal input[name=target]').attr('value', $(trigger).attr('data-gascoTarget'))
                 $('#gascoEntryModal select[name=gascoEntry]').dropdown('set selected', $(trigger).attr('data-gascoEntry'))
@@ -285,7 +285,7 @@
         </g:form>
 
         <laser:script file="${this.getGroovyPageFileName()}">
-            JSPC.callbacks.modal.show.legalInformationModal = function(trigger) {
+            JSPC.callbacks.modal.onShow.legalInformationModal = function(trigger) {
                 $('#legalInformationModal input[name=target]').attr('value', $(trigger).attr('data-liTarget'))
                 $('#legalInformationModal #orgName_li').attr('value', $(trigger).attr('data-orgName'))
 
@@ -337,7 +337,7 @@
         </g:form>
 
         <laser:script file="${this.getGroovyPageFileName()}">
-            JSPC.callbacks.modal.show.customerTypeModal = function(trigger) {
+            JSPC.callbacks.modal.onShow.customerTypeModal = function(trigger) {
                 $('#customerTypeModal #orgName_ct').attr('value', $(trigger).attr('data-orgName'))
                 $('#customerTypeModal input[name=target]').attr('value', $(trigger).attr('data-ctTarget'))
 
@@ -375,7 +375,7 @@
         </g:form>
 
         <laser:script file="${this.getGroovyPageFileName()}">
-            JSPC.callbacks.modal.show.apiLevelModal = function(trigger) {
+            JSPC.callbacks.modal.onShow.apiLevelModal = function(trigger) {
                 $('#apiLevelModal #orgName_al').attr('value', $(trigger).attr('data-orgName'))
                 $('#apiLevelModal input[name=target]').attr('value', $(trigger).attr('data-alTarget'))
 

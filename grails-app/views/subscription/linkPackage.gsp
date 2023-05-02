@@ -355,7 +355,7 @@
     </g:form>
 
     <laser:script file="${this.getGroovyPageFileName()}">
-        JSPC.callbacks.modal.show.linkPackageModal = function(trigger) {
+        JSPC.callbacks.modal.onShow.linkPackageModal = function(trigger) {
             $('#linkPackageModal #pkgName').attr('value', $(trigger).attr('data-packageName'))
             $('#linkPackageModal input[name=addUUID]').attr('value', $(trigger).attr('data-addUUID'))
         }

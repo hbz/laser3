@@ -53,10 +53,9 @@ JSPC = {
 
     callbacks : {
         modal : { // -- dynamic storage; search modalCallbackFunction@r2d2.js for more information
-            show : {
-            }
-        },
-        dynPostFunc : function () { console.log('JSPC.callbacks.dynPostFunc - default') }
+            onShow : {},
+            onVisible : {}
+        }
     },
 
     dict : { // -- js translations

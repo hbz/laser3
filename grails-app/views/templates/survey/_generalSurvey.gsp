@@ -88,7 +88,7 @@
                         </g:each>
 
                         <g:if test="${editable}">
-                            <g:render template="/survey/surveyUrlsModal"/>
+                            <laser:render template="/survey/surveyUrlsModal"/>
                         </g:if>
 
                     </ui:card>
@@ -207,7 +207,7 @@
         <div class="ui one cards">
 
             <div id="container-documents">
-                <g:render template="/survey/surveyLinkCard"/>
+                <laser:render template="/survey/surveyLinkCard"/>
             </div>
 
             <g:if test="${controllerName == 'survey' && actionName == 'show'}">

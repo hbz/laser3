@@ -249,13 +249,13 @@
 <laser:script file="${this.getGroovyPageFileName()}">
         JSPC.app.addresscreate_prs = function (prsId, typeId, redirect, hideType) {
             var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>?prsId=' + prsId + '&typeId=' + typeId + '&redirect=' + redirect + '&hideType=' + hideType;
-            var func = bb8.ajax4SimpleModalFunction("#addressFormModal", url, false);
+            var func = bb8.ajax4SimpleModalFunction("#addressFormModal", url);
             func();
         }
 
         JSPC.app.editPerson = function (id) {
             var url = '<g:createLink controller="ajaxHtml" action="editPerson" params="[showAddresses: showAddresses ?: false, showContacts: showContacts ?: false, org: (restrictToOrg ? restrictToOrg?.id : '')]"/>&id=' + id;
-            var func = bb8.ajax4SimpleModalFunction("#personModal", url, false);
+            var func = bb8.ajax4SimpleModalFunction("#personModal", url);
             func();
         }
 </laser:script>

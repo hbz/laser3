@@ -425,7 +425,7 @@
 
     JSPC.app.addresscreate_prs = function (prsId, typeId, redirect, modalId, hideType) {
         var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>'?prsId=' + prsId + '&typeId=' + typeId + '&redirect=' + redirect + '&modalId=' + modalId + '&hideType=' + hideType;
-        var func = bb8.ajax4SimpleModalFunction("#addressFormModal", url, false);
+        var func = bb8.ajax4SimpleModalFunction("#addressFormModal", url);
         func();
     }
 </laser:script>

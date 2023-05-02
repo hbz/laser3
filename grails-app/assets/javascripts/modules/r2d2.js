@@ -126,7 +126,7 @@ r2d2 = {
         r2d2.initDynamicUiStuff('body');
         r2d2.initDynamicXEditableStuff('body');
 
-        $("html").css("cursor", "auto");
+        $('html').css('cursor', 'auto');
     },
 
     initGlobalAjaxLogin : function() {
@@ -553,7 +553,7 @@ r2d2 = {
         tooltip.init(ctxSel);
 
         $(ctxSel + " a[href], " + ctxSel + " input.js-wait-wheel").not("a[href^='#'], a[href*='ajax'], a[target='_blank'], .js-open-confirm-modal, a[data-tab], a[data-content], a.la-ctrls , .close, .js-no-wait-wheel, .trigger-modal").click(function() {
-            $("html").css("cursor", "wait");
+            $('html').css('cursor', 'wait');
         });
 
         // selectable table to avoid button is showing when focus after modal closed
@@ -568,7 +568,7 @@ r2d2 = {
 
         // modals
         $(ctxSel + " *[data-ui='modal']").click(function() {
-            var triggerElement = $(this)
+            var $triggerElement = $(this)
             var href = $(this).attr('data-href')
             if (! href) {
                 href = $(this).attr('href')
@@ -579,6 +579,12 @@ r2d2 = {
                     $(this).find('.yearpicker').calendar(r2d2.configs.yearpicker);
 
                     r2d2.helper.focusFirstFormElement(this);
+
+                    let modalCallbackFunction = JSPC.callbacks.modal.onVisible[$(this).attr('id')];
+                    if (typeof modalCallbackFunction === "function") {
+                        console.debug('%cJSPC.callbacks.modal.onVisible found: #' + $(this).attr('id') + ' - trigger: ' + $triggerElement.attr('id'), 'color:grey')
+                        modalCallbackFunction($triggerElement)
+                    }
                 },
                 detachable: true,
                 autofocus: false,
@@ -589,7 +595,6 @@ r2d2 = {
                     return false;
                 },
                 onShow : function() {
-                    var modalCallbackFunction = JSPC.callbacks.modal.show[$(this).attr('id')];
                     a11yModal.go({
                         el: document.getElementById($(this).attr('id')),
                         focusElement: '',
@@ -601,10 +606,12 @@ r2d2 = {
                         }
                     }
                     this.addEventListener('keyup', keyboardHandler);
-                    if (typeof modalCallbackFunction === "function") {
-                        modalCallbackFunction(triggerElement)
-                    }
 
+                    let modalCallbackFunction = JSPC.callbacks.modal.onShow[$(this).attr('id')];
+                    if (typeof modalCallbackFunction === "function") {
+                        console.debug('%cJSPC.callbacks.modal.onShow found: #' + $(this).attr('id') + ' - trigger: ' + $triggerElement.attr('id'), 'color:grey')
+                        modalCallbackFunction($triggerElement)
+                    }
                 },
                 onHide : function() {
                     this.removeEventListener('keyup', keyboardHandler);

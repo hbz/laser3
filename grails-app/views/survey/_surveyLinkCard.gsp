@@ -59,7 +59,7 @@
             </div>
         </div>
         <g:if test="${editable}">
-            <g:render template="/survey/surveyLinksModal"/>
+            <laser:render template="/survey/surveyLinksModal"/>
         </g:if>
     </ui:card>
 </g:if>

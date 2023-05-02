@@ -49,7 +49,7 @@
 <ui:objectStatus object="${orgInstance}" status="${orgInstance.status}"/>
 
 <ui:messages data="${flash}"/>
-<g:render template="/templates/workflow/status" model="${[cmd: cmd, status: status]}" />
+<laser:render template="/templates/workflow/status" model="${[cmd: cmd, status: status]}" />
 
 <div class="ui stackable grid">
     <div class="eleven wide column">
@@ -1309,13 +1309,13 @@
 
     JSPC.app.addresscreate_org = function (orgId, typeId, redirect, hideType) {
         var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>?orgId=' + orgId + '&typeId=' + typeId + '&redirect=' + redirect + '&hideType=' + hideType;
-        var func = bb8.ajax4SimpleModalFunction("#addressFormModal", url, false);
+        var func = bb8.ajax4SimpleModalFunction("#addressFormModal", url);
         func();
     }
 
     <%--JSPC.app.addresscreate_prs = function (prsId, typeId, redirect, hideType) {
         var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>?prsId=' + prsId + '&typeId=' + typeId + '&redirect=' + redirect + '&hideType=' + hideType;
-        var func = bb8.ajax4SimpleModalFunction("#addressFormModal", url, false);
+        var func = bb8.ajax4SimpleModalFunction("#addressFormModal", url);
         func();
     }--%>
 
@@ -1344,7 +1344,7 @@
             let existsWekbRecord = "";
         </g:else>
         var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor=' + contactFor + '&org=' + org + existsWekbRecord + '&showAddresses=false&showContacts=true' + supportType;
-        var func = bb8.ajax4SimpleModalFunction("#personModal", url, false);
+        var func = bb8.ajax4SimpleModalFunction("#personModal", url);
         func();
     }
 

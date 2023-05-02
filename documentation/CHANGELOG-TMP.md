@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4993    02.05.2023  dev     3.1         David   Feature     Javascript: JSPC - dynPostFunc entfernen
+
 4874    29.04.2023  dev     3.1         Andreas Feature     Umstellung sämtlicher ClickMich-Exporte und Sicht "Alle Anbieter" aufgeräumt
 
 4983    28.04.2023  dev     3.1         David   Feature     Autofocus für modale Dialoge
