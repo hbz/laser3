@@ -65346,6 +65346,13 @@ Floated Menu / Item
     float: none!important;
   }
 }
+
+.la-vertical-centered {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
 /*!
  * # Fomantic-UI ^2.9.2 - Ad
  * https://github.com/fomantic/Fomantic-UI/
