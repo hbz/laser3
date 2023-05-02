@@ -13,7 +13,7 @@
         %>
         <ui:exportDropdown>
             <ui:exportDropdownItem>
-                <a class="item" data-ui="modal" href="#individuallyExportModal">Click Me Excel Export</a>
+                <a class="item" data-ui="modal" href="#individuallyExportModal">Click Me Export</a>
             </ui:exportDropdownItem>
             <g:if test="${filterSet}">
                 <ui:exportDropdownItem>

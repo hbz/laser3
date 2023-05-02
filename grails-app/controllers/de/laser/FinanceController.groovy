@@ -165,7 +165,7 @@ class FinanceController  {
         }
         SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
         String filename = result.subscription ? escapeService.escapeString(result.subscription.name)+"_financialExport" : escapeService.escapeString(result.institution.name)+"_financialExport"
-        if(params.exportXLS) {
+        /*if(params.exportXLS) {
             SXSSFWorkbook workbook = exportService.processFinancialXLSX(result)
             response.setHeader("Content-disposition", "attachment; filename=\"${sdf.format(new Date())}_${filename}.xlsx\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -179,7 +179,8 @@ class FinanceController  {
                 log.error("A request was started before the started one was terminated")
             }
         }
-        else if(params.exportClickMeExcel) {
+        */
+        if(params.exportClickMeExcel) {
             if (params.filename) {
                 filename =params.filename
             }
@@ -187,8 +188,7 @@ class FinanceController  {
             Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
             Map<String, Object> selectedFields = [:]
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
-
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportCostItems(result, selectedFields)
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportCostItems(result, selectedFields, ExportClickMeService.FORMAT.XLS)
 
             response.setHeader "Content-disposition", "attachment; filename=${filename}.xlsx"
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -222,10 +222,10 @@ class FinanceController  {
                            message(code: 'financials.newCosts.costsReferenceOn'), message(code: 'financials.budgetCode'),
                            message(code: 'financials.invoice_number'), message(code: 'financials.order_number')])
             SimpleDateFormat dateFormat = DateUtils.getLocalizedSDF_noTime()
-            //LinkedHashMap<Subscription,List<Org>> subscribers = [:]
-            //LinkedHashMap<Subscription,Set<Org>> providers = [:]
+            LinkedHashMap<Subscription,List<Org>> subscribers = [:]
+            LinkedHashMap<Subscription,Set<Org>> providers = [:]
             LinkedHashMap<Subscription,BudgetCode> costItemGroups = [:]
-            /*OrgRole.findAllByRoleTypeInList([RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]).each { it ->
+            OrgRole.findAllByRoleTypeInList([RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]).each { it ->
                 List<Org> orgs = subscribers.get(it.sub)
                 if(orgs == null)
                     orgs = [it.org]
@@ -238,7 +238,7 @@ class FinanceController  {
                     orgs = [it.org]
                 else orgs.add(it.org)
                 providers.put(it.sub,orgs)
-            }*/
+            }
             CostItemGroup.findAll().each{ cig -> costItemGroups.put(cig.costItem,cig.budgetCode) }
             withFormat {
                 csv {

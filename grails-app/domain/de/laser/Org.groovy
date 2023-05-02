@@ -239,7 +239,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         lastUpdatedCascading (nullable: true)
     }
 
-    static final Set<String> WEKB_PROPERTIES = ['nickname', 'homepage', 'metadataDownloaderURL', 'kbartDownloaderURL', 'roles']
+    static final Set<String> WEKB_PROPERTIES = ['homepage', 'metadataDownloaderURL', 'kbartDownloaderURL', 'roles']
 
     /**
      * Checks if the organisation is marked as deleted
