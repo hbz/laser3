@@ -145,7 +145,7 @@
 </style>
 
 <laser:script file="${this.getGroovyPageFileName()}">
-    JSPC.callbacks.modal.onShow['${modalID}'] = function() {
+    JSPC.callbacks.modal.onShow['${modalID}'] = function(trigger) {
         $('#${modalID} .help-section').hide();
         $current = $('#${modalID} .help-section[data-help-section=' + JSPC.app.reporting.current.request.query + ']');
         if (! $current.length) {

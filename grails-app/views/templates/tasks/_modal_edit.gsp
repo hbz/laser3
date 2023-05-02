@@ -99,7 +99,7 @@
 
     <laser:script file="${this.getGroovyPageFileName()}">
 
-        JSPC.callbacks.modal.onVisible.modalEditTask = function () {
+        JSPC.callbacks.modal.onVisible.modalEditTask = function (trigger) {
             console.log('JSPC.callbacks.modal.onVisible.modalEditTask @ tasks/_modal_edit.gsp');
 
             $("#radioresponsibleOrgEdit").change(function () { JSPC.app.toggleResponsibleUserEdit() });

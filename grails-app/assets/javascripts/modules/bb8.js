@@ -127,7 +127,7 @@ bb8 = {
                             let modalCallbackFunction = JSPC.callbacks.modal.onVisible[$(this).attr('id')];
                             if (typeof modalCallbackFunction === "function") {
                                 console.debug('%cJSPC.callbacks.modal.onVisible found: #' + $(this).attr('id'), 'color:grey')
-                                modalCallbackFunction()
+                                modalCallbackFunction( null )
                             }
                         }
                     }).modal('show');
