@@ -401,14 +401,21 @@
                                     <div class="ui raised segments la-accordion-segments">
                                         <div class="ui fluid segment title" data-ajaxTippId="${ie.tipp.id}" data-ajaxIeId="${ie ? ie.id : null}">
                                             <div class="ui stackable equal width grid">
+                                                <g:if test="${subscription.hasPerpetualAccess}">
+                                                    <span class="ui mini left corner label la-perpetualAccess la-popup-tooltip la-delay"
+                                                          data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')}"
+                                                          data-position="left center" data-variation="tiny">
+                                                        <i class="star icon"></i>
+                                                    </span>
+                                                </g:if>
                                                 <div class="one wide column la-js-show-hide" style="display: none">
                                                     <g:if test="${editable}"><input type="checkbox"
                                                                                     name="_bulkflag.${ie.id}"
-                                                                                    class="bulkcheck"/></g:if>
+                                                                                    class="bulkcheck la-vertical-centered"/></g:if>
                                                 </div>
 
                                                 <div class="one wide column">
-                                                    ${counter++}
+                                                    <span class="la-vertical-centered">${counter++}</span>
                                                 </div>
 
                                                 <div class="column">

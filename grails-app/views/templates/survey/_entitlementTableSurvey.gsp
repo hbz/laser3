@@ -31,62 +31,31 @@
 
 
                     <div class="ui stackable equal width grid la-js-checkItem" data-gokbId="${tipp.gokbId}" data-tippId="${tipp.id}" data-ieId="${ie.id}" data-index="${counter}">
+                        <g:if test="${participantPerpetualAccessToTitle}">
+                            <span class="ui mini left corner label la-perpetualAccess la-popup-tooltip la-delay"
+                                  data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')}"
+                                  data-position="left center" data-variation="tiny">
+                                <i class="star icon"></i>
+                            </span>
+                        </g:if>
                         <div class="one wide column">
                             <g:if test="${(params.tab == 'previousIEs' || params.tab == 'allIEs' || params.tab == 'toBeSelectedIEs' || params.tab == 'currentIEs') && (editable && !ieInNewSub && allowedToSelect)}">
                                 <input type="checkbox" name="bulkflag"
-                                       class="bulkcheck" ${checkedCache ? checkedCache[ie.id.toString()] : ''}>
+                                       class="bulkcheck la-vertical-centered" ${checkedCache ? checkedCache[ie.id.toString()] : ''}>
                             </g:if>
                             <g:elseif test="${editable && params.tab == 'selectedIEs' && ieInNewSub && de.laser.IssueEntitlementGroupItem.findByIeAndIeGroup(ieInNewSub, de.laser.IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscriberSub))}">
                                 <input type="checkbox" name="bulkflag"
-                                       class="bulkcheck" ${checkedCache ? checkedCache[ie.id.toString()] : ''}>
+                                       class="bulkcheck la-vertical-centered" ${checkedCache ? checkedCache[ie.id.toString()] : ''}>
                             </g:elseif>
                         </div>
 
 
                         <div class="one wide column">
-                            ${counter++}
+                            <span class="la-vertical-centered">${counter++}</span>
                         </div>
 
                         <div class="column">
                             <div class="ui list">
-                                <g:if test="${(params.tab != 'currentIEs') ||
-                                            participantPerpetualAccessToTitle ||
-                                            (participantPerpetualAccessToTitle && previousSubscription && surveyService.titleContainedBySubscription(previousSubscription, tipp))}">
-                                    <div class="ui label la-iconStrip">
-                                        <g:if test="${params.tab != 'currentIEs' && ieInNewSub}">
-                                            <span class="la-popup-tooltip la-delay"
-                                                  data-content="${message(code: 'renewEntitlementsWithSurvey.ie.existsInSub')}"
-                                                  data-position="left center" data-variation="tiny">
-                                                <i class="shopping basket icon blue"></i>
-                                            </span>
-                                        </g:if>
-                                        <g:else>
-                                            <i class="shopping basket icon disabled"></i>
-                                        </g:else>
-
-                                        <g:if test="${participantPerpetualAccessToTitle}">
-                                            <span class="la-popup-tooltip la-delay"
-                                                  data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')}"
-                                                  data-position="left center" data-variation="tiny">
-                                                <i class="shopping basket icon violet"></i>
-                                            </span>
-                                        </g:if>
-                                        <g:else>
-                                            <i class="shopping basket icon disabled"></i>
-                                        </g:else>
-
-                                        <g:if test="${!participantPerpetualAccessToTitle && previousSubscription && surveyService.titleContainedBySubscription(previousSubscription, tipp)}">
-                                            <span class="la-popup-tooltip la-delay"
-                                                  data-content="${message(code: 'renewEntitlementsWithSurvey.ie.existsInPreviousSubscription')}"
-                                                  data-position="left center" data-variation="tiny">
-                                                <i class="shopping basket icon brown"></i>
-                                            </span>
-                                        </g:if>
-                                        <g:else>
-                                            <i class="shopping basket icon disabled"></i>
-                                        </g:else>
-                                    </div>
-                                </g:if>
                                 <!-- START TEMPLATE -->
                                 <laser:render
                                         template="/templates/title_short_accordion"
