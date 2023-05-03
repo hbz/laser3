@@ -23,13 +23,17 @@
 %>
 
 <br />
-<span class="ui label"><i class="icon green tag"></i>spring</span>
-<span class="ui label"><i class="icon orange tag"></i>grails</span>
-<span class="ui label"><i class="icon yellow tag"></i>grails.plugin(s)</span>
-<span class="ui label"><i class="icon red tag"></i>java</span>
-<span class="ui label"><i class="icon blue tag"></i>dataSource</span>
+<div id="cfgFilter">
+    <span class="ui label" data-class="*">Alle anzeigen</span>
+    <span class="ui label" data-class="green"><i class="icon green tag"></i>spring</span>
+    <span class="ui label" data-class="orange"><i class="icon orange tag"></i>grails</span>
+    <span class="ui label" data-class="yellow"><i class="icon yellow tag"></i>grails.plugin(s)</span>
+    <span class="ui label" data-class="red"><i class="icon red tag"></i>java</span>
+    <span class="ui label" data-class="blue"><i class="icon blue tag"></i>dataSource</span>
+    <span class="ui label" data-class="native"><i class="icon grey tag"></i>default</span>
+</div>
 
-<table class="ui sortable celled la-js-responsive-table la-hover-table la-table compact table">
+<table id="cfgTable" class="ui sortable celled la-js-responsive-table la-hover-table la-table compact table">
     <thead>
     <tr>
         <th></th>
@@ -47,7 +51,7 @@
                 else if (key.startsWith('java'))            { color = 'red' }
                 else if (key.startsWith('spring'))          { color = 'green' }
             %>
-            <tr>
+            <tr data-class="${color ?: 'native'}">
                 <td class="center aligned">
                     <span class="ui mini label ${color}">${i+1}</span>
                 </td>
@@ -71,5 +75,21 @@
         </g:each>
     </tbody>
 </table>
+
+<style>
+    #cfgFilter span[data-class]:hover { cursor: pointer }
+</style>
+
+<laser:script file="${this.getGroovyPageFileName()}">
+    $('#cfgFilter span[data-class]').on ('click', function () {
+        let cls = $(this).attr('data-class')
+        if (cls == '*') {
+            $('#cfgTable tbody tr').show()
+        } else {
+            $('#cfgTable tbody tr').hide()
+            $('#cfgTable tbody tr[data-class=' + cls + ']').show()
+        }
+    })
+</laser:script>
 
 <laser:htmlEnd />

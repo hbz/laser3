@@ -142,7 +142,7 @@
 
         <div class="item" role="menuitem" aria-haspopup="true">
             <div class="title">
-                ${message(code:'menu.admin.dataManagement')} <i class="dropdown icon"></i>
+                <i class="icon database"></i> ${message(code:'menu.admin.dataManagement')} <i class="dropdown icon"></i>
             </div>
 
             <div class="menu" role="menu">
