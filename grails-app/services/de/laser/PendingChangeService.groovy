@@ -134,7 +134,7 @@ class PendingChangeService extends AbstractLockableService {
                     "join org_role on or_sub_fk = ie_subscription_fk "+
                     "join subscription on ie_subscription_fk = sub_id "+
                     "where tic_event = :titleRemoved and or_org_fk = :context and or_roletype_fk = :roleType and ie_status_rv_fk != :removed "+
-                    "group by tipp_pkg_fk, tic_event, or_sub_fk, sub_name, sub_start_desc "+
+                    "group by tipp_pkg_fk, tic_event, or_sub_fk, sub_name, sub_start_date "+
                     "order by sub_name, sub_start_date desc",
                     [titleRemoved: PendingChangeConfiguration.TITLE_REMOVED, context: configMap.contextOrg.id, roleType: RDStore.OR_SUBSCRIBER.id, removed: RDStore.TIPP_STATUS_REMOVED.id]).each { GroovyRowResult row ->
                 Subscription subscription = Subscription.get(row['or_sub_fk'])
