@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4998    03.05.2023  dev     3.1         Andreas Bug         Bugs beim Erzeugen und Export von Nutzerzahlen behoben
+
 4997    02.05.2023  dev     3.1         David   Feature     Sicherheitsabfrage Merkmale umbennen
 
 4994    02.05.2023  dev     3.1         David   Feature     DEV: Workflow braucht noch Sicherheitsabfrage

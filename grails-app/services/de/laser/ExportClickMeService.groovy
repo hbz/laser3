@@ -3401,9 +3401,9 @@ class ExportClickMeService {
 
                     if(readerNumberStudents || readerNumberStaff || readerNumberFTE){
                         row.add(createTableCell(format, currentSemester.getI10n('value')))
-                        String studentsStr = readerNumberStudents ? readerNumberStudents.value : ' ',
-                        staffStr = readerNumberStaff ? readerNumberStaff.value : ' ',
-                        fteStr = readerNumberFTE ? readerNumberFTE.value : ' '
+                        BigDecimal studentsStr = readerNumberStudents ? readerNumberStudents.value : null,
+                        staffStr = readerNumberStaff ? readerNumberStaff.value : null,
+                        fteStr = readerNumberFTE ? readerNumberFTE.value : null
                         row.add(createTableCell(format, studentsStr))
                         row.add(createTableCell(format, staffStr))
                         row.add(createTableCell(format, fteStr))
@@ -3420,9 +3420,9 @@ class ExportClickMeService {
                                 readerNumberStudents = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_STUDENTS, org, refdataValueList[count])
                                 readerNumberFTE = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_FTE, org, refdataValueList[count])
                                 if (readerNumberStudents || readerNumberStaff || readerNumberFTE) {
-                                    String studentsStr = readerNumberStudents ? readerNumberStudents.value : ' ',
-                                           staffStr = readerNumberStaff ? readerNumberStaff.value : ' ',
-                                           fteStr = readerNumberFTE ? readerNumberFTE.value : ' '
+                                    BigDecimal studentsStr = readerNumberStudents ? readerNumberStudents.value : null,
+                                           staffStr = readerNumberStaff ? readerNumberStaff.value : null,
+                                           fteStr = readerNumberFTE ? readerNumberFTE.value : null
                                     row.add(createTableCell(format, refdataValueList[count].getI10n('value')))
                                     row.add(createTableCell(format, studentsStr))
                                     row.add(createTableCell(format, staffStr))
@@ -3432,10 +3432,10 @@ class ExportClickMeService {
                             }
                         }
                         if(!readerNumberStudents && !readerNumberStaff && !readerNumberFTE){
-                            row.add(createTableCell(format, ' '))
-                            row.add(createTableCell(format, ' '))
-                            row.add(createTableCell(format, ' '))
-                            row.add(createTableCell(format, ' '))
+                            row.add(createTableCell(format, null))
+                            row.add(createTableCell(format, null))
+                            row.add(createTableCell(format, null))
+                            row.add(createTableCell(format, null))
                         }
                     }
                 }
@@ -3443,7 +3443,7 @@ class ExportClickMeService {
                 ReaderNumber readerNumberPeople = ReaderNumber.findByReferenceGroupAndOrg(RDStore.READER_NUMBER_PEOPLE, org, [sort: 'dueDate', order: 'desc'])
                 ReaderNumber readerNumberUser = ReaderNumber.findByReferenceGroupAndOrg(RDStore.READER_NUMBER_USER, org, [sort: 'dueDate', order: 'desc'])
 
-                String peopleStr = readerNumberUser ? readerNumberUser.value : ' ', userStr = readerNumberPeople ? readerNumberPeople.value : ' '
+                BigDecimal peopleStr = readerNumberUser ? readerNumberUser.value : null, userStr = readerNumberPeople ? readerNumberPeople.value : null
 
                 row.add(createTableCell(format, peopleStr))
                 row.add(createTableCell(format, userStr))
