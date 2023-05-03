@@ -771,7 +771,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 }
                 tipp.prices.each { price ->
                     updatedTIPP.priceItems << [
-                            listPrice: escapeService.parseFinancialValue(price.amount),
+                            listPrice: price.amount instanceof String ? escapeService.parseFinancialValue(price.amount) : BigDecimal.valueOf(price.amount),
                             startDate: DateUtils.parseDateGeneric(price.startDate),
                             endDate: DateUtils.parseDateGeneric(price.endDate),
                             listCurrency: currency.get(price.currency)
@@ -829,9 +829,11 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     if(pkg)
                         addNewTIPP(pkg, updatedTIPP, platformsOnPage)
                 }
-                Date lastUpdatedTime = DateUtils.parseDateGeneric(tipp.lastUpdatedDisplay)
-                if(lastUpdatedTime.getTime() > maxTimestamp) {
-                    maxTimestamp = lastUpdatedTime.getTime()
+                if(source.rectype == RECTYPE_TIPP) {
+                    Date lastUpdatedTime = DateUtils.parseDateGeneric(tipp.lastUpdatedDisplay)
+                    if(lastUpdatedTime.getTime() > maxTimestamp) {
+                        maxTimestamp = lastUpdatedTime.getTime()
+                    }
                 }
             }
             catch (SyncException e) {
@@ -1122,6 +1124,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     }
                 }
             //}
+            if(source.rectype == RECTYPE_PACKAGE) {
+                Date lastUpdatedTime = DateUtils.parseDateGeneric(packageRecord.lastUpdatedDisplay)
+                if(lastUpdatedTime.getTime() > maxTimestamp) {
+                    maxTimestamp = lastUpdatedTime.getTime()
+                }
+            }
             result
         }
         else null
@@ -1239,9 +1247,11 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         }
                     }
                 }
-                Date lastUpdatedTime = DateUtils.parseDateGeneric(providerRecord.lastUpdatedDisplay)
-                if(lastUpdatedTime.getTime() > maxTimestamp) {
-                    maxTimestamp = lastUpdatedTime.getTime()
+                if(source.rectype == RECTYPE_ORG) {
+                    Date lastUpdatedTime = DateUtils.parseDateGeneric(providerRecord.lastUpdatedDisplay)
+                    if(lastUpdatedTime.getTime() > maxTimestamp) {
+                        maxTimestamp = lastUpdatedTime.getTime()
+                    }
                 }
                 provider
             }
@@ -1399,9 +1409,11 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     if(packagesOfPlatform && packagesOfPlatform.count > 0) {
                         Package.executeUpdate('update Package pkg set pkg.nominalPlatform = :plat where pkg.gokbId in (:uuids)', [uuids: packagesOfPlatform.records.uuid, plat: platform])
                     }
-                    Date lastUpdatedTime = DateUtils.parseDateGeneric(platformRecord.lastUpdatedDisplay)
-                    if(lastUpdatedTime.getTime() > maxTimestamp) {
-                        maxTimestamp = lastUpdatedTime.getTime()
+                    if(source.rectype == RECTYPE_PLATFORM) {
+                        Date lastUpdatedTime = DateUtils.parseDateGeneric(platformRecord.lastUpdatedDisplay)
+                        if(lastUpdatedTime.getTime() > maxTimestamp) {
+                            maxTimestamp = lastUpdatedTime.getTime()
+                        }
                     }
                     platform
                 }
