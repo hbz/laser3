@@ -51,7 +51,7 @@
         <g:hiddenField name="surveyConfigID" value="${params.surveyConfigID}"/>
         <g:hiddenField name="tab" value="${params.tab}"/>
         <g:hiddenField name="tabStat" value="${params.tabStat}"/>
-        <g:hiddenField name="titleGroup" value="${params.titleGroup}"/>
+        %{--<g:hiddenField name="titleGroup" value="${params.titleGroup}"/>--}%
 
         <div class="four fields">
             <div class="field">
@@ -274,6 +274,16 @@
                 </div>
                 <g:if test="${actionName =='index' && subscription.ieGroups.size() > 0}">
                     <div class="field">
+                        <label>${message(code: 'issueEntitlementGroup.label')}</label>
+                        <g:select class="ui fluid dropdown" name="titleGroup"
+                                   from="${subscription.ieGroups}"
+                                   optionKey="id"
+                                   optionValue="name"
+                                   value="${params.titleGroup}"
+                                   noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+                    </div>
+
+                    %{--<div class="field">
                         <label>${message(code: 'issueEntitlement.inTitleGroups')}</label>
                         <ui:select class="ui fluid dropdown" name="inTitleGroups"
                                       from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
@@ -281,7 +291,7 @@
                                       optionValue="value"
                                       value="${params.inTitleGroups}"
                                       noSelection="${['': message(code: 'default.select.choose.label')]}"/>
-                    </div>
+                    </div>--}%
                 </g:if>
             </g:if>
         </div>

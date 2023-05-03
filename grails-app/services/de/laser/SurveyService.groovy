@@ -49,6 +49,7 @@ class SurveyService {
     LinksGenerationService linksGenerationService
     MessageSource messageSource
     SubscriptionService subscriptionService
+    MailSendService mailSendService
 
     PageRenderer groovyPageRenderer
 
@@ -1712,12 +1713,12 @@ class SurveyService {
         ies
     }
 
-    String notificationSurveyAsStringInHtml(SurveyInfo surveyInfo, boolean reminder = false) {
+    String surveyMailHtmlAsString(SurveyInfo surveyInfo, boolean reminder = false) {
         Locale language = new Locale("de")
         groovyPageRenderer.render view: '/mailTemplates/html/notificationSurveyForMailClient', model: [language: language, survey: surveyInfo, reminder: false]
     }
 
-    String notificationSurveyAsStringInText(SurveyInfo surveyInfo, boolean reminder = false) {
+    String surveyMailTextAsString(SurveyInfo surveyInfo, boolean reminder = false) {
         Locale language = new Locale("de")
         groovyPageRenderer.render view: '/mailTemplates/text/notificationSurvey', model: [language: language, survey: surveyInfo, reminder: reminder]
     }

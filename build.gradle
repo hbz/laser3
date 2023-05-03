@@ -130,6 +130,8 @@ dependencies {
     implementation 'org.liquibase:liquibase-core:4.19.0'                    // 2023 : + org.grails.plugins:database-migration
     implementation 'org.quartz-scheduler:quartz:2.3.2'                      // 2019
 
+    implementation "io.github.gpc:asynchronous-mail:3.1.1"                  // 2015
+
     // --------------------------------------------------
 
     runtimeOnly 'org.apache.tomcat:tomcat-jdbc'

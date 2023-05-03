@@ -147,7 +147,7 @@
         </div><!--.grid-->
     </g:if>
 
-    <g:if test="${subscription.ieGroups.size() > 0}">
+%{--    <g:if test="${subscription.ieGroups.size() > 0}">
         <div class="ui top attached stackable tabular la-tab-with-js menu">
             <g:link controller="subscription" action="index" id="${subscription.id}"
                     class="item ${params.titleGroup ? '' : 'active'}">
@@ -169,10 +169,38 @@
             </g:each>
         </div>
         <div class="ui bottom attached tab active segment">
-    </g:if>
-    <div class="ui grid">
-        <div class="row">
-            <div class="column">
+    </g:if>--}%
+
+<ui:tabs actionName="${actionName}">
+    <ui:tabsItem controller="subscription" action="${actionName}"
+                 params="[id: subscription.id, tab: 'currentIEs']"
+                 text="${message(code: "package.show.nav.current")}" tab="currentIEs"
+                 counts="${currentIECounts}"/>
+    <ui:tabsItem controller="subscription" action="${actionName}"
+                 params="[id: subscription.id, tab: 'plannedIEs']"
+                 text="${message(code: "package.show.nav.planned")}" tab="plannedIEs"
+                 counts="${plannedIECounts}"/>
+    <ui:tabsItem controller="subscription" action="${actionName}"
+                 params="[id: subscription.id, tab: 'expiredIEs']"
+                 text="${message(code: "package.show.nav.expired")}" tab="expiredIEs"
+                 counts="${expiredIECounts}"/>
+    <ui:tabsItem controller="subscription" action="${actionName}"
+                 params="[id: subscription.id, tab: 'deletedIEs']"
+                 text="${message(code: "package.show.nav.deleted")}" tab="deletedIEs"
+                 counts="${deletedIECounts}"/>
+    <ui:tabsItem controller="subscription" action="${actionName}"
+                 params="[id: subscription.id, tab: 'allIEs']"
+                 text="${message(code: "menu.public.all_titles")}" tab="allIEs"
+                 counts="${allIECounts}"/>
+</ui:tabs>
+
+<% params.remove('tab')%>
+
+
+<div class="ui bottom attached tab active segment">
+   <div class="ui grid">
+       <div class="row">
+           <div class="column">
                 <laser:render template="/templates/filter/tipp_ieFilter"/>
             </div>
         </div><!--.row-->
@@ -693,10 +721,11 @@
         </div><%-- .column --%>
     </div><%--.row --%>
 </div><%--.grid --%>
+</div>
 
-<g:if test="${subscription.ieGroups.size() > 0}">
+%{--<g:if test="${subscription.ieGroups.size() > 0}">
     </div><%-- .ui.bottom.attached.tab.active.segment --%>
-</g:if>
+</g:if>--}%
 
 
 <g:if test="${entitlements}">
