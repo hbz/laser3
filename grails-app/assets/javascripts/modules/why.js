@@ -19,10 +19,11 @@ why = {
             '_info      : shows current details' +
             '_history   : shows existing history \n' +
             '  \n' +
+            '_comments  : shows $(<!-- -->) \n' +
             '_elem(id)  : shows $(*[data-why-id="why-<id>"]) \n' +
             '_forms     : shows $(forms) \n' +
             '_headlines : shows $(h{1..6}) \n' +
-            '_comments  : shows $(<!-- -->) \n' +
+            '_scripts   : shows $(script) \n' +
             '_templates : shows $(<!-- [template: .. ] -->) \n'
         )
     },
@@ -67,9 +68,9 @@ why = {
         })
     },
 
-    forms: function() {
-        console.log('why.forms')
-        $.each($('form'), function (i, elem) {
+    scripts: function() {
+        console.log('why.scripts')
+        $.each($('script'), function (i, elem) {
             console.log(elem)
         })
     },
@@ -77,6 +78,13 @@ why = {
     headlines: function() {
         console.log('why.headlines')
         $.each($('h1,h2,h3,h4,h5,h6'), function (i, elem) {
+            console.log(elem)
+        })
+    },
+
+    forms: function() {
+        console.log('why.forms')
+        $.each($('form'), function (i, elem) {
             console.log(elem)
         })
     },
@@ -240,5 +248,6 @@ Object.defineProperty (window, '_headlines', { get: function () { why.headlines(
 Object.defineProperty (window, '_help',      { get: function () { why.help() } })
 Object.defineProperty (window, '_history',   { get: function () { why.history() } })
 Object.defineProperty (window, '_info',      { get: function () { why.info() } })
+Object.defineProperty (window, '_scripts',   { get: function () { why.scripts() } })
 Object.defineProperty (window, '_tap',       { get: function () { why.tap() } })
 Object.defineProperty (window, '_templates', { get: function () { why.templates() } })
