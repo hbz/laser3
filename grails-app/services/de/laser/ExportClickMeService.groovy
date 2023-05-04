@@ -2394,7 +2394,7 @@ class ExportClickMeService {
      * @param selectedFields the fields which should appear
      * @return an Excel worksheet containing the export
      */
-    def exportTipps(ArrayList<TitleInstancePackagePlatform> result, Map<String, Object> selectedFields, FORMAT format) {
+    def exportTipps(Collection result, Map<String, Object> selectedFields, FORMAT format) {
         Locale locale = LocaleUtils.getCurrentLocale()
 
         Map<String, Object> selectedExportFields = [:]
@@ -2411,12 +2411,18 @@ class ExportClickMeService {
 
         List exportData = []
 
-        int max = 500
+        int max = result[0] instanceof Long ? 50000 : 500
         TitleInstancePackagePlatform.withSession { Session sess ->
             for(int offset = 0; offset < result.size(); offset+=max) {
                 List allRows = []
-                //this double structure is necessary because the KBART standard foresees for each coverageStatement an own row with the full data
-                Set<TitleInstancePackagePlatform> tipps = result.drop(offset).take(max)
+                Set<TitleInstancePackagePlatform> tipps = []
+                if(result[0] instanceof TitleInstancePackagePlatform) {
+                    //this double structure is necessary because the KBART standard foresees for each coverageStatement an own row with the full data
+                    tipps = result.drop(offset).take(max)
+                }
+                else if(result[0] instanceof Long) {
+                    tipps = TitleInstancePackagePlatform.findAllByIdInList(result.drop(offset).take(max), [sort: 'sortname'])
+                }
                 tipps.each { TitleInstancePackagePlatform tipp ->
                     if(!tipp.coverages && !tipp.priceItems) {
                         allRows << tipp
@@ -2431,9 +2437,10 @@ class ExportClickMeService {
                     }
                 }
 
-                allRows.each { rowData ->
+                allRows.eachWithIndex { rowData, int i ->
+                    long start = System.currentTimeMillis()
                     _setTippRow(rowData, selectedExportFields, exportData, format)
-
+                    log.debug("used time for record ${i}: ${System.currentTimeMillis()-start}")
                 }
                 log.debug("flushing after ${offset} ...")
                 sess.flush()
@@ -3038,10 +3045,10 @@ class ExportClickMeService {
                     }
                 }
                 else if (fieldKey.contains('ddcs')) {
-                    row.add(createTableCell(format, result.tipp.ddcs.collect {"${it.ddc.value} - ${it.ddc.getI10n("value")}"}.join(";")))
+                    row.add(createTableCell(format, result.ddcs.collect {"${it.ddc.value} - ${it.ddc.getI10n("value")}"}.join(";")))
                 }
                 else if (fieldKey.contains('languages')) {
-                    row.add(createTableCell(format, result.tipp.languages.collect { "${it.language.getI10n("value")}" }.join(";")))
+                    row.add(createTableCell(format, result.languages.collect { "${it.language.getI10n("value")}" }.join(";")))
                 }
                 else if (fieldKey.startsWith('coverage.')) {
                     AbstractCoverage covStmt = exportService.getCoverageStatement(result)
@@ -3401,9 +3408,9 @@ class ExportClickMeService {
 
                     if(readerNumberStudents || readerNumberStaff || readerNumberFTE){
                         row.add(createTableCell(format, currentSemester.getI10n('value')))
-                        String studentsStr = readerNumberStudents ? readerNumberStudents.value : ' ',
-                        staffStr = readerNumberStaff ? readerNumberStaff.value : ' ',
-                        fteStr = readerNumberFTE ? readerNumberFTE.value : ' '
+                        BigDecimal studentsStr = readerNumberStudents ? readerNumberStudents.value : null,
+                        staffStr = readerNumberStaff ? readerNumberStaff.value : null,
+                        fteStr = readerNumberFTE ? readerNumberFTE.value : null
                         row.add(createTableCell(format, studentsStr))
                         row.add(createTableCell(format, staffStr))
                         row.add(createTableCell(format, fteStr))
@@ -3420,9 +3427,9 @@ class ExportClickMeService {
                                 readerNumberStudents = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_STUDENTS, org, refdataValueList[count])
                                 readerNumberFTE = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_FTE, org, refdataValueList[count])
                                 if (readerNumberStudents || readerNumberStaff || readerNumberFTE) {
-                                    String studentsStr = readerNumberStudents ? readerNumberStudents.value : ' ',
-                                           staffStr = readerNumberStaff ? readerNumberStaff.value : ' ',
-                                           fteStr = readerNumberFTE ? readerNumberFTE.value : ' '
+                                    BigDecimal studentsStr = readerNumberStudents ? readerNumberStudents.value : null,
+                                           staffStr = readerNumberStaff ? readerNumberStaff.value : null,
+                                           fteStr = readerNumberFTE ? readerNumberFTE.value : null
                                     row.add(createTableCell(format, refdataValueList[count].getI10n('value')))
                                     row.add(createTableCell(format, studentsStr))
                                     row.add(createTableCell(format, staffStr))
@@ -3432,10 +3439,10 @@ class ExportClickMeService {
                             }
                         }
                         if(!readerNumberStudents && !readerNumberStaff && !readerNumberFTE){
-                            row.add(createTableCell(format, ' '))
-                            row.add(createTableCell(format, ' '))
-                            row.add(createTableCell(format, ' '))
-                            row.add(createTableCell(format, ' '))
+                            row.add(createTableCell(format, null))
+                            row.add(createTableCell(format, null))
+                            row.add(createTableCell(format, null))
+                            row.add(createTableCell(format, null))
                         }
                     }
                 }
@@ -3443,7 +3450,7 @@ class ExportClickMeService {
                 ReaderNumber readerNumberPeople = ReaderNumber.findByReferenceGroupAndOrg(RDStore.READER_NUMBER_PEOPLE, org, [sort: 'dueDate', order: 'desc'])
                 ReaderNumber readerNumberUser = ReaderNumber.findByReferenceGroupAndOrg(RDStore.READER_NUMBER_USER, org, [sort: 'dueDate', order: 'desc'])
 
-                String peopleStr = readerNumberUser ? readerNumberUser.value : ' ', userStr = readerNumberPeople ? readerNumberPeople.value : ' '
+                BigDecimal peopleStr = readerNumberUser ? readerNumberUser.value : null, userStr = readerNumberPeople ? readerNumberPeople.value : null
 
                 row.add(createTableCell(format, peopleStr))
                 row.add(createTableCell(format, userStr))

@@ -75,22 +75,21 @@
 </g:if>
 <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')}">
     <ui:actionsDropdown>
-        <%--<g:if test="${editable}">--%>
+        <ui:actionsDropdownItem message="template.addNote" data-ui="modal" href="#modalCreateNote" />
+
             <g:if test="${editable && accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_EDITOR')}">
                 <ui:actionsDropdownItem message="task.create.new" data-ui="modal" href="#modalCreateTask" />
             </g:if>
             <ui:actionsDropdownItem message="template.documents.add" data-ui="modal" href="#modalCreateDocument" />
-        <%--</g:if>--%>
-        <ui:actionsDropdownItem message="template.addNote" data-ui="modal" href="#modalCreateNote" />
-        <div class="divider"></div>
-        <g:if test="${editable}">
 
             <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
                 <ui:actionsDropdownItem message="workflow.instantiate" data-ui="modal" href="#modalCreateWorkflow" />
-                <div class="divider"></div>
             </g:if>
+            <div class="divider"></div>
 
-        <g:if test="${(contextCustomerType == CustomerTypeService.ORG_INST_PRO && subscription._getCalculatedType() == Subscription.TYPE_LOCAL) || (customerTypeService.isConsortium( contextCustomerType ) && subscription._getCalculatedType() == Subscription.TYPE_CONSORTIAL)}">
+        <g:if test="${editable}">
+
+            <g:if test="${(contextCustomerType == CustomerTypeService.ORG_INST_PRO && subscription._getCalculatedType() == Subscription.TYPE_LOCAL) || (customerTypeService.isConsortium( contextCustomerType ) && subscription._getCalculatedType() == Subscription.TYPE_CONSORTIAL)}">
                 <ui:actionsDropdownItem controller="subscription" action="copySubscription" params="${[sourceObjectId: genericOIDService.getOID(subscription), copyObject: true]}" message="myinst.copySubscription" />
             </g:if>
             <g:else>
@@ -205,11 +204,11 @@
         </g:if>
     </ui:actionsDropdown>
 </g:if>
-<g:if test="${editable && accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_EDITOR')}">
+<g:if test="${editable || accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_EDITOR')}">
     <laser:render template="/templates/documents/modal" model="${[ownobj: subscription, owntp: 'subscription']}"/>
     <laser:render template="/templates/tasks/modal_create" model="${[ownobj: subscription, owntp: 'subscription']}"/>
-</g:if>
-<g:if test="${userService.checkAffiliationAndCtxOrg(user, contextOrg, 'INST_EDITOR')}">
+%{--</g:if>--}%
+%{--<g:if test="${userService.checkAffiliationAndCtxOrg(user, contextOrg, 'INST_EDITOR')}">--}%
     <laser:render template="/templates/notes/modal_create" model="${[ownobj: subscription, owntp: 'subscription']}"/>
 </g:if>
 

@@ -2,12 +2,17 @@ package de.laser
 
 import de.laser.annotations.RefdataInfo
 import de.laser.storage.RDConstants
+import de.laser.utils.DateUtils
+import groovy.util.logging.Slf4j
+
+import java.text.SimpleDateFormat
 
 /**
  * Represents a registered reader count entry for a library. It may be grouped by a reference group and a temporal entity: one of semester or due date.
  * A reference group is linked to a temporal entity and we cannot have both due date and semester set. Only high schools use semesters; the reference groups selectable by them are thus linked to semester. All others go with due date.
  * See readerNumber.gsp for the groups selectable by each institution type
  */
+@Slf4j
 class ReaderNumber {
 
     @RefdataInfo(cat = RDConstants.NUMBER_TYPE)
@@ -52,6 +57,26 @@ class ReaderNumber {
         lastUpdated     column:'num_last_updated'
         dateCreated     column:'num_date_created'
         org             column:'num_org_fk'
+    }
+
+    static ReaderNumber construct(Map configMap) {
+        Map<String, Object> rnData = [:]
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
+        if (configMap.dueDate)
+            rnData.dueDate = sdf.parse(configMap.dueDate)
+        rnData.org = Org.get(configMap.orgid)
+        rnData.referenceGroup = RefdataValue.get(configMap.referenceGroup)
+        rnData.semester = RefdataValue.get(configMap.semester)
+        ReaderNumber readerNumber = ReaderNumber.findByOrgAndReferenceGroupAndSemester(rnData.org, rnData.referenceGroup, rnData.semester)
+        if(!readerNumber)
+            readerNumber = new ReaderNumber(rnData)
+        readerNumber.value = new BigDecimal(configMap.value)
+        if(readerNumber.save())
+            readerNumber
+        else {
+            log.error(readerNumber.getErrors().getAllErrors().toString())
+            null
+        }
     }
 
 }

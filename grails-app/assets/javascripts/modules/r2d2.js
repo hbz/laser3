@@ -862,17 +862,21 @@ r2d2 = {
                         },
                         closable  : false,
                         onApprove : function() {
-
                             // open confirmation modal from inside a form
-                            if (dataAttr){
+                            if (dataAttr) {
                                 $('[data-confirm-id='+dataAttr+']').submit();
                             }
                             // open confirmation modal and open a new url after conirmation
-                            if (url){
+                            if (url) {
                                 window.location.href = url;
                             }
                             if (remoteLink) {
                                 bb8.ajax4remoteLink(elem)
+                            }
+                            // custom callback calls
+                            if ($(elem).attr('data-callback')) {
+                                let callback = JSPC.app[$(elem).attr('data-callback')];
+                                if (callback) { callback($(elem)); }
                             }
                             // x-editable
                             if (confirmationModalXeditableFlag == true) {

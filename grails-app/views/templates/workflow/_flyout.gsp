@@ -20,12 +20,12 @@
         <g:if test="${checkedEditable}">
             <g:if test="${status == WorkflowService.OP_STATUS_DONE}">
                 <div class="ui message positive" style="margin-top:1em;text-align:left;font-size:14px;font-weight:normal;">
-                    ${message(code: 'workflow.edit.ok')} (${cmd})
+                    ${message(code: 'workflow.edit.ok')}
                 </div>
             </g:if>
             <g:elseif test="${status == WorkflowService.OP_STATUS_ERROR}">
                 <div class="ui message negative" style="margin-top:1em;text-align:left;font-size:14px;font-weight:normal;">
-                    ${message(code: 'workflow.edit.error')} (${cmd})
+                    ${message(code: 'workflow.edit.error')}
                 </div>
             </g:elseif>
             <g:else>
@@ -170,39 +170,47 @@
                         <g:set var="tKey" value="${clistInfo.target.class.name}:${clistInfo.target.id}:${WfCheckpoint.KEY}:${cpoint.id}" />%{-- todo --}%
 
                         <div class="four wide column wf-centered">
-
                             <g:if test="${checkedEditable}"><!-- TODO: workflows-permissions -->
-                                <g:if test="${ti > 0}">
+                                <g:if test="${ti == 1 && cpoints.size() == 2}">%{-- override layout --}%
+                                    <div class="ui icon button compact la-hidden"><i class="coffee icon"></i></div>
                                     <div class="ui icon blue button compact la-modern-button"
                                          data-cmd="moveUp:${WfCheckpoint.KEY}:${cpoint.id}" data-key="${WfChecklist.KEY}:${clist.id}"><i class="icon arrow up"></i>
                                     </div>
                                 </g:if>
                                 <g:else>
-                                    <div class="ui icon button compact la-hidden"><i class="coffee icon"></i></div>
-                                </g:else>
-                                <g:if test="${ti < cpoints.size()-1}">
-                                    <div class="ui icon blue button compact la-modern-button"
-                                         data-cmd="moveDown:${WfCheckpoint.KEY}:${cpoint.id}" data-key="${WfChecklist.KEY}:${clist.id}"><i class="icon arrow down"></i>
-                                    </div>
-                                </g:if>
-                                <g:else>
-                                    <div class="ui icon button compact la-hidden"><i class="coffee icon"></i></div>
+                                    <g:if test="${ti > 0}">
+                                        <div class="ui icon blue button compact la-modern-button"
+                                             data-cmd="moveUp:${WfCheckpoint.KEY}:${cpoint.id}" data-key="${WfChecklist.KEY}:${clist.id}"><i class="icon arrow up"></i>
+                                        </div>
+                                    </g:if>
+                                    <g:else>
+                                        <div class="ui icon button compact la-hidden"><i class="coffee icon"></i></div>
+                                    </g:else>
+                                    <g:if test="${ti < cpoints.size()-1}">
+                                        <div class="ui icon blue button compact la-modern-button"
+                                             data-cmd="moveDown:${WfCheckpoint.KEY}:${cpoint.id}" data-key="${WfChecklist.KEY}:${clist.id}"><i class="icon arrow down"></i>
+                                        </div>
+                                    </g:if>
+                                    <g:else>
+                                        <div class="ui icon button compact la-hidden"><i class="coffee icon"></i></div>
+                                    </g:else>
                                 </g:else>
                             </g:if>
 
                             <g:if test="${checkedEditable}"><!-- TODO: workflows-permissions -->
-                                <div class="ui icon negative button la-modern-button"
-                                     data-cmd="delete:${WfCheckpoint.KEY}:${cpoint.id}" data-key="${WfChecklist.KEY}:${clist.id}"><i class="trash alternate outline icon"></i>
-                                </div>
-%{--                                <div class="ui icon negative button la-modern-button js-open-confirm-modal"--}%
-%{--                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.checkpoint", args: [cpoint.title])}"--}%
-%{--                                        data-confirm-term-how="delete"--}%
-%{--                                        data-cmd="delete:${WfCheckpoint.KEY}:${cpoint.id}"--}%
-%{--                                        data-key="${WfChecklist.KEY}:${clist.id}"--}%
-%{--                                        role="button"--}%
-%{--                                        aria-label="${message(code: 'ariaLabel.delete.universal')}">--}%
-%{--                                    <i class="trash alternate outline icon"></i>--}%
+%{--                                <div class="ui icon negative button la-modern-button"--}%
+%{--                                     data-cmd="delete:${WfCheckpoint.KEY}:${cpoint.id}" data-key="${WfChecklist.KEY}:${clist.id}"><i class="trash alternate outline icon"></i>--}%
 %{--                                </div>--}%
+                                <div class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.checkpoint", args: [cpoint.title])}"
+                                        data-confirm-term-how="delete"
+                                        data-callback="workflowFlyoutCmd"
+                                        data-cmd="delete:${WfCheckpoint.KEY}:${cpoint.id}"
+                                        data-key="${WfChecklist.KEY}:${clist.id}"
+                                        role="button"
+                                        aria-label="${message(code: 'ariaLabel.delete.universal')}">
+                                    <i class="trash alternate outline icon"></i>
+                                </div>
                             </g:if>
 
                         </div>
@@ -268,32 +276,39 @@
     </style>
 
     <laser:script file="${this.getGroovyPageFileName()}">
-        $('#cpFormToggle').on ('click', function () {
-            $(this).toggleClass ('la-modern-button')
-            $('#cpForm').toggle()
-        })
-        $('#wfFlyout .content .icon.button[data-cmd]').on ('click', function(e) {
+        JSPC.app.workflowFlyoutCmd = function ($trigger) {
             $.ajax ({
                 url: "<g:createLink controller="ajaxHtml" action="workflowFlyout"/>",
                 data: {
-                    cmd: $(this).attr ('data-cmd'),
-                    key: $(this).attr ('data-key'),
+                    cmd: $trigger.attr ('data-cmd'),
+                    key: $trigger.attr ('data-key'),
                 }
             }).done (function (response) {
-                $('#wfFlyout').html (response);
-                r2d2.initDynamicUiStuff ('#wfFlyout');
-                r2d2.initDynamicXEditableStuff ('#wfFlyout');
+                $('#wfFlyout').html (response)
+                r2d2.initDynamicUiStuff ('#wfFlyout')
+                r2d2.initDynamicXEditableStuff ('#wfFlyout')
             })
+        }
+
+        $('#wfFlyout .content .icon.button[data-cmd]:not([data-callback])').on ('click', function(e) {
+            JSPC.app.workflowFlyoutCmd($(this))
         })
+
+        $('#cpFormToggle').on ('click', function () {
+            $(this).toggleClass ('la-modern-button')
+            $('#cpForm').toggle()
+            $('#cpForm #WF_CHECKPOINT_title')[0].focus()
+        })
+
         $('#cpForm input[type=submit]').on ('click', function(e) {
             e.preventDefault()
             $.ajax ({
                 url: "<g:createLink controller="ajaxHtml" action="workflowFlyout"/>",
                 data: $('#cpForm').serialize()
             }).done (function (response) {
-                $('#wfFlyout').html (response);
-                r2d2.initDynamicUiStuff ('#wfFlyout');
-                r2d2.initDynamicXEditableStuff ('#wfFlyout');
+                $('#wfFlyout').html (response)
+                r2d2.initDynamicUiStuff ('#wfFlyout')
+                r2d2.initDynamicXEditableStuff ('#wfFlyout')
             })
         })
     </laser:script>

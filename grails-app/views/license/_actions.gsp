@@ -11,6 +11,7 @@
 
 <g:if test="${userService.checkAffiliationAndCtxOrg(user, institution, 'INST_EDITOR')}">
     <ui:actionsDropdown>
+        <ui:actionsDropdownItem message="template.addNote" data-ui="modal" href="#modalCreateNote" />
 
         <g:if test="${editable && accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_EDITOR')}">
             <ui:actionsDropdownItem message="task.create.new" data-ui="modal" href="#modalCreateTask" />
@@ -18,7 +19,10 @@
         <g:if test="${contextCustomerType in [CustomerTypeService.ORG_INST_PRO, CustomerTypeService.ORG_CONSORTIUM_BASIC, CustomerTypeService.ORG_CONSORTIUM_PRO]}">
             <ui:actionsDropdownItem message="template.documents.add" data-ui="modal" href="#modalCreateDocument" />
         </g:if>
-        <ui:actionsDropdownItem message="template.addNote" data-ui="modal" href="#modalCreateNote" />
+        <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
+            <ui:actionsDropdownItem message="workflow.instantiate" data-ui="modal" href="#modalCreateWorkflow" />
+        </g:if>
+
         <g:if test="${editable}">
             <g:if test="${license.getLicensingConsortium()?.id == institution.id}">
                 <g:if test="${!( license.instanceOf )}">
@@ -32,11 +36,6 @@
                         ${message(code:'myinst.emptyLicense.child')}
                     </g:link>
                 </g:if>
-            </g:if>
-
-            <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
-                <div class="divider"></div>
-                <ui:actionsDropdownItem message="workflow.instantiate" data-ui="modal" href="#modalCreateWorkflow" />
             </g:if>
 
             <div class="divider"></div>
@@ -78,11 +77,11 @@
     </ui:actionsDropdown>
 </g:if>
 
-<g:if test="${editable && accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_EDITOR')}">
+<g:if test="${editable || accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_EDITOR')}">
     <laser:render template="/templates/tasks/modal_create" model="${[ownobj:license, owntp:'license']}"/>
     <laser:render template="/templates/documents/modal" model="${[ownobj:license, owntp:'license']}"/>
-</g:if>
-<g:if test="${userService.checkAffiliationAndCtxOrg(user, institution, 'INST_EDITOR')}">
+%{--</g:if>--}%
+%{--<g:if test="${userService.checkAffiliationAndCtxOrg(user, institution, 'INST_EDITOR')}">--}%
     <laser:render template="/templates/notes/modal_create" model="${[ownobj: license, owntp: 'license']}"/>
 </g:if>
 
