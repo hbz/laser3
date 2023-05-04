@@ -126,12 +126,18 @@
 
 </g:elseif>
 <%-- secure against listInstitution, where no orgId is given --%>
+
+%{--<!--}%
+%{--    orgInstance (org to show) : ${orgInstance}--}%
+%{--    institution (context org) : ${institution}--}%
+%{----!>--}%
+
 <g:if test="${createModal}">
-    <g:if test="${editable && accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_EDITOR')}">
+    <g:if test="${editable || accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_EDITOR')}">
         <laser:render template="/templates/tasks/modal_create" model="${[ownobj: orgInstance, owntp: 'org']}"/>
         <laser:render template="/templates/documents/modal" model="${[ownobj: orgInstance, institution: institution, owntp: 'org']}"/>
-    </g:if>
-    <g:if test="${userService.checkAffiliationAndCtxOrg(user, institution, 'INST_EDITOR')}">
+%{--    </g:if>--}%
+%{--    <g:if test="${userService.checkAffiliationAndCtxOrg(user, institution, 'INST_EDITOR')}">--}%
         <laser:render template="/templates/notes/modal_create" model="${[ownobj: orgInstance, owntp: 'org']}"/>
     </g:if>
 </g:if>
@@ -140,14 +146,6 @@
     <g:if test="${inContextOrg || isProviderOrAgency}">
         <laser:render template="/templates/workflow/instantiate" model="${[target: orgInstance]}"/>
     </g:if>
-    %{--(RDStore.OT_PROVIDER.id in result.allOrgTypeIds) || (RDStore.OT_AGENCY.id in result.allOrgTypeIds)--}%
-    %{--<g:if test="${isProviderOrAgency}">--}%
-%{--    <g:if test="${RDStore.OT_AGENCY.id in allOrgTypeIds}">--}%
-%{--        <laser:render template="/templates/workflow/instantiate" model="${[cmd: RDStore.WF_WORKFLOW_TARGET_TYPE_AGENCY, target: orgInstance]}"/>--}%
-%{--    </g:if>--}%
-%{--    <g:if test="${RDStore.OT_PROVIDER.id in allOrgTypeIds}">--}%
-%{--        <laser:render template="/templates/workflow/instantiate" model="${[cmd: RDStore.WF_WORKFLOW_TARGET_TYPE_PROVIDER, target: orgInstance]}"/>--}%
-%{--    </g:if>--}%
 </g:if>
 
 

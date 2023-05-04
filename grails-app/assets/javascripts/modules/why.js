@@ -101,7 +101,7 @@ why = {
                 let target = $(href)[0 ]? $(href)[0] : 'ERROR'
                 result.push([ elem, href, target ])
             })
-            console.table(result)
+            if (result) { console.table(result) }
         }
     },
 
