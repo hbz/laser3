@@ -1,6 +1,6 @@
 
-<h2 class="ui dividing header">Labels<a class="anchor" id="icons"></a></h2>
-<h4 class="ui header">Vorschlag für minimalistischere Jahresringe</h4>
+<h2 class="ui dividing header">Header<a class="anchor" id="icons"></a></h2>
+<h4 class="ui header">Zweizeilige Überschrift bei Bedarf (mit Jahreszahl)  </h4>
 <div class="html ui top attached segment example">
     <h1 class="ui icon header la-noMargin-top">
     Überschrift

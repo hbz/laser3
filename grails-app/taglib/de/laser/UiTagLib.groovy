@@ -35,21 +35,28 @@ class UiTagLib {
     // </ui:headerWithIcon>
 
     def h1HeaderWithIcon = { attrs, body ->
+
+
         if (attrs.floated && attrs.floated != 'false') {
             out << '<h1 class="ui icon header la-clear-before left floated aligned la-positionRelative">'
         } else {
             out << '<h1 class="ui icon header la-clear-before la-noMargin-top">'
         }
-
+        if (attrs.referenceYear){
+            out << '<div class="la-subPlusYear">'
+        }
         if (attrs.type) {
             out << ui.headerTitleIcon([type: attrs.type])
         } else {
             out << ui.headerIcon()
         }
-
+        if (attrs.referenceYear){
+            out << '<div class="la-subPlusYear-texts">'
+        }
         if (attrs.text) {
             out << attrs.text
         }
+
         if (attrs.message) {
             SwissKnife.checkMessageKey(attrs.message as String)
             out << "${message(code: attrs.message, args: attrs.args)}"
@@ -60,6 +67,17 @@ class UiTagLib {
         }
         if ( body ) {
             out << body()
+        }
+        if (attrs.referenceYear) {
+            out << '<span class="la-subPlusYear-year" >'
+            out << attrs.referenceYear
+            out << '</span>'
+        }
+        if (attrs.referenceYear) {
+            out << '</div>'
+        }
+        if (attrs.referenceYear) {
+            out << '</div>'
         }
         out << '</h1>'
     }
