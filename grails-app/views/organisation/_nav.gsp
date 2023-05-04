@@ -31,7 +31,7 @@
 
     <ui:subNavItem controller="organisation" action="notes" params="${breadcrumbParams}" counts="${notesCount}" message="default.notes.label"/>
     <ui:securedSubNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="organisation" action="tasks" params="${breadcrumbParams}" counts="${tasksCount}" message="menu.institutions.tasks"/>
-    <ui:securedSubNavItem orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="organisation" action="documents" params="${breadcrumbParams}" message="menu.my.documents" />
+    <ui:securedSubNavItem orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="organisation" action="documents" params="${breadcrumbParams}" message="default.documents.label" />
 
     <g:if test="${(inContextOrg || isProviderOrAgency) && accessService.ctxPerm(CustomerTypeService.PERMS_BASIC)}"><!-- TODO: workflows-permissions -->
         <g:if test="${accessService.ctxPerm(CustomerTypeService.PERMS_PRO)}">

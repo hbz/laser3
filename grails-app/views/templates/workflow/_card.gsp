@@ -1,7 +1,10 @@
-<%@ page import="de.laser.workflow.WfChecklist; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.CustomerTypeService; de.laser.workflow.WfChecklist; de.laser.storage.RDStore" %>
 <laser:serviceInjection />
+<%
+    boolean editable2 = accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_EDITOR')
+%>
 
-    <ui:card message="workflow.open.plural" class="notes la-js-hideable" href="#modalCreateWorkflow" editable="${editable}">
+    <ui:card message="workflow.open.plural" class="workflows la-js-hideable" href="#modalCreateWorkflow" editable="${editable || editable2}">
         <g:each in="${checklists.findAll{ it.getInfo().status != RDStore.WF_WORKFLOW_STATUS_DONE }}" var="clist">
             <g:set var="clistInfo" value="${clist.getInfo()}" />
             <div class="ui small feed content la-js-dont-hide-this-card">
