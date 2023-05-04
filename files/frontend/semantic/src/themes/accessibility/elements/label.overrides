@@ -330,3 +330,7 @@ a .ui.circular.label {
         display: inline-flex!important
     }
 }
+/* Label with star in corner for perpetual access */
+.ui.corner.label.la-perpetualAccess {
+  position: relative;
+}
