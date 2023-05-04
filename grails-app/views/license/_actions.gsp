@@ -78,11 +78,11 @@
     </ui:actionsDropdown>
 </g:if>
 
-<g:if test="${editable && accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_EDITOR')}">
+<g:if test="${editable || accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_EDITOR')}">
     <laser:render template="/templates/tasks/modal_create" model="${[ownobj:license, owntp:'license']}"/>
     <laser:render template="/templates/documents/modal" model="${[ownobj:license, owntp:'license']}"/>
-</g:if>
-<g:if test="${userService.checkAffiliationAndCtxOrg(user, institution, 'INST_EDITOR')}">
+%{--</g:if>--}%
+%{--<g:if test="${userService.checkAffiliationAndCtxOrg(user, institution, 'INST_EDITOR')}">--}%
     <laser:render template="/templates/notes/modal_create" model="${[ownobj: license, owntp: 'license']}"/>
 </g:if>
 
