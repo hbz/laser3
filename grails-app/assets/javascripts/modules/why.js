@@ -23,6 +23,7 @@ why = {
             '_elem(id)  : shows $(*[data-why-id="why-<id>"]) \n' +
             '_forms     : shows $(forms) \n' +
             '_headlines : shows $(h{1..6}) \n' +
+            '_modals    : shows $(*[data-ui="modal"]) \n' +
             '_scripts   : shows $(script) \n' +
             '_templates : shows $(<!-- [template: .. ] -->) \n'
         )
@@ -87,6 +88,21 @@ why = {
         $.each($('form'), function (i, elem) {
             console.log(elem)
         })
+    },
+
+    modals: function (id) {
+        console.log('why.elem: $( [data-ui="modal"] )')
+        let elems = $('*[data-ui="modal"]')
+
+        if (elems) {
+            result = []
+            $.each(elems, function (i, elem) {
+                let href = $(elem).attr('href') ? $(elem).attr('href') : $(elem).attr('data-href')
+                let target = $(href)[0 ]? $(href)[0] : 'ERROR'
+                result.push([ elem, href, target ])
+            })
+            console.table(result)
+        }
     },
 
     templates: function() {
@@ -248,6 +264,7 @@ Object.defineProperty (window, '_headlines', { get: function () { why.headlines(
 Object.defineProperty (window, '_help',      { get: function () { why.help() } })
 Object.defineProperty (window, '_history',   { get: function () { why.history() } })
 Object.defineProperty (window, '_info',      { get: function () { why.info() } })
+Object.defineProperty (window, '_modals',    { get: function () { why.modals() } })
 Object.defineProperty (window, '_scripts',   { get: function () { why.scripts() } })
 Object.defineProperty (window, '_tap',       { get: function () { why.tap() } })
 Object.defineProperty (window, '_templates', { get: function () { why.templates() } })
