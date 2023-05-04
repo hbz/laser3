@@ -271,7 +271,7 @@ Subscription Property,Product dependency,Produktabhängigkeit,Product dependency
 Subscription Property,Rabatt des Teilnehmers,Rabatt des Teilnehmers,Member discount,java.lang.String,,,,,Höhe des Rabattes des Teilnehmers,Amount of member discount,,,,
 Subscription Property,Remote-Zugriff,Remote-Zugriff,Remote Access,de.laser.RefdataValue,y.n.o,,,,"Aussagen darüber, inwieweit autorisierte Nutzer über Remote Access auf lizenziertes Material zugreifen dürfen.",The right of an authorized user to gain access to an Electronic Product from an offsite location.,,,,
 Subscription Property,Restricted user group,Eingeschränkter Benutzerkreis,Restricted user group,java.lang.String,,,,,Welche Einschränkung des Benutzerkreises gibt es?,,,,,
-Subscription Property,reverse charge,reverse charge,reverse charge,de.laser.RefdataValue,y.n,,,,Unterliegt die Lizenz dem reverse charge?,,,,,
+Subscription Property,reverse charge,everse charge,reverse charge,de.laser.RefdataValue,y.n,,,,Unterliegt die Lizenz dem reverse charge?,,,,,
 Subscription Property,Scale of discount,Rabattstaffel,Scale of discount,java.lang.String,,,,,Wie sieht die Rabattstaffel für die Lizenz aus?,,,,,
 Subscription Property,SFX entry,SFX-Eintrag,SFX entry,de.laser.RefdataValue,y.n,,,,Gibt es einen SFX-Eintrag?,,,,,
 Subscription Property,Sim-User Number,Simultannutzer Zahl,Sim-User Number,de.laser.RefdataValue,sim.user.number,,,,Wie viele gleichzeitige Nutzerzugriffe umfasst die Lizenz?,How many users may access the subscription at the same time?,,,,
