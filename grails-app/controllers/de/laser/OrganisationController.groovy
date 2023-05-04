@@ -1230,7 +1230,19 @@ class OrganisationController  {
     })
     @Check404()
     def workflows() {
-        Map<String,Object> ctrlResult = organisationControllerService.workflows( this, params )
+        // TMP constraint - TODO
+        Org org = Org.get(params.id)
+        List<Long> allOrgTypeIds = org.getAllOrgTypeIds()
+        boolean isProviderOrAgency = (RDStore.OT_PROVIDER.id in allOrgTypeIds) || (RDStore.OT_AGENCY.id in allOrgTypeIds)
+        boolean inContextOrg = contextService.getOrg().id = org.id
+
+        Map<String,Object> ctrlResult = [:]
+        if (!(inContextOrg || isProviderOrAgency)) {
+            ctrlResult = organisationControllerService.getResultGenericsAndCheckAccess(controller, params)
+        }
+        else {
+            ctrlResult = organisationControllerService.workflows( this, params )
+        }
 
         render view: 'workflows', model: ctrlResult.result
     }

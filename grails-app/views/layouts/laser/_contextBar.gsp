@@ -10,7 +10,7 @@
             ${contextOrg.name}
             <g:if test="${currentServer == AppUtils.LOCAL}">
                 - ${contextOrg.getCustomerTypeI10n()}
-                - ${UserOrgRole.findByUserAndOrg(contextUser as User, contextOrg as Org).formalRole.getI10n('authority')}
+                - ${UserOrgRole.findByUserAndOrg(contextUser as User, contextOrg as Org)?.formalRole?.getI10n('authority')}
             </g:if>
         </div>
 
