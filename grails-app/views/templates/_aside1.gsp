@@ -17,6 +17,11 @@
         }
     }
 %>
+
+<div id="container-notes">
+    <laser:render template="/templates/notes/card" model="${[ownobj:ownobj, owntp:owntp, css_class:'', parentAtChild: parentAtChild]}" />
+</div>
+
 <g:if test="${accessService.ctxPerm(CustomerTypeService.PERMS_PRO)}">
     <div id="container-tasks">
         <laser:render template="/templates/tasks/card" model="${[ownobj:ownobj, owntp:owntp, css_class:'', parentAtChild: parentAtChild]}"  />
@@ -25,10 +30,6 @@
 
 <div id="container-documents">
     <laser:render template="/templates/documents/card" model="${[ownobj:ownobj, owntp:owntp, css_class:'', parentAtChild: parentAtChild]}" />
-</div>
-
-<div id="container-notes">
-    <laser:render template="/templates/notes/card" model="${[ownobj:ownobj, owntp:owntp, css_class:'', parentAtChild: parentAtChild]}" />
 </div>
 
 <g:if test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
