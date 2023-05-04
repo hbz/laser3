@@ -11,6 +11,7 @@
 
 <g:if test="${userService.checkAffiliationAndCtxOrg(user, institution, 'INST_EDITOR')}">
     <ui:actionsDropdown>
+        <ui:actionsDropdownItem message="template.addNote" data-ui="modal" href="#modalCreateNote" />
 
         <g:if test="${editable && accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_EDITOR')}">
             <ui:actionsDropdownItem message="task.create.new" data-ui="modal" href="#modalCreateTask" />
@@ -18,7 +19,7 @@
         <g:if test="${contextCustomerType in [CustomerTypeService.ORG_INST_PRO, CustomerTypeService.ORG_CONSORTIUM_BASIC, CustomerTypeService.ORG_CONSORTIUM_PRO]}">
             <ui:actionsDropdownItem message="template.documents.add" data-ui="modal" href="#modalCreateDocument" />
         </g:if>
-        <ui:actionsDropdownItem message="template.addNote" data-ui="modal" href="#modalCreateNote" />
+
         <g:if test="${editable}">
             <g:if test="${license.getLicensingConsortium()?.id == institution.id}">
                 <g:if test="${!( license.instanceOf )}">

@@ -75,13 +75,15 @@
 </g:if>
 <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')}">
     <ui:actionsDropdown>
+        <ui:actionsDropdownItem message="template.addNote" data-ui="modal" href="#modalCreateNote" />
+
         <%--<g:if test="${editable}">--%>
             <g:if test="${editable && accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_EDITOR')}">
                 <ui:actionsDropdownItem message="task.create.new" data-ui="modal" href="#modalCreateTask" />
             </g:if>
             <ui:actionsDropdownItem message="template.documents.add" data-ui="modal" href="#modalCreateDocument" />
         <%--</g:if>--%>
-        <ui:actionsDropdownItem message="template.addNote" data-ui="modal" href="#modalCreateNote" />
+
         <div class="divider"></div>
         <g:if test="${editable}">
 

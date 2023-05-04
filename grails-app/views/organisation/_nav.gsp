@@ -28,6 +28,11 @@
             <ui:securedSubNavItem controller="organisation" action="accessPoints" params="${breadcrumbParams}" message="org.nav.accessPoints"/>
         </g:else>
     </g:if>
+
+    <ui:subNavItem controller="organisation" action="notes" params="${breadcrumbParams}" counts="${notesCount}" message="default.notes.label"/>
+    <ui:securedSubNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="organisation" action="tasks" params="${breadcrumbParams}" counts="${tasksCount}" message="menu.institutions.tasks"/>
+    <ui:securedSubNavItem orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="organisation" action="documents" params="${breadcrumbParams}" message="menu.my.documents" />
+
     <g:if test="${(inContextOrg || isProviderOrAgency) && accessService.ctxPerm(CustomerTypeService.PERMS_BASIC)}"><!-- TODO: workflows-permissions -->
         <g:if test="${accessService.ctxPerm(CustomerTypeService.PERMS_PRO)}">
             <ui:subNavItem controller="organisation" action="workflows" counts="${checklistCount}" params="${breadcrumbParams}" message="workflow.plural"/>
@@ -37,9 +42,6 @@
         </g:else>
     </g:if>
 
-    <ui:securedSubNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="organisation" action="tasks" params="${breadcrumbParams}" counts="${tasksCount}" message="menu.institutions.tasks"/>
-    <ui:securedSubNavItem orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="organisation" action="documents" params="${breadcrumbParams}" message="menu.my.documents" />
-    <ui:subNavItem controller="organisation" action="notes" params="${breadcrumbParams}" counts="${notesCount}" message="default.notes.label"/>
     <g:if test="${!inContextOrg && contextCustomerType in ['ORG_INST_PRO','ORG_CONSORTIUM_BASIC','ORG_CONSORTIUM_PRO']}">
         <ui:subNavItem controller="organisation" action="addressbook" params="${breadcrumbParams}" message="menu.institutions.myAddressbook"/>
     </g:if>
