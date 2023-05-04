@@ -73,6 +73,7 @@ class MyInstitutionController  {
     AddressbookService addressbookService
     ContextService contextService
     ComparisonService comparisonService
+    CustomerTypeService customerTypeService
     DeletionService deletionService
     DocstoreService docstoreService
     ExportClickMeService exportClickMeService
@@ -1448,8 +1449,24 @@ class MyInstitutionController  {
         if(queryFilter)
             qryString += ' and '+queryFilter.join(' and ')
 
+        Map<String, Object> selectedFields = [:]
         Set<Long> currentIssueEntitlements = []
-        if(!params.containsKey('exportXLSX') && params.format != 'csv') {
+        Set<Long> tippIDs = []
+        if(params.exportClickMeExcel || params.format) {
+            String consFilter = ""
+            Set<RefdataValue> roleTypes = []
+            if(customerTypeService.isConsortium(result.contextCustomerType)) {
+                consFilter = " and sub.instanceOf = null "
+                roleTypes << RDStore.OR_SUBSCRIPTION_CONSORTIA
+            }
+            else roleTypes.addAll([RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS])
+            //load proxies instead of full objects ... maybe this gonna bring performance?
+            tippIDs.addAll(TitleInstancePackagePlatform.executeQuery("select tipp.id from IssueEntitlement ie join ie.tipp tipp where ie.status != :ieStatus and ie.subscription in (select sub from OrgRole oo join oo.sub sub where oo.org = :contextOrg and oo.roleType in (:roleTypes) and (sub.status = :current or sub.hasPerpetualAccess = true)"+consFilter+")", [ieStatus: RDStore.TIPP_STATUS_REMOVED, contextOrg: result.institution, roleTypes: roleTypes, current: RDStore.SUBSCRIPTION_CURRENT], [sort: 'sortname']))
+            //tipps.addAll(TitleInstancePackagePlatform.findAllByIdInList(titleIDs, [sort: 'sortname']))
+            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+        }
+        else if(!params.containsKey('exportClickMeExcel') && params.format != 'csv') {
             //second filter needed because double-join on same table does deliver me empty results
             if (filterPvd) {
                 currentIssueEntitlements.addAll(IssueEntitlement.executeQuery("select ie.id from IssueEntitlement ie join ie.tipp tipp join tipp.pkg pkg join pkg.orgs oo where oo.roleType in (:cpRole) and oo.org.id in ("+filterPvd.join(", ")+") order by tipp.sortname asc",[cpRole:[RDStore.OR_CONTENT_PROVIDER,RDStore.OR_PROVIDER,RDStore.OR_AGENCY,RDStore.OR_PUBLISHER]]))
@@ -1475,7 +1492,6 @@ class MyInstitutionController  {
 
 		List bm = prf.stopBenchmark()
 		result.benchMark = bm
-
         if(params.exportKBart) {
             response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
             response.contentType = "text/tsv"
@@ -1492,9 +1508,11 @@ class MyInstitutionController  {
             out.flush()
             out.close()
         }
-        else if(params.exportXLSX) {
+        else if(Boolean.valueOf(params.exportClickMeExcel)) {
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportTipps(tippIDs, selectedFields, ExportClickMeService.FORMAT.XLS)
             response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            /*
             Map<String, Object> configMap = [:]
             configMap.putAll(params)
             configMap.validOn = checkedDate.getTime()
@@ -1505,9 +1523,11 @@ class MyInstitutionController  {
             sheetData[message(code:'menu.my.titles')] = [titleRow:export.titles,columnData:export.rows]
             SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
             workbook.write(response.outputStream)
+            */
+
             response.outputStream.flush()
             response.outputStream.close()
-            workbook.dispose()
+            wb.dispose()
             return
         }
         else {
@@ -1520,9 +1540,8 @@ class MyInstitutionController  {
                     response.contentType = "text/csv"
 
                     ServletOutputStream out = response.outputStream
-                    Map<String,List> tableData = exportService.generateTitleExportCSV(currentIssueEntitlements, IssueEntitlement.class.name)
                     out.withWriter { writer ->
-                        writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.rows,'|'))
+                        writer.write(exportClickMeService.exportTipps(tippIDs,selectedFields,ExportClickMeService.FORMAT.CSV))
                     }
                     out.flush()
                     out.close()

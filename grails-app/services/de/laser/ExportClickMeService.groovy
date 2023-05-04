@@ -2394,7 +2394,7 @@ class ExportClickMeService {
      * @param selectedFields the fields which should appear
      * @return an Excel worksheet containing the export
      */
-    def exportTipps(ArrayList<TitleInstancePackagePlatform> result, Map<String, Object> selectedFields, FORMAT format) {
+    def exportTipps(Collection result, Map<String, Object> selectedFields, FORMAT format) {
         Locale locale = LocaleUtils.getCurrentLocale()
 
         Map<String, Object> selectedExportFields = [:]
@@ -2411,12 +2411,18 @@ class ExportClickMeService {
 
         List exportData = []
 
-        int max = 500
+        int max = result[0] instanceof Long ? 50000 : 500
         TitleInstancePackagePlatform.withSession { Session sess ->
             for(int offset = 0; offset < result.size(); offset+=max) {
                 List allRows = []
-                //this double structure is necessary because the KBART standard foresees for each coverageStatement an own row with the full data
-                Set<TitleInstancePackagePlatform> tipps = result.drop(offset).take(max)
+                Set<TitleInstancePackagePlatform> tipps = []
+                if(result[0] instanceof TitleInstancePackagePlatform) {
+                    //this double structure is necessary because the KBART standard foresees for each coverageStatement an own row with the full data
+                    tipps = result.drop(offset).take(max)
+                }
+                else if(result[0] instanceof Long) {
+                    tipps = TitleInstancePackagePlatform.findAllByIdInList(result.drop(offset).take(max), [sort: 'sortname'])
+                }
                 tipps.each { TitleInstancePackagePlatform tipp ->
                     if(!tipp.coverages && !tipp.priceItems) {
                         allRows << tipp
@@ -2431,9 +2437,10 @@ class ExportClickMeService {
                     }
                 }
 
-                allRows.each { rowData ->
+                allRows.eachWithIndex { rowData, int i ->
+                    long start = System.currentTimeMillis()
                     _setTippRow(rowData, selectedExportFields, exportData, format)
-
+                    log.debug("used time for record ${i}: ${System.currentTimeMillis()-start}")
                 }
                 log.debug("flushing after ${offset} ...")
                 sess.flush()
@@ -3038,10 +3045,10 @@ class ExportClickMeService {
                     }
                 }
                 else if (fieldKey.contains('ddcs')) {
-                    row.add(createTableCell(format, result.tipp.ddcs.collect {"${it.ddc.value} - ${it.ddc.getI10n("value")}"}.join(";")))
+                    row.add(createTableCell(format, result.ddcs.collect {"${it.ddc.value} - ${it.ddc.getI10n("value")}"}.join(";")))
                 }
                 else if (fieldKey.contains('languages')) {
-                    row.add(createTableCell(format, result.tipp.languages.collect { "${it.language.getI10n("value")}" }.join(";")))
+                    row.add(createTableCell(format, result.languages.collect { "${it.language.getI10n("value")}" }.join(";")))
                 }
                 else if (fieldKey.startsWith('coverage.')) {
                     AbstractCoverage covStmt = exportService.getCoverageStatement(result)
