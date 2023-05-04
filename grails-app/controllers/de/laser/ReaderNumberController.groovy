@@ -23,18 +23,9 @@ class ReaderNumberController  {
 	})
     def create() {
 		ReaderNumber.withTransaction { TransactionStatus ts ->
-			SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
-			Map<String, Object> rnData = params.clone()
-			if (params.dueDate)
-				rnData.dueDate = sdf.parse(params.dueDate)
-
-			rnData.org = Org.get(params.orgid)
-			rnData.referenceGroup = RefdataValue.get(params.referenceGroup)
-			rnData.value = new BigDecimal(params.value)
-			ReaderNumber numbersInstance = new ReaderNumber(rnData)
-			if (! numbersInstance.save()) {
+			ReaderNumber numbersInstance = ReaderNumber.construct(params)
+			if (! numbersInstance) {
 				flash.error = message(code: 'default.not.created.message', args: [message(code: 'readerNumber.number.label')]) as String
-				log.error(numbersInstance.errors.toString())
 			}
 		}
 		redirect controller: 'organisation', action: 'readerNumber', params: [id: params.orgid, tableA: params.tableA, tableB: params.tableB, sort: params.sort, order: params.order]

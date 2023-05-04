@@ -1093,7 +1093,7 @@ join sub.orgRelations or_sub where
                     medium: tipp.medium,
                     // ieReason: 'Manually Added by User'
                     )
-            new_ie.generateSortTitle()
+            //new_ie.generateSortTitle()
 
             //fix for renewEntitlementsWithSurvey, overwrite TIPP status if holding's status differ
             IssueEntitlement parentIE = IssueEntitlement.findBySubscriptionAndTippAndStatusNotEqual(sub.instanceOf, tipp, RDStore.TIPP_STATUS_REMOVED)

@@ -221,7 +221,7 @@ class AjaxHtmlController {
      */
     @Secured(['ROLE_USER'])
     def getPackageData() {
-        Map<String,Object> result = [subscription:Subscription.get(params.subscription), curatoryGroups: []], packageMetadata
+        Map<String,Object> result = [subscription:Subscription.get(params.subscription), curatoryGroups: []], packageMetadata = [:]
         Org contextOrg = contextService.getOrg()
         result.contextCustomerType = contextOrg.getCustomerType()
         result.institution = contextOrg
@@ -231,6 +231,15 @@ class AjaxHtmlController {
         result.roleRespValue = 'Specific subscription editor'
         result.editmode = result.subscription.isEditableBy(contextService.getUser())
         result.accessConfigEditable = accessService.ctxPermAffiliation(CustomerTypeService.ORG_INST_BASIC, 'INST_EDITOR') || (accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR') && result.subscription.getSubscriber().id == contextOrg.id)
+        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        result.subscription.packages.pkg.gokbId.each { String uuid ->
+            Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/searchApi?uuid=${uuid}")
+            if (queryResult.warning) {
+                List records = queryResult.warning.result
+                packageMetadata.put(uuid, records[0])
+            }
+        }
+        result.packageMetadata = packageMetadata
         render template: '/subscription/packages', model: result
     }
 
