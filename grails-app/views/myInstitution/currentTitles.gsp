@@ -7,6 +7,7 @@
 
 <ui:controlButtons>
     <ui:exportDropdown>
+        <%--
         <ui:exportDropdownItem>
             <g:if test="${filterSet}">
                 <g:link class="item js-open-confirm-modal"
@@ -34,6 +35,10 @@
                     <g:message code="default.button.exports.xls"/>
                 </g:link>
             </g:else>
+        </ui:exportDropdownItem>
+        --%>
+        <ui:exportDropdownItem>
+            <a class="item" data-ui="modal" href="#individuallyExportTippsModal">Click Me Export</a>
         </ui:exportDropdownItem>
         <ui:exportDropdownItem>
             <g:if test="${filterSet}">
@@ -348,5 +353,7 @@
 <ui:debugInfo>
     <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]"/>
 </ui:debugInfo>
+
+<laser:render template="/templates/export/individuallyExportTippsModal" model="[modalID: 'individuallyExportTippsModal']" />
 
 <laser:htmlEnd />
