@@ -32,7 +32,7 @@
 </div>
 
 <g:if test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
-    <g:if test="${inContextOrg || isProviderOrAgency}">
+    <g:if test="${!(ownobj instanceof Org) || (inContextOrg || isProviderOrAgency)}">
         <div id="container-workflows">
             <laser:render template="/templates/workflow/card" model="${[checklists: checklists, parentAtChild: parentAtChild]}" />
         </div>
