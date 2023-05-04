@@ -420,7 +420,6 @@
                     </div>
                 </div>
             </g:if>
-
                 <g:if test="${entitlements}">
                     <div class="ui fluid card">
                         <div class="content">
@@ -429,20 +428,32 @@
                                     <div class="ui raised segments la-accordion-segments">
                                         <div class="ui fluid segment title" data-ajaxTippId="${ie.tipp.id}" data-ajaxIeId="${ie ? ie.id : null}">
                                             <div class="ui stackable equal width grid">
-                                                <g:if test="${subscription.hasPerpetualAccess}">
-                                                    <span class="ui mini left corner label la-perpetualAccess la-popup-tooltip la-delay"
-                                                          data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')}"
-                                                          data-position="left center" data-variation="tiny">
-                                                        <i class="star icon"></i>
-                                                    </span>
+                                                <g:if test="${ie.perpetualAccessBySub}">
+                                                    <g:if test="${ie.perpetualAccessBySub && ie.perpetualAccessBySub != subscription}">
+                                                        <g:link controller="subscription" action="index" id="${ie.perpetualAccessBySub.id}">
+                                                            <span class="ui mini left corner label la-perpetualAccess la-js-notOpenAccordion la-popup-tooltip la-delay"
+                                                                  data-content="${message(code: 'subscription.start.with')} ${ie.perpetualAccessBySub.dropdownNamingConvention()}"
+                                                                  data-position="left center" data-variation="tiny">
+                                                                <i class="star blue icon"></i>
+                                                            </span>
+                                                        </g:link>
+                                                    </g:if>
+                                                    <g:else>
+                                                        <span class="ui mini left corner label la-perpetualAccess la-js-notOpenAccordion la-popup-tooltip la-delay"
+                                                              data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')}"
+                                                              data-position="left center" data-variation="tiny">
+                                                            <i class="star icon"></i>
+                                                        </span>
+                                                    </g:else>
                                                 </g:if>
                                                 <div class="one wide column la-js-show-hide" style="display: none">
                                                     <g:if test="${editable}"><input type="checkbox"
                                                                                     name="_bulkflag.${ie.id}"
-                                                                                    class="bulkcheck la-vertical-centered"/></g:if>
+                                                                                    class="bulkcheck la-vertical-centered la-js-notOpenAccordion"/></g:if>
                                                 </div>
 
                                                 <div class="one wide column">
+
                                                     <span class="la-vertical-centered">${counter++}</span>
                                                 </div>
 

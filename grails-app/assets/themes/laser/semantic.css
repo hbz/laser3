@@ -27543,6 +27543,23 @@ body[class*="platform"] .ui.icon.header .icon.la-object:before {
 .la-positionRelative {
   position: relative;
 }
+
+/* ERMS-4934 */
+
+.la-subPlusYear {
+  display: flex;
+}
+
+.la-subPlusYear-texts {
+  display: flex;
+  flex-direction: column;
+  font-size: 1.4rem;
+  line-height: 1.2em;
+}
+
+.la-subPlusYear-year {
+  font-size: 1rem;
+}
 /*!
  * # Fomantic-UI ^2.9.2 - Icon
  * https://github.com/fomantic/Fomantic-UI/
@@ -47642,6 +47659,12 @@ a .ui.circular.label:focus {
 
 .ui.label.la-iconStrip > .icon {
   margin: 0 0.25rem 0 0;
+}
+
+/* Label with star in corner for perpetual access */
+
+.ui.corner.label.la-perpetualAccess {
+  position: relative;
 }
 /*!
  * # Fomantic-UI ^2.9.2 - List
