@@ -1133,10 +1133,12 @@ join sub.orgRelations or_sub where
             new_ie.accessEndDate = accessEndDate
             if (new_ie.save()) {
 
-                IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(ie: new_ie, ieGroup: issueEntitlementGroup)
+                if(issueEntitlementGroup) {
+                    IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(ie: new_ie, ieGroup: issueEntitlementGroup)
 
-                if(!issueEntitlementGroupItem.save()) {
-                    throw new EntitlementCreationException(issueEntitlementGroupItem.errors)
+                    if (!issueEntitlementGroupItem.save()) {
+                        throw new EntitlementCreationException(issueEntitlementGroupItem.errors)
+                    }
                 }
 
                 Set coverageStatements
