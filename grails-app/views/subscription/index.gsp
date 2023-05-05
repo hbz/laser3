@@ -13,7 +13,7 @@
 <g:if test="${params.asAt}"><h1
         class="ui left floated aligned icon header la-clear-before"><ui:headerIcon/>${message(code: 'subscription.details.snapshot', args: [params.asAt])}</h1></g:if>
 
-<ui:h1HeaderWithIcon>
+<ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}">
     <g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
         <laser:render template="iconSubscriptionIsChild"/>
     </g:if>

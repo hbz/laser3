@@ -4,7 +4,7 @@
 
 <laser:render template="breadcrumb" model="${[params: params]}"/>
 
-<ui:h1HeaderWithIcon type="Subscription">
+<ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}" type="Subscription">
 <g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
     <laser:render template="iconSubscriptionIsChild"/>
 </g:if>

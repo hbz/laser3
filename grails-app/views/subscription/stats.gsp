@@ -8,7 +8,7 @@
         <ui:controlButtons>
             <laser:render template="actions" />
         </ui:controlButtons>
-        <ui:h1HeaderWithIcon>
+        <ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}">
             <laser:render template="iconSubscriptionIsChild"/>
             ${subscription.name}
         </ui:h1HeaderWithIcon>
