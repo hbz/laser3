@@ -22,7 +22,7 @@
     <laser:render template="actions" model="${[org: orgInstance, user: user]}"/>
 </ui:controlButtons>
 
-<ui:h1HeaderWithIcon text="${orgInstance.name}" />
+<ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}" text="${orgInstance.name}" />
 <ui:anualRings object="${orgInstance}" controller="organisation" action="show" navNext="${navNextOrg}"
                navPrev="${navPrevOrg}"/>
 

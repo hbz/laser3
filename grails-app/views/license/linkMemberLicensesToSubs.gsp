@@ -15,7 +15,7 @@
 
 <ui:messages data="${flash}"/>
 
-<ui:h1HeaderWithIcon>
+<ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}">
     <ui:xEditable owner="${license}" field="reference" id="reference"/>
     <ui:totalNumber total="${totalCount}"/>
 </ui:h1HeaderWithIcon>

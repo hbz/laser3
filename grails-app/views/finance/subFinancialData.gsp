@@ -77,7 +77,7 @@
             }
         %>
 
-        <ui:h1HeaderWithIcon type="Subscription">
+        <ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}"type="Subscription">
             <laser:render template="/subscription/iconSubscriptionIsChild"/>
 
             ${message(code:'subscription.details.financials.label')} ${message(code:'default.for')} ${subscription} <ui:totalNumber total="${total.join(' / ')}"/>

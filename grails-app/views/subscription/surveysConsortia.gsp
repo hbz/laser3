@@ -7,7 +7,7 @@
     <laser:render template="actions"/>
 </ui:controlButtons>
 
-<ui:h1HeaderWithIcon>
+<ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}">
 <ui:xEditable owner="${subscription}" field="name"/>
 <ui:totalNumber total="${surveys.size()}"/>
 </ui:h1HeaderWithIcon>

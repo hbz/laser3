@@ -87,10 +87,11 @@
         <laser:render template="actions" />
     </ui:controlButtons>
 
-    <ui:h1HeaderWithIcon>
+    <ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}">
         <ui:xEditable owner="${subscription}" field="name" />
-        <ui:totalNumber total="${filteredSubChilds.size() ?: 0}"/>
     </ui:h1HeaderWithIcon>
+        <ui:totalNumber total="${filteredSubChilds.size() ?: 0}"/>
+
     <ui:anualRings object="${subscription}" controller="subscription" action="members" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
     <laser:render template="nav" />

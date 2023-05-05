@@ -6,7 +6,7 @@
         <laser:render template="actions" />
     </ui:controlButtons>
 
-    <ui:h1HeaderWithIcon>
+    <ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}">
         <ui:xEditable owner="${license}" field="reference" id="reference"/>
     </ui:h1HeaderWithIcon>
     <ui:anualRings object="${license}" controller="license" action="workflows" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>

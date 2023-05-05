@@ -694,7 +694,7 @@ class UiTagLib {
         out << '</div>'
     }
 
-    def anualRingsModern = { attrs, body ->
+/*    def anualRingsModern = { attrs, body ->
         String ddf_notime = message(code: 'default.date.format.notime')
 
         def object = attrs.object
@@ -801,7 +801,7 @@ class UiTagLib {
             out << '<i aria-hidden="true" class="arrow right icon disabled"></i>'
         }
         out << '</div>'
-    }
+    }*/
 
     def totalNumber = { attrs, body ->
         def total = attrs.total ?: 0
