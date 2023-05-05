@@ -10,11 +10,10 @@
         </g:if>
     </ui:controlButtons>
 
-    <ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}">
+    <ui:h1HeaderWithIcon>
         <ui:xEditable owner="${license}" field="reference" id="reference"/>
-        <ui:totalNumber total="${subscriptions.size() ?: 0}"/>
     </ui:h1HeaderWithIcon>
-
+    <ui:totalNumber total="${subscriptions.size() ?: 0}"/>
     <ui:anualRings object="${license}" controller="license" action="linkedSubs" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
 
 <laser:render template="nav" />

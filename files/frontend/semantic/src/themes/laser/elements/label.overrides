@@ -340,3 +340,7 @@ a .ui.circular.label {
 .ui.corner.label.la-perpetualAccess {
   position: relative;
 }
+
+.ui.label.la-numberHeader{
+  vertical-align: super;
+}

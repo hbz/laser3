@@ -10,8 +10,8 @@
 <ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}">
 <laser:render template="iconSubscriptionIsChild"/>
 <ui:xEditable owner="${subscription}" field="name"/>
-<ui:totalNumber total="${surveys.size()}"/>
 </ui:h1HeaderWithIcon>
+<ui:totalNumber class="la-numberHeader"  total="${surveys.size()}"/>
 <ui:anualRings object="${subscription}" controller="subscription" action="surveys"
                   navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 

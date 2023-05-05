@@ -6,7 +6,7 @@
         <laser:render template="actions" />
     </ui:controlButtons>
 
-    <ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}">
+    <ui:h1HeaderWithIcon>
         <ui:xEditable owner="${license}" field="reference" id="reference"/>
     </ui:h1HeaderWithIcon>
 
