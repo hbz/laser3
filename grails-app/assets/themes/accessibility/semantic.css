@@ -47811,6 +47811,10 @@ a .ui.circular.label:focus {
 .ui.corner.label.la-perpetualAccess {
   position: relative;
 }
+
+.ui.label.la-numberHeader {
+  vertical-align: super;
+}
 /*!
  * # Fomantic-UI ^2.9.2 - List
  * https://github.com/fomantic/Fomantic-UI/
