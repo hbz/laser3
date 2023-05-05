@@ -14,16 +14,16 @@
                 <ui:actionsDropdownItem controller="organisation" action="findProviderMatches" message="org.create_new_provider.label"/>
             </g:if>
             <g:if test="${actionName == 'show'}">
-                <g:if test="${editable || accessService.ctxPermAffiliation(CustomerTypeService.PERMS_BASIC, 'INST_EDITOR')}">
+                <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.PERMS_BASIC, 'INST_EDITOR')}">
                     <ui:actionsDropdownItem data-ui="modal" href="#modalCreateNote" message="template.notes.add"/>
                 </g:if>
                 <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_EDITOR')}">
                     <ui:actionsDropdownItem data-ui="modal" href="#modalCreateTask" message="task.create.new"/>
                 </g:if>
-                <g:if test="${editable || accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')}">
+                <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')}">
                     <ui:actionsDropdownItem data-ui="modal" href="#modalCreateDocument" message="template.documents.add"/>
                 </g:if>
-                <g:if test="${(inContextOrg || isProviderOrAgency) && workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
+                <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_EDITOR')}"><!-- TODO: workflows-permissions -->
                     <ui:actionsDropdownItem message="workflow.instantiate" data-ui="modal" href="#modalCreateWorkflow" />
                 </g:if>
 %{--                <ui:actionsDropdownItem data-ui="modal" href="#propDefGroupBindings" message="menu.institutions.configure_prop_groups" />--}% %{-- erms-4798 --}%
@@ -49,10 +49,8 @@
                 <ui:actionsDropdownItem controller="user" action="create" message="user.create_new.label" params="[org: orgInstance.id]" />
             </g:if>
             <g:if test="${actionName == 'workflows'}">
-                <g:if test="${inContextOrg || isProviderOrAgency}">
-                    <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
-                        <ui:actionsDropdownItem message="workflow.instantiate" data-ui="modal" href="#modalCreateWorkflow" />
-                    </g:if>
+                <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_EDITOR')}"><!-- TODO: workflows-permissions -->
+                    <ui:actionsDropdownItem message="workflow.instantiate" data-ui="modal" href="#modalCreateWorkflow" />
                 </g:if>
             </g:if>
             <g:if test="${actionName == 'readerNumber'}">
@@ -135,20 +133,17 @@
 
 <g:if test="${createModal}">
 %{--    <g:if test="${userService.checkAffiliationAndCtxOrg(user, institution, 'INST_EDITOR')}">--}%
-    <g:if test="${editable || accessService.ctxPermAffiliation(CustomerTypeService.PERMS_BASIC, 'INST_EDITOR')}">
+    <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.PERMS_BASIC, 'INST_EDITOR')}">
         <laser:render template="/templates/notes/modal_create" model="${[ownobj: orgInstance, owntp: 'org']}"/>
     </g:if>
-    <g:if test="${editable || accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_EDITOR')}">
+    <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_EDITOR')}">
         <laser:render template="/templates/tasks/modal_create" model="${[ownobj: orgInstance, owntp: 'org']}"/>
     </g:if>
-    <g:if test="${editable || accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')}">
+    <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')}">
         <laser:render template="/templates/documents/modal" model="${[ownobj: orgInstance, institution: institution, owntp: 'org']}"/>
     </g:if>
-
-    <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
-        <g:if test="${inContextOrg || isProviderOrAgency}">
-            <laser:render template="/templates/workflow/instantiate" model="${[target: orgInstance]}"/>
-        </g:if>
+    <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_EDITOR')}"><!-- TODO: workflows-permissions -->
+        <laser:render template="/templates/workflow/instantiate" model="${[target: orgInstance]}"/>
     </g:if>
 </g:if>
 

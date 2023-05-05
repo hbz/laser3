@@ -14,8 +14,11 @@
     <ui:securedSubNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="license" action="tasks" params="${[id:params.id]}" counts="${tasksCount}" message="task.plural" />
     <ui:securedSubNavItem orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="license" action="documents" params="${[id:params.id]}" message="license.nav.docs" />
 
-    <g:if test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
-        <ui:subNavItem controller="license" action="workflows" counts="${checklistCount}" params="${[id:params.id]}" message="workflow.plural" />
+    <g:if test="${accessService.ctxPerm(CustomerTypeService.PERMS_PRO)}"><!-- TODO: workflows-permissions -->
+        <ui:subNavItem controller="license" action="workflows" counts="${checklistCount}" params="${[id:params.id]}" message="workflow.plural"/>
     </g:if>
+    <g:elseif test="${accessService.ctxPerm(CustomerTypeService.PERMS_BASIC)}">
+        <ui:subNavItem controller="license" action="workflows" counts="${checklistCount}" params="${[id:params.id]}" message="workflow.plural" disabled="disabled"/>
+    </g:elseif>
 
 </ui:subNav>
