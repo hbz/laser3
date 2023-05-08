@@ -11,32 +11,7 @@
 
 <g:if test="${userService.checkAffiliationAndCtxOrg(user, institution, 'INST_EDITOR')}">
     <ui:actionsDropdown>
-%{--        <ui:actionsDropdownItem message="template.addNote" data-ui="modal" href="#modalCreateNote" />--}%
-
-%{--        <g:if test="${editable && accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_EDITOR')}">--}%
-%{--            <ui:actionsDropdownItem message="task.create.new" data-ui="modal" href="#modalCreateTask" />--}%
-%{--        </g:if>--}%
-%{--        <g:if test="${contextCustomerType in [CustomerTypeService.ORG_INST_PRO, CustomerTypeService.ORG_CONSORTIUM_BASIC, CustomerTypeService.ORG_CONSORTIUM_PRO]}">--}%
-%{--            <ui:actionsDropdownItem message="template.documents.add" data-ui="modal" href="#modalCreateDocument" />--}%
-%{--        </g:if>--}%
-%{--        <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->--}%
-%{--            <ui:actionsDropdownItem message="workflow.instantiate" data-ui="modal" href="#modalCreateWorkflow" />--}%
-%{--        </g:if>--}%
-
-        <g:set var="createNTDWModals" value="${true}"/>
-
-        <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.PERMS_BASIC, 'INST_EDITOR')}">
-            <ui:actionsDropdownItem data-ui="modal" href="#modalCreateNote" message="template.notes.add"/>
-        </g:if>
-        <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_EDITOR')}">
-            <ui:actionsDropdownItem data-ui="modal" href="#modalCreateTask" message="task.create.new"/>
-        </g:if>
-        <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')}">
-            <ui:actionsDropdownItem data-ui="modal" href="#modalCreateDocument" message="template.documents.add"/>
-        </g:if>
-        <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_EDITOR')}"><!-- TODO: workflows-permissions -->
-            <ui:actionsDropdownItem data-ui="modal" href="#modalCreateWorkflow" message="workflow.instantiate"/>
-        </g:if>
+        <laser:render template="/templates/sidebar/actions" model="${[tmplConfig: [addActionDropdownItems: true]]}" />
 
         <g:if test="${editable}">
             <g:if test="${license.getLicensingConsortium()?.id == institution.id}">
@@ -92,19 +67,8 @@
     </ui:actionsDropdown>
 </g:if>
 
-<g:if test="${createNTDWModals}">
-    <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.PERMS_BASIC, 'INST_EDITOR')}">
-        <laser:render template="/templates/notes/modal_create" model="${[ownobj:license, owntp:'license']}"/>
-    </g:if>
-    <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_EDITOR')}">
-        <laser:render template="/templates/tasks/modal_create" model="${[ownobj:license, owntp:'license']}"/>
-    </g:if>
-    <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')}">
-        <laser:render template="/templates/documents/modal" model="${[ownobj:license, owntp:'license']}"/>
-    </g:if>
-    <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_EDITOR')}"><!-- TODO: workflows-permissions -->
-        <laser:render template="/templates/workflow/instantiate" model="${[target: license]}"/>
-    </g:if>
+<g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.PERMS_BASIC, 'INST_EDITOR')}">
+    <laser:render template="/templates/sidebar/actions" model="${[tmplConfig: [addActionModals: true, ownobj: license, owntp: 'license']]}" />
 </g:if>
 
 %{--<g:if test="${editable || accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_EDITOR')}">--}%
