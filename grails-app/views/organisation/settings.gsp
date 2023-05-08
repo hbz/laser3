@@ -8,6 +8,12 @@
 
         <ui:h1HeaderWithIcon text="${orgInstance.name}" />
 
+        <g:if test="${editable}">
+            <ui:controlButtons>
+                <laser:render template="actions" />
+            </ui:controlButtons>
+        </g:if>
+
         <ui:objectStatus object="${orgInstance}" status="${orgInstance.status}" />
 
         <laser:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg]}"/>
