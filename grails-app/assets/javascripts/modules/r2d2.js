@@ -636,7 +636,7 @@ r2d2 = {
                 $(".la-metabox ").css('box-shadow','none');
             }
         });
-        $(ctxSel + ' .accordion.la-accordion-showMore').find('input,a').click(function(event){
+        $(ctxSel + ' .accordion.la-accordion-showMore').find('a, .la-js-notOpenAccordion').click(function(event){
             event.stopPropagation();
         });
 

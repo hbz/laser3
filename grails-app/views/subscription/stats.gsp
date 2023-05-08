@@ -8,7 +8,7 @@
         <ui:controlButtons>
             <laser:render template="actions" />
         </ui:controlButtons>
-        <ui:h1HeaderWithIcon>
+        <ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}">
             <laser:render template="iconSubscriptionIsChild"/>
             ${subscription.name}
         </ui:h1HeaderWithIcon>
@@ -31,9 +31,10 @@
                 <div class="ui two doubling stackable cards">
                     <div class="ui card">
                         <div class="content">
-                            <h4>
-                                ${platformInstanceRecord.name}
-                            </h4>
+                            <dl>
+                                <dt><g:message code="platform.name"/></dt>
+                                <dd><g:link url="${platformInstanceRecord.wekbUrl}" target="_blank">${platformInstanceRecord.name}</g:link></dd>
+                            </dl>
                             <g:if test="${platformInstanceRecord.statisticsFormat}">
                                 <dl>
                                     <dt><g:message code="platform.stats.format"/></dt>
@@ -183,59 +184,58 @@
         </g:if>
         <g:else>
             <g:if test="${reportTypes}">
-                <ui:filter>
-                    <g:if test="${revision == AbstractReport.COUNTER_4}">
-                        <ui:msg icon="ui info icon" class="info" header="${message(code: 'default.usage.counter4reportInfo.header')}" message="default.usage.counter4reportInfo.text" noClose="true"/>
-                    </g:if>
-                    <g:if test="${error}">
-                        <ui:msg icon="ui times icon" class="error" message="${message(code: "default.stats.error.${error}")}" noClose="true"/>
-                    </g:if>
-                    <g:form action="generateReport" name="stats" class="ui form" method="get">
-                        <g:hiddenField name="id" value="${subscription.id}"/>
-                        <g:hiddenField name="revision" value="${revision}"/>
-                        <div class="five fields" id="filterDropdownWrapper">
-                            <g:if test="${platformInstanceRecords.size() > 1}">
-                                <div class="field">
-                                    <label for="platform"><g:message code="platform"/></label>
-                                    <ui:select class="ui search selection dropdown" from="${platformInstanceRecords}" name="platform"/>
-                                </div>
-                            </g:if>
-                            <g:elseif test="${platformInstanceRecords.size() == 1}">
-                                <g:hiddenField name="platform" value="${platformInstanceRecords.values()[0].id}"/>
-                            </g:elseif>
+                <g:if test="${revision == AbstractReport.COUNTER_4}">
+                    <ui:msg icon="ui info icon" class="info" header="${message(code: 'default.usage.counter4reportInfo.header')}" message="default.usage.counter4reportInfo.text" noClose="true"/>
+                </g:if>
+                <g:if test="${error}">
+                    <ui:msg icon="ui times icon" class="error" message="${message(code: "default.stats.error.${error}")}" noClose="true"/>
+                </g:if>
+                <g:form action="generateReport" name="stats" class="ui form" method="get">
+                    <g:hiddenField name="id" value="${subscription.id}"/>
+                    <g:hiddenField name="revision" value="${revision}"/>
+                    <div class="five fields" id="filterDropdownWrapper">
+                        <g:if test="${platformInstanceRecords.size() > 1}">
                             <div class="field">
-                                <label for="reportType"><g:message code="default.usage.reportType"/></label>
-                                <select name="reportType" id="reportType" class="ui search selection dropdown">
-                                    <option value=""><g:message code="default.select.choose.label"/></option>
-                                    <g:each in="${reportTypes}" var="reportType">
-                                        <option <%=(params.reportType == reportType) ? 'selected="selected"' : ''%>
-                                                value="${reportType}">
-                                            <g:message code="default.usage.${reportType}"/>
-                                        </option>
-                                    </g:each>
-                                    <g:if test="${reportTypes.size() == 0}">
-                                        <option value="<g:message code="default.stats.noReport" />"><g:message code="default.stats.noReport" /></option>
-                                    </g:if>
-                                </select>
+                                <label for="platform"><g:message code="platform"/></label>
+                                <ui:select class="ui search selection dropdown" from="${platformInstanceRecords}" name="platform"/>
                             </div>
-                            <g:if test="${params.reportType}">
-                                <laser:render template="/templates/filter/statsFilter"/>
-                            </g:if>
-                            <%-- reports filters in COUNTER 5 count only for master reports (tr, pr, dr, ir)! COUNTER 4 has no restriction on filter usage afaik --%>
+                        </g:if>
+                        <g:elseif test="${platformInstanceRecords.size() == 1}">
+                            <g:hiddenField name="platform" value="${platformInstanceRecords.values()[0].id}"/>
+                        </g:elseif>
+                        <div class="field">
+                            <label for="reportType"><g:message code="default.usage.reportType"/></label>
+                            <select name="reportType" id="reportType" class="ui search selection dropdown">
+                                <option value=""><g:message code="default.select.choose.label"/></option>
+                                <g:each in="${reportTypes}" var="reportType">
+                                    <option <%=(params.reportType == reportType) ? 'selected="selected"' : ''%>
+                                            value="${reportType}">
+                                        <g:message code="default.usage.${reportType}"/>
+                                    </option>
+                                </g:each>
+                                <g:if test="${reportTypes.size() == 0}">
+                                    <option value="<g:message code="default.stats.noReport" />"><g:message code="default.stats.noReport" /></option>
+                                </g:if>
+                            </select>
                         </div>
-                        <div class="four fields">
-                            <div class="field"></div>
-                            <div class="field"></div>
-                            <div class="field la-field-right-aligned">
-                                <%-- deactivated as of ERMS-3996; concept needs to be clarified
-                                <input id="generateCostPerUse" type="button" class="ui secondary button" value="${message(code: 'default.stats.generateCostPerUse')}"/>--%>
-                            </div>
-                            <div class="field la-field-right-aligned">
-                                <input type="submit" class="ui primary button" value="${message(code: 'default.stats.generateReport')}"/>
-                            </div>
+                        <g:if test="${params.reportType}">
+                            <laser:render template="/templates/filter/statsFilter"/>
+                        </g:if>
+                        <%-- reports filters in COUNTER 5 count only for master reports (tr, pr, dr, ir)! COUNTER 4 has no restriction on filter usage afaik --%>
+                    </div>
+                    <div class="four fields">
+                        <div class="field"></div>
+                        <div class="field"></div>
+                        <div class="field la-field-right-aligned">
+                            <%-- deactivated as of ERMS-3996; concept needs to be clarified
+                            <input id="generateCostPerUse" type="button" class="ui secondary button" value="${message(code: 'default.stats.generateCostPerUse')}"/>--%>
+                            <g:link action="stats" class="ui button secondary">${message(code:'default.button.reset.label')}</g:link>
                         </div>
-                    </g:form>
-                </ui:filter>
+                        <div class="field la-field-right-aligned">
+                            <input type="submit" class="ui primary button" value="${message(code: 'default.stats.generateReport')}"/>
+                        </div>
+                    </div>
+                </g:form>
             </g:if>
             <g:elseif test="${error}">
                 <ui:msg icon="ui times icon" class="error" noClose="true">

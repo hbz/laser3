@@ -32,10 +32,8 @@
     <laser:render template="/templates/documents/card" model="${[ownobj:ownobj, owntp:owntp, css_class:'', parentAtChild: parentAtChild]}" />
 </div>
 
-<g:if test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
-    <g:if test="${!(ownobj instanceof Org) || (inContextOrg || isProviderOrAgency)}">
-        <div id="container-workflows">
-            <laser:render template="/templates/workflow/card" model="${[checklists: checklists, parentAtChild: parentAtChild]}" />
-        </div>
-    </g:if>
+<g:if test="${accessService.ctxPerm(CustomerTypeService.PERMS_PRO)}"><!-- TODO: workflows-permissions -->
+    <div id="container-workflows">
+        <laser:render template="/templates/workflow/card" model="${[checklists: checklists, parentAtChild: parentAtChild]}" />
+    </div>
 </g:if>

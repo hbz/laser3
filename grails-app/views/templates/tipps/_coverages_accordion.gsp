@@ -73,7 +73,7 @@
     %{-- IE  --}%
     <g:if test="${ie}">
         <div class="ui stackable grid">
-            <div class="eleven wide column">
+            <div class="sixteen wide column">
                 <%
                     Map<String, Object> paramData = [:]
                     if (params.sort && params.order) {
@@ -91,7 +91,7 @@
                                   model="${[covStmt: covStmt, paramData: paramData, showEmbargo: true, objectTypeIsIE: true, overwriteEditable: overwriteEditable, counterCoverage: counterCoverage]}"/>
                 </g:each>
             </div>
-            <div class="five wide column">
+%{--            <div class="five wide column">
                 <div class="ui list la-label-list">
                     <div class="ui label la-labelBlock">${message(code: 'subscription.details.access_dates')}</div>
                     <div class="item">
@@ -129,7 +129,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div>--}%
         </div>
 %{--        <g:if test="${editable}">
             <br/>

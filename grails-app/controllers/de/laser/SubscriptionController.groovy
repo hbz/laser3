@@ -2,6 +2,7 @@ package de.laser
 
 import de.laser.annotations.Check404
 import de.laser.annotations.DebugInfo
+import de.laser.config.ConfigMapper
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.interfaces.CalculatedType
@@ -134,6 +135,7 @@ class SubscriptionController {
                     records[0].lastRun = platformInstance.counter5LastRun ?: platformInstance.counter4LastRun
                     records[0].id = platformInstance.id
                     result.platformInstanceRecords[platformInstance.gokbId] = records[0]
+                    result.platformInstanceRecords[platformInstance.gokbId].wekbUrl = apiSource.editUrl + "/resource/show/${platformInstance.gokbId}"
                     if(records[0].statisticsFormat == 'COUNTER' && records[0].counterR4SushiServerUrl == null && records[0].counterR5SushiServerUrl == null) {
                         result.error = 'noSushiSource'
                         ArrayList<Object> errorArgs = ["${apiSource.editUrl}/resource/show/${platformInstance.gokbId}", platformInstance.name]
@@ -215,20 +217,46 @@ class SubscriptionController {
         else {
             Map<String, Object> ctrlResult = exportService.generateReport(params)
             if(ctrlResult.containsKey('result')) {
+                Subscription sub = Subscription.get(params.id)
                 SXSSFWorkbook wb = ctrlResult.result
+                /*
+                see DocstoreController and https://stackoverflow.com/questions/24827571/how-to-convert-xssfworkbook-to-file
+                 */
                 Date dateRun = new Date()
-                response.setHeader "Content-disposition", "attachment; filename=report_${DateUtils.getSDF_yyyyMMdd().format(dateRun)}.xlsx"
-                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                wb.write(response.outputStream)
-                response.outputStream.flush()
-                response.outputStream.close()
+                String token = "report_${params.reportType}_${params.platform}_${sub.getSubscriber().id}_${DateUtils.getSDF_yyyyMMdd().format(dateRun)}"
+                String dir = ConfigMapper.getStatsReportSaveLocation() ?: '/usage'
+                File folder = new File(dir)
+                if (!folder.exists()) {
+                    folder.mkdirs()
+                }
+                FileOutputStream fos = new FileOutputStream(dir+'/'+token)
+                //--> to document
+                wb.write(fos)
+                fos.flush()
+                fos.close()
                 wb.dispose()
-                return
+                [token: token]
             }
             else {
                 redirect action: 'stats', id: params.id, params: [error: ctrlResult.error, reportType: params.reportType, metricType: params.metricType, accessType: params.accessType, accessMethod: params.accessMethod]
             }
         }
+    }
+
+    /**
+     * Call to fetch the usage data for the given subscription
+     * @return the (filtered) usage data view for the given subscription, rendered as Excel worksheet
+     */
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+    })
+    def downloadReport() {
+        /*
+        get file from token and offer to download with filename
+         */
+        response.setHeader "Content-disposition", "attachment; filename=report_${DateUtils.getSDF_yyyyMMdd().format(dateRun)}.xlsx"
+        response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     }
 
     /**

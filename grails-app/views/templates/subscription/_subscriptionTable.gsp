@@ -89,6 +89,10 @@
                             <g:link controller="subscription" class="la-main-object" action="show" id="${s.id}">
                                 <g:if test="${s.name}">
                                     ${s.name}
+                                    <g:if test="${s?.referenceYear}">
+                                        ( ${s.referenceYear} )
+                                    </g:if>
+
                                 </g:if>
                                 <g:else>
                                     -- ${message(code: 'myinst.currentSubscriptions.name_not_set')}  --

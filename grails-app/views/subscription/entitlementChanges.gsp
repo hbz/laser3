@@ -4,7 +4,7 @@
 
 <laser:render template="breadcrumb" model="${[params: params]}"/>
 
-<ui:h1HeaderWithIcon type="Subscription">
+<ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}" type="Subscription">
 <g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
     <laser:render template="iconSubscriptionIsChild"/>
 </g:if>
@@ -13,6 +13,10 @@
 
 <ui:anualRings object="${subscription}" controller="subscription" action="entitlementChanges"
                   navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
+
+<ui:controlButtons>
+    <laser:render template="actions"/>
+</ui:controlButtons>
 
 <laser:render template="nav"/>
 

@@ -27701,6 +27701,23 @@ body[class*="platform"] .ui.icon.header .icon.la-object:before {
 .la-positionRelative {
   position: relative;
 }
+
+/* ERMS-4934 */
+
+.la-subPlusYear {
+  display: flex;
+}
+
+.la-subPlusYear-texts {
+  display: flex;
+  flex-direction: column;
+  font-size: 1.4rem;
+  line-height: 1.2em;
+}
+
+.la-subPlusYear-year {
+  font-size: 1rem;
+}
 /*!
  * # Fomantic-UI ^2.9.2 - Icon
  * https://github.com/fomantic/Fomantic-UI/
@@ -47534,7 +47551,7 @@ a.ui.ui.ui.inverted.basic.black.label:hover {
   padding-right: 0.5em;
 }
 
-.ui.la-annual-rings-modern {
+/*.ui.la-annual-rings-modern {
   display: inline-flex;
   padding-left: 0.2em;
   padding-right: 0.2em;
@@ -47542,47 +47559,44 @@ a.ui.ui.ui.inverted.basic.black.label:hover {
   background-color: transparent;
   border: none;
   vertical-align: super;
-  align-items: center;
-}
-
-.ui.la-annual-rings-modern > a {
-  opacity: 1;
-  text-decoration: none;
-  display: inline-block;
-  width: 2.1em;
-}
-
-.ui.la-annual-rings-modern > a:hover {
-  filter: brightness(0.85);
-}
-
-.ui.la-annual-rings-modern i.disabled.icon {
-  opacity: 0!important;
-}
-
-.ui.la-annual-rings-modern .la-status-active {
-  color: #98B500;
-  opacity: 1;
-}
-
-.ui.la-annual-rings-modern .la-status-inactive {
-  color: #BB1600;
-  opacity: 1;
-}
-
-.ui.la-annual-rings-modern .la-status-else {
-  color: #FBBD08;
-  opacity: 1;
-}
-
-.ui.la-annual-rings-modern .la-annual-rings-text {
-  padding: 3px;
-  margin-top: 0.3rem;
-  margin-right: -0.3em;
-  color: rgba(0, 0, 0, 0.6);
-  letter-spacing: 0.05em;
-  font-weight: 700;
-}
+  align-items:center;
+  .icon {
+    //margin: 0em @iconDistance 0em @iconDistance;
+  }
+  >a {
+    opacity: 1;
+    text-decoration: none;
+    display: inline-block;
+    width: 2.1em;
+    &:hover {
+      filter: brightness(0.85);
+    }
+  }
+  i.disabled.icon {
+    opacity: 0!important;
+    //margin: 0 0 0 .1em;
+  }
+  .la-status-active {
+    color: @green;
+    opacity: 1;
+  }
+  .la-status-inactive {
+    color: @red;
+    opacity: 1;
+  }
+  .la-status-else {
+    color: @yellow;
+    opacity: 1;
+  }
+  .la-annual-rings-text {
+    padding: 3px;
+    margin-top: 0.3rem;
+    margin-right: -0.3em;
+    color: rgba(0,0,0,.6);
+    letter-spacing: 0.05em;
+    font-weight: 700;
+  }
+}*/
 
 .ui.left-tag.labels .label,
 .ui.left-tag.label {
@@ -47790,6 +47804,16 @@ a .ui.circular.label:focus {
 
 .ui.list > .item.js-copyTriggerParent .js-copyTrigger {
   display: inline-flex !important;
+}
+
+/* Label with star in corner for perpetual access */
+
+.ui.corner.label.la-perpetualAccess {
+  position: relative;
+}
+
+.ui.label.la-numberHeader {
+  vertical-align: super;
 }
 /*!
  * # Fomantic-UI ^2.9.2 - List

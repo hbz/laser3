@@ -70,7 +70,7 @@
   }
 }
 // annual rings modern
-.ui.la-annual-rings-modern {
+/*.ui.la-annual-rings-modern {
   display: inline-flex;
   padding-left: 0.2em;
   padding-right: 0.2em;
@@ -115,7 +115,7 @@
     letter-spacing: 0.05em;
     font-weight: 700;
   }
-}
+}*/
 
 // not used yet
 //left side
@@ -334,4 +334,13 @@ a .ui.circular.label {
 /* Label with Icon Strip */
 .ui.label.la-iconStrip>.icon{
     margin: 0 0.25rem 0 0;
+}
+
+/* Label with star in corner for perpetual access */
+.ui.corner.label.la-perpetualAccess {
+  position: relative;
+}
+
+.ui.label.la-numberHeader{
+  vertical-align: super;
 }
