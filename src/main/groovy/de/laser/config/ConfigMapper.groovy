@@ -50,7 +50,7 @@ class ConfigMapper {
     static final List SHOW_SYSTEM_INFO           = ['showSystemInfo', Boolean]
     static final List SHOW_STATS_INFO            = ['showStatsInfo',  Boolean]
     static final List STATS_API_URL              = ['statsApiUrl', String]
-    static final List STATS_REPORT_SAVE_LOCATION = ['statsReportSaveLocation', Boolean]
+    static final List STATS_REPORT_SAVE_LOCATION = ['statsReportSaveLocation', String]
     static final List STATS_SYNC_JOB_ACTIVE      = ['statsSyncJobActive', Boolean]
     static final List SYSTEM_EMAIL               = ['systemEmail', String]
     static final List SYSTEM_INSIGHT_INDEX       = ['systemInsightIndex', String]
