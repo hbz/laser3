@@ -354,11 +354,8 @@
                                     optionKey="id" optionValue="value" from="${RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.CURRENCY)}"/>
                             </div>
                         </div>
-
-
                     </div>
                     <div class="row">
-
                         <div class="four wide column">
                             <div class="field">
                                 <label><g:message code="issueEntitlement.myNotes"/></label>
