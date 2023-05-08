@@ -14,6 +14,10 @@
 <ui:anualRings object="${subscription}" controller="subscription" action="entitlementChanges"
                   navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
+<ui:controlButtons>
+    <laser:render template="actions"/>
+</ui:controlButtons>
+
 <laser:render template="nav"/>
 
 <g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
