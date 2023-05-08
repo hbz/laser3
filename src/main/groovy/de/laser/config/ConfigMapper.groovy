@@ -46,14 +46,15 @@ class ConfigMapper {
     static final List QUARTZ_HEARTBEAT      = ['quartzHeartbeat', Date]
     static final List REPORTING             = ['reporting', Map]
 
-    static final List SHOW_DEBUG_INFO           = ['showDebugInfo',  Boolean]
-    static final List SHOW_SYSTEM_INFO          = ['showSystemInfo', Boolean]
-    static final List SHOW_STATS_INFO           = ['showStatsInfo',  Boolean]
-    static final List STATS_API_URL             = ['statsApiUrl', String]
-    static final List STATS_SYNC_JOB_ACTIVE     = ['statsSyncJobActive', Boolean]
-    static final List SYSTEM_EMAIL              = ['systemEmail', String]
-    static final List SYSTEM_INSIGHT_INDEX      = ['systemInsightIndex', String]
-    static final List SYSTEM_INSIGHT_JOB_ACTIVE = ['systemInsightJobActive', Boolean]
+    static final List SHOW_DEBUG_INFO            = ['showDebugInfo',  Boolean]
+    static final List SHOW_SYSTEM_INFO           = ['showSystemInfo', Boolean]
+    static final List SHOW_STATS_INFO            = ['showStatsInfo',  Boolean]
+    static final List STATS_API_URL              = ['statsApiUrl', String]
+    static final List STATS_REPORT_SAVE_LOCATION = ['statsReportSaveLocation', Boolean]
+    static final List STATS_SYNC_JOB_ACTIVE      = ['statsSyncJobActive', Boolean]
+    static final List SYSTEM_EMAIL               = ['systemEmail', String]
+    static final List SYSTEM_INSIGHT_INDEX       = ['systemInsightIndex', String]
+    static final List SYSTEM_INSIGHT_JOB_ACTIVE  = ['systemInsightJobActive', Boolean]
 
     static final List TEST_JOB_ACTIVE       = ['testJobActivate', Boolean]
     static final List WEKB_API_USERNAME     = ['wekbApiUsername', String]
@@ -203,6 +204,9 @@ class ConfigMapper {
     }
     static String getStatsApiUrl(int output = LOGGER) {
         readConfig( STATS_API_URL, output )
+    }
+    static String getStatsReportSaveLocation(int output = LOGGER) {
+        readConfig( STATS_REPORT_SAVE_LOCATION, output )
     }
     static boolean getStatsSyncJobActive(int output = LOGGER) {
         readConfig( STATS_SYNC_JOB_ACTIVE, output )
