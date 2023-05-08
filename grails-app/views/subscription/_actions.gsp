@@ -29,11 +29,11 @@
                     <a class="item" data-ui="modal" href="#individuallyExportIEsModal">Click Me Export</a>
                 </ui:exportDropdownItem>
             </g:if>
-            <g:if test="${actionName == 'addEntitlements'}">
+            <g:elseif test="${actionName == 'addEntitlements'}">
                 <ui:exportDropdownItem>
                     <a class="item" data-ui="modal" href="#individuallyExportTippsModal">Click Me Export</a>
                 </ui:exportDropdownItem>
-            </g:if>
+            </g:elseif>
             <%--
             <ui:exportDropdownItem>
                 <g:if test="${filterSet}">
@@ -119,8 +119,7 @@
                 <g:else>
                     <ui:actionsDropdownItemDisabled message="subscription.details.addEntitlements.label" tooltip="${message(code:'subscription.details.addEntitlements.noPackagesYetAdded')}"/>
                 </g:else>
-            </g:if>
-        <g:if test="${editable}">
+
             <%-- TODO: once the hookup has been decided, the ifAnyGranted securing can be taken down --%>
             <sec:ifAnyGranted roles="ROLE_ADMIN">
                 <g:if test="${subscription.instanceOf}">
@@ -167,7 +166,6 @@
                                            params="${[sub:params.id]}" text="${message(code:'createIssueEntitlementsSurvey.label')}" />
             </g:if>
 
-
             <g:if test="${showConsortiaFunctions || subscription.administrative}">
                 <ui:actionsDropdownItem controller="subscription" action="addMembers" params="${[id:params.id]}" text="${message(code:'subscription.details.addMembers.label',args:menuArgs)}" />
             </g:if>
@@ -185,7 +183,7 @@
                     <ui:actionsDropdownItem data-ui="modal" href="#copyEmailaddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
                 </g:if>
             </g:if>
-            <g:if test="${actionName == 'show'}">
+            <g:elseif test="${actionName == 'show'}">
                 <%-- the editable setting needs to be the same as for the properties themselves -> override! --%>
                 <%-- the second clause is to prevent the menu display for consortia at member subscriptions --%>
                 <g:if test="${!(contextOrg.id == subscriptionConsortia?.id && subscription.instanceOf)}">
@@ -200,15 +198,13 @@
                 <g:else>
                     <a class="item disabled" href="#"><i class="trash alternate outline icon"></i> ${message(code:'deletion.subscription')}</a>
                 </g:else>
-            </g:if>
+            </g:elseif>
         </g:if>
     </ui:actionsDropdown>
 </g:if>
 <g:if test="${editable || accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_EDITOR')}">
     <laser:render template="/templates/documents/modal" model="${[ownobj: subscription, owntp: 'subscription']}"/>
     <laser:render template="/templates/tasks/modal_create" model="${[ownobj: subscription, owntp: 'subscription']}"/>
-%{--</g:if>--}%
-%{--<g:if test="${userService.checkAffiliationAndCtxOrg(user, contextOrg, 'INST_EDITOR')}">--}%
     <laser:render template="/templates/notes/modal_create" model="${[ownobj: subscription, owntp: 'subscription']}"/>
 </g:if>
 

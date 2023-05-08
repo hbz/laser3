@@ -1230,7 +1230,7 @@ class OrganisationController  {
     })
     @Check404()
     def workflows() {
-        Map<String,Object> ctrlResult  = organisationControllerService.workflows( this, params )
+        Map<String,Object> ctrlResult = organisationControllerService.workflows( this, params )
         render view: 'workflows', model: ctrlResult.result
     }
 
