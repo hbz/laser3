@@ -76,7 +76,7 @@
 
 <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')}">
     <ui:actionsDropdown>
-        <laser:render template="/templates/sidebar/actions" model="${[tmplConfig: [addActionDropdownItems: true]]}" />
+        <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionDropdownItems: true]]}" />
 
         <div class="divider"></div>
 
@@ -202,7 +202,7 @@
 </g:elseif>
 
 <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.PERMS_BASIC, 'INST_EDITOR')}">
-    <laser:render template="/templates/sidebar/actions" model="${[tmplConfig: [addActionModals: true, ownobj: subscription, owntp: 'subscription']]}" />
+    <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionModals: true, ownobj: subscription, owntp: 'subscription']]}" />
 </g:if>
 
 %{--<g:if test="${editable || accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_EDITOR')}">--}%

@@ -11,7 +11,7 @@
 
 <g:if test="${userService.checkAffiliationAndCtxOrg(user, institution, 'INST_EDITOR')}">
     <ui:actionsDropdown>
-        <laser:render template="/templates/sidebar/actions" model="${[tmplConfig: [addActionDropdownItems: true]]}" />
+        <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionDropdownItems: true]]}" />
 
         <g:if test="${editable}">
             <g:if test="${license.getLicensingConsortium()?.id == institution.id}">
@@ -68,7 +68,7 @@
 </g:if>
 
 <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.PERMS_BASIC, 'INST_EDITOR')}">
-    <laser:render template="/templates/sidebar/actions" model="${[tmplConfig: [addActionModals: true, ownobj: license, owntp: 'license']]}" />
+    <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionModals: true, ownobj: license, owntp: 'license']]}" />
 </g:if>
 
 %{--<g:if test="${editable || accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_EDITOR')}">--}%
