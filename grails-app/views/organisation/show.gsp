@@ -17,7 +17,6 @@
 <laser:render template="breadcrumb"
           model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView, consortialView: consortialView]}"/>
 
-
 <ui:controlButtons>
     <laser:render template="actions" model="${[org: orgInstance, user: user]}"/>
 </ui:controlButtons>

@@ -9,23 +9,7 @@
 <laser:render template="breadcrumb" model="${[orgInstance: orgInstance, params: params]}"/>
 
 <ui:controlButtons>
-    <ui:actionsDropdown>
-    <g:if test="${editable}">
-        <g:if test="${(institution.isCustomerType_Consortium()) && !isProviderOrAgency}">
-            <a href="#createPersonModal" class="item" data-ui="modal"
-               onclick="JSPC.app.personCreate('contactPersonForInstitution', ${orgInstance.id});"><g:message
-                    code="person.create_new.contactPersonForInstitution.label"/></a>
-        </g:if>
-        <g:if test="${isProviderOrAgency}">
-            <a href="#createPersonModal" class="item" data-ui="modal"
-               onclick="JSPC.app.personCreate('contactPersonForProviderAgency', ${orgInstance.id});"><g:message
-                    code="person.create_new.contactPersonForProviderAgency.label"/></a>
-        </g:if>
-    </g:if>
-
-        <ui:actionsDropdownItem notActive="true" data-ui="modal" href="#copyFilteredEmailAddresses_ajaxModal"
-                                   message="menu.institutions.copy_emailaddresses.button"/>
-    </ui:actionsDropdown>
+    <laser:render template="actions" />
 </ui:controlButtons>
 
 <laser:render template="/templates/copyFilteredEmailAddresses"

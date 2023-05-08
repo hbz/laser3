@@ -9,16 +9,7 @@
 <ui:h1HeaderWithIcon text="${orgInstance.name}" />
 
 <ui:controlButtons>
-    <ui:actionsDropdown>
-        <g:if test="${editable}">
-            <a href="#createPersonModal" class="item" onclick="JSPC.app.personCreate('contactPersonForPublic');"><g:message code="person.create_new.contactPerson.label"/></a>
-        </g:if>
-        <g:if test="${editable}">
-            <a href="#addressFormModal" class="item" onclick="JSPC.app.addresscreate_org('${orgInstance.id}');"><g:message code="address.add.label"/></a>
-        </g:if>
-        <ui:actionsDropdownItem notActive="true" data-ui="modal" href="#copyFilteredEmailAddresses_ajaxModal"
-                                   message="menu.institutions.copy_emailaddresses.button"/>
-    </ui:actionsDropdown>
+    <laser:render template="actions" />
 </ui:controlButtons>
 
 <ui:messages data="${flash}"/>
