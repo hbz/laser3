@@ -73,19 +73,37 @@
             </ui:exportDropdownItem>--%>
         </ui:exportDropdown>
 </g:if>
+
 <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')}">
     <ui:actionsDropdown>
-        <ui:actionsDropdownItem message="template.addNote" data-ui="modal" href="#modalCreateNote" />
+%{--        <ui:actionsDropdownItem message="template.addNote" data-ui="modal" href="#modalCreateNote" />--}%
 
-            <g:if test="${editable && accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_EDITOR')}">
-                <ui:actionsDropdownItem message="task.create.new" data-ui="modal" href="#modalCreateTask" />
-            </g:if>
-            <ui:actionsDropdownItem message="template.documents.add" data-ui="modal" href="#modalCreateDocument" />
+%{--            <g:if test="${editable && accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_EDITOR')}">--}%
+%{--                <ui:actionsDropdownItem message="task.create.new" data-ui="modal" href="#modalCreateTask" />--}%
+%{--            </g:if>--}%
+%{--            <ui:actionsDropdownItem message="template.documents.add" data-ui="modal" href="#modalCreateDocument" />--}%
 
-            <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
-                <ui:actionsDropdownItem message="workflow.instantiate" data-ui="modal" href="#modalCreateWorkflow" />
-            </g:if>
-            <div class="divider"></div>
+%{--            <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->--}%
+%{--                <ui:actionsDropdownItem message="workflow.instantiate" data-ui="modal" href="#modalCreateWorkflow" />--}%
+%{--            </g:if>--}%
+%{--            <div class="divider"></div>--}%
+
+        <g:set var="createNTDWModals" value="${true}"/>
+
+        <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.PERMS_BASIC, 'INST_EDITOR')}">
+            <ui:actionsDropdownItem data-ui="modal" href="#modalCreateNote" message="template.notes.add"/>
+        </g:if>
+        <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_EDITOR')}">
+            <ui:actionsDropdownItem data-ui="modal" href="#modalCreateTask" message="task.create.new"/>
+        </g:if>
+        <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')}">
+            <ui:actionsDropdownItem data-ui="modal" href="#modalCreateDocument" message="template.documents.add"/>
+        </g:if>
+        <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_EDITOR')}"><!-- TODO: workflows-permissions -->
+            <ui:actionsDropdownItem data-ui="modal" href="#modalCreateWorkflow" message="workflow.instantiate"/>
+        </g:if>
+
+        <div class="divider"></div>
 
         <g:if test="${editable}">
 
@@ -195,19 +213,43 @@
                     <div class="divider"></div>
                     <g:link class="item" action="delete" id="${params.id}"><i class="trash alternate outline icon"></i> ${message(code:'deletion.subscription')}</g:link>
                 </g:if>
-                <g:else>
-                    <a class="item disabled" href="#"><i class="trash alternate outline icon"></i> ${message(code:'deletion.subscription')}</a>
-                </g:else>
+%{--                <g:else>--}%
+%{--                    <a class="item disabled" href="#"><i class="trash alternate outline icon"></i> ${message(code:'deletion.subscription')}</a>--}%
+%{--                </g:else>--}%
             </g:elseif>
         </g:if>
     </ui:actionsDropdown>
 </g:if>
-<g:if test="${editable || accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_EDITOR')}">
-    <laser:render template="/templates/documents/modal" model="${[ownobj: subscription, owntp: 'subscription']}"/>
-    <laser:render template="/templates/tasks/modal_create" model="${[ownobj: subscription, owntp: 'subscription']}"/>
-    <laser:render template="/templates/notes/modal_create" model="${[ownobj: subscription, owntp: 'subscription']}"/>
+<g:elseif test="${accessService.ctxPermAffiliation(CustomerTypeService.PERMS_BASIC, 'INST_EDITOR')}">
+    <g:set var="createNTDWModals" value="${true}"/>
+
+    <ui:actionsDropdown>
+        <ui:actionsDropdownItem message="template.addNote" data-ui="modal" href="#modalCreateNote" />
+    </ui:actionsDropdown>
+</g:elseif>
+
+<g:if test="${createNTDWModals}">
+    <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.PERMS_BASIC, 'INST_EDITOR')}">
+        <laser:render template="/templates/notes/modal_create" model="${[ownobj: subscription, owntp: 'subscription']}"/>
+    </g:if>
+    <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_EDITOR')}">
+        <laser:render template="/templates/tasks/modal_create" model="${[ownobj: subscription, owntp: 'subscription']}"/>
+    </g:if>
+    <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')}">
+        <laser:render template="/templates/documents/modal" model="${[ownobj: subscription, owntp: 'subscription']}"/>
+    </g:if>
+    <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_EDITOR')}"><!-- TODO: workflows-permissions -->
+        <laser:render template="/templates/workflow/instantiate" model="${[target: subscription]}"/>
+    </g:if>
 </g:if>
 
-<g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
-    <laser:render template="/templates/workflow/instantiate" model="${[target: subscription]}"/>
-</g:if>
+
+%{--<g:if test="${editable || accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_EDITOR')}">--}%
+%{--    <laser:render template="/templates/documents/modal" model="${[ownobj: subscription, owntp: 'subscription']}"/>--}%
+%{--    <laser:render template="/templates/tasks/modal_create" model="${[ownobj: subscription, owntp: 'subscription']}"/>--}%
+%{--    <laser:render template="/templates/notes/modal_create" model="${[ownobj: subscription, owntp: 'subscription']}"/>--}%
+%{--</g:if>--}%
+
+%{--<g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->--}%
+%{--    <laser:render template="/templates/workflow/instantiate" model="${[target: subscription]}"/>--}%
+%{--</g:if>--}%
