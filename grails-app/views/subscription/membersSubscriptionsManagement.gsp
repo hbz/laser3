@@ -10,7 +10,7 @@
                  text="${message(code: 'subscriptionsManagement.subscriptions.members')}"/>
 </ui:breadcrumbs>
 
-<ui:h1HeaderWithIcon text="${subscription.name}" />
+<ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}" text="${subscription.name}" />
 
 <ui:anualRings object="${subscription}" controller="subscription" action="${actionName}"
                   navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
