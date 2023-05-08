@@ -4,7 +4,7 @@
     <ui:controlButtons>
         <laser:render template="actions" />
     </ui:controlButtons>
-    <ui:h1HeaderWithIcon>
+    <ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}">
         <g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
             <laser:render template="iconSubscriptionIsChild"/>
         </g:if>

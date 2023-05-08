@@ -77,11 +77,12 @@
             }
         %>
 
-        <ui:h1HeaderWithIcon type="Subscription">
+        <ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}" type="Subscription">
             <laser:render template="/subscription/iconSubscriptionIsChild"/>
 
-            ${message(code:'subscription.details.financials.label')} ${message(code:'default.for')} ${subscription} <ui:totalNumber total="${total.join(' / ')}"/>
+            ${message(code:'subscription.details.financials.label')} ${message(code:'default.for')} ${subscription}
         </ui:h1HeaderWithIcon>
+        <ui:totalNumber class="la-numberHeader" total="${total.join(' / ')}"/>
         <ui:anualRings mapping="subfinance" object="${subscription}" controller="finance" action="index" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
         <laser:render template="/subscription/nav" model="${[subscription:subscription, params:(params << [id:subscription.id, showConsortiaFunctions:showConsortiaFunctions])]}"/>
