@@ -8,11 +8,9 @@
 
         <ui:h1HeaderWithIcon text="${orgInstance.name}" />
 
-        <g:if test="${editable}">
-            <ui:controlButtons>
-                <laser:render template="actions" />
-            </ui:controlButtons>
-        </g:if>
+        <ui:controlButtons>
+            <laser:render template="actions" />
+        </ui:controlButtons>
 
         <laser:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: orgInstance.id == contextService.getOrg().id]}"/>
 

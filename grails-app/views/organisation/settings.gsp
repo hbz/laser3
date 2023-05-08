@@ -8,11 +8,9 @@
 
         <ui:h1HeaderWithIcon text="${orgInstance.name}" />
 
-        <g:if test="${editable}">
-            <ui:controlButtons>
-                <laser:render template="actions" />
-            </ui:controlButtons>
-        </g:if>
+        <ui:controlButtons>
+            <laser:render template="actions" />
+        </ui:controlButtons>
 
         <ui:objectStatus object="${orgInstance}" status="${orgInstance.status}" />
 
