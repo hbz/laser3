@@ -1538,6 +1538,8 @@ class YodaController {
         threadArray.each { Thread thread ->
             if (thread.name == 'setPerpetualAccessByIes') {
                 flash.error = 'setPerpetualAccessByIes process still running!'
+                redirect controller: 'yoda', action: 'index'
+                return
             }
         }
         executorService.execute({
