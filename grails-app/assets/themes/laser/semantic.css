@@ -51692,7 +51692,7 @@ aside.la-metabox + .la-metabox-spacer {
 
 .ui.segments.la-accordion-segments .ui.segment:nth-child(2).content .ui.table thead tr:first-child > th,
 .ui.segments.la-accordion-segments .ui.segment:nth-child(2).content .ui.table thead tr:nth-child(2) > th {
-  background: #FFFFFF;
+  background: #f4f8f9;
 }
 
 .ui.la-segment-with-icon {
