@@ -9,7 +9,6 @@
 
 5008    08.05.2023  dev     3.1         David   Feature     Zauberstab-Actions vereinheitlichen
 
-
 5003    08.05.2023  dev     3.1         David   Bug         DEV: Meine Anbieter - Funktionen eingeschränkt für Pro-Nutzer
 
 4998    03.05.2023  dev     3.1         Andreas Bug         Bugs beim Erzeugen und Export von Nutzerzahlen behoben
