@@ -36,7 +36,6 @@
                     <g:link class="item" action="members" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link>
                 </g:else>
             </ui:exportDropdownItem>
-            --%>
             <ui:exportDropdownItem>
                 <g:if test="${filterSet}">
                     <g:link class="item js-open-confirm-modal"
@@ -83,6 +82,7 @@
                     <g:link class="item" action="members" params="${params+[exportShibboleths:true]}">${message(code:'subscriptionDetails.members.exportShibboleths')}</g:link>
                 </g:else>
             </ui:exportDropdownItem>
+            --%>
         </ui:exportDropdown>
         <laser:render template="actions" />
     </ui:controlButtons>
