@@ -63,6 +63,9 @@ class RDConstants {
     public static final String IPV4_ADDRESS_FORMAT    = 'ipv4.address.format'
     public static final String IPV6_ADDRESS_FORMAT    = 'ipv6.address.format'
 
+    public static final String MAIL_STATUS            = 'mail.status'
+    public static final String MAIL_TYPE              = 'mail.type'
+
     public static final String LANGUAGE               = 'language'
     public static final String LANGUAGE_ISO           = 'language.iso'
     public static final String LIBRARY_NETWORK        = 'library.network'

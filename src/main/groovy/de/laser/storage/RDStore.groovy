@@ -82,6 +82,11 @@ class RDStore {
     public final static RefdataValue LINKTYPE_FOLLOWS       = getRefdataValue('follows', RDConstants.LINK_TYPE)
     public final static RefdataValue LINKTYPE_LICENSE       = getRefdataValue('license', RDConstants.LINK_TYPE)
 
+    public final static RefdataValue MAIL_STATUS_SEND       = getRefdataValue('Sent', RDConstants.MAIL_STATUS)
+
+    public final static RefdataValue MAIL_TYPE_SURVEY_REMINDER   = getRefdataValue('Survey-Reminder', RDConstants.MAIL_TYPE)
+    public final static RefdataValue MAIL_TYPE_SURVEY_OPEN       = getRefdataValue('Survey-Open', RDConstants.MAIL_TYPE)
+
     public final static RefdataValue ORG_STATUS_CURRENT     = getRefdataValue('Current', RDConstants.ORG_STATUS)
     public final static RefdataValue ORG_STATUS_DELETED     = getRefdataValue('Deleted', RDConstants.ORG_STATUS)
     public final static RefdataValue ORG_STATUS_REMOVED     = getRefdataValue('Removed', RDConstants.ORG_STATUS)
