@@ -56,7 +56,7 @@
 
         <div class="item" role="menuitem" aria-haspopup="true">
             <div class="title">
-                <i class="ui icon code branch"></i> <span class="text">Developer</span> <i class="dropdown icon"></i>
+                <i class="ui icon code"></i> <span class="text">Developer</span> <i class="dropdown icon"></i>
             </div>
 
             <div class="menu" role="menu">

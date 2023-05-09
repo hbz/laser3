@@ -22,7 +22,7 @@
 <ui:controlButtons>
     <laser:render template="actions"/>
 </ui:controlButtons>
-<ui:h1HeaderWithIcon>
+<ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}">
 <laser:render template="iconSubscriptionIsChild"/>
 <ui:xEditable owner="${subscription}" field="name"/>
 </ui:h1HeaderWithIcon>
@@ -40,7 +40,7 @@
 
 
 <ui:messages data="${flash}"/>
-<g:render template="/templates/workflow/status" model="${[cmd: cmd, status: status]}" />
+<laser:render template="/templates/workflow/status" model="${[cmd: cmd, status: status]}" />
 
 <div id="collapseableSubDetails" class="ui stackable grid">
     <div class="eleven wide column">
@@ -459,7 +459,7 @@
             <div id="container-links">
                 <div class="ui card"  id="links"></div>
             </div>
-            <laser:render template="/templates/aside1" model="${[ownobj: subscription, owntp: 'subscription']}"/>
+            <laser:render template="/templates/sidebar/aside" model="${[ownobj: subscription, owntp: 'subscription']}"/>
         </div>
     </aside><!-- .four -->
 </div><!-- .grid -->

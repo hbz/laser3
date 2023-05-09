@@ -13,7 +13,7 @@
         %>
         <ui:exportDropdown>
             <ui:exportDropdownItem>
-                <a class="item" data-ui="modal" href="#individuallyExportModal">Click Me Excel Export</a>
+                <a class="item" data-ui="modal" href="#individuallyExportModal">Click Me Export</a>
             </ui:exportDropdownItem>
             <g:if test="${filterSet}">
                 <ui:exportDropdownItem>
@@ -42,9 +42,6 @@
                 </ui:exportDropdownItem>
             </g:else>
         </ui:exportDropdown>
-        <g:if test="${editable}">
-            <laser:render template="actions" />
-        </g:if>
     </ui:controlButtons>
 
     <ui:h1HeaderWithIcon message="menu.public.all_cons" total="${consortiaTotal}" floated="true" />

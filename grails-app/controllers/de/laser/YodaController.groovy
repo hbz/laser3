@@ -42,7 +42,10 @@ import org.elasticsearch.client.indices.GetIndexRequest
 import org.hibernate.SessionFactory
 import org.quartz.JobKey
 import org.quartz.impl.matchers.GroupMatcher
+import org.springframework.security.web.FilterChainProxy
+import org.springframework.security.web.SecurityFilterChain
 
+import javax.servlet.Filter
 import javax.servlet.ServletOutputStream
 import java.lang.annotation.Annotation
 import java.lang.reflect.Method
@@ -60,6 +63,7 @@ import java.util.concurrent.ExecutorService
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class YodaController {
 
+    Filter springSecurityFilterChain
     SessionFactory sessionFactory
 
     CacheService cacheService
@@ -167,6 +171,17 @@ class YodaController {
             groups.putAt( groupName, group.sort{ a, b -> (a.name < b.name ? -1 : 1)} )
         }
         result.quartz = groups
+        result
+    }
+
+    @Secured(['ROLE_YODA'])
+    def systemOddments() {
+        Map<String, Object> result = [:]
+
+        FilterChainProxy filterChainProxy = (FilterChainProxy) springSecurityFilterChain
+        List<SecurityFilterChain> list = filterChainProxy.getFilterChains()
+
+        result.filters = list.stream().flatMap(chain -> chain.getFilters().stream()).toArray().toList()
         result
     }
 
@@ -649,7 +664,7 @@ class YodaController {
                 flagContentGokb : true // gokbService.queryElasticsearch
         ]
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
-        Map allPlatforms = gokbService.queryElasticsearch(apiSource.baseUrl+apiSource.fixToken+"/find?componentType=Platform&max=10000&status=Current")
+        Map allPlatforms = gokbService.queryElasticsearch(apiSource.baseUrl+apiSource.fixToken+"/searchApi?componentType=Platform&max=10000&status=Current")
         if (allPlatforms.error && allPlatforms.error == 404) {
             result.wekbServerUnavailable = message(code: 'wekb.error.404')
         }

@@ -1254,7 +1254,20 @@ class ExportService {
 				cell = headerRow.createCell(0)
 				cell.setCellValue("Report_Filters")
 				cell = headerRow.createCell(1)
-				cell.setCellValue(Counter5Report.EXPORT_CONTROLLED_LISTS.valueOf(reportType.toUpperCase()).reportFilters)
+				String standardFilters = Counter5Report.EXPORT_CONTROLLED_LISTS.valueOf(reportType.toUpperCase()).reportFilters
+				if(standardFilters == 'as selected') {
+					String reportFilters = ''
+					if(params.accessType)
+						reportFilters += 'Access_Type='+params.list('accessType').join('|')
+					if(params.accessMethod) {
+						if(reportFilters)
+							reportFilters += '; '
+						reportFilters += 'Access_Method=' + params.list('accessMethod').join('|')
+					}
+					cell.setCellValue(reportFilters)
+				}
+				else
+					cell.setCellValue(standardFilters)
 				headerRow = sheet.createRow(7)
 				cell = headerRow.createCell(0)
 				cell.setCellValue("Report_Attributes")
@@ -1263,6 +1276,14 @@ class ExportService {
 				headerRow = sheet.createRow(8)
 				cell = headerRow.createCell(0)
 				cell.setCellValue("Exceptions")
+				if(requestResponse.header.Exceptions) {
+					cell = headerRow.createCell(1)
+					List<String> exceptions = []
+					requestResponse.header.Exceptions.each { Map exception ->
+						exceptions << "${exception.Code}: ${exception.Message} (${exception.Data})"
+					}
+					cell.setCellValue(exceptions.join('; '))
+				}
 				headerRow = sheet.createRow(9)
 				cell = headerRow.createCell(0)
 				cell.setCellValue("Reporting_Period")
@@ -1310,15 +1331,16 @@ class ExportService {
 					cell.setCellValue(colHeader)
 				}
 				rowno = 14
+				Map<String, Object> data = [:]
 				switch(reportType.toLowerCase()) {
 					case Counter5Report.PLATFORM_MASTER_REPORT:
 					case Counter5Report.PLATFORM_USAGE:
-						Map<String, Object> metricRows = [:]
+						data = [:]
 						for(def reportItem: requestResponse.items) {
 							for(Map performance: reportItem.Performance) {
 								Date reportFrom = DateUtils.parseDateGeneric(performance.Period.Begin_Date)
 								for(Map instance: performance.Instance) {
-									Map<String, Object> metricRow = metricRows.get(instance.Metric_Type)
+									Map<String, Object> metricRow = data.get(instance.Metric_Type)
 									int periodTotal, reportCount = instance.Count as int
 									if(!metricRow) {
 										metricRow = [:]
@@ -1330,11 +1352,11 @@ class ExportService {
 									metricRow.put(DateUtils.getLocalizedSDF_MMMyyyy(LocaleUtils.getLocaleEN()).format(reportFrom), reportCount)
 									periodTotal += reportCount
 									metricRow.put('Reporting_Period_Total', periodTotal)
-									metricRows.put(instance.Metric_Type, metricRow)
+									data.put(instance.Metric_Type, metricRow)
 								}
 							}
 							int i = 0
-							for (Map.Entry<String, Object> metricRow: metricRows) {
+							for (Map.Entry<String, Object> metricRow: data) {
 								row = sheet.createRow(i + rowno)
 								for (int c = 0; c < columnHeaders.size(); c++) {
 									cell = row.createCell(c)
@@ -1374,7 +1396,7 @@ class ExportService {
 					case Counter5Report.DATABASE_MASTER_REPORT:
 					case Counter5Report.DATABASE_ACCESS_DENIED:
 					case Counter5Report.DATABASE_SEARCH_AND_ITEM_USAGE:
-						Map<String, Object> data = prepareDataWithDatabases(requestResponse, reportType)
+						data = prepareDataWithDatabases(requestResponse, reportType)
 						int i = 0
 						for(Map.Entry<String, Object> databaseRow: data) {
 							for(Map.Entry<String, Object> metricRow: databaseRow.getValue()) {
@@ -1413,51 +1435,56 @@ class ExportService {
 							}
 						}*/
 						break
-					default: Map<String, Object> data = prepareDataWithTitles(titles, propIdNamespace, reportType, requestResponse, showPriceDate, showOtherData)
+					default: data = prepareDataWithTitles(titles, propIdNamespace, reportType, requestResponse, showPriceDate, showOtherData)
 						titleRows = data.titleRows
 						break
 				}
-				if(titleRows.size() > 0) {
-					prf.setBenchmark('loop through assembled rows')
-					for(TitleInstancePackagePlatform title: titlesSorted) {
-						Instant start = Instant.now().truncatedTo(ChronoUnit.MICROS)
-						Map titleMetrics = titleRows.get(title.id)
-						for(Map.Entry titleMetric: titleMetrics) {
-							Map titleAccessTypes = titleMetric.getValue()
-							for(Map.Entry titleAccessType: titleAccessTypes) {
-								int i = 0
-								Map titleYop = titleAccessType.getValue()
-								for(Map.Entry entry: titleYop) {
-									Map titleRow = entry.getValue()
-									row = sheet.createRow(i+rowno)
-									cell = row.createCell(0)
-									cell.setCellValue(title.name)
-									for(int c = 1; c < columnHeaders.size(); c++) {
-										cell = row.createCell(c)
-										cell.setCellValue(titleRow.get(columnHeaders[c]) ?: "")
+				if(reportType in Counter5Report.COUNTER_5_TITLE_REPORTS) {
+					if(titleRows.size() > 0) {
+						prf.setBenchmark('loop through assembled rows')
+						for(TitleInstancePackagePlatform title: titlesSorted) {
+							Instant start = Instant.now().truncatedTo(ChronoUnit.MICROS)
+							Map titleMetrics = titleRows.get(title.id)
+							for(Map.Entry titleMetric: titleMetrics) {
+								Map titleAccessTypes = titleMetric.getValue()
+								for(Map.Entry titleAccessType: titleAccessTypes) {
+									int i = 0
+									Map titleYop = titleAccessType.getValue()
+									for(Map.Entry entry: titleYop) {
+										Map titleRow = entry.getValue()
+										row = sheet.createRow(i+rowno)
+										cell = row.createCell(0)
+										cell.setCellValue(title.name)
+										for(int c = 1; c < columnHeaders.size(); c++) {
+											cell = row.createCell(c)
+											cell.setCellValue(titleRow.get(columnHeaders[c]) ?: "")
+										}
+										i++
 									}
-									i++
+									rowno += titleYop.size()
 								}
-								rowno += titleYop.size()
 							}
+							Duration diff = Duration.between(start, Instant.now().truncatedTo(ChronoUnit.MICROS))
+							//log.debug("cell row generated in ${diff} micros")
 						}
-						Duration diff = Duration.between(start, Instant.now().truncatedTo(ChronoUnit.MICROS))
-						//log.debug("cell row generated in ${diff} micros")
-					}
-					List debug = prf.stopBenchmark()
-					debug.eachWithIndex { bm, int c ->
-						String debugString = "Step: ${c+1}, comment: ${bm[0]} "
-						if (c < debug.size() - 1) {
-							debugString += debug[c+1][1] - bm[1]
-						} else {
-							debugString += '=> ' + ( bm[1] - debug[0][1] ) + ' <='
+						List debug = prf.stopBenchmark()
+						debug.eachWithIndex { bm, int c ->
+							String debugString = "Step: ${c+1}, comment: ${bm[0]} "
+							if (c < debug.size() - 1) {
+								debugString += debug[c+1][1] - bm[1]
+							} else {
+								debugString += '=> ' + ( bm[1] - debug[0][1] ) + ' <='
+							}
+							log.debug(debugString)
 						}
-						log.debug(debugString)
+						[result: wb]
 					}
-					[result: wb]
+					else {
+						[error: 'noSubscribedTitles']
+					}
 				}
-				else {
-					[error: 'noSubscribedTitles']
+				else if(data.size() > 0) {
+					[result: wb]
 				}
 				/*
 				titleRows.each{ TitleInstancePackagePlatform title, Map<String, Map<String, Map>> titleMetric ->
@@ -1611,7 +1638,10 @@ class ExportService {
 							}
 							periodTotal += reportCount
 							titleRow.put("Reporting_Period_Total", periodTotal)
-							titleRow.put(DateUtils.getLocalizedSDF_MMMyyyy(LocaleUtils.getLocaleEN()).format(reportFrom), reportCount)
+							//temp solution for journal reports, especially for DUZ, where issues of a journal are currently couted as individual title instances
+							String reportMonth = DateUtils.getLocalizedSDF_MMMyyyy(LocaleUtils.getLocaleEN()).format(reportFrom)
+							int currentMonthCount = titleRow.containsKey(reportMonth) ? titleRow.get(reportMonth) : 0
+							titleRow.put(reportMonth, reportCount+currentMonthCount)
 							titlesByYop.put(yopKey, titleRow)
 							titlesByAccessType.put(reportItem.Access_Type, titlesByYop)
 							titleMetrics.put(instance.Metric_Type, titlesByAccessType)
@@ -2001,12 +2031,15 @@ class ExportService {
 		Map<String, Object> result = [:]
 		ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
 		SimpleDateFormat monthFormatter = DateUtils.getSDF_yyyyMM()
-		Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/sushiSources?uuid=${configMap.platform.gokbId}")
+		Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/sushiSources")
 		Map platformRecord
 		if (queryResult.warning) {
-			List records = queryResult.warning.records
-			if(records[0]) {
-				platformRecord = records[0]
+			Map<String, Object> records = queryResult.warning
+			if(records.counter4ApiSources.containsKey(configMap.platform.gokbId)) {
+				platformRecord = records.counter4ApiSources.get(configMap.platform.gokbId)
+			}
+			else if(records.counter5ApiSources.containsKey(configMap.platform.gokbId)) {
+				platformRecord = records.counter5ApiSources.get(configMap.platform.gokbId)
 			}
 		}
 		if(platformRecord) {
@@ -2055,8 +2088,33 @@ class ExportService {
 				}
 				else if(statsSource.revision == 'counter5') {
 					String url = statsSource.statsUrl + "/${configMap.reportType}"
-					url += "?customer_id=${customerId.value}&requestor_id=${customerId.requestorKey}"
-					url += configMap.platform.centralApiKey ? "&api_key=${configMap.platform.centralApiKey}" : "&api_key=${customerId.requestorKey}"
+					url += "?customer_id=${customerId.value}"
+					switch(platformRecord.sushiApIAuthenticationMethod) {
+						case AbstractReport.API_AUTH_CUSTOMER_REQUESTOR:
+							if(customerId.requestorKey) {
+								url += "&requestor_id=${customerId.requestorKey}"
+							}
+							break
+						case AbstractReport.API_AUTH_CUSTOMER_API:
+						case AbstractReport.API_AUTH_REQUESTOR_API:
+							if(customerId.requestorKey) {
+								url += "&api_key=${customerId.requestorKey}"
+							}
+							break
+						case AbstractReport.API_AUTH_CUSTOMER_REQUESTOR_API:
+							if(customerId.requestorKey && configMap.platform.centralApiKey) {
+								url += "&requestor_id=${customerId.requestorKey}&api_key=${platform.centralApiKey}"
+							}
+							break
+						case AbstractReport.API_IP_WHITELISTING:
+							break
+						default:
+							String apiKey = configMap.platform.centralApiKey ?: customerId.requestorKey
+							if(customerId.requestorKey || apiKey) {
+								url += "&requestor_id=${customerId.requestorKey}&api_key=${apiKey}"
+							}
+							break
+					}
 					url += configMap.metricTypes ? "&metric_type=${configMap.metricTypes}" : ""
 					url += configMap.accessTypes ? "&access_type=${configMap.accessTypes}" : ""
 					url += configMap.accessMethods ? "&access_method=${configMap.accessMethods}" : ""

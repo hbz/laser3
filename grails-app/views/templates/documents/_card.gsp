@@ -6,7 +6,7 @@
     Org contextOrg = contextOrg ?: contextService.getOrg()
     String documentMessage
     switch(ownobj.class.name) {
-        case Org.class.name: documentMessage = "menu.my.documents"
+        case Org.class.name: documentMessage = "default.documents.label"
             editable = userService.checkAffiliationAndCtxOrg_or_ROLEADMIN(contextService.getUser(), contextOrg, 'INST_EDITOR')
             break
         default: documentMessage = "license.documents"

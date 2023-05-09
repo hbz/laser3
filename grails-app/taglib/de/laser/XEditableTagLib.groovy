@@ -316,7 +316,7 @@ class XEditableTagLib {
                 String strValue = intValue ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')
 
                 // Output an editable link
-                out << "<a href=\"#\" id=\"${id}\" class=\"xEditableManyToOne\""
+                out << "<a href=\"#\" id=\"${id}\" class=\"xEditableBoolean\""
 
                 out << (owner instanceof SurveyResult ? ' data-onblur="submit"' : ' data-onblur="ignore"')
 

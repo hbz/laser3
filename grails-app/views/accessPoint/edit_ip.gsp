@@ -44,7 +44,7 @@
 </ui:tabs>
 
 <div class="ui bottom attached active tab segment">
-    <h2 class="ui header la-noMargin-top"><g:message code="default.edit.label" args="[accessPoint.accessMethod.getI10n('value')]"/></h2>
+
 
 
     <div class="la-inline-lists">
@@ -71,12 +71,6 @@
 
 
     <div class="ui bottom attached ${tab == 'IPv4' ? 'active' : ''} tab segment" data-tab="IPv4">
-
-        <h3 class="ui header">${message(code: 'accessPoint.ip.configuration')}
-        %{--<span class="la-long-tooltip la-popup-tooltip la-delay" data-html='${message(code:'accessPoint.permittedIpRanges')}'>
-            <i class="question circle icon la-popup"></i>
-        </span>--}%
-        </h3>
 
         <table class="ui celled la-js-responsive-table la-table table very compact">
             <thead>
@@ -145,11 +139,6 @@
     </div>
 
 <div class="ui bottom attached tab ${tab == 'IPv6' ? 'active' : ''} segment" data-tab="IPv6">
-    <h3 class="ui header">${message(code: 'accessPoint.ip.configuration')}
-    %{--<span class="la-long-tooltip la-popup-tooltip la-delay" data-html='${message(code:'accessPoint.permittedIpRanges')}'>
-        <i class="question circle icon la-popup"></i>
-    </span>--}%
-    </h3>
 
     <table class="ui celled la-js-responsive-table la-table table very compact">
         <thead>

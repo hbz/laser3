@@ -8,6 +8,10 @@
 
         <ui:h1HeaderWithIcon text="${orgInstance.name}" />
 
+        <ui:controlButtons>
+            <laser:render template="actions" />
+        </ui:controlButtons>
+
         <ui:objectStatus object="${orgInstance}" status="${orgInstance.status}" />
 
         <laser:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg]}"/>

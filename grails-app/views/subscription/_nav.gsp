@@ -25,45 +25,49 @@
         ${message(code:'subscription.details.financials.label')}<div class="ui floating blue circular label">${currentCostItemCounts}</div>
     </g:link>
 
-    <g:if test="${showConsortiaFunctions && !subscription.instanceOf}">
-        <ui:securedSubNavItem orgPerm="${CustomerTypeService.ORG_CONSORTIUM_PRO}" controller="subscription" action="surveysConsortia" counts="${currentSurveysCounts}" params="${[id:params.id]}" message="subscription.details.surveys.label" />
-    </g:if>
-    <g:if test="${(contextService.getOrg().isCustomerType_Consortium_Pro() && subscription.instanceOf)}">
-        <ui:securedSubNavItem orgPerm="${CustomerTypeService.ORG_CONSORTIUM_PRO}" controller="subscription" action="surveys" counts="${currentSurveysCounts}" params="${[id:params.id]}" message="subscription.details.surveys.label" />
-    </g:if>
-    <g:if test="${(contextService.getOrg().isCustomerType_Inst() || params.orgBasicMemberView) && subscription?.type == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL}">
-        <ui:securedSubNavItem orgPerm="${CustomerTypeService.ORG_INST_BASIC}" controller="subscription" action="surveys" counts="${currentSurveysCounts}" params="${[id:params.id]}" message="subscription.details.surveys.label" />
-    </g:if>
-    <g:if test="${subscription.packages}">
-        <%
-            Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription", [subscription: subscription])
-            if(!subscribedPlatforms) {
-                subscribedPlatforms = Platform.executeQuery("select tipp.platform from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscription or ie.subscription = (select s.instanceOf from Subscription s where s = :subscription)", [subscription: subscription])
-            }
-            boolean statsAvailable = subscriptionService.areStatsAvailable(subscribedPlatforms)
-        %>
-        <g:if test="${statsAvailable}">
-            <ui:subNavItem controller="subscription" action="stats" params="${[id:params.id]}" message="default.stats.label" />
+        <g:if test="${showConsortiaFunctions && !subscription.instanceOf}">
+            <ui:securedSubNavItem orgPerm="${CustomerTypeService.ORG_CONSORTIUM_PRO}" controller="subscription" action="surveysConsortia" counts="${currentSurveysCounts}" params="${[id:params.id]}" message="subscription.details.surveys.label" />
+        </g:if>
+        <g:if test="${(contextService.getOrg().isCustomerType_Consortium_Pro() && subscription.instanceOf)}">
+            <ui:securedSubNavItem orgPerm="${CustomerTypeService.ORG_CONSORTIUM_PRO}" controller="subscription" action="surveys" counts="${currentSurveysCounts}" params="${[id:params.id]}" message="subscription.details.surveys.label" />
+        </g:if>
+        <g:if test="${(contextService.getOrg().isCustomerType_Inst() || params.orgBasicMemberView) && subscription?.type == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL}">
+            <ui:securedSubNavItem orgPerm="${CustomerTypeService.ORG_INST_BASIC}" controller="subscription" action="surveys" counts="${currentSurveysCounts}" params="${[id:params.id]}" message="subscription.details.surveys.label" />
+        </g:if>
+
+        <g:if test="${subscription.packages}">
+            <%
+                Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription", [subscription: subscription])
+                if(!subscribedPlatforms) {
+                    subscribedPlatforms = Platform.executeQuery("select tipp.platform from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscription or ie.subscription = (select s.instanceOf from Subscription s where s = :subscription)", [subscription: subscription])
+                }
+                boolean statsAvailable = subscriptionService.areStatsAvailable(subscribedPlatforms)
+            %>
+            <g:if test="${statsAvailable}">
+                <ui:subNavItem controller="subscription" action="stats" params="${[id:params.id]}" message="default.stats.label" />
+            </g:if>
+            <g:else>
+                <ui:subNavItem message="default.stats.label" tooltip="${message(code: 'default.stats.noStatsForSubscription')}" disabled="disabled" />
+            </g:else>
         </g:if>
         <g:else>
-            <ui:subNavItem message="default.stats.label" tooltip="${message(code: 'default.stats.noStatsForSubscription')}" disabled="disabled" />
+            <ui:subNavItem message="default.stats.label" tooltip="${message(code: 'default.stats.noPackage')}" disabled="disabled" />
         </g:else>
-    </g:if>
-    <g:else>
-        <ui:subNavItem message="default.stats.label" tooltip="${message(code: 'default.stats.noPackage')}" disabled="disabled" />
-    </g:else>
 
+        <g:if test="${contextService.getOrg().isCustomerType_Pro()}">
+            <ui:subNavItem controller="subscription" action="reporting" params="${[id:params.id]}" message="myinst.reporting" />
+        </g:if>
 
-    <g:if test="${contextService.getOrg().isCustomerType_Pro()}">
-        <ui:subNavItem controller="subscription" action="reporting" params="${[id:params.id]}" message="myinst.reporting" />
-    </g:if>
-    <g:if test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
-        <ui:subNavItem controller="subscription" action="workflows" counts="${checklistCount}" params="${[id:params.id]}" message="workflow.plural" />
-    </g:if>
+        <ui:subNavItem controller="subscription" action="notes" params="${[id:params.id]}" counts="${notesCount}" message="default.notes.label" />
+        <ui:securedSubNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="subscription" action="tasks" params="${[id:params.id]}" counts="${tasksCount}" message="task.plural" />
+        <ui:securedSubNavItem orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="subscription" action="documents" params="${[id:params.id]}" message="default.documents.label" />
 
-    <ui:securedSubNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="subscription" action="tasks" params="${[id:params.id]}" counts="${tasksCount}" message="task.plural" />
-    <ui:securedSubNavItem orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="subscription" action="documents" params="${[id:params.id]}" message="default.documents.label" />
-    <ui:subNavItem controller="subscription" action="notes" params="${[id:params.id]}" counts="${notesCount}" message="default.notes.label" />
+        <g:if test="${accessService.ctxPerm(CustomerTypeService.PERMS_PRO)}"><!-- TODO: workflows-permissions -->
+            <ui:subNavItem controller="subscription" action="workflows" counts="${checklistCount}" params="${[id:params.id]}" message="workflow.plural"/>
+        </g:if>
+        <g:elseif test="${accessService.ctxPerm(CustomerTypeService.PERMS_BASIC)}">
+            <ui:subNavItem controller="subscription" action="workflows" counts="${checklistCount}" params="${[id:params.id]}" message="workflow.plural" disabled="disabled"/>
+        </g:elseif>
 
     </g:if>%{-- if test="${! params.orgBasicMemberView}" --}%
 </ui:subNav>

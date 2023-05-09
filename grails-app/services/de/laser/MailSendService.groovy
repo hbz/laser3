@@ -13,8 +13,16 @@ import de.laser.system.SystemAnnouncement
 import de.laser.system.SystemEvent
 import de.laser.utils.AppUtils
 import grails.gorm.transactions.Transactional
+import grails.plugin.asyncmail.AsynchronousMailService
 import grails.plugins.mail.MailService
+import grails.web.mvc.FlashScope
+import grails.web.servlet.mvc.GrailsParameterMap
+import org.grails.web.servlet.mvc.GrailsWebRequest
+import org.grails.web.util.WebUtils
 import org.springframework.context.MessageSource
+import org.springframework.transaction.TransactionStatus
+
+import javax.servlet.http.HttpServletRequest
 
 @Transactional
 class MailSendService {
@@ -23,8 +31,14 @@ class MailSendService {
     EscapeService escapeService
     MessageSource messageSource
     AccessService accessService
+    SurveyService surveyService
+    SubscriptionService subscriptionService
+    AsynchronousMailService asynchronousMailService
 
     String from
+
+    String currentServer = AppUtils.getCurrentServer()
+    String subjectSystemPraefix = (currentServer == AppUtils.PROD) ? "LAS:eR - " : (ConfigMapper.getLaserSystemId() + " - ")
 
     /**
      * Constructor method
@@ -45,7 +59,7 @@ class MailSendService {
     void sendSurveyEmail(User user, Org org, List<SurveyInfo> surveyEntries, boolean reminderMail) {
 
         if (ConfigMapper.getConfig('grails.mail.disabled', Boolean) == true) {
-            log.debug 'SurveyService.sendSurveyEmail() failed due grails.mail.disabled = true'
+            log.error 'SurveyService.sendSurveyEmail() failed due grails.mail.disabled = true'
         }else {
 
             String replyTo
@@ -86,7 +100,7 @@ class MailSendService {
                         mailSubject = escapeService.replaceUmlaute(mailSubject)
 
                         if (isNotificationCCbyEmail && ccAddress) {
-                            mailService.sendMail {
+                            asynchronousMailService.sendMail {
                                 multipart true
                                 to emailReceiver
                                 from from
@@ -97,7 +111,7 @@ class MailSendService {
                                 html view: "/mailTemplates/html/notificationSurvey", model: [language: language, survey: survey, reminder: reminderMail]
                             }
                         } else {
-                            mailService.sendMail {
+                            asynchronousMailService.sendMail {
                                 multipart true
                                 to emailReceiver
                                 from from
@@ -128,7 +142,7 @@ class MailSendService {
     def emailToSurveyParticipationByFinish(SurveyInfo surveyInfo, Org participationFinish){
 
         if (ConfigMapper.getConfig('grails.mail.disabled', Boolean) == true) {
-            log.debug 'surveyService.emailToSurveyParticipationByFinish() failed due grails.mail.disabled = true'
+            log.error 'surveyService.emailToSurveyParticipationByFinish() failed due grails.mail.disabled = true'
             return false
         }
 
@@ -188,16 +202,16 @@ class MailSendService {
                             }
 
                             if (isNotificationCCbyEmail && ccAddress) {
-                                mailService.sendMail {
-                                    to      emailReceiver
-                                    from    from
-                                    cc      ccAddress
+                                asynchronousMailService.sendMail {
+                                    to emailReceiver
+                                    from from
+                                    cc ccAddress
                                     subject mailSubject
                                     html    (view: "/mailTemplates/html/notificationSurveyParticipationFinish", model: [user: user, survey: surveyInfo, surveyResults: surveyResults, generalContactsEMails: generalContactsEMails])
                                 }
                             } else {
-                                mailService.sendMail {
-                                    to      emailReceiver
+                                asynchronousMailService.sendMail {
+                                    to emailReceiver
                                     from from
                                     subject mailSubject
                                     html    (view: "/mailTemplates/html/notificationSurveyParticipationFinish", model: [user: user, survey: surveyInfo, surveyResults: surveyResults, generalContactsEMails: generalContactsEMails])
@@ -225,7 +239,7 @@ class MailSendService {
     def emailToSurveyOwnerbyParticipationFinish(SurveyInfo surveyInfo, Org participationFinish){
 
         if (ConfigMapper.getConfig('grails.mail.disabled', Boolean) == true) {
-            log.debug 'surveyService.emailToSurveyOwnerbyParticipationFinish() failed due grails.mail.disabled = true'
+            log.error 'emailToSurveyOwnerbyParticipationFinish() failed due grails.mail.disabled = true'
             return false
         }
 
@@ -274,16 +288,16 @@ class MailSendService {
                             }
 
                             if (isNotificationCCbyEmail && ccAddress) {
-                                mailService.sendMail {
-                                    to      emailReceiver
-                                    from    from
-                                    cc      ccAddress
+                                asynchronousMailService.sendMail {
+                                    to emailReceiver
+                                    from from
+                                    cc ccAddress
                                     subject mailSubject
                                     html    (view: "/mailTemplates/html/notificationSurveyParticipationFinishForOwner", model: [user: user, org: participationFinish, survey: surveyInfo, surveyResults: surveyResults])
                                 }
                             } else {
-                                mailService.sendMail {
-                                    to      emailReceiver
+                                asynchronousMailService.sendMail {
+                                    to emailReceiver
                                     from from
                                     subject mailSubject
                                     html    (view: "/mailTemplates/html/notificationSurveyParticipationFinishForOwner", model: [user: user, org: participationFinish, survey: surveyInfo, surveyResults: surveyResults])
@@ -310,6 +324,11 @@ class MailSendService {
      */
     void sendSystemAnnouncementMail(User user, SystemAnnouncement systemAnnouncement) throws Exception {
 
+        if (ConfigMapper.getConfig('grails.mail.disabled', Boolean) == true) {
+            log.error 'sendSystemAnnouncementMail failed due grails.mail.disabled = true'
+            return
+        }
+
         MessageSource messageSource = BeanStore.getMessageSource()
         Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RDStore.LANGUAGE_DE).value.toString())
 
@@ -326,19 +345,18 @@ class MailSendService {
         }
 
         if (isRemindCCbyEmail && ccAddress) {
-            mailService.sendMail {
-                to      user.getEmail()
-                from    ConfigMapper.getNotificationsEmailFrom()
-                cc      ccAddress
+            asynchronousMailService.sendMail {
+                to user.getEmail()
+                from ConfigMapper.getNotificationsEmailFrom()
+                cc ccAddress
                 replyTo ConfigMapper.getNotificationsEmailReplyTo()
                 subject mailSubject
                 body    (view: "/mailTemplates/text/systemAnnouncement", model: [user: user, announcement: systemAnnouncement])
             }
-        }
-        else {
-            mailService.sendMail {
-                to      user.getEmail()
-                from    ConfigMapper.getNotificationsEmailFrom()
+        } else {
+            asynchronousMailService.sendMail {
+                to user.getEmail()
+                from ConfigMapper.getNotificationsEmailFrom()
                 replyTo ConfigMapper.getNotificationsEmailReplyTo()
                 subject mailSubject
                 body    (view: "/mailTemplates/text/systemAnnouncement", model: [user: user, announcement: systemAnnouncement])
@@ -355,8 +373,8 @@ class MailSendService {
      */
     void sendMailToUser(User user, String subj, String view, Map model) {
 
-        if (AppUtils.getCurrentServer() == AppUtils.LOCAL) {
-            log.info "--- instAdmService.sendMail() --- IGNORED SENDING MAIL because of SERVER_LOCAL ---"
+        if (ConfigMapper.getConfig('grails.mail.disabled', Boolean) == true) {
+            log.error 'sendMailToUser failed due grails.mail.disabled = true'
             return
         }
 
@@ -364,9 +382,9 @@ class MailSendService {
 
         try {
 
-            mailService.sendMail {
-                to      user.email
-                from    ConfigMapper.getNotificationsEmailFrom()
+            asynchronousMailService.sendMail {
+                to user.email
+                from ConfigMapper.getNotificationsEmailFrom()
                 replyTo ConfigMapper.getNotificationsEmailReplyTo()
                 subject ConfigMapper.getLaserSystemId() + ' - ' + subj
                 body    view: view, model: model

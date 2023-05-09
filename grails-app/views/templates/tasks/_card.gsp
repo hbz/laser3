@@ -88,7 +88,7 @@
         func();
     }
     JSPC.app.readTask = function (id) {
-        var func = bb8.ajax4SimpleModalFunction("#modalReadTask", "<g:createLink controller="ajaxHtml" action="readTask"/>?id=" + id, false);
+        var func = bb8.ajax4SimpleModalFunction("#modalReadTask", "<g:createLink controller="ajaxHtml" action="readTask"/>?id=" + id);
         func();
     }
 </laser:script>

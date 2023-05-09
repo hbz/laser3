@@ -187,10 +187,8 @@
                     <label for="providerRole">${message(code: 'org.orgRole.label')}</label>
                     <%
                         Set<RefdataValue> providerRoles = [
-                                RefdataValue.getByValueAndCategory('Broker', RDConstants.ORG_TYPE), RefdataValue.getByValueAndCategory('Content Provider', RDConstants.ORG_TYPE),
-                                RefdataValue.getByValueAndCategory('Imprint', RDConstants.ORG_TYPE), RefdataValue.getByValueAndCategory('Issuing Body', RDConstants.ORG_TYPE),
-                                RefdataValue.getByValueAndCategory('Licensee', RDConstants.ORG_TYPE), RDStore.OT_LICENSOR, RefdataValue.getByValueAndCategory('Platform Provider', RDConstants.ORG_TYPE),
-                                RDStore.OT_PUBLISHER, RefdataValue.getByValueAndCategory('Vendor', RDConstants.ORG_TYPE)
+                                RDStore.OT_BROKER, RDStore.OT_CONTENT_PROVIDER, RDStore.OT_IMPRINT, RDStore.OT_ISSUING_BODY,
+                                RDStore.OT_LICENSEE, RDStore.OT_LICENSOR, RDStore.OT_PLATFORM_PROVIDER, RDStore.OT_PUBLISHER, RDStore.OT_VENDOR
                         ]
                     %>
                     <select name="providerRole" id="providerRole" multiple="" class="ui fluid select dropdown search">
@@ -255,6 +253,18 @@
                                   optionValue="value"
                                   value="${params.country}"
                                   noSelection="${['':message(code:'default.select.choose.label')]}"/>
+                </div>
+            </g:if>
+            <g:if test="${field.equalsIgnoreCase('isLegallyObliged')}">
+                <div class="field">
+                    <label for="isLegallyObliged">${message(code: 'org.isLegallyObliged.label')}</label>
+                    <g:set var="isLegallyObligedOptions" value="${['yes': message(code:'org.isLegallyObliged.yes.label'), 'no': message(code:'org.isLegallyObliged.no.label')]}" scope="request"/>
+                    <select id="isLegallyObliged" name="isLegallyObliged" class="ui search select dropdown">
+                        <option value="">${message(code:'default.select.choose.label')}</option>
+                        <g:each in="${isLegallyObligedOptions}" var="iloo">
+                            <option <%=(params.isLegallyObliged == iloo.key) ? 'selected="selected"' : '' %> value="${iloo.key}">${iloo.value}</option>
+                        </g:each>
+                    </select>
                 </div>
             </g:if>
             <g:if test="${field.equalsIgnoreCase('isLegallyObligedBy')}">

@@ -258,6 +258,7 @@
                             }
                             else if (JSPC.app.reporting.current.request.chart == 'pie') {
                                 chartHeight = Math.min(1800, 380 + (12 * JSPC.app.reporting.current.chart.option.dataset.source.length));
+                                JSPC.app.reporting.current.myCountsToggle = false;
                             }
                             else if (JSPC.app.reporting.current.request.chart == 'radar') {
                                 chartHeight = 400 + (8 * JSPC.app.reporting.current.chart.option.dataset.source.length);

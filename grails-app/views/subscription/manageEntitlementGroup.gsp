@@ -14,7 +14,7 @@
     <laser:render template="actions"/>
 </ui:controlButtons>
 
-<ui:h1HeaderWithIcon>
+<ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}">
     <ui:xEditable owner="${subscription}" field="name" />
 </ui:h1HeaderWithIcon>
 <g:if test="${editable}">

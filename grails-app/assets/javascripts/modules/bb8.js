@@ -108,8 +108,8 @@ bb8 = {
             });
     },
 
-    ajax4SimpleModalFunction : function (cssId, url, callDynPostFunc) {
-        console.log("bb8.ajaxSimpleModalFunction( " + cssId + ", " + url + ", " + callDynPostFunc + " )")
+    ajax4SimpleModalFunction : function (cssId, url) {
+        console.log("bb8.ajaxSimpleModalFunction( " + cssId + ", " + url + " )")
 
         return function () {
             $.ajax({
@@ -124,8 +124,10 @@ bb8 = {
                             r2d2.initDynamicUiStuff(cssId);
                             r2d2.initDynamicXEditableStuff(cssId);
 
-                            if (callDynPostFunc) {
-                                JSPC.callbacks.dynPostFunc()
+                            let modalCallbackFunction = JSPC.callbacks.modal.onVisible[$(this).attr('id')];
+                            if (typeof modalCallbackFunction === "function") {
+                                console.debug('%cJSPC.callbacks.modal.onVisible found: #' + $(this).attr('id'), 'color:grey')
+                                modalCallbackFunction( null )
                             }
                         }
                     }).modal('show');

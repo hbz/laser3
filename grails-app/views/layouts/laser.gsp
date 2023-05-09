@@ -277,6 +277,7 @@
                 <g:if test="${currentServer == AppUtils.LOCAL}">
                 console.log(JSPC);
                 why.info(false);
+                
                 </g:if>
 
                 JSPC.app.workaround_targetBlank = function(e) { e.stopPropagation() }

@@ -109,7 +109,7 @@
         }
 
 
-        JSPC.callbacks.modal.show.${modalID} = function(trigger) {
+        JSPC.callbacks.modal.onShow['${modalID}'] = function(trigger) {
           var orgIdList = '';
           var countChecked = 0;
           $.each($("tr[class!=disabled] input[name=selectedOrgs]"), function(i, checkbox) {

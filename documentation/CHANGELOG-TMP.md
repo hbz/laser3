@@ -7,9 +7,61 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5022    09.05.2023  dev     3.1         David   Feature     Aufgabe erstellen: Vorauswahl Bearbeiter auf "einzelnen Mitarbeiter" umstellen
+
+5009    09.05.2023  dev     3.1         Andreas Feature     Verschiedene Optimierungen in der Statistik
+
+5007    09.05.2023  dev     3.1         Andreas Bug         falsche Summierungen behoben
+
+5008    08.05.2023  dev     3.1         David   Feature     Zauberstab-Actions vereinheitlichen
+
+5003    08.05.2023  dev     3.1         David   Bug         DEV: Meine Anbieter - Funktionen eingeschränkt für Pro-Nutzer
+
+4998    03.05.2023  dev     3.1         Andreas Bug         Bugs beim Erzeugen und Export von Nutzerzahlen behoben
+
+4997    02.05.2023  dev     3.1         David   Feature     Sicherheitsabfrage Merkmale umbennen
+
+4994    02.05.2023  dev     3.1         David   Feature     DEV: Workflow braucht noch Sicherheitsabfrage
+
+4993    02.05.2023  dev     3.1         David   Feature     Javascript: JSPC - dynPostFunc entfernen
+
+4977    02.05.2023  dev     3.1         Andreas Bug         Unterbinden der Statistikgeneration wenn keine SUSHI-Quelle vorhanden
+
+4975    02.05.2023  dev     3.1         Andreas Feature     Umstellung des Statistikabrufes auf konfigurierbare Authentifizierungsparameter
+
+4874    29.04.2023  dev     3.1         Andreas Feature     Umstellung sämtlicher ClickMich-Exporte und Sicht "Alle Anbieter" aufgeräumt
+
+4983    28.04.2023  dev     3.1         David   Feature     Autofocus für modale Dialoge
+
+4986    27.04.2023  dev     3.1         Moe     Feature     Konzept: Schaltpult und Paketverknüpfung + Bestandsreiter
+
+4985    27.04.2023  dev     3.1         Andreas Bug         fehlender Referenzwert nachgetragen
+
+4989    27.04.2023  dev     3.1         Moe     Feature     AsynchronousMail Plugin in LASER hinzufügen
+
+4935    26.04.2023  dev     3.1         Moe     Feature     Umfrageübersicht: Bei Kostenangabe Bezug zu aktuellem Lizenzjahr visualisieren
+
+4407    27.04.2023  dev     3.1         David   Feature     API_LEVEL_READ automatisch für Vollnutzer setzen
+
+4984    27.04.2023  dev     3.1         David   Feature     Reporting "Bestand": Sortierung und Beschränkung
+
+4972    26.04.2023  dev     3.1         David   Feature     Zugriffs- und Bearbeitungsrechte
+
+4971    26.04.2023  dev     3.1         David   Feature     Hauptnavigation anpassen
+
+4970    26.04.2023  dev     3.1         David   Feature     Subnavigation anpassen
+
+4944    26.04.2023  dev     3.1         Andreas Feature     Paketsynchronisationsmechanismus eingebaut
+
+4802    26.04.2023  dev     3.1         Andreas Feature     Massenbearbeitung von Beständen angepasst
+
 4979    25.04.2023  dev     3.1         Andreas Bug         Nutzerzahl ließ sich nicht löschen
 
 4840    25.04.2023  dev     3.1         Andreas Feature     Datenkommunikation mit we:kb auf api2 umgerüstet
+
+4927    24.04.2023  dev     3.1         Moe     Feature     Betreff E-Mails aus LAS:eR
+
+4894    24.04.2023  dev     3.1         Moe     Feature     Neue Funktion: Benachrichtigung Benutzername 
 
 4927    24.04.2023  dev     3.1         Moe     Feature     Betreff E-Mails aus LAS:eR
 

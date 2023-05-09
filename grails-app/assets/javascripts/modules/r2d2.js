@@ -126,7 +126,7 @@ r2d2 = {
         r2d2.initDynamicUiStuff('body');
         r2d2.initDynamicXEditableStuff('body');
 
-        $("html").css("cursor", "auto");
+        $('html').css('cursor', 'auto');
     },
 
     initGlobalAjaxLogin : function() {
@@ -526,9 +526,19 @@ r2d2 = {
                 if(response.status == 'error') return response.msg; //msg will be shown in editable form
             }
         }).on('shown', function(e, obj) {
-
-            $('.table').trigger('reflow');
             obj.input.$input.dropdown({clearable: true}) // reference to current dropdown
+        });
+
+        // boolean values only allowed to be 0 or 1 so clearable not suitable
+        $(ctxSel + ' .xEditableBoolean').editable({
+            tpl: '<select class="ui search selection dropdown"></select>',
+            success: function(response, newValue) {
+                if(response.status == 'error') return response.msg; //msg will be shown in editable form
+            }
+        }).on('shown', function(e, obj) {
+
+
+            obj.input.$input.dropdown({clearable: false}) // reference to current dropdown
         });
 
         $(ctxSel + ' .simpleHiddenValue').editable({
@@ -553,7 +563,7 @@ r2d2 = {
         tooltip.init(ctxSel);
 
         $(ctxSel + " a[href], " + ctxSel + " input.js-wait-wheel").not("a[href^='#'], a[href*='ajax'], a[target='_blank'], .js-open-confirm-modal, a[data-tab], a[data-content], a.la-ctrls , .close, .js-no-wait-wheel, .trigger-modal").click(function() {
-            $("html").css("cursor", "wait");
+            $('html').css('cursor', 'wait');
         });
 
         // selectable table to avoid button is showing when focus after modal closed
@@ -568,7 +578,7 @@ r2d2 = {
 
         // modals
         $(ctxSel + " *[data-ui='modal']").click(function() {
-            var triggerElement = $(this)
+            var $triggerElement = $(this)
             var href = $(this).attr('data-href')
             if (! href) {
                 href = $(this).attr('href')
@@ -577,9 +587,17 @@ r2d2 = {
                 onVisible: function() {
                     $(this).find('.datepicker').calendar(r2d2.configs.datepicker);
                     $(this).find('.yearpicker').calendar(r2d2.configs.yearpicker);
+
+                    r2d2.helper.focusFirstFormElement(this);
+
+                    let modalCallbackFunction = JSPC.callbacks.modal.onVisible[$(this).attr('id')];
+                    if (typeof modalCallbackFunction === "function") {
+                        console.debug('%cJSPC.callbacks.modal.onVisible found: #' + $(this).attr('id') + ' - trigger: ' + $triggerElement.attr('id'), 'color:grey')
+                        modalCallbackFunction($triggerElement)
+                    }
                 },
                 detachable: true,
-                autofocus: true,
+                autofocus: false,
                 closable: false,
                 transition: 'scale',
                 onApprove : function() {
@@ -587,7 +605,6 @@ r2d2 = {
                     return false;
                 },
                 onShow : function() {
-                    var modalCallbackFunction = JSPC.callbacks.modal.show[$(this).attr('id')];
                     a11yModal.go({
                         el: document.getElementById($(this).attr('id')),
                         focusElement: '',
@@ -599,10 +616,12 @@ r2d2 = {
                         }
                     }
                     this.addEventListener('keyup', keyboardHandler);
-                    if (typeof modalCallbackFunction === "function") {
-                        modalCallbackFunction(triggerElement)
-                    }
 
+                    let modalCallbackFunction = JSPC.callbacks.modal.onShow[$(this).attr('id')];
+                    if (typeof modalCallbackFunction === "function") {
+                        console.debug('%cJSPC.callbacks.modal.onShow found: #' + $(this).attr('id') + ' - trigger: ' + $triggerElement.attr('id'), 'color:grey')
+                        modalCallbackFunction($triggerElement)
+                    }
                 },
                 onHide : function() {
                     this.removeEventListener('keyup', keyboardHandler);
@@ -627,7 +646,7 @@ r2d2 = {
                 $(".la-metabox ").css('box-shadow','none');
             }
         });
-        $(ctxSel + ' .accordion.la-accordion-showMore').find('input,a').click(function(event){
+        $(ctxSel + ' .accordion.la-accordion-showMore').find('a, .la-js-notOpenAccordion').click(function(event){
             event.stopPropagation();
         });
 
@@ -853,17 +872,21 @@ r2d2 = {
                         },
                         closable  : false,
                         onApprove : function() {
-
                             // open confirmation modal from inside a form
-                            if (dataAttr){
+                            if (dataAttr) {
                                 $('[data-confirm-id='+dataAttr+']').submit();
                             }
                             // open confirmation modal and open a new url after conirmation
-                            if (url){
+                            if (url) {
                                 window.location.href = url;
                             }
                             if (remoteLink) {
                                 bb8.ajax4remoteLink(elem)
+                            }
+                            // custom callback calls
+                            if ($(elem).attr('data-callback')) {
+                                let callback = JSPC.app[$(elem).attr('data-callback')];
+                                if (callback) { callback($(elem)); }
                             }
                             // x-editable
                             if (confirmationModalXeditableFlag == true) {
@@ -983,27 +1006,43 @@ r2d2 = {
         });
     },
 
-    resetModalForm : function (modalCssSel) {
-        let $modal = $(modalCssSel);
-        let $form = $modal.find('.content form');
+    helper : {
 
-        $form.form('reset');
-        $form.find('.field > input[type=text][name]').val('');
-        $form.find('.field > input[type=file][name]').val('');
-        $form.find('.field > textarea[name]').val('');
-        $form.find('.field > .dropdown > select[name]').dropdown('restore defaults');
-        $form.find('.field > .calendar').calendar('clear');
+        focusFirstFormElement: function (elem) {
+            console.log('r2d2.helper.focusFirstFormElement: #' + $(elem).attr('id') + ' .(' + $(elem).attr('class') + ')');
 
-        // documents/_modal - todo
+            let ffe = $(elem).find('input:not([disabled]):not([type=hidden]), textarea:not([disabled]):not([type=hidden])').first();
+            if (ffe) {
+                ffe.focus();
+            }
+        },
 
-        $form.find('dl > dd input[type=text][name]').val('');
-        $form.find('dl > dd input[type=file][name]').val('');
-        $form.find('dl > dd input[type=checkbox][name]').prop('checked', '')
-        $form.find('dl > dd .dropdown > select[name]').dropdown('restore defaults');
-    },
+        resetModalForm: function (modalCssSel) {
+            console.log('r2d2.helper.resetModalForm: ' + modalCssSel);
 
-    clearGlobalModalsContainer : function() {
-        $( '.ui.dimmer.modals.page' ).empty();
+            let $modal = $(modalCssSel);
+            let $form = $modal.find('.content form');
+
+            $form.form('reset');
+            $form.find('.field > input[type=text][name]').val('');
+            $form.find('.field > input[type=file][name]').val('');
+            $form.find('.field > textarea[name]').val('');
+            $form.find('.field > .dropdown > select[name]').dropdown('restore defaults');
+            $form.find('.field > .calendar').calendar('clear');
+
+            // documents/_modal - todo
+
+            $form.find('dl > dd input[type=text][name]').val('');
+            $form.find('dl > dd input[type=file][name]').val('');
+            $form.find('dl > dd input[type=checkbox][name]').prop('checked', '')
+            $form.find('dl > dd .dropdown > select[name]').dropdown('restore defaults');
+        },
+
+        clearGlobalModalsContainer: function () {
+            console.log('r2d2.helper.clearGlobalModalsContainer: ' + modalCssSel);
+
+            $('.ui.dimmer.modals.page').empty();
+        }
     }
 }
 

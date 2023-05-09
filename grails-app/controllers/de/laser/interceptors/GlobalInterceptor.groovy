@@ -1,7 +1,7 @@
 package de.laser.interceptors
 
 import de.laser.annotations.Check404
-import de.laser.custom.CustomWebSocketMessageBrokerConfig
+//import de.laser.custom.CustomWebSocketMessageBrokerConfig
 import de.laser.utils.AppUtils
 import de.laser.utils.CodeUtils
 import grails.core.GrailsControllerClass
@@ -16,7 +16,8 @@ import java.lang.reflect.Method
 class GlobalInterceptor implements grails.artefact.Interceptor {
 
     GlobalInterceptor() {
-        matchAll().excludes(uri: CustomWebSocketMessageBrokerConfig.WS_STOMP + '/**') // websockets
+        matchAll()
+//                .excludes(uri: CustomWebSocketMessageBrokerConfig.WS_STOMP + '/**') // websockets
     }
 
     boolean before() {

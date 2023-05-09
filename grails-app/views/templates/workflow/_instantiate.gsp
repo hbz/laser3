@@ -104,7 +104,7 @@
         $(this).find ('input').removeClass ('disabled').removeAttr ('disabled')
     } })
 
-    JSPC.callbacks.modal.show.modalCreateWorkflow = function () {
+    JSPC.callbacks.modal.onShow.modalCreateWorkflow = function (trigger) {
         $('#modalTabMenu .item').tab('change tab', 'copyWorkflow').tab('change tab', 'newWorkflow')
     }
 </laser:script>

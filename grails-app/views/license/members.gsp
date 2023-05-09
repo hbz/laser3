@@ -12,9 +12,8 @@
 
     <ui:h1HeaderWithIcon>
         <ui:xEditable owner="${license}" field="reference" id="reference"/>
-        <ui:totalNumber total="${validMemberLicenses.size() ?: 0}"/>
     </ui:h1HeaderWithIcon>
-
+    <ui:totalNumber total="${validMemberLicenses.size() ?: 0}"/>
     <ui:anualRings object="${license}" controller="license" action="members" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
 
 <laser:render template="nav" />

@@ -134,6 +134,35 @@ grails:
 ---
 # ---[ plugins ---
 
+asynchronous:
+    mail:
+        clear:
+            after:
+                sent: false
+        default:
+            attempt:
+                interval: 300000 # 5 minutes
+            max:
+                attempts:
+                    count: 1
+        disable: false
+        expired:
+            collector:
+                repeat:
+                    interval: 607000
+        messages:
+            at:
+                once: 100
+        newSessionOnImmediateSend: false
+        persistence:
+            provider: 'hibernate5' #  'hibernate', 'hibernate4', 'hibernate5', 'mongodb'
+        send:
+            immediately: true
+            repeat:
+                interval: 60000 # 1 minute
+        taskPoolSize: 1
+        useFlushOnSave: true
+
 grails:
     mail:
         poolSize: 20

@@ -13,7 +13,7 @@
         <g:form action="manageOrganisations" method="get" class="ui form">
             <laser:render template="/templates/filter/orgFilter"
                       model="[
-                              tmplConfigShow: [['name', 'identifier', 'type'],
+                              tmplConfigShow: [['name', 'identifier', 'type', 'customerType'],
                                                ['country&region', 'libraryNetwork', 'sector', 'libraryType']],
                               tmplConfigFormFilter: true
                       ]"/>
@@ -240,7 +240,7 @@
         </g:form>
 
         <laser:script file="${this.getGroovyPageFileName()}">
-            JSPC.callbacks.modal.show.gascoEntryModal = function(trigger) {
+            JSPC.callbacks.modal.onShow.gascoEntryModal = function(trigger) {
                 $('#gascoEntryModal #orgName_gasco').attr('value', $(trigger).attr('data-orgName'))
                 $('#gascoEntryModal input[name=target]').attr('value', $(trigger).attr('data-gascoTarget'))
                 $('#gascoEntryModal select[name=gascoEntry]').dropdown('set selected', $(trigger).attr('data-gascoEntry'))
@@ -285,7 +285,7 @@
         </g:form>
 
         <laser:script file="${this.getGroovyPageFileName()}">
-            JSPC.callbacks.modal.show.legalInformationModal = function(trigger) {
+            JSPC.callbacks.modal.onShow.legalInformationModal = function(trigger) {
                 $('#legalInformationModal input[name=target]').attr('value', $(trigger).attr('data-liTarget'))
                 $('#legalInformationModal #orgName_li').attr('value', $(trigger).attr('data-orgName'))
 
@@ -326,7 +326,7 @@
                           from="${[Role.findByAuthority('FAKE')] + Role.findAllByRoleType('org')}"
                           optionKey="id"
                           optionValue="authority"
-                          class="ui dropdown"
+                          class="ui dropdown la-not-clearable"
                 />
             </div>
         </g:form>
@@ -337,7 +337,7 @@
         </g:form>
 
         <laser:script file="${this.getGroovyPageFileName()}">
-            JSPC.callbacks.modal.show.customerTypeModal = function(trigger) {
+            JSPC.callbacks.modal.onShow.customerTypeModal = function(trigger) {
                 $('#customerTypeModal #orgName_ct').attr('value', $(trigger).attr('data-orgName'))
                 $('#customerTypeModal input[name=target]').attr('value', $(trigger).attr('data-ctTarget'))
 
@@ -369,13 +369,13 @@
                 <label for="apiLevel">${message(code:'org.apiLevel.label')}</label>
                 <g:select id="apiLevel" name="apiLevel"
                           from="${['Kein Zugriff'] + ApiToolkit.getAllApiLevels()}"
-                          class="ui dropdown"
+                          class="ui dropdown la-not-clearable"
                 />
             </div>
         </g:form>
 
         <laser:script file="${this.getGroovyPageFileName()}">
-            JSPC.callbacks.modal.show.apiLevelModal = function(trigger) {
+            JSPC.callbacks.modal.onShow.apiLevelModal = function(trigger) {
                 $('#apiLevelModal #orgName_al').attr('value', $(trigger).attr('data-orgName'))
                 $('#apiLevelModal input[name=target]').attr('value', $(trigger).attr('data-alTarget'))
 

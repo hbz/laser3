@@ -11,6 +11,9 @@
             </ui:exportDropdownItem>
         </ui:exportDropdown>
         </g:if>
+
+        <laser:render template="actions" />
+
 %{--        <g:if test="${editable}">
 
             <ui:actionsDropdown>

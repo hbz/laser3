@@ -4,16 +4,13 @@
               model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView]}"/>
 
     <ui:controlButtons>
-        <g:if test="${inContextOrg || isProviderOrAgency}">
-            <laser:render template="actions" model="${[org:org]}"/>
-        </g:if>
+        <laser:render template="actions" model="${[org:org]}"/>
     </ui:controlButtons>
 
     <ui:h1HeaderWithIcon text="${orgInstance.name}" />
 
     <laser:render template="nav" />
     <ui:messages data="${flash}" />
-
 
     <laser:render template="/templates/workflow/table" model="${[target:orgInstance, workflows:workflows, checklists:checklists]}"/>
 
@@ -24,7 +21,7 @@
 %{--    <laser:script file="${this.getGroovyPageFileName()}">--}%
 %{--        $('.wfModalLink').on('click', function(e) {--}%
 %{--            e.preventDefault();--}%
-%{--            var func = bb8.ajax4SimpleModalFunction("#wfModal", $(e.currentTarget).attr('href'), false);--}%
+%{--            var func = bb8.ajax4SimpleModalFunction("#wfModal", $(e.currentTarget).attr('href'));--}%
 %{--            func();--}%
 %{--        });--}%
 %{--        $('button[data-wfId]').on('click', function(e) {--}%

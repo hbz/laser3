@@ -12,8 +12,9 @@
     <ui:controlButtons>
         <ui:exportDropdown>
             <ui:exportDropdownItem>
-                <a class="item" data-ui="modal" href="#individuallyExportModal">Click Me Excel Export</a>
+                <a class="item" data-ui="modal" href="#individuallyExportModal">Click Me Export</a>
             </ui:exportDropdownItem>
+            <%--
             <g:if test="${filterSet}">
                 <ui:exportDropdownItem>
                     <g:link class="item js-open-confirm-modal"
@@ -40,10 +41,13 @@
                     <g:link class="item" action="listProvider" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link>
                 </ui:exportDropdownItem>
             </g:else>
+            --%>
         </ui:exportDropdown>
 
             <g:if test="${accessService.ctxPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC ) || accessService.is_ORG_COM_EDITOR()}">
-                <laser:render template="actions" />
+                <ui:actionsDropdown>
+                    <ui:actionsDropdownItem controller="organisation" action="findProviderMatches" message="org.create_new_provider.label"/>
+                </ui:actionsDropdown>
             </g:if>
     </ui:controlButtons>
 

@@ -3,7 +3,6 @@ package de.laser
 import de.laser.annotations.RefdataInfo
 import de.laser.auth.*
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
-import de.laser.CustomerTypeService
 import de.laser.finance.CostItem
 import de.laser.interfaces.DeleteFlag
 import de.laser.oap.OrgAccessPoint
@@ -240,7 +239,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         lastUpdatedCascading (nullable: true)
     }
 
-    static final Set<String> WEKB_PROPERTIES = ['nickname', 'homepage', 'metadataDownloaderURL', 'kbartDownloaderURL', 'roles']
+    static final Set<String> WEKB_PROPERTIES = ['homepage', 'metadataDownloaderURL', 'kbartDownloaderURL', 'roles']
 
     /**
      * Checks if the organisation is marked as deleted

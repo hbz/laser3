@@ -728,7 +728,8 @@ class AjaxJsonController {
             render controlledListService.getSubscriptionPackages(params) as JSON
         }
         else {
-            render [:] as JSON
+            Map empty = [results: []]
+            render empty as JSON
         }
     }
 

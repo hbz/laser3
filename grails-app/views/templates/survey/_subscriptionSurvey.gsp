@@ -127,7 +127,7 @@
                         </g:each>
 
                         <g:if test="${editable}">
-                            <g:render template="/survey/surveyUrlsModal"/>
+                            <laser:render template="/survey/surveyUrlsModal"/>
                         </g:if>
                     </ui:card>
 
@@ -638,7 +638,7 @@
         <div class="ui one cards">
 
             <div id="container-documents">
-                <g:render template="/survey/surveyLinkCard"/>
+                <laser:render template="/survey/surveyLinkCard"/>
             </div>
 
             <g:if test="${controllerName == 'survey' && actionName == 'show'}">
@@ -978,12 +978,12 @@
             <div class="content">
                 <g:if test="${costItemSums.ownCosts}">
                     <g:if test="${(contextOrg.id != subscription.getConsortia()?.id && subscription.instanceOf) || !subscription.instanceOf}">
-                        <h2 class="ui header">${message(code: 'financials.label')} : ${message(code: 'financials.tab.ownCosts')}</h2>
+                        <h2 class="ui header">${message(code: 'financials.label')} : ${message(code: 'financials.tab.ownCosts')} </h2>
                         <laser:render template="/subscription/financials" model="[data: costItemSums.ownCosts]"/>
                     </g:if>
                 </g:if>
                 <g:if test="${costItemSums.consCosts}">
-                    <h2 class="ui header">${message(code: 'financials.label')} : ${message(code: 'financials.tab.consCosts')}</h2>
+                    <h2 class="ui header">${message(code: 'financials.label')} : ${message(code: 'financials.tab.consCosts')} ${message(code: 'surveyCostItem.info')}</h2>
                     <laser:render template="/subscription/financials" model="[data: costItemSums.consCosts]"/>
                 </g:if>
             </div>

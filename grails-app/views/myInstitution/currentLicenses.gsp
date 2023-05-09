@@ -184,13 +184,13 @@
                       <g:if test="${'licensingConsortium' in licenseFilterTable}">
                           <th rowspan="2"><g:message code="consortium"/></th>
                       </g:if>
-                      <g:sortableColumn params="${params}" property="startDate" title="${message(code:'license.start_date')}" />
+                      <g:sortableColumn class="la-smaller-table-head" params="${params}" property="startDate" title="${message(code:'license.start_date')}" />
                       <g:if test="${'action' in licenseFilterTable}">
                           <th rowspan="2" class="la-action-info"><g:message code="default.actions.label"/></th>
                       </g:if>
                   </tr>
                   <tr>
-                      <g:sortableColumn params="${params}" property="endDate" title="${message(code:'license.end_date')}" />
+                      <g:sortableColumn class="la-smaller-table-head" params="${params}" property="endDate" title="${message(code:'license.end_date')}" />
                   </tr>
               </thead>
               <tbody>
@@ -223,16 +223,16 @@
                               </td>
                           </g:if>
                           <td>
-                              <g:set var="licensor" value="${l.getLicensor()}"/>
-                              <g:if test="${licensor}">
+                              <g:set var="licensors" value="${l.getProviderAgency()}"/>
+                              <g:each in="${licensors}" var="licensor">
                                   <g:link controller="organisation" action="show" id="${licensor.id}">
                                       ${fieldValue(bean: licensor, field: "name")}
                                       <g:if test="${licensor.sortname}">
-                                          <br />
                                           (${fieldValue(bean: licensor, field: "sortname")})
                                       </g:if>
                                   </g:link>
-                              </g:if>
+                                  <br>
+                              </g:each>
                           </td>
                           <g:if test="${'licensingConsortium' in licenseFilterTable}">
                               <td>${l.getLicensingConsortium()?.name}</td>

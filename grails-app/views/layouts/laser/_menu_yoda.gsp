@@ -40,6 +40,15 @@
             </div>
         </div>
 
+        <div class="item" role="menuitem" aria-haspopup="true">
+            <div class="title">
+                <i class="paper plane icon"></i> ${message(code:'menu.yoda.mail.label')} <i class="dropdown icon"></i>
+            </div>
+            <div class="menu" role="menu">
+                <ui:link addItemAttributes="true" controller="mailAsync" action="index">${message(code:'menu.yoda.mailAysnc.list')}</ui:link>
+            </div>
+        </div>
+
         <div class="divider"></div>
 
         <div class="item" role="menuitem" aria-haspopup="true">
@@ -84,7 +93,7 @@
                         <ui:link addItemAttributes="true" controller="yoda" action="updateData" params="[dataToLoad:'identifier']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateIdentifiers')}</ui:link>
                         <ui:link addItemAttributes="true" controller="yoda" action="updateData" params="[dataToLoad:'editionStatement']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateEditionStatement')}</ui:link>
                         <%--<ui:link addItemAttributes="true" controller="yoda" action="updateData" params="[dataToLoad:'medium', objType:'issueEntitlement']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateIEMedium')}</ui:link>--%>
-                        <%--<ui:link addItemAttributes="true" controller="yoda" action="updateData" params="[dataToLoad:'accessType', objType:'issueEntitlement']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateIEAccessType')}</ui:link>--%>
+                        <ui:link addItemAttributes="true" controller="yoda" action="updateData" params="[dataToLoad:'abbreviatedName']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateSortname')}</ui:link>
                         <ui:link addItemAttributes="true" controller="yoda" action="updateData" params="[dataToLoad:'sortTitle']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.regenerateSortTitle')}</ui:link>
                         <ui:link addItemAttributes="true" controller="yoda" action="updateData" params="[dataToLoad:'ddc']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateDDC')}</ui:link>
                         <ui:link addItemAttributes="true" controller="yoda" action="updateData" params="[dataToLoad:'language']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateLanguage')}</ui:link>
@@ -133,7 +142,7 @@
 
         <div class="item" role="menuitem" aria-haspopup="true">
             <div class="title">
-                ${message(code:'menu.admin.dataManagement')} <i class="dropdown icon"></i>
+                <i class="icon database"></i> ${message(code:'menu.admin.dataManagement')} <i class="dropdown icon"></i>
             </div>
 
             <div class="menu" role="menu">

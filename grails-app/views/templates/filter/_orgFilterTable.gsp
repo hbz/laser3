@@ -243,12 +243,7 @@
 
             <g:if test="${tmplConfigItem.equalsIgnoreCase('sortname')}">
                 <td>
-                    <g:if test="${wekbRecords?.containsKey(org.gokbId)}">
-                        ${wekbRecords.get(org.gokbId).abbreviatedName}
-                    </g:if>
-                    <g:elseif test="${!org.gokbId}">
-                        ${org.sortname}
-                    </g:elseif>
+                    ${org.sortname}
                 </td>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('name')}">
@@ -582,7 +577,7 @@
                         %>
                         <g:if test="${actionName == 'manageMembers'}">
                             <g:link controller="myInstitution" action="manageConsortiaSubscriptions"
-                                    params="${[member: org.id, status: params.subStatus ?: null, validOn: params.subValidOn, filterSet: true]}">
+                                    params="${[member: org.id, status: params.subStatus ?: null, validOn: params.subValidOn, filterSet: true, filterPvd: params.list('filterPvd')]}">
                                 <div class="ui blue circular label">
                                     ${numberOfSubscriptions}
                                 </div>
@@ -1038,8 +1033,6 @@
                             onVisible: function () {
                                 r2d2.initDynamicUiStuff('#costItem_ajaxModal');
                                 r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
-
-                                JSPC.callbacks.dynPostFunc();
                             },
                             detachable: true,
                             closable: false,
