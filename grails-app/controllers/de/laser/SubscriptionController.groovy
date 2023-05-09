@@ -250,7 +250,7 @@ class SubscriptionController {
                     render template: '/templates/usageReport', model: fileResult
                 }
                 else {
-                    Map<String, Object> errorMap = [error: message(code: "default.stats.error.${ctrlResult.error}")]
+                    Map<String, Object> errorMap = [error: ctrlResult.error]
                     render template: '/templates/usageReport', model: errorMap
                 }
             }
