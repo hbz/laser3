@@ -9,12 +9,12 @@ import de.laser.interfaces.CalculatedType
 import de.laser.remote.ApiSource
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
-import de.laser.survey.SurveyOrg
 import de.laser.utils.DateUtils
-import de.laser.utils.SwissKnife
 import grails.converters.JSON
+import grails.gsp.PageRenderer
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.time.TimeCategory
+import org.apache.http.HttpStatus
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 
 import javax.servlet.ServletOutputStream
@@ -211,34 +211,51 @@ class SubscriptionController {
         ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
     })
     def generateReport() {
-        if(!params.reportType && !params.metricType) {
-            redirect action: 'stats', id: params.id, params: [error: 'noReportSelected']
+        if(!params.reportType) {
+            Map<String, Object> errorMap = [error: message(code: "default.stats.error.noReportSelected")]
+            render template: '/templates/usageReport', model: errorMap
         }
         else {
-            Map<String, Object> ctrlResult = exportService.generateReport(params)
-            if(ctrlResult.containsKey('result')) {
-                Subscription sub = Subscription.get(params.id)
-                SXSSFWorkbook wb = ctrlResult.result
-                /*
-                see DocstoreController and https://stackoverflow.com/questions/24827571/how-to-convert-xssfworkbook-to-file
-                 */
-                Date dateRun = new Date()
-                String token = "report_${params.reportType}_${params.platform}_${sub.getSubscriber().id}_${DateUtils.getSDF_yyyyMMdd().format(dateRun)}"
-                String dir = ConfigMapper.getStatsReportSaveLocation() ?: '/usage'
-                File folder = new File(dir)
-                if (!folder.exists()) {
-                    folder.mkdirs()
+            Subscription sub = Subscription.get(params.id)
+            String token = "report_${params.reportType}_${params.platform}_${sub.getSubscriber().id}"
+            if(params.metricType) {
+                token += '_'+params.list('metricType').join('_')
+            }
+            if(params.accessType) {
+                token += '_'+params.list('accessType').join('_')
+            }
+            if(params.accessMethod) {
+                token += '_'+params.list('accessMethod').join('_')
+            }
+            String dir = ConfigMapper.getStatsReportSaveLocation() ?: '/usage'
+            File folder = new File(dir)
+            if (!folder.exists()) {
+                folder.mkdir()
+            }
+            File f = new File(dir+'/'+token)
+            Map<String, String> fileResult = [token: token]
+            if(!f.exists()) {
+                Map<String, Object> ctrlResult = exportService.generateReport(params)
+                if(ctrlResult.containsKey('result')) {
+                    SXSSFWorkbook wb = ctrlResult.result
+                    /*
+                    see DocstoreController and https://stackoverflow.com/questions/24827571/how-to-convert-xssfworkbook-to-file
+                     */
+                    FileOutputStream fos = new FileOutputStream(dir+'/'+token)
+                    //--> to document
+                    wb.write(fos)
+                    fos.flush()
+                    fos.close()
+                    wb.dispose()
+                    render template: '/templates/usageReport', model: fileResult
                 }
-                FileOutputStream fos = new FileOutputStream(dir+'/'+token)
-                //--> to document
-                wb.write(fos)
-                fos.flush()
-                fos.close()
-                wb.dispose()
-                [token: token]
+                else {
+                    Map<String, Object> errorMap = [error: message(code: "default.stats.error.${ctrlResult.error}")]
+                    render template: '/templates/usageReport', model: errorMap
+                }
             }
             else {
-                redirect action: 'stats', id: params.id, params: [error: ctrlResult.error, reportType: params.reportType, metricType: params.metricType, accessType: params.accessType, accessMethod: params.accessMethod]
+                render template: '/templates/usageReport', model: fileResult
             }
         }
     }
@@ -255,8 +272,21 @@ class SubscriptionController {
         /*
         get file from token and offer to download with filename
          */
-        response.setHeader "Content-disposition", "attachment; filename=report_${DateUtils.getSDF_yyyyMMdd().format(dateRun)}.xlsx"
-        response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        byte[] output = []
+        try {
+            Date dateRun = new Date()
+            String dir = ConfigMapper.getStatsReportSaveLocation() ?: '/usage'
+            File f = new File(dir+'/'+params.token)
+            output = f.getBytes()
+            response.setHeader "Content-disposition", "attachment; filename=report_${DateUtils.getSDF_yyyyMMdd().format(dateRun)}.xlsx"
+            response.setHeader("Content-Length", "${output.length}")
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            response.outputStream << output
+        }
+        catch(Exception e) {
+            log.error(e.getMessage())
+            response.sendError(HttpStatus.SC_NOT_FOUND)
+        }
     }
 
     /**

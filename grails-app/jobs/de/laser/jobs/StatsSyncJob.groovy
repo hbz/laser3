@@ -37,7 +37,16 @@ class StatsSyncJob extends AbstractJob {
             return false
         }
         try {
-            statsSyncService.doFetch(true)
+            //statsSyncService.doFetch(true) changed as of ERMS-4834
+            String usagePath = ConfigMapper.getStatsReportSaveLocation() ?: '/usage'
+            File folder = new File(usagePath)
+            if(!folder.exists())
+                folder.mkdir()
+            else {
+                folder.listFiles().each { File oldReport ->
+                    oldReport.delete()
+                }
+            }
         }
         catch (Exception e) {
             log.error( e.toString() )

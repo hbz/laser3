@@ -1254,7 +1254,20 @@ class ExportService {
 				cell = headerRow.createCell(0)
 				cell.setCellValue("Report_Filters")
 				cell = headerRow.createCell(1)
-				cell.setCellValue(Counter5Report.EXPORT_CONTROLLED_LISTS.valueOf(reportType.toUpperCase()).reportFilters)
+				String standardFilters = Counter5Report.EXPORT_CONTROLLED_LISTS.valueOf(reportType.toUpperCase()).reportFilters
+				if(standardFilters == 'as selected') {
+					String reportFilters = ''
+					if(params.accessType)
+						reportFilters += 'Access_Type='+params.list('accessType').join('|')
+					if(params.accessMethod) {
+						if(reportFilters)
+							reportFilters += '; '
+						reportFilters += 'Access_Method=' + params.list('accessMethod').join('|')
+					}
+					cell.setCellValue(reportFilters)
+				}
+				else
+					cell.setCellValue(standardFilters)
 				headerRow = sheet.createRow(7)
 				cell = headerRow.createCell(0)
 				cell.setCellValue("Report_Attributes")
@@ -1263,6 +1276,14 @@ class ExportService {
 				headerRow = sheet.createRow(8)
 				cell = headerRow.createCell(0)
 				cell.setCellValue("Exceptions")
+				if(requestResponse.header.Exceptions) {
+					cell = headerRow.createCell(1)
+					List<String> exceptions = []
+					requestResponse.header.Exceptions.each { Map exception ->
+						exceptions << "${exception.Code}: ${exception.Message} (${exception.Data})"
+					}
+					cell.setCellValue(exceptions.join('; '))
+				}
 				headerRow = sheet.createRow(9)
 				cell = headerRow.createCell(0)
 				cell.setCellValue("Reporting_Period")
@@ -1617,7 +1638,10 @@ class ExportService {
 							}
 							periodTotal += reportCount
 							titleRow.put("Reporting_Period_Total", periodTotal)
-							titleRow.put(DateUtils.getLocalizedSDF_MMMyyyy(LocaleUtils.getLocaleEN()).format(reportFrom), reportCount)
+							//temp solution for journal reports, especially for DUZ, where issues of a journal are currently couted as individual title instances
+							String reportMonth = DateUtils.getLocalizedSDF_MMMyyyy(LocaleUtils.getLocaleEN()).format(reportFrom)
+							int currentMonthCount = titleRow.containsKey(reportMonth) ? titleRow.get(reportMonth) : 0
+							titleRow.put(reportMonth, reportCount+currentMonthCount)
 							titlesByYop.put(yopKey, titleRow)
 							titlesByAccessType.put(reportItem.Access_Type, titlesByYop)
 							titleMetrics.put(instance.Metric_Type, titlesByAccessType)
