@@ -255,6 +255,18 @@
                                   noSelection="${['':message(code:'default.select.choose.label')]}"/>
                 </div>
             </g:if>
+            <g:if test="${field.equalsIgnoreCase('isLegallyObliged')}">
+                <div class="field">
+                    <label for="isLegallyObliged">${message(code: 'org.isLegallyObliged.label')}</label>
+                    <g:set var="isLegallyObligedOptions" value="${['yes': message(code:'org.isLegallyObliged.yes.label'), 'no': message(code:'org.isLegallyObliged.no.label')]}" scope="request"/>
+                    <select id="isLegallyObliged" name="isLegallyObliged" class="ui search select dropdown">
+                        <option value="">${message(code:'default.select.choose.label')}</option>
+                        <g:each in="${isLegallyObligedOptions}" var="iloo">
+                            <option <%=(params.isLegallyObliged == iloo.key) ? 'selected="selected"' : '' %> value="${iloo.key}">${iloo.value}</option>
+                        </g:each>
+                    </select>
+                </div>
+            </g:if>
             <g:if test="${field.equalsIgnoreCase('isLegallyObligedBy')}">
                 <div class="field">
                     <label for="legallyObligedBy">${message(code: 'org.legallyObligedBy.label')}</label>

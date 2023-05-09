@@ -270,10 +270,11 @@ databaseChangeLog = {
         }
     }
 
+    //remap title updated to title status updated
     changeSet(author: "galffy (hand-coded)", id: "1681212470764-33") {
         grailsChange {
             change {
-                sql.execute("delete from pending_change where pc_tc_fk is not null")
+                sql.execute("insert into title_change (tic_version, tic_tipp_fk, tic_event, tic_old_ref_value_rv_fk, tic_new_ref_value_rv_fk, tic_field, tic_date_created, tic_last_updated) select distinct on(pc_tipp_fk) pc_version, pc_tipp_fk, 'pendingChange.message_TP05', pc_old_value::BIGINT, pc_new_value::BIGINT, pc_target_property, pc_date_created, pc_last_updated from pending_change where pc_msg_token = 'pendingChange.message_TP02' and pc_target_property = 'status' and pc_status_rdv_fk = (select rdv_id from refdata_value join refdata_category on rdv_owner = rdc_id where rdv_value = 'History' and rdc_description = 'pending.change.status') order by pc_tipp_fk, pc_date_created desc")
             }
             rollback {}
         }
@@ -282,13 +283,22 @@ databaseChangeLog = {
     changeSet(author: "galffy (hand-coded)", id: "1681212470764-34") {
         grailsChange {
             change {
-                sql.execute("delete from pending_change where pc_pi_fk is not null")
+                sql.execute("delete from pending_change where pc_tc_fk is not null")
             }
             rollback {}
         }
     }
 
     changeSet(author: "galffy (hand-coded)", id: "1681212470764-35") {
+        grailsChange {
+            change {
+                sql.execute("delete from pending_change where pc_pi_fk is not null")
+            }
+            rollback {}
+        }
+    }
+
+    changeSet(author: "galffy (hand-coded)", id: "1681212470764-36") {
         grailsChange {
             change {
                 sql.execute("delete from pending_change where pc_tipp_fk is not null")

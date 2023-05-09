@@ -3,39 +3,14 @@
 
 <g:if test="${accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )}">
     <ui:actionsDropdown>
-        <g:set var="createNTDWModals" value="${true}"/>
-
-        <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.PERMS_BASIC, 'INST_EDITOR')}">
-            <ui:actionsDropdownItem data-ui="modal" href="#modalCreateNote" message="template.notes.add"/>
-        </g:if>
-        <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_EDITOR')}">
-            <ui:actionsDropdownItem data-ui="modal" href="#modalCreateTask" message="task.create.new"/>
-        </g:if>
-        <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')}">
-            <ui:actionsDropdownItem data-ui="modal" href="#modalCreateDocument" message="template.documents.add"/>
-        </g:if>
-        <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_EDITOR')}"><!-- TODO: workflows-permissions -->
-            <ui:actionsDropdownItem data-ui="modal" href="#modalCreateWorkflow" message="workflow.instantiate"/>
-        </g:if>
+        <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionDropdownItems: true]]}" />
 
 %{--                <ui:actionsDropdownItem data-ui="modal" href="#propDefGroupBindings" message="menu.institutions.configure_prop_groups" />--}% %{-- erms-4798 --}%
 
         <g:if test="${editable || accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')}">
-            <g:if test="${actionName == 'list'}">
-                <div class="divider"></div>
-                <ui:actionsDropdownItem controller="organisation" action="create" message="org.create_new.label"/>
-            </g:if>
-            <g:elseif test="${actionName == 'listInstitution'}">
-                <div class="divider"></div>
-                <ui:actionsDropdownItem controller="organisation" action="findOrganisationMatches" message="org.create_new_institution.label"/>
-            </g:elseif>
-            <g:elseif test="${actionName == 'listProvider'}">
-                <div class="divider"></div>
-                <ui:actionsDropdownItem controller="organisation" action="findProviderMatches" message="org.create_new_provider.label"/>
-            </g:elseif>
-            <g:elseif test="${actionName == 'show'}">
+            <g:if test="${actionName == 'show'}">
 %{--                <ui:actionsDropdownItem data-ui="modal" href="#propDefGroupBindings" message="menu.institutions.configure_prop_groups" />--}%%{-- --}%%{-- erms-4798 --}%
-            </g:elseif>
+            </g:if>
             <g:elseif test="${actionName == 'ids'}">
                 <g:if test="${editable_identifier}">
                     <div class="divider"></div>
@@ -104,7 +79,6 @@
 <g:elseif test="${accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )}">
     <ui:actionsDropdown>
         <ui:actionsDropdownItem message="template.notes.add" data-ui="modal" href="#modalCreateNote"/>
-        <g:set var="createNTDWModals" value="${true}"/>
 
         <g:if test="${actionName in ['show', 'notes']}">
         </g:if>
@@ -184,19 +158,8 @@
 %{--    institution (context org) : ${institution}--}%
 %{----!>--}%
 
-<g:if test="${createNTDWModals}">
-    <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.PERMS_BASIC, 'INST_EDITOR')}">
-        <laser:render template="/templates/notes/modal_create" model="${[ownobj: orgInstance, owntp: 'org']}"/>
-    </g:if>
-    <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_EDITOR')}">
-        <laser:render template="/templates/tasks/modal_create" model="${[ownobj: orgInstance, owntp: 'org']}"/>
-    </g:if>
-    <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')}">
-        <laser:render template="/templates/documents/modal" model="${[ownobj: orgInstance, institution: institution, owntp: 'org']}"/>
-    </g:if>
-    <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_EDITOR')}"><!-- TODO: workflows-permissions -->
-        <laser:render template="/templates/workflow/instantiate" model="${[target: orgInstance]}"/>
-    </g:if>
+<g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.PERMS_BASIC, 'INST_EDITOR')}">
+    <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionModals: true, ownobj: orgInstance, owntp: 'org', institution: institution]]}" />
 </g:if>
 
 

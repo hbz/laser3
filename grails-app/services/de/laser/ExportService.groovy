@@ -1254,7 +1254,20 @@ class ExportService {
 				cell = headerRow.createCell(0)
 				cell.setCellValue("Report_Filters")
 				cell = headerRow.createCell(1)
-				cell.setCellValue(Counter5Report.EXPORT_CONTROLLED_LISTS.valueOf(reportType.toUpperCase()).reportFilters)
+				String standardFilters = Counter5Report.EXPORT_CONTROLLED_LISTS.valueOf(reportType.toUpperCase()).reportFilters
+				if(standardFilters == 'as selected') {
+					String reportFilters = ''
+					if(params.accessType)
+						reportFilters += 'Access_Type='+params.list('accessType').join('|')
+					if(params.accessMethod) {
+						if(reportFilters)
+							reportFilters += '; '
+						reportFilters += 'Access_Method=' + params.list('accessMethod').join('|')
+					}
+					cell.setCellValue(reportFilters)
+				}
+				else
+					cell.setCellValue(standardFilters)
 				headerRow = sheet.createRow(7)
 				cell = headerRow.createCell(0)
 				cell.setCellValue("Report_Attributes")
@@ -1263,6 +1276,14 @@ class ExportService {
 				headerRow = sheet.createRow(8)
 				cell = headerRow.createCell(0)
 				cell.setCellValue("Exceptions")
+				if(requestResponse.header.Exceptions) {
+					cell = headerRow.createCell(1)
+					List<String> exceptions = []
+					requestResponse.header.Exceptions.each { Map exception ->
+						exceptions << "${exception.Code}: ${exception.Message} (${exception.Data})"
+					}
+					cell.setCellValue(exceptions.join('; '))
+				}
 				headerRow = sheet.createRow(9)
 				cell = headerRow.createCell(0)
 				cell.setCellValue("Reporting_Period")
@@ -1319,29 +1340,33 @@ class ExportService {
 							for(Map performance: reportItem.Performance) {
 								Date reportFrom = DateUtils.parseDateGeneric(performance.Period.Begin_Date)
 								for(Map instance: performance.Instance) {
-									Map<String, Object> metricRow = data.get(instance.Metric_Type)
 									int periodTotal, reportCount = instance.Count as int
-									if(!metricRow) {
-										metricRow = [:]
+									Map<String, Object> metricRow = data.containsKey(instance.Metric_Type) ? data.get(instance.Metric_Type) : [:]
+									Map<String, Object> dataTypeRow = metricRow.get(reportItem.Data_Type)
+									if(!dataTypeRow) {
+										dataTypeRow = ['Data_Type': reportItem.Data_Type]
 										periodTotal = 0
 									}
-									else periodTotal = metricRow.get('Reporting_Period_Total') as int
-									metricRow.put('Platform', reportItem.Platform)
-									metricRow.put('Metric_Type', instance.Metric_Type)
-									metricRow.put(DateUtils.getLocalizedSDF_MMMyyyy(LocaleUtils.getLocaleEN()).format(reportFrom), reportCount)
+									else periodTotal = dataTypeRow.get('Reporting_Period_Total') as int
+									dataTypeRow.put('Platform', reportItem.Platform)
+									dataTypeRow.put('Metric_Type', instance.Metric_Type)
+									dataTypeRow.put(DateUtils.getLocalizedSDF_MMMyyyy(LocaleUtils.getLocaleEN()).format(reportFrom), reportCount)
 									periodTotal += reportCount
-									metricRow.put('Reporting_Period_Total', periodTotal)
+									dataTypeRow.put('Reporting_Period_Total', periodTotal)
+									metricRow.put(reportItem.Data_Type, dataTypeRow)
 									data.put(instance.Metric_Type, metricRow)
 								}
 							}
 							int i = 0
 							for (Map.Entry<String, Object> metricRow: data) {
-								row = sheet.createRow(i + rowno)
-								for (int c = 0; c < columnHeaders.size(); c++) {
-									cell = row.createCell(c)
-									cell.setCellValue(metricRow.getValue().get(columnHeaders[c]) ?: "")
+								for (Map.Entry<String, Object> dataTypeRow: metricRow.getValue()) {
+									row = sheet.createRow(i + rowno)
+									for (int c = 0; c < columnHeaders.size(); c++) {
+										cell = row.createCell(c)
+										cell.setCellValue(dataTypeRow.getValue().get(columnHeaders[c]) ?: "")
+									}
+									i++
 								}
-								i++
 							}
 						}
 						/*Counter5Report.withNewSession {
@@ -1373,6 +1398,21 @@ class ExportService {
 						}*/
 						break
 					case Counter5Report.DATABASE_MASTER_REPORT:
+						data = prepareDataWithDatabases(requestResponse, reportType)
+						int i = 0
+						for(Map.Entry<String, Object> databaseRow: data) {
+							for(Map.Entry<String, Object> metricRow: databaseRow.getValue()) {
+								for(Map.Entry<String, Object> dataTypeRow: metricRow.getValue()) {
+									row = sheet.createRow(i + rowno)
+									for(int c = 0;c < columnHeaders.size(); c++) {
+										cell = row.createCell(c)
+										cell.setCellValue(dataTypeRow.getValue().get(columnHeaders[c]) ?: "")
+									}
+									i++
+								}
+							}
+						}
+						break
 					case Counter5Report.DATABASE_ACCESS_DENIED:
 					case Counter5Report.DATABASE_SEARCH_AND_ITEM_USAGE:
 						data = prepareDataWithDatabases(requestResponse, reportType)
@@ -1617,7 +1657,10 @@ class ExportService {
 							}
 							periodTotal += reportCount
 							titleRow.put("Reporting_Period_Total", periodTotal)
-							titleRow.put(DateUtils.getLocalizedSDF_MMMyyyy(LocaleUtils.getLocaleEN()).format(reportFrom), reportCount)
+							//temp solution for journal reports, especially for DUZ, where issues of a journal are currently couted as individual title instances
+							String reportMonth = DateUtils.getLocalizedSDF_MMMyyyy(LocaleUtils.getLocaleEN()).format(reportFrom)
+							int currentMonthCount = titleRow.containsKey(reportMonth) ? titleRow.get(reportMonth) : 0
+							titleRow.put(reportMonth, reportCount+currentMonthCount)
 							titlesByYop.put(yopKey, titleRow)
 							titlesByAccessType.put(reportItem.Access_Type, titlesByYop)
 							titleMetrics.put(instance.Metric_Type, titlesByAccessType)
@@ -1870,21 +1913,41 @@ class ExportService {
 					Date reportFrom = DateUtils.parseDateGeneric(performance.Period.Begin_Date)
 					for(Map instance: performance.Instance) {
 						int periodTotal = 0, reportCount = instance.Count as int
-						Map<String, Object> databaseRow = databaseRows.get(reportItem.Database) as Map<String, Object>
-						if(!databaseRow)
-							databaseRow = [:]
-						Map<String, Object> metricRow = databaseRow.get(instance.Metric_Type) as Map<String, Object>
-						databaseRow.put(instance.Metric_Type, metricRow)
-						databaseRows.put(reportItem.Database, databaseRow)
-						if(!metricRow) {
-							metricRow = ['Database': reportItem.Database, 'Publisher': reportItem.Publisher, 'Platform': reportItem.Platform, 'Metric_Type': instance.Metric_Type]
+						if(reportType == Counter5Report.DATABASE_MASTER_REPORT) {
+							Map<String, Object> databaseRow = databaseRows.get(reportItem.Database) as Map<String, Object>
+							if(!databaseRow)
+								databaseRow = [:]
+							Map<String, Object> metricRow = databaseRow.get(instance.Metric_Type) as Map<String, Object>
+							if(!metricRow) {
+								metricRow = [:]
+							}
+							Map<String, Object> dataTypeRow = metricRow.get(reportItem.Data_Type) as Map<String, Object>
+							if(!dataTypeRow) {
+								dataTypeRow = ['Database': reportItem.Database, 'Publisher': reportItem.Publisher, 'Platform': reportItem.Platform, 'Data_Type': instance.Data_Type, 'Metric_Type': instance.Metric_Type]
+							}
+							else periodTotal = dataTypeRow.get('Reporting_Period_Total')
+							periodTotal += reportCount
+							dataTypeRow.put('Reporting_Period_Total', periodTotal)
+							dataTypeRow.put(DateUtils.getLocalizedSDF_MMMyyyy(LocaleUtils.getLocaleEN()).format(reportFrom), reportCount)
+							metricRow.put(reportItem.Data_Type, dataTypeRow)
+							databaseRow.put(instance.Metric_Type, metricRow)
+							databaseRows.put(reportItem.Database, databaseRow)
 						}
-						else periodTotal = metricRow.get('Reporting_Period_Total')
-						periodTotal += reportCount
-						metricRow.put('Reporting_Period_Total', periodTotal)
-						metricRow.put(DateUtils.getLocalizedSDF_MMMyyyy(LocaleUtils.getLocaleEN()).format(reportFrom), reportCount)
-						databaseRow.put(instance.Metric_Type, metricRow)
-						databaseRows.put(reportItem.Database, databaseRow)
+						else {
+							Map<String, Object> databaseRow = databaseRows.get(reportItem.Database) as Map<String, Object>
+							if(!databaseRow)
+								databaseRow = [:]
+							Map<String, Object> metricRow = databaseRow.get(instance.Metric_Type) as Map<String, Object>
+							if(!metricRow) {
+								metricRow = ['Database': reportItem.Database, 'Publisher': reportItem.Publisher, 'Platform': reportItem.Platform, 'Metric_Type': instance.Metric_Type]
+							}
+							else periodTotal = metricRow.get('Reporting_Period_Total')
+							periodTotal += reportCount
+							metricRow.put('Reporting_Period_Total', periodTotal)
+							metricRow.put(DateUtils.getLocalizedSDF_MMMyyyy(LocaleUtils.getLocaleEN()).format(reportFrom), reportCount)
+							databaseRow.put(instance.Metric_Type, metricRow)
+							databaseRows.put(reportItem.Database, databaseRow)
+						}
 					}
 				}
 			}

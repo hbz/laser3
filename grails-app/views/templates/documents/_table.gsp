@@ -227,7 +227,7 @@
                 </g:if>
             </g:each>
         </tbody>
-        <g:if test="${editable}">
+        <g:if test="${editable && documentSet}">
             <tfoot>
                 <tr>
                     <td class="center aligned">

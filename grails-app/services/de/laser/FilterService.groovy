@@ -142,6 +142,10 @@ class FilterService {
             queryParams << [customerTypeKey : OrgSetting.KEYS.CUSTOMER_TYPE]
         }
 
+        if (params.isLegallyObliged in ['yes', 'no']) {
+            query << "o.legallyObligedBy " + (params.isLegallyObliged == 'yes' ? "is not null" : "is null")
+        }
+
         if (params.legallyObligedBy?.length() > 0) {
             query << "o.legallyObligedBy.id in (:legallyObligedBy)"
             queryParams << [legallyObligedBy: listReaderWrapper(params, 'legallyObligedBy').collect { key -> Long.parseLong(key) }]
@@ -1715,7 +1719,7 @@ class FilterService {
                     params.pkgIds = connection.createArrayOf('bigint', pkgIds.toArray())
                     where = " tipp_pkg_fk = any(:pkgIds)"
                 }
-                where += " or_sub_fk = :ctxId"
+                where += " and or_sub_fk = :ctxId"
                 params.ctxId = contextService.getOrg().id
                 if(contextService.getOrg().getCustomerType() == CustomerTypeService.ORG_CONSORTIUM_BASIC)
                     where += " and sub_parent_sub_fk is null"

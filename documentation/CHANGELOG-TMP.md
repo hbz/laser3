@@ -7,7 +7,23 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-4754    08.05.2023  dev     3.1         Moe     Feature     Dauerhafttitel Container 
+ 5025   09.05.2023  dev     3.1         Moe     Bug         GASCO-Monitor: Paketverknüpfung Journals
+
+4754    08.05.2023  dev     3.1         Moe     Feature     Dauerhafttitel Container
+
+4986    09.05.2023  dev     3.1         Andreas Feature     Schaltschrank-betreffende Teile umgesetzt
+
+5022    09.05.2023  dev     3.1         David   Feature     Aufgabe erstellen: Vorauswahl Bearbeiter auf "einzelnen Mitarbeiter" umstellen
+
+5018    09.05.2023  dev     3.1         Andreas Bug         obsolete Exporteinstellungen herausgenommen
+
+5009    09.05.2023  dev     3.1         Andreas Feature     Verschiedene Optimierungen in der Statistik
+
+5007    09.05.2023  dev     3.1         Andreas Bug         falsche Summierungen behoben
+
+5008    08.05.2023  dev     3.1         David   Feature     Zauberstab-Actions vereinheitlichen
+
+5003    08.05.2023  dev     3.1         David   Bug         DEV: Meine Anbieter - Funktionen eingeschränkt für Pro-Nutzer
 
 4998    03.05.2023  dev     3.1         Andreas Bug         Bugs beim Erzeugen und Export von Nutzerzahlen behoben
 
