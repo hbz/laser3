@@ -143,50 +143,58 @@ class IssueEntitlement extends AbstractBase implements Comparable {
       Subscription subscription = (Subscription) configMap.subscription
       TitleInstancePackagePlatform tipp = (TitleInstancePackagePlatform) configMap.tipp
       IssueEntitlement ie = findBySubscriptionAndTippAndStatusNotEqual(subscription,tipp, RDStore.TIPP_STATUS_REMOVED)
-      if(!ie) {
+      if(!ie && !PermanentTitle.findByOwnerAndTitleInstancePackagePlatform(subscription.subscriber, tipp)) {
           ie = new IssueEntitlement(subscription: subscription, tipp: tipp, medium: tipp.medium, status:tipp.status, accessType: tipp.accessType, openAccess: tipp.openAccess, name: tipp.name)
           //ie.generateSortTitle()
       }
-      if(ie.save()) {
+        if(ie) {
+            if (ie.save()) {
 
-          if(subscription.hasPerpetualAccess){
-              ie.perpetualAccessBySub = subscription
-          }
+                if (subscription.hasPerpetualAccess) {
+                    ie.perpetualAccessBySub = subscription
 
-          Set<TIPPCoverage> tippCoverages = TIPPCoverage.findAllByTipp(tipp)
-        if(tippCoverages) {
-          tippCoverages.each { TIPPCoverage tc ->
-            IssueEntitlementCoverage ic = new IssueEntitlementCoverage(issueEntitlement: ie)
-            ic.startDate = tc.startDate
-            ic.startVolume = tc.startVolume
-            ic.startIssue = tc.startIssue
-            ic.endDate = tc.endDate
-            ic.endVolume = tc.endVolume
-            ic.endIssue = tc.endIssue
-            ic.coverageDepth = tc.coverageDepth
-            ic.coverageNote = tc.coverageNote
-            ic.embargo = tc.embargo
-            if(!ic.save())
-              throw new EntitlementCreationException(ic.errors)
-          }
+                    if (!PermanentTitle.findByOwnerAndTitleInstancePackagePlatform(subscription.subscriber, tipp)) {
+                        PermanentTitle permanentTitle = new PermanentTitle(subscription: subscription,
+                                issueEntitlement: ie,
+                                titleInstancePackagePlatform: tipp,
+                                owner: subscription.subscriber).save()
+                    }
+                }
+
+                Set<TIPPCoverage> tippCoverages = TIPPCoverage.findAllByTipp(tipp)
+                if (tippCoverages) {
+                    tippCoverages.each { TIPPCoverage tc ->
+                        IssueEntitlementCoverage ic = new IssueEntitlementCoverage(issueEntitlement: ie)
+                        ic.startDate = tc.startDate
+                        ic.startVolume = tc.startVolume
+                        ic.startIssue = tc.startIssue
+                        ic.endDate = tc.endDate
+                        ic.endVolume = tc.endVolume
+                        ic.endIssue = tc.endIssue
+                        ic.coverageDepth = tc.coverageDepth
+                        ic.coverageNote = tc.coverageNote
+                        ic.embargo = tc.embargo
+                        if (!ic.save())
+                            throw new EntitlementCreationException(ic.errors)
+                    }
+                }
+                log.debug("creating price items for ${tipp}")
+                Set<PriceItem> tippPriceItems = PriceItem.findAllByTipp(tipp)
+                if (tippPriceItems) {
+                    tippPriceItems.each { PriceItem tp ->
+                        PriceItem ip = new PriceItem(issueEntitlement: ie)
+                        ip.startDate = tp.startDate
+                        ip.endDate = tp.endDate
+                        ip.listPrice = tp.listPrice
+                        ip.listCurrency = tp.listCurrency
+                        ip.setGlobalUID()
+                        if (!ip.save())
+                            throw new EntitlementCreationException(ip.errors)
+                    }
+                }
+            } else
+                throw new EntitlementCreationException(ie.errors)
         }
-          log.debug("creating price items for ${tipp}")
-          Set<PriceItem> tippPriceItems = PriceItem.findAllByTipp(tipp)
-        if(tippPriceItems) {
-            tippPriceItems.each { PriceItem tp ->
-                PriceItem ip = new PriceItem(issueEntitlement: ie)
-                ip.startDate = tp.startDate
-                ip.endDate = tp.endDate
-                ip.listPrice = tp.listPrice
-                ip.listCurrency = tp.listCurrency
-                ip.setGlobalUID()
-                if(!ip.save())
-                    throw new EntitlementCreationException(ip.errors)
-            }
-        }
-      }
-      else
-        throw new EntitlementCreationException(ie.errors)
       ie
     }
     else throw new EntitlementCreationException("Issue entitlement creation attempt without valid subscription and TIPP references! This is not allowed!")

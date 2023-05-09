@@ -2934,6 +2934,12 @@ class SubscriptionControllerService {
     Map<String,Object> removeEntitlement(GrailsParameterMap params) {
         IssueEntitlement ie = IssueEntitlement.get(params.ieid)
         ie.status = RDStore.TIPP_STATUS_REMOVED
+
+        PermanentTitle permanentTitle = PermanentTitle.findByOwnerAndTitleInstancePackagePlatform(ie.subscription.subscriber, ie.tipp)
+        if (permanentTitle) {
+            permanentTitle.delete()
+        }
+
         if(ie.save())
             [result:null,status:STATUS_OK]
         else [result:null,status:STATUS_ERROR]
@@ -2949,6 +2955,12 @@ class SubscriptionControllerService {
         RefdataValue oldStatus = ie.status
         ie.status = RDStore.TIPP_STATUS_REMOVED
         if(ie.save()){
+
+            PermanentTitle permanentTitle = PermanentTitle.findByOwnerAndTitleInstancePackagePlatform(ie.subscription.subscriber, ie.tipp)
+            if (permanentTitle) {
+                permanentTitle.delete()
+            }
+
             if(IssueEntitlementGroupItem.findByIe(ie)) {
                 if (IssueEntitlementGroupItem.executeUpdate("delete from IssueEntitlementGroupItem iegi where iegi.ie = :ie", [ie: ie])) {
                     return [result: null, status: STATUS_OK]
