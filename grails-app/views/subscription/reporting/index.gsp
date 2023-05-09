@@ -111,7 +111,12 @@
                         else {
                             var dsl = JSPC.app.reporting.current.chart.option.dataset.source.length
                             if (JSPC.app.reporting.current.request.query.split('-')[0] != 'timeline') {
-                                var cwh = (JSPC.app.reporting.current.request.chart == 'pie') ? 320 : 220;
+                                var cwh = 220;
+                                if (JSPC.app.reporting.current.request.chart == 'pie') {
+                                    cwh = 320;
+                                    JSPC.app.reporting.current.myCountsToggle = false;
+                                }
+
                                 $('#chart-wrapper').css('height', cwh + (20 * JSPC.app.reporting.current.chart.option.dataset.source.length) + 'px');
                             } else {
                                 $('#chart-wrapper').removeAttr('style');
