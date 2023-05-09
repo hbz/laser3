@@ -99,9 +99,9 @@ class Counter5Report extends AbstractReport {
      * These are the column headers which are mandatory for the respective COUNTER 5 report
      */
     static enum COLUMN_HEADERS {
-        PR (['Platform', 'Metric_Type', 'Reporting_Period_Total'] as LinkedHashSet<String>),
-        PR_P1 (['Platform', 'Metric_Type', 'Reporting_Period_Total'] as LinkedHashSet<String>),
-        DR (['Database', 'Publisher', 'Publisher_ID', 'Platform', 'Proprietary_ID', 'Metric_Type', 'Reporting_Period_Total'] as LinkedHashSet<String>),
+        PR (['Platform', 'Data_Type', 'Metric_Type', 'Reporting_Period_Total'] as LinkedHashSet<String>),
+        PR_P1 (['Platform', 'Data_Type', 'Metric_Type', 'Reporting_Period_Total'] as LinkedHashSet<String>),
+        DR (['Database', 'Publisher', 'Publisher_ID', 'Platform', 'Proprietary_ID', 'Data_Type', 'Metric_Type', 'Reporting_Period_Total'] as LinkedHashSet<String>),
         DR_D1 (['Database', 'Publisher', 'Publisher_ID', 'Platform', 'Proprietary_ID', 'Metric_Type', 'Reporting_Period_Total'] as LinkedHashSet<String>),
         DR_D2 (['Database', 'Publisher', 'Publisher_ID', 'Platform', 'Proprietary_ID', 'Metric_Type', 'Reporting_Period_Total'] as LinkedHashSet<String>),
         TR (['Title', 'Publisher', 'Publisher_ID', 'Platform', 'DOI', 'Proprietary_ID', 'ISBN', 'Print_ISSN', 'Online_ISSN', 'URI', 'Metric_Type', 'Reporting_Period_Total'] as LinkedHashSet<String>),
