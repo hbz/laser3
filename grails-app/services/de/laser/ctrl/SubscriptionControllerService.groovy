@@ -724,6 +724,7 @@ class SubscriptionControllerService {
             startTime = now.with(TemporalAdjusters.firstDayOfYear())
             endTime = now.with(TemporalAdjusters.lastDayOfYear())
         }*/
+        endTime = endTime.with(TemporalAdjusters.lastDayOfMonth())
         if(params.tabStat && params.tabStat != 'total' && params.exportXLS && params.data != 'fetchAll') {
             monthsInRing << DateUtils.getSDF_yyyyMM().parse(params.tabStat)
         }

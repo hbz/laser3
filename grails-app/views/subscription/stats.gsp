@@ -187,9 +187,6 @@
                 <g:if test="${revision == AbstractReport.COUNTER_4}">
                     <ui:msg icon="ui info icon" class="info" header="${message(code: 'default.usage.counter4reportInfo.header')}" message="default.usage.counter4reportInfo.text" noClose="true"/>
                 </g:if>
-                <g:if test="${error}">
-                    <ui:msg icon="ui times icon" class="error" message="${message(code: "default.stats.error.${error}")}" noClose="true"/>
-                </g:if>
                 <g:form action="generateReport" name="stats" class="ui form" method="get">
                     <g:hiddenField name="id" value="${subscription.id}"/>
                     <g:hiddenField name="revision" value="${revision}"/>
@@ -229,10 +226,10 @@
                         <div class="field la-field-right-aligned">
                             <%-- deactivated as of ERMS-3996; concept needs to be clarified
                             <input id="generateCostPerUse" type="button" class="ui secondary button" value="${message(code: 'default.stats.generateCostPerUse')}"/>--%>
-                            <g:link action="stats" class="ui button secondary">${message(code:'default.button.reset.label')}</g:link>
+                            <g:link action="stats" id="${subscription.id}" class="ui button secondary">${message(code:'default.button.reset.label')}</g:link>
                         </div>
                         <div class="field la-field-right-aligned">
-                            <input type="submit" class="ui primary button" value="${message(code: 'default.stats.generateReport')}"/>
+                            <input id="generateReport" type="button" class="ui primary button" disabled="disabled" value="${message(code: 'default.stats.generateReport')}"/>
                         </div>
                     </div>
                 </g:form>
@@ -251,7 +248,7 @@
                     </g:if>
                 </ui:msg>
             </g:elseif>
-            <div id="costPerUseWrapper"></div>
+            <div id="reportWrapper"></div>
         </g:else>
         <laser:script file="${this.getGroovyPageFileName()}">
             $("#reportType").on('change', function() {
@@ -269,12 +266,14 @@
                 }).done(function(response) {
                     $('.dynFilter').remove();
                     $('#filterDropdownWrapper').append(response);
+                    $('#generateReport').removeAttr('disabled');
                     r2d2.initDynamicUiStuff('#filterDropdownWrapper');
                 });
             });
             $("#generateCostPerUse").on('click', function() {
+                $('#globalLoadingIndicator').show();
                 let fd = new FormData($('#stats')[0]);
-                console.log($('#stats')[0]);
+                //console.log($('#stats')[0]);
                 $.ajax({
                     url: "<g:createLink controller="ajax" action="generateCostPerUse"/>",
                     data: fd,
@@ -282,7 +281,22 @@
                     processData: false,
                     contentType: false
                 }).done(function(response){
-                    $("#costPerUseWrapper").html(response);
+                    $("#reportWrapper").html(response);
+                    $('#globalLoadingIndicator').hide();
+                });
+            });
+            $("#generateReport").on('click', function() {
+                $('#globalLoadingIndicator').show();
+                let fd = new FormData($('#stats')[0]);
+                $.ajax({
+                    url: "<g:createLink action="generateReport"/>",
+                    data: fd,
+                    type: 'POST',
+                    processData: false,
+                    contentType: false
+                }).done(function(response){
+                    $("#reportWrapper").html(response);
+                    $('#globalLoadingIndicator').hide();
                 });
             });
         </laser:script>
