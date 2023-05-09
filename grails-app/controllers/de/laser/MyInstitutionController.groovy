@@ -1344,6 +1344,38 @@ class MyInstitutionController  {
 		Profiler prf = new Profiler()
 		prf.setBenchmark('init')
 
+        if(params.tab){
+            if(params.tab == 'currentIEs'){
+                params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
+            }else if(params.tab == 'plannedIEs'){
+                params.status = [RDStore.TIPP_STATUS_EXPECTED.id.toString()]
+            }else if(params.tab == 'expiredIEs'){
+                params.status = [RDStore.TIPP_STATUS_RETIRED.id.toString()]
+            }else if(params.tab == 'deletedIEs'){
+                params.status = [RDStore.TIPP_STATUS_DELETED.id.toString()]
+            }else if(params.tab == 'allIEs'){
+                params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString(), RDStore.TIPP_STATUS_EXPECTED.id.toString(), RDStore.TIPP_STATUS_RETIRED.id.toString(), RDStore.TIPP_STATUS_DELETED.id.toString()]
+            }
+        }
+        else if(params.list('status').size() == 1) {
+            if(params.list('status')[0] == RDStore.TIPP_STATUS_CURRENT.id.toString()){
+                params.tab = 'currentIEs'
+            }else if(params.list('status')[0] == RDStore.TIPP_STATUS_RETIRED.id.toString()){
+                params.tab = 'expiredIEs'
+            }else if(params.list('status')[0] == RDStore.TIPP_STATUS_EXPECTED.id.toString()){
+                params.tab = 'plannedIEs'
+            }else if(params.list('status')[0] == RDStore.TIPP_STATUS_DELETED.id.toString()){
+                params.tab = 'deletedIEs'
+            }
+        }else{
+            if(params.list('status').size() > 1){
+                params.tab = 'allIEs'
+            }else {
+                params.tab = 'currentIEs'
+                params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
+            }
+        }
+
         Set<RefdataValue> orgRoles = []
         String instanceFilter = ""
         List<String> queryFilter = []
@@ -1445,9 +1477,28 @@ class MyInstitutionController  {
             orderByClause = 'order by tipp.sortname asc, tipp.name asc'
         }
 
-        String qryString = "select ie.id from IssueEntitlement ie join ie.tipp tipp join ie.subscription sub join sub.orgRelations oo where ie.status != :ieStatus and sub.status = :current and oo.roleType in (:orgRoles) and oo.org = :institution "
+        String qryString = "from IssueEntitlement ie join ie.tipp tipp join ie.subscription sub join sub.orgRelations oo where ie.status != :ieStatus and sub.status = :current and oo.roleType in (:orgRoles) and oo.org = :institution "
         if(queryFilter)
             qryString += ' and '+queryFilter.join(' and ')
+
+        Map<String,Object> qryParamsClone = qryParams.clone()
+
+        result.currentIECounts = IssueEntitlement.executeQuery('select count(ie) '+ qryString+ ' and ie.tipp.status = :status', qryParamsClone + [status: RDStore.TIPP_STATUS_CURRENT])[0]
+        result.plannedIECounts = IssueEntitlement.executeQuery('select count(ie) '+ qryString+ ' and ie.tipp.status = :status', qryParamsClone + [status: RDStore.TIPP_STATUS_EXPECTED])[0]
+        result.expiredIECounts = IssueEntitlement.executeQuery('select count(ie) '+ qryString+ ' and ie.tipp.status = :status', qryParamsClone + [status: RDStore.TIPP_STATUS_RETIRED])[0]
+        result.deletedIECounts = IssueEntitlement.executeQuery('select count(ie) '+ qryString+ ' and ie.tipp.status = :status', qryParamsClone + [status: RDStore.TIPP_STATUS_DELETED])[0]
+        result.allIECounts = IssueEntitlement.executeQuery('select count(ie) '+ qryString+ ' and ie.tipp.status in (:status)', qryParamsClone + [status: [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_EXPECTED, RDStore.TIPP_STATUS_RETIRED, RDStore.TIPP_STATUS_DELETED]])[0]
+
+        if(params.status != '' && params.status != null && params.list('status')) {
+            List<Long> status = []
+            params.list('status').each { String statusId ->
+                status << Long.parseLong(statusId)
+            }
+            qryString += " and ie.status.id in (:status) "
+            qryParams.status = status
+
+        }
+
 
         Map<String, Object> selectedFields = [:]
         Set<Long> currentIssueEntitlements = []
@@ -1471,7 +1522,7 @@ class MyInstitutionController  {
             if (filterPvd) {
                 currentIssueEntitlements.addAll(IssueEntitlement.executeQuery("select ie.id from IssueEntitlement ie join ie.tipp tipp join tipp.pkg pkg join pkg.orgs oo where oo.roleType in (:cpRole) and oo.org.id in ("+filterPvd.join(", ")+") order by tipp.sortname asc",[cpRole:[RDStore.OR_CONTENT_PROVIDER,RDStore.OR_PROVIDER,RDStore.OR_AGENCY,RDStore.OR_PUBLISHER]]))
             }
-            else currentIssueEntitlements.addAll(IssueEntitlement.executeQuery(qryString+' group by tipp, ie.id order by tipp.sortname asc',qryParams))
+            else currentIssueEntitlements.addAll(IssueEntitlement.executeQuery('select ie.id '+qryString+' group by tipp, ie.id order by tipp.sortname asc',qryParams))
             Set<TitleInstancePackagePlatform> allTitles = currentIssueEntitlements ? TitleInstancePackagePlatform.executeQuery('select tipp from IssueEntitlement ie join ie.tipp tipp where ie.id in (:ids) and ie.status != :ieStatus '+orderByClause,[ieStatus: RDStore.TIPP_STATUS_REMOVED, ids: currentIssueEntitlements.drop(result.offset).take(result.max)]) : []
             result.subscriptions = Subscription.executeQuery('select distinct(sub) from IssueEntitlement ie join ie.subscription sub join sub.orgRelations oo where oo.roleType in (:orgRoles) and oo.org = :institution and (sub.status = :current or sub.hasPerpetualAccess = true) '+instanceFilter+" order by sub.name asc",[
                     institution: result.institution,
@@ -1479,8 +1530,8 @@ class MyInstitutionController  {
                     orgRoles: orgRoles])
             if(result.subscriptions.size() > 0) {
                 Set<Long> allIssueEntitlements = IssueEntitlement.executeQuery('select ie.id from IssueEntitlement ie where ie.subscription in (:currentSubs)',[currentSubs:result.subscriptions])
-                result.providers = Org.executeQuery('select org.id,org.name from IssueEntitlement ie join ie.tipp tipp join tipp.pkg pkg join pkg.orgs oo join oo.org org where ie.id in ('+qryString+' group by tipp, ie.id order by tipp.sortname asc) group by org.id order by org.name asc',qryParams)
-                result.hostplatforms = Platform.executeQuery('select plat.id,plat.name from IssueEntitlement ie join ie.tipp tipp join tipp.platform plat where ie.id in ('+qryString+' group by tipp, ie.id order by tipp.sortname asc) group by plat.id order by plat.name asc',qryParams)
+                result.providers = Org.executeQuery('select org.id,org.name from IssueEntitlement ie join ie.tipp tipp join tipp.pkg pkg join pkg.orgs oo join oo.org org where ie.id in (select ie.id '+qryString+' group by tipp, ie.id order by tipp.sortname asc) group by org.id order by org.name asc',qryParams)
+                result.hostplatforms = Platform.executeQuery('select plat.id,plat.name from IssueEntitlement ie join ie.tipp tipp join tipp.platform plat where ie.id in (select ie.id '+qryString+' group by tipp, ie.id order by tipp.sortname asc) group by plat.id order by plat.name asc',qryParams)
             }
             result.num_ti_rows = currentIssueEntitlements.size()
             result.titles = allTitles
