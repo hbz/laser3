@@ -1574,4 +1574,38 @@ class YodaController {
             SystemEvent.createEvent('YODA_PROCESS', [yodaProcess: 'setPerpetualAccessByIes', countProcessIes: countProcess, countProcessPermanentTitles: countProcessPT])
         })
     }
+
+    @Secured(['ROLE_YODA'])
+    def setPermanentTitle() {
+        Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
+        Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
+        threadArray.each { Thread thread ->
+            if (thread.name == 'setPermanentTitle') {
+                flash.error = 'setPermanentTitle process still running!'
+                redirect controller: 'yoda', action: 'index'
+                return
+            }
+        }
+        executorService.execute({
+            Thread.currentThread().setName("setPermanentTitle")
+            int countProcess = 0
+                List<Long> ieIDs = IssueEntitlement.executeQuery('select ie.id from IssueEntitlement ie where ie.perpetualAccessBySub is not null')
+                if (ieIDs.size() > 0) {
+                   ieIDs.each { Long ieID ->
+                       IssueEntitlement issueEntitlement = IssueEntitlement.get(ieID)
+                       TitleInstancePackagePlatform titleInstancePackagePlatform = issueEntitlement.tipp
+                        Org owner = issueEntitlement.subscription.subscriber
+
+                        if (!PermanentTitle.findByOwnerAndTitleInstancePackagePlatform(owner, titleInstancePackagePlatform)) {
+                            PermanentTitle permanentTitle = new PermanentTitle(subscription: issueEntitlement.subscription,
+                                    issueEntitlement: issueEntitlement,
+                                    titleInstancePackagePlatform: titleInstancePackagePlatform,
+                                    owner: owner).save()
+                            countProcess++
+                        }
+                    }
+                }
+            SystemEvent.createEvent('YODA_PROCESS', [yodaProcess: 'setPermanentTitle', countProcess: countProcess])
+        })
+    }
 }
