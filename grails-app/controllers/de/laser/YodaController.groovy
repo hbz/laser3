@@ -1530,4 +1530,41 @@ class YodaController {
 
         redirect action: 'dashboard'
     }
+
+    @Secured(['ROLE_YODA'])
+    def setPerpetualAccessByIes() {
+        Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
+        Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
+        threadArray.each { Thread thread ->
+            if (thread.name == 'setPerpetualAccessByIes') {
+                flash.error = 'setPerpetualAccessByIes process still running!'
+            }
+        }
+        executorService.execute({
+            Thread.currentThread().setName("setPerpetualAccessByIes")
+            List<Subscription> subList = Subscription.findAllByHasPerpetualAccess(true)
+            int countProcess = 0
+            subList.each { Subscription sub ->
+                List<Long> ieIDs = IssueEntitlement.executeQuery('select ie.id from IssueEntitlement ie where ie.subscription = :sub and ie.perpetualAccessBySub is null', [sub: sub])
+                if (ieIDs.size() > 0) {
+                    Org owner = sub.subscriber
+
+                    ieIDs.each { Long ieID ->
+                        IssueEntitlement.executeUpdate("update IssueEntitlement ie set ie.perpetualAccessBySub = :sub where ie.id = :ieID ", [sub: sub, ieID: ieID])
+
+                        IssueEntitlement issueEntitlement = IssueEntitlement.get(ieID)
+                        TitleInstancePackagePlatform titleInstancePackagePlatform = issueEntitlement.tipp
+
+                        if (!PermanentTitle.findByOwnerAndTitleInstancePackagePlatform(owner, titleInstancePackagePlatform)) {
+                            PermanentTitle permanentTitle = new PermanentTitle(subscription: sub,
+                                    issueEntitlement: issueEntitlement,
+                                    titleInstancePackagePlatform: titleInstancePackagePlatform,
+                                    owner: owner).save()
+                        }
+                        countProcess++
+                    }
+                }
+            }
+        })
+    }
 }

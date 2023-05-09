@@ -1,5 +1,11 @@
 package changelogs
 
+import de.laser.IssueEntitlement
+import de.laser.Org
+import de.laser.PermanentTitle
+import de.laser.Subscription
+import de.laser.TitleInstancePackagePlatform
+
 
 databaseChangeLog = {
 
@@ -55,5 +61,37 @@ databaseChangeLog = {
         addForeignKeyConstraint(baseColumnNames: "pt_tipp_fk", baseTableName: "permanent_title", constraintName: "FKsalhkgmmlmq4v0lmy9sgdcfsf", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "tipp_id", referencedTableName: "title_instance_package_platform", validate: "true")
     }
 
+    changeSet(author: "djebeniani (modified)", id: "1683531152301-6") {
+        grailsChange {
+            change {
+                List<Subscription> subList = Subscription.findAllByHasPerpetualAccess(true)
+                int countProcess = 0
+                subList.each { Subscription sub ->
+                    List<Long> ieIDs = IssueEntitlement.executeQuery('select ie.id from IssueEntitlement ie where ie.subscription = :sub and ie.perpetualAccessBySub is null', [sub: sub])
+                    if (ieIDs.size() > 0) {
+                        Org owner = sub.subscriber
 
+                        ieIDs.each { Long ieID ->
+                            IssueEntitlement.executeUpdate("update IssueEntitlement ie set ie.perpetualAccessBySub = :sub where ie.id = :ieID ", [sub: sub, ieID: ieID])
+
+                            IssueEntitlement issueEntitlement = IssueEntitlement.get(ieID)
+                            TitleInstancePackagePlatform titleInstancePackagePlatform = issueEntitlement.tipp
+
+                            if(!PermanentTitle.findByOwnerAndTitleInstancePackagePlatform(owner, titleInstancePackagePlatform)){
+                                PermanentTitle permanentTitle = new PermanentTitle(subscription: sub,
+                                        issueEntitlement: issueEntitlement,
+                                        titleInstancePackagePlatform: titleInstancePackagePlatform,
+                                        owner: owner).save()
+                            }
+                            countProcess++
+                        }
+                    }
+                }
+
+                confirm("update issue_entitlement set perpetualAccessBySub = sub: ${countProcess}")
+                changeSet.setComments("update issue_entitlement set perpetualAccessBySub = sub: ${countProcess}")
+            }
+            rollback {}
+        }
+    }
 }

@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5024    09.05.2023  dev     3.1         Moe     Feature     Einführung Dauerhaft-Sternchen / bestehende Bestände nachziehen
+
 4933    09.05.2023  dev     3.1         Moe     Feature     Umfrage-Merkmale gruppieren
 
 5025    09.05.2023  dev     3.1         Moe     Bug         GASCO-Monitor: Paketverknüpfung Journals
