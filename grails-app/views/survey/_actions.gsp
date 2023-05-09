@@ -10,9 +10,9 @@
         </g:if>
         <g:else>
 
+            <ui:actionsDropdownItem message="template.addNote" data-ui="modal" href="#modalCreateNote" />
             <ui:actionsDropdownItem message="task.create.new" data-ui="modal" href="#modalCreateTask" />
             <ui:actionsDropdownItem message="template.documents.add" data-ui="modal" href="#modalCreateDocument" />
-            <ui:actionsDropdownItem message="template.addNote" data-ui="modal" href="#modalCreateNote" />
             <div class="divider"></div>
 
             <g:if test="${surveyInfo.type.id != RDStore.SURVEY_TYPE_RENEWAL.id}">
@@ -163,7 +163,7 @@
 </g:if>
 
 <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_PRO, 'INST_EDITOR') && (actionName != 'currentSurveysConsortia' && actionName != 'workflowsSurveysConsortia')}">
-    <laser:render template="/templates/documents/modal" model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
-    <laser:render template="/templates/tasks/modal_create" model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
     <laser:render template="/templates/notes/modal_create" model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
+    <laser:render template="/templates/tasks/modal_create" model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
+    <laser:render template="/templates/documents/modal" model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
 </g:if>

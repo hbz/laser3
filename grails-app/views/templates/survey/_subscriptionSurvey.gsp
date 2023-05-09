@@ -642,17 +642,14 @@
             </div>
 
             <g:if test="${controllerName == 'survey' && actionName == 'show'}">
+                <div id="container-notes">
+                    <laser:render template="/templates/notes/card"
+                                  model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '', editable: accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_PRO, 'INST_EDITOR')]}"/>
+                </div>
                 <div id="container-tasks">
                     <laser:render template="/templates/tasks/card"
                               model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '']}"/>
-
                 </div>
-
-                <div id="container-notes">
-                    <laser:render template="/templates/notes/card"
-                              model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '', editable: accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_PRO, 'INST_EDITOR')]}"/>
-                </div>
-
             </g:if>
 
             <div id="container-documents">
