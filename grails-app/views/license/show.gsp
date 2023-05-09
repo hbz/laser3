@@ -185,7 +185,7 @@
                     <div id="container-links">
                         <div class="ui card" id="links"></div>
                     </div>
-                    <laser:render template="/templates/aside1" model="${[ownobj:license, owntp:'license']}" />
+                    <laser:render template="/templates/sidebar/aside" model="${[ownobj:license, owntp:'license']}" />
                 </div>
             </aside><!-- .four -->
 

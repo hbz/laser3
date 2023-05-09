@@ -459,7 +459,7 @@
             <div id="container-links">
                 <div class="ui card"  id="links"></div>
             </div>
-            <laser:render template="/templates/aside1" model="${[ownobj: subscription, owntp: 'subscription']}"/>
+            <laser:render template="/templates/sidebar/aside" model="${[ownobj: subscription, owntp: 'subscription']}"/>
         </div>
     </aside><!-- .four -->
 </div><!-- .grid -->

@@ -1283,7 +1283,7 @@
                         </div>
                     </div>
                 </div>
-            <laser:render template="/templates/aside1" model="${[ownobj: orgInstance, owntp: 'organisation']}"/>
+            <laser:render template="/templates/sidebar/aside" model="${[ownobj: orgInstance, owntp: 'organisation']}"/>
         </div>
     </aside>
 </div>

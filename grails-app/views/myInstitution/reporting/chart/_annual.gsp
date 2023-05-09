@@ -11,6 +11,7 @@
                 <% data.each{ it -> print "[${it[0]}, '${it[1]}', ${it[2]}]," } %>
             ]
         },
+        legend: JSPC.app.reporting.helper._pie.legend,
         toolbox: JSPC.app.reporting.helper._pie.toolbox,
         tooltip: {
             trigger: 'item',
@@ -20,14 +21,14 @@
                 return str
            }
         },
-        legend: {
-            bottom: 0,
-            left: 'center',
-            z: 1,
-            formatter: function (value) {
-                return value.replace(/\s\(ID:[0-9]*\)/,'')
-            }
-        },
+%{--        legend: {--}%
+%{--            bottom: 0,--}%
+%{--            left: 'center',--}%
+%{--            z: 1,--}%
+%{--            formatter: function (value) {--}%
+%{--                return value.replace(/\s\(ID:[0-9]*\)/,'')--}%
+%{--            }--}%
+%{--        },--}%
         series: [
             {
                 type: 'pie',
