@@ -40,7 +40,7 @@ class PendingChangeController  {
     def acceptTitleChange() {
         log.debug("Accept")
         TitleChange tic = TitleChange.get(params.id)
-        pendingChangeService.applyPendingChange(tic, SubscriptionPackage.executeQuery('select sp from SubscriptionPackage sp where sp.pkg = :pkg and sp.subscription.id = :subId', [pkg: tic.tipp.pkg, subId: params.long('subId')]), contextService.getOrg())
+        pendingChangeService.applyPendingChange(tic, SubscriptionPackage.executeQuery('select sp from SubscriptionPackage sp where sp.pkg = :pkg and sp.subscription.id = :subId', [pkg: tic.tipp.pkg, subId: params.long('subId')])[0], contextService.getOrg())
         redirect(url: request.getHeader('referer'))
     }
 

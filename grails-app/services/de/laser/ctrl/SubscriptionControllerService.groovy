@@ -2349,7 +2349,7 @@ class SubscriptionControllerService {
             Set<String> excludes = PendingChangeConfiguration.GENERIC_EXCLUDES
             result.subscription.packages.each { SubscriptionPackage sp ->
                 //(pcc.settingValue == RDStore.PENDING_CHANGE_CONFIG_PROMPT || pcc.withNotification)
-                Map<String, RefdataValue> keysWithPendingOrNotification = sp.pendingChangeConfig.findAll { PendingChangeConfiguration pcc -> !(pcc.settingKey in excludes) && (pcc.settingValue in [RDStore.PENDING_CHANGE_CONFIG_PROMPT, RDStore.PENDING_CHANGE_CONFIG_ACCEPT]) }.collectEntries { PendingChangeConfiguration pcc -> [pcc.settingKey, pcc.settingValue] }
+                Map<String, RefdataValue> keysWithPendingOrNotification = sp.pendingChangeConfig.findAll { PendingChangeConfiguration pcc -> !(pcc.settingKey in excludes) }.collectEntries { PendingChangeConfiguration pcc -> [pcc.settingKey, pcc.settingValue] }
                 keysWithPendingOrNotification.put(PendingChangeConfiguration.TITLE_REMOVED, RDStore.PENDING_CHANGE_CONFIG_PROMPT)
                 if(keysWithPendingOrNotification) {
                     pkgSettingMap.put(sp, keysWithPendingOrNotification)
@@ -2357,16 +2357,9 @@ class SubscriptionControllerService {
                 }
             }
 
-            if(!params.sort) {
-                if(params.tab == 'acceptedChanges') {
-                    params.sort = 'iec.actionDate'
-                }
-                else if(params.tab == 'changes') {
-                    params.sort = 'tic.dateCreated'
-                }
-            }
-
             params.order = params.order ?: 'desc'
+            if(!params.tab)
+                params.tab = 'acceptedChanges'
             if(!params.eventType) {
                 if(params.tab == 'acceptedChanges') {
                     params.eventType = PendingChangeConfiguration.NEW_TITLE
@@ -2377,30 +2370,46 @@ class SubscriptionControllerService {
             }
             else if(params.eventType == PendingChangeConfiguration.TITLE_REMOVED && params.tab == 'acceptedChanges')
                 params.eventType = PendingChangeConfiguration.NEW_TITLE
+
+            if(!params.sort) {
+                if(params.tab == 'acceptedChanges' && params.eventType == PendingChangeConfiguration.NEW_TITLE) {
+                    params.sort = 'iec.actionDate'
+                }
+                else {
+                    params.sort = 'tic.dateCreated'
+                }
+            }
             String order = " order by ${params.sort} ${params.order}"
             params.tab = params.tab ?: 'changes'
             if(pkgSettingMap && pendingOrWithNotification) {
                 pkgSettingMap.each { SubscriptionPackage sp, Map<String, RefdataValue> settings ->
                     Set titleChanges = []
-                    if(params.tab == 'changes') {
+                    if(params.tab == 'changes' && settings.get(params.eventType) != RDStore.PENDING_CHANGE_CONFIG_REJECT) {
                         switch(params.eventType) {
                             case PendingChangeConfiguration.TITLE_REMOVED:
                                 titleChanges.addAll(TitleChange.executeQuery('select tic from TitleChange tic join tic.tipp tipp where tic.event = :event and tipp.pkg = :pkg and not exists (select ie.id from IssueEntitlement ie where ie.status = :removed and ie.tipp = tipp and ie.subscription = :sub) and tic.dateCreated >= :entryDate '+order,
                                     [pkg: sp.pkg, sub: sp.subscription, event: PendingChangeConfiguration.TITLE_REMOVED, removed: RDStore.TIPP_STATUS_REMOVED, entryDate: sp.dateCreated]))
                                 break
                             case PendingChangeConfiguration.NEW_TITLE:
-                                titleChanges.addAll(TitleChange.executeQuery('select tic from TitleChange tic join tic.tipp tipp where tic.event = :event and tipp.pkg = :pkg and not exists (select iec.id from IssueEntitlementChange iec where iec.status in (:processed) and iec.titleChange = tic and iec.subscription = :sub) and not exists (select ie.id from IssueEntitlement ie where ie.tipp = tipp and ie.status != :removed and ie.subscription = :sub) and tic.dateCreated >= :entryDate '+order,
-                                    [pkg: sp.pkg, sub: sp.subscription, event: params.eventType, processed: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED, RDStore.PENDING_CHANGE_SUPERSEDED], removed: RDStore.TIPP_STATUS_REMOVED, entryDate: sp.dateCreated]))
-                                break
-                            case PendingChangeConfiguration.TITLE_DELETED:
                                 titleChanges.addAll(TitleChange.executeQuery('select tic from TitleChange tic join tic.tipp tipp where tic.event = :event and tipp.pkg = :pkg and not exists (select iec.id from IssueEntitlementChange iec where iec.status in (:processed) and iec.titleChange = tic and iec.subscription = :sub) and tic.dateCreated >= :entryDate '+order,
                                     [pkg: sp.pkg, sub: sp.subscription, event: params.eventType, processed: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED, RDStore.PENDING_CHANGE_SUPERSEDED], entryDate: sp.dateCreated]))
+                                break
+                            case PendingChangeConfiguration.TITLE_DELETED:
+                                //check against both deleted or removed because otherwise, there are changes displayed!
+                                titleChanges.addAll(TitleChange.executeQuery('select tic from TitleChange tic join tic.tipp tipp where tic.event = :event and tipp.pkg = :pkg and not exists (select ie.id from IssueEntitlement ie where ie.status in (:deleted) and ie.tipp = tipp and ie.subscription = :sub) and tic.dateCreated >= :entryDate '+order,
+                                        [pkg: sp.pkg, sub: sp.subscription, event: PendingChangeConfiguration.TITLE_DELETED, deleted: [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED], entryDate: sp.dateCreated]))
                                 break
                         }
                     }
                     else if(params.tab == 'acceptedChanges') {
-                        titleChanges.addAll(IssueEntitlementChange.executeQuery('select iec from IssueEntitlementChange iec join iec.titleChange tic join tic.tipp tipp where tic.event = :event and tipp.pkg = :pkg and iec.subscription = :sub and iec.status = :accepted '+order,
-                                [pkg: sp.pkg, sub: sp.subscription, event: params.eventType, accepted: RDStore.PENDING_CHANGE_ACCEPTED]))
+                        switch(params.eventType) {
+                            case PendingChangeConfiguration.NEW_TITLE: titleChanges.addAll(IssueEntitlementChange.executeQuery('select iec from IssueEntitlementChange iec join iec.titleChange tic join tic.tipp tipp where tic.event = :event and tipp.pkg = :pkg and iec.subscription = :sub and iec.status = :accepted '+order,
+                                        [pkg: sp.pkg, sub: sp.subscription, event: params.eventType, accepted: RDStore.PENDING_CHANGE_ACCEPTED]))
+                                break
+                            case PendingChangeConfiguration.TITLE_STATUS_CHANGED: titleChanges.addAll(TitleChange.executeQuery('select tic from TitleChange tic join tic.tipp tipp where tic.event = :event and tipp.pkg = :pkg'+order,
+                                    [pkg: sp.pkg, event: params.eventType]))
+                                break
+                        }
                     }
                     result.changes = titleChanges.drop(result.offset).take(result.max)
                     result.num_change_rows = titleChanges.size()
