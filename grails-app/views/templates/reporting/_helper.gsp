@@ -16,7 +16,14 @@ if (! JSPC.app.reporting) {
                 legend: {
                     bottom: 0,
                     left: 'center',
-                    z: 1
+                    z: 1,
+                    formatter: function (value) {
+                        if (JSPC.app.reporting.current.myCountsToggle) {
+                            var row = JSPC.app.reporting.current.chart.option.dataset.source.filter(row => row[1] === value)
+                            if (row) { value = value + ': ' + row[0][2] }
+                        }
+                        return value.replace(/\s\(ID:[0-9]*\)/,'')
+                    }
                 },
                 toolbox: {
                     showTitle: false,
@@ -54,6 +61,14 @@ if (! JSPC.app.reporting) {
                                 })
                             }
                         },
+                        myCountsToggle: {
+                            title: '${message(code:'reporting.chart.toolbox.toggleCounts')}',
+                            icon: 'image://${resource(dir:'images', file:'reporting/hash.svg', absolute:true)}',
+                            onclick: function (){
+                                JSPC.app.reporting.current.myCountsToggle = !JSPC.app.reporting.current.myCountsToggle
+                                JSPC.app.reporting.current.chart.echart.resize()
+                            }
+                        },
                         myLegendToggle: {
                             title: '${message(code:'reporting.chart.toolbox.toggleLegend')}',
                             icon: 'image://${resource(dir:'images', file:'reporting/menu.svg', absolute:true)}',
@@ -69,7 +84,7 @@ if (! JSPC.app.reporting) {
                                 })
                                 JSPC.app.reporting.current.chart.echart.resize()
                             }
-                        },
+                        }
                     }
                 },
             },
