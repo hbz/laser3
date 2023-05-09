@@ -1515,7 +1515,7 @@ class SubscriptionControllerService {
             Set<Subscription> subscriptions = []
             if(result.surveyConfig.pickAndChoosePerpetualAccess) {
                 subscriptions = linksGenerationService.getSuccessionChain(subscriberSub, 'sourceSubscription')
-                subscriptions << subscriberSub
+                //subscriptions << subscriberSub
                 result.subscriptionIDs = surveyService.subscriptionsOfOrg(result.subscriber)
             }else {
                 subscriptions << previousSubscription
@@ -1548,9 +1548,9 @@ class SubscriptionControllerService {
                     sourceIEs = sourceIEs + previousIes
                 }
 
-                query = filterService.getIssueEntitlementQuery(parameterMap, subscriberSub)
-                List<Long> currentIes = subscriberSub ? IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams) : []
-                sourceIEs = sourceIEs + currentIes
+                //query = filterService.getIssueEntitlementQuery(parameterMap, subscriberSub)
+                //List<Long> currentIes = subscriberSub ? IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams) : []
+                //sourceIEs = sourceIEs + currentIes
 
             }
 
