@@ -151,10 +151,9 @@
             <div class="two fields">
                 <div class="field wide eight ${hasErrors(bean: taskInstance, field: 'responsible', 'error')} required">
                     <fieldset>
-
                         <div class="field">
                             <div class="ui radio checkbox">
-                                <input id="radioresponsibleOrg" type="radio" value="Org" name="responsible" tabindex="0" class="hidden" checked="">
+                                <input id="radioresponsibleOrg" type="radio" value="Org" name="responsible" tabindex="0" class="hidden">
                                 <label for="radioresponsibleOrg">${message(code: 'task.responsibleOrg.label')} <strong>${contextOrg.getDesignation()}</strong> </label>
                             </div>
                         </div>
@@ -189,7 +188,6 @@
     </g:form>
     <g:if test="${controllerName == 'myInstitution' || controllerName == 'ajaxHtml'}">
         <laser:script file="${this.getGroovyPageFileName()}">
-            // initial side call
             $("#generalradio").prop( "checked", true );
             $("#licensediv, #orgdiv, #pkgdiv, #subscriptiondiv").hide();
 
@@ -223,7 +221,7 @@
         JSPC.callbacks.modal.onShow.modalCreateTask = function (trigger) {
             r2d2.helper.resetModalForm ('#modalCreateTask');
 
-            $('#modalCreateTask #radioresponsibleOrg').prop ('checked', true);
+            $('#modalCreateTask #radioresponsibleUser').prop ('checked', true);
             JSPC.app.toggleResponsibleUser();
 
             // myInstitution

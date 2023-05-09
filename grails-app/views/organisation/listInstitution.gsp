@@ -32,7 +32,7 @@
             <laser:render template="/templates/filter/orgFilter"
                       model="[
                               tmplConfigShow: [
-                                      ['name', 'orgStatus', 'isLegallyObligedBy'],
+                                      ['name', 'orgStatus', 'isLegallyObliged'],
                                       ['identifier', 'identifierNamespace', 'customerIDNamespace', 'isMyX'],
                                       ['country&region', 'libraryNetwork', 'libraryType', 'subjectGroup']
                               ],
