@@ -24,6 +24,7 @@ import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyResult
 import de.laser.system.SystemActivityProfiler
+import de.laser.system.SystemEvent
 import de.laser.system.SystemProfiler
 import de.laser.system.SystemSetting
 import de.laser.utils.AppUtils
@@ -1546,6 +1547,7 @@ class YodaController {
             Thread.currentThread().setName("setPerpetualAccessByIes")
             List<Subscription> subList = Subscription.findAllByHasPerpetualAccess(true)
             int countProcess = 0
+            int countProcessPT = 0
             subList.each { Subscription sub ->
                 List<Long> ieIDs = IssueEntitlement.executeQuery('select ie.id from IssueEntitlement ie where ie.subscription = :sub and ie.perpetualAccessBySub is null', [sub: sub])
                 if (ieIDs.size() > 0) {
@@ -1562,11 +1564,14 @@ class YodaController {
                                     issueEntitlement: issueEntitlement,
                                     titleInstancePackagePlatform: titleInstancePackagePlatform,
                                     owner: owner).save()
+                            countProcessPT
                         }
                         countProcess++
                     }
                 }
             }
+
+            SystemEvent.createEvent('YODA_PROCESS', [yodaProcess: 'setPerpetualAccessByIes', countProcessIes: countProcess, countProcessPermanentTitles: countProcessPT])
         })
     }
 }
