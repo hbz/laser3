@@ -526,9 +526,19 @@ r2d2 = {
                 if(response.status == 'error') return response.msg; //msg will be shown in editable form
             }
         }).on('shown', function(e, obj) {
-
-            $('.table').trigger('reflow');
             obj.input.$input.dropdown({clearable: true}) // reference to current dropdown
+        });
+
+        // boolean values only allowed to be 0 or 1 so clearable not suitable
+        $(ctxSel + ' .xEditableBoolean').editable({
+            tpl: '<select class="ui search selection dropdown"></select>',
+            success: function(response, newValue) {
+                if(response.status == 'error') return response.msg; //msg will be shown in editable form
+            }
+        }).on('shown', function(e, obj) {
+
+
+            obj.input.$input.dropdown({clearable: false}) // reference to current dropdown
         });
 
         $(ctxSel + ' .simpleHiddenValue').editable({

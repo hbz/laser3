@@ -184,13 +184,13 @@
                       <g:if test="${'licensingConsortium' in licenseFilterTable}">
                           <th rowspan="2"><g:message code="consortium"/></th>
                       </g:if>
-                      <g:sortableColumn params="${params}" property="startDate" title="${message(code:'license.start_date')}" />
+                      <g:sortableColumn class="la-smaller-table-head" params="${params}" property="startDate" title="${message(code:'license.start_date')}" />
                       <g:if test="${'action' in licenseFilterTable}">
                           <th rowspan="2" class="la-action-info"><g:message code="default.actions.label"/></th>
                       </g:if>
                   </tr>
                   <tr>
-                      <g:sortableColumn params="${params}" property="endDate" title="${message(code:'license.end_date')}" />
+                      <g:sortableColumn class="la-smaller-table-head" params="${params}" property="endDate" title="${message(code:'license.end_date')}" />
                   </tr>
               </thead>
               <tbody>
