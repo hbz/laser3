@@ -21,7 +21,7 @@ class MailAsyncController {
         [resultList: AsynchronousMailMessage.list(params)]
     }
 
-    private withMessage(Closure cl) {
+    private _withMessage(Closure cl) {
         AsynchronousMailMessage message = AsynchronousMailMessage.get(params.id)
         if (message) {
             return cl(message)
@@ -37,7 +37,7 @@ class MailAsyncController {
      */
     @Secured(['ROLE_YODA'])
     def show() {
-        withMessage {AsynchronousMailMessage message ->
+        _withMessage { AsynchronousMailMessage message ->
             return [message: message]
         }
     }
@@ -47,7 +47,7 @@ class MailAsyncController {
      *//*
     @Secured(['ROLE_YODA'])
     def edit() {
-        withMessage {AsynchronousMailMessage message ->
+        _withMessage {AsynchronousMailMessage message ->
             return [message: message]
         }
     }*/
@@ -57,7 +57,7 @@ class MailAsyncController {
      *//*
     @Secured(['ROLE_YODA'])
     def update() {
-        withMessage {AsynchronousMailMessage message ->
+        _withMessage {AsynchronousMailMessage message ->
             bindData(
                     message, params,
                     [include:
@@ -87,7 +87,7 @@ class MailAsyncController {
      */
     @Secured(['ROLE_YODA'])
     def abort() {
-        withMessage {AsynchronousMailMessage message ->
+        _withMessage { AsynchronousMailMessage message ->
             if (message.abortable) {
                 message.status = MessageStatus.ABORT
                 if (message.save(flush: true)) {
@@ -109,7 +109,7 @@ class MailAsyncController {
      */
     @Secured(['ROLE_YODA'])
     def delete() {
-        withMessage {AsynchronousMailMessage message ->
+        _withMessage { AsynchronousMailMessage message ->
             try {
                 message.delete(flush: true)
                 flash.message = "The message ${message.id} was deleted."
