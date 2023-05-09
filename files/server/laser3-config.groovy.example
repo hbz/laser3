@@ -66,6 +66,7 @@ showStatsInfo  = true
 showSystemInfo = true
 
 statsApiUrl         = 'https://sushi.xy.z'
+statsSyncJobActive  = false
 
 systemEmail = 'laser@localhost'
 
