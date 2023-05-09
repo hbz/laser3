@@ -9,6 +9,8 @@
 
 5022    09.05.2023  dev     3.1         David   Feature     Aufgabe erstellen: Vorauswahl Bearbeiter auf "einzelnen Mitarbeiter" umstellen
 
+5018    09.05.2023  dev     3.1         Andreas Bug         obsolete Exporteinstellungen herausgenommen
+
 5009    09.05.2023  dev     3.1         Andreas Feature     Verschiedene Optimierungen in der Statistik
 
 5007    09.05.2023  dev     3.1         Andreas Bug         falsche Summierungen behoben
