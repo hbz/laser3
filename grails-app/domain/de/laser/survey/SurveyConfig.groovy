@@ -7,6 +7,7 @@ import de.laser.Org
 import de.laser.Subscription
 import de.laser.finance.CostItem
 import de.laser.properties.PropertyDefinition
+import de.laser.properties.PropertyDefinitionGroup
 import de.laser.storage.BeanStore
 import de.laser.storage.PropertyStore
 import de.laser.storage.RDStore
@@ -532,6 +533,81 @@ class SurveyConfig {
         return surveyConfigPropertiesList.size() > 0 ? surveyConfigPropertiesList.surveyProperty : []
     }
 
+
+    Map<String, Object> getCalculatedPropDefGroups(Org contextOrg) {
+        BeanStore.getPropertyService().getCalculatedPropDefGroups(this, contextOrg)
+    }
+
+    LinkedHashSet<SurveyConfigProperties> getSurveyConfigPropertiesByPropDefGroup(PropertyDefinitionGroup propertyDefinitionGroup) {
+        LinkedHashSet<SurveyConfigProperties> properties = []
+
+        this.surveyProperties.each {
+            if(propertyDefinitionGroup && propertyDefinitionGroup.items  && it.surveyProperty in propertyDefinitionGroup.items.propDef){
+                properties << it
+            }
+        }
+
+        properties = properties.sort {it.surveyProperty.getI10n('name')}
+
+        return properties
+
+    }
+
+    LinkedHashSet<SurveyResult> getSurveyResultsByPropDefGroupAndOrg(PropertyDefinitionGroup propertyDefinitionGroup, Org org) {
+
+        LinkedHashSet<SurveyResult> properties = []
+
+        propertyDefinitionGroup.items.each {
+            properties << SurveyResult.findByParticipantAndSurveyConfigAndType(org, this, it.propDef)
+
+        }
+
+        properties = properties.sort {it.type.getI10n('name')}
+
+        return properties
+
+    }
+
+    LinkedHashSet<SurveyConfigProperties> getOrphanedSurveyConfigProperties(LinkedHashSet containedProperties) {
+        LinkedHashSet<SurveyConfigProperties> properties = []
+
+        if(containedProperties.isEmpty()){
+            properties = this.surveyProperties
+        }else {
+            this.surveyProperties.each {
+                if (!(it.id in containedProperties.id)) {
+                    properties << it
+                }
+            }
+        }
+
+        properties = properties.sort {it.surveyProperty.getI10n('name')}
+
+        return properties
+
+    }
+
+    LinkedHashSet<SurveyResult> getOrphanedSurveyResultsByOrg(LinkedHashSet containedProperties, Org org) {
+
+        LinkedHashSet<SurveyResult> properties = []
+
+        if(containedProperties.isEmpty()){
+            this.surveyProperties.each {
+                properties << SurveyResult.findByParticipantAndSurveyConfigAndType(org, this, it.surveyProperty)
+            }
+        }else {
+            this.surveyProperties.each {
+                if (!(it.surveyProperty.id in containedProperties.type.id)) {
+                    properties << SurveyResult.findByParticipantAndSurveyConfigAndType(org, this, it.surveyProperty)
+                }
+            }
+        }
+
+        properties = properties.sort {it.type.getI10n('name')}
+
+        return properties
+
+    }
 
 
 }

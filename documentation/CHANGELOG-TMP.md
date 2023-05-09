@@ -7,7 +7,9 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
- 5025   09.05.2023  dev     3.1         Moe     Bug         GASCO-Monitor: Paketverknüpfung Journals
+4933    09.05.2023  dev     3.1         Moe     Feature     Umfrage-Merkmale gruppieren
+
+5025    09.05.2023  dev     3.1         Moe     Bug         GASCO-Monitor: Paketverknüpfung Journals
 
 4754    08.05.2023  dev     3.1         Moe     Feature     Dauerhafttitel Container
 

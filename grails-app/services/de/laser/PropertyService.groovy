@@ -2,6 +2,8 @@ package de.laser
 
 
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
+import de.laser.survey.SurveyConfig
+import de.laser.survey.SurveyInfo
 import de.laser.utils.CodeUtils
 import de.laser.utils.DateUtils
 import de.laser.storage.RDConstants
@@ -468,8 +470,9 @@ class PropertyService {
         boolean isOrg = obj.class.name == Org.class.name
         boolean isPlt = obj.class.name == Platform.class.name
         boolean isSub = obj.class.name == Subscription.class.name
+        boolean isSur = obj.class.name == SurveyConfig.class.name
 
-        if ( ! (isLic || isOrg || isPlt || isSub)) {
+        if ( ! (isLic || isOrg || isPlt || isSub || isSur)) {
             log.warn('unsupported call of getCalculatedPropDefGroups(): ' + obj.class)
             return [:]
         }
@@ -484,7 +487,7 @@ class PropertyService {
         // ALL type depending groups without checking tenants or bindings
         List<PropertyDefinitionGroup> groups = PropertyDefinitionGroup.findAllByOwnerType(obj.class.name, [sort:'name', order:'asc'])
 
-        if (isOrg || isPlt) {
+        if (isOrg || isPlt || isSur) {
             groups.each{ PropertyDefinitionGroup it ->
 
                 PropertyDefinitionGroupBinding binding
