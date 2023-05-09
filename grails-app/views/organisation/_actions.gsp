@@ -8,21 +8,9 @@
 %{--                <ui:actionsDropdownItem data-ui="modal" href="#propDefGroupBindings" message="menu.institutions.configure_prop_groups" />--}% %{-- erms-4798 --}%
 
         <g:if test="${editable || accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')}">
-            <g:if test="${actionName == 'list'}">
-                <div class="divider"></div>
-                <ui:actionsDropdownItem controller="organisation" action="create" message="org.create_new.label"/>
-            </g:if>
-            <g:elseif test="${actionName == 'listInstitution'}">
-                <div class="divider"></div>
-                <ui:actionsDropdownItem controller="organisation" action="findOrganisationMatches" message="org.create_new_institution.label"/>
-            </g:elseif>
-            <g:elseif test="${actionName == 'listProvider'}">
-                <div class="divider"></div>
-                <ui:actionsDropdownItem controller="organisation" action="findProviderMatches" message="org.create_new_provider.label"/>
-            </g:elseif>
-            <g:elseif test="${actionName == 'show'}">
+            <g:if test="${actionName == 'show'}">
 %{--                <ui:actionsDropdownItem data-ui="modal" href="#propDefGroupBindings" message="menu.institutions.configure_prop_groups" />--}%%{-- --}%%{-- erms-4798 --}%
-            </g:elseif>
+            </g:if>
             <g:elseif test="${actionName == 'ids'}">
                 <g:if test="${editable_identifier}">
                     <div class="divider"></div>

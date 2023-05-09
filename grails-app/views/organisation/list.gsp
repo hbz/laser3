@@ -38,7 +38,9 @@
                 </ui:exportDropdown>
 
                 <g:if test="${accessService.ctxPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )}">
-                    <laser:render template="actions" />
+                    <ui:actionsDropdown>
+                        <ui:actionsDropdownItem controller="organisation" action="create" message="org.create_new.label"/>
+                    </ui:actionsDropdown>
                 </g:if>
 
             </ui:controlButtons>
