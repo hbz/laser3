@@ -240,7 +240,7 @@
                     <g:if test="${error == 'noCustomerId'}">
                         <%-- proxies are coming!!! --%>
                         <g:if test="${contextOrg.id == subscription.getConsortia()?.id}">
-                            <g:link controller="subscription" action="membersSubscriptionsManagement" id="${subscription.instanceOf.id}" params="[tab: 'customerIdentifier', isSiteReloaded: false]"><g:message code="org.customerIdentifier"/></g:link>
+                            <g:link controller="subscription" action="membersSubscriptionsManagement" id="${subscription.instanceOf.id}" params="[tab: 'customerIdentifiers', isSiteReloaded: false]"><g:message code="org.customerIdentifier"/></g:link>
                         </g:if>
                         <g:elseif test="${contextOrg.id == subscription.getSubscriber().id}">
                             <g:link controller="org" action="ids" id="${institution.id}" params="[tab: 'customerIdentifiers']"><g:message code="org.customerIdentifier"/></g:link>
