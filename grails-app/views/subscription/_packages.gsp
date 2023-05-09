@@ -306,8 +306,8 @@
                                         </g:if>
                                     </tr>
                                     </thead>
-                                    <g:set var="excludes" value="${PendingChangeConfiguration.GENERIC_EXCLUDES}"/>
-                                    <g:each in="${PendingChangeConfiguration.SETTING_KEYS-PendingChangeConfiguration.TITLE_REMOVED}" var="settingKey">
+                                    <g:set var="excludes" value="${PendingChangeConfiguration.NOTIFICATION_ONLY}"/>
+                                    <g:each in="${PendingChangeConfiguration.SETTING_KEYS}" var="settingKey">
                                         <%
                                             PendingChangeConfiguration pcc = sp.getPendingChangeConfig(settingKey)
                                         %>

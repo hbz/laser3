@@ -45,6 +45,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
     static final long RECTYPE_TIPP = 3
     static final String PERMANENTLY_DELETED = "Permanently Deleted"
     static final int MAX_CONTENT_LENGTH = 1024 * 1024 * 100
+    static final int MAX_TIPP_COUNT_PER_PAGE = 20000
 
     Map<String, RefdataValue> titleMedium = [:],
             tippStatus = [:],
@@ -58,6 +59,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             contactTypes = [:]
     Long maxTimestamp
     Map<String,Set<Map<String,Object>>> packagesToNotify
+    Set<String> packagesAlreadyUpdated, platformsAlreadyUpdated
     //Map<String,Integer> initialPackagesCounter
     //Map<String,Set<Map<String,Object>>> pkgPropDiffsContainer
 
@@ -121,7 +123,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         break
                 }
                 //do prequest: are we needing the scroll api?
-                Map<String,Object> result = fetchRecordJSON(false,[componentType:componentType,changedSince:sdf.format(oldDate),max:10000]) //changedBefore:'2022-09-27 00:00:00',
+                Map<String,Object> result = fetchRecordJSON(false,[componentType:componentType,changedSince:sdf.format(oldDate),max:MAX_TIPP_COUNT_PER_PAGE]) //changedBefore:'2022-09-27 00:00:00',
                 if(result.error == 404) {
                     log.error("we:kb server is down")
                     SystemEvent.createEvent('GSSS_JSON_ERROR',['jobId':source.id])
@@ -159,6 +161,15 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             log.info("clearing removed titles")
                             packageService.clearRemovedTitles()
                             log.info("end clearing titles")
+                        }
+                        else {
+                            log.info("no diffs recorded ...")
+                        }
+                    }
+                    else if(source.rectype == RECTYPE_PACKAGE) {
+                        if(packagesToNotify.keySet().size() > 0) {
+                            log.info("notifying subscriptions ...")
+                            Map<String, Set<TitleChange>> packageChanges = trackPackageHistory()
                         }
                         else {
                             log.info("no diffs recorded ...")
@@ -211,7 +222,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     }
                 */
                 //do prequest: are we needing the scroll api?
-                Map<String,Object> result = fetchRecordJSON(false,[componentType:componentType,pkg:packageUUID,max:10000])
+                Map<String,Object> result = fetchRecordJSON(false,[componentType:componentType,pkg:packageUUID,max:MAX_TIPP_COUNT_PER_PAGE])
                 if(result.error == 404) {
                     log.error("we:kb server is down")
                 }
@@ -282,7 +293,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             this.apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI,true)
             log.info("getting all records from job #${source.id} with uri ${source.uri}")
             try {
-                Map<String,Object> result = fetchRecordJSON(false,[componentType: componentType, max: 10000])
+                Map<String,Object> result = fetchRecordJSON(false,[componentType: componentType, max: MAX_TIPP_COUNT_PER_PAGE])
                 if(result) {
                     if(result.error == 404) {
                         log.error("we:kb server currently down")
@@ -321,24 +332,24 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     RefdataCategory.getAllRefdataValues(RDConstants.DDC).each { RefdataValue rdv ->
                         ddc.put(rdv.value, rdv)
                     }
-                    max = 10000
+                    max = MAX_TIPP_COUNT_PER_PAGE
                     break
                 case "accessType": triggeredTypes = ['TitleInstancePackagePlatform']
                     RefdataCategory.getAllRefdataValues(RDConstants.TIPP_ACCESS_TYPE).each { RefdataValue rdv ->
                         accessType.put(rdv.value, rdv)
                     }
-                    max = 10000
+                    max = MAX_TIPP_COUNT_PER_PAGE
                     break
                 case "openAccess": triggeredTypes = ['TitleInstancePackagePlatform']
                     buildWekbLaserRefdataMap(RDConstants.LICENSE_OA_TYPE)
-                    max = 10000
+                    max = MAX_TIPP_COUNT_PER_PAGE
                     break
                 case [ "language", "editionStatement" ]:
                     triggeredTypes = ['TitleInstancePackagePlatform']
-                    max = 10000
+                    max = MAX_TIPP_COUNT_PER_PAGE
                     break
                 case "titleNamespace": triggeredTypes = ['Platform']
-                    max = 10000
+                    max = MAX_TIPP_COUNT_PER_PAGE
                     break
                 default: triggeredTypes = []
                     break
@@ -527,8 +538,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * @throws SyncException if an error occurs during the update process
      */
     void processScrollPage(Map<String, Object> result, String componentType, String changedSince, String pkgFilter = null, Set<String> permanentlyDeletedTitles = []) throws SyncException {
-        if(result.count >= 10000) {
-            int offset = 0, max = 10000
+        if(result.count >= MAX_TIPP_COUNT_PER_PAGE) {
+            int offset = 0, max = MAX_TIPP_COUNT_PER_PAGE
             Map<String, Object> queryParams = [componentType: componentType, offset: offset, max: max]
             if(changedSince) {
                 queryParams.changedSince = changedSince
@@ -541,6 +552,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     //actually, scrollId alone should do the trick but tests revealed that other parameters are necessary, too, because of current workaround solution
                     //log.debug("using scrollId ${scrollId}")
                     result = fetchRecordJSON(false, queryParams)
+                    log.debug("-------------- processing page ${result.currentPage} out of ${result.lastPage} ------------------")
                     if(result.count > 0) {
                         switch (source.rectype) {
                             case RECTYPE_ORG:
@@ -588,16 +600,18 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                     }
                                 }
                                 break
-                            case RECTYPE_TIPP: if(offset == 0) updateRecords(result.records, offset, permanentlyDeletedTitles)
-                            else updateRecords(result.records, offset)
+                            case RECTYPE_TIPP:
+                                if(offset == 0)
+                                    updateRecords(result.records, offset, permanentlyDeletedTitles)
+                                else updateRecords(result.records, offset)
                                 break
                         }
                         if(result.currentPage < result.lastPage) {
                             //scrollId = result.scrollId
-                            //flush after 50000 records ... seems that Grails 3 onwards fills memory, too!
+                            //flush after one page ... seems that Grails 3 onwards fills memory, too!
                             offset += max
                             queryParams.offset = offset
-                            if(offset % 50000 == 0 && offset > 0) {
+                            if(offset % MAX_TIPP_COUNT_PER_PAGE == 0 && offset > 0) {
                                 globalService.cleanUpGorm()
                             }
                         }
@@ -608,7 +622,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 }
             }
         }
-        else if(result.count > 0 && result.count < 10000) {
+        else if(result.count > 0 && result.count < MAX_TIPP_COUNT_PER_PAGE) {
             switch (source.rectype) {
                 case RECTYPE_ORG:
                     result.records.each { record ->
@@ -679,15 +693,15 @@ class GlobalSourceSyncService extends AbstractLockableService {
         List<Map> records = rawRecords.findAll { Map tipp -> tipp.containsKey("hostPlatformUuid") && tipp.containsKey("tippPackageUuid") }
         SimpleDateFormat sdf = DateUtils.getSDF_yyyyMMddTHHmmssZ()
         Set<String> platformUUIDs = records.collect { Map tipp -> tipp.hostPlatformUuid } as Set<String>
-        log.debug("found platform UUIDs: ${platformUUIDs.toListString()}")
+        //log.debug("found platform UUIDs: ${platformUUIDs.toListString()}")
         Set<String> packageUUIDs = records.collect { Map tipp -> tipp.tippPackageUuid } as Set<String>
-        log.debug("found package UUIDs: ${packageUUIDs.toListString()}")
+        //log.debug("found package UUIDs: ${packageUUIDs.toListString()}")
         Set<String> tippUUIDs = records.collect { Map tipp -> tipp.uuid } as Set<String>
         Map<String,Package> packagesOnPage = [:]
         Map<String,Platform> platformsOnPage = [:]
 
         //packageUUIDs is null if package has no tipps
-        Set<String> existingPackageUUIDs = packageUUIDs ? Platform.executeQuery('select pkg.gokbId from Package pkg where pkg.gokbId in (:pkgUUIDs)',[pkgUUIDs:packageUUIDs]) : []
+        //Set<String> existingPackageUUIDs = packageUUIDs ? Platform.executeQuery('select pkg.gokbId from Package pkg where pkg.gokbId in (:pkgUUIDs)',[pkgUUIDs:packageUUIDs]) : []
         Map<String,TitleInstancePackagePlatform> tippsInLaser = [:]
         //collect existing TIPPs and purge deleted ones
         if(tippUUIDs) {
@@ -698,7 +712,10 @@ class GlobalSourceSyncService extends AbstractLockableService {
         //create or update platforms
         platformUUIDs.each { String platformUUID ->
             try {
-                platformsOnPage.put(platformUUID,createOrUpdatePlatform(platformUUID))
+                if(platformsAlreadyUpdated.add(platformUUID))
+                    platformsOnPage.put(platformUUID,createOrUpdatePlatform(platformUUID))
+                else
+                    platformsOnPage.put(platformUUID,Platform.findByGokbId(platformUUID))
             }
             catch (SyncException e) {
                 log.error("Error on updating platform ${platformUUID}: ",e)
@@ -708,9 +725,14 @@ class GlobalSourceSyncService extends AbstractLockableService {
         //create or update packages
         packageUUIDs.each { String packageUUID ->
             try {
-                Package pkg = createOrUpdatePackage(packageUUID)
-                if(pkg)
-                    packagesOnPage.put(packageUUID,pkg)
+                if(packagesAlreadyUpdated.add(packageUUID)) {
+                    Package pkg = createOrUpdatePackage(packageUUID)
+                    if (pkg)
+                        packagesOnPage.put(packageUUID, pkg)
+                }
+                else {
+                    packagesOnPage.put(packageUUID, Package.findByGokbId(packageUUID))
+                }
             }
             catch (SyncException e) {
                 log.error("Error on updating package ${packageUUID}: ",e)
@@ -795,7 +817,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 tipp.titleHistory.each { historyEvent ->
                     updatedTIPP.history << [date:DateUtils.parseDateGeneric(historyEvent.date),from:historyEvent.from,to:historyEvent.to]
                 }
-                if(updatedTIPP.packageUUID in existingPackageUUIDs) {
+                if(Package.findByGokbId(updatedTIPP.packageUUID)) {
                     Map<String,Object> diffs = createOrUpdateTIPP(tippsInLaser.get(updatedTIPP.uuid),updatedTIPP,packagesOnPage,platformsOnPage)
                     Set<Map<String,Object>> diffsOfPackage = packagesToNotify.get(updatedTIPP.packageUUID)
                     if(!diffsOfPackage) {
@@ -874,23 +896,24 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     switch(diff.event) {
                         case 'add': packageChanges << TitleChange.construct([event:PendingChangeConfiguration.NEW_TITLE,tipp:diff.target])
                             break
-                        /* void as of ERMS-4585, comment February 27th
+                        /* changed as of ERMS-4585, comment February 27th and ERMS-4986
                         case 'update':
                             diff.diffs.each { tippDiff ->
-                                packagePendingChanges << PendingChange.construct([msgToken:PendingChangeConfiguration.TITLE_UPDATED,target:diff.target,status:RDStore.PENDING_CHANGE_HISTORY,prop:tippDiff.prop,newValue:tippDiff.newValue,oldValue:tippDiff.oldValue])
-                            }
-                            break*/
-                        case 'delete': packageChanges << TitleChange.construct([event:PendingChangeConfiguration.TITLE_DELETED,tipp:diff.target,oldValue:diff.oldValue])
-                            break
-                        case 'remove': TitleChange.construct([event:PendingChangeConfiguration.TITLE_REMOVED,tipp:diff.target,oldValue:diff.oldValue]) //dealt elsewhere!
-                            break
-                        /* never worked, no one seemed to miss that
-                        case 'pkgPropDiffs':
-                            diff.diffs.each { pkgPropDiff ->
-                                packagePendingChanges << PendingChange.construct([mskTogen: PendingChangeConfiguration.PACKAGE_PROP, target: diff.target, prop: pkgPropDiff.prop, newValue: pkgPropDiff.newValue, oldValue: pkgPropDiff.oldValue, status: RDStore.PENDING_CHANGE_HISTORY])
+                                TitleChange.construct([event:PendingChangeConfiguration.TITLE_UPDATED,target:diff.target,prop:tippDiff.prop,newValue:tippDiff.newValue,oldValue:tippDiff.oldValue])
                             }
                             break
                             */
+                        case 'statusChange': TitleChange.construct([event: PendingChangeConfiguration.TITLE_STATUS_CHANGED,tipp:diff.target,oldValue:diff.oldValue,newValue:diff.newValue]) //notification only, to be applied directly
+                            break
+                        case 'delete': TitleChange.construct([event:PendingChangeConfiguration.TITLE_DELETED,tipp:diff.target,oldValue:diff.oldValue]) //dealt elsewhere!
+                            break
+                        case 'remove': TitleChange.construct([event:PendingChangeConfiguration.TITLE_REMOVED,tipp:diff.target,oldValue:diff.oldValue]) //dealt elsewhere!
+                            break
+                        case 'pkgPropDiffs':
+                            diff.diffs.each { pkgPropDiff ->
+                                packageChanges << PendingChange.construct([msgToken: PendingChangeConfiguration.PACKAGE_PROP, target: diff.target, prop: pkgPropDiff.prop, newValue: pkgPropDiff.newValue, oldValue: pkgPropDiff.oldValue, status: RDStore.PENDING_CHANGE_HISTORY])
+                            }
+                            break
                     }
                     //PendingChange.construct([msgToken,target,status,prop,newValue,oldValue])
                 }
@@ -930,7 +953,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         get each change for each subscribed package and token, fetch issue entitlement equivalent and process the change
                         if a change is being accepted, create an issue entitlement change record pointing to that change
                          */
-                        //continue here: adapt pending change logic
                         pendingChangeService.applyPendingChange(newChange,subPkg,contextOrg)
                     //}
                 }
@@ -1043,16 +1065,22 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         if(packageRecord.providerUuid) {
                             newPackageProps.contentProvider = Org.findByGokbId(packageRecord.providerUuid)
                         }
-                        /*
-                        not used
                         Set<Map<String,Object>> pkgPropDiffs = getPkgPropDiff(result, newPackageProps)
                         if(pkgPropDiffs) {
-                            pkgPropDiffsContainer.put(packageInput, [event: "pkgPropUpdate", diffs: pkgPropDiffs, target: result])
+                            //pkgPropDiffsContainer.put(packageInput, [event: "pkgPropUpdate", diffs: pkgPropDiffs, target: result])
+                            Set<Map<String,Object>> diffsOfPackage = packagesToNotify.get(packageRecord.uuid)
+                            if(!diffsOfPackage) {
+                                diffsOfPackage = []
+                            }
+                            diffsOfPackage.addAll(pkgPropDiffs)
+                            /*
+                            if(pkgPropDiffsContainer.get(updatedTIPP.packageUUID)) {
+                                diffsOfPackage.addAll(pkgPropDiffsContainer.get(updatedTIPP.packageUUID))
+                            }
+                             */
+                            //test with set, otherwise make check
+                            packagesToNotify.put(packageRecord.uuid,diffsOfPackage)
                         }
-
-                        if(!initialPackagesCounter.get(packageUUID))
-                            initialPackagesCounter.put(packageUUID,TitleInstancePackagePlatform.executeQuery('select count(tipp.id) from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg',[pkg:result])[0] as Integer)
-                         */
                     }
                     result.name = packageRecord.name
                     result.sortname = escapeService.generateSortTitle(packageRecord.name)
@@ -1443,13 +1471,11 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * @param pkgA the old package (as {@link Package} which is already persisted)
      * @param pkgB the new package (as unprocessed {@link Map}
      * @return a {@link Set} of {@link Map}s with the differences
-     * @deprecated observe if needed, no one seems to have missed the result ...
      */
-    @Deprecated
     Set<Map<String,Object>> getPkgPropDiff(Package pkgA, Map<String,Object> pkgB) {
         log.info("processing package prop diffs; the respective GOKb UUIDs are: ${pkgA.gokbId} (LAS:eR) vs. ${pkgB.uuid} (remote)")
         Set<Map<String,Object>> result = []
-        Set<String> controlledProperties = ['name','packageStatus']
+        Set<String> controlledProperties = ['name','breakable','file','scope','packageStatus']
 
         controlledProperties.each { String prop ->
             if(pkgA[prop] != pkgB[prop]) {
@@ -1459,11 +1485,11 @@ class GlobalSourceSyncService extends AbstractLockableService {
             }
         }
 
-        if(pkgA.nominalPlatform != pkgB.nominalPlatform) {
+        if(pkgA.nominalPlatform.name != pkgB.nominalPlatform.name) {
             result.add([prop: 'nominalPlatform', newValue: pkgB.nominalPlatform?.name, oldValue: pkgA.nominalPlatform?.name])
         }
 
-        if(pkgA.contentProvider != pkgB.contentProvider) {
+        if(pkgA.contentProvider.name != pkgB.contentProvider.name) {
             result.add([prop: 'nominalProvider', newValue: pkgB.contentProvider?.name, oldValue: pkgA.contentProvider?.name])
         }
 
@@ -1519,9 +1545,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     }
                 }
             }
+            RefdataValue oldStatus = tippA.status, newStatus = tippStatus.get(tippB.status)
+            boolean statusChanged = oldStatus != newStatus
             tippA.status = tippStatus.get(tippB.status)
-            //temp solution until 3.2
-            IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.status = :newStatus where ie.tipp = :tipp and ie.status != :removed', [newStatus: tippStatus.get(tippB.status), tipp: tippA, removed: RDStore.TIPP_STATUS_REMOVED])
             tippA.accessType = accessType.get(tippB.accessType)
             tippA.openAccess = openAccess.get(tippB.openAccess)
             tippA.firstAuthor = tippB.firstAuthor
@@ -1635,6 +1661,11 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             throw new SyncException("Error on saving title history data: ${the.errors}")
                     }
                 }
+            }
+            if(statusChanged) {
+                //bootleneck?
+                IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.status = :newStatus where ie.tipp = :tipp and ie.status != :removed', [newStatus: tippStatus.get(tippB.status), tipp: tippA, removed: RDStore.TIPP_STATUS_REMOVED])
+                [event: 'statusChange', target: tippA, oldValue: oldStatus, newValue: newStatus]
             }
             //get to diffs that need to be notified
             //println("tippA:"+tippA)
@@ -2164,7 +2195,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
     Set<String> getPermanentlyDeletedTitles() {
         Set<String> result = []
         Map<String, Object> recordBatch = fetchRecordJSON(false, [componentType: 'TitleInstancePackagePlatform', status: PERMANENTLY_DELETED])
-        for(int i = 0;i < recordBatch.count; i+=10000) {
+        for(int i = 0;i < recordBatch.count; i+=MAX_TIPP_COUNT_PER_PAGE) {
             result.addAll(recordBatch.records.collect { record -> record.uuid })
             if(recordBatch.currentPage < recordBatch.lastPage)
                 recordBatch = fetchRecordJSON(false, [componentType: 'TitleInstancePackagePlatform'])
@@ -2222,6 +2253,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
         buildWekbLaserRefdataMap(RDConstants.LICENSE_OA_TYPE)
         packagesToNotify = [:]
+        packagesAlreadyUpdated = []
+        platformsAlreadyUpdated = []
     }
 
     /**
