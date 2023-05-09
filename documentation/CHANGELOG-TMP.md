@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5022    09.05.2023  dev     3.1         David   Feature     Aufgabe erstellen: Vorauswahl Bearbeiter auf "einzelnen Mitarbeiter" umstellen
+
 5008    08.05.2023  dev     3.1         David   Feature     Zauberstab-Actions vereinheitlichen
 
 5003    08.05.2023  dev     3.1         David   Bug         DEV: Meine Anbieter - Funktionen eingeschränkt für Pro-Nutzer
