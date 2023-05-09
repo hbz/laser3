@@ -8,7 +8,7 @@ import groovy.util.logging.Slf4j
 @Slf4j
 class StatsSyncJob extends AbstractJob {
 
-    StatsSyncService statsSyncService
+    //StatsSyncService statsSyncService
 
     static triggers = {
         cron name:'statsSyncTrigger', cronExpression: "0 0 4 ? * *"
@@ -23,10 +23,10 @@ class StatsSyncJob extends AbstractJob {
         //                  `- Second, 0-59
     }
 
-    static List<List> configurationProperties = [ ConfigMapper.STATS_SYNC_JOB_ACTIVE ]
+    static List<List> configurationProperties = [ /*ConfigMapper.STATS_SYNC_JOB_ACTIVE*/ ]
 
     boolean isAvailable() {
-        !jobIsRunning && !statsSyncService.running && ConfigMapper.getStatsSyncJobActive()
+        !jobIsRunning /*&& !statsSyncService.running && ConfigMapper.getStatsSyncJobActive()*/
     }
     boolean isRunning() {
         jobIsRunning
@@ -37,7 +37,16 @@ class StatsSyncJob extends AbstractJob {
             return false
         }
         try {
-            statsSyncService.doFetch(true)
+            //statsSyncService.doFetch(true) changed as of ERMS-4834
+            String usagePath = ConfigMapper.getStatsReportSaveLocation() ?: '/usage'
+            File folder = new File(usagePath)
+            if(!folder.exists())
+                folder.mkdir()
+            else {
+                folder.listFiles().each { File oldReport ->
+                    oldReport.delete()
+                }
+            }
         }
         catch (Exception e) {
             log.error( e.toString() )

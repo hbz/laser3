@@ -230,7 +230,7 @@ class SubscriptionController {
             String dir = ConfigMapper.getStatsReportSaveLocation() ?: '/usage'
             File folder = new File(dir)
             if (!folder.exists()) {
-                folder.mkdirs()
+                folder.mkdir()
             }
             File f = new File(dir+'/'+token)
             Map<String, String> fileResult = [token: token]
