@@ -142,6 +142,10 @@ class FilterService {
             queryParams << [customerTypeKey : OrgSetting.KEYS.CUSTOMER_TYPE]
         }
 
+        if (params.isLegallyObliged in ['yes', 'no']) {
+            query << "o.legallyObligedBy " + (params.isLegallyObliged == 'yes' ? "is not null" : "is null")
+        }
+
         if (params.legallyObligedBy?.length() > 0) {
             query << "o.legallyObligedBy.id in (:legallyObligedBy)"
             queryParams << [legallyObligedBy: listReaderWrapper(params, 'legallyObligedBy').collect { key -> Long.parseLong(key) }]
