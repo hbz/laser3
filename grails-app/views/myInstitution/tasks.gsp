@@ -1,16 +1,16 @@
 <%@ page import="de.laser.RefdataCategory;de.laser.storage.RDConstants"%>
-<laser:htmlStart message="task.plural" />
+<laser:htmlStart message="menu.my.tasks" />
 
     <ui:breadcrumbs>
         <ui:crumb controller="org" action="show" id="${institution.id}" text="${institution.getDesignation()}"/>
-        <ui:crumb message="menu.institutions.tasks" class="active"/>
+        <ui:crumb message="menu.my.tasks" class="active"/>
     </ui:breadcrumbs>
 
         <ui:controlButtons>
             <laser:render template="actions"/>
         </ui:controlButtons>
 
-        <ui:h1HeaderWithIcon message="task.plural" floated="true" />
+        <ui:h1HeaderWithIcon message="menu.my.tasks" floated="true" />
 
         <%--<g:if test="${editable}">
             <input type="submit" class="ui left floated  button la-clear-before" value="${message(code:'task.create.new')}" data-ui="modal" data-href="#modalCreateTask" />

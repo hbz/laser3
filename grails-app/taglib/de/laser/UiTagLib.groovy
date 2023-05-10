@@ -72,11 +72,7 @@ class UiTagLib {
             out << '<span class="la-subPlusYear-year" >'
             out << attrs.referenceYear
             out << '</span>'
-        }
-        if (attrs.referenceYear) {
             out << '</div>'
-        }
-        if (attrs.referenceYear) {
             out << '</div>'
         }
         out << '</h1>'

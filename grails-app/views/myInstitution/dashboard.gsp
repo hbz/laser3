@@ -8,42 +8,164 @@
 
         <ui:h1HeaderWithIcon text="${institution.name}" />
 
-        <div class="ui equal width grid la-clear-before">
+        <div class="ui equal width grid la-clear-before" style="margin:1em 0;">
             <div class="row">
-
                 <div class="column">
                     <div class="ui divided relaxed list">
                         <div class="item">
-                            <g:link controller="myInstitution" action="currentSubscriptions">${message(code:'menu.my.subscriptions')}</g:link>
+                            <i class="clipboard icon la-list-icon"></i>
+                            <div class="content">
+                                <g:link controller="myInstitution" action="currentSubscriptions">${message(code:'menu.my.subscriptions')}</g:link>
+                            </div>
                         </div>
                         <div class="item">
-                            <g:link controller="myInstitution" action="currentLicenses">${message(code:'menu.my.licenses')}</g:link>
+                            <i class="balance scale icon la-list-icon"></i>
+                            <div class="content">
+                                <g:link controller="myInstitution" action="currentLicenses">${message(code:'menu.my.licenses')}</g:link>
+                            </div>
                         </div>
                         <div class="item">
-                            <g:link controller="myInstitution" action="currentTitles">${message(code:'menu.my.titles')}</g:link>
+                            <i class="university icon la-list-icon"></i>
+                            <div class="content">
+                                <g:link controller="myInstitution" action="currentProviders">${message(code:'menu.my.providers')}</g:link>
+                            </div>
                         </div>
                     </div>
                 </div>
-
                 <div class="column">
                     <div class="ui divided relaxed list">
                         <div class="item">
-                            <g:link controller="org" action="show" id="${institution.id}">${message(code: 'menu.institutions.org_info')}</g:link>
+                            <i class="chart pie icon la-list-icon"></i>
+                            <div class="content">
+                                <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_INST_BASIC)}">
+                                    <g:link controller="myInstitution" action="currentSurveys">${message(code:'menu.my.surveys')}</g:link>
+                                </g:if>
+                                <g:elseif test="${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
+                                    <g:link controller="survey" action="workflowsSurveysConsortia">${message(code:'menu.my.surveys')}</g:link>
+                                </g:elseif>
+                            </div>
                         </div>
-                        <ui:securedMainNavItem controller="myInstitution" action="finance" message="menu.institutions.finance" />
-                        <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="reporting" message="myinst.reporting" />
+                        <div class="item">
+                            <i class="tasks icon la-list-icon"></i>
+                            <div class="content">
+                                <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="currentWorkflows" message="menu.my.workflows" />
+                            </div>
+                        </div>
+                        <div class="item">
+                            <i class="fake icon la-list-icon"></i>
+                            <div class="content">
+                                <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="tasks" message="menu.my.tasks" />
+                            </div>
+                        </div>
                     </div>
                 </div>
-
                 <div class="column">
                     <div class="ui divided relaxed list">
-                        <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="tasks" message="task.plural" />
-                        <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="addressbook" message="menu.institutions.myAddressbook" />
-                        <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="managePrivatePropertyDefinitions" message="menu.institutions.manage_props" />
+                        <div class="item">
+                            <i class="university icon la-list-icon"></i>
+                            <div class="content">
+                                <g:link controller="org" action="show" id="${institution.id}">${message(code: 'menu.institutions.org_info')}</g:link>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <i class="fake icon la-list-icon"></i>
+                            <div class="content">
+                                <ui:securedMainNavItem controller="myInstitution" action="finance" message="menu.institutions.finance" />
+                            </div>
+                        </div>
+                        <div class="item">
+                            <i class="fake icon la-list-icon"></i>
+                            <div class="content">
+                                <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="reporting" message="myinst.reporting" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="ui divided relaxed list">
+                        <div class="item">
+                            <i class="university icon la-list-icon"></i>
+                            <div class="content">
+                                <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
+                                    <ui:securedMainNavItem addItemAttributes="true" specRole="ROLE_ADMIN" controller="myInstitution" action="manageMembers" message="menu.my.insts" />
+                                </g:if>
+                                <g:elseif test="${accessService.ctxPerm(CustomerTypeService.ORG_INST_BASIC)}">
+                                    <ui:securedMainNavItem addItemAttributes="true" controller="myInstitution" action="currentConsortia" message="menu.my.consortia" />
+                                </g:elseif>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <i class="fake icon la-list-icon"></i>
+                            <div class="content">
+                                <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="addressbook" message="menu.institutions.myAddressbook" />
+                            </div>
+                        </div>
+                        <div class="item">
+                            <i class="question icon la-list-icon"></i>
+                            <div class="content">
+                                <g:link controller="profile" action="help">${message(code:'menu.user.help')}</g:link>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+
+        <style>
+            .list .item .content .disabled { color:lightgrey }
+        </style>
+%{--        <div class="ui equal width grid la-clear-before" style="padding-top: 1em; padding-bottom: 1em;">--}%
+%{--            <div class="row">--}%
+%{--                <div class="column">--}%
+%{--                    <div class="ui divided relaxed list">--}%
+%{--                        <div class="item">--}%
+%{--                            <g:link controller="myInstitution" action="currentSubscriptions">${message(code:'menu.my.subscriptions')}</g:link>--}%
+%{--                        </div>--}%
+%{--                        <div class="item">--}%
+%{--                            <g:link controller="myInstitution" action="currentLicenses">${message(code:'menu.my.licenses')}</g:link>--}%
+%{--                        </div>--}%
+%{--                        <div class="item">--}%
+%{--                            <g:link controller="myInstitution" action="currentProviders">${message(code:'menu.my.providers')}</g:link>--}%
+%{--                        </div>--}%
+%{--                        <div class="item">--}%
+%{--                            <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">--}%
+%{--                                <ui:securedMainNavItem addItemAttributes="true" specRole="ROLE_ADMIN" controller="myInstitution" action="manageMembers" message="menu.my.insts" />--}%
+%{--                            </g:if>--}%
+%{--                            <g:elseif test="${accessService.ctxPerm(CustomerTypeService.ORG_INST_BASIC)}">--}%
+%{--                                <ui:securedMainNavItem addItemAttributes="true" controller="myInstitution" action="currentConsortia" message="menu.my.consortia" />--}%
+%{--                            </g:elseif>--}%
+%{--                        </div>--}%
+%{--                    </div>--}%
+%{--                </div>--}%
+%{--                <div class="column">--}%
+%{--                    <div class="ui divided relaxed list">--}%
+%{--                        <div class="item">--}%
+%{--                            <g:link controller="org" action="show" id="${institution.id}">${message(code: 'menu.institutions.org_info')}</g:link>--}%
+%{--                        </div>--}%
+%{--                        <ui:securedMainNavItem controller="myInstitution" action="finance" message="menu.institutions.finance" />--}%
+%{--                        <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="reporting" message="myinst.reporting" />--}%
+%{--                        <div class="item">--}%
+%{--                            <g:link controller="profile" action="help">${message(code:'menu.user.help')}</g:link>--}%
+%{--                        </div>--}%
+%{--                    </div>--}%
+%{--                </div>--}%
+%{--                <div class="column">--}%
+%{--                    <div class="ui divided relaxed list">--}%
+%{--                        <div class="item">--}%
+%{--                            <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_INST_BASIC)}">--}%
+%{--                                <g:link controller="myInstitution" action="currentSurveys">${message(code:'menu.my.surveys')}</g:link>--}%
+%{--                            </g:if>--}%
+%{--                            <g:elseif test="${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">--}%
+%{--                                <g:link controller="survey" action="workflowsSurveysConsortia">${message(code:'menu.my.surveys')}</g:link>--}%
+%{--                            </g:elseif>--}%
+%{--                        </div>--}%
+%{--                        <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="tasks" message="menu.my.tasks" />--}%
+%{--                        <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="currentWorkflows" message="menu.my.workflows" />--}%
+%{--                        <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="addressbook" message="menu.institutions.myAddressbook" />--}%
+%{--                    </div>--}%
+%{--                </div>--}%
+%{--            </div>--}%
+%{--        </div>--}%
 
         <ui:messages data="${flash}" />
         <br />
