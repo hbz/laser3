@@ -61,7 +61,7 @@ databaseChangeLog = {
         addForeignKeyConstraint(baseColumnNames: "pt_tipp_fk", baseTableName: "permanent_title", constraintName: "FKsalhkgmmlmq4v0lmy9sgdcfsf", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "tipp_id", referencedTableName: "title_instance_package_platform", validate: "true")
     }
 
-    changeSet(author: "djebeniani (modified)", id: "1683531152301-6") {
+/*    changeSet(author: "djebeniani (modified)", id: "1683531152301-6") {
         grailsChange {
             change {
                 List<Subscription> subList = Subscription.findAllByHasPerpetualAccess(true)
@@ -93,5 +93,5 @@ databaseChangeLog = {
             }
             rollback {}
         }
-    }
+    }*/
 }
