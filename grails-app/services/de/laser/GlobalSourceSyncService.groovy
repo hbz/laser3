@@ -1485,12 +1485,16 @@ class GlobalSourceSyncService extends AbstractLockableService {
             }
         }
 
-        if(pkgA.nominalPlatform.name != pkgB.nominalPlatform.name) {
-            result.add([prop: 'nominalPlatform', newValue: pkgB.nominalPlatform?.name, oldValue: pkgA.nominalPlatform?.name])
+        if(pkgA.nominalPlatform) {
+            if (pkgA.nominalPlatform.name != pkgB.nominalPlatform.name) {
+                result.add([prop: 'nominalPlatform', newValue: pkgB.nominalPlatform?.name, oldValue: pkgA.nominalPlatform.name])
+            }
         }
 
-        if(pkgA.contentProvider.name != pkgB.contentProvider.name) {
-            result.add([prop: 'nominalProvider', newValue: pkgB.contentProvider?.name, oldValue: pkgA.contentProvider?.name])
+        if(pkgA.contentProvider) {
+            if (pkgA.contentProvider.name != pkgB.contentProvider.name) {
+                result.add([prop: 'nominalProvider', newValue: pkgB.contentProvider?.name, oldValue: pkgA.contentProvider?.name])
+            }
         }
 
         //the tipp diff count cannot be executed at this place because it depends on TIPP processing result

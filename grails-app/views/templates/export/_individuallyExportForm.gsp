@@ -16,9 +16,6 @@
         <ui:msg icon="ui exclamation icon" class="warning" message="exportClickMe.exportCSV.noAccessPoints" noClose="true"/>
     </g:if>
     <div class="ui form">
-        <div class="field">
-            <label><g:message code="exportClickMe.fieldsToExport"/></label>
-        </div>
 
         <div class="ui top attached stackable tabular la-tab-with-js menu">
             <g:each in="${totalFields}" var="fields" status="i">
