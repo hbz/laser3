@@ -1708,7 +1708,7 @@ class FilterService {
                                    "(select ${refdata_value_col} from refdata_value where rdv_id = tipp_open_access_rv_fk) as openAccess"]
                         break
                 }
-                query = "select ${columns.join(',')} from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id join subscription on ie_subscription_fk = sub_id join org_role on ie_subscription_fk = or_sub_fk"
+                query = "select ${columns.join(',')} from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id join subscription on ie_subscription_fk = sub_id"
                 if(configMap.pkgfilter != null && !configMap.pkgfilter.isEmpty()) {
                     params.pkgId = Long.parseLong(configMap.pkgfilter)
                     where = " tipp_pkg_fk = :pkgId"
@@ -1719,10 +1719,13 @@ class FilterService {
                     params.pkgIds = connection.createArrayOf('bigint', pkgIds.toArray())
                     where = " tipp_pkg_fk = any(:pkgIds)"
                 }
+                /*
                 where += " and or_sub_fk = :ctxId"
+                subJoin = " join org_role on or_sub_fk = ie_subscription_fk "
                 params.ctxId = contextService.getOrg().id
                 if(contextService.getOrg().getCustomerType() == CustomerTypeService.ORG_CONSORTIUM_BASIC)
                     where += " and sub_parent_sub_fk is null"
+                */
                 orderClause = " order by tipp_sort_name, tipp_name"
                 if(configMap.sub) {
                     if(configMap.sub instanceof Subscription)
