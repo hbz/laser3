@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore; de.laser.IssueEntitlement;de.laser.Platform; de.laser.remote.ApiSource;" %>
+<%@ page import="de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.IssueEntitlement;de.laser.Platform; de.laser.remote.ApiSource;" %>
 <laser:htmlStart message="myinst.currentTitles.label" />
 
 <ui:breadcrumbs>
@@ -66,6 +66,8 @@
 <ui:h1HeaderWithIcon message="myinst.currentTitles.label" total="${num_ti_rows}" floated="true" />
 
 <ui:messages data="${flash}"/>
+
+<g:set var="availableStatus" value="${RefdataCategory.getAllRefdataValues(RDConstants.TIPP_STATUS)-RDStore.TIPP_STATUS_REMOVED}"/>
 
 <ui:filter>
     <g:form id="filtering-form" action="currentTitles" controller="myInstitution" method="get" class="ui form">
@@ -141,6 +143,25 @@
                 </select>
             </div>
 
+            <div class="field">
+                <label for="status">
+                    ${message(code: 'default.status.label')}
+                </label>
+                <select name="status" id="status" multiple=""
+                        class="ui search selection dropdown">
+                    <option value="">${message(code: 'default.select.choose.label')}</option>
+
+                    <g:each in="${availableStatus}" var="status">
+                        <option <%=(params.list('status')?.contains(status.id.toString())) ? 'selected="selected"' : ''%>
+                                value="${status.id}">
+                            ${status.getI10n('value')}
+                        </option>
+                    </g:each>
+                </select>
+            </div>
+
+        </div>
+        <div class="two fields">
             <div class="field la-field-right-aligned">
                 <a href="${request.forwardURI}"
                    class="ui reset secondary button">${message(code: 'default.button.reset.label')}</a>
@@ -184,7 +205,34 @@
     </g:form>
 </ui:filter>
 
+<ui:tabs actionName="${actionName}">
+    <ui:tabsItem controller="${controllerName}" action="${actionName}"
+                 params="[tab: 'currentIEs']"
+                 text="${message(code: "package.show.nav.current")}" tab="currentIEs"
+                 counts="${currentIECounts}"/>
+    <ui:tabsItem controller="${controllerName}" action="${actionName}"
+                 params="[tab: 'plannedIEs']"
+                 text="${message(code: "package.show.nav.planned")}" tab="plannedIEs"
+                 counts="${plannedIECounts}"/>
+    <ui:tabsItem controller="${controllerName}" action="${actionName}"
+                 params="[tab: 'expiredIEs']"
+                 text="${message(code: "package.show.nav.expired")}" tab="expiredIEs"
+                 counts="${expiredIECounts}"/>
+    <ui:tabsItem controller="${controllerName}" action="${actionName}"
+                 params="[tab: 'deletedIEs']"
+                 text="${message(code: "package.show.nav.deleted")}" tab="deletedIEs"
+                 counts="${deletedIECounts}"/>
+    <ui:tabsItem controller="${controllerName}" action="${actionName}"
+                 params="[tab: 'allIEs']"
+                 text="${message(code: "menu.public.all_titles")}" tab="allIEs"
+                 counts="${allIECounts}"/>
+</ui:tabs>
+
+<% params.remove('tab')%>
+
+
 <div class="la-clear-before">
+    <div class="ui bottom attached tab active segment">
     <div>
         <div>
             <g:if test="${titles}">
@@ -343,6 +391,7 @@
     </div>
 
 
+</div>
     <g:if test="${titles}">
         <ui:paginate action="currentTitles" controller="myInstitution" params="${params}"
                         max="${max}" total="${num_ti_rows}"/>

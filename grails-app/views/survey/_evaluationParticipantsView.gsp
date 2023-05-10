@@ -4,7 +4,7 @@
 <g:if test="${showOpenParticipantsAgainButtons}">
     <g:set var="mailSubject"
            value="${escapeService.replaceUmlaute(g.message(code: 'email.subject.surveys', args: ["${surveyConfig.surveyInfo.type.getI10n('value')}"]) + " " + surveyConfig.surveyInfo.name + "")}"/>
-    <g:set var="mailBody" value="${surveyService.notificationSurveyAsStringInHtml(surveyConfig.surveyInfo)}"/>
+    <g:set var="mailBody" value="${surveyService.surveyMailHtmlAsString(surveyConfig.surveyInfo)}"/>
     <g:set var="mailString" value=""/>
 </g:if>
 
@@ -121,9 +121,14 @@
 
 
 
-<g:form action="${processAction}" controller="survey" method="post" class="ui form"
+<g:form action="${processAction}" controller="${processController ?: 'survey'}" method="post" class="ui form"
         params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: params.tab]">
     <br/><br/>
+
+    <g:if test="${processController == 'mail'}">
+        <g:hiddenField name="objectType" value="${surveyInfo.class.name}"/>
+        <g:hiddenField name="originalAction" value="${actionName}"/>
+    </g:if>
 
     <div class="ui blue large label">
         <g:message code="surveyEvaluation.participants"/>: <div class="detail">${participants.size()}</div>
@@ -371,12 +376,18 @@
                                 ${message(code: 'openParticipantsAgain.reminder.participantsHasAccess')}
                             </a>
 
-                            <laser:render template="generateEmailWithAddresses"
+                    %{--        <laser:render template="generateEmailWithAddresses"
                                           model="[modalID: 'generateEmailWithAddresses_ajaxModal', formUrl: processAction ?  g.createLink([controller: 'survey',action: processAction, params: [id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: params.tab]]) : '',
                                                   messageCode: 'openParticipantsAgain.reminder.participantsHasAccess',
                                                   submitButtonValue: 'ReminderMail',
-                                                    mailText: surveyService.notificationSurveyAsStringInText(surveyConfig.surveyInfo, true)]"/>
+                                                    mailText: surveyService.notificationSurveyAsStringInText(surveyConfig.surveyInfo, true)]"/>--}%
 
+                        </div>
+
+                        <div class="eight wide field" style="text-align: left;">
+                            <button name="openOption" type="submit" value="ReminderMail" class="ui button">
+                                ${message(code: 'openParticipantsAgain.reminder.participantsHasAccess')}
+                            </button>
                         </div>
                     </g:if>
                 </div>

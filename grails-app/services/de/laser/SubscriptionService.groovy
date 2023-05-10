@@ -1074,6 +1074,8 @@ join sub.orgRelations or_sub where
         TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGokbId(gokbId)
         if (tipp == null) {
             throw new EntitlementCreationException("Unable to tipp ${gokbId}")
+        }else if(!PermanentTitle.findByOwnerAndTitleInstancePackagePlatform(sub.subscriber, tipp)){
+            throw new EntitlementCreationException("Unable to create IssueEntitlement because IssueEntitlement exist as PermanentTitle")
         }
         else if(IssueEntitlement.findAllBySubscriptionAndTippAndStatusInList(sub, tipp, [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_RETIRED])) {
             throw new EntitlementCreationException("Unable to create IssueEntitlement because IssueEntitlement exist with tipp ${gokbId}")
@@ -1102,6 +1104,14 @@ join sub.orgRelations or_sub where
 
             if(pickAndChoosePerpetualAccess || sub.hasPerpetualAccess){
                 new_ie.perpetualAccessBySub = sub
+
+                if(!PermanentTitle.findByOwnerAndTitleInstancePackagePlatform(sub.subscriber, tipp)){
+                    PermanentTitle permanentTitle = new PermanentTitle(subscription: sub,
+                            issueEntitlement: new_ie,
+                            titleInstancePackagePlatform: tipp,
+                            owner: sub.subscriber).save()
+                }
+
             }
 
             Date accessStartDate, accessEndDate
@@ -1240,6 +1250,11 @@ join sub.orgRelations or_sub where
         }
         else {
             ie.status = RDStore.TIPP_STATUS_REMOVED
+            PermanentTitle permanentTitle = PermanentTitle.findByOwnerAndTitleInstancePackagePlatform(sub.subscriber, ie.tipp)
+            if (permanentTitle) {
+                permanentTitle.delete()
+            }
+
             if(ie.save()) {
                 return true
             }
@@ -1262,6 +1277,12 @@ join sub.orgRelations or_sub where
         }
         else {
             ie.status = RDStore.TIPP_STATUS_REMOVED
+
+            PermanentTitle permanentTitle = PermanentTitle.findByOwnerAndTitleInstancePackagePlatform(sub.subscriber, ie.tipp)
+            if (permanentTitle) {
+                permanentTitle.delete()
+            }
+
             if(ie.save()) {
                 return true
             }

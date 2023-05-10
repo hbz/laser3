@@ -7,6 +7,14 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5024    09.05.2023  dev     3.1         Moe     Feature     Einführung Dauerhaft-Sternchen / bestehende Bestände nachziehen
+
+4933    09.05.2023  dev     3.1         Moe     Feature     Umfrage-Merkmale gruppieren
+
+5025    09.05.2023  dev     3.1         Moe     Bug         GASCO-Monitor: Paketverknüpfung Journals
+
+4754    08.05.2023  dev     3.1         Moe     Feature     Dauerhafttitel Container
+
 4986    09.05.2023  dev     3.1         Andreas Feature     Schaltschrank-betreffende Teile umgesetzt
 
 5022    09.05.2023  dev     3.1         David   Feature     Aufgabe erstellen: Vorauswahl Bearbeiter auf "einzelnen Mitarbeiter" umstellen
