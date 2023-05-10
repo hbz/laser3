@@ -2378,8 +2378,8 @@ mail.template.language,English,Englisch,English,,
 mail.template.language,German,Deutsch,German,,
 mail.template.type,IP Message,IP-Meldung,IP Message,,
 mail.status,Sent, Verschickt, Sent,,
-mail.type, Survey-Reminder, Umfrage-Reminder, Survey-Reminder,,
-mail.type, Survey-Open, Umfrage-Offen, Survey-Open,,
+mail.type,Survey-Reminder,Umfrage-Reminder,Survey-Reminder,,
+mail.type,Survey-Open,Umfrage-Offen,Survey-Open,,
 number.type,Population,Einwohner,Population,Einwohner der Stadt,Einwohner der Stadt
 number.type,Scientific staff,wissenschaftliches Personal (Köpfe),Scientific staff (heads),Anzahl von Köpfen an wissenschaftlichem Personal,Count of heads in scientific personnel
 number.type,FTE,wissenschaftliches Personal (FTEs),Scientific staff (FTEs),Anzahl an Vollzeitstellen (full time equivalents) an wissenschaftlichem Personal,Count of full time equivalents in scientific personnel
