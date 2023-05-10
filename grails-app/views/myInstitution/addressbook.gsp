@@ -12,7 +12,7 @@
 <ui:controlButtons>
     <ui:exportDropdown>
         <ui:exportDropdownItem>
-            <a class="item" data-ui="modal" href="#individuallyExportModal">Click Me Export</a>
+            <a class="item" data-ui="modal" href="#individuallyExportModal">Export</a>
         </ui:exportDropdownItem>
         <g:if test="${filterSet == true}">
             <%--

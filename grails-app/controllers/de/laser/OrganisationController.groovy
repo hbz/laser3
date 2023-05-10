@@ -624,6 +624,7 @@ class OrganisationController  {
             nsList = nsList - IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS)
         }
         else {
+            nsList = nsList - IdentifierNamespace.findAllByNsInList([IdentifierNamespace.CROSSREF_FUNDER_ID, IdentifierNamespace.DBPEDIA, IdentifierNamespace.LOC_ID, IdentifierNamespace.ROR_ID, IdentifierNamespace.VIAF, IdentifierNamespace.WIKIDATA_ID])
             if(org.ids.find { Identifier id -> id.ns == IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_ID) })
                 nsList = nsList - IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_ID)
             if(org.ids.find { Identifier id -> id.ns == IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_KR) })
