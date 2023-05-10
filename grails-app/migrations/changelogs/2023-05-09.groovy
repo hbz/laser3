@@ -6,21 +6,23 @@ databaseChangeLog = {
         dropPrimaryKey(tableName: "mail_report")
     }
 
-    changeSet(author: "djebeniani (generated)", id: "1683666399030-2") {
-        addPrimaryKey(columnNames: "mr_id", constraintName: "mail_reportPK", tableName: "mail_report")
-    }
-
-    changeSet(author: "djebeniani (generated)", id: "1683666399030-3") {
+    changeSet(author: "djebeniani (generated)", id: "1683707515950-2") {
         addColumn(tableName: "mail_report") {
-            column(name: "mr_asynchronous_mail_message_fk", type: "int8") {
+            column(autoIncrement: "true", name: "mr_id", type: "int8") {
                 constraints(nullable: "false")
             }
         }
     }
 
+    changeSet(author: "djebeniani (generated)", id: "1683666399030-3") {
+        addPrimaryKey(columnNames: "mr_id", constraintName: "mail_reportPK", tableName: "mail_report")
+    }
+
     changeSet(author: "djebeniani (generated)", id: "1683666399030-4") {
         addColumn(tableName: "mail_report") {
-            column(name: "mr_bcc_receiver", type: "varchar(255)")
+            column(name: "mr_asynchronous_mail_message_fk", type: "int8") {
+                constraints(nullable: "false")
+            }
         }
     }
 
@@ -56,9 +58,7 @@ databaseChangeLog = {
 
     changeSet(author: "djebeniani (generated)", id: "1683666399030-9") {
         addColumn(tableName: "mail_report") {
-            column(autoIncrement: "true", name: "mr_id", type: "int8") {
-                constraints(nullable: "false")
-            }
+            column(name: "mr_bcc_receiver", type: "varchar(255)")
         }
     }
 
@@ -197,4 +197,5 @@ databaseChangeLog = {
     changeSet(author: "djebeniani (generated)", id: "1683666399030-31") {
         dropColumn(columnName: "version", tableName: "mail_report")
     }
+
 }
