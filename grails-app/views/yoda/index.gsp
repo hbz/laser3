@@ -10,6 +10,8 @@
 
     <h2 class="ui header">&nbsp;</h2>
 
+<ui:messages data="${flash}"/>
+
 <div class="ui equal width grid">
     <div class="row">
 

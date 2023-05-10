@@ -89,6 +89,8 @@ license.structure,Vertragskonstruktion,License Structure
 link.type,Link Type,Link Type
 mail.template.language,MailTemplate Sprache,MailTemplate Language
 mail.template.type,MailTemplate Typ,MailTemplate Type
+mail.status,Mail Status, Mail Status
+mail.type, Mail Type, Mail Type
 number.type,Zahlen-Typ,Number Type
 oa.content.receiver,OA-Inhalte Empfänger,OA content receiver
 oa.author.identification,OA Autorenidentifikation,OA author identification

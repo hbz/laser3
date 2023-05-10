@@ -24,6 +24,7 @@ import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyResult
 import de.laser.system.SystemActivityProfiler
+import de.laser.system.SystemEvent
 import de.laser.system.SystemProfiler
 import de.laser.system.SystemSetting
 import de.laser.utils.AppUtils
@@ -1529,5 +1530,82 @@ class YodaController {
         result
 
         redirect action: 'dashboard'
+    }
+
+    @Secured(['ROLE_YODA'])
+    def setPerpetualAccessByIes() {
+        Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
+        Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
+        threadArray.each { Thread thread ->
+            if (thread.name == 'setPerpetualAccessByIes') {
+                flash.error = 'setPerpetualAccessByIes process still running!'
+                redirect controller: 'yoda', action: 'index'
+                return
+            }
+        }
+        executorService.execute({
+            Thread.currentThread().setName("setPerpetualAccessByIes")
+            List<Subscription> subList = Subscription.findAllByHasPerpetualAccess(true)
+            int countProcess = 0
+            int countProcessPT = 0
+            subList.each { Subscription sub ->
+                List<Long> ieIDs = IssueEntitlement.executeQuery('select ie.id from IssueEntitlement ie where ie.subscription = :sub and ie.perpetualAccessBySub is null', [sub: sub])
+                if (ieIDs.size() > 0) {
+                    Org owner = sub.subscriber
+
+                    ieIDs.each { Long ieID ->
+                        IssueEntitlement.executeUpdate("update IssueEntitlement ie set ie.perpetualAccessBySub = :sub where ie.id = :ieID ", [sub: sub, ieID: ieID])
+
+                        IssueEntitlement issueEntitlement = IssueEntitlement.get(ieID)
+                        TitleInstancePackagePlatform titleInstancePackagePlatform = issueEntitlement.tipp
+
+                        if (!PermanentTitle.findByOwnerAndTitleInstancePackagePlatform(owner, titleInstancePackagePlatform)) {
+                            PermanentTitle permanentTitle = new PermanentTitle(subscription: sub,
+                                    issueEntitlement: issueEntitlement,
+                                    titleInstancePackagePlatform: titleInstancePackagePlatform,
+                                    owner: owner).save()
+                            countProcessPT
+                        }
+                        countProcess++
+                    }
+                }
+            }
+
+            SystemEvent.createEvent('YODA_PROCESS', [yodaProcess: 'setPerpetualAccessByIes', countProcessIes: countProcess, countProcessPermanentTitles: countProcessPT])
+        })
+    }
+
+    @Secured(['ROLE_YODA'])
+    def setPermanentTitle() {
+        Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
+        Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
+        threadArray.each { Thread thread ->
+            if (thread.name == 'setPermanentTitle') {
+                flash.error = 'setPermanentTitle process still running!'
+                redirect controller: 'yoda', action: 'index'
+                return
+            }
+        }
+        executorService.execute({
+            Thread.currentThread().setName("setPermanentTitle")
+            int countProcess = 0
+                List<Long> ieIDs = IssueEntitlement.executeQuery('select ie.id from IssueEntitlement ie where ie.perpetualAccessBySub is not null')
+                if (ieIDs.size() > 0) {
+                   ieIDs.each { Long ieID ->
+                       IssueEntitlement issueEntitlement = IssueEntitlement.get(ieID)
+                       TitleInstancePackagePlatform titleInstancePackagePlatform = issueEntitlement.tipp
+                        Org owner = issueEntitlement.subscription.subscriber
+
+                        if (!PermanentTitle.findByOwnerAndTitleInstancePackagePlatform(owner, titleInstancePackagePlatform)) {
+                            PermanentTitle permanentTitle = new PermanentTitle(subscription: issueEntitlement.subscription,
+                                    issueEntitlement: issueEntitlement,
+                                    titleInstancePackagePlatform: titleInstancePackagePlatform,
+                                    owner: owner).save()
+                            countProcess++
+                        }
+                    }
+                }
+            SystemEvent.createEvent('YODA_PROCESS', [yodaProcess: 'setPermanentTitle', countProcess: countProcess])
+        })
     }
 }

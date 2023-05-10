@@ -3,7 +3,7 @@
 <div class="three wide column" data-ajaxTopic="true">
     <div class="ui list"  >
         <div class="item">
-            <ui:listIcon hideSurroundingMarkup="true" type="${tipp.titleType}"/>
+            <ui:listIcon hideSurroundingMarkup="true" type="${tipp.titleType?.value}"/>
             <div class="content">
                 <div class="header">
                     ${message(code: 'tipp.titleType') + ':'}

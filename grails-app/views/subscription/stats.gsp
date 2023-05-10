@@ -33,7 +33,7 @@
                         <div class="content">
                             <dl>
                                 <dt><g:message code="platform.name"/></dt>
-                                <dd><g:link url="${platformInstanceRecord.wekbUrl}" target="_blank">${platformInstanceRecord.name}</g:link></dd>
+                                <dd>${platformInstanceRecord.name} <g:link url="${platformInstanceRecord.wekbUrl}" target="_blank" class="la-popup-tooltip la-delay" data-content="we:kb Link"><i class="ui icon la-gokb"></i></g:link></dd>
                             </dl>
                             <g:if test="${platformInstanceRecord.statisticsFormat}">
                                 <dl>

@@ -1,6 +1,6 @@
 <%@ page import="de.laser.storage.RDStore;" %>
 <div class="la-icon-list">
-<ui:listIcon type="${tipp.titleType}"/>
+<ui:listIcon type="${tipp.titleType?.value}"/>
 <g:if test="${ie}">
     <g:link controller="issueEntitlement" id="${ie.id}"
             action="show"><strong>${ie.name}</strong>
@@ -27,7 +27,7 @@
 </g:if>
 
 <div class="item">
-    <ui:listIcon type="${tipp.titleType}"/>
+    <ui:listIcon type="${tipp.titleType?.value}"/>
 
     <div class="content">
         ${showCompact ? '' : message(code: 'tipp.titleType') + ':'} ${tipp.titleType}
