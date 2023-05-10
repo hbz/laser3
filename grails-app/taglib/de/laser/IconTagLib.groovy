@@ -63,6 +63,9 @@ class IconTagLib {
                     if (level < 3 && it.formalRole.authority == Role.INST_ADM)    { level = 3; icon = 'user cog bordered inverted grey la-object-extended' }
                 }
                 break
+            case 'help':
+                icon = 'question circle bordered inverted grey la-object-extended'
+                break
         }
         }
         out << '<i aria-hidden="true" class="icon ' + icon + '"></i> '
