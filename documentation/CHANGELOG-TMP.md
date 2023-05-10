@@ -7,7 +7,11 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4986    09.05.2023  dev     3.1         Andreas Feature     Schaltschrank-betreffende Teile umgesetzt
+
 5022    09.05.2023  dev     3.1         David   Feature     Aufgabe erstellen: Vorauswahl Bearbeiter auf "einzelnen Mitarbeiter" umstellen
+
+5018    09.05.2023  dev     3.1         Andreas Bug         obsolete Exporteinstellungen herausgenommen
 
 5009    09.05.2023  dev     3.1         Andreas Feature     Verschiedene Optimierungen in der Statistik
 

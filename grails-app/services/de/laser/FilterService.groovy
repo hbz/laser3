@@ -1719,7 +1719,7 @@ class FilterService {
                     params.pkgIds = connection.createArrayOf('bigint', pkgIds.toArray())
                     where = " tipp_pkg_fk = any(:pkgIds)"
                 }
-                where += " or_sub_fk = :ctxId"
+                where += " and or_sub_fk = :ctxId"
                 params.ctxId = contextService.getOrg().id
                 if(contextService.getOrg().getCustomerType() == CustomerTypeService.ORG_CONSORTIUM_BASIC)
                     where += " and sub_parent_sub_fk is null"

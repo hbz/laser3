@@ -64,6 +64,7 @@
         <%
             Set<String> eventTabs = PendingChangeConfiguration.SETTING_KEYS
             eventTabs.removeAll([PendingChangeConfiguration.PACKAGE_PROP, PendingChangeConfiguration.PACKAGE_DELETED])
+            eventTabs << PendingChangeConfiguration.TITLE_DELETED
             eventTabs << PendingChangeConfiguration.TITLE_REMOVED
             int currentCount = 0
         %>
@@ -72,15 +73,16 @@
                 switch(event) {
                     case PendingChangeConfiguration.NEW_TITLE: currentCount = params.tab == 'acceptedChanges' ? newTitlesAccepted : newTitlesPending
                         break
-                    case PendingChangeConfiguration.TITLE_UPDATED: currentCount = params.tab == 'acceptedChanges' ? titlesUpdatedAccepted : titlesUpdatedPending
+                    case PendingChangeConfiguration.TITLE_STATUS_CHANGED: currentCount = params.tab == 'acceptedChanges' ? titlesStatusChangedAccepted : 0
                         break
-                    case PendingChangeConfiguration.TITLE_DELETED: currentCount = params.tab == 'acceptedChanges' ? titlesDeletedAccepted : titlesDeletedPending
+                    case PendingChangeConfiguration.TITLE_DELETED: currentCount = params.tab == 'changes' ? titlesDeletedPending : 0
                         break
                     case PendingChangeConfiguration.TITLE_REMOVED: currentCount = params.tab == 'changes' ? titlesRemovedPending : 0
                         break
                 }
             %>
-            <g:if test="${(event == PendingChangeConfiguration.TITLE_REMOVED && params.tab == 'changes') || event != PendingChangeConfiguration.TITLE_REMOVED}">
+            <g:if test="${(event in [PendingChangeConfiguration.TITLE_REMOVED, PendingChangeConfiguration.TITLE_DELETED] && params.tab == 'changes') || (event == PendingChangeConfiguration.TITLE_STATUS_CHANGED && params.tab == 'acceptedChanges')
+                    || !(event in [PendingChangeConfiguration.TITLE_REMOVED, PendingChangeConfiguration.TITLE_DELETED, PendingChangeConfiguration.TITLE_STATUS_CHANGED])}">
                 <g:link controller="subscription" action="entitlementChanges" id="${subscription.id}"
                         params="[eventType: event, tab: params.tab]"
                         class="item ${params.eventType == event ? 'active' : ''}">
@@ -101,13 +103,13 @@
                 <th><g:message code="profile.dashboard.changes.object"/></th>
                 <g:sortableColumn property="tic.event" title="${message(code: 'profile.dashboard.changes.event')}"
                                   params="[tab: params.tab]"/>
-                <g:if test="${params.tab == 'acceptedChanges'}">
+                <g:if test="${params.tab == 'acceptedChanges' && params.eventType == PendingChangeConfiguration.NEW_TITLE}">
                     <g:sortableColumn property="actionDate" title="${message(code: 'default.date.label')}" params="[tab: params.tab]"/>
                     <th><g:message code="default.status.label"/></th>
                 </g:if>
                 <g:else>
                     <g:sortableColumn property="dateCreated" title="${message(code: 'default.date.label')}" params="[tab: params.tab]"/>
-                    <g:if test="${editable}">
+                    <g:if test="${editable && params.tab == 'changed'}">
                         <th><g:message code="default.action.label"/></th>
                     </g:if>
                 </g:else>
@@ -173,8 +175,8 @@
                     </td>
                     <td>
                         <g:if test="${change.field in PendingChange.REFDATA_FIELDS}">
-                            <g:set var="oldValue" value="${RefdataValue.get(change.oldRefVal)?.getI10n('value')}"/>
-                            <g:set var="newValue" value="${RefdataValue.get(change.newRefVal)?.getI10n('value')}"/>
+                            <g:set var="oldValue" value="${change.oldRefVal.getI10n('value')}"/>
+                            <g:set var="newValue" value="${change.newRefVal.getI10n('value')}"/>
                         </g:if>
                         <g:elseif test="${change.field in PendingChange.DATE_FIELDS}">
                             <g:set var="oldValue" value="${change.oldDateVal}"/>
@@ -201,18 +203,19 @@
                     <td>
                         <g:formatDate format="${message(code: 'default.date.format.noZ')}" date="${actionDate}"/>
                     </td>
-                    <g:if test="${params.tab == 'acceptedChanges'}">
+                    <g:if test="${params.tab == 'acceptedChanges' && params.eventType == PendingChangeConfiguration.NEW_TITLE}">
                         <td>${entry.status.getI10n('value')}</td>
                     </g:if>
-                    <g:elseif test="${editable}">
+
+                    <g:elseif test="${editable && params.tab == 'changes'}">
                         <td>
                             <div class="ui buttons">
-                                <g:link class="ui positive button" controller="pendingChange" action="accept"
+                                <g:link class="ui positive button" controller="pendingChange" action="acceptTitleChange"
                                         id="${entry.id}"
                                         params="[subId: subscription.id]"><g:message
                                         code="default.button.accept.label"/></g:link>
                                 <div class="or" data-text="${message(code: 'default.or')}"></div>
-                                <g:link class="ui negative button" controller="pendingChange" action="reject"
+                                <g:link class="ui negative button" controller="pendingChange" action="rejectTitleChange"
                                         id="${entry.id}"
                                         params="[subId: subscription.id]"><g:message
                                         code="default.button.reject.label"/></g:link>
