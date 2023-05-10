@@ -111,7 +111,7 @@
             </ui:exportDropdownItem>
         </g:if>--}%
 
-        <g:if test="${showStatisticByParticipant}">
+        <g:if test="${showStatisticByParticipant && params.tab == 'topUsed'}">
             <ui:exportDropdownItem>
                 <g:link class="item statsExport" action="renewEntitlementsWithSurvey"
                         id="${subscriberSub.id}"
@@ -124,7 +124,7 @@
             </ui:exportDropdownItem>
         </g:if>
 
-        <g:if test="${showStatisticByParticipant}">
+        <g:if test="${showStatisticByParticipant && params.tab == 'topUsed'}">
             <ui:exportDropdownItem>
                 <g:link class="item statsExport" action="renewEntitlementsWithSurvey"
                         id="${subscriberSub.id}"
@@ -518,12 +518,12 @@
     $(".statsExport").on('click', function(e) {
         e.preventDefault();
         /*
-        kept for reasons of debug
+        kept for reasons of debug*/
         console.log($("#reportType").dropdown('get value'));
         console.log($("#metricType").dropdown('get value'));
         console.log($("#accessType").dropdown('get value'));
         console.log($("#accessMethod").dropdown('get value'));
-        */
+
         let url = $(this).attr('href')+'&reportType='+$("#reportType").dropdown('get value');
         if($("#metricType").dropdown('get value').length > 0)
             url+='&metricType='+$("#metricType").dropdown('get value');
@@ -540,7 +540,7 @@
             url+='&platform='+$("#platform").val();
         }
         //do not forget to communicate that to the users!
-        if($("#reportType").dropdown('get value') !== '')
+        if($("#reportType").dropdown('get value') !== '' && $("#reportType").dropdown('get value').length > 0)
             window.location.href = url;
     });
 </laser:script>
