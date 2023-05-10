@@ -20,7 +20,7 @@
                 </g:else>
             </ui:exportDropdownItem>--%>
             <ui:exportDropdownItem>
-                <a class="item" data-ui="modal" href="#individuallyExportModal">Click Me Export</a>
+                <a class="item" data-ui="modal" href="#individuallyExportModal">Export</a>
             </ui:exportDropdownItem>
             <%--
             <ui:exportDropdownItem>

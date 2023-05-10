@@ -24,7 +24,7 @@
                         </g:link>
                     </ui:exportDropdownItem>--%>
                     <ui:exportDropdownItem>
-                        <a class="item" data-ui="modal" href="#individuallyExportModal">Click Me Export</a>
+                        <a class="item" data-ui="modal" href="#individuallyExportModal">Export</a>
                     </ui:exportDropdownItem>
                     <%--<ui:exportDropdownItem>
                         <g:link class="item exportCSV js-open-confirm-modal"
@@ -41,7 +41,7 @@
                         <g:link class="item" controller="finance" action="financialsExport" params="${params+[exportXLS:true]}">${message(code:'default.button.exports.xls')}</g:link>
                     </ui:exportDropdownItem>--%>
                     <ui:exportDropdownItem>
-                        <a class="item" data-ui="modal" href="#individuallyExportModal">Click Me Export</a>
+                        <a class="item" data-ui="modal" href="#individuallyExportModal">Export</a>
                     </ui:exportDropdownItem>
                     <%--<ui:exportDropdownItem>
                         <g:link class="item exportCSV js-open-confirm-modal"

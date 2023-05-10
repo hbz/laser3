@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5030    10.05.2023  dev     3.1         Andreas Bug         Identifier-Namensraum-Auswahl korrigiert
+
 5024    09.05.2023  dev     3.1         Moe     Feature     Einführung Dauerhaft-Sternchen / bestehende Bestände nachziehen
 
 4933    09.05.2023  dev     3.1         Moe     Feature     Umfrage-Merkmale gruppieren
