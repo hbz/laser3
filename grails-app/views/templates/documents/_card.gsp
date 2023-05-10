@@ -150,7 +150,7 @@
                             </g:if>
                             <g:else>
                                 <div class="ui icon button la-hidden">
-                                    <i class="coffe icon"></i><%-- Hidden Fake Button --%>
+                                    <i class="fake icon"></i><%-- Hidden Fake Button --%>
                                 </div>
                             </g:else>
                         </g:else>%{-- (editable || editable2) --}%
@@ -182,17 +182,17 @@
 %{--                                </g:if>--}%
 %{--                                <g:else>--}%
 %{--                                    <div class="ui icon button la-hidden">--}%
-%{--                                        <i class="coffe icon"></i><%-- Hidden Fake Button --%>--}%
+%{--                                        <i class="fake icon"></i><%-- Hidden Fake Button --%>--}%
 %{--                                    </div>--}%
 %{--                                </g:else>--}%
 %{--                                <%-- STOP Second Button --%>--}%
 %{--                            </g:if>--}%
 %{--                            <g:else>--}%
 %{--                                <div class="ui icon button la-hidden">--}%
-%{--                                    <i class="coffe icon"></i><%-- Hidden Fake Button --%>--}%
+%{--                                    <i class="fake icon"></i><%-- Hidden Fake Button --%>--}%
 %{--                                </div>--}%
 %{--                                <div class="ui icon button la-hidden">--}%
-%{--                                    <i class="coffe icon"></i><%-- Hidden Fake Button --%>--}%
+%{--                                    <i class="fake icon"></i><%-- Hidden Fake Button --%>--}%
 %{--                                </div>--}%
 %{--                            </g:else>--}%
 %{--                            <%-- START Third Button --%>--}%

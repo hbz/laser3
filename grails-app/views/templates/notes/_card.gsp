@@ -89,7 +89,7 @@
 %{--                            <g:else>--}%
 %{--                                    <!-- Hidden Fake Button To hold the other Botton in Place -->--}%
 %{--                                    <div class="ui icon mini button la-hidden">--}%
-%{--                                        <i class="coffe icon"></i>--}%
+%{--                                        <i class="fake icon"></i>--}%
 %{--                                    </div>--}%
 %{--                            </g:else>--}%
                             <%-- 2 --%>
@@ -105,7 +105,7 @@
                             </g:if>
                             <g:else>
                                 <div class="ui icon button la-hidden">
-                                    <i class="coffe icon"></i><%-- Hidden Fake Button --%>
+                                    <i class="fake icon"></i><%-- Hidden Fake Button --%>
                                 </div>
                             </g:else>
                         </div>

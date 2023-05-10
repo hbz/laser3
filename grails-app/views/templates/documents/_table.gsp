@@ -176,7 +176,7 @@
                             </td>
                         --%>
                         </g:if>
-                        <td class="center aligned">
+                        <td class="center aligned x">
                             <g:if test="${docctx.isDocAFile()}">
                                 <g:if test="${instance?.respondsTo('showUIShareButton')}">
                                     <g:if test="${docctx.sharedFrom}">
