@@ -1486,10 +1486,15 @@ class FilterService {
             qry_params.deleted = RDStore.TIPP_STATUS_REMOVED
         }*/
 
-        if(params.status != '' && params.status != null) {
+        if(params.status != '' && params.status != null && params.list('status')) {
+            List<Long> status = []
+            params.list('status').each { String statusId ->
+                status << Long.parseLong(statusId)
+            }
             base_qry += " and tipp.status.id = :status "
-            qry_params.status = params.status
-        }else if (params.notStatus != '' && params.notStatus != null){
+            qry_params.status = status
+
+        } else if (params.notStatus != '' && params.notStatus != null){
             base_qry += " and tipp.status.id != :notStatus "
             qry_params.notStatus = params.notStatus
         }
