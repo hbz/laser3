@@ -285,15 +285,15 @@
         <g:if test="${accessService.ctxPerm(CustomerTypeService.PERMS_PRO)}">
         <div class="ui bottom attached tab ${us_dashboard_tab.value == 'Tasks' ? 'active':''}" data-tab="tasks">
 
-            <g:if test="${editable}">
-                <div class="ui right aligned grid">
-                    <div class="right floated right aligned sixteen wide column">
-                        <a onclick="JSPC.app.createTask();" class="ui button">
-                            ${message(code:'task.create.new')}
-                        </a>
-                    </div>
-                </div>
-            </g:if>
+%{--            <g:if test="${editable}">--}%
+%{--                <div class="ui right aligned grid">--}%
+%{--                    <div class="right floated right aligned sixteen wide column">--}%
+%{--                        <a onclick="JSPC.app.createTask();" class="ui button">--}%
+%{--                            ${message(code:'task.create.new')}--}%
+%{--                        </a>--}%
+%{--                    </div>--}%
+%{--                </div>--}%
+%{--            </g:if>--}%
 
             <div class="ui cards">
                 <g:each in="${tasks}" var="tsk">
@@ -612,7 +612,7 @@
             }
         });
 
-        JSPC.app.createTask = bb8.ajax4SimpleModalFunction("#modalCreateTask", "<g:createLink controller="ajaxHtml" action="createTask"/>", true);
+%{--        JSPC.app.createTask = bb8.ajax4SimpleModalFunction("#modalCreateTask", "<g:createLink controller="ajaxHtml" action="createTask"/>", true);--}%
 
         JSPC.app.editTask = function (id) {
             var func = bb8.ajax4SimpleModalFunction("#modalEditTask", "<g:createLink controller="ajaxHtml" action="editTask"/>?id=" + id, true);
@@ -642,18 +642,6 @@
                   r2d2.initDynamicUiStuff('#surveyWrapper');
             })
         }
-
-                /* $('.item .widget-content').readmore({
-                    speed: 250,
-                    collapsedHeight: 21,
-                    startOpen: false,
-                    moreLink: '<a href="#">[ ${message(code:'default.button.show.label')} ]</a>',
-                    lessLink: '<a href="#">[ ${message(code:'default.button.hide.label')} ]</a>'
-                }); */
-                $('.xEditableManyToOne').editable({
-                }).on('hidden', function() {
-                        //location.reload();
-                });
 
         JSPC.app.loadChanges();
         JSPC.app.loadSurveys();
