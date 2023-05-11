@@ -68,15 +68,15 @@
                             </div>
                         </div>
                         <div class="item">
-                            <i class="money bill icon la-list-icon"></i>
+                            <i class="address book icon la-list-icon"></i>
                             <div class="content">
-                                <ui:securedMainNavItem controller="myInstitution" action="finance" message="menu.institutions.finance" />
+                                <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="addressbook" message="menu.institutions.addressbook" />
                             </div>
                         </div>
                         <div class="item">
-                            <i class="chartline icon la-list-icon"></i>
+                            <i class="euro sign icon la-list-icon"></i>
                             <div class="content">
-                                <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="reporting" message="myinst.reporting" />
+                                <ui:securedMainNavItem controller="myInstitution" action="finance" message="menu.institutions.finance" />
                             </div>
                         </div>
                     </div>
@@ -95,9 +95,9 @@
                             </div>
                         </div>
                         <div class="item">
-                            <i class="address book icon la-list-icon"></i>
+                            <i class="chartline icon la-list-icon"></i>
                             <div class="content">
-                                <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="addressbook" message="menu.institutions.myAddressbook" />
+                                <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="reporting" message="myinst.reporting" />
                             </div>
                         </div>
                         <div class="item">
@@ -161,7 +161,7 @@
 %{--                        </div>--}%
 %{--                        <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="tasks" message="menu.my.tasks" />--}%
 %{--                        <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="currentWorkflows" message="menu.my.workflows" />--}%
-%{--                        <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="addressbook" message="menu.institutions.myAddressbook" />--}%
+%{--                        <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="addressbook" message="menu.institutions.addressbook" />--}%
 %{--                    </div>--}%
 %{--                </div>--}%
 %{--            </div>--}%
