@@ -26,12 +26,12 @@
             --%>
             <g:if test="${actionName == 'index'}">
                 <ui:exportDropdownItem>
-                    <a class="item" data-ui="modal" href="#individuallyExportIEsModal">Click Me Export</a>
+                    <a class="item" data-ui="modal" href="#individuallyExportIEsModal">Export</a>
                 </ui:exportDropdownItem>
             </g:if>
             <g:elseif test="${actionName == 'addEntitlements'}">
                 <ui:exportDropdownItem>
-                    <a class="item" data-ui="modal" href="#individuallyExportTippsModal">Click Me Export</a>
+                    <a class="item" data-ui="modal" href="#individuallyExportTippsModal">Export</a>
                 </ui:exportDropdownItem>
             </g:elseif>
             <%--

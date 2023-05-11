@@ -29,7 +29,7 @@
                 </g:else>
             </g:each>
         </div>
-
+        <%--
         <g:each in="${filterFields}" var="fields" status="i">
             <div class="ui bottom attached ${("tab-${i}" == "tab-0") ? 'active' : ''} tab segment" data-tab="tab-${i}">
 
@@ -94,7 +94,72 @@
             </div>
             </div>
         </g:each>
+        --%>
 
+        <g:each in="${formFields}" var="fields" status="i">
+            <div class="ui bottom attached ${("tab-${i+filterFieldsSize}" == "tab-0") ? 'active' : ''} tab segment" data-tab="tab-${i+filterFieldsSize}">
+                <%
+                    Map<String, Object> costItemFields = fields.value.fields.get('costItemsElements'),
+                    otherFields = fields.value.fields.findAll { Map.Entry f -> f.getKey() != 'costItemsElements' }
+                %>
+                <g:if test="${costItemFields}">
+                    <div class="ui grid">
+                        <g:each in="${costItemFields}" var="field" status="gc">
+                            <g:if test="${gc == 0 || gc == Math.floor((costItemFields.size() / 2))}">
+                                <div class="wide eight field">
+                            </g:if>
+                            <div class="field">
+                                <div class="ui checkbox">
+                                    <input type="checkbox" name="iex:${field.key}" id="iex:${field.key}" ${field.value.defaultChecked ? 'checked="checked"' : ''}>
+                                    <label for="iex:${field.key}">${field.value.message ? message(code: field.value.message) : field.value.label}</label>
+                                </div>
+                            </div>
+                            <g:if test="${gc == Math.floor((costItemFields.size() / 2))-1 || gc == costItemFields.size()-1}">
+                                </div><!-- .wide eight gc -->
+                            </g:if>
+                        </g:each>
+                    </div><!-- .grid -->
+                    <div class="ui divider"></div>
+                </g:if>
+                <div class="ui grid">
+                    <g:each in="${otherFields}" var="field" status="fc">
+                        <g:if test="${fc == 0 || fc == Math.floor((otherFields.size() / 2))}">
+                            <div class="wide eight field">
+                        </g:if>
+                        <div class="field">
+                            <div class="ui checkbox">
+                                <input type="checkbox" name="iex:${field.key}" id="iex:${field.key}" ${field.value.defaultChecked ? 'checked="checked"' : ''}>
+                                <label for="iex:${field.key}">${field.value.message ? message(code: field.value.message) : field.value.label}</label>
+                            </div>
+                        </div>
+                        <g:if test="${fc == Math.floor((otherFields.size() / 2))-1 || fc == otherFields.size()-1}">
+                            </div><!-- .wide eight fc -->
+                        </g:if>
+                    </g:each>
+                </div><!-- .grid -->
+
+                <g:if test="${fields.key.contains('Contacts') && contactSwitch == true}">
+
+                    <div class="inline fields" style="border-top:1px solid lightgrey; padding-top:1em;">%{-- tmp --}%
+                        <div class="field">
+                            <div class="ui checkbox">
+                                <label for="public"><g:message code="org.publicContacts.label"/></label>
+                                <input type="checkbox" name="contactSwitch" id="public" value="public" checked="checked"/>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="ui checkbox">
+                                <label for="private"><g:message code="org.privateContacts.exports.label"/></label>
+                                <input type=checkbox name="contactSwitch" id="private" value="private"/>
+                            </div>
+                        </div>
+                    </div>
+
+                </g:if>
+            </div><!-- .bottom -->
+        </g:each>
+
+        <%--
         <g:each in="${formFields}" var="fields" status="i">
             <div class="ui bottom attached ${("tab-${i+filterFieldsSize}" == "tab-0") ? 'active' : ''} tab segment"
                  data-tab="tab-${i+filterFieldsSize}">
@@ -158,7 +223,7 @@
                 </g:each>
             </div>
 
-                <g:if test="${fields.key.contains('Contacts') && contactSwitch == true}"><%--  --%>
+                <g:if test="${fields.key.contains('Contacts') && contactSwitch == true}">
 
                     <div class="inline fields" style="border-top:1px solid lightgrey; padding-top:1em;">%{-- tmp --}%
                         <div class="field">
@@ -179,7 +244,7 @@
 
             </div>
         </g:each>
-
+        --%>
 %{--        <g:if test="${contactSwitch == true}">--}%
 %{--            <div class="fields">--}%
 %{--                <div class="wide eight field">--}%

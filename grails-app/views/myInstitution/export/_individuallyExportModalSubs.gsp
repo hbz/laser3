@@ -4,7 +4,7 @@
 <!-- _individuallyExportModal.gsp -->
 <g:set var="formFields" value="${exportClickMeService.getExportSubscriptionFieldsForUI(institution)}"/>
 
-<ui:modal modalSize="large" id="${modalID}" text="ClickMich-Export" refreshModal="true" hideSubmitButton="true">
+<ui:modal modalSize="large" id="${modalID}" text="Export" refreshModal="true" hideSubmitButton="true">
 
     <g:form action="${actionName}" controller="${controllerName}" params="${params}">
 
