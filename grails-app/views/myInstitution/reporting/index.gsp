@@ -8,7 +8,7 @@
             <ui:crumb text="${message(code:'myinst.reporting')}" class="active" />
         </ui:breadcrumbs>
 
-        <ui:h1HeaderWithIcon message="myinst.reporting" />
+        <ui:h1HeaderWithIcon message="myinst.reporting" type="reporting" />
 
         <laser:render template="/templates/reporting/helper" />%{--js--}%
 

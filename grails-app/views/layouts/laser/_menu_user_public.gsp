@@ -8,9 +8,6 @@
         ${message(code:'menu.public')} <i class="dropdown icon"></i>
     </a>
     <div class="menu" role="menu">
-        <ui:link addItemAttributes="true" controller="package" action="index">${message(code:'menu.public.all_pkg')}</ui:link>
-        <ui:link addItemAttributes="true" controller="title" action="index">${message(code:'menu.public.all_titles')}</ui:link>
-
         <sec:ifAnyGranted roles="ROLE_ADMIN">
             <ui:link addItemAttributes="true" controller="organisation" action="index">${message(code:'menu.public.all_orgs')}</ui:link>
         </sec:ifAnyGranted>
@@ -24,6 +21,9 @@
 
         <ui:link addItemAttributes="true" controller="organisation" action="listProvider">${message(code:'menu.public.all_providers')}</ui:link>
         <ui:link addItemAttributes="true" controller="platform" action="list">${message(code:'menu.public.all_platforms')}</ui:link>
+
+        <ui:link addItemAttributes="true" controller="package" action="index">${message(code:'menu.public.all_pkg')}</ui:link>
+        <ui:link addItemAttributes="true" controller="title" action="index">${message(code:'menu.public.all_titles')}</ui:link>
 
         <div class="divider"></div>
         <ui:link addItemAttributes="true" target="_blank" onclick="JSPC.app.workaround_targetBlank(event)" controller="gasco">${message(code:'menu.public.gasco_monitor')}</ui:link>

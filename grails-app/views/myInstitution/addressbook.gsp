@@ -2,11 +2,11 @@
 
 <laser:serviceInjection/>
 
-<laser:htmlStart message="menu.institutions.myAddressbook" />
+<laser:htmlStart message="menu.institutions.addressbook" />
 
 <ui:breadcrumbs>
     <ui:crumb controller="org" action="show" id="${institution.id}" text="${institution.getDesignation()}"/>
-    <ui:crumb message="menu.institutions.myAddressbook" class="active"/>
+    <ui:crumb message="menu.institutions.addressbook" class="active"/>
 </ui:breadcrumbs>
 
 <ui:controlButtons>
@@ -67,7 +67,7 @@
 
 <laser:render template="/templates/copyFilteredEmailAddresses" model="[emailAddresses: emailAddresses]"/>
 
-<ui:h1HeaderWithIcon message="menu.institutions.myAddressbook" total="${num_visiblePersons}" floated="true" />
+<ui:h1HeaderWithIcon message="menu.institutions.addressbook" type="addressbook" total="${num_visiblePersons}" floated="true" />
 
 <ui:messages data="${flash}"/>
 
