@@ -58,7 +58,7 @@
                 <tr>
                     <td>${counter + 1}</td>
                     <td>
-                        <ui:listIcon type="${tipp.titleType?.value}"/>
+                        <ui:listIcon type="${tipp.titleType}"/>
                         <strong>${tipp.name}</strong>
                         <br />
 
