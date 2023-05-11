@@ -7,7 +7,7 @@
             <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
         </ui:debugInfo>
         <ui:breadcrumbs>
-            <%--<ui:crumb controller="myInstitution" action="dashboard" text="${institution.name}" />--%>
+            <ui:crumb controller="org" action="show" id="${institution.id}" text="${institution.getDesignation()}"/>
             <ui:crumb class="active" text="${message(code:'subscription.details.financials.label')}" />
         </ui:breadcrumbs>
 
@@ -78,7 +78,7 @@
             }
         %>
 
-        <ui:h1HeaderWithIcon message="subscription.details.financials.label" total="${total.join(' / ')}" floated="true" />
+        <ui:h1HeaderWithIcon message="subscription.details.financials.label" type="finance" total="${total.join(' / ')}" floated="true" />
 
         <laser:render template="result" model="[own:own,cons:cons,subscr:subscr,showView:showView,filterPresets:filterPresets,ciTitles:ciTitles]" />
 

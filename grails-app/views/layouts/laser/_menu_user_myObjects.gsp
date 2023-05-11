@@ -23,22 +23,18 @@
         <ui:securedMainNavItem addItemAttributes="true" controller="myInstitution" action="currentPlatforms" message="menu.my.platforms" />
         <ui:securedMainNavItem addItemAttributes="true" controller="myInstitution" action="currentPackages" message="menu.my.packages" />
         <ui:securedMainNavItem addItemAttributes="true" controller="myInstitution" action="currentTitles" message="menu.my.titles" />
-        <ui:securedMainNavItem addItemAttributes="true" orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="documents" message="menu.my.documents" />
 
         <div class="divider"></div>
-
-        <ui:securedMainNavItem addItemAttributes="true" orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="subscriptionsManagement" message="menu.my.subscriptionsManagement" />
+        <ui:securedMainNavItem addItemAttributes="true" orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="tasks" message="menu.my.tasks" />
+        <ui:securedMainNavItem addItemAttributes="true" orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="documents" message="menu.my.documents" />
 
         <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_INST_BASIC)}">
-            <div class="divider"></div>
             <ui:securedMainNavItem addItemAttributes="true" controller="myInstitution" action="currentSurveys" message="menu.my.surveys" />
         </g:if>
         <g:elseif test="${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
-            <div class="divider"></div>
             <ui:securedMainNavItem addItemAttributes="true" orgPerm="${CustomerTypeService.ORG_CONSORTIUM_PRO}" controller="survey" action="workflowsSurveysConsortia" message="menu.my.surveys" />
         </g:elseif>
 
-        <div class="divider"></div>
         <ui:securedMainNavItem addItemAttributes="true" orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="currentWorkflows" message="menu.my.workflows" />
 
         %{--                                <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)}">--}%

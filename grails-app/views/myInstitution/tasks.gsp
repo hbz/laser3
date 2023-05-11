@@ -2,7 +2,6 @@
 <laser:htmlStart message="menu.my.tasks" />
 
     <ui:breadcrumbs>
-        <ui:crumb controller="org" action="show" id="${institution.id}" text="${institution.getDesignation()}"/>
         <ui:crumb message="menu.my.tasks" class="active"/>
     </ui:breadcrumbs>
 
@@ -10,7 +9,7 @@
             <laser:render template="actions"/>
         </ui:controlButtons>
 
-        <ui:h1HeaderWithIcon message="menu.my.tasks" floated="true" />
+        <ui:h1HeaderWithIcon message="menu.my.tasks" type="task" floated="true" />
 
         <%--<g:if test="${editable}">
             <input type="submit" class="ui left floated  button la-clear-before" value="${message(code:'task.create.new')}" data-ui="modal" data-href="#modalCreateTask" />

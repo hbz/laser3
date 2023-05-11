@@ -7,7 +7,7 @@
         <ui:crumb message="menu.institutions.budgetCodes" class="active"/>
     </ui:breadcrumbs>
 
-    <ui:h1HeaderWithIcon message="menu.institutions.budgetCodes" />
+    <ui:h1HeaderWithIcon message="menu.institutions.budgetCodes" type="finance" />
 
         <ui:messages data="${flash}" />
 

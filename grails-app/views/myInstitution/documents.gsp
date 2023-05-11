@@ -9,7 +9,7 @@
       <laser:render template="actions" />
     </ui:controlButtons>
 
-    <ui:h1HeaderWithIcon message="menu.my.documents" />
+    <ui:h1HeaderWithIcon message="menu.my.documents" type="file" />
 
     <ui:messages data="${flash}" />
 
