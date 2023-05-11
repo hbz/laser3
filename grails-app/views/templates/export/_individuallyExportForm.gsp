@@ -17,7 +17,7 @@
     </g:if>
     <div class="ui form">
 
-        <div class="ui top attached stackable tabular la-tab-with-js menu">
+        <div class="ui top attached stackable tabular la-tab-with-js la-overflowX-auto menu">
             <g:each in="${totalFields}" var="fields" status="i">
                 <g:if test="${fields.value.fields.size() > 0}">
                     <a class="${("tab-${i}" == "tab-0") ? 'active' : ''}  item"
