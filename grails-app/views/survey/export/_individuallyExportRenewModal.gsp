@@ -11,7 +11,7 @@
 
         <laser:render template="/templates/export/individuallyExportForm"
                   model="${[formFields: formFields, exportFileName: escapeService.escapeString(surveyConfig.getSurveyName()) + "_" + message(code:'renewalexport.renewals'),
-                            exportExcelButtonName: message(code: 'renewalEvaluation.exportExcelRenewal'), exportCSVButtonName: message(code: 'renewalEvaluation.exportCSVRenewal')]}"/>
+                            exportExcelButtonName: message(code: 'renewalEvaluation.exportExcelRenewal'), exportCSVButtonName: message(code: 'renewalEvaluation.exportCSVRenewal'), csvFieldSeparator: ',']}"/>
 
     </g:form>
 

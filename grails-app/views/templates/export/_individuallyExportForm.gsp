@@ -283,7 +283,36 @@
                 <input name="filename" id="filename" value="${exportFileName}"/>
             </div>
 
-            <div class="wide eight field">
+            <div id="fileformat-query-csv" class="wide four field">
+                <label>${message(code: 'default.export.cfg.csv')}</label>
+                <p>
+                    ${message(code: 'default.export.cfg.csv.fieldSeparator')}: <span class="ui circular label">${csvFieldSeparator}</span> <br />
+                </p>
+            </div>
+
+            <div id="fileformat-query-tsv" class="wide four field">
+                <label>${message(code: 'default.export.cfg.tsv')}</label>
+                <p>
+                    ${message(code: 'default.export.cfg.tsv.fieldSeparator')}: <span class="ui circular label">\t</span> <br />
+                </p>
+            </div>
+            <div id="fileformat-query-xlsx" class="wide four field">
+                <label>${message(code: 'default.export.cfg.xlsx')}</label>
+                <p>
+                    ${message(code: 'default.export.cfg.xlsx.default')}
+                </p>
+            </div>
+
+            <div class="wide two field">
+                <g:select name="fileformat" id="fileformat-query" class="ui selection dropdown la-not-clearable"
+                          optionKey="key" optionValue="value"
+                          from="${[xlsx: 'XLSX', csv: 'CSV']}"
+                />
+            </div>
+
+            <div class="wide two field">
+                <button class="ui button positive right floated exportButton" value="exportClickMeExcel">Export</button>
+                <%-- disused
                 <br>
                 <g:hiddenField name="format" value=""/>
                 <g:hiddenField name="exportClickMeExcel" value=""/>
@@ -294,12 +323,14 @@
                     <button class="ui button positive right floated exportButton" id="export-as-excel" value="exportClickMeExcel">${exportExcelButtonName ?: 'Export Excel'}</button>
                     <button class="ui button positive right floated exportButton" id="export-as-csv" value="exportClickMeCSV">${exportCSVButtonName ?: 'Export CSV'}</button>
                 </g:else>
+                --%>
             </div>
 
         </div><!-- .fields -->
     </div><!-- .form -->
 
 <laser:script file="${this.getGroovyPageFileName()}">
+    /* disused
     $('.exportButton').click(function(){
         if($(this).attr('id') === 'export-as-excel') {
             $('#exportClickMeExcel').val('true');
@@ -310,4 +341,10 @@
             $('#format').val('csv');
         }
     });
+    */
+
+    $('#${modalID} select[name=fileformat]').on( 'change', function() {
+        $('#${modalID} *[id^=fileformat-query-]').addClass('hidden')
+        $('#${modalID} *[id^=fileformat-query-' + $('#${modalID} select[name=fileformat]').val() + ']').removeClass('hidden')
+    }).trigger('change');
 </laser:script>
