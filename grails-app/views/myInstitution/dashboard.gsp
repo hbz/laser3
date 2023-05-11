@@ -35,6 +35,12 @@
                 <div class="column">
                     <div class="ui divided relaxed list">
                         <div class="item">
+                            <i class="calendar check outline icon la-list-icon"></i>
+                            <div class="content">
+                                <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="tasks" message="menu.my.tasks" />
+                            </div>
+                        </div>
+                        <div class="item">
                             <i class="chart pie icon la-list-icon"></i>
                             <div class="content">
                                 <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_INST_BASIC)}">
@@ -51,12 +57,6 @@
                                 <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="currentWorkflows" message="menu.my.workflows" />
                             </div>
                         </div>
-                        <div class="item">
-                            <i class="fake icon la-list-icon"></i>
-                            <div class="content">
-                                <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="tasks" message="menu.my.tasks" />
-                            </div>
-                        </div>
                     </div>
                 </div>
                 <div class="column">
@@ -68,13 +68,13 @@
                             </div>
                         </div>
                         <div class="item">
-                            <i class="fake icon la-list-icon"></i>
+                            <i class="money bill icon la-list-icon"></i>
                             <div class="content">
                                 <ui:securedMainNavItem controller="myInstitution" action="finance" message="menu.institutions.finance" />
                             </div>
                         </div>
                         <div class="item">
-                            <i class="fake icon la-list-icon"></i>
+                            <i class="chartline icon la-list-icon"></i>
                             <div class="content">
                                 <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="reporting" message="myinst.reporting" />
                             </div>
@@ -95,7 +95,7 @@
                             </div>
                         </div>
                         <div class="item">
-                            <i class="fake icon la-list-icon"></i>
+                            <i class="address book icon la-list-icon"></i>
                             <div class="content">
                                 <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="addressbook" message="menu.institutions.myAddressbook" />
                             </div>
