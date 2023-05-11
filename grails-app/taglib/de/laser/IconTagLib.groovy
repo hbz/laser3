@@ -22,38 +22,11 @@ class IconTagLib {
 
         if (attrs.type) {
         switch (attrs.type.toLowerCase()) {
-            case 'database':
-                icon = 'bordered la-object-database'
-                break
-            case 'ebook':
-                icon = 'bordered la-object-ebook'
-                break
-            case 'journal':
-                icon = 'bordered la-object-journal'
-                break
-            case 'search':
-                icon = 'search'
-                break
-            case 'subscription':
-                icon = 'bordered inverted orange clipboard la-object-extended'
-                break
-            case 'survey':
-                icon = 'bordered inverted pink chart pie la-object-extended'
-                break
-            case 'workflow':
-                icon = 'bordered inverted brown tasks la-object-extended'
+            case 'addressbook':
+                icon = 'bordered inverted teal address book la-object-extended'
                 break
             case 'admin':
                 icon = 'la-object trophy'
-                break
-            case 'datamanager':
-                icon = 'la-object hdd'
-                break
-            case 'yoda':
-                icon = 'la-object tools'
-                break
-            case 'user':
-                icon = 'user bordered inverted grey la-object-extended'
                 break
             case 'affiliation':
                 int level = 0
@@ -63,8 +36,50 @@ class IconTagLib {
                     if (level < 3 && it.formalRole.authority == Role.INST_ADM)    { level = 3; icon = 'user cog bordered inverted grey la-object-extended' }
                 }
                 break
+            case 'database':
+                icon = 'bordered la-object-database'
+                break
+            case 'datamanager':
+                icon = 'la-object hdd'
+                break
+            case 'ebook':
+                icon = 'bordered la-object-ebook'
+                break
+            case 'file':
+                icon = 'bordered inverted blue file alternate la-object-extended'
+                break
+            case 'finance':
+                icon = 'bordered inverted teal euro sign la-object-extended'
+                break
             case 'help':
                 icon = 'question circle bordered inverted grey la-object-extended'
+                break
+            case 'journal':
+                icon = 'bordered la-object-journal'
+                break
+            case 'search':
+                icon = 'search'
+                break
+            case 'reporting':
+                icon = 'bordered inverted teal chartline icon la-object-extended'
+                break
+            case 'subscription':
+                icon = 'bordered inverted orange clipboard la-object-extended'
+                break
+            case 'survey':
+                icon = 'bordered inverted pink chart pie la-object-extended'
+                break
+            case 'task':
+                icon = 'bordered inverted green calendar check outline la-object-extended'
+                break
+            case 'user':
+                icon = 'user bordered inverted grey la-object-extended'
+                break
+            case 'workflow':
+                icon = 'bordered inverted brown tasks la-object-extended'
+                break
+            case 'yoda':
+                icon = 'la-object tools'
                 break
         }
         }
