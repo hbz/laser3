@@ -296,7 +296,7 @@ class OrganisationController  {
         String filename = message+"_${datetoday}"
         Map<String, Object> selectedFields = [:]
         Set<String> contactSwitch = []
-        if(params.exportClickMeExcel || params.format) {
+        if(params.fileformat) {
             if (params.filename) {
                 filename =params.filename
             }
@@ -304,7 +304,7 @@ class OrganisationController  {
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
             contactSwitch.addAll(params.list("contactSwitch"))
         }
-        if(Boolean.valueOf(params.exportClickMeExcel)) {
+        if(params.fileformat == 'xlsx') {
             SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(availableOrgs, selectedFields, 'institution', ExportClickMeService.FORMAT.XLS, contactSwitch)
 
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
@@ -315,22 +315,18 @@ class OrganisationController  {
             wb.dispose()
             return //IntelliJ cannot know that the return prevents an obsolete redirect
         }
-        else {
-            withFormat {
-                html {
-                    result.availableOrgs = availableOrgs.drop(result.offset).take(result.max)
-                    result
-                }
-                csv {
-                    response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
-                    response.contentType = "text/csv"
-                    ServletOutputStream out = response.outputStream
-                    out.withWriter { writer ->
-                        writer.write((String) exportClickMeService.exportOrgs(availableOrgs, selectedFields, 'institution', ExportClickMeService.FORMAT.CSV, contactSwitch))
-                    }
-                    out.close()
-                }
+        else if(params.fileformat == 'csv') {
+            response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
+            response.contentType = "text/csv"
+            ServletOutputStream out = response.outputStream
+            out.withWriter { writer ->
+                writer.write((String) exportClickMeService.exportOrgs(availableOrgs, selectedFields, 'institution', ExportClickMeService.FORMAT.CSV, contactSwitch))
             }
+            out.close()
+        }
+        else {
+            result.availableOrgs = availableOrgs.drop(result.offset).take(result.max)
+            result
         }
     }
 
@@ -384,7 +380,7 @@ class OrganisationController  {
 
         Set<String> contactSwitch = []
         Map<String, Object> selectedFields = [:]
-        if(params.exportClickMeExcel || params.format) {
+        if(params.fileformat) {
             if (params.filename) {
                 file = params.filename
             }
@@ -405,7 +401,7 @@ class OrganisationController  {
             return
         }
         else */
-        if(params.exportClickMeExcel) {
+        if(params.fileformat == 'xlsx') {
             SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(availableOrgs, selectedFields, 'consortium', ExportClickMeService.FORMAT.XLS, contactSwitch)
 
             response.setHeader "Content-disposition", "attachment; filename=\"${file}.xlsx\""
@@ -416,21 +412,17 @@ class OrganisationController  {
             wb.dispose()
             return
         }
-        else {
-            withFormat {
-                html {
-                    result
-                }
-                csv {
-                    response.setHeader("Content-disposition", "attachment; filename=\"${file}.csv\"")
-                    response.contentType = "text/csv"
-                    ServletOutputStream out = response.outputStream
-                    out.withWriter { writer ->
-                        writer.write((String) exportClickMeService.exportOrgs(availableOrgs, selectedFields, 'consortium', ExportClickMeService.FORMAT.CSV, contactSwitch))
-                    }
-                    out.close()
-                }
+        else if(params.fileformat == 'csv') {
+            response.setHeader("Content-disposition", "attachment; filename=\"${file}.csv\"")
+            response.contentType = "text/csv"
+            ServletOutputStream out = response.outputStream
+            out.withWriter { writer ->
+                writer.write((String) exportClickMeService.exportOrgs(availableOrgs, selectedFields, 'consortium', ExportClickMeService.FORMAT.CSV, contactSwitch))
             }
+            out.close()
+        }
+        else {
+            result
         }
     }
 
@@ -555,7 +547,7 @@ class OrganisationController  {
         else */
         Map<String, Object> selectedFields = [:]
         Set<String> contactSwitch = []
-        if(params.exportClickMeExcel || params.format) {
+        if(params.fileformat) {
             if (params.filename) {
                 filename =params.filename
             }
@@ -563,7 +555,7 @@ class OrganisationController  {
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
             contactSwitch.addAll(params.list("contactSwitch"))
         }
-        if(Boolean.valueOf(params.exportClickMeExcel)) {
+        if(params.fileformat == 'xlsx') {
             SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(orgListTotal, selectedFields, 'provider', ExportClickMeService.FORMAT.XLS, contactSwitch)
 
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
@@ -574,19 +566,17 @@ class OrganisationController  {
             wb.dispose()
             return //IntelliJ cannot know that the return prevents an obsolete redirect
         }
-        withFormat {
-            html {
-                result
+        else if(params.fileformat == 'csv') {
+            response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
+            response.contentType = "text/csv"
+            ServletOutputStream out = response.outputStream
+            out.withWriter { writer ->
+                writer.write((String) exportClickMeService.exportOrgs(orgListTotal, selectedFields, 'provider', ExportClickMeService.FORMAT.CSV, contactSwitch))
             }
-            csv {
-                response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
-                response.contentType = "text/csv"
-                ServletOutputStream out = response.outputStream
-                out.withWriter { writer ->
-                    writer.write((String) exportClickMeService.exportOrgs(orgListTotal, selectedFields, 'provider', ExportClickMeService.FORMAT.CSV, contactSwitch))
-                }
-                out.close()
-            }
+            out.close()
+        }
+        else {
+            result
         }
     }
 

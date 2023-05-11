@@ -8,7 +8,7 @@
 
     <g:form action="financialsExport" controller="finance" params="${params+[id:params.id]}">
 
-        <laser:render template="/templates/export/individuallyExportForm" model="${[multiMap: true, formFields: formFields, exportFileName: (subscription ? (escapeService.escapeString(subscription.name) + "_" + message(code:'subscription.details.financials.label')) : message(code:'subscription.details.financials.label'))]}"/>
+        <laser:render template="/templates/export/individuallyExportForm" model="${[multiMap: true, formFields: formFields, exportFileName: (subscription ? (escapeService.escapeString(subscription.name) + "_" + message(code:'subscription.details.financials.label')) : message(code:'subscription.details.financials.label')), csvFieldSeparator: ';']}"/>
 
     </g:form>
 

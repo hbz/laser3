@@ -8,7 +8,7 @@
 
     <g:form action="${actionName}" controller="${controllerName}" params="${params+[id:params.id]}">
 
-        <laser:render template="/templates/export/individuallyExportForm" model="${[formFields: formFields, exportFileName: filename ?: message(code:'default.title.label')]}"/>
+        <laser:render template="/templates/export/individuallyExportForm" model="${[formFields: formFields, exportFileName: filename ?: message(code:'default.title.label'), csvFieldSeparator: '|']}"/>
 
     </g:form>
 

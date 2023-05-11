@@ -1446,13 +1446,13 @@ class SurveyController {
         else {
             filename = message + "_" + result.surveyConfig.getSurveyName() + "_${datetoday}"
         }
-        if(params.exportClickMeExcel || params.format) {
+        if(params.fileformat) {
             Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
 
             contactSwitch.addAll(params.list("contactSwitch"))
         }
-        if (Boolean.valueOf(params.exportClickMeExcel)) {
+        if (params.fileformat == 'xlsx') {
             try {
                 SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportSurveyEvaluation(result, selectedFields, contactSwitch, ExportClickMeService.FORMAT.XLS)
                 // Write the output to a file
@@ -1471,75 +1471,70 @@ class SurveyController {
                 return
             }
         }
+        else if(params.fileformat == 'csv') {
+            response.setHeader("Content-disposition", "attachment; filename=${filename}.csv")
+            response.contentType = "text/csv"
+            ServletOutputStream out = response.outputStream
+            out.withWriter { writer ->
+                writer.write((String) exportClickMeService.exportSurveyEvaluation(result, selectedFields, contactSwitch, ExportClickMeService.FORMAT.CSV))
+            }
+            out.close()
+        }
         else {
-            withFormat {
-                html {
-                    if (params.tab == 'participantsViewAllNotFinish') {
-                        params.participantsNotFinish = true
-                    } else if (params.tab == 'participantsViewAllFinish') {
-                        params.participantsFinish = true
-                    }
+            if (params.tab == 'participantsViewAllNotFinish') {
+                params.participantsNotFinish = true
+            } else if (params.tab == 'participantsViewAllFinish') {
+                params.participantsFinish = true
+            }
+            result.participantsNotFinishTotal = SurveyOrg.findAllByFinishDateIsNullAndSurveyConfig(result.surveyConfig).size()
+            result.participantsFinishTotal = SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig).size()
+            result.participantsTotal = result.surveyConfig.orgs.size()
 
-                    result.participantsNotFinishTotal = SurveyOrg.findAllByFinishDateIsNullAndSurveyConfig(result.surveyConfig).size()
-                    result.participantsFinishTotal = SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig).size()
-                    result.participantsTotal = result.surveyConfig.orgs.size()
+            Map<String, Object> fsq = filterService.getSurveyOrgQuery(params, result.surveyConfig)
 
-                    Map<String, Object> fsq = filterService.getSurveyOrgQuery(params, result.surveyConfig)
-
-                    result.participants = SurveyOrg.executeQuery(fsq.query, fsq.queryParams, params)
+            result.participants = SurveyOrg.executeQuery(fsq.query, fsq.queryParams, params)
 
 
-                    result.propList = result.surveyConfig.surveyProperties.surveyProperty
+            result.propList = result.surveyConfig.surveyProperties.surveyProperty
 
-                    if (result.surveyInfo.type.id in [RDStore.SURVEY_TYPE_SUBSCRIPTION.id, RDStore.SURVEY_TYPE_RENEWAL.id]) {
-                        result.propertiesChanged = [:]
-                        result.propertiesChangedByParticipant = []
-                        result.propList.sort { it.getI10n('name') }.each { PropertyDefinition propertyDefinition ->
+            if (result.surveyInfo.type.id in [RDStore.SURVEY_TYPE_SUBSCRIPTION.id, RDStore.SURVEY_TYPE_RENEWAL.id]) {
+                result.propertiesChanged = [:]
+                result.propertiesChangedByParticipant = []
+                result.propList.sort { it.getI10n('name') }.each { PropertyDefinition propertyDefinition ->
 
-                            PropertyDefinition subPropDef = PropertyDefinition.getByNameAndDescr(propertyDefinition.name, PropertyDefinition.SUB_PROP)
-                            if (subPropDef) {
-                                result.participants.each { SurveyOrg surveyOrg ->
-                                    Subscription subscription = Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",
-                                            [parentSub  : result.surveyConfig.subscription,
-                                             participant: surveyOrg.org
-                                            ])[0]
-                                    SurveyResult surveyResult = SurveyResult.findByParticipantAndTypeAndSurveyConfigAndOwner(surveyOrg.org, propertyDefinition, result.surveyConfig, result.contextOrg)
-                                    SubscriptionProperty subscriptionProperty = SubscriptionProperty.findByTypeAndOwnerAndTenant(subPropDef, subscription, result.contextOrg)
+                    PropertyDefinition subPropDef = PropertyDefinition.getByNameAndDescr(propertyDefinition.name, PropertyDefinition.SUB_PROP)
+                    if (subPropDef) {
+                        result.participants.each { SurveyOrg surveyOrg ->
+                            Subscription subscription = Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",
+                                    [parentSub  : result.surveyConfig.subscription,
+                                     participant: surveyOrg.org
+                                    ])[0]
+                            SurveyResult surveyResult = SurveyResult.findByParticipantAndTypeAndSurveyConfigAndOwner(surveyOrg.org, propertyDefinition, result.surveyConfig, result.contextOrg)
+                            SubscriptionProperty subscriptionProperty = SubscriptionProperty.findByTypeAndOwnerAndTenant(subPropDef, subscription, result.contextOrg)
 
-                                    if (surveyResult && subscriptionProperty) {
-                                        String surveyValue = surveyResult.getValue()
-                                        String subValue = subscriptionProperty.getValue()
-                                        if (surveyValue != subValue) {
-                                            Map changedMap = [:]
-                                            changedMap.participant = surveyOrg.org
+                            if (surveyResult && subscriptionProperty) {
+                                String surveyValue = surveyResult.getValue()
+                                String subValue = subscriptionProperty.getValue()
+                                if (surveyValue != subValue) {
+                                    Map changedMap = [:]
+                                    changedMap.participant = surveyOrg.org
 
-                                            result.propertiesChanged."${propertyDefinition.id}" = result.propertiesChanged."${propertyDefinition.id}" ?: []
-                                            result.propertiesChanged."${propertyDefinition.id}" << changedMap
+                                    result.propertiesChanged."${propertyDefinition.id}" = result.propertiesChanged."${propertyDefinition.id}" ?: []
+                                    result.propertiesChanged."${propertyDefinition.id}" << changedMap
 
-                                            result.propertiesChangedByParticipant << surveyOrg.org
-                                        }
-                                    }
-
+                                    result.propertiesChangedByParticipant << surveyOrg.org
                                 }
-
                             }
+
                         }
-                    }
 
-                    result.participants = result.participants.sort { it.org.sortname }
-
-                    result
-                }
-                csv {
-                    response.setHeader("Content-disposition", "attachment; filename=${filename}.csv")
-                    response.contentType = "text/csv"
-                    ServletOutputStream out = response.outputStream
-                    out.withWriter { writer ->
-                        writer.write((String) exportClickMeService.exportSurveyEvaluation(result, selectedFields, contactSwitch, ExportClickMeService.FORMAT.CSV))
                     }
-                    out.close()
                 }
             }
+
+            result.participants = result.participants.sort { it.org.sortname }
+
+            result
         }
     }
 
@@ -2885,25 +2880,26 @@ class SurveyController {
                 return
         }
         else {
+            String message = g.message(code: 'renewalexport.renewals')
+            SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
+            String datetoday = sdf.format(new Date())
 
-            if (params.exportClickMeExcel) {
+            String filename
+            Map<String, Object> selectedFields = [:]
+            if(params.fileformat) {
+                Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+                selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+                if (params.filename) {
+                    filename =params.filename
+                }
+                else {
+                    filename = message + "_" + ctrlResult.result.surveyConfig.getSurveyName() + "_${datetoday}"
+                }
+            }
+
+
+            if (params.fileformat == 'xlsx') {
                 try {
-                    String message = g.message(code: 'renewalexport.renewals')
-                    SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
-                    String datetoday = sdf.format(new Date())
-
-                    String filename
-                    if (params.filename) {
-                        filename =params.filename
-                    }
-                    else {
-                        filename = message + "_" + ctrlResult.result.surveyConfig.getSurveyName() + "_${datetoday}"
-                    }
-
-                    Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
-                    Map<String, Object> selectedFields = [:]
-                    selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
-
                     SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportRenewalResult(ctrlResult.result, selectedFields, ExportClickMeService.FORMAT.XLS)
                     // Write the output to a file
 
@@ -2921,8 +2917,17 @@ class SurveyController {
                     return
                 }
             }
-
-            ctrlResult.result
+            else if(params.fileformat == 'csv') {
+                response.setHeader("Content-disposition", "attachment; filename=${filename}.csv")
+                response.contentType = "text/csv"
+                ServletOutputStream out = response.outputStream
+                out.withWriter { writer ->
+                    writer.write((String) exportClickMeService.exportRenewalResult(ctrlResult.result, selectedFields, ExportClickMeService.FORMAT.CSV))
+                }
+                out.close()
+            }
+            else
+                ctrlResult.result
         }
     }
 

@@ -894,7 +894,7 @@ class MyInstitutionController  {
         Map<String, Object> selectedFields = [:]
         Set<String> contactSwitch = []
 
-        if(params.exportClickMeExcel || params.format) {
+        if(params.fileformat) {
             if (params.filename) {
                 filename = params.filename
             }
@@ -903,7 +903,7 @@ class MyInstitutionController  {
             contactSwitch.addAll(params.list("contactSwitch"))
         }
 
-        if(Boolean.valueOf(params.exportClickMeExcel)) {
+        if(params.fileformat == 'xlsx') {
             SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(orgListTotal, selectedFields, 'provider', ExportClickMeService.FORMAT.XLS, contactSwitch)
 
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
@@ -914,20 +914,16 @@ class MyInstitutionController  {
             wb.dispose()
             return
         }
-        withFormat {
-            html {
-                result
+        else if(params.fileformat == 'csv') {
+            response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
+            response.contentType = "text/csv"
+            ServletOutputStream out = response.outputStream
+            out.withWriter { writer ->
+                writer.write((String) exportClickMeService.exportOrgs(orgListTotal,selectedFields, 'provider',ExportClickMeService.FORMAT.CSV,contactSwitch))
             }
-            csv {
-                response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
-                response.contentType = "text/csv"
-                ServletOutputStream out = response.outputStream
-                out.withWriter { writer ->
-                    writer.write((String) exportClickMeService.exportOrgs(orgListTotal,selectedFields, 'provider',ExportClickMeService.FORMAT.CSV,contactSwitch))
-                }
-                out.close()
-            }
+            out.close()
         }
+        result
     }
 
     /**
@@ -958,7 +954,7 @@ class MyInstitutionController  {
 		//result.benchMark = bm
         Map<String, Object> selectedFields = [:]
 
-        if(params.exportClickMeExcel || params.format) {
+        if(params.fileformat) {
             if (params.filename) {
                 filename =params.filename
             }
@@ -966,7 +962,7 @@ class MyInstitutionController  {
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
         }
 
-        if(Boolean.valueOf(params.exportClickMeExcel)) {
+        if(params.fileformat == 'xlsx') {
             SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportSubscriptions(result.allSubscriptions, selectedFields, result.institution, ExportClickMeService.FORMAT.XLS)
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -975,6 +971,16 @@ class MyInstitutionController  {
             response.outputStream.close()
             wb.dispose()
             return
+        }
+        else if(params.fileformat == 'csv') {
+            response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
+            response.contentType = "text/csv"
+            ServletOutputStream out = response.outputStream
+            out.withWriter { writer ->
+                //writer.write((String) _exportcurrentSubscription(result.allSubscriptions,"csv", result.institution))
+                writer.write((String) exportClickMeService.exportSubscriptions(result.allSubscriptions, selectedFields, result.institution, ExportClickMeService.FORMAT.CSV))
+            }
+            out.close()
         }
         /*
         if ( params.exportXLS ) {
@@ -990,22 +996,7 @@ class MyInstitutionController  {
 
             return
         }else*/
-
-        withFormat {
-            html {
-                result
-            }
-            csv {
-                response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
-                response.contentType = "text/csv"
-                ServletOutputStream out = response.outputStream
-                out.withWriter { writer ->
-                    //writer.write((String) _exportcurrentSubscription(result.allSubscriptions,"csv", result.institution))
-                    writer.write((String) exportClickMeService.exportSubscriptions(result.allSubscriptions, selectedFields, result.institution, ExportClickMeService.FORMAT.CSV))
-                }
-                out.close()
-            }
-        }
+        result
     }
 
     /**
@@ -1503,7 +1494,7 @@ class MyInstitutionController  {
         Map<String, Object> selectedFields = [:]
         Set<Long> currentIssueEntitlements = []
         Set<Long> tippIDs = []
-        if(params.exportClickMeExcel || params.format) {
+        if(params.fileformat) {
             String consFilter = ""
             Set<RefdataValue> roleTypes = []
             if(customerTypeService.isConsortium(result.contextCustomerType)) {
@@ -1517,7 +1508,7 @@ class MyInstitutionController  {
             Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
         }
-        else if(!params.containsKey('exportClickMeExcel') && params.format != 'csv') {
+        else if(!params.containsKey('fileformat')) {
             //second filter needed because double-join on same table does deliver me empty results
             if (filterPvd) {
                 currentIssueEntitlements.addAll(IssueEntitlement.executeQuery("select ie.id from IssueEntitlement ie join ie.tipp tipp join tipp.pkg pkg join pkg.orgs oo where oo.roleType in (:cpRole) and oo.org.id in ("+filterPvd.join(", ")+") order by tipp.sortname asc",[cpRole:[RDStore.OR_CONTENT_PROVIDER,RDStore.OR_PROVIDER,RDStore.OR_AGENCY,RDStore.OR_PUBLISHER]]))
@@ -1559,7 +1550,7 @@ class MyInstitutionController  {
             out.flush()
             out.close()
         }
-        else if(Boolean.valueOf(params.exportClickMeExcel)) {
+        else if(params.fileformat == 'xlsx') {
             SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportTipps(tippIDs, selectedFields, ExportClickMeService.FORMAT.XLS)
             response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -1581,24 +1572,19 @@ class MyInstitutionController  {
             wb.dispose()
             return
         }
-        else {
-            withFormat {
-                html {
-                    result
-                }
-                csv {
-                    response.setHeader("Content-disposition", "attachment; filename=${filename}.csv")
-                    response.contentType = "text/csv"
+        else if(params.fileformat == 'csv') {
+            response.setHeader("Content-disposition", "attachment; filename=${filename}.csv")
+            response.contentType = "text/csv"
 
-                    ServletOutputStream out = response.outputStream
-                    out.withWriter { writer ->
-                        writer.write(exportClickMeService.exportTipps(tippIDs,selectedFields,ExportClickMeService.FORMAT.CSV))
-                    }
-                    out.flush()
-                    out.close()
-                }
+            ServletOutputStream out = response.outputStream
+            out.withWriter { writer ->
+                writer.write(exportClickMeService.exportTipps(tippIDs,selectedFields,ExportClickMeService.FORMAT.CSV))
             }
+            out.flush()
+            out.close()
         }
+        else
+            result
     }
 
     /**
@@ -2497,7 +2483,7 @@ class MyInstitutionController  {
         List visiblePersons = []
         Map<String, Object> selectedFields = [:]
         String filename = escapeService.escapeString("${message(code: 'menu.institutions.myAddressbook')}_${DateUtils.getSDF_yyyyMMdd().format(new Date())}")
-        if(params.exportClickMeExcel || params.format) {
+        if(params.fileformat) {
             if (params.filename) {
                 filename = params.filename
             }
@@ -2554,7 +2540,7 @@ class MyInstitutionController  {
             return
         }
         else */
-        if(Boolean.valueOf(params.exportClickMeExcel)) {
+        if(params.fileformat == 'xlsx') {
 
             SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportAddresses(visiblePersons, selectedFields, params.exportOnlyContactPersonForInstitution == 'true', params.exportOnlyContactPersonForProviderAgency == 'true', ExportClickMeService.FORMAT.XLS)
 
@@ -2566,21 +2552,17 @@ class MyInstitutionController  {
             wb.dispose()
             return
         }
-        else {
-            withFormat {
-                html {
-                    result
-                }
-                csv {
-                    response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
-                    response.contentType = "text/csv"
-                    ServletOutputStream out = response.outputStream
-                    out.withWriter { Writer writer ->
-                        writer.write((String) exportService.exportAddressbook('csv', visiblePersons))
-                    }
-                    out.close()
-                }
+        else if(params.fileformat == 'csv') {
+            response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
+            response.contentType = "text/csv"
+            ServletOutputStream out = response.outputStream
+            out.withWriter { Writer writer ->
+                writer.write((String) exportService.exportAddressbook('csv', visiblePersons))
             }
+            out.close()
+        }
+        else {
+            result
         }
       }
 
@@ -3028,7 +3010,7 @@ class MyInstitutionController  {
 		result.benchMark = bm
         Map<String, Object> selectedFields = [:]
         Set<String> contactSwitch = []
-        if(params.exportClickMeExcel || params.format) {
+        if(params.fileformat) {
             if (params.filename) {
                 file = params.filename
             }
@@ -3050,7 +3032,7 @@ class MyInstitutionController  {
             return
         }
         else */
-        if(Boolean.valueOf(params.exportClickMeExcel)) {
+        if(params.fileformat == 'xlsx') {
             SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(totalConsortia, selectedFields, 'consortium', ExportClickMeService.FORMAT.XLS, contactSwitch)
 
             response.setHeader "Content-disposition", "attachment; filename=\"${file}.xlsx\""
@@ -3061,21 +3043,17 @@ class MyInstitutionController  {
             wb.dispose()
             return
         }
-        else {
-            withFormat {
-                html {
-                    result
-                }
-                csv {
-                    response.setHeader("Content-disposition", "attachment; filename=\"${file}.csv\"")
-                    response.contentType = "text/csv"
-                    ServletOutputStream out = response.outputStream
-                    out.withWriter { writer ->
-                        writer.write((String) organisationService.exportOrg(totalConsortia,header,true,"csv"))
-                    }
-                    out.close()
-                }
+        else if(params.fileformat == 'csv') {
+            response.setHeader("Content-disposition", "attachment; filename=\"${file}.csv\"")
+            response.contentType = "text/csv"
+            ServletOutputStream out = response.outputStream
+            out.withWriter { writer ->
+                writer.write((String) organisationService.exportOrg(totalConsortia,header,true,"csv"))
             }
+            out.close()
+        }
+        else {
+            result
         }
     }
 
@@ -3223,7 +3201,7 @@ join sub.orgRelations or_sub where
 		result.benchMark = bm
         Map<String, Object> selectedFields = [:]
         Set<String> contactSwitch = []
-        if(params.exportClickMeExcel || params.format) {
+        if(params.fileformat) {
             if (params.filename) {
                 file = params.filename
             }
@@ -3243,7 +3221,7 @@ join sub.orgRelations or_sub where
             return //IntelliJ cannot know that the return prevents an obsolete redirect
         }
         else */
-        if(Boolean.valueOf(params.exportClickMeExcel)) {
+        if(params.fileformat == 'xlsx') {
             SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(totalMembers, selectedFields, 'member', ExportClickMeService.FORMAT.XLS, contactSwitch)
 
             response.setHeader "Content-disposition", "attachment; filename=\"${file}.xlsx\""
@@ -3254,21 +3232,17 @@ join sub.orgRelations or_sub where
             wb.dispose()
             return //IntelliJ cannot know that the return prevents an obsolete redirect
         }
-        else {
-            withFormat {
-                html {
-                    result
-                }
-                csv {
-                    response.setHeader("Content-disposition", "attachment; filename=\"${file}.csv\"")
-                    response.contentType = "text/csv"
-                    ServletOutputStream out = response.outputStream
-                    out.withWriter { writer ->
-                        writer.write((String) exportClickMeService.exportOrgs(totalMembers, selectedFields, 'member', ExportClickMeService.FORMAT.CSV, contactSwitch))
-                    }
-                    out.close()
-                }
+        else if(params.fileformat == 'csv') {
+            response.setHeader("Content-disposition", "attachment; filename=\"${file}.csv\"")
+            response.contentType = "text/csv"
+            ServletOutputStream out = response.outputStream
+            out.withWriter { writer ->
+                writer.write((String) exportClickMeService.exportOrgs(totalMembers, selectedFields, 'member', ExportClickMeService.FORMAT.CSV, contactSwitch))
             }
+            out.close()
+        }
+        else {
+            result
         }
     }
 
