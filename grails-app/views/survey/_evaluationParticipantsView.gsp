@@ -39,7 +39,7 @@
     </g:if>
 
     <g:if test="${!surveyConfig.subscription}">
-        <g:link  class="ui right floated button la-inline-labeled" controller="survey" action="surveyParticipants"
+        <g:link class="ui right floated button la-inline-labeled" controller="survey" action="surveyParticipants"
                 id="${surveyConfig.surveyInfo.id}"
                 params="[surveyConfigID: surveyConfig.id]">
             <strong>${message(code: 'surveyconfig.orgs.label')}:</strong>

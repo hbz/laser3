@@ -53,7 +53,7 @@
             --%>
             <ui:exportDropdownItem>
                 <g:if test="${filterSet}">
-                    <g:link  class="item js-open-confirm-modal"
+                    <g:link class="item js-open-confirm-modal"
                              data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
                              data-confirm-term-how="ok"
                              action="${actionName}"

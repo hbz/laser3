@@ -84,7 +84,7 @@
             <g:textArea id="mailTemplateTextEdit" name="text" rows="5" cols="40"/>
         </div>
 
-        <div  class="field required">
+        <div class="field required">
             <label for="mailTemplateLanguage">${message(code:'mailTemplate.language.label')} <g:message code="messageRequiredField" /></label>
             <g:select id="mailTemplateLanguageEdit"
                       name="language"
@@ -95,7 +95,7 @@
                       noSelection="[null: '']"/>
         </div>
 
-        <div  class="field required">
+        <div class="field required">
             <label for="mailTemplateType">${message(code:'default.type.label')} <g:message code="messageRequiredField" /></label>
             <g:select id="mailTemplateTypeEdit"
                       name="type"
@@ -139,7 +139,7 @@
             <g:textArea id="mailTemplateText" name="text" rows="5" cols="40"/>
         </div>
 
-        <div  class="field required">
+        <div class="field required">
         <label for="mailTemplateLanguage">${message(code:'mailTemplate.language.label')} <g:message code="messageRequiredField" /></label>
         <g:select id="mailTemplateLanguage"
                   name="language"
@@ -150,7 +150,7 @@
                   noSelection="[null: '']"/>
         </div>
 
-        <div  class="field required">
+        <div class="field required">
             <label for="mailTemplateType">${message(code:'default.type.label')} <g:message code="messageRequiredField" /></label>
             <g:select id="mailTemplateType"
                       name="type"

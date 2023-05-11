@@ -61,7 +61,7 @@
                         ${org.sortname}
 
                         <g:if test="${org.status?.value == 'Deleted'}">
-                            <span  class="la-popup-tooltip la-delay" data-content="Diese Organisation wurde als 'gelöscht' markiert." data-position="top left">
+                            <span class="la-popup-tooltip la-delay" data-content="Diese Organisation wurde als 'gelöscht' markiert." data-position="top left">
                                 <i class="icon minus circle red"></i>
                             </span>
                         </g:if>
