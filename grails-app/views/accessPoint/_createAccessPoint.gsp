@@ -51,9 +51,6 @@
                 <g:textField name="entityId" value="${entityId}" />
             </div>
         </g:elseif>
-        <g:elseif test="${accessMethod == RDStore.ACCESS_POINT_TYPE_VPN}">
-            <laser:render template="name" model="${[nameOptions: [],name: '']}"/>
-        </g:elseif>
         <g:elseif test="${accessMethod == RDStore.ACCESS_POINT_TYPE_MAIL_DOMAIN}">
             <laser:render template="name" model="${[nameOptions: [],name: '']}"/>
         </g:elseif>

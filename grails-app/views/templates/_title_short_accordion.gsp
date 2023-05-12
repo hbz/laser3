@@ -1,6 +1,6 @@
 <%@ page import="de.laser.storage.RDStore; de.laser.remote.ApiSource" %>
 <div class="item">
-    <ui:listIcon type="${tipp.titleType?.value}"/>
+    <ui:listIcon type="${tipp.titleType}"/>
     <g:if test="${ie}">
         <g:link controller="issueEntitlement" id="${ie.id}" action="show"><strong>${ie.tipp.name}</strong>
         </g:link>

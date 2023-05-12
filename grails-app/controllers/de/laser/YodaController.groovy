@@ -1573,6 +1573,9 @@ class YodaController {
 
             SystemEvent.createEvent('YODA_PROCESS', [yodaProcess: 'setPerpetualAccessByIes', countProcessIes: countProcess, countProcessPermanentTitles: countProcessPT])
         })
+
+        flash.message = 'setPerpetualAccessByIes process is now running. In SystemEvents you see when setPerpetualAccessByIes is finish!'
+        redirect controller: 'yoda', action: 'index'
     }
 
     @Secured(['ROLE_YODA'])
@@ -1607,5 +1610,8 @@ class YodaController {
                 }
             SystemEvent.createEvent('YODA_PROCESS', [yodaProcess: 'setPermanentTitle', countProcess: countProcess])
         })
+
+        flash.message = 'setPermanentTitle process is now running. In SystemEvents you see when setPermanentTitle is finish!'
+        redirect controller: 'yoda', action: 'index'
     }
 }

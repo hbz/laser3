@@ -90,16 +90,13 @@
             <g:if test="${allPropDefGroups.global}">
                 ${message(code: 'surveyConfigsInfo.properties.orphaned')}
             </g:if>
-            <g:else>
-                ${message(code: 'surveyConfigsInfo.properties')}
-            </g:else>
         </h2>
 
         <div>
             <g:if test="${controllerName == 'survey' && actionName == 'show'}">
-                <g:set var="properties" value="${surveyConfig.getOrphanedSurveyConfigProperties(properties)}"/>
+                <g:set var="properties" value="${surveyConfig.getOrphanedSurveyConfigProperties(groupedProperties)}"/>
             </g:if><g:else>
-                <g:set var="properties" value="${surveyConfig.getOrphanedSurveyResultsByOrg(properties, institution)}"/>
+                <g:set var="properties" value="${surveyConfig.getOrphanedSurveyResultsByOrg(groupedProperties)}"/>
             </g:else>
 
             <div>
