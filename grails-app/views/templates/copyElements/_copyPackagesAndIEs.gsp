@@ -332,7 +332,7 @@
                                                 <g:each in="${titleGroup.items?.sort { it.ie.tipp.sortname }}"
                                                         var="item">
                                                     <div class="item">
-                                                        <ui:listIcon hideTooltip="true" type="${item.ie.tipp.titleType?.value}"/>
+                                                        <ui:listIcon hideTooltip="true" type="${item.ie.tipp.titleType}"/>
                                                         <strong>
                                                             <g:link controller="tipp" action="show" id="${item.ie.tipp.id}">${item.ie.name}</g:link>
                                                         </strong>
@@ -380,7 +380,7 @@
                                                         var="item">
                                                     <div class="item">
                                                         <ui:listIcon hideTooltip="true"
-                                                                        type="${item.ie.tipp.titleType?.value}"/>
+                                                                        type="${item.ie.tipp.titleType}"/>
                                                         <strong><g:link controller="tipp" action="show"
                                                                         id="${item.ie.tipp.id}">${item.ie.name}</g:link></strong>
                                                     </div>

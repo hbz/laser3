@@ -506,13 +506,13 @@ class PackageController {
         String filename
 
         if (func == "planned") {
-            params.status = RDStore.TIPP_STATUS_EXPECTED.id
+            params.status = RDStore.TIPP_STATUS_EXPECTED.id.toString()
             filename = "${escapeService.escapeString(packageInstance.name + '_' + message(code: 'package.show.nav.planned'))}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
         } else if (func == "expired") {
-            params.status = RDStore.TIPP_STATUS_RETIRED.id
+            params.status = RDStore.TIPP_STATUS_RETIRED.id.toString()
             filename = "${escapeService.escapeString(packageInstance.name + '_' + message(code: 'package.show.nav.expired'))}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
         } else if (func == "deleted") {
-            params.status = RDStore.TIPP_STATUS_DELETED.id
+            params.status = RDStore.TIPP_STATUS_DELETED.id.toString()
             filename = "${escapeService.escapeString(packageInstance.name + '_' + message(code: 'package.show.nav.deleted'))}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
         }
 

@@ -2319,11 +2319,11 @@ class SubscriptionControllerService {
             result.considerInBatch = ["sort", "order", "offset", "max", "status", "pkgfilter", "asAt", "series_name", "subject_reference", "ddc", "language", "yearsFirstOnline", "identifier", "title_types", "publishers", "coverageDepth", "inTitleGroups"]
 
 
-            result.currentIECounts = IssueEntitlement.executeQuery("select count(ie) from IssueEntitlement as ie where ie.subscription = :sub and ie.tipp.status = :status", [sub: result.subscription, status: RDStore.TIPP_STATUS_CURRENT])[0]
-            result.plannedIECounts = IssueEntitlement.executeQuery("select count(ie) from IssueEntitlement as ie where ie.subscription = :sub and ie.tipp.status = :status", [sub: result.subscription, status: RDStore.TIPP_STATUS_EXPECTED])[0]
-            result.expiredIECounts = IssueEntitlement.executeQuery("select count(ie) from IssueEntitlement as ie where ie.subscription = :sub and ie.tipp.status = :status", [sub: result.subscription, status: RDStore.TIPP_STATUS_RETIRED])[0]
-            result.deletedIECounts = IssueEntitlement.executeQuery("select count(ie) from IssueEntitlement as ie where ie.subscription = :sub and ie.tipp.status = :status", [sub: result.subscription, status: RDStore.TIPP_STATUS_DELETED])[0]
-            result.allIECounts = IssueEntitlement.executeQuery("select count(ie) from IssueEntitlement as ie where ie.subscription = :sub and ie.tipp.status in (:status)", [sub: result.subscription, status: [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_EXPECTED, RDStore.TIPP_STATUS_RETIRED, RDStore.TIPP_STATUS_DELETED]])[0]
+            result.currentIECounts = IssueEntitlement.executeQuery("select count(ie) from IssueEntitlement as ie where ie.subscription = :sub and ie.tipp.status = :status and ie.status != :ieStatus", [sub: result.subscription, status: RDStore.TIPP_STATUS_CURRENT, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+            result.plannedIECounts = IssueEntitlement.executeQuery("select count(ie) from IssueEntitlement as ie where ie.subscription = :sub and ie.tipp.status = :status and ie.status != :ieStatus", [sub: result.subscription, status: RDStore.TIPP_STATUS_EXPECTED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+            result.expiredIECounts = IssueEntitlement.executeQuery("select count(ie) from IssueEntitlement as ie where ie.subscription = :sub and ie.tipp.status = :status and ie.status != :ieStatus", [sub: result.subscription, status: RDStore.TIPP_STATUS_RETIRED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+            result.deletedIECounts = IssueEntitlement.executeQuery("select count(ie) from IssueEntitlement as ie where ie.subscription = :sub and ie.tipp.status = :status and ie.status != :ieStatus", [sub: result.subscription, status: RDStore.TIPP_STATUS_DELETED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+            result.allIECounts = IssueEntitlement.executeQuery("select count(ie) from IssueEntitlement as ie where ie.subscription = :sub and ie.tipp.status in (:status) and ie.status != :ieStatus", [sub: result.subscription, status: [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_EXPECTED, RDStore.TIPP_STATUS_RETIRED, RDStore.TIPP_STATUS_DELETED], ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
 
 
             [result:result,status:STATUS_OK]
