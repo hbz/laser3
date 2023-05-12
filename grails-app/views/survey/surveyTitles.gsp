@@ -4,7 +4,6 @@
 <laser:render template="breadcrumb" model="${[params: params]}"/>
 
 <ui:controlButtons>
-
     <laser:render template="actions"/>
 </ui:controlButtons>
 
@@ -13,12 +12,9 @@
     <uiSurvey:status object="${surveyInfo}"/>
 </ui:h1HeaderWithIcon>
 
-
-
 <laser:render template="nav"/>
 
 <ui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
-
 
 <ui:messages data="${flash}"/>
 

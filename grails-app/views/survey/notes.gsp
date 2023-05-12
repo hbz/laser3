@@ -12,11 +12,9 @@
 </ui:h1HeaderWithIcon>
 <uiSurvey:statusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="show"/>
 
-
 <laser:render template="nav"/>
 
 <ui:messages data="${flash}"/>
-
 
 <br/>
 

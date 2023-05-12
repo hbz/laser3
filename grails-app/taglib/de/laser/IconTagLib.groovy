@@ -241,9 +241,9 @@ class IconTagLib {
         if (attrs.org && attrs.org.isCustomerType_Inst_Pro()) {
             out << '<span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center" data-content="' + attrs.org.getCustomerTypeI10n() + '">'
             if (attrs.cssClass) {
-                out << '<i class="trophy icon ' + attrs.cssClass + '"></i>'
+                out << '<i class="icon grey trophy ' + attrs.cssClass + '"></i>'
             } else {
-                out << '<i class="trophy icon"></i>'
+                out << '<i class="icon grey trophy"></i>'
             }
             out << '</span>'
         }

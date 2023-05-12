@@ -2,15 +2,15 @@
 <laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyConfigDocs.label')})" serviceInjection="true"/>
 
 <ui:breadcrumbs>
-    <ui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg().getDesignation()}"/>
+%{--    <ui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg().getDesignation()}"/>--}%
     <ui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
     <g:if test="${surveyInfo}">
-        <ui:crumb controller="survey" action="show" id="${surveyInfo.id}"
-                     params="[surveyConfigID: surveyConfig.id]" text="${surveyConfig?.getConfigNameShort()}"/>
+%{--        <ui:crumb controller="survey" action="show" id="${surveyInfo.id}"--}%
+%{--                     params="[surveyConfigID: surveyConfig.id]" text="${surveyConfig?.getConfigNameShort()}"/>--}%
+        <ui:crumb class="active" text="${surveyConfig.getConfigNameShort()}" />
     </g:if>
-    <ui:crumb message="surveyConfigDocs.label" class="active"/>
+%{--    <ui:crumb message="surveyConfigDocs.label" class="active"/>--}%
 </ui:breadcrumbs>
-
 
 <ui:controlButtons>
     <laser:render template="actions"/>
@@ -21,11 +21,9 @@
 </ui:h1HeaderWithIcon>
 <uiSurvey:statusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="surveyConfigDocs"/>
 
-
 <laser:render template="nav"/>
 
 <ui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
-
 
 <ui:messages data="${flash}"/>
 

@@ -23,8 +23,6 @@
     <uiSurvey:status object="${surveyInfo}"/>
 </ui:h1HeaderWithIcon>
 
-
-
 <laser:render template="nav"/>
 
 <ui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
