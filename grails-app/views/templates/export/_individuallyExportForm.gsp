@@ -29,6 +29,48 @@
                 </g:else>
             </g:each>
         </div>
+
+        <g:each in="${filterFields}" var="fields" status="i">
+            <div class="ui bottom attached ${("tab-${i}" == "tab-0") ? 'active' : ''} tab segment" data-tab="tab-${i}">
+                <%
+                    Map<String, Object> costItemFilterFields = fields.value.fields.get('costItemsElements'),
+                    otherFilterFields = fields.value.fields.findAll { Map.Entry f -> f.getKey() != 'costItemsElements' }
+                %>
+                <g:if test="${costItemFilterFields}">
+                    <div class="ui grid">
+                        <g:each in="${costItemFilterFields}" var="costItemElements" status="gc">
+                            <g:if test="${gc == 0 || gc == Math.floor((costItemFilterFields.size() / 2))}">
+                                <div class="wide eight field">
+                            </g:if>
+                            <div class="ui checkbox">
+                                <input type="checkbox" name="ief:${costItemElements.key}"
+                                       id="ief:${costItemElements.key}" ${costItemElements.value.defaultChecked ? 'checked="checked"' : ''}>
+                                <label for="ief:${costItemElements.key}">${costItemElements.value.message ? message(code: costItemElements.value.message) : costItemElements.value.label}</label>
+                            </div>
+                            <g:if test="${gc == Math.floor((costItemFields.size() / 2))-1 || gc == costItemFields.size()-1}">
+                                </div><!-- .wide eight gc -->
+                            </g:if>
+                        </g:each>
+                    </div>
+                    <div class="ui divider"></div>
+                </g:if>
+                <div class="ui grid">
+                    <g:each in="${otherFilterFields}" var="field" status="fc">
+                        <g:if test="${fc == 0 || fc == Math.floor((otherFilterFields.size() / 2))}">
+                            <div class="wide eight field">
+                        </g:if>
+                        <div class="ui checkbox">
+                            <input type="checkbox" name="ief:${field.key}"
+                                   id="ief:${field.key}" ${field.value.defaultChecked ? 'checked="checked"' : ''}>
+                            <label for="ief:${field.key}">${field.value.message ? message(code: field.value.message) : field.value.label}</label>
+                        </div>
+                        <g:if test="${fc == Math.floor((otherFilterFields.size() / 2))-1 || fc == otherFilterFields.size()-1}">
+                            </div><!-- .wide eight fc -->
+                        </g:if>
+                    </g:each>
+                </div>
+            </div>
+        </g:each>
         <%--
         <g:each in="${filterFields}" var="fields" status="i">
             <div class="ui bottom attached ${("tab-${i}" == "tab-0") ? 'active' : ''} tab segment" data-tab="tab-${i}">
@@ -98,45 +140,21 @@
 
         <g:each in="${formFields}" var="fields" status="i">
             <div class="ui bottom attached ${("tab-${i+filterFieldsSize}" == "tab-0") ? 'active' : ''} tab segment" data-tab="tab-${i+filterFieldsSize}">
-                <%
-                    Map<String, Object> costItemFields = fields.value.fields.get('costItemsElements'),
-                    otherFields = fields.value.fields.findAll { Map.Entry f -> f.getKey() != 'costItemsElements' }
-                %>
-                <g:if test="${costItemFields}">
-                    <div class="ui grid">
-                        <g:each in="${costItemFields}" var="field" status="gc">
-                            <g:if test="${gc == 0 || gc == Math.floor((costItemFields.size() / 2))}">
-                                <div class="wide eight field">
-                            </g:if>
-                            <div class="field">
-                                <div class="ui checkbox">
-                                    <input type="checkbox" name="iex:${field.key}" id="iex:${field.key}" ${field.value.defaultChecked ? 'checked="checked"' : ''}>
-                                    <label for="iex:${field.key}">${field.value.message ? message(code: field.value.message) : field.value.label}</label>
-                                </div>
-                            </div>
-                            <g:if test="${gc == Math.floor((costItemFields.size() / 2))-1 || gc == costItemFields.size()-1}">
-                                </div><!-- .wide eight gc -->
-                            </g:if>
+                <g:if test="${fields.value.containsKey('subTabs')}">
+                    <div class="ui top attached stackable tabular la-tab-with-js menu">
+                        <g:each in="${fields.value.subTabs}" var="subTab" status="st">
+                            <a class="${(subTab.view == fields.value.subTabActive) ? 'active' : ''} item" data-tab="subTab-${st}">${message(code: subTab.label)}</a>
                         </g:each>
-                    </div><!-- .grid -->
-                    <div class="ui divider"></div>
-                </g:if>
-                <div class="ui grid">
-                    <g:each in="${otherFields}" var="field" status="fc">
-                        <g:if test="${fc == 0 || fc == Math.floor((otherFields.size() / 2))}">
-                            <div class="wide eight field">
-                        </g:if>
-                        <div class="field">
-                            <div class="ui checkbox">
-                                <input type="checkbox" name="iex:${field.key}" id="iex:${field.key}" ${field.value.defaultChecked ? 'checked="checked"' : ''}>
-                                <label for="iex:${field.key}">${field.value.message ? message(code: field.value.message) : field.value.label}</label>
-                            </div>
+                    </div>
+                    <g:each in="${fields.value.subTabs}" var="subTab" status="st">
+                        <div class="ui bottom attached ${(subTab.view == fields.value.subTabActive) ? 'active' : ''} tab segment" data-tab="subTab-${st}">
+                            <g:render template="/templates/export/individuallyExportFormGrid" model="[fields: fields, subTabPrefix: subTab.view]"/>
                         </div>
-                        <g:if test="${fc == Math.floor((otherFields.size() / 2))-1 || fc == otherFields.size()-1}">
-                            </div><!-- .wide eight fc -->
-                        </g:if>
                     </g:each>
-                </div><!-- .grid -->
+                </g:if>
+                <g:else>
+                    <g:render template="/templates/export/individuallyExportFormGrid" model="[fields: fields]"/>
+                </g:else>
 
                 <g:if test="${fields.key.contains('Contacts') && contactSwitch == true}">
 
@@ -264,11 +282,11 @@
                 <div class="wide eight field">
                     <div class="ui checkbox">
                         <label for="exportOnlyContactPersonForInstitution"><g:message code="person.contactPersonForInstitution.label"/></label>
-                        <input type=checkbox name="exportOnlyContactPersonForInstitution" value="true" checked="checked"/>
+                        <input type=checkbox id="exportOnlyContactPersonForInstitution" name="exportOnlyContactPersonForInstitution" value="true" checked="checked"/>
                     </div>
                     <div class="ui checkbox">
                         <label for="exportOnlyContactPersonForProviderAgency"><g:message code="person.contactPersonForProviderAgency.label"/></label>
-                        <input type="checkbox" name="exportOnlyContactPersonForProviderAgency" value="true" checked="checked"/>
+                        <input type="checkbox" id="exportOnlyContactPersonForProviderAgency" name="exportOnlyContactPersonForProviderAgency" value="true" checked="checked"/>
                     </div>
                 </div>
             </div>
