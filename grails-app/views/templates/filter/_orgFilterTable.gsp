@@ -249,12 +249,7 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('name')}">
                 <th scope="row" class="la-th-column la-main-object">
                     <div class="la-flexbox">
-                        <g:if test="${org.isCustomerType_Inst_Pro()}">
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                                  data-content="${org.getCustomerTypeI10n()}">
-                                <i class="chess rook grey la-list-icon icon"></i>
-                            </span>
-                        </g:if>
+                        <ui:customerTypeIcon org="${org}" cssClass="la-list-icon" />
                         <g:if test="${tmplDisableOrgIds && (org.id in tmplDisableOrgIds)}">
                             ${fieldValue(bean: org, field: "name")}
                         </g:if>
