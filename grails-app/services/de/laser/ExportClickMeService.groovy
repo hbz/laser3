@@ -22,6 +22,7 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.springframework.context.MessageSource
 import org.hibernate.Session
 
+import java.math.RoundingMode
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.text.SimpleDateFormat
@@ -39,6 +40,7 @@ class ExportClickMeService {
     ContextService contextService
     CustomerTypeService customerTypeService
     ExportService exportService
+    FinanceService financeService
     GokbService gokbService
 
     MessageSource messageSource
@@ -336,8 +338,10 @@ class ExportClickMeService {
             subCostItems : [
                     label: 'Cost Items',
                     message: 'subscription.costItems.label',
+                    subTabs: [],
                     fields: [
                             'costItemsElements' : [:],
+                    /*
                             'costItem.costTitle'                        : [field: 'costItem.costTitle', label: 'Cost Title', message: 'financials.newCosts.costTitle'],
                             'costItem.reference'                        : [field: 'costItem.reference', label: 'Reference Codes', message: 'financials.referenceCodes'],
                             'costItem.budgetCodes'                      : [field: 'costItem.budgetcodes', label: 'Budget Code', message: 'financials.budgetCode'],
@@ -360,7 +364,8 @@ class ExportClickMeService {
 
                             'costItem.costDescription'                  : [field: 'costItem.costDescription', label: 'Description', message: 'default.description.label'],
                             'costItem.invoiceNumber'                    : [field: 'costItem.invoice.invoiceNumber', label: 'Invoice Number', message: 'financials.invoice_number'],
-                            'costItem.orderNumber'                      : [field: 'costItem.order.orderNumber', label: 'Order Number', message: 'financials.order_number'],
+                            'costItem.orderNumber'                      : [field: 'costItem.order.orderNumber', label: 'Order Number', message: 'financials.order_number']
+                    */
                     ]
             ]
     ]
@@ -1146,6 +1151,21 @@ class ExportClickMeService {
             exportFields.put('subscription.isAutomaticRenewAnnually', [field: 'isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'])
         }
 
+        //determine field configuration based on customer type
+        Set<String> fieldKeyPrefixes = []
+        switch(institution.getCustomerType()) {
+        //cases one to three
+            case CustomerTypeService.ORG_CONSORTIUM_BASIC:
+            case CustomerTypeService.ORG_CONSORTIUM_PRO: fieldKeyPrefixes.addAll(['own', 'cons'])
+                break
+                //cases four and five
+            case CustomerTypeService.ORG_INST_PRO: fieldKeyPrefixes.addAll(['own', 'subscr'])
+                break
+                //cases six: basic member
+            case CustomerTypeService.ORG_INST_BASIC: fieldKeyPrefixes << 'subscr'
+                break
+        }
+
         IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
             exportFields.put("participantIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
         }
@@ -1167,9 +1187,11 @@ class ExportClickMeService {
             exportFields.put("subProperty." + propertyDefinition.id, [field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant?.id == institution.id)])
         }
 
-        String query = "select rdv from RefdataValue as rdv where rdv.owner.desc=:category order by rdv.order, rdv." + localizedValue
-        RefdataValue.executeQuery(query, [category: RDConstants.COST_ITEM_ELEMENT]).each { RefdataValue refdataValue ->
-            exportFields.put("subCostItem." + refdataValue.id, [field: null, label: refdataValue."${localizedValue}"])
+        Set<RefdataValue> elements = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.COST_ITEM_ELEMENT)
+        elements.each { RefdataValue refdataValue ->
+            fieldKeyPrefixes.each { String fieldKeyPrefix ->
+                exportFields.put("subCostItem." +fieldKeyPrefix+"."+ refdataValue.id, [field: null, label: refdataValue."${localizedValue}"])
+            }
         }
 
         exportFields
@@ -1217,9 +1239,7 @@ class ExportClickMeService {
             fields.packages.fields << ["packageIdentifiers.${idns.id}":[field: null, label: idns.ns]]
         }
 
-        Set<PropertyDefinition> propList = PropertyDefinition.executeQuery("select pd from PropertyDefinition pd where pd.descr in (:availableTypes) and (pd.tenant = null or pd.tenant = :ctx) order by pd."+localizedName+" asc",
-                [ctx:institution,availableTypes:[PropertyDefinition.SUB_PROP]])
-
+        Set<PropertyDefinition> propList = PropertyDefinition.executeQuery("select pd from PropertyDefinition pd where pd.descr in (:availableTypes) and (pd.tenant = null or pd.tenant = :ctx) order by pd."+localizedName+" asc", [ctx:institution,availableTypes:[PropertyDefinition.SUB_PROP]])
 
         propList.each { PropertyDefinition propertyDefinition ->
             //the proxies again ...
@@ -1229,9 +1249,31 @@ class ExportClickMeService {
                 fields.subProperties.fields << ["subProperty.${propertyDefinition.id}": [field: null, label: propertyDefinition."${localizedName}", privateProperty: false]]
         }
 
-        String query = "select rdv from RefdataValue as rdv where rdv.owner.desc=:category order by rdv.order, rdv." + localizedValue
-        RefdataValue.executeQuery(query, [category: RDConstants.COST_ITEM_ELEMENT]).each { RefdataValue refdataValue ->
-            fields.subCostItems.fields.costItemsElements << ["subCostItem.${refdataValue.id}": [field: null, label: refdataValue."${localizedValue}"]]
+        //determine tabs configuration based on customer type
+        switch(institution.getCustomerType()) {
+            //cases one to three
+            case CustomerTypeService.ORG_CONSORTIUM_BASIC:
+            case CustomerTypeService.ORG_CONSORTIUM_PRO:
+                fields.subCostItems.subTabs = [[view: 'own', label: 'financials.tab.ownCosts'],[view: 'cons', label: 'financials.tab.consCosts']]
+                fields.subCostItems.subTabActive = 'cons'
+                break
+                //cases four and five
+            case CustomerTypeService.ORG_INST_PRO:
+                fields.subCostItems.subTabs = [[view: 'own', label: 'financials.tab.ownCosts'],[view: 'subscr', label: 'financials.tab.subscrCosts']]
+                fields.subCostItems.subTabActive = 'subscr'
+                break
+                //cases six: basic member
+            case CustomerTypeService.ORG_INST_BASIC:
+                fields.subCostItems.subTabs = [[view: 'subscr', label: 'financials.tab.subscrCosts']]
+                fields.subCostItems.subTabActive = 'subscr'
+                break
+        }
+
+        Set<RefdataValue> elements = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.COST_ITEM_ELEMENT)
+        elements.each { RefdataValue refdataValue ->
+            fields.subCostItems.subTabs.view.each { String fieldKeyPrefix ->
+                fields.subCostItems.fields << [("subCostItem." +fieldKeyPrefix+"."+ refdataValue.id): [field: null, label: refdataValue."${localizedValue}"]]
+            }
         }
 
         fields
@@ -1959,10 +2001,10 @@ class ExportClickMeService {
             }
         }
 
-        List<RefdataValue> selectedCostItemElements = []
+        Map<String, List<RefdataValue>> selectedCostItemElements = [all: []]
         List<String> removeSelectedCostItemElements = []
         selectedExportFields.keySet().findAll {it.startsWith('participantSubCostItem.')}.each {
-            selectedCostItemElements << RefdataValue.get(Long.parseLong(it.split("\\.")[1]))
+            selectedCostItemElements.all << RefdataValue.get(Long.parseLong(it.split("\\.")[1]))
             removeSelectedCostItemElements << it
         }
         Map selectedCostItemFields = [:]
@@ -2032,20 +2074,25 @@ class ExportClickMeService {
             }
         }
 
-        List<RefdataValue> selectedCostItemElements = []
+        Map<String, List<RefdataValue>> selectedCostItemElements = [:]
         List<String> removeSelectedCostItemElements = []
-        selectedExportFields.keySet().findAll {it.startsWith('subCostItem.')}.each {
-            selectedCostItemElements << RefdataValue.get(Long.parseLong(it.split("\\.")[1]))
-            removeSelectedCostItemElements << it
+        selectedExportFields.keySet().findAll {it.startsWith('subCostItem.')}.each { String key ->
+            List<String> keyParts = key.split("\\.")
+            if(!selectedCostItemElements.containsKey(keyParts[1]))
+                selectedCostItemElements.put(keyParts[1], [])
+            selectedCostItemElements[keyParts[1]] << RefdataValue.get(Long.parseLong(keyParts[2]))
+            removeSelectedCostItemElements << key
         }
         Map selectedCostItemFields = [:]
         if(selectedCostItemElements){
+            /*
             selectedExportFields.keySet().findAll {it.startsWith('costItem.')}.each {
                 selectedCostItemFields.put(it, selectedExportFields.get(it))
             }
             selectedCostItemFields.each {
                 selectedExportFields.remove(it.key)
             }
+            */
             removeSelectedCostItemElements.each {
                 selectedExportFields.remove(it)
             }
@@ -2056,7 +2103,7 @@ class ExportClickMeService {
 
         maxCostItemsElements = CostItem.executeQuery('select count(id) as countCostItems from CostItem where sub in (:subs) group by costItemElement, sub order by countCostItems desc', [subs: result])[0]
 
-        List titles = _exportTitles(selectedExportFields, locale, selectedCostItemFields, maxCostItemsElements)
+        List titles = _exportTitles(selectedExportFields, locale, selectedCostItemFields, maxCostItemsElements, null, selectedCostItemElements)
 
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
 
@@ -2665,10 +2712,11 @@ class ExportClickMeService {
      * @param selectedCostItemElements the cost item elements to export
      * @param selectedCostItemFields the fields which should appear in the cost item export
      */
-    private void _setSubRow(def result, Map<String, Object> selectedFields, List exportData, String localizedName, List<RefdataValue> selectedCostItemElements, Map selectedCostItemFields, FORMAT format, Set<String> contactSources = []){
+    private void _setSubRow(def result, Map<String, Object> selectedFields, List exportData, String localizedName, Map selectedCostItemElements, Map selectedCostItemFields, FORMAT format, Set<String> contactSources = []){
         List row = []
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
-        Org org
+        Locale locale = LocaleUtils.getCurrentLocale()
+        Org org, contextOrg = contextService.getOrg()
         Subscription subscription
         if(result instanceof Subscription) {
             subscription = result
@@ -2680,9 +2728,38 @@ class ExportClickMeService {
         }
 
 
-        List<CostItem> costItems
-        if(selectedCostItemElements){
-           costItems = CostItem.findAllBySubAndCostItemElementInListAndCostItemStatusNotEqual(subscription, selectedCostItemElements, RDStore.COST_ITEM_DELETED, [sort: 'costItemElement'])
+        List costItems
+        Map<String, Object> costItemSums = [:]
+        //in order to distinguish between sums and entire items
+        if(selectedCostItemElements.containsKey('all')){
+           costItems = CostItem.findAllBySubAndCostItemElementInListAndCostItemStatusNotEqual(subscription, selectedCostItemElements.all, RDStore.COST_ITEM_DELETED, [sort: 'costItemElement'])
+        }
+        else if(selectedCostItemElements) {
+            selectedCostItemElements.each { String key, List<RefdataValue> costItemElements ->
+                Map<String, Object> costSumSubMap = [:]
+                costItemElements.each { RefdataValue cie ->
+                    //determine cost items configuration based on customer type
+                    switch(contextOrg.getCustomerType()) {
+                        //cases one to three
+                        case CustomerTypeService.ORG_CONSORTIUM_BASIC:
+                        case CustomerTypeService.ORG_CONSORTIUM_PRO:
+                            costItems = CostItem.executeQuery('select ci.id from CostItem ci join ci.sub sub where ci.owner = :contextOrg and (sub = :sub or sub.instanceOf = :sub) and ci.costItemElement = :cie and ci.costItemStatus != :deleted', [contextOrg: contextOrg, sub: subscription, cie: cie, deleted: RDStore.COST_ITEM_DELETED])
+                            break
+                            //cases four and five
+                        case CustomerTypeService.ORG_INST_PRO:
+                            if(key == 'own')
+                                costItems = CostItem.executeQuery('select ci.id from CostItem ci join ci.sub sub where ci.owner = :contextOrg and sub = :sub and ci.costItemElement = :cie and ci.costItemStatus != :deleted', [contextOrg: contextOrg, sub: subscription, cie: cie, deleted: RDStore.COST_ITEM_DELETED])
+                            else if(key == 'subscr')
+                                costItems = CostItem.executeQuery('select ci.id from CostItem ci join ci.sub sub where ci.isVisibleForSubscriber = true and sub = :sub and ci.costItemElement = :cie and ci.costItemStatus != :deleted', [sub: subscription, cie: cie, deleted: RDStore.COST_ITEM_DELETED])
+                            break
+                            //cases six: basic member
+                        case CustomerTypeService.ORG_INST_BASIC: costItems = CostItem.executeQuery('select ci.id from CostItem ci join ci.sub sub where ci.isVisibleForSubscriber = true and sub = :sub and ci.costItemElement = :cie and ci.costItemStatus != :deleted', [sub: subscription, cie: cie, deleted: RDStore.COST_ITEM_DELETED])
+                            break
+                    }
+                    costSumSubMap.put(cie, financeService.calculateResults(costItems))
+                }
+                costItemSums.put(key, costSumSubMap)
+            }
         }
 
         selectedFields.keySet().each { String fieldKey ->
@@ -2751,7 +2828,19 @@ class ExportClickMeService {
                     row.add(createTableCell(format, count))
                 }
                 else if ((fieldKey == 'participantSubCostItem' || fieldKey == 'subCostItem')) {
-                    if(costItems && selectedCostItemFields.size() > 0){
+                    if(costItemSums) {
+                        costItemSums.each { String view, Map costSumSubMap ->
+                            costSumSubMap.each { RefdataValue cie, Map sums ->
+                                List<String> cellValue = []
+                                sums.billingSums.each { Map currencyMap ->
+                                    cellValue << "${messageSource.getMessage('financials.newCosts.billingSum', null, locale)} (${currencyMap.currency}): ${BigDecimal.valueOf(currencyMap.billingSumAfterTax).setScale(2, RoundingMode.HALF_UP)}"
+                                    cellValue << "${messageSource.getMessage('financials.newCosts.finalSum', null, locale)}: ${BigDecimal.valueOf(currencyMap.localSumAfterTax).setScale(2, RoundingMode.HALF_UP)}"
+                                }
+                                row.add(createTableCell(format, cellValue.join('\n')))
+                            }
+                        }
+                    }
+                    else if(costItems && selectedCostItemFields.size() > 0){
                         costItems.each { CostItem costItem ->
                             String cieVal = costItem.costItemElement ? costItem.costItemElement.getI10n('value') : ''
                             row.add(createTableCell(format, cieVal))
@@ -2760,7 +2849,8 @@ class ExportClickMeService {
                                 row.add(createTableCell(format, fieldValue))
                             }
                         }
-                    }else if(selectedCostItemFields.size() > 0) {
+                    }
+                    else if(selectedCostItemFields.size() > 0) {
                             row.add(createTableCell(format, ' '))
                             selectedCostItemFields.each {
                                 row.add(createTableCell(format, ' '))
@@ -3595,10 +3685,13 @@ class ExportClickMeService {
         }
     }
 
-    private List _exportTitles(Map<String, Object> selectedExportFields, Locale locale, Map selectedCostItemFields = null, Integer maxCostItemsElements = null, Set<String> contactSources = []){
+    private List _exportTitles(Map<String, Object> selectedExportFields, Locale locale, Map selectedCostItemFields = null, Integer maxCostItemsElements = null, Set<String> contactSources = [], Map selectedCostElements = [:]){
         List titles = []
 
         String localizedValue = LocaleUtils.getLocalizedAttributeName('value')
+        Map<String, String> colHeaderMap = [own: messageSource.getMessage('financials.tab.ownCosts', null, locale),
+                                            cons: messageSource.getMessage('financials.tab.consCosts', null, locale),
+                                            subscr: messageSource.getMessage('financials.tab.subscrCosts', null, locale)]
 
         selectedExportFields.keySet().each {String fieldKey ->
             Map fields = selectedExportFields.get(fieldKey)
@@ -3662,6 +3755,13 @@ class ExportClickMeService {
                         selectedCostItemFields.each {
                             titles << (it.value.message ? messageSource.getMessage("${it.value.message}", null, locale) : it.value.label)
                         }
+                }
+                else if(fieldKey == 'subCostItem') {
+                    selectedCostElements.each { String titleSuffix, List<RefdataValue> costItemElements ->
+                        costItemElements.each { RefdataValue cie ->
+                            titles << "${cie.getI10n('value')} (${colHeaderMap.get(titleSuffix)})"
+                        }
+                    }
                 }
                 else {
                     String label = (fields.message ? messageSource.getMessage("${fields.message}", null, locale) : fields.label)
