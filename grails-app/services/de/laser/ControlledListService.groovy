@@ -11,6 +11,7 @@ import de.laser.storage.RDStore
 import de.laser.interfaces.CalculatedType
 import de.laser.properties.PropertyDefinition
 import grails.gorm.transactions.Transactional
+import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
 
 import java.text.SimpleDateFormat
@@ -643,6 +644,28 @@ class ControlledListService {
 
     /**
      * Called from title filter views
+     * Retrieves all possible title types for the given subscription
+     * @param subscription the subscription whose titles should be inspected
+     * @return a set of possible title types
+     */
+    Set<String> getAllPossibleTitleTypesByStatus(GrailsParameterMap params) {
+        Set<String> titleTypes = []
+
+       if(params.status != '' && params.status != null && params.list('status')) {
+            List<Long> statusList = []
+            params.list('status').each { String statusId ->
+                statusList << Long.parseLong(statusId)
+            }
+            titleTypes = TitleInstancePackagePlatform.executeQuery("select titleType from TitleInstancePackagePlatform where titleType is not null and status.id in (:status) ", [status: statusList])
+        }
+        if(titleTypes.size() == 0){
+            titleTypes << messageSource.getMessage('titleInstance.noTitleType.label', null, LocaleUtils.getCurrentLocale())
+        }
+        titleTypes
+    }
+
+    /**
+     * Called from title filter views
      * Retrieves all possible medium types for the given package and the given title status
      * @param pkg the package whose titles should be inspected
      * @param forTitles the title status considered
@@ -674,6 +697,25 @@ class ControlledListService {
 
     /**
      * Called from title filter views
+     * Retrieves all possible medium types for the given subscription
+     * @param subscription the subscription whose titles should be inspected
+     * @return a set of possible title types
+     */
+    Set<String> getAllPossibleMediumTypesByStatus(GrailsParameterMap params) {
+        Set<String> mediumTypes = []
+
+       if(params.status != '' && params.status != null && params.list('status')) {
+            List<Long> statusList = []
+            params.list('status').each { String statusId ->
+                statusList << Long.parseLong(statusId)
+            }
+            mediumTypes.addAll(TitleInstancePackagePlatform.executeQuery("select tipp.medium from TitleInstancePackagePlatform tipp where tipp.medium is not null and tipp.status.id in (:status) ", [status: statusList]))
+        }
+        mediumTypes
+    }
+
+    /**
+     * Called from title filter views
      * Retrieves all possible coverage depths for the given package and the given title status
      * @param pkg the package whose titles should be inspected
      * @param forTitles the title status considered
@@ -699,6 +741,26 @@ class ControlledListService {
 
         if(subscription.packages){
             coverageDepths = RefdataValue.executeQuery("select rdv from RefdataValue rdv where rdv.value in (select tc.coverageDepth from TIPPCoverage tc join tc.tipp tipp where tc.coverageDepth is not null and tipp.pkg in (:pkg)) ", [pkg: subscription.packages.pkg])
+        }
+
+        coverageDepths
+    }
+
+    /**
+     * Called from title filter views
+     * Retrieves all possible coverage depths for the given subscription
+     * @param subscription the subscription whose titles should be inspected
+     * @return a set of possible coverage depths
+     */
+    Set<RefdataValue> getAllPossibleCoverageDepthsByStatus(GrailsParameterMap params) {
+        Set<RefdataValue> coverageDepths = []
+
+       if(params.status != '' && params.status != null && params.list('status')) {
+            List<Long> statusList = []
+            params.list('status').each { String statusId ->
+                statusList << Long.parseLong(statusId)
+            }
+            coverageDepths = RefdataValue.executeQuery("select rdv from RefdataValue rdv where rdv.value in (select tc.coverageDepth from TIPPCoverage tc join tc.tipp tipp where tc.coverageDepth is not null and tipp.status.id in (:status)) ", [status: statusList])
         }
 
         coverageDepths
@@ -743,6 +805,28 @@ class ControlledListService {
 
     /**
      * Called from title filter views
+     * Retrieves all possible series for the given subscription
+     * @param subscription the subscription whose titles should be inspected
+     * @return a set of possible series
+     */
+    Set<String> getAllPossibleSeriesByStatus(GrailsParameterMap params) {
+        Set<String> seriesName = []
+
+       if(params.status != '' && params.status != null && params.list('status')) {
+            List<Long> statusList = []
+            params.list('status').each { String statusId ->
+                statusList << Long.parseLong(statusId)
+            }
+            seriesName = TitleInstancePackagePlatform.executeQuery("select distinct(seriesName) from TitleInstancePackagePlatform where seriesName is not null and status.id in (:status) order by seriesName", [status: statusList])
+        }
+        if(seriesName.size() == 0){
+            seriesName << messageSource.getMessage('titleInstance.noSeriesName.label', null, LocaleUtils.getCurrentLocale())
+        }
+        seriesName
+    }
+
+    /**
+     * Called from title filter views
      * Retrieves all possible Dewey decimal classification entries for the given package and the given title status
      * @param pkg the package whose titles should be inspected
      * @param forTitles the title status considered
@@ -774,6 +858,25 @@ class ControlledListService {
 
     /**
      * Called from title filter views
+     * Retrieves all possible Dewey decimal classification entries for the given subscription
+     * @param subscription the subscription whose titles should be inspected
+     * @return a set of possible Dewey decimal classification entries
+     */
+    Set<RefdataValue> getAllPossibleDdcsByStatus(GrailsParameterMap params) {
+        Set<RefdataValue> ddcs = []
+
+       if(params.status != '' && params.status != null && params.list('status')) {
+            List<Long> statusList = []
+            params.list('status').each { String statusId ->
+                statusList << Long.parseLong(statusId)
+            }
+            ddcs.addAll(DeweyDecimalClassification.executeQuery("select ddc.ddc from DeweyDecimalClassification ddc join ddc.tipp tipp where tipp.status.id in (:status) order by ddc.ddc.value_" + LocaleUtils.getCurrentLang(), [status: statusList]))
+        }
+        ddcs
+    }
+
+    /**
+     * Called from title filter views
      * Retrieves all possible languages for the given package and the given title status
      * @param pkg the package whose titles should be inspected
      * @param forTitles the title status considered
@@ -799,6 +902,25 @@ class ControlledListService {
 
         if(subscription.packages){
             languages.addAll(DeweyDecimalClassification.executeQuery("select lang.language from Language lang join lang.tipp tipp join tipp.pkg pkg where pkg in (:pkg) order by lang.language.value_" + LocaleUtils.getCurrentLang(), [pkg: subscription.packages.pkg]))
+        }
+        languages
+    }
+
+    /**
+     * Called from title filter views
+     * Retrieves all possible language entries for the given subscription
+     * @param subscription the subscription whose titles should be inspected
+     * @return a set of possible language entries
+     */
+    Set<RefdataValue> getAllPossibleLanguagesByStatus(GrailsParameterMap params) {
+        Set<RefdataValue> languages = []
+
+       if(params.status != '' && params.status != null && params.list('status')) {
+            List<Long> statusList = []
+            params.list('status').each { String statusId ->
+                statusList << Long.parseLong(statusId)
+            }
+            languages.addAll(DeweyDecimalClassification.executeQuery("select lang.language from Language lang join lang.tipp tipp where tipp.status.id in (:status) order by lang.language.value_" + LocaleUtils.getCurrentLang(), [status: statusList]))
         }
         languages
     }
@@ -862,6 +984,38 @@ class ControlledListService {
 
     /**
      * Called from title filter views
+     * Retrieves all possible subject references for the given subscription
+     * @param subscription the subscription whose titles should be inspected
+     * @return a set of possible subject references
+     */
+    Set<String> getAllPossibleSubjectsByStatus(GrailsParameterMap params) {
+        SortedSet<String> subjects = new TreeSet<String>()
+        List<String> rawSubjects = []
+
+       if(params.status != '' && params.status != null && params.list('status')) {
+            List<Long> statusList = []
+            params.list('status').each { String statusId ->
+                statusList << Long.parseLong(statusId)
+            }
+            rawSubjects = TitleInstancePackagePlatform.executeQuery("select distinct(subjectReference) from TitleInstancePackagePlatform where subjectReference is not null and status.id in (:status) order by subjectReference", [status: statusList])
+        }
+        if(rawSubjects.size() == 0){
+            subjects << messageSource.getMessage('titleInstance.noSubjectReference.label', null, LocaleUtils.getCurrentLocale())
+        }
+        else {
+            rawSubjects.each { String rawSubject ->
+                rawSubject.tokenize(',;|').each { String rs ->
+                    subjects.add(rs.trim())
+                }
+                //subjects << rawSubject.trim()
+            }
+        }
+
+        subjects
+    }
+
+    /**
+     * Called from title filter views
      * Retrieves all possible years of first online publication for the given package and the given title status
      * @param pkg the package whose titles should be inspected
      * @param forTitles the title status considered
@@ -900,6 +1054,29 @@ class ControlledListService {
     }
 
     /**
+     * Called from title filter views
+     * Retrieves all possible years of first online publication for the given subscription
+     * @param subscription the subscription whose titles should be inspected
+     * @return a set of possible years of first online publication
+     */
+    Set<String> getAllPossibleDateFirstOnlineYearByStatus(GrailsParameterMap params) {
+        Set<String> yearsFirstOnline = []
+
+       if(params.status != '' && params.status != null && params.list('status')) {
+            List<Long> statusList = []
+            params.list('status').each { String statusId ->
+                statusList << Long.parseLong(statusId)
+            }
+            yearsFirstOnline = TitleInstancePackagePlatform.executeQuery("select distinct(YEAR(dateFirstOnline)) from TitleInstancePackagePlatform where dateFirstOnline is not null and status.id in (:status) order by YEAR(dateFirstOnline)", [status: statusList])
+        }
+        if(yearsFirstOnline.size() == 0){
+            yearsFirstOnline << messageSource.getMessage('default.selectionNotPossible.label', null, LocaleUtils.getCurrentLocale())
+        }
+
+        yearsFirstOnline
+    }
+
+    /**
     * Called from title filter views
     * Retrieves all possible publishers for the given package and the given title status
     * @param pkg the package whose titles should be inspected
@@ -928,6 +1105,28 @@ class ControlledListService {
         if(subscription.packages){
             //publishers.addAll(TitleInstancePackagePlatform.executeQuery("select distinct(orgRole.org.name) from TitleInstancePackagePlatform tipp left join tipp.orgs orgRole where orgRole.roleType.id = ${RDStore.OR_PUBLISHER.id} and tipp.pkg in (:pkg) order by orgRole.org.name", [pkg: subscription.packages.pkg]))
             publishers.addAll(TitleInstancePackagePlatform.executeQuery("select distinct(publisherName) from TitleInstancePackagePlatform where publisherName is not null and pkg in (:pkg) and status = :current order by publisherName", [pkg: subscription.packages.pkg,current: RDStore.TIPP_STATUS_CURRENT]))
+        }
+
+        publishers
+    }
+
+    /**
+     * Called from title filter views
+     * Retrieves all possible publishers for the given subscription
+     * @param subscription the subscription whose titles should be inspected
+     * @return a set of possible publishers
+     */
+    Set<String> getAllPossiblePublisherByStatus(GrailsParameterMap params) {
+        Set<String> publishers = []
+
+       if(params.status != '' && params.status != null && params.list('status')) {
+            List<Long> statusList = []
+            params.list('status').each { String statusId ->
+                statusList << Long.parseLong(statusId)
+            }
+
+            //publishers.addAll(TitleInstancePackagePlatform.executeQuery("select distinct(orgRole.org.name) from TitleInstancePackagePlatform tipp left join tipp.orgs orgRole where orgRole.roleType.id = ${RDStore.OR_PUBLISHER.id} and tipp.pkg in (:pkg) order by orgRole.org.name", [pkg: subscription.packages.pkg]))
+            publishers.addAll(TitleInstancePackagePlatform.executeQuery("select distinct(publisherName) from TitleInstancePackagePlatform where publisherName is not null and status.id in (:status) order by publisherName", [status: statusList]))
         }
 
         publishers
