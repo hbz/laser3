@@ -12,12 +12,7 @@
                     <p>
                         <strong>
                             <g:link controller="organisation" action="show" id="${chosenOrg.id}">${chosenOrg.name}</g:link>
-                            <g:if test="${chosenOrg.isCustomerType_Inst_Pro()}">
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                                      data-content="${chosenOrg.getCustomerTypeI10n()}">
-                                    <i class="chess rook grey icon"></i>
-                                </span>
-                            </g:if>
+                            <ui:customerTypeIcon org="${chosenOrg}" />
                         </strong>
                     </p>
                     ${chosenOrg.libraryType?.getI10n('value')}
@@ -105,13 +100,8 @@
                             <i class="low vision grey icon"></i>
                         </span>
                     </g:if>
-                    <g:if test="${subscr.isCustomerType_Inst_Pro()}">
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                              data-content="${subscr.getCustomerTypeI10n()}">
-                            <i class="chess rook grey icon"></i>
-                        </span>
-                    </g:if>
 
+                    <ui:customerTypeIcon org="${subscr}" />
                 </td>
                 <th scope="row" class="la-th-column">
 

@@ -54,13 +54,8 @@
                                             <g:link controller="subscription"
                                                     action="show"
                                                     id="${sub.id}">${subscriberOrg.sortname}</g:link>
-                                            <g:if test="${subscriberOrg.isCustomerType_Inst_Pro()}">
-                                                <span class="la-long-tooltip la-popup-tooltip la-delay"
-                                                      data-position="bottom center"
-                                                      data-content="${subscriberOrg.getCustomerTypeI10n()}">
-                                                    <i class="chess rook grey icon"></i>
-                                                </span>
-                                            </g:if>
+
+                                            <ui:customerTypeIcon org="${subscriberOrg}" />
                                         </td>
                                         <td><g:formatDate formatName="default.date.format.notime"
                                                           date="${sub.startDate}"/></td>

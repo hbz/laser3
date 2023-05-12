@@ -65,13 +65,6 @@
                                     class="js-open-confirm-modal-xEditable"
                                     owner="${orgInstance}" field="name"
                                     overwriteEditable="${editable && orgInstanceRecord == null}"/>
-
-                            <g:if test="${orgInstance.isCustomerType_Inst_Pro()}">
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                                      data-content="${orgInstance.getCustomerTypeI10n()}">
-                                    <i class="chess rook grey icon"></i>
-                                </span>
-                            </g:if>
                         </dd>
                     </dl>
                     <g:if test="${!inContextOrg || isGrantedOrgRoleAdminOrOrgEditor}">

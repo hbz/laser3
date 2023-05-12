@@ -19,13 +19,16 @@
     <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]"/>
 </ui:debugInfo>
 <laser:render template="breadcrumb" model="${[params: params]}"/>
+
 <ui:controlButtons>
     <laser:render template="actions"/>
 </ui:controlButtons>
+
 <ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}">
 <laser:render template="iconSubscriptionIsChild"/>
 <ui:xEditable owner="${subscription}" field="name"/>
 </ui:h1HeaderWithIcon>
+
 <g:if test="${editable}">
     <ui:auditButton class="la-auditButton-header" auditable="[subscription, 'name']" auditConfigs="${auditConfigs}" withoutOptions="true"/>
 </g:if>

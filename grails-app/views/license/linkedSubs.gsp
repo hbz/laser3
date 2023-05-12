@@ -153,12 +153,7 @@
                             </span>
                         </g:if>
 
-                        <g:if test="${subscr.isCustomerType_Inst_Pro()}">
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                                  data-content="${subscr.getCustomerTypeI10n()}">
-                                <i class="chess rook grey icon"></i>
-                            </span>
-                        </g:if>
+                        <ui:customerTypeIcon org="${subscr}" />
 
                         <div class="ui list">
                             <g:each in="${Person.getPublicByOrgAndFunc(subscr, 'General contact person')}" var="gcp">

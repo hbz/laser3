@@ -8,6 +8,29 @@
     Playground
 </h1>
 
+<div class="ui segment">
+    <p class="ui header">
+        <i class="icon large users"></i> various
+    </p>
+    <div class="ui list">
+        <div class="item">
+            <i class="icon large fake"></i>
+            <div class="content"> internal link</div>
+        </div>
+        <div class="item">
+            <i class="icon large filter"></i>
+            <div class="content"> internal link (redirect to list view with filter)</div>
+        </div>
+        <div class="item">
+            <i class="icon large share square"></i>
+            <div class="content"> external link</div>
+        </div>
+        <div class="item">
+            <i class="icon large fake"></i>
+            <div class="content"> functional link</div>
+        </div>
+    </div>
+</div>
 
 <div class="ui segment">
     <p class="ui header">
@@ -15,42 +38,61 @@
     </p>
     <div class="ui list">
         <div class="item">
-            <i class="icon large user   inverted teal"></i>
-            <div class="content"> <g:message code="cv.roles.INST_USER"/> </div>
+            <div class="ui label">
+                <i class="icon user"></i>
+                <g:message code="cv.roles.INST_USER"/>
+            </div>
         </div>
         <div class="item">
-            <i class="icon large user edit   inverted teal"></i>
-            <div class="content"> <g:message code="cv.roles.INST_EDITOR"/> </div>
+            <div class="ui label">
+                <i class="icon user edit"></i>
+                <g:message code="cv.roles.INST_EDITOR"/>
+            </div>
         </div>
         <div class="item">
-            <i class="icon large user cog   inverted teal"></i>
-            <div class="content"> <g:message code="cv.roles.INST_ADM"/> </div>
+            <div class="ui label">
+                <i class="icon user shield"></i>
+                <g:message code="cv.roles.INST_ADM"/>
+            </div>
         </div>
     </div>
     <div class="ui list">
         <div class="item">
-            <i class="icon large star half outline"></i>
-            <div class="content"> ${Role.findByAuthority(CustomerTypeService.ORG_INST_BASIC).getI10n('authority')} </div>
+            <div class="ui label blue">
+                <i class="icon circle outline"></i>
+                ${Role.findByAuthority(CustomerTypeService.ORG_INST_BASIC).getI10n('authority')}
+            </div>
         </div>
         <div class="item">
-            <i class="icon large star outline"></i>
-            <div class="content"> ${Role.findByAuthority(CustomerTypeService.ORG_INST_PRO).getI10n('authority')} </div>
+            <div class="ui label blue">
+                <i class="icon trophy"></i>
+                ${Role.findByAuthority(CustomerTypeService.ORG_INST_PRO).getI10n('authority')}
+            </div>
+        </div>
+
+        <div class="item">
+            <div class="ui label teal">
+                <i class="icon circle outline"></i>
+                ${Role.findByAuthority(CustomerTypeService.ORG_CONSORTIUM_BASIC).getI10n('authority')}
+            </div>
         </div>
         <div class="item">
-            <i class="icon large tag"></i>
-            <div class="content"> ? </div>
+            <div class="ui label teal">
+                <i class="icon trophy"></i>
+                ${Role.findByAuthority(CustomerTypeService.ORG_CONSORTIUM_PRO).getI10n('authority')}
+            </div>
         </div>
         <div class="item">
-            <i class="icon large star half"></i>
-            <div class="content"> ${Role.findByAuthority(CustomerTypeService.ORG_CONSORTIUM_BASIC).getI10n('authority')} </div>
+            <div class="ui label">
+                <i class="icon certificate"></i>
+                ?
+            </div>
         </div>
         <div class="item">
-            <i class="icon large star"></i>
-            <div class="content"> ${Role.findByAuthority(CustomerTypeService.ORG_CONSORTIUM_PRO).getI10n('authority')} </div>
-        </div>
-        <div class="item">
-            <i class="icon large certificate"></i>
-            <div class="content"> ? </div>
+            <div class="ui label">
+                <i class="icon tag"></i>
+                ?
+            </div>
         </div>
     </div>
 </div>
