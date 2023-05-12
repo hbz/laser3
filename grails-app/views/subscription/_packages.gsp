@@ -21,7 +21,7 @@
                             </g:if>
                             <div class="ui list">
                                 <div class="item">
-                                    <i aria-hidden="true"  class="grey cloud icon"></i>
+                                    <i aria-hidden="true" class="grey cloud icon"></i>
                                     <div class="content">
                                         <div class="header">${message(code: 'platform.label')}: </div>
                                         <div class="description">

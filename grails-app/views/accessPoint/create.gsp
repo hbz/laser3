@@ -8,9 +8,7 @@
 </laser:script>
 
   <ui:breadcrumbs>
-    <ui:crumb controller="organisation" action="show" id="${orgInstance.id}" text="${orgInstance.getDesignation()}"/>
-    <ui:crumb controller="organisation" action="accessPoints" id="${orgInstance.id}" message="org.nav.accessPoints"/>
-    <ui:crumb message="accessPoint.new" class="active"/>
+    <ui:crumb text="${orgInstance.getDesignation()}" class="active" />
   </ui:breadcrumbs>
 
     <ui:h1HeaderWithIcon text="${orgInstance.name}" />

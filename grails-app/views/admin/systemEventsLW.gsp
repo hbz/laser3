@@ -43,7 +43,7 @@
         <tr data-group="${lastRemote != d.remote ? ++gc : gc}" class="${gc%2 == 0 ? 'custom-grey' : 'custom-white'}">
             <g:set var="lastRemote" value="${d.remote}" />
             <td data-date="${d.x_date}">
-                <span  class="la-popup-tooltip la-delay" data-content="${d.id}" data-position="top right">
+                <span class="la-popup-tooltip la-delay" data-content="${d.id}" data-position="top right">
                     ${d.x_date}
                 </span>
             </td>
@@ -53,7 +53,7 @@
                     <i class="server icon green"></i> ${d.host.replaceFirst('host: ', '')}
                 </g:if>
                 <g:elseif test="${d.host.startsWith('cookie: ')}">
-                    <span  class="la-popup-tooltip la-delay" data-content="${d.host.replaceFirst('cookie: ', '')}" data-position="top right">
+                    <span class="la-popup-tooltip la-delay" data-content="${d.host.replaceFirst('cookie: ', '')}" data-position="top right">
                         <i class="cookie bite icon orange"></i>
                     </span>
                 </g:elseif>

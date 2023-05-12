@@ -19,12 +19,12 @@
                         <tr>
                             <td>
                                 <g:if test="${! p.isPublic}">
-                                    <span  class="la-popup-tooltip la-delay" data-content="${message(code:'address.private')}" data-position="top right">
+                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'address.private')}" data-position="top right">
                                         <i class="address card outline icon"></i>
                                     </span>
                                 </g:if>
                                 <g:else>
-                                    <span  class="la-popup-tooltip la-delay" data-content="${message(code:'address.public')}" data-position="top right">
+                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'address.public')}" data-position="top right">
                                         <i class="address card icon"></i>
                                     </span>
                                 </g:else>

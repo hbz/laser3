@@ -48,7 +48,7 @@
             <g:if test="${'withCostItems' in tableConfig}">
                 <th rowspan="2">${message(code:'financials.amountFinal')}</th>
                 <th class="la-no-uppercase" rowspan="2">
-                    <span  class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center">
+                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center">
                         <i class="money bill alternate icon"></i>
                     </span>&nbsp;/&nbsp;
                     <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">

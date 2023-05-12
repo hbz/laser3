@@ -26,7 +26,7 @@
                     ${fieldValue(bean: us, field: "username")}
 
                     <g:if test="${! SpringSecurityUtils.ifAnyGranted('ROLE_USER')}">
-                        <span  class="la-popup-tooltip la-delay" data-content="Dieser Account besitzt keine ROLE_USER-Rechte." data-position="top right">
+                        <span class="la-popup-tooltip la-delay" data-content="Dieser Account besitzt keine ROLE_USER-Rechte." data-position="top right">
                             <i class="icon minus circle red"></i>
                         </span>
                     </g:if>
@@ -128,7 +128,7 @@
 
                         </g:if>
                         <g:else>
-                            <span  class="la-popup-tooltip la-delay" data-content="${message(code:'user.affiliation.lastAdminForOrg1', args: [us.getDisplayName()])}">
+                            <span class="la-popup-tooltip la-delay" data-content="${message(code:'user.affiliation.lastAdminForOrg1', args: [us.getDisplayName()])}">
                                 <button class="ui icon negative button la-modern-button" disabled="disabled"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">

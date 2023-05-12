@@ -35,7 +35,7 @@
                     </td>
                     <td class="center aligned">
                         <g:if test="${docctx.sharedFrom}">
-                            <span  class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.on')}">
+                            <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.on')}">
                                 <i class="grey alternate share icon"></i>
                             </span>
                         </g:if>

@@ -16,7 +16,7 @@
             <ui:exportDropdown>
                 <g:if test="${filterSet}">
                     <%--<ui:exportDropdownItem>
-                        <g:link  class="item js-open-confirm-modal"
+                        <g:link class="item js-open-confirm-modal"
                                  data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
                                  data-confirm-term-how="ok"
                                  controller="finance"

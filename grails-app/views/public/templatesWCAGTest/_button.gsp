@@ -1,6 +1,6 @@
 <h3 class="ui dividing header">3.1. Link funktioniert als Button mit Tooltip</h3>
 <a  role="button" class="ui icon button la-audit-button la-popup-tooltip la-delay" href='https://www.w3.org/' data-content="Das ist der Inhalt des Tooltips">
-    <i  class="icon thumbtack la-js-editmode-icon"></i>
+    <i class="icon thumbtack la-js-editmode-icon"></i>
 </a>
 <h3 class="ui dividing header">3.2. Link funktioniert als Button ohne Tooltip</h3>
 <g:link aria-label="Das ist eine Beschreibung für den Accessibility Tree" controller="public" action="wcagTest" params="" class="ui icon positive button">

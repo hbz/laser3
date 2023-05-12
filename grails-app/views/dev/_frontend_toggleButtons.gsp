@@ -29,7 +29,7 @@
 </div>
 <dd class="la-js-editmode-container">
     <a  role="button" class="ui icon button la-audit-button la-popup-tooltip la-delay" href='' data-content="4 5 6">
-        <i  class="icon thumbtack la-js-editmode-icon"></i>
+        <i class="icon thumbtack la-js-editmode-icon"></i>
     </a>
 </dd><br />
 
@@ -47,7 +47,7 @@
 </div>
 
 <a  role="button" class="ui icon button la-audit-button la-popup-tooltip la-delay" href='https://www.spiegel.de' data-content="10 11 12">
-    <i  class="icon thumbtack la-js-editmode-icon"></i>
+    <i class="icon thumbtack la-js-editmode-icon"></i>
 </a><br /><br />
 <h4 class="ui header">Funktions-Button, der NICHT ausgeschaltet werden kann, Icon und Button verschwinden NICHT</h4>
 <div class="html ui top attached segment example">
@@ -64,5 +64,5 @@
 </div>
 
 <a  role="button" class="ui icon mini button la-audit-button la-popup-tooltip la-delay la-js-dont-hide-button" href='https://www.spiegel.de' data-content="13 14 15">
-    <i  class="icon thumbtack"></i>
+    <i class="icon thumbtack"></i>
 </a><br /><br />
