@@ -367,7 +367,7 @@ class PackageController {
         ArrayList<TitleInstancePackagePlatform> tipps = []
         Map<String, Object> selectedFields = [:]
 
-        if(params.clickMeExcelExport || params.format) {
+        if(params.fileformat) {
             if (params.filename) {
                 filename =params.filename
             }
@@ -410,7 +410,7 @@ class PackageController {
             workbook.dispose()
             return
         }else */
-        if(Boolean.valueOf(params.exportClickMeExcel)) {
+        if(params.fileformat == 'xlsx') {
             SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportTipps(tipps, selectedFields, ExportClickMeService.FORMAT.XLS)
             response.setHeader "Content-disposition", "attachment; filename=${filename}.xlsx"
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -420,31 +420,28 @@ class PackageController {
             wb.dispose()
             return
         }
-        withFormat {
-            html {
-                result.currentTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_CURRENT])[0]
-                result.plannedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_EXPECTED])[0]
-                result.expiredTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_RETIRED])[0]
-                result.deletedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_DELETED])[0]
-                //we can be sure that no one will request more than 32768 entries ...
-                result.titlesList = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList.drop(result.offset).take(result.max), [sort: 'sortname']) : []
-                result.num_tipp_rows = titlesList.size()
+        else if(params.fileformat == 'csv') {
+            response.setHeader( "Content-Disposition", "attachment; filename=${filename}.csv")
+            response.contentType = "text/csv"
 
-                result.lasttipp = result.offset + result.max > result.num_tipp_rows ? result.num_tipp_rows : result.offset + result.max
-                result
+            ServletOutputStream out = response.outputStream
+            out.withWriter { writer ->
+                writer.write((String) exportClickMeService.exportTipps(tipps, selectedFields, ExportClickMeService.FORMAT.CSV))
             }
-            csv {
-                response.setHeader( "Content-Disposition", "attachment; filename=${filename}.csv")
-                response.contentType = "text/csv"
-
-                ServletOutputStream out = response.outputStream
-                out.withWriter { writer ->
-                    writer.write((String) exportClickMeService.exportTipps(tipps, selectedFields, ExportClickMeService.FORMAT.CSV))
-                }
-                out.flush()
-                out.close()
-                return
-            }
+            out.flush()
+            out.close()
+            return
+        }
+        else {
+            result.currentTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_CURRENT])[0]
+            result.plannedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_EXPECTED])[0]
+            result.expiredTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_RETIRED])[0]
+            result.deletedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_DELETED])[0]
+            //we can be sure that no one will request more than 32768 entries ...
+            result.titlesList = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList.drop(result.offset).take(result.max), [sort: 'sortname']) : []
+            result.num_tipp_rows = titlesList.size()
+            result.lasttipp = result.offset + result.max > result.num_tipp_rows ? result.num_tipp_rows : result.offset + result.max
+            result
         }
     }
 
@@ -527,7 +524,7 @@ class PackageController {
 
         Map<String, Object> selectedFields = [:]
         ArrayList<TitleInstancePackagePlatform> tipps = []
-        if(params.exportClickMeExcel || params.format) {
+        if(params.fileformat) {
             if (params.filename) {
                 filename = params.filename
             }
@@ -568,7 +565,7 @@ class PackageController {
             workbook.dispose()
             return
         }*/
-        else if(Boolean.valueOf(params.exportClickMeExcel)) {
+        else if(params.fileformat == 'xlsx') {
             SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportTipps(tipps, selectedFields, ExportClickMeService.FORMAT.XLS)
             response.setHeader "Content-disposition", "attachment; filename=${filename}.xlsx"
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -578,26 +575,23 @@ class PackageController {
             wb.dispose()
             return
         }
-        withFormat {
-            html {
+        else if(params.fileformat == 'csv') {
+            response.setHeader("Content-disposition", "attachment; filename=${filename}.csv")
+            response.contentType = "text/csv"
 
-                result.titlesList = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList,[sort:'sortname']).drop(result.offset).take(result.max) : []
-                result.num_tipp_rows = titlesList.size()
-
-                result.lasttipp = result.offset + result.max > result.num_tipp_rows ? result.num_tipp_rows : result.offset + result.max
-                result
+            ServletOutputStream out = response.outputStream
+            out.withWriter { writer ->
+                writer.write((String) exportClickMeService.exportTipps(tipps, selectedFields, ExportClickMeService.FORMAT.CSV))
             }
-            csv {
-                response.setHeader("Content-disposition", "attachment; filename=${filename}.csv")
-                response.contentType = "text/csv"
+            out.flush()
+            out.close()
+        }
+        else {
+            result.titlesList = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList,[sort:'sortname']).drop(result.offset).take(result.max) : []
+            result.num_tipp_rows = titlesList.size()
 
-                ServletOutputStream out = response.outputStream
-                out.withWriter { writer ->
-                    writer.write((String) exportClickMeService.exportTipps(tipps, selectedFields, ExportClickMeService.FORMAT.CSV))
-                }
-                out.flush()
-                out.close()
-            }
+            result.lasttipp = result.offset + result.max > result.num_tipp_rows ? result.num_tipp_rows : result.offset + result.max
+            result
         }
     }
 

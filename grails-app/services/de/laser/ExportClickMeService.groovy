@@ -35,11 +35,13 @@ import java.time.Year
 @Transactional
 class ExportClickMeService {
 
-    MessageSource messageSource
-    ExportService exportService
     AccessPointService accessPointService
     ContextService contextService
+    CustomerTypeService customerTypeService
+    ExportService exportService
     GokbService gokbService
+
+    MessageSource messageSource
 
     static enum FORMAT {
         XLS, CSV, TSV
@@ -116,7 +118,6 @@ class ExportClickMeService {
                                     'subscription.manualCancellationDate'       : [field: 'sub.manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
                                     'subscription.isMultiYear'                  : [field: 'sub.isMultiYear', label: 'Multi Year', message: 'subscription.isMultiYear.label'],
                                     'subscription.referenceYear'                : [field: 'sub.referenceYear', label: 'Reference Year', message: 'subscription.referenceYear.label'],
-                                    'subscription.isAutomaticRenewAnnually'     : [field: 'sub.isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'],
                                     'subscription.status'                       : [field: 'sub.status', label: 'Status', message: 'subscription.status.label'],
                                     'subscription.kind'                         : [field: 'sub.kind', label: 'Kind', message: 'subscription.kind.label'],
                                     'subscription.form'                         : [field: 'sub.form', label: 'Form', message: 'subscription.form.label'],
@@ -241,7 +242,7 @@ class ExportClickMeService {
                             'subscription.manualCancellationDate'       : [field: 'manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
                             'subscription.isMultiYear'                  : [field: 'isMultiYear', label: 'Multi Year', message: 'subscription.isMultiYear.label', defaultChecked: 'true'],
                             'subscription.referenceYear'                : [field: 'referenceYear', label: 'Reference Year', message: 'subscription.referenceYear.label', defaultChecked: 'true'],
-                            'subscription.isAutomaticRenewAnnually'     : [field: 'isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'], //to be shown for PRO users only!
+                            //'subscription.isAutomaticRenewAnnually'     : [field: 'isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'], //to be shown for PRO users only!
                             'subscription.status'                       : [field: 'status', label: 'Status', message: 'subscription.status.label', defaultChecked: 'true'],
                             'subscription.kind'                         : [field: 'kind', label: 'Kind', message: 'subscription.kind.label', defaultChecked: 'true'],
                             'subscription.form'                         : [field: 'form', label: 'Form', message: 'subscription.form.label', defaultChecked: 'true'],
@@ -263,6 +264,23 @@ class ExportClickMeService {
                             'license.endDate'         : [field: 'licenses.endDate', label: 'End Date', message: 'exportClickMe.license.endDate'],
                             'license.openEnded'         : [field: 'licenses.openEnded', label: 'Open Ended', message: 'license.openEnded.label'],
                             'license.uuid'            : [field: 'licenses.globalUID', label: 'Laser-UUID',  message: null],
+                    ]
+            ],
+
+            packages : [
+                    label: 'Packages',
+                    message: 'subscription.packages.label',
+                    fields: [
+                            'package.name' : [field: 'package.name', label: 'Name (Package)', message: 'exportClickMe.package.name'],
+                            'platform.name' : [field: 'package.nominalPlatform.name', label: 'Name (Platform)', message: 'exportClickMe.platform.name']
+                    ]
+            ],
+
+            institutions: [
+                    label: 'Consortium members',
+                    message: 'consortium.member.plural',
+                    fields: ['memberCount': [field: null, label: 'Count', message: 'default.count.label'],
+                             'multiYearCount': [field: null, label: 'Count multi-year', message: 'default.count.multiYear.label']
                     ]
             ],
 
@@ -304,8 +322,14 @@ class ExportClickMeService {
             ],
 
             subProperties : [
-                    label: 'Properties',
-                    message: 'default.object.properties',
+                    label: 'Public properties',
+                    message: 'default.properties',
+                    fields: [:]
+            ],
+
+            mySubProperties : [
+                    label: 'My properties',
+                    message: 'default.properties.my',
                     fields: [:]
             ],
 
@@ -338,8 +362,7 @@ class ExportClickMeService {
                             'costItem.invoiceNumber'                    : [field: 'costItem.invoice.invoiceNumber', label: 'Invoice Number', message: 'financials.invoice_number'],
                             'costItem.orderNumber'                      : [field: 'costItem.order.orderNumber', label: 'Order Number', message: 'financials.order_number'],
                     ]
-            ],
-
+            ]
     ]
 
     static Map<String, Object> EXPORT_CONSORTIA_CONFIG = [
@@ -370,6 +393,11 @@ class ExportClickMeService {
                     fields: [:]
             ],
             consortiumProperties : [
+                    label: 'Properties',
+                    message: 'default.properties',
+                    fields: [:]
+            ],
+            myConsortiumProperties : [
                     label: 'Properties',
                     message: 'default.properties.my',
                     fields: [:]
@@ -512,10 +540,14 @@ class ExportClickMeService {
             ],
             participantProperties : [
                     label: 'Properties',
-                    message: 'default.properties.my',
+                    message: 'default.properties',
                     fields: [:]
             ],
-
+            myParticipantProperties : [
+                    label: 'Properties',
+                    message: 'default.properties.my',
+                    fields: [:]
+            ]
     ]
 
     static Map<String, Object> EXPORT_PROVIDER_CONFIG = [
@@ -549,6 +581,11 @@ class ExportClickMeService {
                     fields: [:]
             ],
             providerProperties : [
+                    label: 'Properties',
+                    message: 'default.properties',
+                    fields: [:]
+            ],
+            myProviderProperties : [
                     label: 'Properties',
                     message: 'default.properties.my',
                     fields: [:]
@@ -1090,10 +1127,23 @@ class ExportClickMeService {
                 break
         }
 
-        EXPORT_SUBSCRIPTION_CONFIG.keySet().each {
-            EXPORT_SUBSCRIPTION_CONFIG.get(it).fields.each {
-                exportFields.put(it.key, it.value)
+        EXPORT_SUBSCRIPTION_CONFIG.keySet().each { String key ->
+            if(key == 'institutions') {
+                if(customerTypeService.isConsortium(institution.getCustomerType())) {
+                    EXPORT_SUBSCRIPTION_CONFIG.get(key).fields.each {
+                        exportFields.put(it.key, it.value)
+                    }
+                }
             }
+            else {
+                EXPORT_SUBSCRIPTION_CONFIG.get(key).fields.each {
+                    exportFields.put(it.key, it.value)
+                }
+            }
+        }
+
+        if(institution.getCustomerType() == CustomerTypeService.ORG_INST_PRO) {
+            exportFields.put('subscription.isAutomaticRenewAnnually', [field: 'isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'])
         }
 
         IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
@@ -1105,13 +1155,16 @@ class ExportClickMeService {
         Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where plat in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg join sp.subscription s join s.orgRelations oo where oo.org = :ctx '+consortiaFilter+')', [ctx: institution]).each { Platform plat ->
             exportFields.put("participantCustomerIdentifiers."+plat.id, [field: null, label: plat.name])
         }
+        IdentifierNamespace.findAllByNsType(IdentifierNamespace.NS_PACKAGE, [sort: 'ns']).each { IdentifierNamespace idns ->
+            exportFields.put("packageIdentifiers."+idns.id, [field: null, label: idns.ns + "(${messageSource.getMessage('package', null, locale)})"])
+        }
 
         Set<PropertyDefinition> propList = PropertyDefinition.executeQuery("select pd from PropertyDefinition pd where pd.descr in (:availableTypes) and (pd.tenant = null or pd.tenant = :ctx) order by pd."+localizedName+" asc",
                 [ctx:institution,availableTypes:[PropertyDefinition.SUB_PROP]])
 
 
         propList.each { PropertyDefinition propertyDefinition ->
-            exportFields.put("subProperty." + propertyDefinition.id, [field: null, label: propertyDefinition."${localizedName}"])
+            exportFields.put("subProperty." + propertyDefinition.id, [field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant?.id == institution.id)])
         }
 
         String query = "select rdv from RefdataValue as rdv where rdv.owner.desc=:category order by rdv.order, rdv." + localizedValue
@@ -1131,6 +1184,9 @@ class ExportClickMeService {
     Map<String, Object> getExportSubscriptionFieldsForUI(Org institution) {
 
         Map<String, Object> fields = EXPORT_SUBSCRIPTION_CONFIG as Map
+        if(!customerTypeService.isConsortium(institution.getCustomerType())) {
+            fields.remove('institutions')
+        }
         Locale locale = LocaleUtils.getCurrentLocale()
         String localizedName
         String localizedValue
@@ -1145,6 +1201,7 @@ class ExportClickMeService {
         }
 
         fields.subProperties.fields.clear()
+        fields.mySubProperties.fields.clear()
         fields.subCostItems.fields.costItemsElements.clear()
 
         IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
@@ -1156,13 +1213,20 @@ class ExportClickMeService {
         Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where plat in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg join sp.subscription s join s.orgRelations oo where oo.org = :ctx '+consortiaFilter+') order by plat.name', [ctx:institution]).each { Platform plat ->
             fields.participantCustomerIdentifiers.fields << ["participantCustomerIdentifiers.${plat.id}":[field: null, label: plat.name]]
         }
+        IdentifierNamespace.findAllByNsType(IdentifierNamespace.NS_PACKAGE, [sort: 'ns']).each { IdentifierNamespace idns ->
+            fields.packages.fields << ["packageIdentifiers.${idns.id}":[field: null, label: idns.ns]]
+        }
 
         Set<PropertyDefinition> propList = PropertyDefinition.executeQuery("select pd from PropertyDefinition pd where pd.descr in (:availableTypes) and (pd.tenant = null or pd.tenant = :ctx) order by pd."+localizedName+" asc",
                 [ctx:institution,availableTypes:[PropertyDefinition.SUB_PROP]])
 
 
         propList.each { PropertyDefinition propertyDefinition ->
-            fields.subProperties.fields << ["subProperty.${propertyDefinition.id}": [field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant != null)]]
+            //the proxies again ...
+            if(propertyDefinition.tenant?.id == institution.id)
+                fields.mySubProperties.fields << ["subProperty.${propertyDefinition.id}": [field: null, label: propertyDefinition."${localizedName}", privateProperty: true]]
+            else
+                fields.subProperties.fields << ["subProperty.${propertyDefinition.id}": [field: null, label: propertyDefinition."${localizedName}", privateProperty: false]]
         }
 
         String query = "select rdv from RefdataValue as rdv where rdv.owner.desc=:category order by rdv.order, rdv." + localizedValue
@@ -1268,7 +1332,7 @@ class ExportClickMeService {
                 }
 
                 PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg()).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
-                    exportFields.put("consortiumProperty."+propertyDefinition.id, [field: null, label: propertyDefinition."${localizedName}"])
+                    exportFields.put("consortiumProperty."+propertyDefinition.id, [field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant?.id == contextOrg.id)])
                 }
                 contactTypes.each { RefdataValue contactType ->
                     exportFields.put("consortiumContact."+contactType.value, [field: null, label: contactType.getI10n('value')])
@@ -1291,7 +1355,7 @@ class ExportClickMeService {
                 }
 
                 PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg()).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
-                    exportFields.put("participantProperty."+propertyDefinition.id, [field: null, label: propertyDefinition."${localizedName}"])
+                    exportFields.put("participantProperty."+propertyDefinition.id, [field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant?.id == contextOrg.id)])
                 }
                 contactTypes.each { RefdataValue contactType ->
                     exportFields.put("participantContact."+contactType.value, [field: null, label: contactType.getI10n('value')])
@@ -1313,7 +1377,7 @@ class ExportClickMeService {
                 }
 
                 PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg()).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
-                    exportFields.put("providerProperty."+propertyDefinition.id, [field: null, label: propertyDefinition."${localizedName}"])
+                    exportFields.put("providerProperty."+propertyDefinition.id, [field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant?.id == contextOrg.id)])
                 }
                 contactTypes.each { RefdataValue contactType ->
                     exportFields.put("providerContact."+contactType.value, [field: null, label: contactType.getI10n('value')])
@@ -1347,8 +1411,12 @@ class ExportClickMeService {
                     fields.consortiumIdentifiers.fields << ["consortiumIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
                 }
                 fields.consortiumProperties.fields.clear()
+                fields.myConsortiumProperties.fields.clear()
                 PropertyDefinition.findAllPublicAndPrivateOrgProp(contextOrg).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
-                    fields.consortiumProperties.fields << ["consortiumProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant != null)]]
+                    if(propertyDefinition.tenant?.id == contextOrg.id)
+                        fields.myConsortiumProperties.fields << ["consortiumProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition."${localizedName}", privateProperty: true]]
+                    else
+                        fields.consortiumProperties.fields << ["consortiumProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition."${localizedName}", privateProperty: false]]
                 }
                 contactTypes.each { RefdataValue contactType ->
                     fields.consortium.fields.put("consortiumContact.${contactType.value}", [field: null, label: contactType.getI10n('value')])
@@ -1359,14 +1427,18 @@ class ExportClickMeService {
                 IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
                     fields.participantIdentifiers.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
                 }
-                fields.participantIdentifiers.fields << ['participant.uuid':[field: 'globalUID', label: 'Globale UUID',  message: null]]
+                fields.participantIdentifiers.fields << ['participant.uuid':[field: 'globalUID', label: 'Laser-UUID',  message: null]]
                 fields.participantCustomerIdentifiers.fields.clear()
                 Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where ci.value != null and ci.customer in (select c.fromOrg from Combo c where c.toOrg = :ctx) order by plat.name', contextParams).each { Platform plat ->
                     fields.participantCustomerIdentifiers.fields << ["participantCustomerIdentifiers.${plat.id}":[field: null, label: plat.name]]
                 }
                 fields.participantProperties.fields.clear()
-                PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg()).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
-                    fields.participantProperties.fields << ["participantProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant != null)]]
+                fields.myParticipantProperties.fields.clear()
+                PropertyDefinition.findAllPublicAndPrivateOrgProp(contextOrg).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
+                    if(propertyDefinition.tenant?.id == contextOrg.id)
+                        fields.myParticipantProperties.fields << ["participantProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition."${localizedName}", privateProperty: true]]
+                    else
+                        fields.participantProperties.fields << ["participantProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition."${localizedName}", privateProperty: false]]
                 }
                 fields.participantContacts.fields.clear()
                 contactTypes.each { RefdataValue contactType ->
@@ -1378,14 +1450,18 @@ class ExportClickMeService {
                 IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_PROVIDER_NS, [sort: 'ns']).each {
                     fields.providerIdentifiers.fields << ["providerIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
                 }
-                fields.providerIdentifiers.fields << ['provider.uuid':[field: 'globalUID', label: 'Globale UUID',  message: null]]
+                fields.providerIdentifiers.fields << ['provider.uuid':[field: 'globalUID', label: 'Laser-UUID',  message: null]]
                 fields.providerCustomerIdentifiers.fields.clear()
                 Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where ci.value != null and ci.customer in (select c.fromOrg from Combo c where c.toOrg = :ctx) order by plat.name', contextParams).each { Platform plat ->
                     fields.providerCustomerIdentifiers.fields << ["providerCustomerIdentifiers.${plat.id}":[field: null, label: plat.name]]
                 }
                 fields.providerProperties.fields.clear()
+                fields.myProviderProperties.fields.clear()
                 PropertyDefinition.findAllPublicAndPrivateOrgProp(contextOrg).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
-                    fields.providerProperties.fields << ["providerProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant != null)]]
+                    if(propertyDefinition.tenant?.id == contextOrg.id)
+                        fields.myProviderProperties.fields << ["providerProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition."${localizedName}", privateProperty: true]]
+                    else
+                        fields.providerProperties.fields << ["providerProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition."${localizedName}", privateProperty: false]]
                 }
                 fields.providerContacts.fields.clear()
                 contactTypes.each { RefdataValue contactType ->
@@ -2634,12 +2710,29 @@ class ExportClickMeService {
                 */
                 else if (fieldKey.startsWith('participantCustomerIdentifiers.')) {
                     _setOrgFurtherInformation(org, row, fieldKey, format, subscription)
-                }else if (fieldKey == 'participant.readerNumbers') {
+                }
+                else if (fieldKey == 'participant.readerNumbers') {
                     _setOrgFurtherInformation(org, row, fieldKey, format)
                 }
                 else if (fieldKey.startsWith('participantIdentifiers.')) {
                     _setOrgFurtherInformation(org, row, fieldKey, format)
-                }else if (fieldKey.startsWith('participantSubProperty.') || fieldKey.startsWith('subProperty.')) {
+                }
+                else if(fieldKey == 'package.name') {
+                    row.add(createTableCell(format, subscription.packages.pkg.name.join('; ')))
+                }
+                else if(fieldKey == 'platform.name') {
+                    row.add(createTableCell(format, Platform.executeQuery('select distinct(plat.name) from SubscriptionPackage sp join sp.pkg pkg join pkg.nominalPlatform plat where sp.subscription = :sub', [sub: subscription]).join('; ')))
+                }
+                else if(fieldKey.startsWith('packageIdentifiers.')) {
+                    Long id = Long.parseLong(fieldKey.split("\\.")[1])
+                    List<String> identifierList = Identifier.executeQuery("select ident.value from Identifier ident where ident.pkg in (select sp.pkg from SubscriptionPackage sp where sp.subscription = :sub) and ident.ns.id = :namespace and ident.value != :unknown and ident.value != ''", [sub: subscription, namespace: id, unknown: IdentifierNamespace.UNKNOWN])
+                    if (identifierList) {
+                        row.add(createTableCell(format, identifierList.join("; ")))
+                    } else {
+                        row.add(createTableCell(format, ' '))
+                    }
+                }
+                else if (fieldKey.startsWith('participantSubProperty.') || fieldKey.startsWith('subProperty.')) {
                     Long id = Long.parseLong(fieldKey.split("\\.")[1])
                     String query = "select prop from SubscriptionProperty prop where (prop.owner = :sub and prop.type.id in (:propertyDefs) and prop.isPublic = true) or (prop.owner = :sub and prop.type.id in (:propertyDefs) and prop.isPublic = false and prop.tenant = :contextOrg) order by prop.type.${localizedName} asc"
                     List<SubscriptionProperty> subscriptionProperties = SubscriptionProperty.executeQuery(query,[sub:subscription, propertyDefs:[id], contextOrg: contextService.getOrg()])
@@ -2648,6 +2741,14 @@ class ExportClickMeService {
                     }else{
                         row.add(createTableCell(format, ' '))
                     }
+                }
+                else if (fieldKey == 'memberCount') {
+                    int count = Subscription.countByInstanceOf(subscription)
+                    row.add(createTableCell(format, count))
+                }
+                else if (fieldKey == 'multiYearCount') {
+                    int count = Subscription.countByInstanceOfAndIsMultiYear(subscription, true)
+                    row.add(createTableCell(format, count))
                 }
                 else if ((fieldKey == 'participantSubCostItem' || fieldKey == 'subCostItem')) {
                     if(costItems && selectedCostItemFields.size() > 0){
@@ -3564,6 +3665,10 @@ class ExportClickMeService {
                 }
                 else {
                     String label = (fields.message ? messageSource.getMessage("${fields.message}", null, locale) : fields.label)
+                    if(fields.privateProperty == true)
+                        label += ' (Meine Merkmale)'
+                    else if(fields.privateProperty == false)
+                        label += ' (Allgemeine Merkmale)'
                     titles << label
                     if (fieldKey.contains('Property')) {
                         titles << "${label} ${messageSource.getMessage('default.notes.plural', null, locale)}"

@@ -180,7 +180,7 @@ class FinanceController  {
             }
         }
         */
-        if(params.exportClickMeExcel) {
+        if(params.fileformat == 'xlsx') {
             if (params.filename) {
                 filename =params.filename
             }
