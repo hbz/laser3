@@ -10,7 +10,7 @@
 
     <div class="menu" role="menu">
         <ui:securedMainNavItem addItemAttributes="true" controller="myInstitution" action="dashboard" message="menu.institutions.dash" />
-        <div class="divider"></div>
+%{--        <div class="divider"></div>--}%
 
         <ui:link addItemAttributes="true" controller="organisation" action="show" params="[id: contextOrg?.id]">${message(code:'menu.institutions.org_info')}</ui:link>
 

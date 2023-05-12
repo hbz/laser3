@@ -24,7 +24,7 @@
 
 
         <g:set var="rdvAllPersonFunctions"
-               value="${de.laser.PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION)}"
+               value="${PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION)}"
                scope="request"/>
         <g:set var="rdvAllPersonPositions" value="${PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION)}"
                scope="request"/>
