@@ -71,6 +71,8 @@ class CopyElementsService {
                 break
             case Subscription.class.simpleName:
                 result = ['startDate', 'endDate', 'manualCancellationDate', 'referenceYear', 'status', 'kind', 'form', 'resource', 'isPublicForApi', 'hasPerpetualAccess', 'hasPublishComponent']
+                if(obj.packages)
+                    result << 'holdingSelection'
                 break
             case SurveyInfo.class.simpleName:
                 result = ['startDate', 'endDate', 'comment']

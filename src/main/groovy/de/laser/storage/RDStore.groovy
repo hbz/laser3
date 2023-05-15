@@ -209,6 +209,9 @@ class RDStore {
     public final static RefdataValue SHARE_CONF_UPLOADER_AND_TARGET     = getRefdataValue('only for author and target organisation', RDConstants.SHARE_CONFIGURATION)
     public final static RefdataValue SHARE_CONF_CONSORTIUM              = getRefdataValue('only for consortia members', RDConstants.SHARE_CONFIGURATION)
 
+    public final static RefdataValue SUBSCRIPTION_HOLDING_ENTIRE    = getRefdataValue('entire', RDConstants.SUBSCRIPTION_HOLDING)
+    public final static RefdataValue SUBSCRIPTION_HOLDING_PARTIAL   = getRefdataValue('partial', RDConstants.SUBSCRIPTION_HOLDING)
+
     public final static RefdataValue SUBSCRIPTION_CURRENT           = getRefdataValue('Current', RDConstants.SUBSCRIPTION_STATUS)
     public final static RefdataValue SUBSCRIPTION_INTENDED          = getRefdataValue('Intended', RDConstants.SUBSCRIPTION_STATUS)
     public final static RefdataValue SUBSCRIPTION_EXPIRED           = getRefdataValue('Expired', RDConstants.SUBSCRIPTION_STATUS)

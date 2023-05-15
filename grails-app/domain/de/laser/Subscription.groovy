@@ -90,13 +90,12 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     @RefdataInfo(cat = RDConstants.SUBSCRIPTION_RESOURCE)
     RefdataValue resource
 
+    @RefdataInfo(cat = RDConstants.SUBSCRIPTION_HOLDING)
+    RefdataValue holdingSelection
+
     // If a subscription is slaved then any changes to instanceOf will automatically be applied to this subscription
     boolean isSlaved = false
 	boolean isPublicForApi = false
-
-    //explicitely demanded as of ERMS-2503 - but demand has been revoked! Keep in u.f.n. until discussions on orderer side are terminated!
-    //@RefdataInfo(cat = RDConstants.Y_N)
-    //RefdataValue hasPerpetualAccess
     boolean hasPerpetualAccess = false
     boolean hasPublishComponent = false
     boolean isMultiYear = false
@@ -172,6 +171,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         kind        column:'sub_kind_rv_fk'
         form        column:'sub_form_fk'
         resource    column:'sub_resource_fk'
+        holdingSelection column:'sub_holding_selection_rv_fk', index: 'sub_holding_selection_idx'
         name        column:'sub_name'
         comment     column: 'sub_comment', type: 'text'
         identifier  column:'sub_identifier'
@@ -213,6 +213,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         kind        (nullable:true)
         form        (nullable:true)
         resource    (nullable:true)
+        holdingSelection (nullable:true)
         startDate(nullable:true, validator: { val, obj ->
             if(obj.startDate != null && obj.endDate != null) {
                 if(obj.startDate > obj.endDate) return ['startDateAfterEndDate']
@@ -237,7 +238,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
     @Override
     Collection<String> getLogIncluded() {
-        [ 'name', 'startDate', 'endDate', 'manualCancellationDate', 'referenceYear', 'status', 'type', 'kind', 'form', 'resource', 'isPublicForApi', 'hasPerpetualAccess', 'hasPublishComponent' ]
+        [ 'name', 'startDate', 'endDate', 'manualCancellationDate', 'referenceYear', 'status', 'type', 'kind', 'form', 'resource', 'isPublicForApi', 'hasPerpetualAccess', 'hasPublishComponent', 'holdingSelection' ]
     }
     @Override
     Collection<String> getLogExcluded() {

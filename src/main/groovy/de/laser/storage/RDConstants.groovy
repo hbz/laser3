@@ -148,6 +148,7 @@ class RDConstants {
     public static final String SIS_USER_GROUP_ATTR2     = 'sis.user.group.attr2'
     public static final String SUBJECT_GROUP          = 'subjectgroup'
     public static final String SUBSCRIPTION_FORM      = 'subscription.form'
+    public static final String SUBSCRIPTION_HOLDING   = 'subscription.holding'
     public static final String SUBSCRIPTION_RESOURCE  = 'subscription.resource'
     public static final String SUBSCRIPTION_STATUS    = 'subscription.status'
     public static final String SUBSCRIPTION_TYPE      = 'subscription.type'

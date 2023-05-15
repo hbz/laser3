@@ -206,6 +206,18 @@
                             </g:if>
                         </dl>
 
+                        <g:if test="${subscription.packages}">
+                            <dl>
+                                <dt class="control-label">${message(code: 'subscription.holdingSelection.label')}</dt>
+                                <dd><ui:xEditableRefData owner="${subscription}" field="holdingSelection"/></dd>
+                                <g:if test="${editable}">
+                                    <dd class="la-js-editmode-container"><ui:auditButton
+                                            auditable="[subscription, 'holdingSelection']"
+                                            auditConfigs="${auditConfigs}"/></dd>
+                                </g:if>
+                            </dl>
+                        </g:if>
+
                     </div>
                 </div>
             </div>

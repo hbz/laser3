@@ -48,7 +48,6 @@ class IssueEntitlement extends AbstractBase implements Comparable {
     Subscription perpetualAccessBySub
 
     //merged as the difference between an IssueEntitlement and a TIPP is mainly former's attachment to a subscription, otherwise, they are functionally identical, even dependent upon each other. So why keep different refdata categories?
-    @Deprecated
     @RefdataInfo(cat = RDConstants.TIPP_STATUS)
     RefdataValue status
 

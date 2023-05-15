@@ -167,6 +167,9 @@
                         <i class="flag outline icon"></i>${message(code:'subscription.hasPerpetualAccess.label')}
                         <i class="comment icon"></i>${message(code:'subscription.hasPublishComponent.label')}
                         <br />
+                        <g:if test="${sourceObject?.packages}">
+                            <i class="pizza slice icon"></i>${message(code:'subscription.holdingSelection.label')}
+                        </g:if>
                         <i class="balance scale icon"></i>${message(code: 'license.label')}
                         <i class="university icon"></i>${message(code: 'subscription.organisations.label')}
                         <i class="address card icon"></i>${message(code: 'subscription.specificSubscriptionEditors')}

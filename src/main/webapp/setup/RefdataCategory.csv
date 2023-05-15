@@ -153,6 +153,7 @@ platform.statistics.format,Statistik Auslieferungsformat (Plattform),Statistics 
 platform.statistics.frequency,Statistik Auslieferungsfrequenz (Plattform),Statistics Frequency (Platform)
 subjectgroup,Fächergruppe,Subject Group
 subscription.form,Lizenzform,Subscription Form
+subscription.holding,Paketzuschnitt,Holding Selection
 subscription.resource,Ressourcentyp,Resource type
 subscription.status,Lizenzstatus,Subscription Status
 subscription.type,Subscription Type,Subscription Type
