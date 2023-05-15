@@ -621,8 +621,10 @@ class SurveyConfig {
         LinkedHashSet<SurveyResult> properties = []
 
         propertyDefinitionGroup.items.each {
-            properties << SurveyResult.findByParticipantAndSurveyConfigAndType(org, this, it.propDef)
-
+            SurveyResult surveyResult = SurveyResult.findByParticipantAndSurveyConfigAndType(org, this, it.propDef)
+            if(surveyResult) {
+                properties << surveyResult
+            }
         }
 
         properties = properties.sort {it.type.getI10n('name')}
@@ -661,7 +663,10 @@ class SurveyConfig {
         }else {
             this.surveyProperties.each {
                 if (!(it.surveyProperty.id in containedProperties.type.id.flatten())) {
-                    properties << SurveyResult.findByParticipantAndSurveyConfigAndType(org, this, it.surveyProperty)
+                    SurveyResult surveyResult = SurveyResult.findByParticipantAndSurveyConfigAndType(org, this, it.surveyProperty)
+                    if(surveyResult) {
+                        properties << surveyResult
+                    }
                 }
             }
         }
