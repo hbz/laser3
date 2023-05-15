@@ -114,58 +114,6 @@
         <style>
             .list .item .content .disabled { color:lightgrey }
         </style>
-%{--        <div class="ui equal width grid la-clear-before" style="padding-top: 1em; padding-bottom: 1em;">--}%
-%{--            <div class="row">--}%
-%{--                <div class="column">--}%
-%{--                    <div class="ui divided relaxed list">--}%
-%{--                        <div class="item">--}%
-%{--                            <g:link controller="myInstitution" action="currentSubscriptions">${message(code:'menu.my.subscriptions')}</g:link>--}%
-%{--                        </div>--}%
-%{--                        <div class="item">--}%
-%{--                            <g:link controller="myInstitution" action="currentLicenses">${message(code:'menu.my.licenses')}</g:link>--}%
-%{--                        </div>--}%
-%{--                        <div class="item">--}%
-%{--                            <g:link controller="myInstitution" action="currentProviders">${message(code:'menu.my.providers')}</g:link>--}%
-%{--                        </div>--}%
-%{--                        <div class="item">--}%
-%{--                            <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">--}%
-%{--                                <ui:securedMainNavItem addItemAttributes="true" specRole="ROLE_ADMIN" controller="myInstitution" action="manageMembers" message="menu.my.insts" />--}%
-%{--                            </g:if>--}%
-%{--                            <g:elseif test="${accessService.ctxPerm(CustomerTypeService.ORG_INST_BASIC)}">--}%
-%{--                                <ui:securedMainNavItem addItemAttributes="true" controller="myInstitution" action="currentConsortia" message="menu.my.consortia" />--}%
-%{--                            </g:elseif>--}%
-%{--                        </div>--}%
-%{--                    </div>--}%
-%{--                </div>--}%
-%{--                <div class="column">--}%
-%{--                    <div class="ui divided relaxed list">--}%
-%{--                        <div class="item">--}%
-%{--                            <g:link controller="org" action="show" id="${institution.id}">${message(code: 'menu.institutions.org_info')}</g:link>--}%
-%{--                        </div>--}%
-%{--                        <ui:securedMainNavItem controller="myInstitution" action="finance" message="menu.institutions.finance" />--}%
-%{--                        <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="reporting" message="myinst.reporting" />--}%
-%{--                        <div class="item">--}%
-%{--                            <g:link controller="profile" action="help">${message(code:'menu.user.help')}</g:link>--}%
-%{--                        </div>--}%
-%{--                    </div>--}%
-%{--                </div>--}%
-%{--                <div class="column">--}%
-%{--                    <div class="ui divided relaxed list">--}%
-%{--                        <div class="item">--}%
-%{--                            <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_INST_BASIC)}">--}%
-%{--                                <g:link controller="myInstitution" action="currentSurveys">${message(code:'menu.my.surveys')}</g:link>--}%
-%{--                            </g:if>--}%
-%{--                            <g:elseif test="${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">--}%
-%{--                                <g:link controller="survey" action="workflowsSurveysConsortia">${message(code:'menu.my.surveys')}</g:link>--}%
-%{--                            </g:elseif>--}%
-%{--                        </div>--}%
-%{--                        <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="tasks" message="menu.my.tasks" />--}%
-%{--                        <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="currentWorkflows" message="menu.my.workflows" />--}%
-%{--                        <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="addressbook" message="menu.institutions.addressbook" />--}%
-%{--                    </div>--}%
-%{--                </div>--}%
-%{--            </div>--}%
-%{--        </div>--}%
 
         <ui:messages data="${flash}" />
         <br />
@@ -301,10 +249,7 @@
 
                         <div class="ui label">
                             <div class="right floated author">
-                                Status:
-                                <span>
-                                <ui:xEditableRefData config="${RDConstants.TASK_STATUS}" owner="${tsk}" field="status" />
-                                </span>
+                                Status: <ui:xEditableRefData config="${RDConstants.TASK_STATUS}" owner="${tsk}" field="status" />
                             </div>
                         </div>
 
@@ -312,7 +257,7 @@
                             <div class="meta">
                                 <div class="">Fällig: <strong><g:formatDate format="${message(code:'default.date.format.notime')}" date="${tsk?.endDate}"/></strong></div>
                             </div>
-                            <a class="header" onclick="JSPC.app.editTask(${tsk?.id});">${tsk?.title}</a>
+                            <a class="header" onclick="JSPC.app.dashboard.editTask(${tsk?.id});">${tsk?.title}</a>
 
                             <div class="description">
                                 <g:if test="${tsk.description}">
@@ -351,8 +296,7 @@
                                 </g:each>
                             </g:if>
                             <g:else>
-                                <i class="calendar check outline icon"></i>
-                                ${message(code: 'task.general')}
+                                <i class="calendar check outline icon"></i> ${message(code: 'task.general')}
                             </g:else>
                         </div>
                     </div>
@@ -373,7 +317,6 @@
                     <g:else>
                         <g:link action="currentSurveys" class="ui button">${message(code: 'menu.my.surveys')}</g:link>
                     </g:else>
-
                 </div>
 
                 <div id="surveyWrapper">
@@ -578,73 +521,79 @@
 
     <laser:script file="${this.getGroovyPageFileName()}">
 
-        $('.wfModalLink').on('click', function(e) {
-            e.preventDefault();
-            var func = bb8.ajax4SimpleModalFunction("#wfModal", $(e.currentTarget).attr('href'));
-            func();
-        });
+        JSPC.app.dashboard = {
 
-        $('button[data-wfId]').on ('click', function(e) {
-            var trigger = $(this).hasClass ('la-modern-button');
-            var key     = "${WfChecklist.KEY}:" + $(this).attr ('data-wfId');
+            initWorkflows: function() {
+                $('.wfModalLink').on('click', function(e) {
+                    e.preventDefault();
+                    var func = bb8.ajax4SimpleModalFunction("#wfModal", $(e.currentTarget).attr('href'));
+                    func();
+                });
 
-            $('button[data-wfId]').addClass ('la-modern-button');
-            $('#wfFlyout').flyout ({
-                onHidden: function (e) { %{-- after animation --}%
+                $('button[data-wfId]').on ('click', function(e) {
+                    var trigger = $(this).hasClass ('la-modern-button');
+                    var key     = "${WfChecklist.KEY}:" + $(this).attr ('data-wfId');
+
                     $('button[data-wfId]').addClass ('la-modern-button');
-                    document.location = document.location.origin + document.location.pathname + '?view=Workflows';
-                }
-            });
+                    $('#wfFlyout').flyout ({
+                        onHidden: function (e) { %{-- after animation --}%
+                            $('button[data-wfId]').addClass ('la-modern-button');
+                            document.location = document.location.origin + document.location.pathname + '?view=Workflows';
+                        }
+                    });
 
-            if (trigger) {
-                $(this).removeClass ('la-modern-button');
+                    if (trigger) {
+                        $(this).removeClass ('la-modern-button');
 
-                $.ajax ({
-                    url: "<g:createLink controller="ajaxHtml" action="workflowFlyout"/>",
-                    data: {
-                        key: key
+                        $.ajax ({
+                            url: "<g:createLink controller="ajaxHtml" action="workflowFlyout"/>",
+                            data: {
+                                key: key
+                            }
+                        }).done (function (response) {
+                            $('#wfFlyout').html (response).flyout ('show');
+                            r2d2.initDynamicUiStuff ('#wfFlyout');
+                            r2d2.initDynamicXEditableStuff ('#wfFlyout');
+                        })
                     }
-                }).done (function (response) {
-                    $('#wfFlyout').html (response).flyout ('show');
-                    r2d2.initDynamicUiStuff ('#wfFlyout');
-                    r2d2.initDynamicXEditableStuff ('#wfFlyout');
+                });
+            },
+
+            loadChanges: function() {
+                $.ajax({
+                    url: "<g:createLink controller="ajaxHtml" action="getChanges"/>",
+                    data: {
+                        max: ${max},
+                        pendingOffset: ${pendingOffset},
+                        acceptedOffset: ${acceptedOffset}
+                    }
+                }).done(function(response){
+                    $("#pendingChanges").html($(response).filter("#pendingChangesWrapper"));
+                    $("#acceptedChanges").html($(response).filter("#acceptedChangesWrapper"));
+                    r2d2.initDynamicUiStuff('#pendingChanges');
                 })
-            }
-        });
+            },
 
-%{--        JSPC.app.createTask = bb8.ajax4SimpleModalFunction("#modalCreateTask", "<g:createLink controller="ajaxHtml" action="createTask"/>", true);--}%
+            loadSurveys: function() {
+                $.ajax({
+                    url: "<g:createLink controller="ajaxHtml" action="getSurveys" params="${params}"/>"
+                }).done(function(response){
+                    $("#surveyWrapper").html(response);
+                    r2d2.initDynamicUiStuff('#surveyWrapper');
+                })
+            },
 
-        JSPC.app.editTask = function (id) {
-            var func = bb8.ajax4SimpleModalFunction("#modalEditTask", "<g:createLink controller="ajaxHtml" action="editTask"/>?id=" + id, true);
-            func();
+            editTask: function (id) {
+                var func = bb8.ajax4SimpleModalFunction("#modalEditTask", "<g:createLink controller="ajaxHtml" action="editTask"/>?id=" + id, true);
+                func();
+            },
         }
 
-        JSPC.app.loadChanges = function() {
-            $.ajax({
-                url: "<g:createLink controller="ajaxHtml" action="getChanges"/>",
-                data: {
-                    max: ${max},
-                    pendingOffset: ${pendingOffset},
-                    acceptedOffset: ${acceptedOffset}
-                }
-            }).done(function(response){
-                $("#pendingChanges").html($(response).filter("#pendingChangesWrapper"));
-                $("#acceptedChanges").html($(response).filter("#acceptedChangesWrapper"));
-                r2d2.initDynamicUiStuff('#pendingChanges');
-            })
-        }
+        JSPC.app.dashboard.loadChanges()
+        JSPC.app.dashboard.loadSurveys()
+        JSPC.app.dashboard.initWorkflows()
 
-        JSPC.app.loadSurveys = function() {
-            $.ajax({
-                url: "<g:createLink controller="ajaxHtml" action="getSurveys" params="${params}"/>"
-            }).done(function(response){
-                $("#surveyWrapper").html(response);
-                  r2d2.initDynamicUiStuff('#surveyWrapper');
-            })
-        }
-
-        JSPC.app.loadChanges();
-        JSPC.app.loadSurveys();
+    %{--        JSPC.app.createTask = bb8.ajax4SimpleModalFunction("#modalCreateTask", "<g:createLink controller="ajaxHtml" action="createTask"/>", true);--}%
     </laser:script>
 
     <ui:debugInfo>
