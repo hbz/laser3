@@ -840,16 +840,6 @@ class SurveyController {
             }
             result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.contextOrg,  result.surveyConfig)
 
-            result.properties = []
-            List allProperties = surveyService.getSurveyProperties(result.contextOrg)
-            result.properties = allProperties
-            /*allProperties.each {
-
-                if (!(it.id in SurveyConfigProperties.findAllBySurveyConfig(result.surveyConfig)?.surveyProperty.id)) {
-                    result.properties << it
-                }
-            }*/
-
         }
 
         if ( params.exportXLSX ) {

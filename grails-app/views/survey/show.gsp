@@ -206,8 +206,7 @@
                                                                 costItemSums: costItemSums,
                                                                 subscription: surveyConfig.subscription,
                                                                 tasks: tasks,
-                                                                visibleOrgRelations: visibleOrgRelations,
-                                                                properties: properties]"/>
+                                                                visibleOrgRelations: visibleOrgRelations]"/>
                 </g:if>
 
 
@@ -217,8 +216,7 @@
                                                                     costItemSums: costItemSums,
                                                                     subscription: surveyConfig.subscription,
                                                                     tasks: tasks,
-                                                                    visibleOrgRelations: visibleOrgRelations,
-                                                                    properties: properties]"/>
+                                                                    visibleOrgRelations: visibleOrgRelations]"/>
                 </g:if>
 
             </g:if>

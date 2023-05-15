@@ -16,39 +16,6 @@
     </div>
 
 
-    <g:if test="${controllerName == 'survey' && actionName == 'show' && editable && properties && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING}">
-        <div class="content">
-            <a class="ui icon right floated button"
-               data-ui="modal"
-               href="#addSurveyPropToConfigModal">
-                <i class="plus icon"></i>
-            </a>
-
-            <ui:modal id="addSurveyPropToConfigModal"
-                      msgSave="${message(code: 'surveyConfigsInfo.add.button')}"
-                      message="surveyConfigsInfo.add.button">
-                <g:form action="addSurveyPropToConfig" controller="survey" method="post" class="ui form">
-                    <g:hiddenField name="id" value="${surveyInfo.id}"/>
-                    <g:hiddenField name="surveyConfigID" value="${surveyConfig.id}"/>
-
-                    <div class="field required">
-                        <label>${message(code: 'surveyConfigs.property')} <g:message
-                                code="messageRequiredField"/></label>
-                        <ui:dropdown name="selectedProperty"
-                                     class="la-filterPropDef"
-                                     from="${properties}"
-                                     iconWhich="shield alternate"
-                                     optionKey="${{ "${it.id}" }}"
-                                     optionValue="${{ it.getI10n('name') }}"
-                                     noSelection="${message(code: 'default.search_for.label', args: [message(code: 'surveyProperty.label')])}"
-                                     required=""/>
-
-                    </div>
-                </g:form>
-            </ui:modal>
-        </div>
-    </g:if>
-
 <%-- grouped custom properties --%>
 
     <g:set var="allPropDefGroups" value="${surveyConfig.getCalculatedPropDefGroups(surveyInfo.owner)}"/>
@@ -76,7 +43,7 @@
 
             <div>
                 <laser:render template="/templates/survey/properties" model="${[
-                        properties: properties]}"/>
+                        properties: properties, pdg: pdg]}"/>
             </div>
         </div>
 

@@ -90,6 +90,36 @@
             </tr>
         </g:each>
         </tbody>
+        <g:if test="${controllerName == 'survey' && actionName == 'show' && editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING}">
+            <g:set var="selectableProperties" value="${pdg ? surveyConfig.getSelectablePropertiesByPropDefGroup(pdg) : surveyConfig.getOrphanedSelectableProperties()}"/>
+            <tfoot>
+            <tr>
+                <td colspan="6">
+            <g:form action="addSurveyPropToConfig" controller="survey" method="post" class="ui form">
+                <g:hiddenField name="id" value="${surveyInfo.id}"/>
+                <g:hiddenField name="surveyConfigID" value="${surveyConfig.id}"/>
+                                <div class="two fields" style="margin-bottom:0">
+                                    <div class="field" style="margin-bottom:0">
+                                        <ui:dropdown name="selectedProperty"
+                                                     class="la-filterPropDef"
+                                                     from="${selectableProperties}"
+                                                     iconWhich="shield alternate"
+                                                     optionKey="${{ "${it.id}" }}"
+                                                     optionValue="${{ it.getI10n('name') }}"
+                                                     noSelection="${message(code: 'default.search_for.label', args: [message(code: 'surveyProperty.label')])}"
+                                                     required=""/>
+                                    </div>
+                                    <div class="field" style="margin-bottom:0">
+                                        <input type="submit" value="${message(code:'default.button.add.label')}" class="ui button js-wait-wheel"/>
+                                    </div>
+                                </div>
+            </g:form>
+
+            </td>
+            </tr>
+            </tfoot>
+        </g:if>
+
     </table>
 </g:if><g:else>
 

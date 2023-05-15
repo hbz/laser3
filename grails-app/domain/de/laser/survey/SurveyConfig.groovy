@@ -542,7 +542,7 @@ class SurveyConfig {
         LinkedHashSet<SurveyConfigProperties> properties = []
 
         this.surveyProperties.each {
-            if(propertyDefinitionGroup && propertyDefinitionGroup.items  && it.surveyProperty in propertyDefinitionGroup.items.propDef){
+            if(propertyDefinitionGroup && propertyDefinitionGroup.items  && it.surveyProperty.id in propertyDefinitionGroup.items.propDef.id){
                 properties << it
             }
         }
@@ -550,6 +550,69 @@ class SurveyConfig {
         properties = properties.sort {it.surveyProperty.getI10n('name')}
 
         return properties
+
+    }
+
+    LinkedHashSet<PropertyDefinition> getSelectablePropertiesByPropDefGroup(PropertyDefinitionGroup propertyDefinitionGroup) {
+        LinkedHashSet<PropertyDefinition> properties = []
+
+        propertyDefinitionGroup.items.propDef.each {
+            if(!(this.surveyProperties && it.id in this.surveyProperties.surveyProperty.id)){
+                properties << it
+            }
+        }
+
+        properties = properties.sort {it.getI10n('name')}
+
+        return properties
+
+    }
+
+    List<PropertyDefinition> getPropertiesByPropDefGroups() {
+        List<PropertyDefinition> properties = []
+
+        List<PropertyDefinitionGroup> propertyDefinitionGroups = []
+
+        Map<String, Object> allPropDefGroups = this.getCalculatedPropDefGroups(this.surveyInfo.owner)
+
+        if(allPropDefGroups.sorted){
+            allPropDefGroups.sorted.each {
+                propertyDefinitionGroups << it[1]
+            }
+        }
+
+        propertyDefinitionGroups.items.propDef.each {
+                properties << it
+        }
+
+        properties = properties.sort {it.getI10n('name')}
+
+        return properties
+
+    }
+
+    List<PropertyDefinition> getOrphanedSelectableProperties() {
+        List<PropertyDefinition> propertiesOfPropDefGroups = this.getPropertiesByPropDefGroups()?.flatten()
+        List<PropertyDefinition> props = []
+
+        Org ownerOrg = this.surveyInfo.owner
+
+        //private Property
+        PropertyDefinition.getAllByDescrAndTenant(PropertyDefinition.SVY_PROP, ownerOrg).each { it ->
+            if((propertiesOfPropDefGroups.size() == 0 || (propertiesOfPropDefGroups && !(it.id in propertiesOfPropDefGroups.id))) && (this.surveyProperties && !(it.id in  this.surveyProperties.surveyProperty.id))) {
+                props << it
+            }
+        }
+        //global Property
+        PropertyDefinition.getAllByDescr(PropertyDefinition.SVY_PROP).each { it ->
+            if((propertiesOfPropDefGroups.size() == 0 || (propertiesOfPropDefGroups && !(it.id in propertiesOfPropDefGroups.id))) && (this.surveyProperties && !(it.id in  this.surveyProperties.surveyProperty.id))) {
+                props << it
+            }
+        }
+
+        props = props.sort {it.getI10n('name')}
+
+        return props
 
     }
 
@@ -575,7 +638,7 @@ class SurveyConfig {
             properties = this.surveyProperties
         }else {
             this.surveyProperties.each {
-                if (!(it.id in containedProperties.id)) {
+                if (!(it.id in containedProperties.id.flatten())) {
                     properties << it
                 }
             }
@@ -597,7 +660,7 @@ class SurveyConfig {
             }
         }else {
             this.surveyProperties.each {
-                if (!(it.surveyProperty.id in containedProperties.type.id)) {
+                if (!(it.surveyProperty.id in containedProperties.type.id.flatten())) {
                     properties << SurveyResult.findByParticipantAndSurveyConfigAndType(org, this, it.surveyProperty)
                 }
             }
