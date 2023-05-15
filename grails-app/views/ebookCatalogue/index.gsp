@@ -96,7 +96,6 @@
     <laser:script file="${this.getGroovyPageFileName()}">
 
             function toggleFilterPart() {
-                console.log('! 1')
                 if ($('.js-consLic input').prop('checked')) {
                     $('#js-consAuth select').removeAttr('disabled')
                 } else {
@@ -104,7 +103,6 @@
                 }
             }
             function toggleTableHeading() {
-                console.log('! 2')
                 if ($('.js-natLic input').prop('checked') || $('.js-allLic input').prop('checked')) {
                     $('#js-negotiator-header').show()
                     $('#js-consortium-header').hide()

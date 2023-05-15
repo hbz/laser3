@@ -791,14 +791,12 @@
 
     $('.la-books.icon').popup({
         delay: {
-            show: 150,
-            hide: 0
+            show: 150, hide: 0
         }
       });
     $('.la-notebook.icon').popup({
         delay: {
-            show: 150,
-            hide: 0
+            show: 150, hide: 0
         }
       });
     $('.trigger-modal').on('click', function(e) {

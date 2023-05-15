@@ -429,7 +429,6 @@
 
 <laser:script file="${this.getGroovyPageFileName()}">
 
-
         JSPC.app.selectAll = function () {
            if ( $('#select-all').is( ":checked") ){
                 $( '#surveyEntitlements .bulkcheck' ).each(function( index ) {
@@ -499,10 +498,7 @@
         JSPC.app.selectAll();
     });
 
-
-
     $(".bulkcheck").change(function() {
-        console.log("geklickt");
         var index = $(this).parents(".la-js-checkItem").attr("data-index");
 
             if (this.checked) {
@@ -510,7 +506,6 @@
             } else {
                 $("div[data-index='" + index + "']").removeClass("positive");
             }
-
 
         JSPC.app.updateSelectionCache($(this).parents(".la-js-checkItem").attr("data-ieId"), $(this).prop('checked'));
     });

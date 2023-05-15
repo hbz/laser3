@@ -66,13 +66,7 @@
                 </div>
 
                 <laser:script file="${this.getGroovyPageFileName()}">
-                    JSPC.app.LaToggle = {};
-                    JSPC.app.LaToggle.advanced = {};
-                    JSPC.app.LaToggle.advanced.button = {};
-
-                    // ready event
-                    JSPC.app.LaToggle.advanced.button.ready = function() {
-                        // selector cache
+                    JSPC.app.initLaToggle = function() {
                         var $button = $('.button.la-toggle-advanced');
                         var handler = {
                             activate: function() {
@@ -90,7 +84,7 @@
                         $button.on('click', handler.activate);
                     };
 
-                    JSPC.app.LaToggle.advanced.button.ready();
+                    JSPC.app.initLaToggle();
                 </laser:script>
             </g:if>
 
