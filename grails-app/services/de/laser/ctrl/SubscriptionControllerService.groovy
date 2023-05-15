@@ -2115,7 +2115,11 @@ class SubscriptionControllerService {
                                 if(addTypeChildren) {
                                     subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, addTypeChildren == 'WithForChildren')
                                 }
-                                subscriptionService.addPendingChangeConfiguration(result.subscription, pkgToLink, params.clone())
+                                result.subscription.holdingSelection = RefdataValue.get(params.holdingSelection)
+                                result.subscription.save()
+                                if(Boolean.valueOf(params.inheritHoldingSelection))
+                                    AuditConfig.addConfig(result.subscription, 'holdingSelection')
+                                //subscriptionService.addPendingChangeConfiguration(result.subscription, pkgToLink, params.clone())
                             }
                         }
                         catch (Exception e) {
@@ -2130,7 +2134,11 @@ class SubscriptionControllerService {
                         if(addTypeChildren) {
                             subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, addTypeChildren == 'WithForChildren')
                         }
-                        subscriptionService.addPendingChangeConfiguration(result.subscription, pkgToLink, params.clone())
+                        result.subscription.holdingSelection = RefdataValue.get(params.holdingSelection)
+                        result.subscription.save()
+                        if(Boolean.valueOf(params.inheritHoldingSelection))
+                            AuditConfig.addConfig(result.subscription, 'holdingSelection')
+                        //subscriptionService.addPendingChangeConfiguration(result.subscription, pkgToLink, params.clone())
                     }
                 })
             }

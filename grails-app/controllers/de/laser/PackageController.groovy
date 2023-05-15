@@ -684,7 +684,7 @@ class PackageController {
                         }
 
                         if (addType != null && addType != '') {
-                            subscriptionService.addPendingChangeConfiguration(result.subscription, result.pkg, params.clone())
+                            //subscriptionService.addPendingChangeConfiguration(result.subscription, result.pkg, params.clone())
                         }
                     })
                 }

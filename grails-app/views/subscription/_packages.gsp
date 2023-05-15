@@ -105,7 +105,7 @@
                 <div class="ui fluid segment content">
                     <g:set var="packageInstanceRecord" value="${packageMetadata.get(sp.pkg.gokbId)}"/>
                     <div class="ui grid">
-                        <div class="seven wide column">
+                        <div class="eight wide column">
                             <dl>
                                 <dt>${message(code: 'default.status.label')}</dt>
                                 <dd>${sp.pkg.packageStatus?.getI10n('value')}</dd>
@@ -178,6 +178,8 @@
                                     <dd><g:message code="package.index.result.noAutomaticUpdates"/></dd>
                                 </dl>
                             </g:else>
+                        </div>
+                        <div class="eight wide column">
                             <dl>
                                 <dt>${message(code: 'package.breakable')}</dt>
                                 <dd>${packageInstanceRecord.breakable ? RefdataValue.getByValueAndCategory(packageInstanceRecord.breakable, RDConstants.PACKAGE_BREAKABLE).getI10n("value") : message(code: 'default.not.available')}</dd>
@@ -265,6 +267,7 @@
                                 </dd>
                             </dl>
                         </div>
+                        <%--
                         <div class="nine wide column">
                             <g:form controller="subscription" action="setupPendingChangeConfiguration" params="[id:sp.subscription.id,pkg:sp.pkg.id]">
                                 <h5 class="ui header">
@@ -384,7 +387,7 @@
                                                 ${parentSp.freezeHolding ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value")}
                                             </g:else>
                                         </td>
-                                        <%--
+
                                             <g:if test="${customerTypeService.isConsortium( contextCustomerType ) && !subscription.instanceOf}">
                                                 <td class="la-border-left">
                                                     <g:if test="${editmode}">
@@ -396,7 +399,7 @@
                                                 </td>
                                                 <td></td>
                                             </g:if>
-                                        --%>
+
                                     </tr>
                                     <g:if test="${editmode && !subscription.instanceOf}">
                                         <tr>
@@ -435,9 +438,10 @@
                                 </table>
                             </g:form>
                         </div>
+                    --%>
+                        </div>
                     </div>
                 </div>
-            </div>
             </g:each>
         </div>
     </div><!-- .content -->

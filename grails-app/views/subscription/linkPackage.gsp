@@ -222,11 +222,17 @@
                             <label for="Without">${message(code: 'subscription.details.link.no_ents')}</label>
                         </div>
                     </div>
+
+                    <div class="field">
+                        <label for="holdingSelection">${message(code: 'subscription.holdingSelection.label')}</label>
+                        <ui:select class="ui dropdown search selection" id="holdingSelection" name="holdingSelection" from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_HOLDING)}" optionKey="id" optionValue="value"/>
+                    </div>
                 </div>
 
                 <br/>
                 <br/>
 
+                <%--
                 <div class="field">
                     <h5 class="ui dividing header">
                         <g:message code="subscription.packages.config.label" args="${[""]}"/>
@@ -278,6 +284,7 @@
                         </g:each>
                     </table>
                 </div>
+                --%>
                 <div class="inline field">
                     <label for="freezeHolding"><g:message code="subscription.packages.freezeHolding"/> <span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.packages.freezeHolding.expl')}"><i class="ui question circle icon"></i></span></label>
                     <g:checkBox class="ui checkbox" name="freezeHolding" checked="${false}"/>
@@ -301,11 +308,18 @@
                                 <label>${message(code: 'subscription.details.link.no_ents')}</label>
                             </div>
                         </div>
+
+                        <div class="field">
+                            <div class="ui radio checkbox">
+                                <input type="checkbox" name="inheritHoldingSelection" id="inheritHoldingSelection" value="true" tabindex="0" class="hidden"/>
+                                <label for="inheritHoldingSelection">${message(code: 'subscription.holdingSelection.inherit')}</label>
+                            </div>
+                        </div>
                     </div>
 
                     <br/>
                     <br/>
-
+                    <%--
                     <div class="field">
                         <h5 class="ui dividing header">
                             <g:message code="subscription.packages.config.children.label" args="${[""]}"/>
@@ -348,6 +362,7 @@
                         <label for="freezeHoldingAudit"><g:message code="subscription.packages.freezeHolding"/> <span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.packages.freezeHolding.expl')}"><i class="ui question circle icon"></i></span></label>
                         <g:checkBox class="ui checkbox" name="freezeHoldingAudit" checked="${false}"/>
                     </div>
+                    --%>
                 </div>
             </g:if>
         </div>
