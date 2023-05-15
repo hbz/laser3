@@ -41,6 +41,28 @@
     <g:set var="coverageDepths"
            value="${subscription ? controlledListService.getAllPossibleCoverageDepthsBySub(subscription) : []}"/>
 </g:if>
+
+<g:if test="${controllerName == 'title'}">
+    <g:set var="seriesNames"
+           value="${params.status ? controlledListService.getAllPossibleSeriesByStatus(params) : []}"/>
+    <g:set var="subjects"
+           value="${params.status ? controlledListService.getAllPossibleSubjectsByStatus(params) : []}"/>
+    <g:set var="ddcs"
+           value="${params.status ? controlledListService.getAllPossibleDdcsByStatus(params) : []}"/>
+    <g:set var="languages"
+           value="${params.status ? controlledListService.getAllPossibleLanguagesByStatus(params) : []}"/>
+    <g:set var="yearsFirstOnline"
+           value="${params.status ? controlledListService.getAllPossibleDateFirstOnlineYearByStatus(params) : []}"/>
+    <g:set var="publishers"
+           value="${params.status ? controlledListService.getAllPossiblePublisherByStatus(params) : []}"/>
+    <g:set var="titleTypes"
+           value="${params.status ? controlledListService.getAllPossibleTitleTypesByStatus(params) : []}"/>
+    <g:set var="mediumTypes"
+           value="${params.status ? controlledListService.getAllPossibleMediumTypesByStatus(params) : []}"/>
+    <g:set var="coverageDepths"
+           value="${params.status ? controlledListService.getAllPossibleCoverageDepthsByStatus(params) : []}"/>
+</g:if>
+
 <g:set var="availableStatus" value="${RefdataCategory.getAllRefdataValues(RDConstants.TIPP_STATUS)-RDStore.TIPP_STATUS_REMOVED}"/>
 
 <ui:filter>
