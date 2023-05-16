@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Package; de.laser.RefdataValue;" %>
+<%@ page import="de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Package; de.laser.RefdataValue; de.laser.remote.ApiSource" %>
 <laser:htmlStart message="menu.my.packages" serviceInjection="true" />
 
 <ui:breadcrumbs>
@@ -61,6 +61,8 @@
 </ui:filter>
 
 <g:if test="${packageList}">
+    <g:set var="apiSource" value="${ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"/>
+
     <table class="ui sortable celled la-js-responsive-table la-table table">
         <thead>
         <tr>
@@ -88,30 +90,36 @@
 
                 <td>
                     <g:each in="${pkg.orgs.findAll{it.roleType == RDStore.OR_CONTENT_PROVIDER}.sort{it.org.name}}" var="role">
-                        <g:link controller="organisation" action="show" id="${role.org.id}">${role?.org?.name}</g:link><br />
+                        <g:link controller="organisation" action="show" id="${role.org.id}">${role.org.name}</g:link>
+                        <g:if test="${role.org.gokbId}">
+                            <a href="${apiSource.baseUrl}/public/orgContent/${role.org.gokbId}" target="_blank"> <i class="icon external alternate"></i></a>
+                        </g:if>
+                        <br />
                     </g:each>
                 </td>
 
                 <td>
                     <g:if test="${pkg.nominalPlatform}">
-                        <g:link controller="platform" action="show" id="${pkg.nominalPlatform.id}">
-                            ${pkg.nominalPlatform.name}
-                        </g:link>
+                        <g:link controller="platform" action="show" id="${pkg.nominalPlatform.id}">${pkg.nominalPlatform.name}</g:link>
+                        <g:if test="${pkg.nominalPlatform.gokbId}">
+                            <a href="${apiSource.baseUrl}/public/platformContent/${pkg.nominalPlatform.gokbId}" target="_blank"> <i class="icon external alternate"></i></a>
+                        </g:if>
                     </g:if>
                 </td>
 
                 <td>
+                    <ul class="la-simpleList">
                     <g:each in="${subscriptionMap.get('package_' + pkg.id)}" var="sub">
                         <%
                             String period = sub.startDate ? g.formatDate(date: sub.startDate, format: message(code: 'default.date.format.notime'))  : ''
                             period = sub.endDate ? period + ' - ' + g.formatDate(date: sub.endDate, format: message(code: 'default.date.format.notime'))  : ''
                             period = period ? '('+period+')' : ''
                         %>
-
-                        <g:link controller="subscription" action="show" id="${sub.id}">
-                            ${sub.name + ' ' +period}
-                        </g:link> <br />
+                        <li>
+                            <g:link controller="subscription" action="show" id="${sub.id}">${sub.name + ' ' +period}</g:link>
+                        </li>
                     </g:each>
+                    </ul>
                 </td>
                 <%--<td class="center aligned">
                 </td>--%>

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.DateUtils; de.laser.Org; de.laser.Package; de.laser.Platform; java.text.SimpleDateFormat;" %>
+<%@ page import="de.laser.utils.DateUtils; de.laser.Org; de.laser.Package; de.laser.Platform; java.text.SimpleDateFormat; de.laser.remote.ApiSource" %>
 <laser:htmlStart message="package.show.all" />
 
 <ui:breadcrumbs>
@@ -31,6 +31,7 @@
 <div class="twelve wide column la-clear-before">
     <div>
         <g:if test="${records}">
+            <g:set var="apiSource" value="${ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"/>
 
             <table class="ui sortable celled la-js-responsive-table la-table table">
                 <thead>
@@ -52,12 +53,14 @@
                                       params="${params}" defaultOrder="desc"/>
                     <sec:ifAllGranted roles="ROLE_YODA">
                         <th class="x">
-                            <g:link class="ui button js-open-confirm-modal"
-                                    data-confirm-tokenMsg="${message(code: 'menu.yoda.reloadPackages.confirm')}"
-                                    data-confirm-term-how="ok"
-                                    controller="yoda" action="reloadPackages">
-                                <g:message code="menu.yoda.reloadPackages"/>
-                            </g:link>
+                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="left center" data-content="${message(code: 'menu.yoda.reloadPackages')}">
+                                <g:link class="ui icon button js-open-confirm-modal"
+                                        data-confirm-tokenMsg="${message(code: 'menu.yoda.reloadPackages.confirm')}"
+                                        data-confirm-term-how="ok"
+                                        controller="yoda" action="reloadPackages">
+                                            <i class="icon cloud download alternate" style="color:white"></i>
+                                </g:link>
+                            </span>
                         </th>
                     </sec:ifAllGranted>
                 </tr>
@@ -96,21 +99,36 @@
                                 0
                             </g:else>
                         </td>
-                        <td><g:if test="${org}"><g:link
-                                controller="organisation" action="show"
-                                id="${org.id}">${record.providerName}</g:link></g:if>
-                        <g:else>${record.providerName}</g:else>
+                        <td>
+                            <g:if test="${org}">
+                                <g:link controller="organisation" action="show" id="${org.id}">${record.providerName}</g:link>
+                                <g:if test="${org.gokbId}">
+                                    <a href="${apiSource.baseUrl}/public/orgContent/${org.gokbId}" target="_blank"> <i class="icon external alternate"></i></a>
+                                </g:if>
+                            </g:if>
+                            <g:else>${record.providerName}</g:else>
                         </td>
-                        <td><g:if test="${plat}"><g:link
-                                controller="platform" action="show"
-                                id="${plat.id}">${record.nominalPlatformName}</g:link></g:if>
+                        <td>
+                            <g:if test="${plat}">
+                                <g:link controller="platform" action="show" id="${plat.id}">${record.nominalPlatformName}</g:link>
+                                <g:if test="${plat.gokbId}">
+                                    <a href="${apiSource.baseUrl}/public/platformContent/${plat.gokbId}" target="_blank"> <i class="icon external alternate"></i></a>
+                                </g:if>
+                            </g:if>
                             <g:else>${record.nominalPlatformName}</g:else></td>
                         <td>
-                            <div class="ui bulleted list">
-                                <g:each in="${record.curatoryGroups}" var="curatoryGroup">
-                                    <div class="item"><g:link url="${editUrl.endsWith('/') ? editUrl : editUrl+'/'}resource/show/${curatoryGroup.curatoryGroup}">${curatoryGroup.name}</g:link></div>
-                                </g:each>
-                            </div>
+                            <g:if test="${record.curatoryGroups}">
+                                <ul class="la-simpleList">
+                                    <g:each in="${record.curatoryGroups}" var="curatoryGroup">
+                                        <li>
+                                            ${curatoryGroup.name}
+                                            <g:link url="${editUrl.endsWith('/') ? editUrl : editUrl+'/'}resource/show/${curatoryGroup.curatoryGroup}" target="_blank">
+                                                <i class="icon external alternate"></i>
+                                            </g:link>
+                                        </li>
+                                    </g:each>
+                                </ul>
+                            </g:if>
                         </td>
                         <td>
                             <g:if test="${record.source?.automaticUpdates}">
@@ -131,13 +149,23 @@
                             </g:if>
                         </td>
                         <sec:ifAllGranted roles="ROLE_YODA">
-                            <td>
-                                <g:link class="ui button" controller="yoda" action="reloadPackage"
-                                        params="${[packageUUID: record.uuid]}"><g:message
-                                        code="menu.yoda.reloadPackage"/></g:link>
-                                <g:link class="ui button" controller="yoda" action="retriggerPendingChanges"
-                                        params="${[packageUUID: record.uuid]}"><g:message
-                                        code="menu.yoda.retriggerPendingChanges"/></g:link>
+                            <td class="x">
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top center" data-content="${message(code: 'menu.yoda.reloadPackage')}">
+                                    <g:link controller="yoda" action="reloadPackage" params="${[packageUUID: record.uuid]}" class="ui icon button">
+                                        <i class="icon cloud download alternate"></i>
+                                    </g:link>
+                                </span>
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top center" data-content="${message(code: 'menu.yoda.retriggerPendingChanges')}">
+                                    <g:link controller="yoda" action="retriggerPendingChanges" params="${[packageUUID: record.uuid]}" class="ui icon button">
+                                        <i class="icon wrench"></i>
+                                    </g:link>
+                                </span>
+%{--                                <g:link class="ui button" controller="yoda" action="reloadPackage"--}%
+%{--                                        params="${[packageUUID: record.uuid]}"><g:message--}%
+%{--                                        code="menu.yoda.reloadPackage"/></g:link>--}%
+%{--                                <g:link class="ui button" controller="yoda" action="retriggerPendingChanges"--}%
+%{--                                        params="${[packageUUID: record.uuid]}"><g:message--}%
+%{--                                        code="menu.yoda.retriggerPendingChanges"/></g:link>--}%
                             </td>
                         </sec:ifAllGranted>
                     </tr>
