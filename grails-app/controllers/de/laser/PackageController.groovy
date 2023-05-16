@@ -76,28 +76,27 @@ class PackageController {
 
         result.editUrl = apiSource.editUrl
 
-        String esQuery = "?componentType=Package"
+        Map<String, Object> queryParams = [componentType: "Package"]
         if (params.q) {
             result.filterSet = true
-            esQuery += "&name=${params.q}"
-            esQuery += "&ids=Anbieter_Produkt_ID,*${params.q}*"
-            esQuery += "&ids=isil,*${params.q}*"
+            queryParams.name = params.q
+            queryParams.ids = ["Anbieter_Produkt_ID,${params.q}", "isil,${params.q}"]
         }
 
         if (params.provider) {
             result.filterSet = true
-            esQuery += "&provider=${params.provider.replaceAll('&','ampersand').replaceAll('\\+','%2B').replaceAll(' ','%20')}"
+            queryParams.provider = params.provider
         }
 
         if (params.curatoryGroup) {
             result.filterSet = true
-            esQuery += "&curatoryGroupExact=${params.curatoryGroup.replaceAll('&','ampersand').replaceAll('\\+','%2B').replaceAll(' ','%20')}"
+            queryParams.curatoryGroupExact = params.curatoryGroup
         }
 
         if (params.ddc) {
             result.filterSet = true
             params.list("ddc").each { String key ->
-                esQuery += "&ddc=${RefdataValue.get(key).value}"
+                queryParams.ddc = RefdataValue.get(key).value
             }
         }
 
@@ -105,12 +104,12 @@ class PackageController {
         if (params.containsKey('curatoryGroupProvider') ^ params.containsKey('curatoryGroupOther')) {
             result.filterSet = true
             if(params.curatoryGroupProvider)
-                esQuery += "&curatoryGroupType=provider"
+                queryParams.curatoryGroupType = "provider"
             else if(params.curatoryGroupOther)
-                esQuery += "&curatoryGroupType=other" //setting to this includes also missing ones, this is already implemented in we:kb
+                queryParams.curatoryGroupType = "other" //setting to this includes also missing ones, this is already implemented in we:kb
         }
 
-        Map queryCuratoryGroups = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/groups')
+        Map queryCuratoryGroups = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/groups', [:])
         if(!params.sort)
             params.sort = 'name'
         if(queryCuratoryGroups.error == 404) {
@@ -122,7 +121,7 @@ class PackageController {
                 result.curatoryGroups = recordsCuratoryGroups?.findAll { it.status == "Current" }
             }
             result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
-            result.putAll(gokbService.doQuery(result, params.clone(), esQuery))
+            result.putAll(gokbService.doQuery(result, params.clone(), queryParams))
         }
 
         result
@@ -297,7 +296,7 @@ class PackageController {
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         result.editUrl = apiSource.editUrl.endsWith('/') ? apiSource.editUrl : apiSource.editUrl+'/'
 
-        Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/searchApi?uuid=${packageInstance.gokbId}")
+        Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: packageInstance.gokbId])
         if (queryResult.error && queryResult.error == 404) {
             flash.error = message(code:'wekb.error.404') as String
         }
@@ -308,7 +307,7 @@ class PackageController {
         if(packageInstance.nominalPlatform) {
             //record filled with LAS:eR and we:kb data
             Map<String, Object> platformInstanceRecord = [:]
-            queryResult = gokbService.queryElasticsearch(apiSource.baseUrl+apiSource.fixToken+"/searchApi?uuid=${packageInstance.nominalPlatform.gokbId}")
+            queryResult = gokbService.queryElasticsearch(apiSource.baseUrl+apiSource.fixToken+"/searchApi", [uuid: packageInstance.nominalPlatform.gokbId])
             if(queryResult.warning) {
                 List records = queryResult.warning.result
                 if(records)

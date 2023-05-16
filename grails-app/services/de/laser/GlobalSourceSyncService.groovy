@@ -228,7 +228,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     }
                 */
                 //do prequest: are we needing the scroll api?
-                Map<String,Object> result = fetchRecordJSON(false,[componentType:componentType,pkg:packageUUID,max:MAX_TIPP_COUNT_PER_PAGE])
+                Map<String,Object> result = fetchRecordJSON(false,[componentType:componentType,tippPackageUuid:packageUUID,max:MAX_TIPP_COUNT_PER_PAGE])
                 if(result.error == 404) {
                     log.error("we:kb server is down")
                 }
@@ -656,7 +656,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                 log.info("${pkg.name} / ${pkg.gokbId} has been removed, record status is ${record.status}, mark titles in package as removed ...")
                                 TitleInstancePackagePlatform.findAllByPkgAndStatusNotEqual(pkg, RDStore.TIPP_STATUS_REMOVED).each { TitleInstancePackagePlatform tipp ->
                                     tipp.status = RDStore.TIPP_STATUS_REMOVED
-                                    TitleChange.construct([event: PendingChangeConfiguration.TITLE_REMOVED, tipp: tipp])
+                                    IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.status = :removed, ie.lastUpdated = :now where ie.tipp = :tipp and ie.status != :removed', [tipp: tipp, removed: RDStore.TIPP_STATUS_REMOVED, now: new Date()])
+                                    //TitleChange.construct([event: PendingChangeConfiguration.TITLE_REMOVED, tipp: tipp])
                                     tipp.save()
                                 }
                             }

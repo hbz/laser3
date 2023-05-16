@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5028    16.05.2023  dev     3.1         Andreas Feature     Umstellung der we:kb-Kommunikation auf POST
+
 5017    12.05.2023  dev     3.1         Andreas Feature     verschiedene Umbauten im Excel-Export
 
 5030    10.05.2023  dev     3.1         Andreas Bug         Identifier-Namensraum-Auswahl korrigiert

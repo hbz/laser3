@@ -211,11 +211,11 @@ class MyInstitutionController  {
                     tippRemoved    : RDStore.TIPP_STATUS_REMOVED
             ]
 
-            String esQuery = "?componentType=Platform"
+            Map<String, Object> queryParams = [componentType: "Platform"]
 
             if (params.q?.length() > 0) {
                 result.filterSet = true
-                esQuery += "&q=${params.q}"
+                queryParams.q = params.q
                 qry3 += "and ("
                 qry3 += "   genfunc_filter_matcher(o.name, :query) = true"
                 qry3 += "   or genfunc_filter_matcher(o.sortname, :query) = true"
@@ -225,46 +225,51 @@ class MyInstitutionController  {
 
             if(params.provider) {
                 result.filterSet = true
-                esQuery += "&provider=${params.provider}"
+                queryParams.provider = params.provider
             }
 
             if(params.status) {
                 result.filterSet = true
-                esQuery += "&status=${RefdataValue.get(params.status).value}"
+                queryParams.status = RefdataValue.get(params.status).value
             }
             else if(!params.filterSet) {
                 result.filterSet = true
-                esQuery += "&status=Current"
+                queryParams.status = "Current"
                 params.status = RDStore.PLATFORM_STATUS_CURRENT.id.toString()
             }
 
             if(params.ipSupport) {
                 result.filterSet = true
                 List<String> ipSupport = params.list("ipSupport")
+                queryParams.ipAuthentication = []
                 ipSupport.each { String ip ->
                     RefdataValue rdv = RefdataValue.get(ip)
-                    esQuery += "&ipAuthentication=${rdv.value}"
+                    queryParams.ipAuthentication = rdv.value
                 }
             }
 
             if(params.shibbolethSupport) {
                 result.filterSet = true
                 List<String> shibbolethSupport = params.list("shibbolethSupport")
+                queryParams.shibbolethAuthentication = []
                 shibbolethSupport.each { String shibboleth ->
                     RefdataValue rdv = RefdataValue.get(shibboleth)
-                    esQuery += "&shibbolethAuthentication=${rdv == RDStore.GENERIC_NULL_VALUE ? "null" : rdv.value}"
+                    String shibb = rdv == RDStore.GENERIC_NULL_VALUE ? "null" : rdv.value
+                    queryParams.shibbolethAuthentication = shibb
                 }
             }
 
             if(params.counterCertified) {
                 result.filterSet = true
                 List<String> counterCertified = params.list("counterCertified")
+                queryParams.counterCeritified = []
                 counterCertified.each { String counter ->
                     RefdataValue rdv = RefdataValue.get(counter)
-                    esQuery += "&counterCertified=${rdv == RDStore.GENERIC_NULL_VALUE ? "null" : rdv.value}"
+                    String cert = rdv == RDStore.GENERIC_NULL_VALUE ? "null" : rdv.value
+                    queryParams.counterCertified << cert
                 }
             }
-            List wekbIds = gokbService.doQuery([max:10000, offset:0], params.clone(), esQuery).records.collect { Map hit -> hit.uuid }
+            List wekbIds = gokbService.doQuery([max:10000, offset:0], params.clone(), queryParams).records.collect { Map hit -> hit.uuid }
 
             qryParams3.wekbIds = wekbIds
 
