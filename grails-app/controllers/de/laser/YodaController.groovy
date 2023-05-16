@@ -7,7 +7,6 @@ import de.laser.auth.UserRole
 import de.laser.base.AbstractJob
 import de.laser.config.ConfigDefaults
 import de.laser.config.ConfigMapper
-import de.laser.finance.CostItem
 import de.laser.properties.LicenseProperty
 import de.laser.properties.OrgProperty
 import de.laser.properties.PersonProperty
@@ -599,21 +598,14 @@ class YodaController {
         yodaService.getTIPPsWithoutGOKBId()
     }
 
-    @Deprecated
     @Secured(['ROLE_YODA'])
-    def purgeTIPPsWithoutGOKBId() {
-        def toDelete = JSON.parse(params.toDelete)
-        def toUUIDfy = JSON.parse(params.toUUIDfy)
-        if(params.doIt == "true") {
-            yodaService.purgeTIPPsWihtoutGOKBId(toDelete,toUUIDfy)
-            redirect(url: request.getHeader('referer'))
-            return
+    def matchTitleStatus() {
+        if(!yodaService.bulkOperationRunning) {
+            yodaService.matchTitleStatus()
+            log.debug("Titel-Status-Matching läuft ...")
         }
-        else {
-            flash.message = "Betroffene TIPP-IDs wären vereinigt worden: ${toDelete} und folgende hätten einen fehlenden Wert erhalten: ${toUUIDfy}"
-            redirect action: 'getTIPPsWithoutGOKBId'
-            return
-        }
+        else log.error("Prozess läuft schon, kein Neustart")
+        redirect controller: 'home'
     }
 
     /**
@@ -665,7 +657,7 @@ class YodaController {
                 flagContentGokb : true // gokbService.queryElasticsearch
         ]
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
-        Map allPlatforms = gokbService.queryElasticsearch(apiSource.baseUrl+apiSource.fixToken+"/searchApi?componentType=Platform&max=10000&status=Current")
+        Map allPlatforms = gokbService.queryElasticsearch(apiSource.baseUrl+apiSource.fixToken+"/searchApi", [componentType: "Platform", max: 10000, status: "Current"])
         if (allPlatforms.error && allPlatforms.error == 404) {
             result.wekbServerUnavailable = message(code: 'wekb.error.404')
         }
