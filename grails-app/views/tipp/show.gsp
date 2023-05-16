@@ -198,7 +198,7 @@
                     <a role="button" class="ui icon mini blue button la-modern-button la-js-dont-hide-button la-popup-tooltip la-delay"
                        data-content="${message(code: 'tipp.tooltip.callUrl')}"
                        href="${tipp.platform.primaryUrl?.contains('http') ? tipp.platform.primaryUrl : 'http://' + tipp.platform.primaryUrl}"
-                       target="_blank"><i class="share square icon"></i></a>
+                       target="_blank"><i class="external alternate icon"></i></a>
                 </g:if>
             </div>
             <br/>

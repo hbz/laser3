@@ -22,7 +22,7 @@
             <div class="content"> internal link (redirect to list view with filter)</div>
         </div>
         <div class="item">
-            <i class="icon large share square"></i>
+            <i class="icon large external alternate"></i>
             <div class="content"> external link</div>
         </div>
         <div class="item">

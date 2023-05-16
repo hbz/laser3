@@ -12,7 +12,7 @@
 <ui:greySegment>
 
 <a href="https://www.hbz-nrw.de/datenschutz" class="ui button" target="_blank" onclick="$('#modalDsgvo').modal('hide')">
-    <i class="share square icon"></i>
+    <i class="external alternate icon"></i>
     ${message(code:'dse')}
 </a>
 

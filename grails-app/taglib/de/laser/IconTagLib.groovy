@@ -232,7 +232,7 @@ class IconTagLib {
     def linkWithIcon = { attrs, body ->
         out << ' <span class="la-popup-tooltip la-delay" style="bottom: -3px" data-position="top right" data-content="Diese URL aufrufen ..">'
         out << '&nbsp;<a href="' + attrs.href + '" aria-label="' + attrs.href + '" target="_blank" class="ui icon blue la-js-dont-hide-button">'
-        out << '<i aria-hidden="true" class="share square icon"></i>'
+        out << '<i aria-hidden="true" class="external alternate icon"></i>'
         out << '</a>'
         out << '</span>'
     }
