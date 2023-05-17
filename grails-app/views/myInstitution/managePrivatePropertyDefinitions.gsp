@@ -268,8 +268,7 @@
                         <div class="six wide column">
                             <br />
                             <a href="<g:createLink controller="profile" action="properties" />" target="_blank">
-                                <i class="icon external alternate"></i>
-                                Alle Kategorien und Referenzwerte<br />als Übersicht öffnen
+                                <i class="icon window maximize outline"></i> Alle Kategorien und Referenzwerte<br />als Übersicht öffnen
                             </a>
                         </div>
                     </div><!-- .grid -->

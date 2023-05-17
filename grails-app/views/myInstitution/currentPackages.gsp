@@ -88,20 +88,20 @@
 
                 <td>
                     <g:each in="${pkg.orgs.findAll{it.roleType == RDStore.OR_CONTENT_PROVIDER}.sort{it.org.name}}" var="role">
-                        <g:link controller="organisation" action="show" id="${role.org.id}">${role.org.name}</g:link>
                         <g:if test="${role.org.gokbId}">
                             <ui:wekbIconLink type="org" gokbId="${role.org.gokbId}" />
                         </g:if>
+                        <g:link controller="organisation" action="show" id="${role.org.id}">${role.org.name}</g:link>
                         <br />
                     </g:each>
                 </td>
 
                 <td>
                     <g:if test="${pkg.nominalPlatform}">
-                        <g:link controller="platform" action="show" id="${pkg.nominalPlatform.id}">${pkg.nominalPlatform.name}</g:link>
                         <g:if test="${pkg.nominalPlatform.gokbId}">
                             <ui:wekbIconLink type="platform" gokbId="${pkg.nominalPlatform.gokbId}" />
                         </g:if>
+                        <g:link controller="platform" action="show" id="${pkg.nominalPlatform.id}">${pkg.nominalPlatform.name}</g:link>
                     </g:if>
                 </td>
 

@@ -684,16 +684,13 @@
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('platform')}">
                 <td>
-                    <ul class="la-simpleList">
                         <g:each in="${org.platforms}" var="platform">
-                            <li>
-                                <g:link controller="platform" action="show" id="${platform.id}">${platform.name}</g:link>
                                 <g:if test="${platform.gokbId != null}">
                                     <ui:wekbIconLink type="platform" gokbId="${platform.gokbId}" />
                                 </g:if>
-                            </li>
+                                <g:link controller="platform" action="show" id="${platform.id}">${platform.name}</g:link>
+                                <br />
                         </g:each>
-                    </ul>
                 </td>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('type')}">

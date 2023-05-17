@@ -59,11 +59,10 @@
 							</td>
 							<td>
 								<g:if test="${platformInstance && platformInstance.org}">
-									<g:link controller="organisation" action="show" id="${platformInstance.org.id}">${platformInstance.org.getDesignation()}</g:link>
-
 									<g:if test="${platformInstance.org.gokbId != null && RDStore.OT_PROVIDER.id in platformInstance.org.getAllOrgTypeIds()}">
 										<ui:wekbIconLink type="org" gokbId="${platformInstance.org.gokbId}" />
 									</g:if>
+									<g:link controller="organisation" action="show" id="${platformInstance.org.id}">${platformInstance.org.getDesignation()}</g:link>
 								</g:if>
 								<g:elseif test="${record.providerUuid}">
 									${record.providerName}
