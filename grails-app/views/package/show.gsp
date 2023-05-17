@@ -296,7 +296,7 @@
                                                 <dt><g:message code="platform.stats.adminURL"/></dt>
                                                 <dd>
                                                     <g:if test="${platformInstanceRecord.statisticsAdminPortalUrl.startsWith('http')}">
-                                                        ${platformInstanceRecord.statisticsAdminPortalUrl} <a href="${platformInstanceRecord.statisticsAdminPortalUrl}"><i title="${message(code: 'platform.stats.adminURL')} Link" class="external alternate icon"></i></a>
+                                                        ${platformInstanceRecord.statisticsAdminPortalUrl} <ui:linkWithIcon href="${platformInstanceRecord.statisticsAdminPortalUrl}"/>
                                                     </g:if>
                                                     <g:else>
                                                         <g:message code="default.url.invalid"/>
@@ -321,7 +321,7 @@
                                                 <dt><g:message code="platform.stats.counter.registryURL"/></dt>
                                                 <dd>
                                                     <g:if test="${platformInstanceRecord.counterRegistryUrl.startsWith('http')}">
-                                                        ${platformInstanceRecord.counterRegistryUrl} <a href="${platformInstanceRecord.counterRegistryUrl}"><i title="${message(code: 'platform.stats.counter.registryURL')} Link" class="external alternate icon"></i></a>
+                                                        ${platformInstanceRecord.counterRegistryUrl} <ui:linkWithIcon href="${platformInstanceRecord.counterRegistryUrl}"/>
                                                     </g:if>
                                                     <g:else>
                                                         <g:message code="default.url.invalid"/>
@@ -358,7 +358,7 @@
                                                 <dt><g:message code="platform.stats.counter.r4serverURL"/></dt>
                                                 <dd>
                                                     <g:if test="${platformInstanceRecord.counterR4SushiServerUrl.startsWith('http')}">
-                                                        ${platformInstanceRecord.counterR4SushiServerUrl} <a href="${platformInstanceRecord.counterR4SushiServerUrl}"><i title="${message(code: 'platform.stats.counter.r4serverURL')} Link" class="external alternate icon"></i></a>
+                                                        ${platformInstanceRecord.counterR4SushiServerUrl} <ui:linkWithIcon href="${platformInstanceRecord.counterR4SushiServerUrl}"/>
                                                     </g:if>
                                                     <g:else>
                                                         ${platformInstanceRecord.counterR4SushiServerUrl}
@@ -371,7 +371,7 @@
                                                 <dt><g:message code="platform.stats.counter.r5serverURL"/></dt>
                                                 <dd>
                                                     <g:if test="${platformInstanceRecord.counterR5SushiServerUrl.startsWith('http')}">
-                                                        ${platformInstanceRecord.counterR5SushiServerUrl} <a href="${platformInstanceRecord.counterR5SushiServerUrl}"><i title="${message(code: 'platform.stats.counter.r5serverURL')} Link" class="external alternate icon"></i></a>
+                                                        ${platformInstanceRecord.counterR5SushiServerUrl} <ui:linkWithIcon href="${platformInstanceRecord.counterR5SushiServerUrl}"/>
                                                     </g:if>
                                                     <g:else>
                                                         ${platformInstanceRecord.counterR5SushiServerUrl}
