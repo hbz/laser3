@@ -30,16 +30,20 @@ class LinkTagLib {
         String label = ''
 
         if (attrs.type == 'org') {
-            href = '' + apiSource.baseUrl + '/public/orgContent/' + attrs.gokbId
+            href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
             label = message(code: 'default.provider.label') + ' in der we:kb aufrufen'
         }
         else if (attrs.type == 'platform') {
-            href = '' + apiSource.baseUrl + '/public/platformContent/' + attrs.gokbId
+            href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
             label = message(code: 'platform.label') + ' in der we:kb aufrufen'
+        }
+        else if (attrs.type == 'curatoryGroup') {
+            href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
+            label = message(code: 'package.curatoryGroup.label') + ' in der we:kb aufrufen'
         }
         out << '<span class="la-popup-tooltip la-delay" data-position="top right" data-content="' + label + '" style="bottom: -3px">&nbsp;'
         out << '<a href="' + href + '" target="_blank" aria-label="' + label + '">'
-        out << '<i class="icon external alternate" aria-hidden="true"></i>'
+        out << '<i class="icon la-gokb" aria-hidden="true"></i>'
         out << '</a>'
         out << '</span>'
     }
@@ -50,11 +54,11 @@ class LinkTagLib {
         String label = ''
 
         if (attrs.type == 'org') {
-            href = '' + apiSource.baseUrl + '/public/orgContent/' + attrs.gokbId
+            href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
             label = message(code: 'default.provider.label') + ' in der we:kb aufrufen'
         }
         else if (attrs.type == 'platform') {
-            href = '' + apiSource.baseUrl + '/public/platformContent/' + attrs.gokbId
+            href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
             label = message(code: 'platform.label') + ' in der we:kb aufrufen'
         }
 
@@ -65,7 +69,7 @@ class LinkTagLib {
 //        out << 'aria-label="' + message(code: 'org.isWekbCurated.header.label') + '" '
         out << 'role="button">'
 
-        out << '<i class="la-gokb icon" aria-hidden="true"></i>'
+        out << '<i class="icon la-gokb" aria-hidden="true"></i>'
         out << '</a>'
     }
 }

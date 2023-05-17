@@ -92,33 +92,31 @@
                         </td>
                         <td>
                             <g:if test="${org}">
-                                <g:link controller="organisation" action="show" id="${org.id}">${record.providerName}</g:link>
                                 <g:if test="${org.gokbId}">
                                     <ui:wekbIconLink type="org" gokbId="${org.gokbId}" />
                                 </g:if>
+                                <g:link controller="organisation" action="show" id="${org.id}">${record.providerName}</g:link>
                             </g:if>
                             <g:else>${record.providerName}</g:else>
                         </td>
                         <td>
                             <g:if test="${plat}">
-                                <g:link controller="platform" action="show" id="${plat.id}">${record.nominalPlatformName}</g:link>
                                 <g:if test="${plat.gokbId}">
                                     <ui:wekbIconLink type="platform" gokbId="${plat.gokbId}" />
                                 </g:if>
+                                <g:link controller="platform" action="show" id="${plat.id}">${record.nominalPlatformName}</g:link>
                             </g:if>
                             <g:else>${record.nominalPlatformName}</g:else></td>
                         <td>
                             <g:if test="${record.curatoryGroups}">
-                                <ul class="la-simpleList">
-                                    <g:each in="${record.curatoryGroups}" var="curatoryGroup">
-                                        <li>
-                                            ${curatoryGroup.name}
-                                            <g:link url="${editUrl.endsWith('/') ? editUrl : editUrl+'/'}resource/show/${curatoryGroup.curatoryGroup}" target="_blank">
-                                                <i class="icon external alternate"></i>
-                                            </g:link>
-                                        </li>
-                                    </g:each>
-                                </ul>
+                                <g:each in="${record.curatoryGroups}" var="curatoryGroup">
+                                    <ui:wekbIconLink type="curatoryGroup" gokbId="${curatoryGroup.curatoryGroup}" />
+                                    ${curatoryGroup.name}
+%{--                                    <g:link url="${editUrl.endsWith('/') ? editUrl : editUrl+'/'}resource/show/${curatoryGroup.curatoryGroup}" target="_blank">--}%
+%{--                                        <i class="icon external alternate"></i>--}%
+%{--                                    </g:link>--}%
+                                    <br />
+                                </g:each>
                             </g:if>
                         </td>
                         <td>

@@ -41,11 +41,10 @@
                 </td>
                 <td>
                     <g:if test="${platformInstance.org}">
-                        <g:link controller="organisation" action="show" id="${platformInstance.org.id}">${platformInstance.org.getDesignation()}</g:link>
-
                         <g:if test="${platformInstance.org.gokbId != null}">
                             <ui:wekbIconLink type="org" gokbId="${platformInstance.org.gokbId}" />
                         </g:if>
+                        <g:link controller="organisation" action="show" id="${platformInstance.org.id}">${platformInstance.org.getDesignation()}</g:link>
                     </g:if>
                 </td>
                 <td>
