@@ -1551,10 +1551,10 @@ class YodaController {
                         IssueEntitlement issueEntitlement = IssueEntitlement.get(ieID)
                         TitleInstancePackagePlatform titleInstancePackagePlatform = issueEntitlement.tipp
 
-                        if (!PermanentTitle.findByOwnerAndTitleInstancePackagePlatform(owner, titleInstancePackagePlatform)) {
+                        if (!PermanentTitle.findByOwnerAndTipp(owner, titleInstancePackagePlatform)) {
                             PermanentTitle permanentTitle = new PermanentTitle(subscription: sub,
                                     issueEntitlement: issueEntitlement,
-                                    titleInstancePackagePlatform: titleInstancePackagePlatform,
+                                    tipp: titleInstancePackagePlatform,
                                     owner: owner).save()
                             countProcessPT
                         }
@@ -1591,10 +1591,10 @@ class YodaController {
                        TitleInstancePackagePlatform titleInstancePackagePlatform = issueEntitlement.tipp
                         Org owner = issueEntitlement.subscription.subscriber
 
-                        if (!PermanentTitle.findByOwnerAndTitleInstancePackagePlatform(owner, titleInstancePackagePlatform)) {
+                        if (!PermanentTitle.findByOwnerAndTipp(owner, titleInstancePackagePlatform)) {
                             PermanentTitle permanentTitle = new PermanentTitle(subscription: issueEntitlement.subscription,
                                     issueEntitlement: issueEntitlement,
-                                    titleInstancePackagePlatform: titleInstancePackagePlatform,
+                                    tipp: titleInstancePackagePlatform,
                                     owner: owner).save()
                             countProcess++
                         }

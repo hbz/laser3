@@ -1074,7 +1074,7 @@ join sub.orgRelations or_sub where
         TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGokbId(gokbId)
         if (tipp == null) {
             throw new EntitlementCreationException("Unable to tipp ${gokbId}")
-        }else if(!PermanentTitle.findByOwnerAndTitleInstancePackagePlatform(sub.subscriber, tipp)){
+        }else if(!PermanentTitle.findByOwnerAndTipp(sub.subscriber, tipp)){
             throw new EntitlementCreationException("Unable to create IssueEntitlement because IssueEntitlement exist as PermanentTitle")
         }
         else if(IssueEntitlement.findAllBySubscriptionAndTippAndStatusInList(sub, tipp, [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_RETIRED])) {
@@ -1105,10 +1105,10 @@ join sub.orgRelations or_sub where
             if(pickAndChoosePerpetualAccess || sub.hasPerpetualAccess){
                 new_ie.perpetualAccessBySub = sub
 
-                if(!PermanentTitle.findByOwnerAndTitleInstancePackagePlatform(sub.subscriber, tipp)){
+                if(!PermanentTitle.findByOwnerAndTipp(sub.subscriber, tipp)){
                     PermanentTitle permanentTitle = new PermanentTitle(subscription: sub,
                             issueEntitlement: new_ie,
-                            titleInstancePackagePlatform: tipp,
+                            tipp: tipp,
                             owner: sub.subscriber).save()
                 }
 
@@ -1250,7 +1250,7 @@ join sub.orgRelations or_sub where
         }
         else {
             ie.status = RDStore.TIPP_STATUS_REMOVED
-            PermanentTitle permanentTitle = PermanentTitle.findByOwnerAndTitleInstancePackagePlatform(sub.subscriber, ie.tipp)
+            PermanentTitle permanentTitle = PermanentTitle.findByOwnerAndTipp(sub.subscriber, ie.tipp)
             if (permanentTitle) {
                 permanentTitle.delete()
             }
@@ -1278,7 +1278,7 @@ join sub.orgRelations or_sub where
         else {
             ie.status = RDStore.TIPP_STATUS_REMOVED
 
-            PermanentTitle permanentTitle = PermanentTitle.findByOwnerAndTitleInstancePackagePlatform(sub.subscriber, ie.tipp)
+            PermanentTitle permanentTitle = PermanentTitle.findByOwnerAndTipp(sub.subscriber, ie.tipp)
             if (permanentTitle) {
                 permanentTitle.delete()
             }
@@ -2443,7 +2443,7 @@ join sub.orgRelations or_sub where
         Map<String, Object> selectedIEs = [:]
         Org contextOrg = contextService.getOrg()
 
-        List<Long> subscriptionIDs = surveyService.subscriptionsOfOrg(newSub.getSubscriber())
+        //List<Long> subscriptionIDs = surveyService.subscriptionsOfOrg(newSub.getSubscriber())
 
         ArrayList<String> rows = stream.text.split('\n')
         Map<String, Integer> colMap = [zdbCol: -1, onlineIdentifierCol: -1, printIdentifierCol: -1, pick: -1]
@@ -2511,7 +2511,7 @@ join sub.orgRelations or_sub where
                                                 IssueEntitlement ieInNewSub = surveyService.titleContainedBySubscription(newSub, tipp)
                                                 boolean allowedToSelect = false
                                                 if (surveyConfig.pickAndChoosePerpetualAccess) {
-                                                    boolean participantPerpetualAccessToTitle = surveyService.hasParticipantPerpetualAccessToTitle2(subscriptionIDs, tipp)
+                                                    boolean participantPerpetualAccessToTitle = surveyService.hasParticipantPerpetualAccessToTitle3(newSub.getSubscriber(), tipp)
                                                     allowedToSelect = !(participantPerpetualAccessToTitle) && (!ieInNewSub || (ieInNewSub && (contextOrg.id == surveyConfig.surveyInfo.owner.id)))
                                                 } else {
                                                     allowedToSelect = !ieInNewSub || (ieInNewSub && (contextOrg.id == surveyConfig.surveyInfo.owner.id))

@@ -19,7 +19,7 @@
         <ui:messages data="${flash}" />
 
         <ui:tabs actionName="settings">
-            <ui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'general']" tab="general" text="${message(code: 'org.setting.tab.general')}"/>
+            <%--<ui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'general']" tab="general" text="${message(code: 'org.setting.tab.general')}"/>--%>
             <g:if test="${accessService.ctxPerm_or_ROLEADMIN( 'FAKE,ORG_INST_PRO,ORG_CONSORTIUM_BASIC' )}">
                 <ui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'api']" tab="api" text="${message(code: 'org.setting.tab.api')}"/>
             </g:if>

@@ -25,7 +25,7 @@
     <div class="row">
         <div class="column">
 
-            <g:if test="${entitlements && entitlements.size() > 0}">
+            <g:if test="${titlesList && titlesList.size() > 0}">
 
                 <g:if test="${subscription.packages.size() > 1}">
                     <a class="ui right floated button" data-href="#showPackagesModal" data-ui="modal"><g:message
@@ -49,166 +49,83 @@
     <br>
 
     <div class="la-inline-lists">
+        <g:if test="${!titlesList}">
+            <div class="ui icon positive message">
+                <i class="info icon"></i>
 
-        <div class="ui icon positive message">
-            <i class="info icon"></i>
+                <div class="content">
+                    <div class="header"></div>
 
-            <div class="content">
-                <div class="header"></div>
+                    <p>
+                        <%-- <g:message code="surveyInfo.finishOrSurveyCompleted"/> --%>
+                        <g:message code="showSurveyInfo.pickAndChoose.Package"/>
+                    </p>
+                    <br/>
+                    <g:link controller="subscription" class="ui button" action="index" target="_blank"
+                            id="${surveyConfig.subscription.id}">
+                        ${surveyConfig.subscription.name} (${surveyConfig.subscription.status.getI10n('value')})
+                    </g:link>
 
-                <p>
-                    <%-- <g:message code="surveyInfo.finishOrSurveyCompleted"/> --%>
-                    <g:message code="showSurveyInfo.pickAndChoose.Package"/>
-                </p>
-                <br/>
-                <g:link controller="subscription" class="ui button" action="index" target="_blank"
-                        id="${surveyConfig.subscription.id}">
-                    ${surveyConfig.subscription.name} (${surveyConfig.subscription.status.getI10n('value')})
-                </g:link>
+                    <g:link controller="subscription" class="ui button" action="linkPackage" target="_blank"
+                            id="${surveyConfig.subscription.id}">
+                        <g:message code="subscription.details.linkPackage.label"/>
+                    </g:link>
 
-                <g:link controller="subscription" class="ui button" action="linkPackage" target="_blank"
-                        id="${surveyConfig.subscription.id}">
-                    <g:message code="subscription.details.linkPackage.label"/>
-                </g:link>
-
-                <g:link controller="subscription" class="ui button" action="addEntitlements" target="_blank"
-                        id="${surveyConfig.subscription.id}">
-                    <g:message code="subscription.details.addEntitlements.label"/>
-                </g:link>
-
-            </div>
-
-        </div>
-
-
-        <div class="row">
-            <div class="column">
-                <laser:render template="/templates/filter/tipp_ieFilter"/>
-            </div>
-        </div>
-
-        <div class="row">
-            <div class="column">
-
-                <div class="ui blue large label"><g:message code="title.plural"/>: <div class="detail">${num_ies_rows}</div>
                 </div>
 
-                <g:set var="counter" value="${offset + 1}"/>
+            </div>
+        </g:if>
+    </div>
 
-                <table class="ui sortable celled la-js-responsive-table la-table table la-ignore-fixed la-bulk-header">
-                    <thead>
-                    <tr>
 
-                        <th>${message(code: 'sidewide.number')}</th>
-                        <g:sortableColumn class="eight wide" params="${params}" property="tipp.sortname"
-                                          title="${message(code: 'title.label')}"/>
-                        <th class="one wide">${message(code: 'subscription.details.print-electronic')}</th>
-                        <th class="four wide">${message(code: 'default.date.label')}</th>
-                        <th class="two wide">${message(code: 'subscription.details.access_dates')}</th>
-                        <th class="two wide"><g:message code="subscription.details.prices"/></th>
-                        <th class="one wide"></th>
-                    </tr>
-                    <tr>
-                        <th rowspan="2" colspan="3"></th>
-                        <g:sortableColumn class="la-smaller-table-head" params="${params}" property="startDate"
-                                          title="${message(code: 'default.from')}"/>
-                        <g:sortableColumn class="la-smaller-table-head" params="${params}"
-                                          property="accessStartDate"
-                                          title="${message(code: 'default.from')}"/>
 
-                        <th rowspan="2" colspan="2"></th>
-                    </tr>
-                    <tr>
-                        <g:sortableColumn class="la-smaller-table-head" property="endDate"
-                                          title="${message(code: 'default.to')}"/>
-                        <g:sortableColumn class="la-smaller-table-head" params="${params}"
-                                          property="accessEndDate"
-                                          title="${message(code: 'default.to')}"/>
-                    </tr>
-                    <tr>
-                        <th colspan="9"></th>
-                    </tr>
-                    </thead>
-                    <tbody>
+            <div class="row">
+                <div class="column">
+                    <laser:render template="/templates/filter/tipp_ieFilter"/>
+                </div>
+            </div>
 
-                    <g:if test="${entitlements}">
-
-                        <g:each in="${entitlements}" var="ie">
-                            <tr>
-
-                                <td>${counter++}</td>
-                                <td>
-                                    <!-- START TEMPLATE -->
-                                    <laser:render template="/templates/title_short"
-                                              model="${[ie: ie, tipp: ie.tipp,
-                                                        showPackage: true, showPlattform: true, showCompact: true, showEmptyFields: false, overwriteEditable: false]}"/>
-                                    <!-- END TEMPLATE -->
-                                </td>
-
-                                <td>
-                                    <ui:xEditableRefData owner="${ie}" field="medium"
-                                                            config="${de.laser.storage.RDConstants.IE_MEDIUM}"
-                                                            overwriteEditable="${false}"/>
-                                </td>
-                                <td class="coverageStatements la-tableCard" data-entitlement="${ie.id}">
-
-                                    <laser:render template="/templates/tipps/coverages"
-                                              model="${[ie: ie, tipp: ie.tipp, overwriteEditable: false]}"/>
-
-                                </td>
-                                <td>
-                                    <!-- von --->
-
-                                    <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                                  date="${ie.accessStartDate}"/>
-
-                                    <ui:dateDevider/>
-                                    <!-- bis -->
-
-                                    <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                                  date="${ie.accessEndDate}"/>
-
-                                </td>
-                                <td>
-                                    <g:if test="${ie.priceItems}">
-                                        <g:each in="${ie.priceItems}" var="priceItem" status="i">
-                                            <g:message code="tipp.price.listPrice"/>: <ui:xEditable field="listPrice"
-                                                                                                 owner="${priceItem}"
-                                                                                                 format=""/> <ui:xEditableRefData
-                                                field="listCurrency" owner="${priceItem}"
-                                                config="Currency"/> <%--<g:formatNumber number="${priceItem.listPrice}" type="currency" currencyCode="${priceItem.listCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%><br/>
-                                            <g:message code="tipp.price.localPrice"/>: <ui:xEditable field="localPrice"
-                                                                                                  owner="${priceItem}"/> <ui:xEditableRefData
-                                                field="localCurrency" owner="${priceItem}"
-                                                config="Currency"/> <%--<g:formatNumber number="${priceItem.localPrice}" type="currency" currencyCode="${priceItem.localCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%>
-                                        <%--<ui:xEditable field="startDate" type="date"
-                                                         owner="${priceItem}"/><ui:dateDevider/><ui:xEditable
-                                            field="endDate" type="date"
-                                            owner="${priceItem}"/>  <g:formatDate format="${message(code:'default.date.format.notime')}" date="${priceItem.startDate}"/>--%>
-                                            <g:if test="${i < ie.priceItems.size() - 1}"><hr></g:if>
-                                        </g:each>
-                                    </g:if>
-
-                                </td>
-                                <td class="x">
-
-                                </td>
-                            </tr>
-                        </g:each>
-                    </g:if>
-                    </tbody>
-                </table>
+            <div class="row">
+                <div class="eight wide column">
+                    <h3 class="ui icon header la-clear-before la-noMargin-top"><span
+                            class="ui circular  label">${num_tipp_rows}</span> <g:message code="title.filter.result"/></h3>
+                </div>
 
             </div>
-        </div><!--.row-->
-    </div>
-</div>
-<g:if test="${entitlements}">
-    <ui:paginate action="surveyTitles" controller="survey" params="${params}"
-                    max="${max}" total="${num_ies_rows}"/>
-</g:if>
+        <%
+            Map<String, String>
+            sortFieldMap = ['tipp.sortname': message(code: 'title.label')]
+            if (journalsOnly) {
+                sortFieldMap['startDate'] = message(code: 'default.from')
+                sortFieldMap['endDate'] = message(code: 'default.to')
+            } else {
+                sortFieldMap['tipp.dateFirstInPrint'] = message(code: 'tipp.dateFirstInPrint')
+                sortFieldMap['tipp.dateFirstOnline'] = message(code: 'tipp.dateFirstOnline')
+            }
+        %>
+        <div class="ui form">
+            <div class="three wide fields">
+                <div class="field">
+                    <ui:sortingDropdown noSelection="${message(code:'default.select.choose.label')}" from="${sortFieldMap}" sort="${params.sort}" order="${params.order}"/>
+                </div>
+            </div>
+        </div>
+        <div class="ui grid">
+            <div class="row">
+                <div class="column">
+                    <laser:render template="/templates/tipps/table_accordion"
+                                  model="[tipps: titlesList, showPackage: false, showPlattform: true]"/>
+                </div>
+            </div>
+        </div>
 
-<div id="magicArea"></div>
+        <g:if test="${titlesList}">
+            <ui:paginate action="current" controller="package" params="${params}"
+                         max="${max}" total="${num_tipp_rows}"/>
+        </g:if>
+
+
+        <div id="magicArea"></div>
 
 <ui:modal id="showPackagesModal" message="subscription.packages.label" hideSubmitButton="true">
     <div class="ui ordered list">
