@@ -871,7 +871,7 @@ class SubscriptionControllerService {
         SortedSet<String> allAvailableReports = new TreeSet<String>()
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         subscribedPlatforms.each { Platform platform ->
-            Map<String, Object> queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/sushiSources")
+            Map<String, Object> queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/sushiSources", [:])
             Map platformRecord
             if (queryResult.warning) {
                 Map<String, Object> records = queryResult.warning
@@ -1618,7 +1618,7 @@ class SubscriptionControllerService {
                 result.platformsJSON = subscribedPlatforms.globalUID as JSON
                 ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
                 subscribedPlatforms.each { Platform platformInstance ->
-                    Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/searchApi?uuid=${platformInstance.gokbId}")
+                    Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: platformInstance.gokbId])
                     if (queryResult.error && queryResult.error == 404) {
                         result.wekbServerUnavailable = message(code: 'wekb.error.404')
                     }
@@ -1989,34 +1989,33 @@ class SubscriptionControllerService {
             SwissKnife.setPaginationParams(result, params, result.user)
 
             result.editUrl = apiSource.baseUrl
-            String esQuery = "?componentType=Package"
+            Map<String, Object> queryParams = [componentType: 'Package']
             if (params.q) {
                 result.filterSet = true
                 //workaround for or-connection; find api supports only and-connection
-                esQuery += "&name=${params.q}"
-                esQuery += "&ids=Anbieter_Produkt_ID,*${params.q}*"
-                esQuery += "&ids=isil,*${params.q}*"
+                queryParams.name = params.q
+                queryParams.ids = ["Anbieter_Produkt_ID,${params.q}", "isil,${params.q}"]
             }
 
             if(params.provider) {
                 result.filterSet = true
-                esQuery += "&provider=${params.provider.replaceAll('&','ampersand').replaceAll('\\+','%2B').replaceAll(' ','%20')}"
+                queryParams.provider = params.provider
             }
 
             if(params.curatoryGroup) {
                 result.filterSet = true
-                esQuery += "&curatoryGroupExact=${params.curatoryGroup.replaceAll('&','ampersand').replaceAll('\\+','%2B').replaceAll(' ','%20')}"
+                queryParams.curatoryGroupExact = params.curatoryGroup
             }
 
             if(params.resourceTyp) {
                 result.filterSet = true
-                esQuery += "&contentType=${params.resourceTyp}"
+                queryParams.contentType = params.resourceTyp
             }
 
             if (params.ddc) {
                 result.filterSet = true
                 params.list("ddc").each { String key ->
-                    esQuery += "&ddc=${RefdataValue.get(key).value}"
+                    queryParams.ddc = RefdataValue.get(key).value
                 }
             }
 
@@ -2024,19 +2023,19 @@ class SubscriptionControllerService {
             if (params.containsKey('curatoryGroupProvider') ^ params.containsKey('curatoryGroupOther')) {
                 result.filterSet = true
                 if(params.curatoryGroupProvider)
-                    esQuery += "&curatoryGroupType=provider"
+                    queryParams.curatoryGroupType = "provider"
                 else if(params.curatoryGroupOther)
-                    esQuery += "&curatoryGroupType=other" //setting to this includes also missing ones, this is already implemented in we:kb
+                    queryParams.curatoryGroupType = "other" //setting to this includes also missing ones, this is already implemented in we:kb
             }
 
-            String sort = params.sort ? "&sort="+params.sort: "&sort=name"
-            String order = params.order ? "&order="+params.order: "&order=asc"
-            String max = params.max ? "&max=${params.max}": "&max=${result.max}"
-            String offset = params.offset ? "&offset=${params.offset}": "&offset=${result.offset}"
+            queryParams.sort = params.sort ?: "name"
+            queryParams.order = params.order ?: "asc"
+            queryParams.max = params.max ?: result.max
+            queryParams.offset = params.offset ?: result.offset
 
             result.flagContentGokb = true // gokbService.queryElasticsearch
 
-            Map queryCuratoryGroups = gokbService.queryElasticsearch(apiSource.baseUrl+apiSource.fixToken+'/groups')
+            Map queryCuratoryGroups = gokbService.queryElasticsearch(apiSource.baseUrl+apiSource.fixToken+'/groups', [:])
             if(queryCuratoryGroups.error && queryCuratoryGroups.error == 404) {
                 result.error = messageSource.getMessage('wekb.error.404', null, LocaleUtils.getCurrentLocale())
                 [result:result, status: STATUS_ERROR]
@@ -2049,7 +2048,7 @@ class SubscriptionControllerService {
                 result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
 
                 Set records = []
-                Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/searchApi' + esQuery + sort + order + max + offset)
+                Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/searchApi' , queryParams)
                 if (queryResult.warning) {
                     records.addAll(queryResult.warning.result)
                     result.recordsCount = queryResult.warning.result_count_total
@@ -2092,7 +2091,7 @@ class SubscriptionControllerService {
                     Thread.currentThread().setName("PackageTransfer_"+result.subscription.id)
                     if(!Package.findByGokbId(pkgUUID)) {
                         try {
-                            Map<String,Object> queryResult = globalSourceSyncService.fetchRecordJSON(false,[componentType:'TitleInstancePackagePlatform',pkg:pkgUUID,max:5000])
+                            Map<String,Object> queryResult = globalSourceSyncService.fetchRecordJSON(false,[componentType:'TitleInstancePackagePlatform',tippPackageUuid:pkgUUID,max:5000])
                             if(queryResult.error && queryResult.error == 404) {
                                 log.error("we:kb server currently unavailable")
                             }
@@ -2115,7 +2114,11 @@ class SubscriptionControllerService {
                                 if(addTypeChildren) {
                                     subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, addTypeChildren == 'WithForChildren')
                                 }
-                                subscriptionService.addPendingChangeConfiguration(result.subscription, pkgToLink, params.clone())
+                                result.subscription.holdingSelection = RefdataValue.get(params.holdingSelection)
+                                result.subscription.save()
+                                if(Boolean.valueOf(params.inheritHoldingSelection))
+                                    AuditConfig.addConfig(result.subscription, 'holdingSelection')
+                                //subscriptionService.addPendingChangeConfiguration(result.subscription, pkgToLink, params.clone())
                             }
                         }
                         catch (Exception e) {
@@ -2130,7 +2133,11 @@ class SubscriptionControllerService {
                         if(addTypeChildren) {
                             subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, addTypeChildren == 'WithForChildren')
                         }
-                        subscriptionService.addPendingChangeConfiguration(result.subscription, pkgToLink, params.clone())
+                        result.subscription.holdingSelection = RefdataValue.get(params.holdingSelection)
+                        result.subscription.save()
+                        if(Boolean.valueOf(params.inheritHoldingSelection))
+                            AuditConfig.addConfig(result.subscription, 'holdingSelection')
+                        //subscriptionService.addPendingChangeConfiguration(result.subscription, pkgToLink, params.clone())
                     }
                 })
             }
@@ -2349,7 +2356,10 @@ class SubscriptionControllerService {
             Set<String> excludes = PendingChangeConfiguration.GENERIC_EXCLUDES
             result.subscription.packages.each { SubscriptionPackage sp ->
                 //(pcc.settingValue == RDStore.PENDING_CHANGE_CONFIG_PROMPT || pcc.withNotification)
+                /*
                 Map<String, RefdataValue> keysWithPendingOrNotification = sp.pendingChangeConfig.findAll { PendingChangeConfiguration pcc -> !(pcc.settingKey in excludes) }.collectEntries { PendingChangeConfiguration pcc -> [pcc.settingKey, pcc.settingValue] }
+                */
+                Map<String, RefdataValue> keysWithPendingOrNotification = [:]
                 keysWithPendingOrNotification.put(PendingChangeConfiguration.TITLE_REMOVED, RDStore.PENDING_CHANGE_CONFIG_PROMPT)
                 if(keysWithPendingOrNotification) {
                     pkgSettingMap.put(sp, keysWithPendingOrNotification)
@@ -2361,12 +2371,15 @@ class SubscriptionControllerService {
             if(!params.tab)
                 params.tab = 'acceptedChanges'
             if(!params.eventType) {
+                params.eventType = PendingChangeConfiguration.TITLE_REMOVED
+                /*
                 if(params.tab == 'acceptedChanges') {
                     params.eventType = PendingChangeConfiguration.NEW_TITLE
                 }
                 else if(params.tab == 'changes') {
                     params.eventType = PendingChangeConfiguration.TITLE_REMOVED
                 }
+                */
             }
             else if(params.eventType == PendingChangeConfiguration.TITLE_REMOVED && params.tab == 'acceptedChanges')
                 params.eventType = PendingChangeConfiguration.NEW_TITLE
@@ -2386,10 +2399,6 @@ class SubscriptionControllerService {
                     Set titleChanges = []
                     if(params.tab == 'changes' && settings.get(params.eventType) != RDStore.PENDING_CHANGE_CONFIG_REJECT) {
                         switch(params.eventType) {
-                            case PendingChangeConfiguration.TITLE_REMOVED:
-                                titleChanges.addAll(TitleChange.executeQuery('select tic from TitleChange tic join tic.tipp tipp where tic.event = :event and tipp.pkg = :pkg and not exists (select ie.id from IssueEntitlement ie where ie.status = :removed and ie.tipp = tipp and ie.subscription = :sub) and tic.dateCreated >= :entryDate '+order,
-                                    [pkg: sp.pkg, sub: sp.subscription, event: PendingChangeConfiguration.TITLE_REMOVED, removed: RDStore.TIPP_STATUS_REMOVED, entryDate: sp.dateCreated]))
-                                break
                             case PendingChangeConfiguration.NEW_TITLE:
                                 titleChanges.addAll(TitleChange.executeQuery('select tic from TitleChange tic join tic.tipp tipp where tic.event = :event and tipp.pkg = :pkg and not exists (select iec.id from IssueEntitlementChange iec where iec.status in (:processed) and iec.titleChange = tic and iec.subscription = :sub) and tic.dateCreated >= :entryDate '+order,
                                     [pkg: sp.pkg, sub: sp.subscription, event: params.eventType, processed: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED, RDStore.PENDING_CHANGE_SUPERSEDED], entryDate: sp.dateCreated]))
@@ -2403,6 +2412,13 @@ class SubscriptionControllerService {
                     }
                     else if(params.tab == 'acceptedChanges') {
                         switch(params.eventType) {
+                            case PendingChangeConfiguration.TITLE_REMOVED:
+                                /*
+                                titleChanges.addAll(TitleChange.executeQuery('select tic from TitleChange tic join tic.tipp tipp where tic.event = :event and tipp.pkg = :pkg and not exists (select ie.id from IssueEntitlement ie where ie.status = :removed and ie.tipp = tipp and ie.subscription = :sub) and tic.dateCreated >= :entryDate '+order,
+                                    [pkg: sp.pkg, sub: sp.subscription, event: PendingChangeConfiguration.TITLE_REMOVED, removed: RDStore.TIPP_STATUS_REMOVED, entryDate: sp.dateCreated]))
+                                */
+                                titleChanges.addAll(IssueEntitlement.executeQuery("select ie from IssueEntitlement ie join ie.tipp tipp where tipp.pkg = :pkg and ie.subscription = :sub and ie.status = :removed order by ie.lastUpdated desc", [pkg: sp.pkg, sub: sp.subscription, removed: RDStore.TIPP_STATUS_REMOVED], [max: result.max, offset: result.offset]))
+                                break
                             case PendingChangeConfiguration.NEW_TITLE: titleChanges.addAll(IssueEntitlementChange.executeQuery('select iec from IssueEntitlementChange iec join iec.titleChange tic join tic.tipp tipp where tic.event = :event and tipp.pkg = :pkg and iec.subscription = :sub and iec.status = :accepted '+order,
                                         [pkg: sp.pkg, sub: sp.subscription, event: params.eventType, accepted: RDStore.PENDING_CHANGE_ACCEPTED]))
                                 break

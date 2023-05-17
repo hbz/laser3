@@ -57,57 +57,62 @@ class PlatformController  {
         ]
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        String esQuery = "?componentType=Platform"
+        Map queryParams = [componentType: "Platform"]
 
         if(params.q) {
             result.filterSet = true
-            esQuery += "&q=${params.q}"
+            queryParams.q = params.q
         }
 
         if(params.provider) {
             result.filterSet = true
-            esQuery += "&provider=${params.provider}"
+            queryParams.provider = params.provider
         }
 
         if(params.status) {
             result.filterSet = true
-            esQuery += "&status=${RefdataValue.get(params.status).value}"
+            queryParams.status = RefdataValue.get(params.status).value
         }
         else if(!params.filterSet) {
             result.filterSet = true
-            esQuery += "&status=Current"
+            queryParams.status = "Current"
             params.status = RDStore.PLATFORM_STATUS_CURRENT.id.toString()
         }
 
         if(params.ipSupport) {
             result.filterSet = true
             List<String> ipSupport = params.list("ipSupport")
+            queryParams.ipAuthentication = []
             ipSupport.each { String ip ->
                 RefdataValue rdv = RefdataValue.get(ip)
-                esQuery += "&ipAuthentication=${rdv.value}"
+                queryParams.ipAuthentication << rdv.value
             }
         }
 
         if(params.shibbolethSupport) {
             result.filterSet = true
             List<String> shibbolethSupport = params.list("shibbolethSupport")
+            queryParams.shibbolethAuthentication = []
             shibbolethSupport.each { String shibboleth ->
                 RefdataValue rdv = RefdataValue.get(shibboleth)
-                esQuery += "&shibbolethAuthentication=${rdv == RDStore.GENERIC_NULL_VALUE ? "null" : rdv.value}"
+                String auth = rdv == RDStore.GENERIC_NULL_VALUE ? "null" : rdv.value
+                queryParams.shibbolethAuthentication << auth
             }
         }
 
         if(params.counterCertified) {
             result.filterSet = true
             List<String> counterCertified = params.list("counterCertified")
+            queryParams.counterCertified = []
             counterCertified.each { String counter ->
                 RefdataValue rdv = RefdataValue.get(counter)
-                esQuery += "&counterCertified=${rdv == RDStore.GENERIC_NULL_VALUE ? "null" : rdv.value}"
+                String cert = rdv == RDStore.GENERIC_NULL_VALUE ? "null" : rdv.value
+                queryParams.counterCertified = cert
             }
         }
 
         // overridden pagination - all uuids are required
-        Map wekbResultMap = gokbService.doQuery(result, [offset:0, max:1000, status: params.status], esQuery)
+        Map wekbResultMap = gokbService.doQuery(result, [offset:0, max:1000, status: params.status], queryParams)
 
         // ? --- copied from myInstitutionController.currentPlatforms()
         String instanceFilter = ""
@@ -241,7 +246,7 @@ class PlatformController  {
 
         result.flagContentGokb = true // gokbService.queryElasticsearch
         result.platformInstanceRecord = [:]
-        Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/searchApi?uuid=${platformInstance.gokbId}")
+        Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: platformInstance.gokbId])
         if (queryResult.error && queryResult.error == 404) {
             flash.error = message(code:'wekb.error.404') as String
         }

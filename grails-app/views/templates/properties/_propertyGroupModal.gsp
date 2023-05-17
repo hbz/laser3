@@ -1,5 +1,5 @@
 <!-- A: templates/properties/_propertyGroupModal -->
-<%@ page import="de.laser.survey.SurveyResult; de.laser.survey.SurveyInfo; de.laser.utils.LocaleUtils; de.laser.Subscription; de.laser.License; de.laser.Org; de.laser.RefdataCategory; de.laser.properties.PropertyDefinitionGroupItem; de.laser.properties.PropertyDefinition; de.laser.I10nTranslation; de.laser.FormService;"%>
+<%@ page import="de.laser.survey.SurveyConfig; de.laser.survey.SurveyResult; de.laser.survey.SurveyInfo; de.laser.utils.LocaleUtils; de.laser.Subscription; de.laser.License; de.laser.Org; de.laser.RefdataCategory; de.laser.properties.PropertyDefinitionGroupItem; de.laser.properties.PropertyDefinition; de.laser.I10nTranslation; de.laser.FormService;"%>
 <laser:serviceInjection />
 
 <ui:modal id="propDefGroupModal" message="propertyDefinitionGroup.create_new.label" msgSave="${createOrUpdate}">
@@ -34,7 +34,7 @@
                             <g:elseif test="${pdDescr == PropertyDefinition.SUB_PROP && pdGroup?.ownerType == Subscription.class.name}">
                                 <option selected="selected" value="${pdDescr}"><g:message code="propertyDefinition.${pdDescr}.label" /></option>
                             </g:elseif>
-                            <g:elseif test="${pdDescr == PropertyDefinition.SVY_PROP && pdGroup?.ownerType == SurveyResult.class.name}">
+                            <g:elseif test="${pdDescr == PropertyDefinition.SVY_PROP && pdGroup?.ownerType == SurveyConfig.class.name}">
                                 <option selected="selected" value="${pdDescr}"><g:message code="propertyDefinition.${pdDescr}.label" /></option>
                             </g:elseif>
                             <g:else>

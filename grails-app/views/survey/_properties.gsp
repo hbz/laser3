@@ -16,39 +16,6 @@
     </div>
 
 
-    <g:if test="${controllerName == 'survey' && actionName == 'show' && editable && properties && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING}">
-        <div class="content">
-            <a class="ui icon right floated button"
-               data-ui="modal"
-               href="#addSurveyPropToConfigModal">
-                <i class="plus icon"></i>
-            </a>
-
-            <ui:modal id="addSurveyPropToConfigModal"
-                      msgSave="${message(code: 'surveyConfigsInfo.add.button')}"
-                      message="surveyConfigsInfo.add.button">
-                <g:form action="addSurveyPropToConfig" controller="survey" method="post" class="ui form">
-                    <g:hiddenField name="id" value="${surveyInfo.id}"/>
-                    <g:hiddenField name="surveyConfigID" value="${surveyConfig.id}"/>
-
-                    <div class="field required">
-                        <label>${message(code: 'surveyConfigs.property')} <g:message
-                                code="messageRequiredField"/></label>
-                        <ui:dropdown name="selectedProperty"
-                                     class="la-filterPropDef"
-                                     from="${properties}"
-                                     iconWhich="shield alternate"
-                                     optionKey="${{ "${it.id}" }}"
-                                     optionValue="${{ it.getI10n('name') }}"
-                                     noSelection="${message(code: 'default.search_for.label', args: [message(code: 'surveyProperty.label')])}"
-                                     required=""/>
-
-                    </div>
-                </g:form>
-            </ui:modal>
-        </div>
-    </g:if>
-
 <%-- grouped custom properties --%>
 
     <g:set var="allPropDefGroups" value="${surveyConfig.getCalculatedPropDefGroups(surveyInfo.owner)}"/>
@@ -57,53 +24,77 @@
         <%
             PropertyDefinitionGroup pdg = entry[1]
         %>
-        <div class="content">
-            <h2 class="ui header">
-                ${message(code: 'surveyConfigsInfo.properties')}
-                (${pdg.name})
-            </h2>
-            <g:if test="${controllerName == 'survey' && actionName == 'show'}">
-                <g:set var="properties" value="${surveyConfig.getSurveyConfigPropertiesByPropDefGroup(pdg)}"/>
-                <%
-                    groupedProperties << properties
-                %>
-            </g:if><g:else>
-                <g:set var="properties" value="${surveyConfig.getSurveyResultsByPropDefGroupAndOrg(pdg, institution)}"/>
-                <%
-                    groupedProperties << properties
-                %>
-            </g:else>
+        <g:if test="${controllerName == 'survey' && actionName == 'show'}">
+            <g:set var="surveyProperties" value="${surveyConfig.getSurveyConfigPropertiesByPropDefGroup(pdg)}"/>
+            <%
+                groupedProperties << surveyProperties
+            %>
+            <div class="content">
+                <h2 class="ui header">
+                    ${message(code: 'surveyConfigsInfo.properties')}
+                    (${pdg.name})
+                </h2>
 
-            <div>
-                <laser:render template="/templates/survey/properties" model="${[
-                        properties: properties]}"/>
+                <div>
+                    <laser:render template="/templates/survey/properties" model="${[
+                            surveyProperties: surveyProperties, pdg: pdg]}"/>
+                </div>
             </div>
-        </div>
+        </g:if>
+        <g:else>
+            <g:set var="surveyProperties"
+                   value="${surveyConfig.getSurveyResultsByPropDefGroupAndOrg(pdg, institution)}"/>
+            <%
+                groupedProperties << surveyProperties
+            %>
+            <g:if test="${surveyProperties.size() > 0}">
+                <div class="content">
+                    <h2 class="ui header">
+                        ${message(code: 'surveyConfigsInfo.properties')}
+                        (${pdg.name})
+                    </h2>
 
+                    <div>
+                        <laser:render template="/templates/survey/properties" model="${[
+                                surveyProperties: surveyProperties, pdg: pdg]}"/>
+                    </div>
+                </div>
+            </g:if>
+        </g:else>
     </g:each>
 
 <%-- orphaned properties --%>
 
 <%--<div class="ui card la-dl-no-table la-js-hideable"> --%>
     <div class="content">
-        <h2 class="ui header">
-            <g:if test="${allPropDefGroups.global}">
-                ${message(code: 'surveyConfigsInfo.properties.orphaned')}
-            </g:if>
-        </h2>
-
-        <div>
-            <g:if test="${controllerName == 'survey' && actionName == 'show'}">
-                <g:set var="properties" value="${surveyConfig.getOrphanedSurveyConfigProperties(groupedProperties)}"/>
-            </g:if><g:else>
-                <g:set var="properties" value="${surveyConfig.getOrphanedSurveyResultsByOrg(groupedProperties)}"/>
-            </g:else>
+        <g:if test="${controllerName == 'survey' && actionName == 'show'}">
+            <g:set var="surveyProperties" value="${surveyConfig.getOrphanedSurveyConfigProperties(groupedProperties)}"/>
+            <h2 class="ui header">
+                <g:if test="${allPropDefGroups.global}">
+                    ${message(code: 'surveyConfigsInfo.properties.orphaned')}
+                </g:if>
+            </h2>
 
             <div>
                 <laser:render template="/templates/survey/properties" model="${[
-                        properties: properties]}"/>
+                        surveyProperties: surveyProperties]}"/>
             </div>
-        </div>
+        </g:if><g:else>
+        <g:set var="surveyProperties"
+               value="${surveyConfig.getOrphanedSurveyResultsByOrg(groupedProperties, institution)}"/>
+        <g:if test="${surveyProperties.size() > 0}">
+            <h2 class="ui header">
+                <g:if test="${allPropDefGroups.global}">
+                    ${message(code: 'surveyConfigsInfo.properties.orphaned')}
+                </g:if>
+            </h2>
+
+            <div>
+                <laser:render template="/templates/survey/properties" model="${[
+                        surveyProperties: surveyProperties]}"/>
+            </div>
+        </g:if>
+    </g:else>
     </div>
     <%--</div>--%>
 

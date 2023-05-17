@@ -126,6 +126,9 @@ class IconTagLib {
             case 'hasPublishComponent':
                 icon = 'comment'
                 break
+            case 'holdingSelection':
+                icon = 'pizza slice'
+                break
             case 'startDate':
                 icon = 'calendar alternate outline'
                 break

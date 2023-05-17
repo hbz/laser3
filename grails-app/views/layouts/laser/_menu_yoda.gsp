@@ -92,7 +92,7 @@
                         <ui:link addItemAttributes="true" controller="yoda" action="reloadWekbPlatform" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.reloadPlatform')}</ui:link>
                         <ui:link addItemAttributes="true" controller="yoda" action="updateData" params="[dataToLoad:'identifier']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateIdentifiers')}</ui:link>
                         <ui:link addItemAttributes="true" controller="yoda" action="updateData" params="[dataToLoad:'editionStatement']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateEditionStatement')}</ui:link>
-                        <%--<ui:link addItemAttributes="true" controller="yoda" action="updateData" params="[dataToLoad:'medium', objType:'issueEntitlement']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateIEMedium')}</ui:link>--%>
+                        <ui:link addItemAttributes="true" controller="yoda" action="matchTitleStatus" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.matchTitleStatus')}</ui:link>
                         <ui:link addItemAttributes="true" controller="yoda" action="updateData" params="[dataToLoad:'abbreviatedName']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateSortname')}</ui:link>
                         <ui:link addItemAttributes="true" controller="yoda" action="updateData" params="[dataToLoad:'sortTitle']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.regenerateSortTitle')}</ui:link>
                         <ui:link addItemAttributes="true" controller="yoda" action="updateData" params="[dataToLoad:'ddc']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateDDC')}</ui:link>
@@ -103,7 +103,6 @@
                     </div>
                 </div>
                 <ui:link addItemAttributes="true" controller="yoda" action="manageGlobalSources">${message(code:'menu.yoda.manageGlobalSources')}</ui:link>
-                <ui:link addItemAttributes="true" controller="yoda" action="getTIPPsWithoutGOKBId">${message(code:'menu.yoda.purgeTIPPsWithoutGOKBID')}</ui:link>
                 <ui:link addItemAttributes="true" controller="yoda" action="expungeRemovedTIPPs" onclick="return confirm('${message(code:'confirmation.content.deleteTIPPsWithoutGOKBId')}')">${message(code:'menu.yoda.expungeRemovedTIPPs')}</ui:link>
                 <%--<ui:link addItemAttributes="true" controller="yoda" action="matchPackageHoldings">${message(code:'menu.admin.bulkOps.matchPackageHoldings')}</ui:link>--%>
             </div>

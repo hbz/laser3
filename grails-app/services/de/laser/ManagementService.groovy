@@ -755,6 +755,13 @@ class ManagementService {
                             if (params.process_hasPublishComponent && auditService.getAuditConfig(subscription.instanceOf, 'hasPublishComponent')) {
                                 noChange << messageSource.getMessage('subscription.hasPublishComponent.label', null, locale)
                             }
+                            if (params.process_holdingSelection && !auditService.getAuditConfig(subscription.instanceOf, 'holdingSelection')) {
+                                subscription.holdingSelection = RefdataValue.get(params.process_holdingSelection) ?: subscription.holdingSelection
+                                change << messageSource.getMessage('subscription.holdingSelection.label', null, locale)
+                            }
+                            if (params.process_resource && auditService.getAuditConfig(subscription.instanceOf, 'resource')) {
+                                noChange << messageSource.getMessage('subscription.resource.label', null, locale)
+                            }
                             if (params.process_isMultiYear && !auditService.getAuditConfig(subscription.instanceOf, 'isMultiYear')) {
                                 subscription.isMultiYear = RefdataValue.get(params.process_isMultiYear) == RDStore.YN_YES
                                 change << messageSource.getMessage('subscription.isMultiYear.label', null, locale)

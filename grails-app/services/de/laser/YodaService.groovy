@@ -29,9 +29,11 @@ class YodaService {
     ContextService contextService
     DeletionService deletionService
     GlobalSourceSyncService globalSourceSyncService
-    GokbService gokbService
+    GlobalService globalService
     PackageService packageService
     ExecutorService executorService
+
+    boolean bulkOperationRunning = false
 
     /**
      * Checks whether debug information should be displayed
@@ -137,15 +139,24 @@ class YodaService {
      * @param toDelete titles to be deleted
      * @param toUUIDfy titles which should persist but marked with null entry for that the gokbId property may be set not null
      */
-    void purgeTIPPsWihtoutGOKBId(toDelete,toUUIDfy) {
-        toDelete.each { oldTippId, newTippId ->
-            TitleInstancePackagePlatform oldTipp = TitleInstancePackagePlatform.get(oldTippId)
-            TitleInstancePackagePlatform newTipp = TitleInstancePackagePlatform.get(newTippId)
-            deletionService.deleteTIPP(oldTipp,newTipp)
-        }
-        toUUIDfy.each { tippId ->
-            TitleInstancePackagePlatform.executeUpdate("update TitleInstancePackagePlatform tipp set tipp.gokbId = :missing where tipp.id = :id",[missing:"${RDStore.GENERIC_NULL_VALUE}.${tippId}",id:tippId])
-        }
+    void matchTitleStatus() {
+        int max = 100000
+        bulkOperationRunning = true
+        executorService.execute({
+            int total = IssueEntitlement.executeQuery('select count(ie) from IssueEntitlement ie where ie.tipp.status != ie.status and ie.status not in (:removed)', [removed: [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED]])[0]
+            log.debug("${total} titles concerned")
+            for(int offset = 0; offset < total; offset += max) {
+                Set<IssueEntitlement> iesConcerned = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp.status != ie.status and ie.status not in (:removed)', [removed: [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED]], [max: max, offset: offset])
+                iesConcerned.eachWithIndex { IssueEntitlement ie, int i ->
+                    log.debug("now processing record #${i+offset} from total ${total}")
+                    ie.status = ie.tipp.status
+                    ie.save()
+                }
+                globalService.cleanUpGorm()
+            }
+            log.debug("release lock ...")
+            bulkOperationRunning = false
+        })
     }
 
     /**

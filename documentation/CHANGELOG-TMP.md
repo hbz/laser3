@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5028    16.05.2023  dev     3.1         Andreas Feature     Umstellung der we:kb-Kommunikation auf POST
+
 5039    15.05.2023  dev     3.1         David   Feature     Umfragen - Navigation & weitere Anpassungen
 
 5017    12.05.2023  dev     3.1         Andreas Feature     verschiedene Umbauten im Excel-Export
