@@ -196,7 +196,6 @@ r2d2 = {
 
     initGlobalUiStuff : function() {
         console.log("r2d2.initGlobalUiStuff()");
-        // copy email adress and IDs and putting it in cache
 
         // universal copy item
         $('.js-copyTrigger').click(function(){

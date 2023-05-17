@@ -125,7 +125,7 @@
                                 <dd>
                                     <div class="ui bulleted list">
                                         <g:each in="${packageInstanceRecord.curatoryGroups}" var="curatoryGroup">
-                                            <div class="item"><g:link url="${editUrl}resource/show/${curatoryGroup.curatoryGroup}">${curatoryGroup.name} ${curatoryGroup.type ? "(${curatoryGroup.type})" : ""}</g:link></div>
+                                            <div class="item">${curatoryGroup.name} ${curatoryGroup.type ? "(${curatoryGroup.type})" : ""} <ui:wekbIconLink gokbId="${curatoryGroup.curatoryGroup}"/></div>
                                         </g:each>
                                     </div>
                                 </dd>
@@ -139,6 +139,19 @@
                                     </g:if>
                                 </dd>
                             </dl>
+                            <dl>
+                                <dt>${message(code: 'package.breakable')}</dt>
+                                <dd>${packageInstanceRecord.breakable ? RefdataValue.getByValueAndCategory(packageInstanceRecord.breakable, RDConstants.PACKAGE_BREAKABLE).getI10n("value") : message(code: 'default.not.available')}</dd>
+                            </dl>
+                            <dl>
+                                <dt>${message(code: 'package.contentType.label')}</dt>
+                                <dd>${sp.pkg.contentType?.getI10n("value")}</dd>
+                            </dl>
+                            <dl>
+                                <dt>${message(code: 'package.file')}</dt>
+                                <dd>${sp.pkg.file?.getI10n("value")}</dd>
+                            </dl>
+                            <%--
                             <g:if test="${packageInstanceRecord.source}">
                                 <dl>
                                     <dt>${message(code: 'package.source.label')}</dt>
@@ -178,20 +191,9 @@
                                     <dd><g:message code="package.index.result.noAutomaticUpdates"/></dd>
                                 </dl>
                             </g:else>
+                            --%>
                         </div>
                         <div class="eight wide column">
-                            <dl>
-                                <dt>${message(code: 'package.breakable')}</dt>
-                                <dd>${packageInstanceRecord.breakable ? RefdataValue.getByValueAndCategory(packageInstanceRecord.breakable, RDConstants.PACKAGE_BREAKABLE).getI10n("value") : message(code: 'default.not.available')}</dd>
-                            </dl>
-                            <dl>
-                                <dt>${message(code: 'package.contentType.label')}</dt>
-                                <dd>${sp.pkg.contentType?.getI10n("value")}</dd>
-                            </dl>
-                            <dl>
-                                <dt>${message(code: 'package.file')}</dt>
-                                <dd>${sp.pkg.file?.getI10n("value")}</dd>
-                            </dl>
                             <dl>
                                 <dt>${message(code: 'package.scope.label')}</dt>
                                 <dd>

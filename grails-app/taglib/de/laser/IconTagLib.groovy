@@ -2,6 +2,7 @@ package de.laser
 
 import de.laser.auth.Role
 import de.laser.auth.UserOrgRole
+import de.laser.remote.ApiSource
 import de.laser.storage.RDStore
 import de.laser.titles.BookInstance
 import de.laser.titles.DatabaseInstance
@@ -229,14 +230,6 @@ class IconTagLib {
 
         out << '<span class="la-popup-tooltip la-delay" data-content="' + msg + '" data-position="left center" data-variation="tiny">'
         out << '<i aria-hidden="true" class="' + icon + '"></i>'
-        out << '</span>'
-    }
-
-    def linkWithIcon = { attrs, body ->
-        out << ' <span class="la-popup-tooltip la-delay" style="bottom: -3px" data-position="top right" data-content="Diese URL aufrufen ..">'
-        out << '&nbsp;<a href="' + attrs.href + '" aria-label="' + attrs.href + '" target="_blank" class="ui icon blue la-js-dont-hide-button">'
-        out << '<i aria-hidden="true" class="share square icon"></i>'
-        out << '</a>'
         out << '</span>'
     }
 

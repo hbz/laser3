@@ -7,7 +7,17 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5047    17.05.2023  dev     3.1         Andreas Bug         Statistik lokaler Lizenzen konnte nicht aufgerufen werden
+
+5044    17.05.2023  dev     3.1         Andreas Bug         Tippfehler in Referenzwert behoben
+
+5027    17.05.2023  dev     3.1         Andreas Feature     Umstrukturierungen bei den Kontaktkacheln
+
+4924    17.05.2023  dev     3.1         Andreas Feature     Entfernen des überflüssigen Reiters
+
 5028    16.05.2023  dev     3.1         Andreas Feature     Umstellung der we:kb-Kommunikation auf POST
+
+5039    15.05.2023  dev     3.1         David   Feature     Umfragen - Navigation & weitere Anpassungen
 
 5017    12.05.2023  dev     3.1         Andreas Feature     verschiedene Umbauten im Excel-Export
 
@@ -116,6 +126,8 @@
 4829    18.04.2023  dev     3.1         David   Bug         Javascript Library Trumbowyg v2.26.0 funktioniert nicht mehr richtig
 
 4962    17.04.2023  dev     3.1         David   Feature     Sicherheitsabfrage bei Anmerkungen ändern
+
+--      13.04.2023  rc-3.0  3.0.7       Andreas Bug         Brücke für Statistik-Sync eingebaut
 
 4955    12.04.2023  dev     3.1         Moe     Feature     Umfrage erweiteren auf 4-MJL und 5-MJL
 
