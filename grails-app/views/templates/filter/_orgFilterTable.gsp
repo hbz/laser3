@@ -75,6 +75,9 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('numberOfSubscriptions')}">
                 <th class="la-th-wrap">${message(code: 'org.subscriptions.label')}</th>
             </g:if>
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('currentSubscriptions')}">
+                <th class="la-th-wrap">${message(code: 'org.subscriptions.label')}</th>
+            </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('numberOfSurveys')}">
                 <th class="la-th-wrap">${message(code: 'survey.active')}</th>
             </g:if>
@@ -139,7 +142,6 @@
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('surveySubCostItem')}">
                 <th>
-
                     <g:if test="${actionName == 'surveyCostItems'}">
                         <%
                             def tmpParams = params.clone()
@@ -277,17 +279,10 @@
                     else altnames.addAll(org.altnames.name)
                 %>
                 <td>
-                    <ul>
+                    <ul class="la-simpleList">
                         <g:each in="${altnames}" var="altname" status="a">
                             <g:if test="${a < 10}">
-                                <li>
-                                    <g:if test="${org.gokbId}">
-                                        <g:link url="${apiSource.baseUrl}/public/orgContent/${org.gokbId}#altnames">${altname}</g:link>
-                                    </g:if>
-                                    <g:else>
-                                        ${altname}
-                                    </g:else>
-                                </li>
+                                <li>${altname}</li>
                             </g:if>
                         </g:each>
                     </ul>
@@ -296,16 +291,9 @@
                             <%-- TODO translation string if this solution is going to be accepted --%>
                             <div class="title">Weitere ...<i class="ui dropdown icon"></i></div>
                             <div class="content">
-                                <ul>
+                                <ul class="la-simpleList">
                                     <g:each in="${altnames.drop(10)}" var="altname">
-                                        <li>
-                                            <g:if test="${org.gokbId}">
-                                                <g:link url="${apiSource.baseUrl}/public/orgContent/${org.gokbId}#altnames">${altname}</g:link>
-                                            </g:if>
-                                            <g:else>
-                                                ${altname}
-                                            </g:else>
-                                        </li>
+                                        <li>${altname}</li>
                                     </g:each>
                                 </ul>
                             </div>
@@ -332,8 +320,7 @@
                                 ${personRole.getPrs()?.getFirst_name()} ${personRole.getPrs()?.getLast_name()} <br />
 
                                 <g:each in="${Contact.findAllByPrsAndContentType(
-                                        personRole.getPrs(),
-                                        RDStore.CCT_EMAIL
+                                        personRole.getPrs(), RDStore.CCT_EMAIL
                                 )}" var="email">
                                     <div class="item js-copyTriggerParent">
                                             <span data-position="right center"
@@ -345,8 +332,7 @@
                                     </div>
                                 </g:each>
                                 <g:each in="${Contact.findAllByPrsAndContentType(
-                                        personRole.getPrs(),
-                                        RDStore.CCT_PHONE
+                                        personRole.getPrs(), RDStore.CCT_PHONE
                                 )}" var="telNr">
                                     <div class="item">
                                         <span data-position="right center">
@@ -382,12 +368,7 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('isWekbCurated')}">
                 <td class="center aligned">
                     <g:if test="${org.gokbId != null && RDStore.OT_PROVIDER.id in org.getAllOrgTypeIds()}">
-                        <g:link url="${apiSource.baseUrl}/public/orgContent/${org.gokbId}">
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                                  data-content="${message(code:'org.isWekbCurated.header.label')}">
-                                <i class="la-gokb la-list-icon icon"></i>
-                            </span>
-                        </g:link>
+                        <ui:wekbButtonLink type="org" gokbId="${org.gokbId}" />
                     </g:if>
                 </td>
             </g:if>
@@ -608,6 +589,31 @@
                     </div>
                 </td>
             </g:if>
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('currentSubscriptions')}">
+                <td>
+                    <g:if test="${actionName == 'currentProviders'}">
+                        <%
+                            if (params.filterPvd && params.filterPvd != "" && params.list('filterPvd')){
+                                (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(
+                                        [org: org, actionName: actionName, status: RDStore.SUBSCRIPTION_CURRENT.id, date_restr: params.subValidOn ? DateUtils.parseDateGeneric(params.subValidOn) : null, providers: params.list('filterPvd')],
+                                        contextService.getOrg())
+                            } else {
+                                (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(
+                                        [org: org, actionName: actionName, status: RDStore.SUBSCRIPTION_CURRENT.id, date_restr: params.subValidOn ? DateUtils.parseDateGeneric(params.subValidOn) : null],
+                                        contextService.getOrg())
+                            }
+                            List<Subscription> currentSubscriptions = Subscription.executeQuery("select s " + base_qry, qry_params)
+                        %>
+                        <g:if test="${currentSubscriptions}">
+                            <ul class="la-simpleList">
+                                <g:each in="${currentSubscriptions}" var="sub">
+                                    <li><g:link controller="subscription" action="show" id="${sub.id}">${sub}</g:link></li>
+                                </g:each>
+                            </ul>
+                        </g:if>
+                    </g:if>
+                </td>
+            </g:if>
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('numberOfSurveys')}">
                     <td class="center aligned">
                         <div class="la-flexbox">
@@ -678,9 +684,14 @@
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('platform')}">
                 <td>
-                    <ul>
+                    <ul class="la-simpleList">
                         <g:each in="${org.platforms}" var="platform">
-                            <li><g:link controller="platform" action="show" id="${platform.id}">${platform.name}</g:link></li>
+                            <li>
+                                <g:link controller="platform" action="show" id="${platform.id}">${platform.name}</g:link>
+                                <g:if test="${platform.gokbId != null}">
+                                    <ui:wekbIconLink type="platform" gokbId="${platform.gokbId}" />
+                                </g:if>
+                            </li>
                         </g:each>
                     </ul>
                 </td>

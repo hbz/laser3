@@ -221,7 +221,7 @@
                             </dt>
                             <dd>
                                 <g:if test="${orgInstanceRecord.metadataDownloaderURL}">
-                                    ${orgInstanceRecord.metadataDownloaderURL} <a href="${orgInstanceRecord.metadataDownloaderURL}"><i title="${message(code: 'org.metadataDownloaderURL.label')} Link" class="external alternate icon"></i></a>
+                                    ${orgInstanceRecord.metadataDownloaderURL} <ui:externalIconLink href="${orgInstanceRecord.metadataDownloaderURL}" tooltip="${message(code: 'org.metadataDownloaderURL.label')} Link" />
                                 </g:if>
                             </dd>
                         </dl>
@@ -231,7 +231,7 @@
                             </dt>
                             <dd>
                                 <g:if test="${orgInstanceRecord.kbartDownloaderURL}">
-                                    ${orgInstanceRecord.kbartDownloaderURL} <a href="${orgInstanceRecord.kbartDownloaderURL}"><i title="${message(code: 'org.KBARTDownloaderURL.label')} Link" class="external alternate icon"></i></a>
+                                    ${orgInstanceRecord.kbartDownloaderURL} <ui:externalIconLink href="${orgInstanceRecord.kbartDownloaderURL}" tooltip="${message(code: 'org.KBARTDownloaderURL.label')} Link" />
                                 </g:if>
                             </dd>
                         </dl>
@@ -598,9 +598,8 @@
                     <div class="content">
                         <div class="ui accordion">
                             <div class="title">
-                                <i class="dropdown icon la-dropdown-accordion"></i>
-                                <g:message code="org.platforms.label" />
-                                <div class="ui blue circular label">${orgInstance.platforms.size()}</div>
+                                <i class="dropdown icon la-dropdown-accordion"></i> <g:message code="org.platforms.label" />
+                                &nbsp;<div class="ui blue circular label">${orgInstance.platforms.size()}</div>
                             </div>
                             <div class="content">
                                 <div class="ui divided middle aligned selection list la-flex-list">
@@ -608,9 +607,7 @@
                                         <g:if test="${platform.status == RDStore.PLATFORM_STATUS_CURRENT}">
                                             <div class="ui item">
                                                 <div class="content la-space-right">
-                                                    <strong><g:link controller="platform" action="show"
-                                                                    id="${platform.id}">${platform.name}</g:link>
-                                                    </strong>
+                                                    <g:link controller="platform" action="show" id="${platform.id}">${platform.name}</g:link>
                                                 </div>
                                             </div>
                                         </g:if>
@@ -625,18 +622,15 @@
                         <div class="content">
                             <div class="ui accordion">
                                 <div class="title">
-                                    <i class="dropdown icon la-dropdown-accordion"></i>
-                                    <g:message code="package.plural" />
-                                    <div class="ui blue circular label">${packages.size()}</div>
+                                    <i class="dropdown icon la-dropdown-accordion"></i> <g:message code="package.plural" />
+                                    &nbsp;<div class="ui blue circular label">${packages.size()}</div>
                                 </div>
                                 <div class="content">
                                     <div class="ui divided middle aligned selection list la-flex-list">
                                         <g:each in="${packages}" var="pkg">
                                             <div class="ui item">
                                                 <div class="content la-space-right">
-                                                    <strong>
-                                                        <g:link controller="package" action="show" id="${pkg.id}">${pkg.name}</g:link>
-                                                    </strong>
+                                                    <g:link controller="package" action="show" id="${pkg.id}">${pkg.name}</g:link>
                                                 </div>
                                             </div>
                                         </g:each>
@@ -648,46 +642,60 @@
                 </g:if>
                 <div class="ui card">
                     <div class="content">
-                        <dl>
-                            <dd>
+                        <div class="ui accordion">
+                            <div class="title">
+                                <i class="dropdown icon la-dropdown-accordion"></i> <g:message code="subscription.plural" />
+                                &nbsp;<div class="ui blue circular label">${currentSubscriptionsCount}/${subLinks.size()}</div>
+                            </div>
+                            <div class="content">
                                 <div class="ui divided middle aligned selection list la-flex-list">
                                     <div class="ui item">
                                         <g:link controller="myInstitution" action="currentSubscriptions" params="[identifier: orgInstance.globalUID, status: RDStore.SUBSCRIPTION_CURRENT.id]">
                                             <div class="content la-space-right">
-                                                <g:message code="subscription.plural.current" /> <div class="ui blue circular label">${currentSubscriptionsCount}</div>
+                                                <i class="icon filter"></i> <g:message code="subscription.plural.current" />
+                                                &nbsp;<div class="ui blue circular label">${currentSubscriptionsCount}</div>
                                             </div>
                                         </g:link>
                                     </div>
                                     <div class="ui item">
                                         <g:link controller="myInstitution" action="currentSubscriptions" params="[identifier: orgInstance.globalUID, status: 'FETCH_ALL']">
                                             <div class="content la-space-right">
-                                                <g:message code="subscription.plural.total" /> <div class="ui blue circular label">${subLinks.size()}</div>
+                                                <i class="icon filter"></i> <g:message code="subscription.plural.total" />
+                                                &nbsp;<div class="ui blue circular label">${subLinks.size()}</div>
                                             </div>
                                         </g:link>
                                     </div>
                                 </div>
-                            </dd>
-                        </dl>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="ui card">
                     <div class="content">
-                        <dl>
-                            <dd>
+                        <div class="ui accordion">
+                            <div class="title">
+                                <i class="dropdown icon la-dropdown-accordion"></i> <g:message code="license.plural" />
+                                &nbsp;<div class="ui blue circular label">${currentLicensesCount}/${licLinks.size()}</div>
+                            </div>
+                            <div class="content">
                                 <div class="ui divided middle aligned selection list la-flex-list">
                                     <div class="ui item">
                                         <div class="content la-space-right">
-                                            <g:link controller="myInstitution" action="currentLicenses" params="[licensor: orgInstance.id, status: RDStore.LICENSE_CURRENT.id, subStatus: RDStore.SUBSCRIPTION_CURRENT.id, filterSubmit: 'Filtern']"><g:message code="license.plural.current" /> <div class="ui blue circular label">${currentLicensesCount}</div></g:link>
+                                            <g:link controller="myInstitution" action="currentLicenses" params="[licensor: orgInstance.id, status: RDStore.LICENSE_CURRENT.id, subStatus: RDStore.SUBSCRIPTION_CURRENT.id, filterSubmit: 'Filtern']">
+                                                <i class="icon filter"></i> <g:message code="license.plural.current" />
+                                                &nbsp;<div class="ui blue circular label">${currentLicensesCount}</div></g:link>
                                         </div>
                                     </div>
                                     <div class="ui item">
                                         <div class="content la-space-right">
-                                            <g:link controller="myInstitution" action="currentLicenses" params="[licensor: orgInstance.id, filterSubmit: 'Filtern']"><g:message code="license.plural.total" /> <div class="ui blue circular label">${licLinks.size()}</div></g:link>
+                                            <g:link controller="myInstitution" action="currentLicenses" params="[licensor: orgInstance.id, filterSubmit: 'Filtern']">
+                                                <i class="icon filter"></i> <g:message code="license.plural.total" />
+                                                &nbsp;<div class="ui blue circular label">${licLinks.size()}</div></g:link>
                                         </div>
                                     </div>
                                 </div>
-                            </dd>
-                        </dl>
+                            </div>
+                        </div>
                     </div>
                 </div>
                         <%--

@@ -55,7 +55,7 @@
                                     <a role="button" class="ui icon blue button la-modern-button la-js-dont-hide-button la-popup-tooltip la-delay"
                                        data-content="${message(code: 'tipp.tooltip.callUrl')}"
                                        href="${platformInstance.primaryUrl.startsWith('http') ? platformInstance.primaryUrl : 'http://' + platformInstance.primaryUrl}"
-                                       target="_blank"><i class="share square icon"></i></a>
+                                       target="_blank"><i class="external alternate icon"></i></a>
                                 </g:if>
                             </dd>
                         </dl>

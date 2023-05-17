@@ -59,7 +59,7 @@
             <g:form action="listProvider" method="get" class="ui form">
                 <laser:render template="/templates/filter/orgFilter"
                           model="[
-                                  tmplConfigShow: [['name', 'identifier'],['curatoryGroup', 'orgStatus'] , ['providerRole', 'isMyX']],
+                                  tmplConfigShow: [['name', 'identifier'], ['curatoryGroup', 'orgStatus'], ['providerRole', 'isMyX']],
                                   tmplConfigFormFilter: true
                           ]"/>
             </g:form>
@@ -70,7 +70,7 @@
                       model="[orgList: orgList,
                               currentProviderIdList: currentProviderIdList,
                               tmplShowCheckbox: false,
-                              tmplConfigShow: ['lineNumber', 'sortname', 'name', 'isWekbCurated', 'altname', 'platform', 'isMyX']
+                              tmplConfigShow: ['lineNumber', 'sortname', 'name', 'altname', 'platform', 'isMyX', 'isWekbCurated']
                       ]"/>
             </g:if>
             <g:else>

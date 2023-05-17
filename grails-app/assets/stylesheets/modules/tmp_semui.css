@@ -301,3 +301,9 @@ h1.header.icon > i.trophy {
 .ui.list > .item.js-copyTriggerParent .js-copyTrigger {
     display: inline-flex !important;
 }
+
+/* simple list */
+
+ul.la-simpleList {
+    padding-left: 20px;
+}
