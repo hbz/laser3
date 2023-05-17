@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.DateUtils; de.laser.Org; de.laser.Package; de.laser.Platform; java.text.SimpleDateFormat; de.laser.remote.ApiSource" %>
+<%@ page import="de.laser.utils.DateUtils; de.laser.Org; de.laser.Package; de.laser.Platform; java.text.SimpleDateFormat" %>
 <laser:htmlStart message="package.show.all" />
 
 <ui:breadcrumbs>
@@ -31,26 +31,17 @@
 <div class="twelve wide column la-clear-before">
     <div>
         <g:if test="${records}">
-            <g:set var="apiSource" value="${ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"/>
-
             <table class="ui sortable celled la-js-responsive-table la-table table">
                 <thead>
                 <tr>
                     <th>${message(code: 'sidewide.number')}</th>
-                    <g:sortableColumn property="name"
-                                      title="${message(code: 'package.show.pkg_name')}"
-                                      params="${params}"/>
-                    <g:sortableColumn property="titleCount"
-                                      title="${message(code: 'package.compare.overview.tipps')}"
-                                      params="${params}"/>
-                    <g:sortableColumn property="providerName" title="${message(code: 'package.content_provider')}"
-                                      params="${params}"/>
-                    <g:sortableColumn property="nominalPlatformName" title="${message(code: 'platform.label')}"
-                                      params="${params}"/>
+                    <g:sortableColumn property="name" title="${message(code: 'package.show.pkg_name')}" params="${params}"/>
+                    <g:sortableColumn property="titleCount" title="${message(code: 'package.compare.overview.tipps')}" params="${params}"/>
+                    <g:sortableColumn property="providerName" title="${message(code: 'package.content_provider')}" params="${params}"/>
+                    <g:sortableColumn property="nominalPlatformName" title="${message(code: 'platform.label')}" params="${params}"/>
                     <th>${message(code: 'package.curatoryGroup.label')}</th>
                     <th>${message(code: 'package.source.automaticUpdates')}</th>
-                    <g:sortableColumn property="lastUpdatedDisplay" title="${message(code: 'package.lastUpdated.label')}"
-                                      params="${params}" defaultOrder="desc"/>
+                    <g:sortableColumn property="lastUpdatedDisplay" title="${message(code: 'package.lastUpdated.label')}" params="${params}" defaultOrder="desc"/>
                     <sec:ifAllGranted roles="ROLE_YODA">
                         <th class="x">
                             <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="left center" data-content="${message(code: 'menu.yoda.reloadPackages')}">
@@ -103,7 +94,7 @@
                             <g:if test="${org}">
                                 <g:link controller="organisation" action="show" id="${org.id}">${record.providerName}</g:link>
                                 <g:if test="${org.gokbId}">
-                                    <a href="${apiSource.baseUrl}/public/orgContent/${org.gokbId}" target="_blank"> <i class="icon external alternate"></i></a>
+                                    <ui:wekbIconLink type="org" gokbId="${org.gokbId}" />
                                 </g:if>
                             </g:if>
                             <g:else>${record.providerName}</g:else>
@@ -112,7 +103,7 @@
                             <g:if test="${plat}">
                                 <g:link controller="platform" action="show" id="${plat.id}">${record.nominalPlatformName}</g:link>
                                 <g:if test="${plat.gokbId}">
-                                    <a href="${apiSource.baseUrl}/public/platformContent/${plat.gokbId}" target="_blank"> <i class="icon external alternate"></i></a>
+                                    <ui:wekbIconLink type="platform" gokbId="${plat.gokbId}" />
                                 </g:if>
                             </g:if>
                             <g:else>${record.nominalPlatformName}</g:else></td>

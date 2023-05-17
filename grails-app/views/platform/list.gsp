@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Platform; de.laser.Package; de.laser.remote.ApiSource; de.laser.Org; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.Platform; de.laser.Package; de.laser.Org; de.laser.storage.RDStore" %>
 <laser:htmlStart message="platforms.all_platforms.label" />
 
 	<ui:breadcrumbs>
@@ -12,7 +12,6 @@
 			<laser:render template="/templates/filter/platformFilter"/>
 
 			<g:if test="${records}">
-				<g:set var="apiSource" value="${ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"/>
 
 				<table class="ui sortable celled la-js-responsive-table la-table table">
 					<thead>
@@ -63,10 +62,7 @@
 									<g:link controller="organisation" action="show" id="${platformInstance.org.id}">${platformInstance.org.getDesignation()}</g:link>
 
 									<g:if test="${platformInstance.org.gokbId != null && RDStore.OT_PROVIDER.id in platformInstance.org.getAllOrgTypeIds()}">
-									%{--										<span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code: 'org.isWekbCurated.header.label')}">--}%
-									%{--											<i class="la-gokb icon la-list-icon"></i>--}%
-									%{--										</span>--}%
-										<a href="${apiSource.baseUrl}/public/orgContent/${platformInstance.org.gokbId}" target="_blank"> <i class="icon external alternate"></i></a>
+										<ui:wekbIconLink type="org" gokbId="${platformInstance.org.gokbId}" />
 									</g:if>
 								</g:if>
 								<g:elseif test="${record.providerUuid}">
@@ -84,25 +80,7 @@
 								</g:if>
 							</td>
 							<td>
-								<a role="button" class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
-								   data-content="${message(code:'org.isWekbCurated.header.label')}" aria-label="${message(code:'org.isWekbCurated.header.label')}"
-								   href="${apiSource.baseUrl}/public/platformContent/${platformInstance.gokbId}" target="_blank"><i class="la-gokb icon" aria-hidden="true"></i>
-								</a>
-
-%{--								<g:if test="${platformInstance && platformInstance.org}">--}%
-%{--									<g:if test="${platformInstance.org.gokbId != null && RDStore.OT_PROVIDER.id in platformInstance.org.getAllOrgTypeIds()}">--}%
-%{--										<a role="button" class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"--}%
-%{--										   data-content="${message(code:'org.isWekbCurated.header.label')}" aria-label="${message(code:'org.isWekbCurated.header.label')}"--}%
-%{--										   href="${apiSource.baseUrl}/public/orgContent/${platformInstance.org.gokbId}" target="_blank"><i class="la-gokb icon" aria-hidden="true"></i>--}%
-%{--										</a>--}%
-%{--									</g:if>--}%
-%{--								</g:if>--}%
-%{--								<g:elseif test="${record.providerUuid}">--}%
-%{--									<a role="button" class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"--}%
-%{--									   data-content="${message(code:'org.isWekbCurated.header.label')}" aria-label="${message(code:'org.isWekbCurated.header.label')}"--}%
-%{--									   href="${apiSource.baseUrl}/public/orgContent/${record.providerUuid}" target="_blank"><i class="la-gokb icon" aria-hidden="true"></i>--}%
-%{--									</a>--}%
-%{--								</g:elseif>--}%
+								<ui:wekbButtonLink type="platform" gokbId="${platformInstance.gokbId}" />
 							</td>
 						</tr>
 					</g:each>

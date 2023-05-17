@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Package; de.laser.RefdataValue; de.laser.remote.ApiSource" %>
+<%@ page import="de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Package; de.laser.RefdataValue" %>
 <laser:htmlStart message="menu.my.packages" serviceInjection="true" />
 
 <ui:breadcrumbs>
@@ -61,8 +61,6 @@
 </ui:filter>
 
 <g:if test="${packageList}">
-    <g:set var="apiSource" value="${ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"/>
-
     <table class="ui sortable celled la-js-responsive-table la-table table">
         <thead>
         <tr>
@@ -92,7 +90,7 @@
                     <g:each in="${pkg.orgs.findAll{it.roleType == RDStore.OR_CONTENT_PROVIDER}.sort{it.org.name}}" var="role">
                         <g:link controller="organisation" action="show" id="${role.org.id}">${role.org.name}</g:link>
                         <g:if test="${role.org.gokbId}">
-                            <a href="${apiSource.baseUrl}/public/orgContent/${role.org.gokbId}" target="_blank"> <i class="icon external alternate"></i></a>
+                            <ui:wekbIconLink type="org" gokbId="${role.org.gokbId}" />
                         </g:if>
                         <br />
                     </g:each>
@@ -102,7 +100,7 @@
                     <g:if test="${pkg.nominalPlatform}">
                         <g:link controller="platform" action="show" id="${pkg.nominalPlatform.id}">${pkg.nominalPlatform.name}</g:link>
                         <g:if test="${pkg.nominalPlatform.gokbId}">
-                            <a href="${apiSource.baseUrl}/public/platformContent/${pkg.nominalPlatform.gokbId}" target="_blank"> <i class="icon external alternate"></i></a>
+                            <ui:wekbIconLink type="platform" gokbId="${pkg.nominalPlatform.gokbId}" />
                         </g:if>
                     </g:if>
                 </td>

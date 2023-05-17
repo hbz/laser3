@@ -368,16 +368,7 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('isWekbCurated')}">
                 <td class="center aligned">
                     <g:if test="${org.gokbId != null && RDStore.OT_PROVIDER.id in org.getAllOrgTypeIds()}">
-                    %{--                        <g:link url="${apiSource.baseUrl}/public/orgContent/${org.gokbId}">--}%
-                    %{--                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"--}%
-                    %{--                                  data-content="${message(code:'org.isWekbCurated.header.label')}">--}%
-                    %{--                                <i class="la-gokb la-list-icon icon"></i>--}%
-                    %{--                            </span>--}%
-                    %{--                        </g:link>--}%
-                        <a role="button" class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
-                           data-content="${message(code:'org.isWekbCurated.header.label')}" aria-label="${message(code:'org.isWekbCurated.header.label')}"
-                           href="${apiSource.baseUrl}/public/orgContent/${org.gokbId}" target="_blank"><i class="la-gokb icon" aria-hidden="true"></i>
-                        </a>
+                        <ui:wekbButtonLink type="org" gokbId="${org.gokbId}" />
                     </g:if>
                 </td>
             </g:if>
@@ -698,7 +689,7 @@
                             <li>
                                 <g:link controller="platform" action="show" id="${platform.id}">${platform.name}</g:link>
                                 <g:if test="${platform.gokbId != null}">
-                                    <a href="${apiSource.baseUrl}/public/platformContent/${platform.gokbId}" target="_blank"> <i class="icon external alternate"></i></a>
+                                    <ui:wekbIconLink type="platform" gokbId="${platform.gokbId}" />
                                 </g:if>
                             </li>
                         </g:each>

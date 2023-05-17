@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Platform; de.laser.remote.ApiSource; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.Platform; de.laser.storage.RDStore" %>
 <laser:htmlStart message="menu.my.platforms" />
 
 <ui:breadcrumbs>
@@ -12,7 +12,6 @@
 <laser:render template="/templates/filter/platformFilter"/>
 
 <g:if test="${platformInstanceList}">
-    <g:set var="apiSource" value="${ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"/>
 
     <table class="ui sortable celled la-js-responsive-table la-table table">
         <thead>
@@ -37,8 +36,7 @@
                 </th>
                 <td>
                     <g:if test="${platformInstance.primaryUrl}">
-                        ${platformInstance.primaryUrl}
-                        <a href="<g:createLink url="${platformInstance.primaryUrl}" />" target="_blank"><i class="external alternate icon"></i></a>
+                        ${platformInstance.primaryUrl} <ui:externalIconLink href="${platformInstance.primaryUrl}" />
                     </g:if>
                 </td>
                 <td>
@@ -46,7 +44,7 @@
                         <g:link controller="organisation" action="show" id="${platformInstance.org.id}">${platformInstance.org.getDesignation()}</g:link>
 
                         <g:if test="${platformInstance.org.gokbId != null}">
-                            <a href="${apiSource.baseUrl}/public/orgContent/${platformInstance.org.gokbId}" target="_blank"> <i class="icon external alternate"></i></a>
+                            <ui:wekbIconLink type="org" gokbId="${platformInstance.org.gokbId}" />
                         </g:if>
                     </g:if>
                 </td>
@@ -82,14 +80,7 @@
                     <g:if test="${platformInstance.org}">
                         <div class="la-flexbox">
                             <g:if test="${platformInstance.org.gokbId != null && RDStore.OT_PROVIDER.id in platformInstance.org.getAllOrgTypeIds()}">
-                            %{--                                <span class="la-long-tooltip la-popup-tooltip la-delay"--}%
-                            %{--                                      data-content="${message(code: 'org.isWekbCurated.header.label')}">--}%
-                            %{--                                    <i class="la-gokb icon la-list-icon"></i>--}%
-                            %{--                                </span>--}%
-                                <a role="button" class="ui icon tiny blue button la-js-dont-hide-button la-popup-tooltip la-delay"
-                                   data-content="${message(code:'org.isWekbCurated.header.label')}" aria-label="${message(code:'org.isWekbCurated.header.label')}"
-                                   href="${apiSource.baseUrl}/public/platformContent/${platformInstance.gokbId}" target="_blank"><i class="la-gokb icon" aria-hidden="true"></i>
-                                </a>
+                                <ui:wekbButtonLink type="platform" gokbId="${platformInstance.gokbId}" />
                             </g:if>
                         </div>
                     </g:if>

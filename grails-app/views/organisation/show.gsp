@@ -221,7 +221,7 @@
                             </dt>
                             <dd>
                                 <g:if test="${orgInstanceRecord.metadataDownloaderURL}">
-                                    ${orgInstanceRecord.metadataDownloaderURL} <a href="${orgInstanceRecord.metadataDownloaderURL}"><i title="${message(code: 'org.metadataDownloaderURL.label')} Link" class="external alternate icon"></i></a>
+                                    ${orgInstanceRecord.metadataDownloaderURL} <ui:externalIconLink href="${orgInstanceRecord.metadataDownloaderURL}" tooltip="${message(code: 'org.metadataDownloaderURL.label')} Link" />
                                 </g:if>
                             </dd>
                         </dl>
@@ -231,7 +231,7 @@
                             </dt>
                             <dd>
                                 <g:if test="${orgInstanceRecord.kbartDownloaderURL}">
-                                    ${orgInstanceRecord.kbartDownloaderURL} <a href="${orgInstanceRecord.kbartDownloaderURL}"><i title="${message(code: 'org.KBARTDownloaderURL.label')} Link" class="external alternate icon"></i></a>
+                                    ${orgInstanceRecord.kbartDownloaderURL} <ui:externalIconLink href="${orgInstanceRecord.kbartDownloaderURL}" tooltip="${message(code: 'org.KBARTDownloaderURL.label')} Link" />
                                 </g:if>
                             </dd>
                         </dl>
