@@ -142,7 +142,7 @@ class IssueEntitlement extends AbstractBase implements Comparable {
       Subscription subscription = (Subscription) configMap.subscription
       TitleInstancePackagePlatform tipp = (TitleInstancePackagePlatform) configMap.tipp
       IssueEntitlement ie = findBySubscriptionAndTippAndStatusNotEqual(subscription,tipp, RDStore.TIPP_STATUS_REMOVED)
-      if(!ie && !PermanentTitle.findByOwnerAndTitleInstancePackagePlatform(subscription.subscriber, tipp)) {
+      if(!ie && !PermanentTitle.findByOwnerAndTipp(subscription.subscriber, tipp)) {
           ie = new IssueEntitlement(subscription: subscription, tipp: tipp, medium: tipp.medium, status:tipp.status, accessType: tipp.accessType, openAccess: tipp.openAccess, name: tipp.name)
           //ie.generateSortTitle()
       }
@@ -152,10 +152,10 @@ class IssueEntitlement extends AbstractBase implements Comparable {
                 if (subscription.hasPerpetualAccess) {
                     ie.perpetualAccessBySub = subscription
 
-                    if (!PermanentTitle.findByOwnerAndTitleInstancePackagePlatform(subscription.subscriber, tipp)) {
+                    if (!PermanentTitle.findByOwnerAndTipp(subscription.subscriber, tipp)) {
                         PermanentTitle permanentTitle = new PermanentTitle(subscription: subscription,
                                 issueEntitlement: ie,
-                                titleInstancePackagePlatform: tipp,
+                                tipp: tipp,
                                 owner: subscription.subscriber).save()
                     }
                 }

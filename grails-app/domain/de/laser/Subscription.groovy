@@ -291,10 +291,10 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
                         IssueEntitlement issueEntitlement = IssueEntitlement.get(ieID)
                         TitleInstancePackagePlatform titleInstancePackagePlatform = issueEntitlement.tipp
 
-                        if(!PermanentTitle.findByOwnerAndTitleInstancePackagePlatform(owner, titleInstancePackagePlatform)){
+                        if(!PermanentTitle.findByOwnerAndTipp(owner, titleInstancePackagePlatform)){
                             PermanentTitle permanentTitle = new PermanentTitle(subscription: this,
                                     issueEntitlement: issueEntitlement,
-                                    titleInstancePackagePlatform: titleInstancePackagePlatform,
+                                    tipp: titleInstancePackagePlatform,
                                     owner: owner).save()
                         }
                     }

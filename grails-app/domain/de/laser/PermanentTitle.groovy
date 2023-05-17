@@ -5,7 +5,7 @@ class PermanentTitle {
     Org owner
     Subscription subscription
     IssueEntitlement issueEntitlement
-    TitleInstancePackagePlatform titleInstancePackagePlatform
+    TitleInstancePackagePlatform tipp
 
     Date dateCreated
     Date lastUpdated
@@ -24,6 +24,6 @@ class PermanentTitle {
         owner column: 'pt_owner_fk'
         subscription column: 'pt_subscription_fk'
         issueEntitlement column: 'pt_ie_fk'
-        titleInstancePackagePlatform column: 'pt_tipp_fk'
+        tipp column: 'pt_tipp_fk'
     }
 }

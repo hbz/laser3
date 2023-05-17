@@ -1,6 +1,6 @@
 <%@ page import="de.laser.TitleInstancePackagePlatform; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.base.AbstractReport" %>
 <laser:serviceInjection />
-<g:if test="${controllerName == 'package'}">
+<g:if test="${controllerName == 'package' || fillDropdownsWithPackage}">
     <g:set var="seriesNames"
            value="${packageInstance ? controlledListService.getAllPossibleSeriesByPackage(packageInstance,actionName) : []}"/>
     <g:set var="subjects"
@@ -20,8 +20,7 @@
     <g:set var="coverageDepths"
            value="${packageInstance ? controlledListService.getAllPossibleCoverageDepthsByPackage(packageInstance,actionName) : []}"/>
 </g:if>
-
-<g:if test="${controllerName == 'subscription'}">
+<g:elseif test="${controllerName == 'subscription'}">
     <g:set var="seriesNames"
            value="${subscription ? controlledListService.getAllPossibleSeriesBySub(subscription) : []}"/>
     <g:set var="subjects"
@@ -40,9 +39,8 @@
            value="${subscription ? controlledListService.getAllPossibleMediumTypesBySub(subscription) : []}"/>
     <g:set var="coverageDepths"
            value="${subscription ? controlledListService.getAllPossibleCoverageDepthsBySub(subscription) : []}"/>
-</g:if>
-
-<g:if test="${controllerName == 'title'}">
+</g:elseif>
+<g:elseif test="${controllerName == 'title'}">
     <g:set var="seriesNames"
            value="${params.status ? controlledListService.getAllPossibleSeriesByStatus(params) : []}"/>
     <g:set var="subjects"
@@ -61,7 +59,7 @@
            value="${params.status ? controlledListService.getAllPossibleMediumTypesByStatus(params) : []}"/>
     <g:set var="coverageDepths"
            value="${params.status ? controlledListService.getAllPossibleCoverageDepthsByStatus(params) : []}"/>
-</g:if>
+</g:elseif>
 
 <g:set var="availableStatus" value="${RefdataCategory.getAllRefdataValues(RDConstants.TIPP_STATUS)-RDStore.TIPP_STATUS_REMOVED}"/>
 
@@ -284,7 +282,7 @@
 
 
         <div class="three fields">
-            <g:if test="${controllerName == 'subscription' && !showStatsFilter}">
+            <g:if test="${controllerName == 'subscription' && !showStatsFilter && !notShow}">
                 <div class="field">
                     <label>${message(code: 'issueEntitlement.perpetualAccessBySub.label')}</label>
                     <ui:select class="ui fluid dropdown" name="hasPerpetualAccess"

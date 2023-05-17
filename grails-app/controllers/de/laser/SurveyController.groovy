@@ -885,24 +885,20 @@ class SurveyController {
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        /*String base_qry = null
-        Map<String,Object> qry_params = [subscription: result.surveyConfig.subscription]
+        if(result.subscription.packages) {
+            params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
+            Map<String, Object> query = filterService.getTippQuery(params, result.subscription.packages.pkg)
+            result.filterSet = query.filterSet
+            List<Long> titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
+            result.titlesList = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList.drop(result.offset).take(result.max), [sort: 'sortname']) : []
+            result.num_tipp_rows = titlesList.size()
 
-        Date date_filter
-        date_filter = new Date()
-        result.as_at_date = date_filter
-        base_qry = " from IssueEntitlement as ie where ie.subscription = :subscription "
-        base_qry += " and (( :startDate >= coalesce(ie.accessStartDate,subscription.startDate) ) OR ( ie.accessStartDate is null )) and ( ( :endDate <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) ) "
-        qry_params.startDate = date_filter
-        qry_params.endDate = date_filter*/
+            result
 
-        def query = filterService.getIssueEntitlementQuery(params, result.surveyConfig.subscription)
-        result.filterSet = query.filterSet
-
-        result.num_ies_rows = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams).size()
-
-        result.entitlements = IssueEntitlement.executeQuery("select ie " + query.query, query.queryParams, [max: result.max, offset: result.offset])
-
+        }else {
+            result.titlesList = []
+            result.num_tipp_rows = 0
+        }
         result
 
     }

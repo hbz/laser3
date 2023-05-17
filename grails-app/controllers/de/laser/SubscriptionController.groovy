@@ -1100,12 +1100,11 @@ class SubscriptionController {
         result.editable = surveyService.isEditableSurvey(result.institution, result.surveyConfig.surveyInfo)
         if (result.subscription) {
             if(result.editable && params.singleTitle) {
-                IssueEntitlement ie = IssueEntitlement.get(params.singleTitle)
-                TitleInstancePackagePlatform tipp = ie.tipp
+                TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.get(params.singleTitle)
 
                 boolean tippExistsInParentSub = false
 
-                if(IssueEntitlement.findByTippAndSubscriptionAndStatus(tipp, result.surveyConfig.subscription, RDStore.TIPP_STATUS_CURRENT)) {
+/*                if(IssueEntitlement.findByTippAndSubscriptionAndStatus(tipp, result.surveyConfig.subscription, RDStore.TIPP_STATUS_CURRENT)) {
                     tippExistsInParentSub = true
                 }else {
                    List<TitleInstancePackagePlatform> titleInstancePackagePlatformList = TitleInstancePackagePlatform.findAllByHostPlatformURLAndStatus(tipp.hostPlatformURL, RDStore.TIPP_STATUS_CURRENT)
@@ -1115,8 +1114,8 @@ class SubscriptionController {
                             tipp = titleInstancePackagePlatform
                         }
                     }
-                }
-
+                }*/
+                tippExistsInParentSub = true
                 if(tippExistsInParentSub) {
                     try {
 
@@ -1128,8 +1127,10 @@ class SubscriptionController {
                             }
                         }
 
-                        if (issueEntitlementGroup && subscriptionService.addEntitlement(result.subscription, tipp.gokbId, ie, (ie.priceItems != null), result.surveyConfig.pickAndChoosePerpetualAccess, issueEntitlementGroup)) {
+                        if (issueEntitlementGroup && subscriptionService.addEntitlement(result.subscription, tipp.gokbId, null, (tipp.priceItems != null), result.surveyConfig.pickAndChoosePerpetualAccess, issueEntitlementGroup)) {
                             flash.message = message(code: 'subscription.details.addEntitlements.titleAddToSub', args: [tipp.name]) as String
+                        }else {
+                            log.error("no issueEntitlementGroup found and no issueEntitlementGroup created, because it is not set a issueEntitlementGroupName in survey config!")
                         }
                     }
                     catch (EntitlementCreationException e) {
@@ -1444,7 +1445,7 @@ class SubscriptionController {
         else {
             Map queryMap = [:]
             String filename
-            if(params.tab == 'allIEs') {
+            if(params.tab == 'allTipps') {
                 queryMap = [sub: ctrlResult.result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT, pkgIds: ctrlResult.result.subscription.packages?.pkg?.id]
                 if(params.reportType)
                     queryMap.reportType = params.reportType
@@ -1480,27 +1481,6 @@ class SubscriptionController {
                 queryMap = [subscriptions: subscriptions, ieStatus: RDStore.TIPP_STATUS_CURRENT, pkgIds: packageIds]
                 filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.currentTitles') + '_' + ctrlResult.result.previousSubscription.dropdownNamingConvention())
             }
-
-            List<Long> toBeSelectedTippIDs = []
-            /*if(params.tab == 'toBeSelectedIEs') {
-                List<Long> allTippIDs = IssueEntitlement.executeQuery("select ie.tipp.id from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :ieStatus", [sub: ctrlResult.result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])
-
-                List<Long> selectedTippIDs =  IssueEntitlement.executeQuery("select ie.tipp.id from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :ieStatus ", [sub: ctrlResult.result.subscriberSub, ieStatus: RDStore.TIPP_STATUS_CURRENT])
-                toBeSelectedTippIDs.addAll(allTippIDs - selectedTippIDs)
-                if(toBeSelectedTippIDs.size()) {
-                    queryMap = [sub: ctrlResult.result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT, tippIds: toBeSelectedTippIDs, pkgIds: ctrlResult.result.subscription.packages?.pkg?.id]
-                    if(params.reportType)
-                        queryMap.reportType = params.reportType
-                    if(params.metricType)
-                        queryMap.metricTypes = params.metricType
-                    if(params.accessType)
-                        queryMap.accessTypes = params.accessType
-                    if(params.accessMethod)
-                        queryMap.accessMethods = params.accessMethod
-                    queryMap.platform = Platform.get(params.platform)
-                }
-                filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.toBeSelectedIEs') + '_' + ctrlResult.result.subscriberSub.dropdownNamingConvention())
-            }*/
 
             if (params.exportKBart) {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")

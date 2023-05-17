@@ -443,7 +443,7 @@ class AjaxController {
 		  Map<String, String> newChecked = checked ?: [:]
           if(params.referer == 'renewEntitlementsWithSurvey'){
 
-              Subscription baseSub = Subscription.get(params.baseSubID)
+              /*Subscription baseSub = Subscription.get(params.baseSubID)
               Subscription newSub = Subscription.get(params.newSubID)
               Subscription previousSubscription = newSub._getCalculatedPreviousForSurvey()
 
@@ -457,23 +457,6 @@ class AjaxController {
 
               List<IssueEntitlement> sourceIEs
 
-              if(params.tab == 'currentIEs') {
-                  Map query = filterService.getIssueEntitlementQuery(params, previousSubscription)
-                  List<IssueEntitlement> previousTipps = previousSubscription ? IssueEntitlement.executeQuery("select ie.tipp.id " + query.query, query.queryParams) : []
-                  sourceIEs = previousTipps ? IssueEntitlement.findAllByTippInListAndSubscriptionAndStatusNotEqual(TitleInstancePackagePlatform.findAllByIdInList(previousTipps), previousSubscription, RDStore.TIPP_STATUS_REMOVED) : []
-                  sourceIEs = sourceIEs + (sourceTipps ? IssueEntitlement.findAllByTippInListAndSubscriptionAndStatusNotEqual(TitleInstancePackagePlatform.findAllByIdInList(targetIETipps), newSub, RDStore.TIPP_STATUS_REMOVED) : [])
-
-              }
-
-              //TODO @Moe please verify
-              if(params.tab in ['allIEs', 'toBeSelectedIEs']) {
-                  Map query = filterService.getIssueEntitlementQuery(params, baseSub)
-                  List<Long> allIETipps = IssueEntitlement.executeQuery("select ie.tipp.id " + query.query, query.queryParams)
-                  sourceTipps = allIETipps
-                  sourceTipps = sourceTipps.minus(selectedIETipps)
-                  sourceTipps = sourceTipps.minus(targetIETipps)
-                  sourceIEs = sourceTipps ? IssueEntitlement.findAllByTippInListAndSubscriptionAndStatus(TitleInstancePackagePlatform.findAllByIdInList(sourceTipps), baseSub, RDStore.TIPP_STATUS_CURRENT) : []
-              }
               if(params.tab == 'selectedIEs') {
                   sourceTipps = selectedIETipps
                   sourceTipps = sourceTipps.minus(targetIETipps)
@@ -482,7 +465,7 @@ class AjaxController {
 
               sourceIEs.each { IssueEntitlement ie ->
                   newChecked[ie.id.toString()] = params.checked == 'true' ? 'checked' : null
-              }
+              }*/
 
           }
           else {
