@@ -36,7 +36,7 @@
                 </th>
                 <td>
                     <g:if test="${platformInstance.primaryUrl}">
-                        ${platformInstance.primaryUrl} <ui:externalIconLink href="${platformInstance.primaryUrl}" />
+                        ${platformInstance.primaryUrl} <ui:linkWithIcon href="${platformInstance.primaryUrl}"/>
                     </g:if>
                 </td>
                 <td>

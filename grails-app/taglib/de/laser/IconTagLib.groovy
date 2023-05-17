@@ -233,14 +233,6 @@ class IconTagLib {
         out << '</span>'
     }
 
-    def linkWithIcon = { attrs, body ->
-        out << ' <span class="la-popup-tooltip la-delay" style="bottom: -3px" data-position="top right" data-content="Diese URL aufrufen ..">'
-        out << '&nbsp;<a href="' + attrs.href + '" aria-label="' + attrs.href + '" target="_blank" class="ui icon blue la-js-dont-hide-button">'
-        out << '<i aria-hidden="true" class="external alternate icon"></i>'
-        out << '</a>'
-        out << '</span>'
-    }
-
     def customerTypeIcon = { attrs, body ->
         if (attrs.org && attrs.org.isCustomerType_Inst_Pro()) {
             out << '<span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center" data-content="' + attrs.org.getCustomerTypeI10n() + '">'
