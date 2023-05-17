@@ -92,6 +92,17 @@
                             </g:if>
                         </dl>
 
+                        <dl>
+                            <dt class="control-label">${message(code: 'default.status.label')}</dt>
+                            <dd><ui:xEditableRefData owner="${subscription}" field="status"
+                                                     config="${RDConstants.SUBSCRIPTION_STATUS}"
+                                                     constraint="removeValue_deleted"/></dd>
+                            <g:if test="${editable}">
+                                <dd class="la-js-editmode-container"><ui:auditButton
+                                        auditable="[subscription, 'status']" auditConfigs="${auditConfigs}"/></dd>
+                            </g:if>
+                        </dl>
+
                         <g:if test="${(subscription.type == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL &&
                                 subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION) ||
                                 (subscription.type == RDStore.SUBSCRIPTION_TYPE_LOCAL &&
@@ -116,16 +127,6 @@
 
                 <div class="ui card">
                     <div class="content">
-                        <dl>
-                            <dt class="control-label">${message(code: 'default.status.label')}</dt>
-                            <dd><ui:xEditableRefData owner="${subscription}" field="status"
-                                                        config="${RDConstants.SUBSCRIPTION_STATUS}"
-                                                        constraint="removeValue_deleted"/></dd>
-                            <g:if test="${editable}">
-                                <dd class="la-js-editmode-container"><ui:auditButton
-                                        auditable="[subscription, 'status']" auditConfigs="${auditConfigs}"/></dd>
-                            </g:if>
-                        </dl>
                         <sec:ifAnyGranted roles="ROLE_YODA">
                             <dl>
                                 <dt class="control-label">alter Lizenztyp</dt>
@@ -209,7 +210,7 @@
                         <g:if test="${subscription.packages}">
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.holdingSelection.label')}</dt>
-                                <dd><ui:xEditableRefData owner="${subscription}" field="holdingSelection"/></dd>
+                                <dd><ui:xEditableRefData owner="${subscription}" field="holdingSelection" config="${RDConstants.SUBSCRIPTION_HOLDING}"/></dd>
                                 <g:if test="${editable}">
                                     <dd class="la-js-editmode-container"><ui:auditButton
                                             auditable="[subscription, 'holdingSelection']"

@@ -58,6 +58,8 @@
                onclick="JSPC.app.personCreate('contactPersonForPublic');"><g:message
                     code="person.create_new.contactPersonForPublic.label"/></a>
 
+            <a href="#addressFormModal" class="item" onclick="JSPC.app.addresscreate_org('${institution.id}');"><g:message code="address.add.label"/></a>
+
         </g:if>
 
         <ui:actionsDropdownItem notActive="true" data-ui="modal" href="#copyFilteredEmailAddresses_ajaxModal"
@@ -186,6 +188,11 @@
                 }).modal('show');
             }
         });
+    }
+    JSPC.app.addresscreate_org = function (orgId) {
+        var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>?orgId=' + orgId;
+        var func = bb8.ajax4SimpleModalFunction("#addressFormModal", url);
+        func();
     }
 </laser:script>
 

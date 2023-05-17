@@ -7,6 +7,14 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5047    17.05.2023  dev     3.1         Andreas Bug         Statistik lokaler Lizenzen konnte nicht aufgerufen werden
+
+5044    17.05.2023  dev     3.1         Andreas Bug         Tippfehler in Referenzwert behoben
+
+5027    17.05.2023  dev     3.1         Andreas Feature     Umstrukturierungen bei den Kontaktkacheln
+
+4924    17.05.2023  dev     3.1         Andreas Feature     Entfernen des überflüssigen Reiters
+
 5028    16.05.2023  dev     3.1         Andreas Feature     Umstellung der we:kb-Kommunikation auf POST
 
 5039    15.05.2023  dev     3.1         David   Feature     Umfragen - Navigation & weitere Anpassungen

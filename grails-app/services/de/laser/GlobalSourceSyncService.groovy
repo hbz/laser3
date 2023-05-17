@@ -130,7 +130,11 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 }
                 else {
                     if(result) {
-                        processScrollPage(result, componentType, sdf.format(oldDate))
+                        Set<String> permanentlyDeletedTitles = []
+                        if(source.rectype == RECTYPE_TIPP) {
+                            permanentlyDeletedTitles = getPermanentlyDeletedTitles(sdf.format(oldDate))
+                        }
+                        processScrollPage(result, componentType, sdf.format(oldDate), null, permanentlyDeletedTitles)
                     }
                     else {
                         log.info("no records updated - leaving everything as is ...")
@@ -334,7 +338,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     max = 1000
                     break
                 case "sortTitle": triggeredTypes = ['Package', 'TitleInstancePackagePlatform']
-                    max = 100
+                    max = MAX_TIPP_COUNT_PER_PAGE
                     break
                 case "ddc": triggeredTypes = ['TitleInstancePackagePlatform']
                     RefdataCategory.getAllRefdataValues(RDConstants.DDC).each { RefdataValue rdv ->
@@ -366,7 +370,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 triggeredTypes.each { String componentType ->
                     GlobalRecordSource.withNewSession { Session sess ->
                         int offset = 0
-                        Map<String, Object> queryParams = [componentType: componentType, max: max]
+                        Map<String, Object> queryParams = [componentType: componentType, max: max, offset: offset]
                         Map<String,Object> result = fetchRecordJSON(false,queryParams)
                         if(result) {
                             if(result.error == 404) {
@@ -376,14 +380,14 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                 boolean more = true
                                 while(more) {
                                     log.debug("processing entries ${offset}-${offset+max} for ${componentType} ...")
-                                    Set<String> uuids = result.records.collect { Map entry -> entry.uuid } as Set<String>
+                                    Map<String, Map> wekbRecords = result.records.collectEntries { Map entry -> [entry.uuid, entry] }
                                     switch(componentType) {
-                                        case 'Package': List<Package> packages = Package.findAllByGokbIdInList(uuids.toList())
+                                        case 'Package': List<Package> packages = Package.findAllByGokbIdInList(wekbRecords.keySet().toList())
                                             log.debug("from current page, ${packages.size()} packages exist in LAS:eR")
                                             packages.eachWithIndex { Package pkg, int idx ->
                                                 log.debug("now processing package ${idx} with uuid ${pkg.gokbId}, total entry: ${offset+idx}")
                                                 if(dataToLoad == 'identifier') {
-                                                    List identifiers = result.records.find { record -> record.uuid == pkg.gokbId }.identifiers
+                                                    List identifiers = wekbRecords.get(pkg.gokbId).identifiers
                                                     if(identifiers) {
                                                         if(pkg.ids) {
                                                             Identifier.executeUpdate('delete from Identifier i where i.pkg = :pkg',[pkg:pkg]) //damn those wrestlers ...
@@ -401,21 +405,21 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                                 }
                                             }
                                             break
-                                        case 'Platform': List<Platform> platforms = Platform.findAllByGokbIdInList(uuids.toList())
+                                        case 'Platform': List<Platform> platforms = Platform.findAllByGokbIdInList(wekbRecords.keySet().toList())
                                             log.debug("from current page, ${platforms.size()} packages exist in LAS:eR")
                                             platforms.eachWithIndex { Platform platform, int idx ->
                                                 log.debug("now processing platform ${idx} with uuid ${platform.gokbId}, total entry: ${offset+idx}")
-                                                platform.titleNamespace = result.records.find { record -> record.uuid == platform.gokbId }.titleNamespace
+                                                platform.titleNamespace = wekbRecords.get(platform.gokbId).titleNamespace
                                                 platform.save()
                                             }
                                             break
-                                        case 'Org': List<Org> providers = Org.findAllByGokbIdInList(uuids.toList())
+                                        case 'Org': List<Org> providers = Org.findAllByGokbIdInList(wekbRecords.keySet().toList())
                                             log.debug("from current page, ${providers.size()} providers exist in LAS:eR")
                                             providers.eachWithIndex { Org provider, int idx ->
                                                 log.debug("now processing org ${idx} with uuid ${provider.gokbId}, total entry: ${offset+idx}")
                                                 switch(dataToLoad) {
                                                     case "identifier":
-                                                        List identifiers = result.records.find { record -> record.uuid == provider.gokbId }.identifiers
+                                                        List identifiers = wekbRecords.get(provider.gokbId).identifiers
                                                         if(identifiers) {
                                                             if(provider.ids) {
                                                                 Identifier.executeUpdate('delete from Identifier i where i.org = :org',[org:provider]) //damn those wrestlers ...
@@ -427,19 +431,19 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                                             }
                                                         }
                                                         break
-                                                    case "abbreviatedName": provider.sortname = result.records.find { record -> record.uuid == provider.gokbId }.abbreviatedName
+                                                    case "abbreviatedName": provider.sortname = wekbRecords.get(provider.gokbId).abbreviatedName
                                                         provider.save()
                                                         break
                                                 }
                                             }
                                             break
-                                        case 'TitleInstancePackagePlatform': List<TitleInstancePackagePlatform> tipps = TitleInstancePackagePlatform.findAllByGokbIdInList(uuids.toList())
+                                        case 'TitleInstancePackagePlatform': List<TitleInstancePackagePlatform> tipps = TitleInstancePackagePlatform.findAllByGokbIdInList(wekbRecords.keySet().toList())
                                             log.debug("from this page, ${tipps.size()} TIPPs do exist in LAS:eR")
                                             tipps.eachWithIndex { TitleInstancePackagePlatform tipp, int idx ->
                                                 log.debug("now processing tipp ${idx} with uuid ${tipp.gokbId}, total entry: ${offset+idx}")
                                                 switch(dataToLoad) {
                                                     case "identifier":
-                                                        List identifiers = result.records.find { record -> record.uuid == tipp.gokbId }.identifiers
+                                                        List identifiers = wekbRecords.get(tipp.gokbId).identifiers
                                                         Set<String> oldIds = []
                                                         if(tipp.ids)
                                                             oldIds.addAll(tipp.ids.collect { Identifier id -> id.value })
@@ -456,7 +460,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                                         }
                                                         break
                                                     case "ddc":
-                                                        List ddcs = result.records.find { record -> record.uuid == tipp.gokbId }.ddcs
+                                                        List ddcs = wekbRecords.get(tipp.gokbId).ddcs
                                                         Set<String> oldDdcs = []
                                                         if(tipp.ddcs)
                                                             oldDdcs.addAll(tipp.ddcs.collect { DeweyDecimalClassification ddc -> ddc.ddc.value })
@@ -472,7 +476,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                                         }
                                                         break
                                                     case "language":
-                                                        List languages = result.records.find { record -> record.uuid == tipp.gokbId }.languages
+                                                        List languages = wekbRecords.get(tipp.gokbId).languages
                                                         Set<String> oldLanguages = []
                                                         if(tipp.languages)
                                                             oldLanguages.addAll(tipp.languages.collect { Language language -> language.language.value })
@@ -489,21 +493,21 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                                         }
                                                         break
                                                     case "editionStatement":
-                                                        tipp.editionStatement = result.records.find { record -> record.uuid == tipp.gokbId }.editionStatement
+                                                        tipp.editionStatement = wekbRecords.get(tipp.gokbId).editionStatement
                                                         tipp.save()
                                                         break
                                                     case "accessType":
-                                                        String newAccessType = result.records.find { record -> record.uuid == tipp.gokbId }.accessType
+                                                        String newAccessType = wekbRecords.get(tipp.gokbId).accessType
                                                         tipp.accessType = accessType.get(newAccessType)
                                                         tipp.save()
                                                         break
                                                     case "openAccess":
-                                                        String newOpenAccess = result.records.find { record -> record.uuid == tipp.gokbId }.openAccess
+                                                        String newOpenAccess = wekbRecords.get(tipp.gokbId).openAccess
                                                         tipp.openAccess = openAccess.get(newOpenAccess)
                                                         tipp.save()
                                                         break
                                                     case "sortTitle":
-                                                        tipp.name = result.records.find { record -> record.uuid == tipp.gokbId }.name
+                                                        tipp.name = wekbRecords.get(tipp.gokbId).name
                                                         tipp.sortname = escapeService.generateSortTitle(tipp.name)
                                                         tipp.save()
                                                         break
@@ -513,15 +517,14 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                             sess.flush()
                                             break
                                     }
-                                    if(result.currentPage < result.lastPage) {
+                                    more = result.currentPage < result.lastPage
+                                    if(more) {
                                         //String scrollId = result.scrollId
                                         offset += max
+                                        queryParams.offset = offset
                                         //log.debug("using scrollId ${scrollId}")
                                         //result = fetchRecordJSON(false, queryParams+[scrollId: scrollId])
                                         result = fetchRecordJSON(false, queryParams)
-                                    }
-                                    else {
-                                        more = false
                                     }
                                     sess.flush()
                                     sess.clear()
@@ -2232,13 +2235,16 @@ class GlobalSourceSyncService extends AbstractLockableService {
         result
     }
 
-    Set<String> getPermanentlyDeletedTitles() {
+    Set<String> getPermanentlyDeletedTitles(String changedFrom = null) {
         Set<String> result = []
-        Map<String, Object> recordBatch = fetchRecordJSON(false, [componentType: 'TitleInstancePackagePlatform', status: PERMANENTLY_DELETED])
+        Map<String, Object> queryParams = [componentType: 'deletedkbcomponent', status: PERMANENTLY_DELETED, max: MAX_TIPP_COUNT_PER_PAGE]
+        if(changedFrom)
+            queryParams.changedSince = changedFrom
+        Map<String, Object> recordBatch = fetchRecordJSON(false, queryParams)
         for(int i = 0;i < recordBatch.count; i+=MAX_TIPP_COUNT_PER_PAGE) {
-            result.addAll(recordBatch.records.collect { record -> record.uuid })
+            result.addAll(recordBatch.records.findAllWhere{ record -> record.componentType == 'TitleInstancePackagePlatform' }.collect { record -> record.uuid })
             if(recordBatch.currentPage < recordBatch.lastPage)
-                recordBatch = fetchRecordJSON(false, [componentType: 'TitleInstancePackagePlatform'])
+                recordBatch = fetchRecordJSON(false, queryParams+[offset: i])
         }
         result
     }
