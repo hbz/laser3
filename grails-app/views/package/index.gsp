@@ -110,10 +110,11 @@
                         <td>
                             <g:if test="${record.curatoryGroups}">
                                 <g:each in="${record.curatoryGroups}" var="curatoryGroup">
+                                    <ui:wekbIconLink type="curatoryGroup" gokbId="${curatoryGroup.curatoryGroup}" />
                                     ${curatoryGroup.name}
-                                    <g:link url="${editUrl.endsWith('/') ? editUrl : editUrl+'/'}resource/show/${curatoryGroup.curatoryGroup}" target="_blank">
-                                        <i class="icon external alternate"></i>
-                                    </g:link>
+%{--                                    <g:link url="${editUrl.endsWith('/') ? editUrl : editUrl+'/'}resource/show/${curatoryGroup.curatoryGroup}" target="_blank">--}%
+%{--                                        <i class="icon external alternate"></i>--}%
+%{--                                    </g:link>--}%
                                     <br />
                                 </g:each>
                             </g:if>
