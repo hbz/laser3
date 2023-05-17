@@ -98,7 +98,7 @@ class OrganisationController  {
         Map<String,Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
 
         if(!params.containsKey("tab"))
-            params.tab = "general"
+            params.tab = "ezb"
         Boolean isComboRelated = Combo.findByFromOrgAndToOrg(result.orgInstance, result.institution)
         result.isComboRelated = isComboRelated
         result.contextOrg = result.institution //for the properties template
