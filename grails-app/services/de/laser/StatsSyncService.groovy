@@ -351,8 +351,8 @@ class StatsSyncService {
                                                 }
                                                 else if (result.error && result.error != true) {
                                                     notifyError(sql, [platform: c4asPlatform.name, uuid: c4asPlatform.gokbId, url: statsUrl, error: result, customer: keyPair.customerName, keyPair: "${keyPair.value}:${keyPair.requestorKey}"])
-                                                    sql.executeInsert('insert into stats_missing_period (smp_version, smp_from_date, smp_to_date, smp_customer_fk, smp_platform_fk, smp_report_id) values (0, :from, :to, :customer, :platform, :reportID)',
-                                                            [platform: c4asPlatform.id, customer: keyPair.customerId, reportID: reportID, from: new Timestamp(startTime.getTimeInMillis()), to: new Timestamp(currentYearEnd.getTimeInMillis())])
+                                                    /*sql.executeInsert('insert into stats_missing_period (smp_version, smp_from_date, smp_to_date, smp_customer_fk, smp_platform_fk, smp_report_id) values (0, :from, :to, :customer, :platform, :reportID)',
+                                                            [platform: c4asPlatform.id, customer: keyPair.customerId, reportID: reportID, from: new Timestamp(startTime.getTimeInMillis()), to: new Timestamp(currentYearEnd.getTimeInMillis())])*/
                                                 }
                                                 startTime.add(Calendar.YEAR, 1)
                                                 currentYearEnd.add(Calendar.YEAR, 1)
@@ -360,6 +360,7 @@ class StatsSyncService {
                                                 if (calendarConfig.now.before(startTime)) {
                                                     more = false
                                                     //log.debug("${Thread.currentThread().getName()} has finished current data fetching for report ${reportID}. Processing missing periods for ${keyPair.customerName}")
+                                                    /*
                                                     Map<String, Object> missingParams = [customer: keyPair.customerId, platform: c4asPlatform.id, report: reportID]
                                                     List<GroovyRowResult> currentMissingPeriods = sql.rows('select smp_id, smp_from_date, smp_to_date from stats_missing_period where smp_customer_fk = :customer and smp_platform_fk = :platform and smp_report_id = :report', missingParams)
                                                     List<Object> donePeriods = []
@@ -371,13 +372,13 @@ class StatsSyncService {
                                                         if (result.containsKey('reports')) {
                                                             donePeriods << row.get("smp_id")
                                                             processCounter4ReportData(result, c4asPlatform, keyPair.customerUID, namespaces, sql, statsSql)
-                                                            /*
+
                                                                 List<Map<String, Object>> customerReports = reports.get(keyPair.customerUID)
                                                                 if (!customerReports)
                                                                     customerReports = []
                                                                 customerReports << result
                                                                 reports.put(keyPair.customerUID, customerReports)
-                                                            */
+
                                                         }
                                                         else if (result.error) {
                                                             notifyError(sql, [platform: c4asPlatform.name, uuid: c4asPlatform.gokbId, url: statsUrl, error: result.error, customer: keyPair.customerName, keyPair: "${keyPair.value}:${keyPair.requestorKey}"])
@@ -387,6 +388,7 @@ class StatsSyncService {
                                                         //log.debug("${Thread.currentThread().getName()} has fetched missing data, removing rows ${donePeriods.toListString()}")
                                                         sql.execute('delete from stats_missing_period where smp_id = any(:periodIds)', [periodIds: sql.getDataSource().getConnection().createArrayOf('bigint', donePeriods.toArray())])
                                                     }
+                                                    */
                                                 }
                                                 log.debug("${Thread.currentThread().getName()} has finished report ${reportID} and gets next report for ${keyPair.customerName}")
                                                 //limbo before next request
@@ -507,8 +509,8 @@ class StatsSyncService {
                                                             }
                                                             else {
                                                                 notifyError(sql, [platform: c5asPlatform.name, uuid: c5asPlatform.gokbId, url: url, error: report.error, customer: keyPair.customerName, keyPair: "${keyPair.value}:${keyPair.requestorKey}"])
-                                                                    sql.executeInsert('insert into stats_missing_period (smp_version, smp_from_date, smp_to_date, smp_customer_fk, smp_platform_fk, smp_report_id) values (0, :from, :to, :customer, :platform, :reportID)',
-                                                                            [platform: c5asPlatform.id, customer: keyPair.customerId, reportID: reportId, from: new Timestamp(startTime.getTimeInMillis()), to: new Timestamp(currentYearEnd.getTimeInMillis())])
+                                                                /*sql.executeInsert('insert into stats_missing_period (smp_version, smp_from_date, smp_to_date, smp_customer_fk, smp_platform_fk, smp_report_id) values (0, :from, :to, :customer, :platform, :reportID)',
+                                                                            [platform: c5asPlatform.id, customer: keyPair.customerId, reportID: reportId, from: new Timestamp(startTime.getTimeInMillis()), to: new Timestamp(currentYearEnd.getTimeInMillis())])*/
                                                             }
                                                         }
                                                         startTime.add(Calendar.YEAR, 1)
@@ -517,6 +519,7 @@ class StatsSyncService {
                                                         if (calendarConfig.now.before(startTime)) {
                                                             more = false
                                                             //log.debug("${Thread.currentThread().getName()} has finished fetching running data for report ${reportId}. Processing missing periods for ${keyPair.customerName} ...")
+                                                            /*
                                                             Map<String, Object> missingParams = [customer: keyPair.customerId, platform: c5asPlatform.id, report: reportId]
                                                             List<GroovyRowResult> currentMissingPeriods = sql.rows('select smp_id, smp_from_date, smp_to_date from stats_missing_period where smp_customer_fk = :customer and smp_platform_fk = :platform and smp_report_id = :report', missingParams)
                                                             List<Object> donePeriods = []
@@ -525,13 +528,13 @@ class StatsSyncService {
                                                                 report = performCounter5Request(statsUrl + reportReqId + params + "&begin_date=${monthFormatter.format(from)}&end_date=${monthFormatter.format(to)}", reportId)
                                                                 if (report?.containsKey('reports')) {
                                                                     donePeriods << row.get("smp_id")
-                                                                    /*
+
                                                                     List<Map<String, Object>> customerReports = reports.get(keyPair.customerUID)
                                                                     if (!customerReports)
                                                                         customerReports = []
                                                                     customerReports << report
                                                                     reports.put(keyPair.customerUID, customerReports)
-                                                                    */
+
                                                                     processCounter5ReportData(report, c5asPlatform, keyPair.customerUID, namespaces, sql, statsSql)
                                                                 }
                                                                 else if (report?.error) {
@@ -540,8 +543,9 @@ class StatsSyncService {
                                                             }
                                                             if (donePeriods.size() > 0) {
                                                                 //log.debug("${Thread.currentThread().getName()} has fetched missing data, removing rows ${donePeriods.toListString()}")
-                                                                sql.execute('delete from stats_missing_period where smp_id = any(:periodIds)', [periodIds: sql.getDataSource().getConnection().createArrayOf('bigint', donePeriods.toArray())])
+                                                                //sql.execute('delete from stats_missing_period where smp_id = any(:periodIds)', [periodIds: sql.getDataSource().getConnection().createArrayOf('bigint', donePeriods.toArray())])
                                                             }
+                                                            */
                                                             //log.debug("${Thread.currentThread().getName()} has finished report ${reportId} and gets next report for ${keyPair.customerName}")
                                                         }
                                                         //limbo before next request
@@ -760,7 +764,7 @@ class StatsSyncService {
     }
 
     void processCounter5ReportData(Map<String, Object> reportData, Platform c5asPlatform, String customerUID, Set<Long> namespaces, Sql sql, Sql statsSql) {
-        Connection sqlConn = sql.getDataSource().getConnection()
+        //Connection sqlConn = sql.getDataSource().getConnection()
         if (reportData.reportID in Counter5Report.COUNTER_5_PLATFORM_REPORTS) {
             int[] resultCount = statsSql.withBatch("insert into counter5report (c5r_version, c5r_publisher, c5r_platform_guid, c5r_report_institution_guid, c5r_report_type, c5r_metric_type, c5r_data_type, c5r_report_from, c5r_report_to, c5r_report_count) " +
                     "values (:version, :publisher, :platform, :reportInstitution, :reportType, :metricType, :dataType, :reportFrom, :reportTo, :reportCount)") { stmt ->
@@ -805,7 +809,14 @@ class StatsSyncService {
         }
         else {
             //GParsPool.withExistingPool(pool) {
-            reportData.reports.items.eachWithIndex { Map reportItem, int t ->
+            List items = []
+            if(reportData.reports.items instanceof Map) {
+                items.addAll(reportData.reports.items.values())
+            }
+            else {
+                items.addAll(reportData.reports.items)
+            }
+            items.eachWithIndex { Map reportItem, int t ->
                 String batchQuery = "insert into counter5report (c5r_version, c5r_online_identifier, c5r_print_identifier, c5r_proprietary_identifier, c5r_isbn, c5r_doi, c5r_publisher, c5r_database_name, c5r_platform_guid, c5r_report_institution_guid, c5r_report_type, c5r_metric_type, c5r_data_type, c5r_access_type, c5r_access_method, c5r_report_from, c5r_report_to, c5r_report_count, c5r_yop, c5r_identifier_hash) " +
                         "values (:version, :onlineIdentifier, :printIdentifier, :proprietaryIdentifier, :isbn, :doi, :publisher, :databaseName, :platform, :reportInstitution, :reportType, :metricType, :dataType, :accessType, :accessMethod, :reportFrom, :reportTo, :reportCount, :yop, :identifierHash) " +
                         "on conflict (c5r_report_from, c5r_report_to, c5r_report_type, c5r_metric_type, c5r_platform_guid, c5r_report_institution_guid, c5r_identifier_hash) " +
