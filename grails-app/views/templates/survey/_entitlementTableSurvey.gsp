@@ -14,7 +14,7 @@
                    value="${surveyService.titleContainedBySubscription(subscriberSub, tipp)}"/>
             <g:if test="${surveyConfig.pickAndChoosePerpetualAccess}">
                 <g:set var="participantPerpetualAccessToTitle"
-                       value="${surveyService.hasParticipantPerpetualAccessToTitle2(subscriptionIDs, tipp)}"/>
+                       value="${surveyService.hasParticipantPerpetualAccessToTitle3(subscriber, tipp)}"/>
                 <g:set var="allowedToSelect"
                        value="${!(participantPerpetualAccessToTitle) && (!ieInNewSub)}"/>
             </g:if>
@@ -39,7 +39,7 @@
                             </span>
                         </g:if>
                         <div class="one wide column">
-                            <g:if test="${(params.tab == 'previousIEs' || params.tab == 'allIEs' || params.tab == 'toBeSelectedIEs' || params.tab == 'currentIEs') && (editable && !ieInNewSub && allowedToSelect)}">
+                            <g:if test="${(params.tab == 'currentIEs') && (editable && !ieInNewSub && allowedToSelect)}">
                                 <input type="checkbox" name="bulkflag"
                                        class="bulkcheck la-vertical-centered" ${checkedCache ? checkedCache[ie.id.toString()] : ''}>
                             </g:if>
@@ -139,22 +139,12 @@
                                 <div class="ui icon blue button la-modern-button "><i
                                         class="ui angle double down icon"></i>
                                 </div>
-                                <g:if test="${(params.tab == 'allIEs' || params.tab == 'selectedIEs') && editable && ieInNewSub && de.laser.IssueEntitlementGroupItem.findByIeAndIeGroup(ieInNewSub, de.laser.IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscriberSub))}">
+                                <g:if test="${(params.tab == 'selectedIEs') && editable && ieInNewSub && de.laser.IssueEntitlementGroupItem.findByIeAndIeGroup(ieInNewSub, de.laser.IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscriberSub))}">
                                     <g:link class="ui icon button blue la-modern-button la-popup-tooltip la-delay"
                                             action="processRemoveIssueEntitlementsSurvey"
                                             params="${[id: subscriberSub.id, singleTitle: ieInNewSub.id, packageId: packageId, surveyConfigID: surveyConfig?.id]}"
                                             data-content="${message(code: 'subscription.details.addEntitlements.remove_now')}">
                                         <i class="shopping basket icon"></i>
-                                    </g:link>
-                                </g:if>
-
-
-                                <g:if test="${(params.tab == 'allIEs' || params.tab == 'toBeSelectedIEs') && editable && !ieInNewSub && allowedToSelect}">
-                                    <g:link class="ui icon negative button la-modern-button la-popup-tooltip la-delay"
-                                            action="processAddIssueEntitlementsSurvey"
-                                            params="${[id: subscriberSub.id, singleTitle: ie.id, surveyConfigID: surveyConfig?.id]}"
-                                            data-content="${message(code: 'subscription.details.addEntitlements.add_now')}">
-                                        <i class="la-basket-shopping slash icon"></i>
                                     </g:link>
                                 </g:if>
                             </div>

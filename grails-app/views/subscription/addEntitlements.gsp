@@ -213,7 +213,7 @@
         <g:each in="${tipps}" var="tipp">
 
             <g:set var="perpetualAccessToTitle"
-                   value="${surveyService.hasParticipantPerpetualAccessToTitle2(subscriptionIDs, tipp)}"/>
+                   value="${surveyService.hasParticipantPerpetualAccessToTitle3(result.subscriber, tipp)}"/>
 
             <tr data-index="${tipp.gokbId}">
                 <td>

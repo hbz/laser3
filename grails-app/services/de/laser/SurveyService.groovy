@@ -1465,6 +1465,23 @@ class SurveyService {
         }
     }
 
+    boolean hasParticipantPerpetualAccessToTitle3(Org org, TitleInstancePackagePlatform tipp){
+            Integer countPermanentTitles = PermanentTitle.executeQuery('select count(pt.id) from PermanentTitle pt where ' +
+                    '(pt.tipp.hostPlatformURL = :hostPlatformURL OR  pt.tipp = :tipp) AND ' +
+                    'tipp.status != :tippStatus AND ' +
+                    'pt.owner = :org',
+                    [hostPlatformURL: tipp.hostPlatformURL,
+                     tippStatus: RDStore.TIPP_STATUS_REMOVED,
+                     tipp: tipp,
+                     org: org])[0]
+
+            if(countPermanentTitles > 0){
+                return true
+            }else {
+                return false
+            }
+    }
+
     /**
      * Called from views
      * Checks if the org has perpetual access to the given title

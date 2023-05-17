@@ -25,7 +25,7 @@
                        value="${surveyService.titleContainedBySubscription(subscriberSub, tipp)}"/>
                 <g:if test="${surveyConfig.pickAndChoosePerpetualAccess}">
                     <g:set var="participantPerpetualAccessToTitle"
-                           value="${surveyService.hasParticipantPerpetualAccessToTitle2(subscriptionIDs, tipp)}"/>
+                           value="${surveyService.hasParticipantPerpetualAccessToTitle3(subscriber, tipp)}"/>
                     <g:set var="allowedToSelect"
                            value="${!(participantPerpetualAccessToTitle)}"/>
                 </g:if>
@@ -74,24 +74,7 @@
                         <td><g:each in="${usage.keySet()}" var="metric">${usage.get(metric)}<br></g:each></td>
                     </g:if>
                     <td>
-                        <g:if test="${(params.tab in ['allIEsStats', 'holdingIEsStats']) && editable && ieInNewSub && de.laser.IssueEntitlementGroupItem.findByIeAndIeGroup(ieInNewSub, de.laser.IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscriberSub))}">
-                            <g:link class="ui icon positive check button la-popup-tooltip la-delay"
-                                    action="processRemoveIssueEntitlementsSurvey"
-                                    params="${[id: subscriberSub.id, singleTitle: ieInNewSub.id, packageId: packageId, surveyConfigID: surveyConfig?.id]}"
-                                    data-content="${message(code: 'subscription.details.addEntitlements.remove_now')}">
-                                <i class="minus icon"></i>
-                            </g:link>
-                        </g:if>
 
-
-                        <g:if test="${(params.tab in ['allIEsStats', 'holdingIEsStats']) && editable && !ieInNewSub && allowedToSelect }">
-                            <g:link class="ui icon button blue la-modern-button la-popup-tooltip la-delay"
-                                    action="processAddIssueEntitlementsSurvey"
-                                    params="${[id: subscriberSub.id, singleTitle: ie?.id, surveyConfigID: surveyConfig?.id]}"
-                                    data-content="${message(code: 'subscription.details.addEntitlements.add_now')}">
-                                <i class="plus icon"></i>
-                            </g:link>
-                        </g:if>
                     </td>
                 </tr>
             </g:each>
