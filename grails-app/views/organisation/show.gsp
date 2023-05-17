@@ -594,6 +594,104 @@
             --%>
 
             <g:if test="${isProviderOrAgency}">
+
+                <div class="ui card">
+                    <div class="content">
+                        <div class="ui accordion">
+                            <div class="title">
+                                <i class="dropdown icon la-dropdown-accordion"></i>
+                                <div class="ui horizontal relaxed list">
+                                    <div class="item">
+                                        <strong><g:message code="org.platforms.label" /></strong>
+                                        &nbsp;<div class="ui blue circular label">${orgInstance.platforms.size()}</div>
+                                    </div>
+                                    <div class="item">
+                                        <strong><g:message code="package.plural" /></strong>
+                                        &nbsp;<div class="ui blue circular label">${packages.size()}</div>
+                                    </div>
+                                    <div class="item">
+                                        <strong><g:message code="subscription.plural" /></strong>
+                                        &nbsp;<div class="ui blue circular label">${currentSubscriptionsCount}/${subLinks.size()}</div>
+                                    </div>
+                                    <div class="item">
+                                        <strong><g:message code="license.plural" /></strong>
+                                        &nbsp;<div class="ui blue circular label">${currentLicensesCount}/${licLinks.size()}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="content">
+                                <p class="ui header">%{--<i class="icon cloud"></i>--}% <g:message code="org.platforms.label" /></p>
+
+                                <div class="ui divided middle aligned selection list la-flex-list">
+                                    <g:each in="${orgInstance.platforms}" var="platform">
+                                        <g:if test="${platform.status == RDStore.PLATFORM_STATUS_CURRENT}">
+                                            <div class="ui item">
+                                                <div class="content la-space-right">
+                                                    <g:link controller="platform" action="show" id="${platform.id}">${platform.name}</g:link>
+                                                </div>
+                                            </div>
+                                        </g:if>
+                                    </g:each>
+                                </div>
+
+                                <p class="ui header">%{--<i class="icon gift"></i>--}% <g:message code="package.plural" /></p>
+
+                                <div class="ui divided middle aligned selection list la-flex-list">
+                                    <g:each in="${packages}" var="pkg">
+                                        <div class="ui item">
+                                            <div class="content la-space-right">
+                                                <g:link controller="package" action="show" id="${pkg.id}">${pkg.name}</g:link>
+                                            </div>
+                                        </div>
+                                    </g:each>
+                                </div>
+
+                                <p class="ui header">%{--<i class="icon clipboard"></i>--}% <g:message code="subscription.plural" /></p>
+
+                                <div class="ui divided middle aligned selection list la-flex-list">
+                                    <div class="ui item">
+                                        <g:link controller="myInstitution" action="currentSubscriptions" params="[identifier: orgInstance.globalUID, status: RDStore.SUBSCRIPTION_CURRENT.id]">
+                                            <div class="content la-space-right">
+                                                <i class="icon filter"></i> <g:message code="subscription.plural.current" />
+                                            &nbsp;<div class="ui blue circular label">${currentSubscriptionsCount}</div>
+                                            </div>
+                                        </g:link>
+                                    </div>
+                                    <div class="ui item">
+                                        <g:link controller="myInstitution" action="currentSubscriptions" params="[identifier: orgInstance.globalUID, status: 'FETCH_ALL']">
+                                            <div class="content la-space-right">
+                                                <i class="icon filter"></i> <g:message code="subscription.plural.total" />
+                                            &nbsp;<div class="ui blue circular label">${subLinks.size()}</div>
+                                            </div>
+                                        </g:link>
+                                    </div>
+                                </div>
+
+                                <p class="ui header">%{--<i class="icon balance scale"></i>--}% <g:message code="license.plural" /></p>
+
+                                <div class="ui divided middle aligned selection list la-flex-list">
+                                    <div class="ui item">
+                                        <div class="content la-space-right">
+                                            <g:link controller="myInstitution" action="currentLicenses" params="[licensor: orgInstance.id, status: RDStore.LICENSE_CURRENT.id, subStatus: RDStore.SUBSCRIPTION_CURRENT.id, filterSubmit: 'Filtern']">
+                                                <i class="icon filter"></i> <g:message code="license.plural.current" />
+                                                &nbsp;<div class="ui blue circular label">${currentLicensesCount}</div></g:link>
+                                        </div>
+                                    </div>
+                                    <div class="ui item">
+                                        <div class="content la-space-right">
+                                            <g:link controller="myInstitution" action="currentLicenses" params="[licensor: orgInstance.id, filterSubmit: 'Filtern']">
+                                                <i class="icon filter"></i> <g:message code="license.plural.total" />
+                                                &nbsp;<div class="ui blue circular label">${licLinks.size()}</div></g:link>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                %{--
                 <div class="ui card">
                     <div class="content">
                         <div class="ui accordion">
@@ -617,7 +715,7 @@
                         </div>
                     </div>
                 </div>
-                <g:if test="${isProviderOrAgency}">
+
                     <div class="ui card">
                         <div class="content">
                             <div class="ui accordion">
@@ -639,7 +737,7 @@
                             </div>
                         </div>
                     </div>
-                </g:if>
+
                 <div class="ui card">
                     <div class="content">
                         <div class="ui accordion">
@@ -698,6 +796,7 @@
                         </div>
                     </div>
                 </div>
+                --}%
                         <%--
                         <div class="ui accordion">
                             <div class="title">
