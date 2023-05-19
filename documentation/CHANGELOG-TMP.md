@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5038    19.05.2023  rc-3.1  3.1         Andreas Feature     Hinweis auf Maximaleintrag
+
 5047    17.05.2023  dev     3.1         Andreas Bug         Statistik lokaler Lizenzen konnte nicht aufgerufen werden
 
 5044    17.05.2023  dev     3.1         Andreas Bug         Tippfehler in Referenzwert behoben

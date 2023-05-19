@@ -2246,7 +2246,7 @@ class SubscriptionControllerService {
                 result.num_ies = IssueEntitlement.executeQuery("select count(ie.id) " + query2.query, query2.queryParams)[0]
             }
             result.num_ies_rows = entitlements.size()
-            if(entitlements) {
+            if(entitlements && !params.containsKey('fileformat')) {
                 String orderClause = 'order by tipp.sortname'
                 if(params.sort){
                     if(params.sort == 'startDate')

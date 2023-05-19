@@ -25,14 +25,24 @@
             </ui:exportDropdownItem>
             --%>
             <g:if test="${actionName == 'index'}">
-                <ui:exportDropdownItem>
-                    <a class="item" data-ui="modal" href="#individuallyExportIEsModal">Export</a>
-                </ui:exportDropdownItem>
+                <g:if test="${currentTitlesCounts < 1000000}">
+                    <ui:exportDropdownItem>
+                        <a class="item" data-ui="modal" href="#individuallyExportIEsModal">Export</a>
+                    </ui:exportDropdownItem>
+                </g:if>
+                <g:else>
+                    <ui:actionsDropdownItemDisabled message="Export" tooltip="${message(code: 'export.titles.excelLimit')}"/>
+                </g:else>
             </g:if>
             <g:elseif test="${actionName == 'addEntitlements'}">
-                <ui:exportDropdownItem>
-                    <a class="item" data-ui="modal" href="#individuallyExportTippsModal">Export</a>
-                </ui:exportDropdownItem>
+                <g:if test="${currentTitlesCounts < 1000000}">
+                    <ui:exportDropdownItem>
+                        <a class="item" data-ui="modal" href="#individuallyExportTippsModal">Export</a>
+                    </ui:exportDropdownItem>
+                </g:if>
+                <g:else>
+                    <ui:actionsDropdownItemDisabled message="Export" tooltip="${message(code: 'export.titles.excelLimit')}"/>
+                </g:else>
             </g:elseif>
             <%--
             <ui:exportDropdownItem>

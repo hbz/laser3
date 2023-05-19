@@ -37,9 +37,14 @@
             </g:else>
         </ui:exportDropdownItem>
         --%>
-        <ui:exportDropdownItem>
-            <a class="item" data-ui="modal" href="#individuallyExportTippsModal">Export</a>
-        </ui:exportDropdownItem>
+        <g:if test="${num_ti_rows < 100000}">
+            <ui:exportDropdownItem>
+                <a class="item" data-ui="modal" href="#individuallyExportTippsModal">Export</a>
+            </ui:exportDropdownItem>
+        </g:if>
+        <g:else>
+            <ui:actionsDropdownItemDisabled message="Export" tooltip="${message(code: 'export.titles.excelLimit')}"/>
+        </g:else>
         <ui:exportDropdownItem>
             <g:if test="${filterSet}">
                 <g:link class="item js-open-confirm-modal"
