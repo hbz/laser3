@@ -4,6 +4,7 @@ package de.laser
 import de.laser.base.AbstractCoverage
 import de.laser.finance.CostItem
 import de.laser.finance.PriceItem
+import de.laser.properties.LicenseProperty
 import de.laser.remote.ApiSource
 import de.laser.storage.PropertyStore
 import de.laser.utils.DateUtils
@@ -370,6 +371,87 @@ class ExportClickMeService {
                             'costItem.orderNumber'                      : [field: 'costItem.order.orderNumber', label: 'Order Number', message: 'financials.order_number']
                     */
                     ]
+            ]
+    ]
+
+    static Map<String, Object> EXPORT_LICENSE_CONFIG = [
+            licenses: [
+                    label: 'License',
+                    message: 'license.label',
+                    fields: [
+                            'license.reference'       : [field: 'licenses.reference', label: 'Name', message: 'exportClickMe.license.name', defaultChecked: 'true' ],
+                            'license.status'          : [field: 'licenses.status', label: 'Status', message: 'exportClickMe.license.status'],
+                            'license.licenseCategory' : [field: 'licenses.licenseCategory', label: 'License Category', message: 'license.licenseCategory.label'],
+                            'license.startDate'       : [field: 'licenses.startDate', label: 'Start Date', message: 'exportClickMe.license.startDate'],
+                            'license.endDate'         : [field: 'licenses.endDate', label: 'End Date', message: 'exportClickMe.license.endDate'],
+                            'license.openEnded'       : [field: 'licenses.openEnded', label: 'Open Ended', message: 'license.openEnded.label'],
+                            'license.uuid'            : [field: 'licenses.globalUID', label: 'Laser-UUID',  message: null],
+                    ]
+            ],
+
+            subscription: [
+                    label: 'Subscription',
+                    message: 'subscription.label',
+                    fields: [
+                            'subscription.name'                         : [field: 'name', label: 'Name', message: 'subscription.name.label', defaultChecked: 'true'],
+                            'subscription.startDate'                    : [field: 'startDate', label: 'Start Date', message: 'subscription.startDate.label', defaultChecked: 'true'],
+                            'subscription.endDate'                      : [field: 'endDate', label: 'End Date', message: 'subscription.endDate.label', defaultChecked: 'true'],
+                            'subscription.manualCancellationDate'       : [field: 'manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
+                            'subscription.isMultiYear'                  : [field: 'isMultiYear', label: 'Multi Year', message: 'subscription.isMultiYear.label', defaultChecked: 'true'],
+                            'subscription.referenceYear'                : [field: 'referenceYear', label: 'Reference Year', message: 'subscription.referenceYear.label', defaultChecked: 'true'],
+                            //'subscription.isAutomaticRenewAnnually'     : [field: 'isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'], //to be shown for PRO users only!
+                            'subscription.status'                       : [field: 'status', label: 'Status', message: 'subscription.status.label', defaultChecked: 'true'],
+                            'subscription.kind'                         : [field: 'kind', label: 'Kind', message: 'subscription.kind.label', defaultChecked: 'true'],
+                            'subscription.form'                         : [field: 'form', label: 'Form', message: 'subscription.form.label', defaultChecked: 'true'],
+                            'subscription.resource'                     : [field: 'resource', label: 'Resource', message: 'subscription.resource.label'],
+                            'subscription.hasPerpetualAccess'           : [field: 'hasPerpetualAccess', label: 'Perpetual Access', message: 'subscription.hasPerpetualAccess.label'],
+                            'subscription.hasPublishComponent'          : [field: 'hasPublishComponent', label: 'Publish Component', message: 'subscription.hasPublishComponent.label'],
+                            'subscription.holdingSelection'             : [field: 'holdingSelection', label: 'Holding Selection', message: 'subscription.holdingSelection.label'],
+                            'subscription.uuid'                         : [field: 'globalUID', label: 'Laser-UUID',  message: null],
+                    ]
+            ],
+
+            providers: [
+                    label: 'Provider',
+                    message: 'default.provider.label',
+                    fields: [
+                            'provider.sortname'          : [field: 'providers.sortname', label: 'Sortname', message: 'exportClickMe.provider.sortname'],
+                            'provider.name'              : [field: 'providers.name', label: 'Name', message: 'exportClickMe.provider.name', defaultChecked: 'true' ],
+                            'provider.altnames'          : [field: 'providers.altnames.name', label: 'Alt Name', message: 'exportClickMe.provider.altnames'],
+                            'provider.url'               : [field: 'providers.url', label: 'Url', message: 'exportClickMe.provider.url'],
+                            'provider.platforms'         : [field: 'providers.platforms.name', label: 'Platform', message: 'org.platforms.label'],
+                            'provider.platforms.url'     : [field: 'providers.platforms.primaryUrl', label: 'Primary URL', message: 'platform.primaryURL'],
+                    ]
+            ],
+
+            agencies: [
+                    label: 'Agency',
+                    message: 'default.agency.label',
+                    fields: [
+                            'agency.sortname'          : [field: 'agencies.sortname', label: 'Sortname', message: 'exportClickMe.agency.sortname'],
+                            'agency.name'              : [field: 'agencies.name', label: 'Name', message: 'exportClickMe.agency.name', defaultChecked: 'true' ],
+                            'agency.altnames'          : [field: 'agencies.altnames.name', label: 'Alt Name', message: 'exportClickMe.agency.altnames'],
+                            'agency.url'               : [field: 'agencies.url', label: 'Url', message: 'exportClickMe.agency.url'],
+                    ]
+            ],
+
+            participantIdentifiers : [
+                    label: 'Identifiers',
+                    message: 'exportClickMe.participantIdentifiers',
+                    fields: [:],
+
+            ],
+
+            licProperties : [
+                    label: 'Public properties',
+                    message: 'default.properties',
+                    fields: [:]
+            ],
+
+            myLicProperties : [
+                    label: 'My properties',
+                    message: 'default.properties.my',
+                    fields: [:]
             ]
     ]
 
@@ -1286,6 +1368,106 @@ class ExportClickMeService {
     }
 
     /**
+     * Gets the license fields for the given institution
+     * @param institution the context institution whose perspective should be taken for the export
+     * @return the configuration map for the license export
+     */
+    Map<String, Object> getExportLicenseFields(Org institution) {
+
+        Map<String, Object> exportFields = [:]
+        Locale locale = LocaleUtils.getCurrentLocale()
+        String localizedName
+        String localizedValue
+        switch (locale) {
+            case Locale.GERMANY:
+            case Locale.GERMAN: localizedName = "name_de"
+                localizedValue = "value_de"
+                break
+            default: localizedName = "name_en"
+                localizedValue = "value_en"
+                break
+        }
+
+        EXPORT_LICENSE_CONFIG.keySet().each { String key ->
+            if(key == 'institutions') {
+                if(customerTypeService.isConsortium(institution.getCustomerType())) {
+                    EXPORT_LICENSE_CONFIG.get(key).fields.each {
+                        exportFields.put(it.key, it.value)
+                    }
+                }
+            }
+            else {
+                EXPORT_LICENSE_CONFIG.get(key).fields.each {
+                    exportFields.put(it.key, it.value)
+                }
+            }
+        }
+
+        if(institution.getCustomerType() == CustomerTypeService.ORG_INST_PRO) {
+            exportFields.put('subscription.isAutomaticRenewAnnually', [field: 'isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'])
+        }
+
+        IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
+            exportFields.put("participantIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
+        }
+
+        Set<PropertyDefinition> propList = PropertyDefinition.executeQuery("select pd from PropertyDefinition pd where pd.descr in (:availableTypes) and (pd.tenant = null or pd.tenant = :ctx) order by pd."+localizedName+" asc",
+                [ctx:institution,availableTypes:[PropertyDefinition.LIC_PROP]])
+
+
+        propList.each { PropertyDefinition propertyDefinition ->
+            exportFields.put("licProperty." + propertyDefinition.id, [field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant?.id == institution.id)])
+        }
+
+        exportFields
+    }
+
+    /**
+     * Generic call from views
+     * Gets the license fields for the given institution for the UI
+     * @param institution the context institution whose perspective should be taken for the export
+     * @return the configuration map for the subscription export for the UI
+     */
+    Map<String, Object> getExportLicenseFieldsForUI(Org institution) {
+
+        Map<String, Object> fields = EXPORT_LICENSE_CONFIG as Map
+        if(!customerTypeService.isConsortium(institution.getCustomerType())) {
+            fields.remove('institutions')
+        }
+        Locale locale = LocaleUtils.getCurrentLocale()
+        String localizedName
+        String localizedValue
+        switch (locale) {
+            case Locale.GERMANY:
+            case Locale.GERMAN: localizedName = "name_de"
+                localizedValue = "value_de"
+                break
+            default: localizedName = "name_en"
+                localizedValue = "value_en"
+                break
+        }
+
+        fields.licProperties.fields.clear()
+        fields.myLicProperties.fields.clear()
+
+        IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
+            fields.participantIdentifiers.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
+        }
+
+        Set<PropertyDefinition> propList = PropertyDefinition.executeQuery("select pd from PropertyDefinition pd where pd.descr in (:availableTypes) and (pd.tenant = null or pd.tenant = :ctx) order by pd."+localizedName+" asc", [ctx:institution,availableTypes:[PropertyDefinition.LIC_PROP]])
+
+        propList.each { PropertyDefinition propertyDefinition ->
+            //the proxies again ...
+            if(propertyDefinition.tenant?.id == institution.id)
+                fields.myLicProperties.fields << ["licProperty.${propertyDefinition.id}": [field: null, label: propertyDefinition."${localizedName}", privateProperty: true]]
+            else
+                fields.licProperties.fields << ["licProperty.${propertyDefinition.id}": [field: null, label: propertyDefinition."${localizedName}", privateProperty: false]]
+        }
+
+        fields
+    }
+
+    /**
      * Gets the cost item fields for the given institution
      * @return the configuration map for the cost item export
      */
@@ -2134,6 +2316,48 @@ class ExportClickMeService {
     }
 
     /**
+     * Exports the given fields from the given subscriptions
+     * @param result the subscription set to export
+     * @param selectedFields the fields which should appear
+     * @param institution the institution as reference
+     * @return an Excel worksheet containing the export
+     */
+    def exportLicenses(ArrayList<License> result, Map<String, Object> selectedFields, Org institution, FORMAT format) {
+        Locale locale = LocaleUtils.getCurrentLocale()
+
+        Map<String, Object> selectedExportFields = [:]
+
+        Map<String, Object> configFields = getExportSubscriptionFields(institution)
+
+        configFields.keySet().each { String k ->
+            if (k in selectedFields.keySet() ) {
+                selectedExportFields.put(k, configFields.get(k))
+            }
+        }
+
+        List titles = _exportTitles(selectedExportFields, locale)
+
+        String localizedName = LocaleUtils.getLocalizedAttributeName('name')
+
+        List exportData = []
+        result.each { License license ->
+            _setLicRow(license, selectedExportFields, exportData, localizedName, format)
+        }
+
+        switch(format) {
+            case FORMAT.XLS:
+            Map sheetData = [:]
+            sheetData[messageSource.getMessage('menu.my.licenses', null, locale)] = [titleRow: titles, columnData: exportData]
+
+            return exportService.generateXLSXWorkbook(sheetData)
+        case FORMAT.CSV:
+            return exportService.generateSeparatorTableString(titles, exportData, ',')
+        case FORMAT.TSV:
+            return exportService.generateSeparatorTableString(titles, exportData, '\t')
+        }
+    }
+
+    /**
      * Exports the given fields from the given cost items
      * @param result the cost item set to export
      * @param selectedFields the fields which should appear
@@ -2863,6 +3087,62 @@ class ExportClickMeService {
                             selectedCostItemFields.each {
                                 row.add(createTableCell(format, ' '))
                             }
+                    }
+                }
+                else {
+                    def fieldValue = _getFieldValue(result, field, sdf)
+                    String strVal = ' '
+                    if(fieldValue instanceof Year) {
+                        strVal = fieldValue != null ? fieldValue.toString() : ' '
+                    }
+                    else {
+                        strVal = fieldValue != null ? fieldValue : ' '
+                    }
+                    row.add(createTableCell(format, strVal))
+                }
+            }
+        }
+        exportData.add(row)
+    }
+
+    /**
+     * Fills a row for the license export
+     * @param result the license to export
+     * @param selectedFields the fields which should appear
+     * @param exportData the list containing the export rows
+     * @param localizedName the localised name of the property name
+     */
+    private void _setLicRow(def result, Map<String, Object> selectedFields, List exportData, String localizedName, FORMAT format){
+        List row = []
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
+        Locale locale = LocaleUtils.getCurrentLocale()
+        Org org, contextOrg = contextService.getOrg()
+        License license
+        if(result instanceof License) {
+            license = result
+            org = license.getLicensee()
+        }
+        else {
+            license = result.lic
+            org = result.orgs
+        }
+
+
+        selectedFields.keySet().each { String fieldKey ->
+            Map mapSelecetedFields = selectedFields.get(fieldKey)
+            String field = mapSelecetedFields.field
+            if(!mapSelecetedFields.separateSheet) {
+                if (fieldKey.startsWith('participantIdentifiers.')) {
+                    _setOrgFurtherInformation(org, row, fieldKey, format)
+                }
+                else if (fieldKey.startsWith('participantLicProperty.') || fieldKey.startsWith('licProperty.')) {
+                    Long id = Long.parseLong(fieldKey.split("\\.")[1])
+                    String query = "select prop from LicenseProperty prop where (prop.owner = :lic and prop.type.id in (:propertyDefs) and prop.isPublic = true) or (prop.owner = :lic and prop.type.id in (:propertyDefs) and prop.isPublic = false and prop.tenant = :contextOrg) order by prop.type.${localizedName} asc"
+                    List<LicenseProperty> licenseProperties = SubscriptionProperty.executeQuery(query,[lic:license, propertyDefs:[id], contextOrg: contextService.getOrg()])
+                    if(licenseProperties){
+                        row.add(createTableCell(format, licenseProperties.collect { it.getValueInI10n()}.join(";")))
+                    }else{
+                        row.add(createTableCell(format, ' '))
                     }
                 }
                 else {
