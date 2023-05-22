@@ -8,6 +8,7 @@ import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.ctrl.UserControllerService
 import de.laser.custom.CustomWkhtmltoxService
 import de.laser.finance.PriceItem
+import de.laser.reporting.export.base.BaseExportHelper
 import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.auth.Role
@@ -579,6 +580,60 @@ class MyInstitutionController  {
                 objectNames.put(row[0],row[1])
             }
         }
+        Map<String, Object> selectedFields = [:]
+
+        if(params.fileformat) {
+            if (params.filename) {
+                filename = params.filename
+            }
+            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+        }
+
+        if(params.fileformat == 'xlsx') {
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportLicenses(totalLicenses, selectedFields, result.institution, ExportClickMeService.FORMAT.XLS)
+            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
+            return
+        }
+        else if(params.fileformat == 'csv') {
+            response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
+            response.contentType = "text/csv"
+            ServletOutputStream out = response.outputStream
+            out.withWriter { writer ->
+                //writer.write((String) _exportcurrentSubscription(result.allSubscriptions,"csv", result.institution))
+                writer.write((String) exportClickMeService.exportLicenses(totalLicenses, selectedFields, result.institution, ExportClickMeService.FORMAT.CSV))
+            }
+            out.close()
+        }
+        else if(params.fileformat == 'pdf') {
+            Map<String, Object> pdfOutput = exportClickMeService.exportLicenses(totalLicenses, selectedFields, result.institution, ExportClickMeService.FORMAT.PDF)
+            Map<String, Object> pageStruct = [orientation: 'Landscape', width: pdfOutput.titleRow.size()*15, height: 35]
+            if (pageStruct.width > 85*4)       { pageStruct.pageSize = 'A0' }
+            else if (pageStruct.width > 85*3)  { pageStruct.pageSize = 'A1' }
+            else if (pageStruct.width > 85*2)  { pageStruct.pageSize = 'A2' }
+            else if (pageStruct.width > 85)    { pageStruct.pageSize = 'A3' }
+            pdfOutput.struct = [pageStruct.pageSize + ' ' + pageStruct.orientation]
+            byte[] pdf = wkhtmltoxService.makePdf(
+                    view: '/templates/export/_individuallyExportPdf',
+                    model: pdfOutput,
+                    pageSize: pageStruct.pageSize,
+                    orientation: pageStruct.orientation,
+                    marginLeft: 10,
+                    marginRight: 10,
+                    marginTop: 15,
+                    marginBottom: 15
+            )
+            response.setHeader('Content-disposition', 'attachment; filename="'+ filename +'.pdf"')
+            response.setContentType('application/pdf')
+            response.outputStream.withStream { it << pdf }
+            return
+        }
+        /*
         if(params.exportXLS) {
             response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -630,8 +685,10 @@ class MyInstitutionController  {
             response.outputStream.withStream { it << pdf }
             return
         }
+        */
+        result
+            /*
         withFormat {
-            html result
             csv {
                 response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
                 response.contentType = "text/csv"
@@ -657,6 +714,7 @@ class MyInstitutionController  {
                 out.close()
             }
         }
+            */
     }
 
     /**
@@ -1419,7 +1477,7 @@ class MyInstitutionController  {
 
         Map<String,Object> qryParams = [
                 institution: result.institution,
-                ieStatus: RDStore.TIPP_STATUS_REMOVED,
+                //ieStatus: RDStore.TIPP_STATUS_REMOVED,
                 current: RDStore.SUBSCRIPTION_CURRENT,
                 orgRoles: orgRoles
         ]
@@ -1467,34 +1525,39 @@ class MyInstitutionController  {
         //String havingClause = params.filterMultiIE ? 'having count(ie.ie_id) > 1' : ''
 
         String orderByClause
-        if (params.order == 'desc') {
-            orderByClause = 'order by tipp.sortname desc, tipp.name desc'
-        } else {
-            orderByClause = 'order by tipp.sortname asc, tipp.name asc'
+        if ((params.sort != null) && (params.sort.length() > 0)) {
+            orderByClause = " order by ${params.sort} ${params.order} "
+        }
+        else {
+            if (params.order == 'desc') {
+                orderByClause = 'order by tipp.sortname desc, tipp.name desc'
+            } else {
+                orderByClause = 'order by tipp.sortname asc, tipp.name asc'
+            }
         }
 
-        String qryString = "from IssueEntitlement ie join ie.tipp tipp join ie.subscription sub join sub.orgRelations oo where ie.status != :ieStatus and sub.status = :current and oo.roleType in (:orgRoles) and oo.org = :institution "
+        String qryString = "from IssueEntitlement ie join ie.tipp tipp join ie.subscription sub join sub.orgRelations oo where sub.status = :current and oo.roleType in (:orgRoles) and oo.org = :institution "
         if(queryFilter)
             qryString += ' and '+queryFilter.join(' and ')
 
         Map<String,Object> qryParamsClone = qryParams.clone()
-
-        result.currentIECounts = IssueEntitlement.executeQuery('select count(ie) '+ qryString+ ' and ie.tipp.status = :status and ie.status != :ieStatus', qryParamsClone + [status: RDStore.TIPP_STATUS_CURRENT, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
-        result.plannedIECounts = IssueEntitlement.executeQuery('select count(ie) '+ qryString+ ' and ie.tipp.status = :status and ie.status != :ieStatus', qryParamsClone + [status: RDStore.TIPP_STATUS_EXPECTED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
-        result.expiredIECounts = IssueEntitlement.executeQuery('select count(ie) '+ qryString+ ' and ie.tipp.status = :status and ie.status != :ieStatus', qryParamsClone + [status: RDStore.TIPP_STATUS_RETIRED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
-        result.deletedIECounts = IssueEntitlement.executeQuery('select count(ie) '+ qryString+ ' and ie.tipp.status = :status and ie.status != :ieStatus', qryParamsClone + [status: RDStore.TIPP_STATUS_DELETED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
-        result.allIECounts = IssueEntitlement.executeQuery('select count(ie) '+ qryString+ ' and ie.tipp.status in (:status) and ie.status != :ieStatus', qryParamsClone + [status: [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_EXPECTED, RDStore.TIPP_STATUS_RETIRED, RDStore.TIPP_STATUS_DELETED], ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+        if(!params.containsKey('fileformat')) {
+            result.currentIECounts = IssueEntitlement.executeQuery('select count(ie) '+ qryString+ ' and ie.tipp.status = :status and ie.status != :ieStatus', qryParamsClone + [status: RDStore.TIPP_STATUS_CURRENT, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+            result.plannedIECounts = IssueEntitlement.executeQuery('select count(ie) '+ qryString+ ' and ie.tipp.status = :status and ie.status != :ieStatus', qryParamsClone + [status: RDStore.TIPP_STATUS_EXPECTED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+            result.expiredIECounts = IssueEntitlement.executeQuery('select count(ie) '+ qryString+ ' and ie.tipp.status = :status and ie.status != :ieStatus', qryParamsClone + [status: RDStore.TIPP_STATUS_RETIRED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+            result.deletedIECounts = IssueEntitlement.executeQuery('select count(ie) '+ qryString+ ' and ie.tipp.status = :status and ie.status != :ieStatus', qryParamsClone + [status: RDStore.TIPP_STATUS_DELETED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+            result.allIECounts = IssueEntitlement.executeQuery('select count(ie) '+ qryString+ ' and ie.tipp.status in (:status) and ie.status != :ieStatus', qryParamsClone + [status: [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_EXPECTED, RDStore.TIPP_STATUS_RETIRED, RDStore.TIPP_STATUS_DELETED], ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+        }
 
         if(params.status != '' && params.status != null && params.list('status')) {
             List<Long> status = []
             params.list('status').each { String statusId ->
                 status << Long.parseLong(statusId)
             }
-            qryString += " and ie.status.id in (:status) "
+            qryString += " and ie.tipp.status.id in (:status) "
             qryParams.status = status
 
         }
-
 
         Map<String, Object> selectedFields = [:]
         Set<Long> currentIssueEntitlements = []
@@ -1514,6 +1577,7 @@ class MyInstitutionController  {
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
         }
         else if(!params.containsKey('fileformat')) {
+
             //second filter needed because double-join on same table does deliver me empty results
             if (filterPvd) {
                 currentIssueEntitlements.addAll(IssueEntitlement.executeQuery("select ie.id from IssueEntitlement ie join ie.tipp tipp join tipp.pkg pkg join pkg.orgs oo where oo.roleType in (:cpRole) and oo.org.id in ("+filterPvd.join(", ")+") order by tipp.sortname asc",[cpRole:[RDStore.OR_CONTENT_PROVIDER,RDStore.OR_PROVIDER,RDStore.OR_AGENCY,RDStore.OR_PUBLISHER]]))
@@ -1526,10 +1590,10 @@ class MyInstitutionController  {
                     orgRoles: orgRoles])
             if(result.subscriptions.size() > 0) {
                 Set<Long> allIssueEntitlements = IssueEntitlement.executeQuery('select ie.id from IssueEntitlement ie where ie.subscription in (:currentSubs)',[currentSubs:result.subscriptions])
-                result.providers = Org.executeQuery('select org.id,org.name from IssueEntitlement ie join ie.tipp tipp join tipp.pkg pkg join pkg.orgs oo join oo.org org where ie.id in (select ie.id '+qryString+' group by tipp, ie.id order by tipp.sortname asc) group by org.id order by org.name asc',qryParams)
-                result.hostplatforms = Platform.executeQuery('select plat.id,plat.name from IssueEntitlement ie join ie.tipp tipp join tipp.platform plat where ie.id in (select ie.id '+qryString+' group by tipp, ie.id order by tipp.sortname asc) group by plat.id order by plat.name asc',qryParams)
+                result.providers = Org.executeQuery('select org.id,org.name from TitleInstancePackagePlatform tipp join tipp.pkg pkg join pkg.orgs oo join oo.org org where tipp.id in (select tipp.id '+qryString+') group by org.id order by org.name asc',qryParams)
+                result.hostplatforms = Platform.executeQuery('select plat.id,plat.name from TitleInstancePackagePlatform tipp join tipp.platform plat where tipp.id in (select tipp.id '+qryString+') group by plat.id order by plat.name asc',qryParams)
             }
-            result.num_ti_rows = currentIssueEntitlements.size()
+            result.num_ti_rows = result.allIECounts
             result.titles = allTitles
 
             result.filterSet = params.filterSet || defaultSet
@@ -1590,6 +1654,79 @@ class MyInstitutionController  {
         }
         else
             result
+    }
+
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'])
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+    })
+    def currentPermanentTitles() {
+
+        Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params)
+
+
+        if(params.tab){
+            if(params.tab == 'currentIEs'){
+                params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
+            }else if(params.tab == 'plannedIEs'){
+                params.status = [RDStore.TIPP_STATUS_EXPECTED.id.toString()]
+            }else if(params.tab == 'expiredIEs'){
+                params.status = [RDStore.TIPP_STATUS_RETIRED.id.toString()]
+            }else if(params.tab == 'deletedIEs'){
+                params.status = [RDStore.TIPP_STATUS_DELETED.id.toString()]
+            }else if(params.tab == 'allIEs'){
+                params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString(), RDStore.TIPP_STATUS_EXPECTED.id.toString(), RDStore.TIPP_STATUS_RETIRED.id.toString(), RDStore.TIPP_STATUS_DELETED.id.toString()]
+            }
+        }
+        else if(params.list('status').size() == 1) {
+            if(params.list('status')[0] == RDStore.TIPP_STATUS_CURRENT.id.toString()){
+                params.tab = 'currentIEs'
+            }else if(params.list('status')[0] == RDStore.TIPP_STATUS_RETIRED.id.toString()){
+                params.tab = 'expiredIEs'
+            }else if(params.list('status')[0] == RDStore.TIPP_STATUS_EXPECTED.id.toString()){
+                params.tab = 'plannedIEs'
+            }else if(params.list('status')[0] == RDStore.TIPP_STATUS_DELETED.id.toString()){
+                params.tab = 'deletedIEs'
+            }
+        }else{
+            if(params.list('status').size() > 1){
+                params.tab = 'allIEs'
+            }else {
+                params.tab = 'currentIEs'
+                params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
+            }
+        }
+
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
+
+        Map query = filterService.getPermanentTitlesQuery(params, result.institution)
+        result.filterSet = query.filterSet
+        Set tipps = TitleInstancePackagePlatform.executeQuery("select pt.tipp.id " + query.query, query.queryParams)
+        result.tippIDs = tipps
+
+        result.num_tipp_rows = tipps.size()
+
+        String orderClause = 'order by tipp.sortname'
+        if(params.sort){
+                if(params.sort.contains('sortname'))
+                    orderClause = "order by tipp.sortname ${params.order}, tipp.name ${params.order} "
+                else
+                    orderClause = "order by ${params.sort} ${params.order} "
+        }
+        Set filteredIDs = result.tippIDs.drop(result.offset).take(result.max)
+        result.titles = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp where tipp.id in (:tippIDs) '+orderClause, [tippIDs: filteredIDs])
+
+        result.currentTippCounts = PermanentTitle.executeQuery("select count(pt) from PermanentTitle as pt where pt.owner = :org and pt.tipp.status = :status and pt.issueEntitlement.status != :ieStatus", [org: result.institution, status: RDStore.TIPP_STATUS_CURRENT, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+        result.plannedTippCounts = PermanentTitle.executeQuery("select count(pt) from PermanentTitle as pt where pt.owner = :org and pt.tipp.status = :status and pt.issueEntitlement.status != :ieStatus", [org: result.institution, status: RDStore.TIPP_STATUS_EXPECTED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+        result.expiredTippCounts = PermanentTitle.executeQuery("select count(pt) from PermanentTitle as pt where pt.owner = :org and pt.tipp.status = :status and pt.issueEntitlement.status != :ieStatus", [org: result.institutionn, status: RDStore.TIPP_STATUS_RETIRED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+        result.deletedTippCounts = PermanentTitle.executeQuery("select count(pt) from PermanentTitle as pt where pt.owner = :org and pt.tipp.status = :status and pt.issueEntitlement.status != :ieStatus", [org: result.institution, status: RDStore.TIPP_STATUS_DELETED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+        result.allTippCounts = PermanentTitle.executeQuery("select count(pt) from PermanentTitle as pt where pt.owner = :org and pt.tipp.status in (:status) and pt.issueEntitlement.status != :ieStatus", [org: result.institution, status: [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_EXPECTED, RDStore.TIPP_STATUS_RETIRED, RDStore.TIPP_STATUS_DELETED], ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+
+        //for tipp_ieFilter
+        params.institution = result.institution
+        params.filterForPermanentTitle = true
+
+        result
     }
 
     /**

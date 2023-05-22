@@ -60,9 +60,12 @@
                             <dl>
                                 <dt>${message(code: 'package.curatoryGroup.label')}</dt>
                                 <dd>
-                                    <div class="ui bulleted list">
+                                    <div class="ui list">
                                         <g:each in="${packageInstanceRecord.curatoryGroups}" var="curatoryGroup">
-                                            <div class="item">${curatoryGroup.name} ${curatoryGroup.type ? "(${curatoryGroup.type})" : ""} <ui:wekbIconLink gokbId="${curatoryGroup.curatoryGroup}"/></div>
+                                            <div class="item">
+                                                ${curatoryGroup.name} ${curatoryGroup.type ? "(${curatoryGroup.type})" : ""}
+                                                <ui:wekbIconLink type="curatoryGroup" gokbId="${curatoryGroup.curatoryGroup}"/>
+                                            </div>
                                         </g:each>
                                     </div>
                                 </dd>
@@ -182,7 +185,7 @@
                             <div class="ui accordion la-accordion-showMore">
                                 <div class="ui raised segments la-accordion-segments">
                                     <div class="ui fluid segment title">
-                                        ${packageInstanceRecord.source.name} <ui:wekbIconLink target="${packageInstanceRecord.source.uuid}"/>
+                                        ${packageInstanceRecord.source.name} <ui:wekbIconLink type="source" gokbId="${packageInstanceRecord.source.uuid}"/>
                                         <div class="ui icon blue button la-modern-button ${buttonColor} la-js-dont-hide-button la-popup-tooltip la-delay"
                                              data-content="${message(code: 'platform.details')}">
                                             <i class="ui angle double down icon"></i>
@@ -193,7 +196,7 @@
                                             <dt><g:message code="package.source.url.label"/></dt>
                                             <dd>
                                                 <g:if test="${packageInstanceRecord.source.url}">
-                                                    <g:message code="package.source.url"/><ui:linkWithIcon target="_blank" href="${packageInstanceRecord.source.url}"/>
+                                                    ${packageInstanceRecord.source.url} <ui:linkWithIcon target="_blank" href="${packageInstanceRecord.source.url}"/>
                                                 </g:if>
                                             </dd>
                                         </dl>
@@ -229,6 +232,7 @@
                                 <div class="ui raised segments la-accordion-segments">
                                     <div class="ui fluid segment title">
                                         <g:link controller="platform" action="show" id="${platformInstanceRecord.id}">${platformInstanceRecord.name}</g:link>
+                                        <ui:wekbIconLink type="platform" gokbId="${platformInstanceRecord.uuid}"/>
                                         <g:if test="${platformInstanceRecord.primaryUrl}">
                                             <ui:linkWithIcon href="${platformInstanceRecord.primaryUrl?.startsWith('http') ? platformInstanceRecord.primaryUrl : 'http://' + platformInstanceRecord.primaryUrl}"/>
                                         </g:if>

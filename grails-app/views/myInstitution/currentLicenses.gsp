@@ -8,6 +8,10 @@
 
   <ui:controlButtons>
       <ui:exportDropdown>
+          <ui:exportDropdownItem>
+              <a class="item" data-ui="modal" href="#individuallyExportModal">Export</a>
+          </ui:exportDropdownItem>
+      <%--
           <g:if test="${filterSet || defaultSet}">
               <ui:exportDropdownItem>
                   <g:link class="item js-open-confirm-modal" data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
@@ -33,6 +37,7 @@
                   <g:link class="item" action="currentLicenses" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link>
               </ui:exportDropdownItem>
           </g:else>
+      --%>
       </ui:exportDropdown>
 
       <laser:render template="actions" />
@@ -273,8 +278,9 @@
   </g:if>
 
   </g:form>
-      <ui:paginate action="currentLicenses" controller="myInstitution" params="${params}" max="${max}" total="${licenseCount}" />
-      <ui:debugInfo>
-          <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
-      </ui:debugInfo>
+  <ui:paginate action="currentLicenses" controller="myInstitution" params="${params}" max="${max}" total="${licenseCount}" />
+  <ui:debugInfo>
+      <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
+  </ui:debugInfo>
+  <laser:render template="export/individuallyExportModalLics" model="[modalID: 'individuallyExportModal']" />
 <laser:htmlEnd />

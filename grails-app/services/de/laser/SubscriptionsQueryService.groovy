@@ -313,6 +313,12 @@ class SubscriptionsQueryService {
             filterSet = true
         }
 
+        if (params.holdingSelection) {
+          base_qry += " and s.holdingSelection.id in (:holdingSelection) "
+          qry_params.put('holdingSelection', params.list("holdingSelection").collect { Long.parseLong(it) })
+            filterSet = true
+        }
+
         if (params.isPublicForApi) {
             base_qry += " and s.isPublicForApi = :isPublicForApi "
             qry_params.put('isPublicForApi', (params.isPublicForApi == RDStore.YN_YES.id.toString()) ? true : false)

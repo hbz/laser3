@@ -902,12 +902,7 @@
                             <div class="header">
                                 <div class="ui grid">
                                     <div class="twelve wide column">
-                                        <g:if test="${orgInstance.isCustomerType_Inst()}">
-                                            <g:message code="org.contactpersons.and.addresses.label"/>
-                                        </g:if>
-                                        <g:else>
-                                            <g:message code="org.contacts.label"/>
-                                        </g:else>
+                                        <g:message code="org.publicContacts.label"/>
                                     </div>
                                     <div class="right aligned four wide column">
                                         <g:if test="${inContextOrg}">

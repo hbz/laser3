@@ -1429,6 +1429,168 @@ class FilterService {
     }
 
     /**
+     * Processes the given filter parameters and generates a query to retrieve permanent titles
+     * @param params the filter parameter map
+     * @param owner the org whose be the owner of permanent titles
+     * @return the map containing the query and the prepared query parameters
+     */
+    Map<String,Object> getPermanentTitlesQuery(GrailsParameterMap params, Org owner) {
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
+        Map result = [:]
+
+
+
+        String base_qry
+        Map<String,Object> qry_params = [owner: owner]
+        boolean filterSet = false
+        Date date_filter
+        if (params.asAt && params.asAt.length() > 0) {
+            date_filter = sdf.parse(params.asAt)
+            result.as_at_date = date_filter
+            result.editable = false
+        }
+        if (params.filter) {
+            base_qry = " from PermanentTitle as pt left join pt.issueEntitlement ie join pt.tipp tipp where pt.owner = :owner "
+            if (date_filter) {
+                // If we are not in advanced mode, hide IEs that are not current, otherwise filter
+                // base_qry += "and ie.status <> ? and ( ? >= coalesce(ie.accessStartDate,subscription.startDate) ) and ( ( ? <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) )  "
+                // qry_params.add(deleted_ie);
+                base_qry += "and ( ( :startDate >= coalesce(ie.accessStartDate,ie.subscription.startDate,ie.tipp.accessStartDate) or (ie.accessStartDate is null and ie.subscription.startDate is null and ie.tipp.accessStartDate is null) ) and ( :endDate <= coalesce(ie.accessEndDate,ie.subscription.endDate,ie.tipp.accessEndDate) or (ie.accessEndDate is null and ie.subscription.endDate is null and ie.tipp.accessEndDate is null) OR ( ie.subscription.hasPerpetualAccess = true ) ) ) "
+                qry_params.startDate = date_filter
+                qry_params.endDate = date_filter
+            }
+            base_qry += "and ( ( lower(ie.name) like :title ) or ( exists ( from Identifier ident where ident.tipp.id = ie.tipp.id and ident.value like :identifier ) ) or ((lower(ie.tipp.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(ie.tipp.firstEditor) like :ebookFirstAutorOrFirstEditor)) ) "
+            qry_params.title = "%${params.filter.trim().toLowerCase()}%"
+            qry_params.identifier = "%${params.filter}%"
+            qry_params.ebookFirstAutorOrFirstEditor = "%${params.filter.trim().toLowerCase()}%"
+            filterSet = true
+        }
+        else {
+            base_qry = " from PermanentTitle as pt left join pt.issueEntitlement ie join pt.tipp tipp where pt.owner = :owner "
+        }
+
+        if (params.status == RDStore.TIPP_STATUS_REMOVED.id.toString()) {
+            base_qry += " and ie.tipp.status.id = :status and ie.status.id != :status "
+            qry_params.status = params.long('status')
+        }
+        else if(params.status != '' && params.status != null && params.list('status')) {
+            List<Long> status = []
+            params.list('status').each { String statusId ->
+                status << Long.parseLong(statusId)
+            }
+            base_qry += " and ie.status.id in (:status) "
+            qry_params.status = status
+            filterSet = true
+        }
+        else if (params.notStatus != '' && params.notStatus != null){
+            base_qry += " and ie.status.id != :notStatus "
+            qry_params.notStatus = params.notStatus
+        }
+        else {
+            base_qry += " and ie.status = :current "
+            qry_params.current = RDStore.TIPP_STATUS_CURRENT
+        }
+
+        if (params.pkgfilter && (params.pkgfilter != '')) {
+            base_qry += " and tipp.pkg.id = :pkgId "
+            qry_params.pkgId = Long.parseLong(params.pkgfilter)
+            filterSet = true
+        }
+
+        if (params.ddcs && params.ddcs != "" && params.list('ddcs')) {
+            base_qry += " and exists ( select ddc.id from DeweyDecimalClassification ddc where ddc.tipp = tipp and ddc.ddc.id in (:ddcs) ) "
+            qry_params.ddcs = params.list('ddcs').collect { String key -> Long.parseLong(key) }
+            filterSet = true
+        }
+
+        if (params.languages && params.languages != "" && params.list('languages')) {
+            base_qry += " and exists ( select lang.id from Language lang where lang.tipp = tipp and lang.language.id in (:languages) ) "
+            qry_params.languages = params.list('languages').collect { String key -> Long.parseLong(key) }
+            filterSet = true
+        }
+
+        if (params.subject_references && params.subject_references != "" && params.list('subject_references')) {
+            Set<String> subjectQuery = []
+            params.list('subject_references').each { String subReference ->
+                subjectQuery << "genfunc_filter_matcher(tipp.subjectReference, '${subReference.toLowerCase()}') = true"
+            }
+            base_qry += " and (${subjectQuery.join(" or ")}) "
+            filterSet = true
+        }
+
+        if (params.series_names && params.series_names != "" && params.list('series_names')) {
+            base_qry += " and lower(ie.tipp.seriesName) in (:series_names)"
+            qry_params.series_names = params.list('series_names').collect { ""+it.toLowerCase()+"" }
+            filterSet = true
+        }
+
+        if(params.summaryOfContent) {
+            base_qry += " and lower(tipp.summaryOfContent) like :summaryOfContent "
+            qry_params.summaryOfContent = "%${params.summaryOfContent.trim().toLowerCase()}%"
+        }
+
+        if(params.ebookFirstAutorOrFirstEditor) {
+            base_qry += " and (lower(tipp.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(tipp.firstEditor) like :ebookFirstAutorOrFirstEditor) "
+            qry_params.ebookFirstAutorOrFirstEditor = "%${params.ebookFirstAutorOrFirstEditor.trim().toLowerCase()}%"
+        }
+
+        if(params.dateFirstOnlineFrom) {
+            base_qry += " and (tipp.dateFirstOnline is not null AND tipp.dateFirstOnline >= :dateFirstOnlineFrom) "
+            qry_params.dateFirstOnlineFrom = sdf.parse(params.dateFirstOnlineFrom)
+
+        }
+        if(params.dateFirstOnlineTo) {
+            base_qry += " and (tipp.dateFirstOnline is not null AND tipp.dateFirstOnline <= :dateFirstOnlineTo) "
+            qry_params.dateFirstOnlineTo = sdf.parse(params.dateFirstOnlineTo)
+        }
+
+        if(params.yearsFirstOnline) {
+            base_qry += " and (Year(tipp.dateFirstOnline) in (:yearsFirstOnline)) "
+            qry_params.yearsFirstOnline = params.list('yearsFirstOnline').collect { Integer.parseInt(it) }
+        }
+
+        if (params.identifier) {
+            base_qry += "and ( exists ( from Identifier ident where ident.tipp.id = tipp.id and ident.value like :identifier ) ) "
+            qry_params.identifier = "${params.identifier}"
+            filterSet = true
+        }
+
+        if (params.publishers) {
+            //(exists (select orgRole from OrgRole orgRole where orgRole.tipp = ie.tipp and orgRole.roleType.id = ${RDStore.OR_PUBLISHER.id} and orgRole.org.name in (:publishers)) )
+            base_qry += "and lower(tipp.publisherName) in (:publishers) "
+            qry_params.publishers = params.list('publishers').collect { it.toLowerCase() }
+            filterSet = true
+        }
+
+
+        if (params.title_types && params.title_types != "" && params.list('title_types')) {
+            base_qry += " and lower(tipp.titleType) in (:title_types)"
+            qry_params.title_types = params.list('title_types').collect { ""+it.toLowerCase()+"" }
+            filterSet = true
+        }
+
+        if (params.medium && params.medium != "" && listReaderWrapper(params, 'medium')) {
+            base_qry += " and tipp.medium.id in (:medium) "
+            qry_params.medium = listReaderWrapper(params, 'medium').collect { String key -> Long.parseLong(key) }
+            filterSet = true
+        }
+
+        if ((params.sort != null) && (params.sort.length() > 0)) {
+            base_qry += " order by ${params.sort} ${params.order} "
+        }
+        else {
+            base_qry += " order by tipp.sortname"
+        }
+
+        result.query = base_qry
+        result.queryParams = qry_params
+        result.filterSet = filterSet
+
+        result
+
+    }
+
+    /**
      * Processes the given filter parameters and generates a query to retrieve titles of the given packages
      * @param params the filter parameter map
      * @param pkgs the packages whose titles should be queried
