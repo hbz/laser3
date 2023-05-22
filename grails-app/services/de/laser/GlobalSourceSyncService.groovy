@@ -1601,7 +1601,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             tippA.accessEndDate = tippB.accessEndDate
             tippA.volume = tippB.volume
             if(!tippA.save())
-                throw new SyncException("Error on updating base title data: ${tippA.errors}")
+                throw new SyncException("Error on updating base title data: ${tippA.getErrors().getAllErrors().toListString()}")
             //this query has to be observed very closely. It may first cause an extreme bottleneck (the underlying query may have many Sequence Scans), then it directs the issue holdings
             if(oldStatus != newStatus) {
                 int updateCount = IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.status = :newStatus where ie.tipp = :tipp and ie.status != :newStatus', [tipp: tippA, newStatus: newStatus])

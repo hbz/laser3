@@ -265,8 +265,6 @@ class PackageController {
             }
         }
 
-        result.lasttipp = result.offset + result.max > result.num_tipp_rows ? result.num_tipp_rows : result.offset + result.max
-
         if (OrgSetting.get(result.contextOrg, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID) instanceof OrgSetting) {
             result.statsWibid = result.contextOrg.getIdentifierByType('wibid')?.value
             result.usageMode = accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) ? 'package' : 'institution'
@@ -437,9 +435,8 @@ class PackageController {
             result.expiredTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_RETIRED])[0]
             result.deletedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_DELETED])[0]
             //we can be sure that no one will request more than 32768 entries ...
-            result.titlesList = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList.drop(result.offset).take(result.max), [sort: 'sortname']) : []
+            result.titlesList = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList.drop(result.offset).take(result.max), [sort: params.sort?: 'sortname', order: params.order]) : []
             result.num_tipp_rows = titlesList.size()
-            result.lasttipp = result.offset + result.max > result.num_tipp_rows ? result.num_tipp_rows : result.offset + result.max
             result
         }
     }
@@ -586,10 +583,8 @@ class PackageController {
             out.close()
         }
         else {
-            result.titlesList = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList,[sort:'sortname']).drop(result.offset).take(result.max) : []
+            result.titlesList = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList, [sort: params.sort?: 'sortname', order: params.order]).drop(result.offset).take(result.max) : []
             result.num_tipp_rows = titlesList.size()
-
-            result.lasttipp = result.offset + result.max > result.num_tipp_rows ? result.num_tipp_rows : result.offset + result.max
             result
         }
     }

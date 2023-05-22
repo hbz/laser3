@@ -1,242 +1,54 @@
-<%@ page import="de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.IssueEntitlement;de.laser.Platform; de.laser.remote.ApiSource; de.laser.PermanentTitle" %>
-<laser:htmlStart message="myinst.currentTitles.label"/>
+<%@ page import="de.laser.storage.RDStore; de.laser.IssueEntitlement; de.laser.PermanentTitle" %>
+<laser:htmlStart message="myinst.currentPermanentTitles.label"/>
 
 <ui:breadcrumbs>
-    <ui:crumb message="myinst.currentTitles.label" class="active"/>
+    <ui:crumb message="myinst.currentPermanentTitles.label" class="active"/>
 </ui:breadcrumbs>
 
-<ui:controlButtons>
-    <ui:exportDropdown>
-    <%--
-    <ui:exportDropdownItem>
-        <g:if test="${filterSet}">
-            <g:link class="item js-open-confirm-modal"
-                    data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}"
-                    data-confirm-term-how="ok" controller="myInstitution" action="currentTitles"
-                    params="${params + [format: 'csv']}">
-                <g:message code="default.button.exports.csv"/>
-            </g:link>
-        </g:if>
-        <g:else>
-            <g:link class="item" action="currentTitles" params="${params + [format: 'csv']}">CSV Export</g:link>
-        </g:else>
-    </ui:exportDropdownItem>
-    <ui:exportDropdownItem>
-        <g:if test="${filterSet}">
-            <g:link class="item js-open-confirm-modal"
-                    data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}"
-                    data-confirm-term-how="ok" controller="myInstitution" action="currentTitles"
-                    params="${params + [exportXLSX: true]}">
-                <g:message code="default.button.exports.xls"/>
-            </g:link>
-        </g:if>
-        <g:else>
-            <g:link class="item" action="currentTitles" params="${params + [exportXLSX: true]}">
-                <g:message code="default.button.exports.xls"/>
-            </g:link>
-        </g:else>
-    </ui:exportDropdownItem>
-    --%>
-        <g:if test="${num_ti_rows < 100000}">
-            <ui:exportDropdownItem>
-                <a class="item" data-ui="modal" href="#individuallyExportTippsModal">Export</a>
-            </ui:exportDropdownItem>
-        </g:if>
-        <g:else>
-            <ui:actionsDropdownItemDisabled message="Export" tooltip="${message(code: 'export.titles.excelLimit')}"/>
-        </g:else>
-        <ui:exportDropdownItem>
-            <g:if test="${filterSet}">
-                <g:link class="item js-open-confirm-modal"
-                        data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}"
-                        data-confirm-term-how="ok" controller="myInstitution" action="currentTitles"
-                        params="${params + [exportKBart: true]}">
-                    KBART Export
-                </g:link>
-            </g:if>
-            <g:else>
-                <g:link class="item" action="currentTitles"
-                        params="${params + [exportKBart: true]}">KBART Export</g:link>
-            </g:else>
-        </ui:exportDropdownItem>
-    <%--<ui:exportDropdownItem>
-        <g:link class="item" action="currentTitles" params="${params + [format:'json']}">JSON Export</g:link>
-    </ui:exportDropdownItem>
-    <ui:exportDropdownItem>
-        <g:link class="item" action="currentTitles" params="${params + [format:'xml']}">XML Export</g:link>
-    </ui:exportDropdownItem>--%>
-    </ui:exportDropdown>
-</ui:controlButtons>
-
-<ui:h1HeaderWithIcon message="myinst.currentTitles.label" total="${num_ti_rows}" floated="true"/>
+<ui:h1HeaderWithIcon message="myinst.currentPermanentTitles.label" total="${num_ti_rows}" floated="true"/>
 
 <ui:messages data="${flash}"/>
-
-<g:set var="availableStatus"
-       value="${RefdataCategory.getAllRefdataValues(RDConstants.TIPP_STATUS) - RDStore.TIPP_STATUS_REMOVED}"/>
-
-<ui:filter>
-    <g:form id="filtering-form" action="currentTitles" controller="myInstitution" method="get" class="ui form">
-
-        <g:set var="filterSub" value="${params.filterSub ? params.list('filterSub') : "all"}"/>
-        <g:set var="filterPvd" value="${params.filterPvd ? params.list('filterPvd') : "all"}"/>
-        <g:set var="filterHostPlat" value="${params.filterHostPlat ? params.list('filterHostPlat') : "all"}"/>
-
-
-        <div class="two fields">
-            <div class="field">
-                <label>${message(code: 'default.search.text')}</label>
-                <input type="hidden" name="sort" value="${params.sort}">
-                <input type="hidden" name="order" value="${params.order}">
-                <input type="text" name="filter" value="${params.filter}" style="padding-left:5px;"
-                       placeholder="${message(code: 'default.search.ph')}"/>
-            </div>
-
-            <ui:datepicker label="myinst.currentTitles.subs_valid_on" id="validOn" name="validOn"
-                           value="${validOn}"/>
-
-        </div>
-
-        <div class="two fields">
-            <div class="field">
-                <label for="filterSub">${message(code: 'subscription.plural')}</label>
-                <select id="filterSub" name="filterSub" multiple="" class="ui search selection fluid dropdown">
-                    <option <%--<%= (filterSub.contains("all")) ? ' selected' : '' %>--%>
-                            value="">${message(code: 'default.select.all.label')}</option>
-                    <g:each in="${subscriptions}" var="s">
-                        <option <%=(filterSub.contains(s.id.toString())) ? 'selected="selected"' : ''%> value="${s.id}"
-                                                                                                        title="${s.dropdownNamingConvention(institution)}">
-                            ${s.dropdownNamingConvention(institution)}
-                        </option>
-                    </g:each>
-                </select>
-            </div>
-
-            <div class="field">
-                <label for="filterPvd">${message(code: 'default.agency.provider.plural.label')}</label>
-                <select id="filterPvd" name="filterPvd" multiple="" class="ui search selection fluid dropdown">
-                    <option <%--<%= (filterPvd.contains("all")) ? 'selected' : '' %>--%>
-                            value="">${message(code: 'default.select.all.label')}</option>
-                    <g:each in="${providers}" var="p">
-                        <%
-                            def pvdId = p[0].toString()
-                            def pvdName = p[1]
-                        %>
-                        <option <%=(filterPvd.contains(pvdId)) ? 'selected' : ''%> value="${pvdId}" title="${pvdName}">
-                            ${pvdName}
-                        </option>
-                    </g:each>
-                </select>
-            </div>
-        </div>
-
-        <div class="two fields">
-            <div class="field">
-                <label for="filterPvd">${message(code: 'default.host.platforms.label')}</label>
-                <select name="filterHostPlat" multiple="" class="ui search selection fluid dropdown">
-                    <option <%--<%= (filterHostPlat.contains("all")) ? 'selected' : '' %>--%>
-                            value="">${message(code: 'default.select.all.label')}</option>
-                    <g:each in="${hostplatforms}" var="hp">
-                        <%
-                            def hostId = hp[0].toString()
-                            def hostName = hp[1]
-                        %>
-                        <option <%=(filterHostPlat.contains(hostId)) ? 'selected' : ''%> value="${hostId}"
-                                                                                         title="${hostName}">
-                            ${hostName}
-                        </option>
-                    </g:each>
-                </select>
-            </div>
-
-            <div class="field">
-                <label for="status">
-                    ${message(code: 'default.status.label')}
-                </label>
-                <select name="status" id="status" multiple=""
-                        class="ui search selection dropdown">
-                    <option value="">${message(code: 'default.select.choose.label')}</option>
-
-                    <g:each in="${availableStatus}" var="status">
-                        <option <%=(params.list('status')?.contains(status.id.toString())) ? 'selected="selected"' : ''%>
-                                value="${status.id}">
-                            ${status.getI10n('value')}
-                        </option>
-                    </g:each>
-                </select>
-            </div>
-
-        </div>
-
-        <div class="two fields">
-            <div class="field la-field-right-aligned">
-                <a href="${request.forwardURI}"
-                   class="ui reset secondary button">${message(code: 'default.button.reset.label')}</a>
-                <input type="hidden" name="filterSet" value="true"/>
-                <input type="submit" class="ui primary button"
-                       value="${message(code: 'default.button.filter.label')}"/>
-            </div>
-
-            <%--<div class="field">
-                <label for="filterPvd">${message(code: 'default.all_other.platforms.label')}</label>
-                <select name="filterOtherPlat" multiple="" class="ui search selection fluid dropdown">
-                    <option <%= (filterOtherPlat.contains("all")) ? 'selected' : '' %>
-                            value="">${message(code: 'myinst.currentTitles.all_other_platforms')}</option>
-                    <g:each in="${otherplatforms}" var="op">
-
-                        <%
-                            def platId = op[0].id.toString()
-                            def platName = op[0].name
-                        %>
-                        <option <%=(filterOtherPlat.contains(platId)) ? 'selected' : ''%> value="${platId}"
-                                                                                          title="${platName}">
-                            ${platName}
-                        </option>
-                    </g:each>
-                </select>
-            </div>--%>
-        </div>
-
-    <%--<div class="two fields">
-
-    <%-- class="field">
-        <label for="filterMultiIE">${message(code: 'myinst.currentTitles.dupes')}</label>
-
-        <div class="ui checkbox">
-            <input type="checkbox" class="hidden" name="filterMultiIE" id="filterMultiIE"
-                   value="${true}" <%=(params.filterMultiIE) ? ' checked="true"' : ''%>/>
-        </div>
-    </div>
-    </div>--%>
-
-    </g:form>
-</ui:filter>
 
 <ui:tabs actionName="${actionName}">
     <ui:tabsItem controller="${controllerName}" action="${actionName}"
                  params="[tab: 'currentIEs']"
                  text="${message(code: "package.show.nav.current")}" tab="currentIEs"
-                 counts="${currentIECounts}"/>
+                 counts="${currentTippCounts}"/>
     <ui:tabsItem controller="${controllerName}" action="${actionName}"
                  params="[tab: 'plannedIEs']"
                  text="${message(code: "package.show.nav.planned")}" tab="plannedIEs"
-                 counts="${plannedIECounts}"/>
+                 counts="${plannedTippCounts}"/>
     <ui:tabsItem controller="${controllerName}" action="${actionName}"
                  params="[tab: 'expiredIEs']"
                  text="${message(code: "package.show.nav.expired")}" tab="expiredIEs"
-                 counts="${expiredIECounts}"/>
+                 counts="${expiredTippCounts}"/>
     <ui:tabsItem controller="${controllerName}" action="${actionName}"
                  params="[tab: 'deletedIEs']"
                  text="${message(code: "package.show.nav.deleted")}" tab="deletedIEs"
-                 counts="${deletedIECounts}"/>
+                 counts="${deletedTippCounts}"/>
     <ui:tabsItem controller="${controllerName}" action="${actionName}"
                  params="[tab: 'allIEs']"
                  text="${message(code: "menu.public.all_titles")}" tab="allIEs"
-                 counts="${allIECounts}"/>
+                 counts="${allTippCounts}"/>
 </ui:tabs>
 
 <% params.remove('tab') %>
 
+<div class="ui grid">
+    <div class="row">
+        <div class="column">
+            <laser:render template="/templates/filter/tipp_ieFilter"/>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="eight wide column">
+            <h3 class="ui icon header la-clear-before la-noMargin-top"><span
+                    class="ui circular  label">${num_tipp_rows}</span> <g:message code="title.filter.result"/></h3>
+        </div>
+
+    </div>
+</div>
 <%
     Map<String, String>
     sortFieldMap = ['tipp.sortname': message(code: 'title.label')]
@@ -250,23 +62,19 @@
     sortFieldMap['tipp.accessStartDate'] = "${message(code: 'subscription.details.access_dates')} ${message(code: 'default.from')}"
     sortFieldMap['tipp.accessEndDate'] = "${message(code: 'subscription.details.access_dates')} ${message(code: 'default.to')}"
 %>
-
-
-<div class="la-clear-before">
-    <div class="ui bottom attached tab active segment">
-
-        <div class="ui form">
-            <div class="three wide fields">
-                <div class="field">
-                    <ui:sortingDropdown noSelection="${message(code: 'default.select.choose.label')}"
-                                        from="${sortFieldMap}" sort="${params.sort}" order="${params.order}"/>
-                </div>
+    <div class="ui form">
+        <div class="three wide fields">
+            <div class="field">
+                <ui:sortingDropdown noSelection="${message(code: 'default.select.choose.label')}" from="${sortFieldMap}"
+                                    sort="${params.sort}" order="${params.order}"/>
             </div>
         </div>
+    </div>
 
 
-        <div>
-            <div>
+    <div class="ui grid">
+        <div class="row">
+            <div class="column">
                 <g:if test="${titles}">
                     <g:set var="counter" value="${offset + 1}"/>
 
@@ -281,7 +89,7 @@
                                                 String instanceFilter = ''
                                                 if (institution.isCustomerType_Consortium())
                                                     instanceFilter += ' and sub.instanceOf = null'
-                                                Set<IssueEntitlement> ie_infos = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.subscription sub join sub.orgRelations oo where oo.org = :context and ie.tipp = :tipp and sub.status = :current and ie.status != :ieStatus' + instanceFilter, [ieStatus: RDStore.TIPP_STATUS_REMOVED, context: institution, tipp: tipp, current: RDStore.SUBSCRIPTION_CURRENT])
+                                                Set<IssueEntitlement> ie_infos = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.subscription sub join sub.orgRelations oo where oo.org = :context and ie.tipp = :tipp and ie.status != :ieStatus' + instanceFilter, [ieStatus: RDStore.TIPP_STATUS_REMOVED, context: institution, tipp: tipp])
                                             %>
 
                                             <g:render template="/templates/title_segment_accordion"
@@ -431,17 +239,10 @@
 
     </div>
     <g:if test="${titles}">
-        <ui:paginate action="currentTitles" controller="myInstitution" params="${params}"
-                     max="${max}" total="${num_ti_rows}"/>
+        <ui:paginate action="currentPermanentTitles" controller="myInstitution" params="${params}"
+                     max="${max}" total="${num_tipp_rows}"/>
     </g:if>
 
 </div>
-
-<ui:debugInfo>
-    <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]"/>
-</ui:debugInfo>
-
-<laser:render template="/templates/export/individuallyExportTippsModal"
-              model="[modalID: 'individuallyExportTippsModal']"/>
 
 <laser:htmlEnd/>

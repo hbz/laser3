@@ -40,7 +40,7 @@
     <g:set var="coverageDepths"
            value="${subscription ? controlledListService.getAllPossibleCoverageDepthsBySub(subscription) : []}"/>
 </g:elseif>
-<g:elseif test="${controllerName == 'title'}">
+<g:elseif test="${controllerName == 'title' || actionName == 'currentPermanentTitles'}">
     <g:set var="seriesNames"
            value="${params.status ? controlledListService.getAllPossibleSeriesByStatus(params) : []}"/>
     <g:set var="subjects"

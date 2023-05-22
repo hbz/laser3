@@ -61,7 +61,8 @@ class MailSendService {
 
         result.mailSubject = subjectSystemPraefix
         if(reminderMail) {
-            result.mailSubject = result.mailSubject + ' ' + messageSource.getMessage('email.subject.surveysReminder', language)
+            Object[] args
+            result.mailSubject = result.mailSubject + ' ' + messageSource.getMessage('email.subject.surveysReminder', args, language)
         }
 
         result.mailSubject = result.mailSubject + ' ' + surveyInfo.name + ' ('+surveyInfo.type.getI10n('value', language)+')'
@@ -246,7 +247,8 @@ class MailSendService {
                         Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RDStore.LANGUAGE_DE).value.toString())
                         String mailSubject = subjectSystemPraefix
                         if(reminderMail) {
-                            mailSubject = mailSubject + ' ' + messageSource.getMessage('email.subject.surveysReminder', language)
+                            Object[] args
+                            mailSubject = mailSubject + ' ' + messageSource.getMessage('email.subject.surveysReminder', args, language)
                         }
 
                         mailSubject = mailSubject + ' ' + survey.name + ' ('+survey.type.getI10n('value', language)+')'
@@ -408,7 +410,8 @@ class MailSendService {
 
                     SurveyOrg surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(surveyInfo.surveyConfigs[0], participationFinish)
                     if(surveyOrg && surveyOrg.orgInsertedItself) {
-                        mailSubject = mailSubject + messageSource.getMessage('default.new', null, language) + ' '
+                        Object[] args
+                        mailSubject = mailSubject + messageSource.getMessage('default.new', args, language) + ' '
                     }
 
                     mailSubject = mailSubject + surveyInfo.name +  ' (' + surveyInfo.type.getI10n('value', language) + ') ['
@@ -477,7 +480,8 @@ class MailSendService {
         MessageSource messageSource = BeanStore.getMessageSource()
         Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RDStore.LANGUAGE_DE).value.toString())
 
-        String mailSubject = subjectSystemPraefix + messageSource.getMessage('email.subject.sysAnnouncement', null, language)
+        Object[] args
+        String mailSubject = subjectSystemPraefix + messageSource.getMessage('email.subject.sysAnnouncement', args, language)
 
         boolean isRemindCCbyEmail = user.getSetting(UserSetting.KEYS.IS_REMIND_CC_BY_EMAIL, RDStore.YN_NO)?.rdValue == RDStore.YN_YES
         String ccAddress
