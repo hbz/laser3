@@ -93,9 +93,8 @@ class TitleController  {
 
         result.allTippsCounts = result.currentTippsCounts + result.plannedTippsCounts +  result.expiredTippsCounts + result.deletedTippsCounts
 
-        result.titlesList = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList.drop(result.offset).take(result.max), [sort: 'sortname']) : []
+        result.titlesList = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList.drop(result.offset).take(result.max)) : []
         result.num_tipp_rows = titlesList.size()
-        result.lasttipp = result.offset + result.max > result.num_tipp_rows ? result.num_tipp_rows : result.offset + result.max
 
 
         result
