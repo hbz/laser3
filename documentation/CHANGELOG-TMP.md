@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5002    22.05.2023  rc-3.1  3.1         David   Feature     DEV: Kosten-Export im Reporting
+
 5049    22.05.2023  rc-3.1  3.1         David   Bug         500er QA Titelumfrage nicht aufrufbar
 
 5038    19.05.2023  rc-3.1  3.1         Andreas Feature     Hinweis auf Maximaleintrag
