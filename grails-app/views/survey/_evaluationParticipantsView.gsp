@@ -370,11 +370,11 @@
             <div class="ui form twelve wide column">
                 <div class="two fields">
                     <g:if test="${params.tab == 'participantsViewAllNotFinish'}">
-                        <div class="eight wide field" style="text-align: left;">
+                       %{-- <div class="eight wide field" style="text-align: left;">
                             <a data-ui="modal" class="ui button"
                                href="#generateEmailWithAddresses_ajaxModal">
                                 ${message(code: 'openParticipantsAgain.reminder.participantsHasAccess')}
-                            </a>
+                            </a>--}%
 
                     %{--        <laser:render template="generateEmailWithAddresses"
                                           model="[modalID: 'generateEmailWithAddresses_ajaxModal', formUrl: processAction ?  g.createLink([controller: 'survey',action: processAction, params: [id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: params.tab]]) : '',

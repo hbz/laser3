@@ -72,7 +72,7 @@
         </g:if>
 
 
-        <g:if test="${showStatisticByParticipant && params.tab == 'topUsed'}">
+%{--        <g:if test="${showStatisticByParticipant && params.tab == 'topUsed'}">
             <ui:exportDropdownItem>
                 <g:link class="item statsExport" action="renewEntitlementsWithSurvey"
                         id="${subscriberSub.id}"
@@ -102,7 +102,7 @@
                                    loadFor       : 'holdingIEsStats',
                                    revision: revision]}">${message(code:'default.usage.exports.filtered')} "${message(code: 'default.stats.label')}" ${message(code: 'default.stats.holding')}</g:link>
             </ui:exportDropdownItem>
-        </g:if>
+        </g:if>--}%
     </ui:exportDropdown>
 </ui:controlButtons>
 
@@ -273,14 +273,14 @@
                     text="${message(code: "renewEntitlementsWithSurvey.currentTitles")}" tab="currentIEs"
                     counts="${countCurrentIEs}"/>
 
-    <g:if test="${showStatisticByParticipant}">
+%{--    <g:if test="${showStatisticByParticipant}">
         <ui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
                      params="[id: subscriberSub.id, surveyConfigID: surveyConfig.id, tab: 'stats']"
                      text="${message(code: "renewEntitlementsWithSurvey.stats")}" tab="stats"/>
         <ui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
                      params="[id: subscriberSub.id, surveyConfigID: surveyConfig.id, tab: 'topUsed']"
                      text="${message(code: "renewEntitlementsWithSurvey.topUsed")}" tab="topUsed"/>
-    </g:if>
+    </g:if>--}%
 
 </ui:tabs>
 

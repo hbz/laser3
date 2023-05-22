@@ -3,7 +3,7 @@
 
         <laser:render template="/templates/title_long_accordion"
                       model="${[ie         : ie, tipp: tipp,
-                                showPackage: true, showPlattform: true, showCompact: showCompact, showEmptyFields: showEmptyFields]}"/>
+                                showPackage: true, showPlattform: true, showEmptyFields: showEmptyFields]}"/>
 
 
 
