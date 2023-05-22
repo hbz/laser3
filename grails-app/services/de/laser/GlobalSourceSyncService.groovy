@@ -2242,7 +2242,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             queryParams.changedSince = changedFrom
         Map<String, Object> recordBatch = fetchRecordJSON(false, queryParams)
         for(int i = 0;i < recordBatch.count; i+=MAX_TIPP_COUNT_PER_PAGE) {
-            result.addAll(recordBatch.records.findAllWhere{ record -> record.componentType == 'TitleInstancePackagePlatform' }.collect { record -> record.uuid })
+            result.addAll(recordBatch.records.findAll { record -> record.componentType == 'TitleInstancePackagePlatform' }.collect { record -> record.uuid })
             if(recordBatch.currentPage < recordBatch.lastPage)
                 recordBatch = fetchRecordJSON(false, queryParams+[offset: i])
         }

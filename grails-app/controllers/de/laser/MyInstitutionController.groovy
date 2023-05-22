@@ -8,6 +8,7 @@ import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.ctrl.UserControllerService
 import de.laser.custom.CustomWkhtmltoxService
 import de.laser.finance.PriceItem
+import de.laser.reporting.export.base.BaseExportHelper
 import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.auth.Role
@@ -609,6 +610,29 @@ class MyInstitutionController  {
             }
             out.close()
         }
+        else if(params.fileformat == 'pdf') {
+            Map<String, Object> pdfOutput = exportClickMeService.exportLicenses(totalLicenses, selectedFields, result.institution, ExportClickMeService.FORMAT.PDF)
+            Map<String, Object> pageStruct = [orientation: 'Landscape', width: pdfOutput.titleRow.size()*15, height: 35]
+            if (pageStruct.width > 85*4)       { pageStruct.pageSize = 'A0' }
+            else if (pageStruct.width > 85*3)  { pageStruct.pageSize = 'A1' }
+            else if (pageStruct.width > 85*2)  { pageStruct.pageSize = 'A2' }
+            else if (pageStruct.width > 85)    { pageStruct.pageSize = 'A3' }
+            pdfOutput.struct = [pageStruct.pageSize + ' ' + pageStruct.orientation]
+            byte[] pdf = wkhtmltoxService.makePdf(
+                    view: '/templates/export/_individuallyExportPdf',
+                    model: pdfOutput,
+                    pageSize: pageStruct.pageSize,
+                    orientation: pageStruct.orientation,
+                    marginLeft: 10,
+                    marginRight: 10,
+                    marginTop: 15,
+                    marginBottom: 15
+            )
+            response.setHeader('Content-disposition', 'attachment; filename="'+ filename +'.pdf"')
+            response.setContentType('application/pdf')
+            response.outputStream.withStream { it << pdf }
+            return
+        }
         /*
         if(params.exportXLS) {
             response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
@@ -637,7 +661,6 @@ class MyInstitutionController  {
             workbook.dispose()
             return
         }
-        */
         else if(params.exportPDF) {
             result.licenses = totalLicenses
             Map<String, Object> pageStruct = [
@@ -662,6 +685,7 @@ class MyInstitutionController  {
             response.outputStream.withStream { it << pdf }
             return
         }
+        */
         result
             /*
         withFormat {
