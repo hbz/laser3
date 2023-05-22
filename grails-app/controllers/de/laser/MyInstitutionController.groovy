@@ -1501,10 +1501,15 @@ class MyInstitutionController  {
         //String havingClause = params.filterMultiIE ? 'having count(ie.ie_id) > 1' : ''
 
         String orderByClause
-        if (params.order == 'desc') {
-            orderByClause = 'order by tipp.sortname desc, tipp.name desc'
-        } else {
-            orderByClause = 'order by tipp.sortname asc, tipp.name asc'
+        if ((params.sort != null) && (params.sort.length() > 0)) {
+            orderByClause = " order by ${params.sort} ${params.order} "
+        }
+        else {
+            if (params.order == 'desc') {
+                orderByClause = 'order by tipp.sortname desc, tipp.name desc'
+            } else {
+                orderByClause = 'order by tipp.sortname asc, tipp.name asc'
+            }
         }
 
         String qryString = "from IssueEntitlement ie join ie.tipp tipp join ie.subscription sub join sub.orgRelations oo where sub.status = :current and oo.roleType in (:orgRoles) and oo.org = :institution "
