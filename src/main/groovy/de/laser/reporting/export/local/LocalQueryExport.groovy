@@ -1,5 +1,6 @@
 package de.laser.reporting.export.local
 
+import de.laser.RefdataValue
 import de.laser.storage.BeanStore
 import de.laser.reporting.export.LocalExportHelper
 import de.laser.reporting.export.base.BaseQueryExport
@@ -40,17 +41,31 @@ class LocalQueryExport extends BaseQueryExport {
             result.cols.add( messageSource.getMessage('default.count.label', null, locale) ) // simple
         }
         else {
-            result.cols.addAll( chart )
+            if (queryCache.query == 'timeline-cost') {
+                for (c in chart) {
+                    result.cols.add(c)
+                    result.cols.add(messageSource.getMessage('default.currency.label', null, locale))
+                }
+            }
+            else {
+                result.cols.addAll(chart)
+            }
         }
         // -- todo
+
+        String eur = RefdataValue.getByValueAndCategory('EUR', 'Currency').getI10n('value')
 
         result.rows = dd.collect{ Map e ->
             List entry = [e.label.toString()]
             if (queryCache.query == 'timeline-cost') { // -- todo // -- todo // -- todo
                 entry.add((e.vnc ?: ''))
+                entry.add(eur)
                 entry.add((e.vnct ?: ''))
+                entry.add(eur)
                 entry.add((e.vc ?: ''))
+                entry.add(eur)
                 entry.add((e.vct ?: ''))
+                entry.add(eur)
             }
             else {
                 if (e.containsKey('minusIdList')) {

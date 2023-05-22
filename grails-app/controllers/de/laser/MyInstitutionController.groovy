@@ -1549,7 +1549,7 @@ class MyInstitutionController  {
             params.list('status').each { String statusId ->
                 status << Long.parseLong(statusId)
             }
-            qryString += " and ie.status.id in (:status) "
+            qryString += " and ie.tipp.status.id in (:status) "
             qryParams.status = status
 
         }
