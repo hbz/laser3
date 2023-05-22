@@ -1223,6 +1223,8 @@ class ControlledListService {
                 break
             case 'expired': RDStore.TIPP_STATUS_RETIRED
                 break
+            case 'deleted': RDStore.TIPP_STATUS_DELETED
+                break
             default: RDStore.TIPP_STATUS_CURRENT
                 break
         }

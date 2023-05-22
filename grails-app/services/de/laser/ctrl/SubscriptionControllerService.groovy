@@ -1840,7 +1840,7 @@ class SubscriptionControllerService {
             }
 
             result.editable = surveyService.isEditableSurvey(result.institution, result.surveyInfo)
-            result.showStatisticByParticipant = surveyService.showStatisticByParticipant(result.surveyConfig.subscription, result.subscriber)
+            //result.showStatisticByParticipant = surveyService.showStatisticByParticipant(result.surveyConfig.subscription, result.subscriber)
 
 
             if (result.editable) {

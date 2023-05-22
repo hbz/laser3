@@ -96,7 +96,6 @@ class TitleController  {
         result.titlesList = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList.drop(result.offset).take(result.max), [sort: params.sort?: 'sortname', order: params.order]) : []
         result.num_tipp_rows = titlesList.size()
 
-
         result
     }
 
