@@ -60,9 +60,12 @@
                             <dl>
                                 <dt>${message(code: 'package.curatoryGroup.label')}</dt>
                                 <dd>
-                                    <div class="ui bulleted list">
+                                    <div class="ui list">
                                         <g:each in="${packageInstanceRecord.curatoryGroups}" var="curatoryGroup">
-                                            <div class="item">${curatoryGroup.name} ${curatoryGroup.type ? "(${curatoryGroup.type})" : ""} <ui:wekbIconLink gokbId="${curatoryGroup.curatoryGroup}"/></div>
+                                            <div class="item">
+                                                <ui:wekbIconLink gokbId="${curatoryGroup.curatoryGroup}"/>
+                                                ${curatoryGroup.name} ${curatoryGroup.type ? "(${curatoryGroup.type})" : ""}
+                                            </div>
                                         </g:each>
                                     </div>
                                 </dd>
@@ -182,7 +185,7 @@
                             <div class="ui accordion la-accordion-showMore">
                                 <div class="ui raised segments la-accordion-segments">
                                     <div class="ui fluid segment title">
-                                        ${packageInstanceRecord.source.name} <ui:wekbIconLink target="${packageInstanceRecord.source.uuid}"/>
+                                        <ui:wekbIconLink target="${packageInstanceRecord.source.uuid}"/> ${packageInstanceRecord.source.name}
                                         <div class="ui icon blue button la-modern-button ${buttonColor} la-js-dont-hide-button la-popup-tooltip la-delay"
                                              data-content="${message(code: 'platform.details')}">
                                             <i class="ui angle double down icon"></i>

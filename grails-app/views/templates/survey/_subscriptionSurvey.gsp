@@ -990,8 +990,6 @@
 
 <laser:render template="/templates/survey/properties" model="${[surveyConfig: surveyConfig]}"/>
 
-
-
 <laser:script file="${this.getGroovyPageFileName()}">
 
     $('body #participation').editable('destroy').editable({
