@@ -80,27 +80,52 @@
 
   <ui:errors bean="${packageInstance}" />
 
-  <div class="row">
-      <div class="column">
-          <laser:render template="/templates/filter/tipp_ieFilter"/>
-      </div>
-  </div>
+<div class="ui grid">
+    <div class="row">
+        <div class="column">
+            <laser:render template="/templates/filter/tipp_ieFilter"/>
+        </div>
+    </div>
 
-  <div class="row">
-      <div class="column">
+    <div class="row">
+        <div class="eight wide column">
+            <h3 class="ui icon header la-clear-before la-noMargin-top"><span
+                    class="ui circular  label">${num_tipp_rows}</span> <g:message code="title.filter.result"/></h3>
+        </div>
 
-          <div class="ui blue large label"><g:message code="title.plural"/>: <div class="detail">${num_tipp_rows}</div>
-          </div>
+    </div>
+</div>
+<%
+    Map<String, String>
+    sortFieldMap = ['sortname': message(code: 'title.label')]
+    if (journalsOnly) {
+        sortFieldMap['startDate'] = message(code: 'default.from')
+        sortFieldMap['endDate'] = message(code: 'default.to')
+    } else {
+        sortFieldMap['dateFirstInPrint'] = message(code: 'tipp.dateFirstInPrint')
+        sortFieldMap['dateFirstOnline'] = message(code: 'tipp.dateFirstOnline')
+    }
+%>
+<div class="ui form">
+    <div class="three wide fields">
+        <div class="field">
+            <ui:sortingDropdown noSelection="${message(code:'default.select.choose.label')}" from="${sortFieldMap}" sort="${params.sort}" order="${params.order}"/>
+        </div>
+    </div>
+</div>
+<div class="ui grid">
+    <div class="row">
+        <div class="column">
+            <laser:render template="/templates/tipps/table_accordion"
+                          model="[tipps: titlesList, showPackage: false, showPlattform: true]"/>
+        </div>
+    </div>
+</div>
 
-          <laser:render template="/templates/tipps/table"
-                    model="[tipps: titlesList, showPackage: false, showPlattform: true]"/>
-      </div>
-  </div>
-
-  <g:if test="${titlesList}">
-      <ui:paginate action="${actionName}" controller="package" params="${params}"
-                      maxsteps="${max}" total="${num_tipp_rows}"/>
-  </g:if>
+<g:if test="${titlesList}">
+    <ui:paginate action="current" controller="package" params="${params}"
+                 max="${max}" total="${num_tipp_rows}"/>
+</g:if>
 
   <laser:render template="/templates/export/individuallyExportTippsModal" model="[modalID: 'individuallyExportTippsModal']" />
 

@@ -656,7 +656,15 @@ class ControlledListService {
             params.list('status').each { String statusId ->
                 statusList << Long.parseLong(statusId)
             }
-            titleTypes = TitleInstancePackagePlatform.executeQuery("select titleType from TitleInstancePackagePlatform where titleType is not null and status.id in (:status) ", [status: statusList])
+           String query = "select titleType from TitleInstancePackagePlatform tipp where tipp.titleType is not null and tipp.status.id in (:status) "
+           Map queryMap = [status: statusList]
+
+           if(params.institution && params.filterForPermanentTitle){
+               queryMap.inst = params.institution
+               query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
+           }
+
+           titleTypes = TitleInstancePackagePlatform.executeQuery(query, queryMap)
         }
         if(titleTypes.size() == 0){
             titleTypes << messageSource.getMessage('titleInstance.noTitleType.label', null, LocaleUtils.getCurrentLocale())
@@ -709,7 +717,15 @@ class ControlledListService {
             params.list('status').each { String statusId ->
                 statusList << Long.parseLong(statusId)
             }
-            mediumTypes.addAll(TitleInstancePackagePlatform.executeQuery("select tipp.medium from TitleInstancePackagePlatform tipp where tipp.medium is not null and tipp.status.id in (:status) ", [status: statusList]))
+           String query = "select tipp.medium from TitleInstancePackagePlatform tipp where tipp.medium is not null and tipp.status.id in (:status) "
+           Map queryMap = [status: statusList]
+
+           if(params.institution && params.filterForPermanentTitle){
+               queryMap.inst = params.institution
+               query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
+           }
+
+            mediumTypes.addAll(TitleInstancePackagePlatform.executeQuery(query, queryMap))
         }
         mediumTypes
     }
@@ -760,7 +776,15 @@ class ControlledListService {
             params.list('status').each { String statusId ->
                 statusList << Long.parseLong(statusId)
             }
-            coverageDepths = RefdataValue.executeQuery("select rdv from RefdataValue rdv where rdv.value in (select tc.coverageDepth from TIPPCoverage tc join tc.tipp tipp where tc.coverageDepth is not null and tipp.status.id in (:status)) ", [status: statusList])
+           String query = "select rdv from RefdataValue rdv where rdv.value in (select tc.coverageDepth from TIPPCoverage tc join tc.tipp tipp where tc.coverageDepth is not null and tipp.status.id in (:status) "
+           Map queryMap = [status: statusList]
+
+           if(params.institution && params.filterForPermanentTitle){
+               queryMap.inst = params.institution
+               query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
+           }
+           query += " )"
+            coverageDepths = RefdataValue.executeQuery(query, queryMap)
         }
 
         coverageDepths
@@ -817,7 +841,17 @@ class ControlledListService {
             params.list('status').each { String statusId ->
                 statusList << Long.parseLong(statusId)
             }
-            seriesName = TitleInstancePackagePlatform.executeQuery("select distinct(seriesName) from TitleInstancePackagePlatform where seriesName is not null and status.id in (:status) order by seriesName", [status: statusList])
+           String query = "select distinct(tipp.seriesName) from TitleInstancePackagePlatform as tipp where tipp.seriesName is not null and tipp.status.id in (:status) "
+           Map queryMap = [status: statusList]
+
+           if(params.institution && params.filterForPermanentTitle){
+               queryMap.inst = params.institution
+               query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
+           }
+
+           query += " order by tipp.seriesName"
+
+           seriesName = TitleInstancePackagePlatform.executeQuery(query, queryMap)
         }
         if(seriesName.size() == 0){
             seriesName << messageSource.getMessage('titleInstance.noSeriesName.label', null, LocaleUtils.getCurrentLocale())
@@ -870,7 +904,17 @@ class ControlledListService {
             params.list('status').each { String statusId ->
                 statusList << Long.parseLong(statusId)
             }
-            ddcs.addAll(DeweyDecimalClassification.executeQuery("select ddc.ddc from DeweyDecimalClassification ddc join ddc.tipp tipp where tipp.status.id in (:status) order by ddc.ddc.value_" + LocaleUtils.getCurrentLang(), [status: statusList]))
+           String query = "select ddc.ddc from DeweyDecimalClassification ddc join ddc.tipp tipp where tipp.status.id in (:status) "
+           Map queryMap = [status: statusList]
+
+           if(params.institution && params.filterForPermanentTitle){
+               queryMap.inst = params.institution
+               query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
+           }
+
+           query += "order by ddc.ddc.value_" + LocaleUtils.getCurrentLang()
+
+            ddcs.addAll(DeweyDecimalClassification.executeQuery(query, queryMap))
         }
         ddcs
     }
@@ -920,7 +964,17 @@ class ControlledListService {
             params.list('status').each { String statusId ->
                 statusList << Long.parseLong(statusId)
             }
-            languages.addAll(DeweyDecimalClassification.executeQuery("select lang.language from Language lang join lang.tipp tipp where tipp.status.id in (:status) order by lang.language.value_" + LocaleUtils.getCurrentLang(), [status: statusList]))
+           String query = "select lang.language from Language lang join lang.tipp tipp where tipp.status.id in (:status) "
+           Map queryMap = [status: statusList]
+
+           if(params.institution && params.filterForPermanentTitle){
+               queryMap.inst = params.institution
+               query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
+           }
+
+           query += " order by lang.language.value_" + LocaleUtils.getCurrentLang()
+
+            languages.addAll(Language.executeQuery(query, queryMap))
         }
         languages
     }
@@ -997,7 +1051,17 @@ class ControlledListService {
             params.list('status').each { String statusId ->
                 statusList << Long.parseLong(statusId)
             }
-            rawSubjects = TitleInstancePackagePlatform.executeQuery("select distinct(subjectReference) from TitleInstancePackagePlatform where subjectReference is not null and status.id in (:status) order by subjectReference", [status: statusList])
+
+           String query = "select distinct(tipp.subjectReference) from TitleInstancePackagePlatform tipp where tipp.subjectReference is not null and tipp.status.id in (:status) "
+           Map queryMap = [status: statusList]
+
+           if(params.institution && params.filterForPermanentTitle){
+               queryMap.inst = params.institution
+               query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
+           }
+
+           query += " order by tipp.subjectReference"
+           rawSubjects = TitleInstancePackagePlatform.executeQuery(query, queryMap)
         }
         if(rawSubjects.size() == 0){
             subjects << messageSource.getMessage('titleInstance.noSubjectReference.label', null, LocaleUtils.getCurrentLocale())
@@ -1067,7 +1131,16 @@ class ControlledListService {
             params.list('status').each { String statusId ->
                 statusList << Long.parseLong(statusId)
             }
-            yearsFirstOnline = TitleInstancePackagePlatform.executeQuery("select distinct(YEAR(dateFirstOnline)) from TitleInstancePackagePlatform where dateFirstOnline is not null and status.id in (:status) order by YEAR(dateFirstOnline)", [status: statusList])
+           String query = "select distinct(YEAR(tipp.dateFirstOnline)) from TitleInstancePackagePlatform tipp where tipp.dateFirstOnline is not null and tipp.status.id in (:status) "
+           Map queryMap = [status: statusList]
+
+           if(params.institution && params.filterForPermanentTitle){
+               queryMap.inst = params.institution
+               query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
+           }
+
+           query += " order by YEAR(tipp.dateFirstOnline)"
+           yearsFirstOnline = TitleInstancePackagePlatform.executeQuery(query, queryMap)
         }
         if(yearsFirstOnline.size() == 0){
             yearsFirstOnline << messageSource.getMessage('default.selectionNotPossible.label', null, LocaleUtils.getCurrentLocale())
@@ -1124,9 +1197,16 @@ class ControlledListService {
             params.list('status').each { String statusId ->
                 statusList << Long.parseLong(statusId)
             }
+           String query = "select distinct(tipp.publisherName) from TitleInstancePackagePlatform tipp where tipp.publisherName is not null and tipp.status.id in (:status) "
+           Map queryMap = [status: statusList]
 
+           if(params.institution && params.filterForPermanentTitle){
+               queryMap.inst = params.institution
+               query += " and tipp.id in (select pt.tipp.id from PermanentTitle as pt where pt.owner = :inst)"
+           }
+           query += " order by tipp.publisherName"
             //publishers.addAll(TitleInstancePackagePlatform.executeQuery("select distinct(orgRole.org.name) from TitleInstancePackagePlatform tipp left join tipp.orgs orgRole where orgRole.roleType.id = ${RDStore.OR_PUBLISHER.id} and tipp.pkg in (:pkg) order by orgRole.org.name", [pkg: subscription.packages.pkg]))
-            publishers.addAll(TitleInstancePackagePlatform.executeQuery("select distinct(publisherName) from TitleInstancePackagePlatform where publisherName is not null and status.id in (:status) order by publisherName", [status: statusList]))
+            publishers.addAll(TitleInstancePackagePlatform.executeQuery(query, queryMap))
         }
 
         publishers

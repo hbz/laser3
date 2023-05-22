@@ -1525,10 +1525,15 @@ class MyInstitutionController  {
         //String havingClause = params.filterMultiIE ? 'having count(ie.ie_id) > 1' : ''
 
         String orderByClause
-        if (params.order == 'desc') {
-            orderByClause = 'order by tipp.sortname desc, tipp.name desc'
-        } else {
-            orderByClause = 'order by tipp.sortname asc, tipp.name asc'
+        if ((params.sort != null) && (params.sort.length() > 0)) {
+            orderByClause = " order by ${params.sort} ${params.order} "
+        }
+        else {
+            if (params.order == 'desc') {
+                orderByClause = 'order by tipp.sortname desc, tipp.name desc'
+            } else {
+                orderByClause = 'order by tipp.sortname asc, tipp.name asc'
+            }
         }
 
         String qryString = "from IssueEntitlement ie join ie.tipp tipp join ie.subscription sub join sub.orgRelations oo where sub.status = :current and oo.roleType in (:orgRoles) and oo.org = :institution "
@@ -1649,6 +1654,79 @@ class MyInstitutionController  {
         }
         else
             result
+    }
+
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'])
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+    })
+    def currentPermanentTitles() {
+
+        Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params)
+
+
+        if(params.tab){
+            if(params.tab == 'currentIEs'){
+                params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
+            }else if(params.tab == 'plannedIEs'){
+                params.status = [RDStore.TIPP_STATUS_EXPECTED.id.toString()]
+            }else if(params.tab == 'expiredIEs'){
+                params.status = [RDStore.TIPP_STATUS_RETIRED.id.toString()]
+            }else if(params.tab == 'deletedIEs'){
+                params.status = [RDStore.TIPP_STATUS_DELETED.id.toString()]
+            }else if(params.tab == 'allIEs'){
+                params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString(), RDStore.TIPP_STATUS_EXPECTED.id.toString(), RDStore.TIPP_STATUS_RETIRED.id.toString(), RDStore.TIPP_STATUS_DELETED.id.toString()]
+            }
+        }
+        else if(params.list('status').size() == 1) {
+            if(params.list('status')[0] == RDStore.TIPP_STATUS_CURRENT.id.toString()){
+                params.tab = 'currentIEs'
+            }else if(params.list('status')[0] == RDStore.TIPP_STATUS_RETIRED.id.toString()){
+                params.tab = 'expiredIEs'
+            }else if(params.list('status')[0] == RDStore.TIPP_STATUS_EXPECTED.id.toString()){
+                params.tab = 'plannedIEs'
+            }else if(params.list('status')[0] == RDStore.TIPP_STATUS_DELETED.id.toString()){
+                params.tab = 'deletedIEs'
+            }
+        }else{
+            if(params.list('status').size() > 1){
+                params.tab = 'allIEs'
+            }else {
+                params.tab = 'currentIEs'
+                params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
+            }
+        }
+
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
+
+        Map query = filterService.getPermanentTitlesQuery(params, result.institution)
+        result.filterSet = query.filterSet
+        Set tipps = TitleInstancePackagePlatform.executeQuery("select pt.tipp.id " + query.query, query.queryParams)
+        result.tippIDs = tipps
+
+        result.num_tipp_rows = tipps.size()
+
+        String orderClause = 'order by tipp.sortname'
+        if(params.sort){
+                if(params.sort.contains('sortname'))
+                    orderClause = "order by tipp.sortname ${params.order}, tipp.name ${params.order} "
+                else
+                    orderClause = "order by ${params.sort} ${params.order} "
+        }
+        Set filteredIDs = result.tippIDs.drop(result.offset).take(result.max)
+        result.titles = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp where tipp.id in (:tippIDs) '+orderClause, [tippIDs: filteredIDs])
+
+        result.currentTippCounts = PermanentTitle.executeQuery("select count(pt) from PermanentTitle as pt where pt.owner = :org and pt.tipp.status = :status and pt.issueEntitlement.status != :ieStatus", [org: result.institution, status: RDStore.TIPP_STATUS_CURRENT, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+        result.plannedTippCounts = PermanentTitle.executeQuery("select count(pt) from PermanentTitle as pt where pt.owner = :org and pt.tipp.status = :status and pt.issueEntitlement.status != :ieStatus", [org: result.institution, status: RDStore.TIPP_STATUS_EXPECTED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+        result.expiredTippCounts = PermanentTitle.executeQuery("select count(pt) from PermanentTitle as pt where pt.owner = :org and pt.tipp.status = :status and pt.issueEntitlement.status != :ieStatus", [org: result.institutionn, status: RDStore.TIPP_STATUS_RETIRED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+        result.deletedTippCounts = PermanentTitle.executeQuery("select count(pt) from PermanentTitle as pt where pt.owner = :org and pt.tipp.status = :status and pt.issueEntitlement.status != :ieStatus", [org: result.institution, status: RDStore.TIPP_STATUS_DELETED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+        result.allTippCounts = PermanentTitle.executeQuery("select count(pt) from PermanentTitle as pt where pt.owner = :org and pt.tipp.status in (:status) and pt.issueEntitlement.status != :ieStatus", [org: result.institution, status: [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_EXPECTED, RDStore.TIPP_STATUS_RETIRED, RDStore.TIPP_STATUS_DELETED], ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+
+        //for tipp_ieFilter
+        params.institution = result.institution
+        params.filterForPermanentTitle = true
+
+        result
     }
 
     /**
