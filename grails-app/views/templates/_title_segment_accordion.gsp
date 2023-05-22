@@ -31,7 +31,7 @@
                 <!-- START TEMPLATE -->
                 <laser:render template="/templates/title_short_accordion"
                               model="${[ie         : null, tipp: tipp,
-                                        showPackage: showPackage, showPlattform: showPlattform, showCompact: true, showEmptyFields: false]}"/>
+                                        showPackage: showPackage, showPlattform: showPlattform, showEmptyFields: false]}"/>
                 <!-- END TEMPLATE -->
 
             </div>
