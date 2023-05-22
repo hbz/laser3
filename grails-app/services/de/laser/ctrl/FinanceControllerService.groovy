@@ -71,7 +71,7 @@ class FinanceControllerService {
         }
 
         if(params.ownSort) {
-            result.sortConfig.ownSort = params.sort
+            result.sortConfig.ownSort = params.sort.contains("ci.") ? params.sort : 'ci.'+params.sort
             result.sortConfig.ownOrder = params.order
         }
         if(params.consSort) {
@@ -79,7 +79,7 @@ class FinanceControllerService {
             result.sortConfig.consOrder = params.order
         }
         if(params.subscrSort) {
-            result.sortConfig.subscrSort = params.sort
+            result.sortConfig.subscrSort = params.sort.contains("ci.") ? params.sort : 'ci.'+params.sort
             result.sortConfig.subscrOrder = params.order
         }
         if (params.forExport) {

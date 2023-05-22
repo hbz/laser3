@@ -74,7 +74,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
     SortedSet ids
 
     static transients = [
-            'referenceConcatenated', 'licensingConsortium', 'licensor', 'licensee',
+            'referenceConcatenated', 'licensingConsortium', 'licensor', 'licensee', 'providers', 'agencies',
             'calculatedPropDefGroups', 'genericLabel', 'nonDeletedDerivedLicenses'
     ] // mark read-only accessor methods
 
@@ -296,6 +296,24 @@ class License extends AbstractBaseWithCalculatedLastUpdated
             result = CalculatedType.TYPE_LOCAL
         }
         result
+    }
+
+    /**
+     * Retrieves all organisation linked as providers to this license
+     * @return a {@link List} of {@link Org}s linked as provider
+     */
+    List<Org> getProviders() {
+        Org.executeQuery("select og.org from OrgRole og where og.lic =:lic and og.roleType in (:provider)",
+                [lic: this, provider: [RDStore.OR_PROVIDER, RDStore.OR_LICENSOR]])
+    }
+
+    /**
+     * Retrieves all organisation linked as agencies to this license
+     * @return a {@link List} of {@link Org}s linked as agency
+     */
+    List<Org> getAgencies() {
+        Org.executeQuery("select og.org from OrgRole og where og.lic =:lic and og.roleType = :agency",
+                [lic: this, agency: RDStore.OR_AGENCY])
     }
 
     /**

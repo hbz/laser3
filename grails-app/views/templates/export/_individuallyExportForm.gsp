@@ -320,11 +320,20 @@
                     ${message(code: 'default.export.cfg.xlsx.default')}
                 </p>
             </div>
+            <div id="fileformat-query-pdf" class="wide four field">
+                <label>${message(code: 'default.export.cfg.pdf')}</label>
+                <p>
+                    ${message(code: 'default.export.cfg.pdf.default')}
+                </p>
+            </div>
 
             <div class="wide two field">
+                <g:if test="${!formats}">
+                    <g:set var="formats" value="${[xlsx: 'XLSX', csv: 'CSV']}"/>
+                </g:if>
                 <g:select name="fileformat" id="fileformat-query" class="ui selection dropdown la-not-clearable"
                           optionKey="key" optionValue="value"
-                          from="${[xlsx: 'XLSX', csv: 'CSV']}"
+                          from="${formats}"
                 />
             </div>
 
