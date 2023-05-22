@@ -988,9 +988,7 @@
     </g:if>
 </g:if>
 
-<laser:render template="properties" model="${[surveyConfig: surveyConfig]}"/>
-
-
+<laser:render template="/templates/survey/properties" model="${[surveyConfig: surveyConfig]}"/>
 
 <laser:script file="${this.getGroovyPageFileName()}">
 
