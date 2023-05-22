@@ -11,12 +11,12 @@
           <ui:exportDropdownItem>
               <a class="item" data-ui="modal" href="#individuallyExportModal">Export</a>
           </ui:exportDropdownItem>
+      <%--
           <g:if test="${filterSet || defaultSet}">
               <ui:exportDropdownItem>
                   <g:link class="item js-open-confirm-modal" data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
                           data-confirm-term-how="ok" action="currentLicenses" target="_blank" params="${params+[exportPDF:true]}">${message(code:'default.button.exports.pdf')}</g:link>
               </ui:exportDropdownItem>
-              <%--
               <ui:exportDropdownItem>
                   <g:link class="item js-open-confirm-modal" data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
                           data-confirm-term-how="ok" action="currentLicenses" params="${params+[exportXLS:true]}">${message(code:'default.button.exports.xls')}</g:link>
@@ -25,21 +25,19 @@
                   <g:link class="item js-open-confirm-modal" data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
                           data-confirm-term-how="ok" action="currentLicenses" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link>
               </ui:exportDropdownItem>
-              --%>
           </g:if>
           <g:else>
               <ui:exportDropdownItem>
                   <g:link class="item" action="currentLicenses" target="_blank" params="${params+[exportPDF:true]}">${message(code:'default.button.exports.pdf')}</g:link>
               </ui:exportDropdownItem>
-              <%--
               <ui:exportDropdownItem>
                   <g:link class="item" action="currentLicenses" params="${params+[exportXLS:true]}">${message(code:'default.button.exports.xls')}</g:link>
               </ui:exportDropdownItem>
               <ui:exportDropdownItem>
                   <g:link class="item" action="currentLicenses" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link>
               </ui:exportDropdownItem>
-              --%>
           </g:else>
+      --%>
       </ui:exportDropdown>
 
       <laser:render template="actions" />

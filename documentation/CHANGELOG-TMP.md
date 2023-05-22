@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5051    22.05.2023  rc-3.1  3.1         Andreas Feature     Designanpassungen in der Paketdetailsicht
+
+5050    22.05.2023  rc-3.1  3.1         Andreas Bug         Kosten waren nicht sortierbar
+
+--      22.05.2023  rc-3.1  3.1         Andreas Feature     Export per Konfiguration für Meine Verträge ist jetzt auch für PDF verfügbar
+
 5049    22.05.2023  rc-3.1  3.1         David   Bug         500er QA Titelumfrage nicht aufrufbar
 
 5038    19.05.2023  rc-3.1  3.1         Andreas Feature     Hinweis auf Maximaleintrag

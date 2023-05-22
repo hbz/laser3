@@ -47,7 +47,7 @@ class ExportClickMeService {
     MessageSource messageSource
 
     static enum FORMAT {
-        XLS, CSV, TSV
+        XLS, CSV, TSV, PDF
     }
 
     static Map<String, Object> EXPORT_RENEWAL_CONFIG = [
@@ -419,9 +419,7 @@ class ExportClickMeService {
                             'provider.sortname'          : [field: 'providers.sortname', label: 'Sortname', message: 'exportClickMe.provider.sortname'],
                             'provider.name'              : [field: 'providers.name', label: 'Name', message: 'exportClickMe.provider.name', defaultChecked: 'true' ],
                             'provider.altnames'          : [field: 'providers.altnames.name', label: 'Alt Name', message: 'exportClickMe.provider.altnames'],
-                            'provider.url'               : [field: 'providers.url', label: 'Url', message: 'exportClickMe.provider.url'],
-                            'provider.platforms'         : [field: 'providers.platforms.name', label: 'Platform', message: 'org.platforms.label'],
-                            'provider.platforms.url'     : [field: 'providers.platforms.primaryUrl', label: 'Primary URL', message: 'platform.primaryURL'],
+                            'provider.url'               : [field: 'providers.url', label: 'Url', message: 'exportClickMe.provider.url']
                     ]
             ],
 
@@ -432,7 +430,7 @@ class ExportClickMeService {
                             'agency.sortname'          : [field: 'agencies.sortname', label: 'Sortname', message: 'exportClickMe.agency.sortname'],
                             'agency.name'              : [field: 'agencies.name', label: 'Name', message: 'exportClickMe.agency.name', defaultChecked: 'true' ],
                             'agency.altnames'          : [field: 'agencies.altnames.name', label: 'Alt Name', message: 'exportClickMe.agency.altnames'],
-                            'agency.url'               : [field: 'agencies.url', label: 'Url', message: 'exportClickMe.agency.url'],
+                            'agency.url'               : [field: 'agencies.url', label: 'Url', message: 'exportClickMe.agency.url']
                     ]
             ],
 
@@ -2353,8 +2351,8 @@ class ExportClickMeService {
             return exportService.generateXLSXWorkbook(sheetData)
         case FORMAT.CSV:
             return exportService.generateSeparatorTableString(titles, exportData, ',')
-        case FORMAT.TSV:
-            return exportService.generateSeparatorTableString(titles, exportData, '\t')
+        case FORMAT.PDF:
+            return [titleRow: titles, columnData: exportData]
         }
     }
 
@@ -3051,8 +3049,15 @@ class ExportClickMeService {
                     String query = "select prop from SubscriptionProperty prop where (prop.owner = :sub and prop.type.id in (:propertyDefs) and prop.isPublic = true) or (prop.owner = :sub and prop.type.id in (:propertyDefs) and prop.isPublic = false and prop.tenant = :contextOrg) order by prop.type.${localizedName} asc"
                     List<SubscriptionProperty> subscriptionProperties = SubscriptionProperty.executeQuery(query,[sub:subscription, propertyDefs:[id], contextOrg: contextService.getOrg()])
                     if(subscriptionProperties){
-                        row.add(createTableCell(format, subscriptionProperties.collect { it.getValueInI10n()}.join(";")))
+                        List<String> values = [], notes = []
+                        subscriptionProperties.each { SubscriptionProperty sp ->
+                            values << sp.getValueInI10n()
+                            notes << sp.note != null ? sp.note : ' '
+                        }
+                        row.add(createTableCell(format, values.join('; ')))
+                        row.add(createTableCell(format, notes.join('; ')))
                     }else{
+                        row.add(createTableCell(format, ' '))
                         row.add(createTableCell(format, ' '))
                     }
                 }
@@ -3147,10 +3152,17 @@ class ExportClickMeService {
                 else if (fieldKey.startsWith('participantLicProperty.') || fieldKey.startsWith('licProperty.')) {
                     Long id = Long.parseLong(fieldKey.split("\\.")[1])
                     String query = "select prop from LicenseProperty prop where (prop.owner = :lic and prop.type.id in (:propertyDefs) and prop.isPublic = true) or (prop.owner = :lic and prop.type.id in (:propertyDefs) and prop.isPublic = false and prop.tenant = :contextOrg) order by prop.type.${localizedName} asc"
-                    List<LicenseProperty> licenseProperties = SubscriptionProperty.executeQuery(query,[lic:license, propertyDefs:[id], contextOrg: contextService.getOrg()])
+                    List<LicenseProperty> licenseProperties = LicenseProperty.executeQuery(query,[lic:license, propertyDefs:[id], contextOrg: contextService.getOrg()])
                     if(licenseProperties){
-                        row.add(createTableCell(format, licenseProperties.collect { it.getValueInI10n()}.join(";")))
+                        List<String> values = [], notes = []
+                        licenseProperties.each { LicenseProperty lp ->
+                            values << lp.getValueInI10n() ?: ' '
+                            notes << lp.note != null ? lp.note : ' '
+                        }
+                        row.add(createTableCell(format, values.join('; ')))
+                        row.add(createTableCell(format, notes.join('; ')))
                     }else{
+                        row.add(createTableCell(format, ' '))
                         row.add(createTableCell(format, ' '))
                     }
                 }
