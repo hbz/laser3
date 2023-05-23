@@ -74,7 +74,8 @@ class IdentifierService {
         }
         if(object.hasProperty("ids")) {
             object.ids.each { Identifier ident ->
-                String key = ident.ns.getI10n('name') ?: ident.ns.ns
+                IdentifierNamespace idns = ident.ns
+                String key = idns.getI10n('name') ?: idns.ns
                 SortedSet<Identifier> idsOfNamespace = objectIds.get(key)
                 if(!idsOfNamespace)
                     idsOfNamespace = new TreeSet<Identifier>()

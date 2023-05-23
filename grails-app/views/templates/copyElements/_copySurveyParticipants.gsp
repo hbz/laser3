@@ -46,13 +46,8 @@
                                         <g:link controller="organisation"
                                                 action="show"
                                                 id="${surveyOrg.org.id}">${surveyOrg.org.sortname}</g:link>
-                                        <g:if test="${surveyOrg.org.getCustomerType() in ['ORG_INST']}">
-                                            <span class="la-long-tooltip la-popup-tooltip la-delay"
-                                                  data-position="bottom center"
-                                                  data-content="${surveyOrg.org.getCustomerTypeI10n()}">
-                                                <i class="chess rook grey icon"></i>
-                                            </span>
-                                        </g:if>
+
+                                        <ui:customerTypeIcon org="${surveyOrg.org}" />
                                     </td>
                                     <td class="titleCell">
                                         <g:link controller="organisation"
@@ -130,13 +125,8 @@
                                         <g:link controller="organisation"
                                                 action="show"
                                                 id="${surveyOrg.org.id}">${surveyOrg.org.sortname}</g:link>
-                                        <g:if test="${surveyOrg.org.getCustomerType() in ['ORG_INST']}">
-                                            <span class="la-long-tooltip la-popup-tooltip la-delay"
-                                                  data-position="bottom center"
-                                                  data-content="${surveyOrg.org.getCustomerTypeI10n()}">
-                                                <i class="chess rook grey icon"></i>
-                                            </span>
-                                        </g:if>
+
+                                        <ui:customerTypeIcon org="${surveyOrg.org}" />
                                     </td>
                                     <td class="titleCell">
                                         <g:link controller="organisation"

@@ -36,6 +36,7 @@ class LoginController {
     GrailsApplication grailsApplication
     InstAdmService instAdmService
     SpringSecurityService springSecurityService
+    MailSendService mailSendService
 
   /**
    * Default action; redirects to 'defaultTargetUrl' if logged in, /login/auth otherwise.
@@ -185,12 +186,29 @@ class LoginController {
         if (user.save()) {
           flash.message = message(code: 'user.newPassword.successNoOutput') as String
 
-          instAdmService.sendMail(user, 'Passwortänderung', '/mailTemplates/text/newPassword', [user: user, newPass: newPassword])
+          mailSendService.sendMailToUser(user, message(code: 'email.subject.forgottenPassword'), '/mailTemplates/text/newPassword', [user: user, newPass: newPassword])
         }
       }
       else flash.error = g.message(code:'menu.user.forgottenPassword.userError') as String
     }
     redirect action: 'auth'
+  }
+
+  def getForgottenUsername() {
+        if(!params.forgotten_username_mail) {
+            flash.error = g.message(code:'menu.user.forgottenUsername.userMissing') as String
+        }
+        else {
+            List<User> users = User.findAllByEmail(params.forgotten_username_mail)
+            if (users.size() > 0) {
+                flash.message = message(code: 'menu.user.forgottenUsername.success') as String
+                users.each {User user ->
+                    mailSendService.sendMailToUser(user, message(code: 'email.subject.forgottenUsername'), '/mailTemplates/text/forgotUserName', [user: user])
+                }
+            }
+            else flash.error = g.message(code:'menu.user.forgottenUsername.userError') as String
+        }
+        redirect action: 'auth'
   }
 
     private boolean _fuzzyCheck(DefaultSavedRequest savedRequest) {

@@ -39,7 +39,9 @@ class IssueEntitlement extends AbstractBase implements Comparable {
     Date accessStartDate
     Date accessEndDate
 
+    @Deprecated
     String name
+    @Deprecated
     String sortname
     String notes
 
@@ -50,11 +52,16 @@ class IssueEntitlement extends AbstractBase implements Comparable {
     RefdataValue status
 
     @Deprecated
+    @RefdataInfo(cat = RDConstants.TIPP_ACCESS_TYPE)
+    RefdataValue accessType
+
+    @Deprecated
+    @RefdataInfo(cat = RDConstants.LICENSE_OA_TYPE)
+    RefdataValue openAccess
+
+    @Deprecated
     @RefdataInfo(cat = RDConstants.TITLE_MEDIUM)
     RefdataValue medium // legacy; was distinguished back then; I see no reason why I should still do so. Is legacy.
-
-    @RefdataInfo(cat = RDConstants.IE_ACCEPT_STATUS)
-    RefdataValue acceptStatus
 
     Date dateCreated
     Date lastUpdated
@@ -73,9 +80,10 @@ class IssueEntitlement extends AbstractBase implements Comparable {
 
     int compareTo(obj) {
         int cmp
-        if(sortname && obj.sortname)
-            cmp = sortname <=> obj.sortname
-        else if(name && obj.name) cmp = name <=> obj.name
+        if(tipp.sortname && obj.tipp.sortname)
+            cmp = tipp.sortname <=> obj.tipp.sortname
+        else if(tipp.name && obj.tipp.name)
+            cmp = tipp.name <=> obj.tipp.name
         if(cmp == 0)
             return id.compareTo(obj.id)
         return cmp
@@ -90,15 +98,16 @@ class IssueEntitlement extends AbstractBase implements Comparable {
               name column:'ie_name', type: 'text'
           sortname column:'ie_sortname', type: 'text'
              notes column:'ie_notes', type: 'text'
-            status column:'ie_status_rv_fk', index: 'ie_status_idx, ie_status_accept_status_idx, ie_tipp_status_accept_status_idx'
-      subscription column:'ie_subscription_fk', index: 'ie_sub_idx, ie_sub_tipp_idx, ie_status_accept_status_idx, ie_tipp_status_accept_status_idx'
-              tipp column:'ie_tipp_fk',         index: 'ie_tipp_idx, ie_sub_tipp_idx, ie_tipp_status_accept_status_idx'
+            status column:'ie_status_rv_fk', index: 'ie_status_idx, ie_sub_tipp_status_idx, ie_status_accept_status_idx, ie_tipp_status_accept_status_idx'
+        accessType column:'ie_access_type_rv_fk', index: 'ie_access_type_idx'
+        openAccess column:'ie_open_access_rv_fk', index: 'ie_open_access_idx'
+      subscription column:'ie_subscription_fk', index: 'ie_sub_idx, ie_sub_tipp_idx, ie_sub_tipp_status_idx, ie_status_accept_status_idx, ie_tipp_status_accept_status_idx'
+              tipp column:'ie_tipp_fk',         index: 'ie_tipp_idx, ie_sub_tipp_idx, ie_sub_tipp_status_idx, ie_tipp_status_accept_status_idx'
         perpetualAccessBySub column:'ie_perpetual_access_by_sub_fk'
             medium column:'ie_medium_rv_fk', index: 'ie_medium_idx'
     accessStartDate column:'ie_access_start_date'
      accessEndDate column:'ie_access_end_date'
          coverages sort: 'startDate', order: 'asc'
-      acceptStatus column:'ie_accept_status_rv_fk', index: 'ie_accept_status_idx, ie_status_accept_status_idx, ie_tipp_status_accept_status_idx'
 
     dateCreated column: 'ie_date_created'
     lastUpdated column: 'ie_last_updated'
@@ -107,14 +116,15 @@ class IssueEntitlement extends AbstractBase implements Comparable {
 
     static constraints = {
         globalUID      (nullable:true, blank:false, unique:true, maxSize:255)
-        status         (nullable:true)
         name           (nullable:true)
         sortname       (nullable:true)
         notes          (nullable:true)
+        status         (nullable:true)
+        accessType     (nullable:true)
+        openAccess     (nullable:true)
         medium         (nullable:true)
         accessStartDate(nullable:true)
         accessEndDate  (nullable:true)
-        acceptStatus   (nullable:true)
 
         lastUpdated (nullable: true)
         perpetualAccessBySub (nullable: true)
@@ -132,50 +142,58 @@ class IssueEntitlement extends AbstractBase implements Comparable {
       Subscription subscription = (Subscription) configMap.subscription
       TitleInstancePackagePlatform tipp = (TitleInstancePackagePlatform) configMap.tipp
       IssueEntitlement ie = findBySubscriptionAndTippAndStatusNotEqual(subscription,tipp, RDStore.TIPP_STATUS_REMOVED)
-      if(!ie) {
-          ie = new IssueEntitlement(subscription: subscription, tipp: tipp, medium: tipp.medium, status:tipp.status, acceptStatus: configMap.acceptStatus, name: tipp.name)
-          ie.generateSortTitle()
+      if(!ie && !PermanentTitle.findByOwnerAndTipp(subscription.subscriber, tipp)) {
+          ie = new IssueEntitlement(subscription: subscription, tipp: tipp, medium: tipp.medium, status:tipp.status, accessType: tipp.accessType, openAccess: tipp.openAccess, name: tipp.name)
+          //ie.generateSortTitle()
       }
-      if(ie.save()) {
+        if(ie) {
+            if (ie.save()) {
 
-          if(subscription.hasPerpetualAccess){
-              ie.perpetualAccessBySub = subscription
-          }
+                if (subscription.hasPerpetualAccess) {
+                    ie.perpetualAccessBySub = subscription
 
-          Set<TIPPCoverage> tippCoverages = TIPPCoverage.findAllByTipp(tipp)
-        if(tippCoverages) {
-          tippCoverages.each { TIPPCoverage tc ->
-            IssueEntitlementCoverage ic = new IssueEntitlementCoverage(issueEntitlement: ie)
-            ic.startDate = tc.startDate
-            ic.startVolume = tc.startVolume
-            ic.startIssue = tc.startIssue
-            ic.endDate = tc.endDate
-            ic.endVolume = tc.endVolume
-            ic.endIssue = tc.endIssue
-            ic.coverageDepth = tc.coverageDepth
-            ic.coverageNote = tc.coverageNote
-            ic.embargo = tc.embargo
-            if(!ic.save())
-              throw new EntitlementCreationException(ic.errors)
-          }
+                    if (!PermanentTitle.findByOwnerAndTipp(subscription.subscriber, tipp)) {
+                        PermanentTitle permanentTitle = new PermanentTitle(subscription: subscription,
+                                issueEntitlement: ie,
+                                tipp: tipp,
+                                owner: subscription.subscriber).save()
+                    }
+                }
+
+                Set<TIPPCoverage> tippCoverages = TIPPCoverage.findAllByTipp(tipp)
+                if (tippCoverages) {
+                    tippCoverages.each { TIPPCoverage tc ->
+                        IssueEntitlementCoverage ic = new IssueEntitlementCoverage(issueEntitlement: ie)
+                        ic.startDate = tc.startDate
+                        ic.startVolume = tc.startVolume
+                        ic.startIssue = tc.startIssue
+                        ic.endDate = tc.endDate
+                        ic.endVolume = tc.endVolume
+                        ic.endIssue = tc.endIssue
+                        ic.coverageDepth = tc.coverageDepth
+                        ic.coverageNote = tc.coverageNote
+                        ic.embargo = tc.embargo
+                        if (!ic.save())
+                            throw new EntitlementCreationException(ic.errors)
+                    }
+                }
+                log.debug("creating price items for ${tipp}")
+                Set<PriceItem> tippPriceItems = PriceItem.findAllByTipp(tipp)
+                if (tippPriceItems) {
+                    tippPriceItems.each { PriceItem tp ->
+                        PriceItem ip = new PriceItem(issueEntitlement: ie)
+                        ip.startDate = tp.startDate
+                        ip.endDate = tp.endDate
+                        ip.listPrice = tp.listPrice
+                        ip.listCurrency = tp.listCurrency
+                        ip.setGlobalUID()
+                        if (!ip.save())
+                            throw new EntitlementCreationException(ip.errors)
+                    }
+                }
+            } else
+                throw new EntitlementCreationException(ie.errors)
         }
-          log.debug("creating price items for ${tipp}")
-          Set<PriceItem> tippPriceItems = PriceItem.findAllByTipp(tipp)
-        if(tippPriceItems) {
-            tippPriceItems.each { PriceItem tp ->
-                PriceItem ip = new PriceItem(issueEntitlement: ie)
-                ip.startDate = tp.startDate
-                ip.endDate = tp.endDate
-                ip.listPrice = tp.listPrice
-                ip.listCurrency = tp.listCurrency
-                ip.setGlobalUID()
-                if(!ip.save())
-                    throw new EntitlementCreationException(ip.errors)
-            }
-        }
-      }
-      else
-        throw new EntitlementCreationException(ie.errors)
       ie
     }
     else throw new EntitlementCreationException("Issue entitlement creation attempt without valid subscription and TIPP references! This is not allowed!")
@@ -198,40 +216,6 @@ class IssueEntitlement extends AbstractBase implements Comparable {
       BeanStore.getDeletionService().deleteDocumentFromIndex(this.globalUID, this.class.simpleName)
   }
 
-    /**
-     * Removes stopwords from the title and generates a sortable title string.
-     * @see Normalizer.Form#NFKD
-     */
-    void generateSortTitle() {
-        if ( name ) {
-            sortname = Normalizer.normalize(name, Normalizer.Form.NFKD).trim().toLowerCase()
-            sortname = sortname.replaceFirst('^copy of ', '')
-            sortname = sortname.replaceFirst('^the ', '')
-            sortname = sortname.replaceFirst('^a ', '')
-            sortname = sortname.replaceFirst('^der ', '')
-            sortname = sortname.replaceFirst('^die ', '')
-            sortname = sortname.replaceFirst('^das ', '')
-        }
-    }
-
-  @Deprecated
-  Date getDerivedAccessStartDate() {
-      if(accessStartDate)
-          accessStartDate
-      else if(subscription.startDate)
-          subscription.startDate
-      else if(tipp.accessStartDate)
-          tipp.accessStartDate
-  }
-  @Deprecated
-  Date getDerivedAccessEndDate() {
-      if(accessEndDate)
-          accessEndDate
-      else if(subscription.endDate)
-          subscription.endDate
-      else if(tipp.accessEndDate)
-          tipp.accessEndDate
-  }
 
   @Transient
   int compare(IssueEntitlement ieB){
@@ -243,49 +227,5 @@ class IssueEntitlement extends AbstractBase implements Comparable {
     if(noChange) return 0;
     return 1;
   }
-
-    /**
-     * Currently unused, is subject of refactoring.
-     * Retrieves usage details for the title to which this issue entitlement is linked
-     * @param date the month for which usage should be retrieved
-     * @param subscriber the subscriber institution ({@link Org}) whose report should be retrieved
-     * @return the first available usage report, TODO: extend with metricType and reportType
-     */
-    def getCounterReport(Date date, Org subscriber){
-        String sort = 'r.reportCount desc'
-
-        String dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
-
-        Calendar filterTime = GregorianCalendar.getInstance()
-        filterTime.setTime(date)
-        filterTime.set(Calendar.DATE, filterTime.getActualMinimum(Calendar.DAY_OF_MONTH))
-        Date startDate = filterTime.getTime()
-        filterTime.set(Calendar.DATE, filterTime.getActualMaximum(Calendar.DAY_OF_MONTH))
-        Date endDate = filterTime.getTime()
-
-        Map<String, Object> queryParams = [customer: subscriber, platform: this.tipp.platform, startDate: startDate, endDate: endDate, title: this.tipp]
-
-        List counterReports
-
-
-        counterReports = Counter5Report.executeQuery('select r from Counter5Report r where r.reportInstitution = :customer and r.platform = :platform and r.title = :title'+dateRange+' order by '+sort, queryParams)
-
-        if(counterReports.size() > 0){
-            //println(counterReports.size())
-            return counterReports[0]
-        }
-
-        counterReports =  Counter4Report.executeQuery('select r from Counter4Report r where r.reportInstitution = :customer and r.platform = :platform and r.title = :title'+dateRange+' order by '+sort, queryParams)
-
-        if(counterReports.size() > 0){
-            //println(counterReports.size())
-            return counterReports[0]
-        }
-
-        if(!counterReports) {
-            return null
-        }
-
-    }
 
 }

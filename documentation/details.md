@@ -1,5 +1,5 @@
 
-## Upgrade from Grails 3.3.11 to Grails 5.2.5
+## Upgrade from Grails 3.3.11 to Grails 5.3.2
 
 ### SpringBootDeveloperTools
 
@@ -75,7 +75,9 @@ Localization dependent logic should be managed by *de.laser.utils.LocaleUtils* t
 
 ### Opencsv
 
-*com.opencsv.** has been removed. New code has to use *liquibase.repackaged.com.opencsv.**
+~~*com.opencsv* has been removed. New code has to use **liquibase.repackaged.com.opencsv.**~~
+Due to the upgrade of the Database Migration plugin (4.2.0), *com.opencsv* has been integrated *again* by Liquibase.
+New code has to use **com.opencsv.**
 
 ### Passwords
 

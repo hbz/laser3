@@ -3,18 +3,20 @@ package de.laser
 import de.laser.config.ConfigMapper
 import de.laser.exceptions.SyncException
 import de.laser.http.BasicHttpClient
-import de.laser.oap.OrgAccessPointLink
+import de.laser.properties.OrgProperty
 import de.laser.remote.GlobalRecordSource
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
+import de.laser.utils.DateUtils
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
-import groovy.xml.slurpersupport.GPathResult
+
 import groovyx.gpars.GParsPool
 import io.micronaut.http.client.DefaultHttpClientConfiguration
 import io.micronaut.http.client.HttpClientConfiguration
+import org.hibernate.Session
 
 import java.util.concurrent.ExecutorService
 
@@ -27,9 +29,11 @@ class YodaService {
     ContextService contextService
     DeletionService deletionService
     GlobalSourceSyncService globalSourceSyncService
-    GokbService gokbService
+    GlobalService globalService
     PackageService packageService
     ExecutorService executorService
+
+    boolean bulkOperationRunning = false
 
     /**
      * Checks whether debug information should be displayed
@@ -37,14 +41,27 @@ class YodaService {
      */
     boolean showDebugInfo() {
         //enhanced as of ERMS-829
-        return ( SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_YODA') || ConfigMapper.getShowDebugInfo() )
+        return ( SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || ConfigMapper.getShowDebugInfo() )
     }
 
     /**
-     * Copies missing medium values into the issue entitlements; values are being taken from the title the holding records have been derived
+     * Copies missing values into the issue entitlements; values are being taken from the title the holding records have been derived
      */
-    void fillIEMedium() {
-        IssueEntitlement.executeUpdate("update IssueEntitlement ie set ie.medium = (select tipp.medium from TitleInstancePackagePlatform tipp where tipp = ie.tipp and tipp.medium != null) where ie.medium = null")
+    void fillValue(String toUpdate) {
+        IssueEntitlement.withNewSession { Session sess ->
+            int total = IssueEntitlement.executeQuery('select count(ie) from IssueEntitlement ie join ie.tipp tipp join ie.subscription sub where ((sub.startDate >= :start and sub.endDate <= :end) or sub.startDate = null or sub.endDate = null) and tipp.'+toUpdate+' != null and tipp.status != :removed and ie.status != :removed', [removed: RDStore.TIPP_STATUS_REMOVED, start: DateUtils.getSDF_yyyyMMdd().parse('2022-01-01'), end: DateUtils.getSDF_yyyyMMdd().parse('2023-12-31')])[0]
+            int max = 100000
+            for(int ctr = 0; ctr < total; ctr += max) {
+                IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.tipp tipp join ie.subscription sub where ((sub.startDate >= :start and sub.endDate <= :end) or sub.startDate = null or sub.endDate = null) and tipp.'+toUpdate+' != null and tipp.status != :removed and ie.status != :removed order by sub.startDate', [removed: RDStore.TIPP_STATUS_REMOVED, start: DateUtils.getSDF_yyyyMMdd().parse('2022-01-01'), end: DateUtils.getSDF_yyyyMMdd().parse('2023-12-31')], [max: max, offset: ctr]).each { IssueEntitlement ie ->
+                    ie[toUpdate] = ie.tipp[toUpdate]
+                    ie.save()
+                }
+                log.debug("flush after ${ctr+max}")
+                sess.flush()
+            }
+            //IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.'+toUpdate+' = (select tipp.'+toUpdate+' from TitleInstancePackagePlatform tipp where tipp = ie.tipp and tipp.'+toUpdate+' != null and tipp.status != :removed) where ie.'+toUpdate+' = null and ie.status != :removed', [removed: RDStore.TIPP_STATUS_REMOVED])
+        }
+
     }
 
     /**
@@ -78,14 +95,6 @@ class YodaService {
             Package pkg = Package.get(pkgId)
             deletionService.deletePackage(pkg)
         }
-    }
-
-    /**
-     * Executes the cleanup of titles marked as removed
-     * @return a {@link List} of title records which should be reported because there are holdings on them
-     */
-    def executeTIPPCleanup(Map result) {
-
     }
 
     /**
@@ -130,15 +139,24 @@ class YodaService {
      * @param toDelete titles to be deleted
      * @param toUUIDfy titles which should persist but marked with null entry for that the gokbId property may be set not null
      */
-    void purgeTIPPsWihtoutGOKBId(toDelete,toUUIDfy) {
-        toDelete.each { oldTippId, newTippId ->
-            TitleInstancePackagePlatform oldTipp = TitleInstancePackagePlatform.get(oldTippId)
-            TitleInstancePackagePlatform newTipp = TitleInstancePackagePlatform.get(newTippId)
-            deletionService.deleteTIPP(oldTipp,newTipp)
-        }
-        toUUIDfy.each { tippId ->
-            TitleInstancePackagePlatform.executeUpdate("update TitleInstancePackagePlatform tipp set tipp.gokbId = :missing where tipp.id = :id",[missing:"${RDStore.GENERIC_NULL_VALUE}.${tippId}",id:tippId])
-        }
+    void matchTitleStatus() {
+        int max = 100000
+        bulkOperationRunning = true
+        executorService.execute({
+            int total = IssueEntitlement.executeQuery('select count(ie) from IssueEntitlement ie where ie.tipp.status != ie.status and ie.status != :removed', [removed: RDStore.TIPP_STATUS_REMOVED])[0]
+            log.debug("${total} titles concerned")
+            for(int offset = 0; offset < total; offset += max) {
+                Set<IssueEntitlement> iesConcerned = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp.status != ie.status and ie.status != :removed', [removed: RDStore.TIPP_STATUS_REMOVED], [max: max, offset: offset])
+                iesConcerned.eachWithIndex { IssueEntitlement ie, int i ->
+                    log.debug("now processing record #${i+offset} from total ${total}")
+                    ie.status = ie.tipp.status
+                    ie.save()
+                }
+                globalService.cleanUpGorm()
+            }
+            log.debug("release lock ...")
+            bulkOperationRunning = false
+        })
     }
 
     /**
@@ -154,7 +172,7 @@ class YodaService {
             Set<Map> titles = []
             HttpClientConfiguration config = new DefaultHttpClientConfiguration()
             config.maxContentLength = 1024 * 1024 * 20
-            BasicHttpClient http = new BasicHttpClient(grs.uri+'/find', config) //we presume that the count will never get beyond 10000
+            BasicHttpClient http = new BasicHttpClient(grs.uri+'/searchApi', config) //we presume that the count will never get beyond 10000
             Closure success = { resp, json ->
                 if(resp.code() == 200) {
                     json.records.each{ Map record ->
@@ -233,7 +251,7 @@ class YodaService {
                             TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGokbId(key)
                             if (tipp) {
                                 tipp.status = RDStore.TIPP_STATUS_REMOVED
-                                PendingChange.construct([msgToken: PendingChangeConfiguration.TITLE_REMOVED, target: tipp, status: RDStore.PENDING_CHANGE_HISTORY])
+                                TitleChange.construct([msgToken: PendingChangeConfiguration.TITLE_REMOVED, target: tipp, status: RDStore.PENDING_CHANGE_HISTORY])
                                 tipp.save()
                             }
                         }
@@ -263,94 +281,6 @@ class YodaService {
                 }
             }
         })
-    }
-
-    /**
-     * Deprecated in its current form as it uses the obsolete OAI endpoint to retrieve data; was used to
-     * compare the LAS:eR platform data against the we:kb (then still GOKb) mirror instance and to determine
-     * those records which are obsolete in LAS:eR
-     * @return a {@link Map} containing obsolete platform records
-     */
-    Map<String, Object> listPlatformDuplicates() {
-        Map<String,Object> result = [ flagContentGokb : true ] // gokbService.queryElasticsearch
-        Map<String, GPathResult> oaiRecords = [:]
-        List<Platform> platformsWithoutTIPPs = Platform.executeQuery('select plat from Platform plat where plat.tipps.size = 0')
-        result.platformDupsWithoutTIPPs = []
-        result.platformsToUpdate = []
-        result.platformsWithoutGOKb = []
-        List<Platform> platformsWithoutGOKb = Platform.findAllByGokbIdIsNull()
-        result.inexistentPlatforms = []
-        result.incorrectPlatformDups = []
-        result.database = []
-        GlobalRecordSource grs = GlobalRecordSource.findAll().get(0)
-        List duplicateKeys = Platform.executeQuery('select plat.gokbId,count(plat.gokbId) from Platform plat where plat.gokbId is not null group by plat.gokbId having count(plat.gokbId) > 1')
-        duplicateKeys.each { row ->
-            //get platform, get eventual TIPPs of platform, determine from package which platform key is correct, if it is correct: ignore, otherwise, add to result
-            List<Platform> platformDuplicates = Platform.findAllByGokbId(row[0])
-            platformDuplicates.each { Platform platform ->
-                log.debug("processing platform ${platform} with duplicate GOKb ID ${platform.gokbId}")
-                //it ran too often into null pointer exceptions ... we set a tighter check!
-                if(platform.tipps.size() > 0) {
-                    TitleInstancePackagePlatform referenceTIPP = platform.tipps[0]
-                    GPathResult packageRecord = oaiRecords.get(referenceTIPP.pkg.gokbId)
-                    if(!packageRecord) {
-                        packageRecord = globalSourceSyncService.fetchRecord(grs.uri,'packages',[verb:'GetRecord',metadataPrefix:grs.fullPrefix,identifier:referenceTIPP.pkg.gokbId])
-                        oaiRecords.put(referenceTIPP.pkg.gokbId,packageRecord)
-                    }
-                    if(packageRecord.record.metadata.gokb.package) {
-                        GPathResult referenceGOKbTIPP = packageRecord.record.metadata.gokb.package.TIPPs.TIPP.find { tipp ->
-                            tipp.@uuid.text() == referenceTIPP.gokbId
-                        }
-                        if(referenceGOKbTIPP) {
-                            String guessedCorrectPlatformKey = referenceGOKbTIPP.platform.@uuid.text()
-                            if(platform.gokbId != guessedCorrectPlatformKey) {
-                                result.incorrectPlatformDups << platform
-                            }
-                        }
-                    }
-                }
-                else {
-                    result.platformDupsWithoutTIPPs << platform
-                }
-            }
-        }
-        platformsWithoutGOKb.each { Platform platform ->
-            if(!OrgAccessPointLink.findByPlatform(platform) && !TitleInstancePackagePlatform.findByPlatform(platform) && platform.propertySet.empty) {
-                result.platformsWithoutGOKb << platform
-            }
-            else {
-                result.database << [id:platform.id,name:platform.name]
-            }
-        }
-        platformsWithoutTIPPs.each { Platform platform ->
-            log.debug("processing platform ${platform} without TIPP ${platform.gokbId} to check correctness ...")
-            Map esQuery = gokbService.queryElasticsearch('https://wekb.hbz-nrw.de/api/find?uuid='+platform.gokbId)
-            List esResult
-            //is a consequent error of GOKbService's copy-paste-mess ...
-            if(esQuery.warning)
-                esResult = esQuery.warning.records
-//            else if(esQuery.info)
-//                esResult = esQuery.info.records
-            if(esResult) {
-                Map gokbPlatformRecord = esResult[0]
-                if(gokbPlatformRecord.name == platform.name)
-                    log.debug("Name ${platform.name} is correct")
-                else {
-                    log.debug("Name ${platform.name} is not correct, should actually be ${gokbPlatformRecord.name}")
-                    result.platformsToUpdate << [old:platform.globalUID,correct:gokbPlatformRecord]
-                }
-            }
-            else {
-                if(!OrgAccessPointLink.findByPlatform(platform) && !TitleInstancePackagePlatform.findByPlatform(platform) && platform.propertySet.empty) {
-                    result.inexistentPlatforms << platform
-                }
-                else {
-                    if(!result.database.find{ entry -> entry.id == platform.id})
-                        result.database << [id:platform.id,name:platform.name]
-                }
-            }
-        }
-        result
     }
 
     /**
@@ -387,28 +317,53 @@ class YodaService {
     }
 
     /**
-     * Clears the retrieved platform duplicates from the database:
-     * <ul>
-     *     <li>duplicates without titles</li>
-     *     <li>platforms without we:kb IDs</li>
-     *     <li>platforms without we:kb record</li>
-     * </ul>
+     * Deletes the obsolete (removed) objects of the given type
      */
-    @Transactional
-    void executePlatformCleanup(Map result) {
-        List<String> toDelete = []
-        toDelete.addAll(result.platformDupsWithoutTIPPs.collect{ plat -> plat.globalUID })
-        toDelete.addAll(result.platformsWithoutGOKb.collect{plat -> plat.globalUID })
-        toDelete.addAll(result.inexistentPlatforms.collect{plat -> plat.globalUID })
-        result.platformsToUpdate.each { entry ->
-            Platform oldRecord = Platform.findByGlobalUID(entry.old)
-            Map newRecord = entry.correct
-            oldRecord.name = newRecord.name
-            oldRecord.primaryUrl = newRecord.primaryUrl
-            oldRecord.status = RefdataValue.getByValueAndCategory(newRecord.status,RDConstants.PLATFORM_STATUS)
-            oldRecord.save()
+    void expungeRemovedComponents(String className) {
+        long rectype
+        String componentType
+        Set objects = []
+        switch(className) {
+            case Org.class.name: rectype = GlobalSourceSyncService.RECTYPE_ORG
+                componentType = 'Org'
+                objects.addAll(Org.findAllByStatusNotEqualAndGokbIdIsNotNull(RDStore.ORG_STATUS_REMOVED))
+                break
+            case Platform.class.name: rectype = GlobalSourceSyncService.RECTYPE_PLATFORM
+                componentType = 'Platform'
+                objects.addAll(Platform.findAllByStatusNotEqual(RDStore.PLATFORM_STATUS_REMOVED))
+                break
+            default: rectype = -1
+                componentType = null
+                break
         }
-        Platform.executeUpdate('delete from Platform plat where plat.globalUID in :toDelete',[toDelete:toDelete])
+        if(componentType) {
+            globalSourceSyncService.setSource(GlobalRecordSource.findByRectypeAndActive(rectype, true))
+            objects.each { obj ->
+                Map record = globalSourceSyncService.fetchRecordJSON(false, [componentType: componentType, uuid: obj.gokbId])
+                if(record?.count == 0) {
+                    if(obj instanceof Org) {
+                        OrgRole.executeUpdate('delete from OrgRole oo where oo.org = :org', [org: obj])
+                        PersonRole.executeUpdate('delete from PersonRole pr where pr.org = :org', [org: obj])
+                        Identifier.executeUpdate('delete from Identifier id where id.org = :org', [org: obj])
+                        Address.executeUpdate('delete from Address a where a.org = :org', [org: obj])
+                        Contact.executeUpdate('delete from Contact c where c.org = :org', [org: obj])
+                        OrgProperty.executeUpdate('delete from OrgProperty op where op.owner = :org', [org: obj])
+                        DocContext.executeUpdate('update DocContext dc set dc.targetOrg = null where dc.targetOrg = :org', [org: obj])
+                        DocContext.executeUpdate('update DocContext dc set dc.org = (select doc.owner from Doc doc where doc = dc.owner) where dc.org = :org', [org: obj])
+                        deletionService.deleteOrganisation(obj, null, false)
+                    }
+                    else if(obj instanceof Platform) {
+                        IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.status = :removed where ie.status != :removed and ie.tipp in (select tipp from TitleInstancePackagePlatform tipp where tipp.platform = :plat)', [removed: RDStore.TIPP_STATUS_REMOVED, plat: obj])
+                        TitleInstancePackagePlatform.executeUpdate('update TitleInstancePackagePlatform tipp set tipp.status = :removed where tipp.status != :removed and tipp.platform = :plat', [plat: obj, removed: RDStore.TIPP_STATUS_REMOVED])
+                        obj.status = RDStore.PLATFORM_STATUS_REMOVED
+                        obj.save()
+                    }
+                }
+                else {
+                    log.debug("we:kb platform record located, status is: ${record.records[0].status}")
+                }
+            }
+        }
     }
 
 }

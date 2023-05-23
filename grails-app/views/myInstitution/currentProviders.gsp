@@ -9,8 +9,9 @@
         <ui:controlButtons>
             <ui:exportDropdown>
                 <ui:exportDropdownItem>
-                    <a class="item" data-ui="modal" href="#individuallyExportModal">Click Me Excel Export</a>
+                    <a class="item" data-ui="modal" href="#individuallyExportModal">Export</a>
                 </ui:exportDropdownItem>
+                <%--
                 <g:if test="${filterSet}">
                     <ui:exportDropdownItem>
                         <g:link class="item js-open-confirm-modal"
@@ -37,6 +38,7 @@
                         <g:link class="item" action="currentProviders" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link>
                     </ui:exportDropdownItem>
                 </g:else>
+                --%>
             </ui:exportDropdown>
             <ui:actionsDropdown>
 
@@ -56,7 +58,7 @@
                       model="[
                               propList: propList,
                               orgRoles: orgRoles,
-                              tmplConfigShow: [['name', 'role', 'property&value'], ['privateContacts', '', '', '']],
+                              tmplConfigShow: [['name', 'property&value'], ['privateContacts', 'role', 'isMyX']],
                               tmplConfigFormFilter: true
                       ]"/>
         </g:form>
@@ -67,7 +69,7 @@
         <laser:render template="/templates/filter/orgFilterTable"
                   model="[orgList: orgList,
                           tmplShowCheckbox: false,
-                          tmplConfigShow: ['lineNumber', 'shortname', 'name', 'isWekbCurated', 'numberOfSubscriptions']
+                          tmplConfigShow: ['lineNumber', 'sortname', 'name', 'altname', /*'numberOfSubscriptions',*/ 'currentSubscriptions', 'isWekbCurated']
                   ]"/>
         </g:if>
         <g:else>
@@ -88,6 +90,6 @@
         <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
     </ui:debugInfo>
 
-    <laser:render template="export/individuallyExportModalOrgs" model="[modalID: 'individuallyExportModal', orgType: 'provider']" />
+    <laser:render template="export/individuallyExportModalOrgs" model="[modalID: 'individuallyExportModal', orgType: 'provider', contactSwitch: true]" />
 
 <laser:htmlEnd />

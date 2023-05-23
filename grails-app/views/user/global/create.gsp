@@ -13,7 +13,7 @@
         <laser:render template="/user/global/breadcrumb" model="${[ inContextOrg: inContextOrg, orgInstance: orgInstance, institutionalView: institutionalView, params:params ]}"/>
     %{--</g:if>--}%
 
-        <ui:h1HeaderWithIcon message="user.create_new.label" />
+        <ui:h1HeaderWithIcon message="user.create_new.label" type="user" />
 
         <ui:messages data="${flash}" />
 

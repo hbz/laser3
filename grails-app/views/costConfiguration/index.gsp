@@ -2,9 +2,11 @@
 <laser:htmlStart message="menu.institutions.costConfiguration" />
 
 <ui:breadcrumbs>
+    <ui:crumb controller="org" action="show" id="${institution.id}" text="${institution.getDesignation()}"/>
     <ui:crumb message="menu.institutions.costConfiguration" class="active" />
 </ui:breadcrumbs>
-<ui:h1HeaderWithIcon message="menu.institutions.costConfiguration" />
+
+<ui:h1HeaderWithIcon message="menu.institutions.costConfiguration" type="finance" />
 
 <g:if test="${editable}">
     <ui:controlButtons>

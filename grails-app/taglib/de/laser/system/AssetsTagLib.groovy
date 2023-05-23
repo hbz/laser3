@@ -6,20 +6,29 @@ import grails.util.Environment
 import org.grails.io.support.GrailsResourceUtils
 import org.grails.web.servlet.mvc.GrailsWebRequest
 
+import java.text.SimpleDateFormat
+
 class AssetsTagLib {
 
     static namespace = 'laser'
 
     static final String NL = "\n"
 
+    private def _getCurrentTimestamp() {
+        return new SimpleDateFormat('hhmm.ss.S').format(new Date(System.currentTimeMillis()))
+    }
+
     def javascript = {final attrs ->
-        out << asset.javascript(attrs).toString().replace(' type="text/javascript" ', ' data-type="external" ')
+        out << asset.javascript(attrs).toString().replace(
+                ' type="text/javascript" ',
+                ' data-type="external" data-timestamp="' + _getCurrentTimestamp() + '"'
+        )
     }
 
     def script = { attrs, body ->
 
         if (AjaxHelper.isXHR(request)) {
-            out << NL + '<script data-type="xhr">'
+            out << NL + '<script data-type="xhr" data-timestamp="' + _getCurrentTimestamp() + '">'
             out << NL + '$(function() {'
             out << NL + ' ' + body() + ' '
             out << NL + '});</script>'
@@ -29,7 +38,7 @@ class AssetsTagLib {
 
             if (AppUtils.getCurrentServer() != AppUtils.PROD) {
                 if (attrs.file) {
-                    map = [file: GrailsResourceUtils.getPathFromBaseDir(attrs.file)]
+                    map = [file: GrailsResourceUtils.getPathFromBaseDir(attrs.file), 'data-timestamp': _getCurrentTimestamp()]
                 }
                 else {
                     map = [uri: request.getRequestURI()]
@@ -47,7 +56,7 @@ class AssetsTagLib {
             return
         }
 
-        out << NL + '<script data-type="scriptBlock">'
+        out << NL + '<script data-type="scriptBlock" data-timestamp="' + _getCurrentTimestamp() + '">'
         out << NL + '$(function() {'
 
         assetBlocks.each { assetBlock ->

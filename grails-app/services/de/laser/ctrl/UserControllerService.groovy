@@ -5,6 +5,7 @@ import de.laser.ContextService
 import de.laser.InstAdmService
 import de.laser.auth.User
 import grails.gorm.transactions.Transactional
+import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.web.servlet.mvc.GrailsParameterMap
 
 /**
@@ -29,16 +30,17 @@ class UserControllerService {
      */
     Map<String, Object> getResultGenerics(GrailsParameterMap params) {
 
-        Map<String, Object> result = [orgInstance: contextService.getOrg()]
-        result.editor = contextService.getUser()
+        Map<String, Object> result = [
+                orgInstance: contextService.getOrg(),
+                editor:      contextService.getUser()
+        ]
 
         if (params.get('id')) {
             result.user = User.get(params.id)
-            result.editable = result.editor.hasRole('ROLE_ADMIN') || instAdmService.isUserEditableForInstAdm(result.user, result.editor)
-            //result.editable = instAdmService.isUserEditableForInstAdm(result.user, result.editor, contextService.getOrg())
+            result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || instAdmService.isUserEditableForInstAdm(result.user, result.editor)
         }
         else {
-            result.editable = result.editor.hasRole('ROLE_ADMIN') || result.editor.hasAffiliation('INST_ADM')
+            result.editable = result.editor.hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
         }
         result
     }
@@ -50,16 +52,17 @@ class UserControllerService {
      */
     Map<String, Object> getResultGenericsERMS3067(GrailsParameterMap params) {
 
-        Map<String, Object> result = [orgInstance: contextService.getOrg()]
-        result.editor = contextService.getUser()
+        Map<String, Object> result = [
+                orgInstance: contextService.getOrg(),
+                editor:      contextService.getUser()
+        ]
 
         if (params.get('uoid')) {
             result.user = genericOIDService.resolveOID(params.uoid)
-            result.editable = result.editor.hasRole('ROLE_ADMIN') || instAdmService.isUserEditableForInstAdm(result.user, result.editor)
-            //result.editable = instAdmService.isUserEditableForInstAdm(result.user, result.editor, contextService.getOrg())
+            result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || instAdmService.isUserEditableForInstAdm(result.user, result.editor)
         }
         else {
-            result.editable = result.editor.hasRole('ROLE_ADMIN') || result.editor.hasAffiliation('INST_ADM')
+            result.editable = result.editor.hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
         }
         result
     }

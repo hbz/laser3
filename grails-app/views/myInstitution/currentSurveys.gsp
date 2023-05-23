@@ -19,7 +19,7 @@
     </ui:exportDropdown>
 </ui:controlButtons>
 
-<ui:h1HeaderWithIcon text="${institution.name} - ${message(code: 'currentSurveys.label')}" total="${countSurveys.values().sum { it }}" floated="true" />
+<ui:h1HeaderWithIcon text="${institution.name} - ${message(code: 'currentSurveys.label')}" type="survey" total="${countSurveys.values().sum { it }}" floated="true" />
 
 <ui:messages data="${flash}"/>
 

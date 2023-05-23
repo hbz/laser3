@@ -1,8 +1,8 @@
 <%@ page import="de.laser.storage.RDStore" %>
 <laser:serviceInjection/>
 <g:if test="${contact}">
-	<div class="ui js-copyTriggerParent item contact-details" style="display: flex;">
-        <div  style="display: flex" class="js-copyTrigger la-popup-tooltip la-delay"
+	<div class="ui js-copyTriggerParent item contact-details" style="display: flex; flex-flow: row wrap;">
+        <div  style="display: flex; flex-flow: row wrap;" class="js-copyTrigger la-popup-tooltip la-delay"
     data-position="top center" data-content="${message(code: 'tooltip.clickToCopySimple')}">
             <ui:contactIcon type="${contact.contentType?.value}" />
             <div class="content la-space-right">
@@ -15,8 +15,8 @@
         <div class="content">
             <g:if test="${contact.contentType in [RDStore.CCT_EMAIL]}">
                 <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code: 'tooltip.sendMail')}">
-                    <a href="mailto:${contact.content}" class="ui  icon blue button la-modern-button">
-                        <i class="share square icon"></i>
+                    <a href="mailto:${contact.content}" class="ui icon blue button la-modern-button">
+                        <i class="external alternate icon"></i>
                     </a>
                 </span>
             </g:if>
@@ -24,7 +24,7 @@
             <g:if test="${contact.contentType in [RDStore.CCT_URL]}">
                 <span class="la-popup-tooltip la-delay" data-position="top right"  data-content="${message(code: 'tooltip.callUrl')}">
                     <a href="${contact.content}" target="_blank" class="ui icon blue button la-modern-button">
-                        <i class="share square icon"></i>
+                        <i class="external alternate icon"></i>
                     </a>
                 </span>
             </g:if>

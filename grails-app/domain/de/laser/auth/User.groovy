@@ -3,7 +3,6 @@ package de.laser.auth
 import de.laser.Org
 import de.laser.UserSetting
 import de.laser.storage.BeanStore
-import grails.plugin.springsecurity.SpringSecurityUtils
 
 import javax.persistence.Transient
 
@@ -28,7 +27,7 @@ class User {
     boolean accountLocked   = false
     boolean passwordExpired = false
 
-    static hasMany      = [ affiliations: UserOrg, roles: UserRole ]
+    static hasMany      = [ affiliations: UserOrgRole, roles: UserRole ]
     static mappedBy     = [ affiliations: 'user',  roles: 'user' ]
 
     static constraints = {
@@ -72,7 +71,7 @@ class User {
 
     /**
      * Retrieves a {@link Set} of global {@link Role}s assigned to the user.
-     * Note that they are not the affiliations (= {@link UserOrg}s) a user may have and which ensure institution-regulated permissions!
+     * Note that they are not the affiliations (= {@link UserOrgRole}s) a user may have and which ensure institution-regulated permissions!
      * @return the user's {@link Role}s
      */
     Set<Role> getAuthorities() {
@@ -168,10 +167,10 @@ class User {
      * @param org the {@link Org} to check the authority
      * @return is the user member of the given org?
      */
-    boolean hasInstMemberAffiliation(Org org) {
+    boolean isMemberOf(Org org) {
         //used in user/global/edit.gsp
         ! Org.executeQuery(
-                "select uo from UserOrg uo where uo.user = :user and uo.org = :org and uo.formalRole.roleType = 'user'",
+                "select uo from UserOrgRole uo where uo.user = :user and uo.org = :org and uo.formalRole.roleType = 'user'",
                 [user: this, org: org]
         ).isEmpty()
     }
@@ -181,78 +180,38 @@ class User {
      * @param org the {@link Org} to check against
      * @return is the user INST_ADM of the org by a combo?
      */
-    boolean hasComboInstAdminAffiliation(Org org) {
+    boolean isComboInstAdminOf(Org org) {
         //used in _membership_table.gsp
         List<Org> orgList = Org.executeQuery('select c.toOrg from Combo c where c.fromOrg = :org', [org: org])
         orgList.add(org)
 
         ! Org.executeQuery(
-                "select uo from UserOrg uo where uo.user = :user and uo.org in (:orgList) and uo.formalRole = :instAdm",
+                "select uo from UserOrgRole uo where uo.user = :user and uo.org in (:orgList) and uo.formalRole = :instAdm",
                 [user: this, orgList: orgList, instAdm: Role.findByAuthority('INST_ADM')]
         ).isEmpty()
     }
 
     /**
-     * Checks if the given role is attributed to the user - can only be used with global (ROLE_) constants
-     * @param roleName the role name to check for
-     * @return does the user have this role granted?
-     */
-    boolean hasRole(String roleName) {
-        SpringSecurityUtils.ifAnyGranted(roleName)
-    }
-
-    /**
-     * Checks if one of the given role names is attributed to the user - can only be used with global (ROLE_) constants
-     * @param roleNames the list of role names to check for
-     * @return does the user have any of the roles granted?
-     */
-    boolean hasRole(List<String> roleNames) {
-        SpringSecurityUtils.ifAnyGranted(roleNames?.join(','))
-    }
-
-    /**
-     * Checks for the ROLE_ADMIN status of the user
-     * @return is the user a global admin?
-     */
-    boolean isAdmin() {
-        SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN")
-    }
-
-    /**
-     * Checks for the ROLE_YODA status of the user
-     * @return is the user a yoda superuser?
-     */
-    boolean isYoda() {
-        SpringSecurityUtils.ifAnyGranted("ROLE_YODA")
-    }
-
-    /**
      * Checks if the user has the given affiliation granted. To be used with one of the INST_ role constants
-     * @param userRoleName the INST_-role to check for
+     * @param instUserRole the INST_-role to check for
      * @return does the user have the given INST_-role granted?
      */
-    boolean hasAffiliation(String userRoleName) {
-        hasAffiliationAND(userRoleName, 'ROLE_USER')
-    }
-
-    /**
-     * Checks if the user has the given institution affiliation and the given global role granted
-     * @param userRoleName the INST_-role to check for
-     * @param globalRoleName the global ROLE constant to check for
-     * @return does the user have the given INST-role AND ROLE constant granted?
-     */
-    boolean hasAffiliationAND(String userRoleName, String globalRoleName) {
-        BeanStore.getUserService().checkAffiliation(this, userRoleName, globalRoleName, 'AND', BeanStore.getContextService().getOrg())
+    boolean hasCtxAffiliation_or_ROLEADMIN(String instUserRole) {
+        BeanStore.getUserService().checkAffiliation_or_ROLEADMIN(this, BeanStore.getContextService().getOrg(), instUserRole)
     }
 
     /**
      * Checks if the user has the given affiliation for the foreign {@link Org} to check
-     * @param userRoleName the INST_-role to check for
+     * @param instUserRole the INST_-role to check for
      * @param orgToCheck the {@link Org} to check whether the user is affiliated to
      * @return does the user have the given INST_-role for the given org?
      */
-    boolean hasAffiliationForForeignOrg(String userRoleName, Org orgToCheck) {
-        BeanStore.getUserService().checkAffiliation(this, userRoleName, 'ROLE_USER', 'AND', orgToCheck)
+    boolean hasOrgAffiliation_or_ROLEADMIN(Org orgToCheck, String instUserRole) {
+        BeanStore.getUserService().checkAffiliation_or_ROLEADMIN(this, orgToCheck, instUserRole)
+    }
+
+    boolean isYoda() {
+        getAuthorities().authority.contains('ROLE_YODA')
     }
 
     /**

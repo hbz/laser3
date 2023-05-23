@@ -2,10 +2,12 @@ package de.laser.survey
 
 import de.laser.Doc
 import de.laser.DocContext
+import de.laser.IssueEntitlementGroup
 import de.laser.Org
 import de.laser.Subscription
 import de.laser.finance.CostItem
 import de.laser.properties.PropertyDefinition
+import de.laser.properties.PropertyDefinitionGroup
 import de.laser.storage.BeanStore
 import de.laser.storage.PropertyStore
 import de.laser.storage.RDStore
@@ -72,6 +74,8 @@ class SurveyConfig {
 
     boolean pickAndChoosePerpetualAccess = false
 
+    String issueEntitlementGroupName
+
     String transferWorkflow
 
     static hasMany = [
@@ -85,6 +89,8 @@ class SurveyConfig {
     static constraints = {
         subscription        (nullable: true)
         surveyProperty      (nullable: true)
+
+        issueEntitlementGroupName (nullable: true, blank: false)
 
         header(nullable: true, blank: false)
         comment(nullable: true, blank: true)
@@ -133,6 +139,8 @@ class SurveyConfig {
         configOrder column: 'surconf_config_order'
 
         transferWorkflow column: 'surconf_transfer_workflow', type:'text'
+
+        issueEntitlementGroupName column: 'surconf_ie_group_name'
     }
 
     def afterDelete() {
@@ -525,6 +533,149 @@ class SurveyConfig {
         return surveyConfigPropertiesList.size() > 0 ? surveyConfigPropertiesList.surveyProperty : []
     }
 
+
+    Map<String, Object> getCalculatedPropDefGroups(Org contextOrg) {
+        BeanStore.getPropertyService().getCalculatedPropDefGroups(this, contextOrg)
+    }
+
+    LinkedHashSet<SurveyConfigProperties> getSurveyConfigPropertiesByPropDefGroup(PropertyDefinitionGroup propertyDefinitionGroup) {
+        LinkedHashSet<SurveyConfigProperties> properties = []
+
+        this.surveyProperties.each {
+            if(propertyDefinitionGroup && propertyDefinitionGroup.items  && it.surveyProperty.id in propertyDefinitionGroup.items.propDef.id){
+                properties << it
+            }
+        }
+
+        properties = properties.sort {it.surveyProperty.getI10n('name')}
+
+        return properties
+
+    }
+
+    LinkedHashSet<PropertyDefinition> getSelectablePropertiesByPropDefGroup(PropertyDefinitionGroup propertyDefinitionGroup) {
+        LinkedHashSet<PropertyDefinition> properties = []
+
+        propertyDefinitionGroup.items.propDef.each {
+            if(!(this.surveyProperties && it.id in this.surveyProperties.surveyProperty.id)){
+                properties << it
+            }
+        }
+
+        properties = properties.sort {it.getI10n('name')}
+
+        return properties
+
+    }
+
+    List<PropertyDefinition> getPropertiesByPropDefGroups() {
+        List<PropertyDefinition> properties = []
+
+        List<PropertyDefinitionGroup> propertyDefinitionGroups = []
+
+        Map<String, Object> allPropDefGroups = this.getCalculatedPropDefGroups(this.surveyInfo.owner)
+
+        if(allPropDefGroups.sorted){
+            allPropDefGroups.sorted.each {
+                propertyDefinitionGroups << it[1]
+            }
+        }
+
+        propertyDefinitionGroups.items.propDef.each {
+                properties << it
+        }
+
+        properties = properties.sort {it.getI10n('name')}
+
+        return properties
+
+    }
+
+    List<PropertyDefinition> getOrphanedSelectableProperties() {
+        List<PropertyDefinition> propertiesOfPropDefGroups = this.getPropertiesByPropDefGroups()?.flatten()
+        List<PropertyDefinition> props = []
+
+        Org ownerOrg = this.surveyInfo.owner
+
+        //private Property
+        PropertyDefinition.getAllByDescrAndTenant(PropertyDefinition.SVY_PROP, ownerOrg).each { it ->
+            if((propertiesOfPropDefGroups.size() == 0 || (propertiesOfPropDefGroups && !(it.id in propertiesOfPropDefGroups.id))) && (this.surveyProperties && !(it.id in  this.surveyProperties.surveyProperty.id))) {
+                props << it
+            }
+        }
+        //global Property
+        PropertyDefinition.getAllByDescr(PropertyDefinition.SVY_PROP).each { it ->
+            if((propertiesOfPropDefGroups.size() == 0 || (propertiesOfPropDefGroups && !(it.id in propertiesOfPropDefGroups.id))) && (this.surveyProperties && !(it.id in  this.surveyProperties.surveyProperty.id))) {
+                props << it
+            }
+        }
+
+        props = props.sort {it.getI10n('name')}
+
+        return props
+
+    }
+
+    LinkedHashSet<SurveyResult> getSurveyResultsByPropDefGroupAndOrg(PropertyDefinitionGroup propertyDefinitionGroup, Org org) {
+
+        LinkedHashSet<SurveyResult> properties = []
+
+        propertyDefinitionGroup.items.each {
+            SurveyResult surveyResult = SurveyResult.findByParticipantAndSurveyConfigAndType(org, this, it.propDef)
+            if(surveyResult) {
+                properties << surveyResult
+            }
+        }
+
+        properties = properties.sort {it.type.getI10n('name')}
+
+        return properties
+
+    }
+
+    LinkedHashSet<SurveyConfigProperties> getOrphanedSurveyConfigProperties(LinkedHashSet containedProperties) {
+        LinkedHashSet<SurveyConfigProperties> properties = []
+
+        if(containedProperties.isEmpty()){
+            properties = this.surveyProperties
+        }else {
+            this.surveyProperties.each {
+                if (!(it.id in containedProperties.id.flatten())) {
+                    properties << it
+                }
+            }
+        }
+
+        properties = properties.sort {it.surveyProperty.getI10n('name')}
+
+        return properties
+
+    }
+
+    LinkedHashSet<SurveyResult> getOrphanedSurveyResultsByOrg(LinkedHashSet containedProperties, Org org) {
+
+        LinkedHashSet<SurveyResult> properties = []
+
+        if(containedProperties.isEmpty()){
+            this.surveyProperties.each {
+                properties << SurveyResult.findByParticipantAndSurveyConfigAndType(org, this, it.surveyProperty)
+            }
+        }else {
+            this.surveyProperties.each {
+                if (!(it.surveyProperty.id in containedProperties.type.id.flatten())) {
+                    SurveyResult surveyResult = SurveyResult.findByParticipantAndSurveyConfigAndType(org, this, it.surveyProperty)
+                    if(surveyResult) {
+                        properties << surveyResult
+                    }
+                }
+            }
+        }
+
+        properties = properties.sort {it.type.getI10n('name')}
+
+        return properties
+
+    }
 
 
 }

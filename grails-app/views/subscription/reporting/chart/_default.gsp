@@ -38,6 +38,10 @@
             left: 'center',
             z: 1,
             formatter: function (value) {
+                if (JSPC.app.reporting.current.myCountsToggle) {
+                    var row = JSPC.app.reporting.current.chart.option.dataset.source.filter(row => row[1] === value)
+                    if (row) { value = value + ': ' + row[0][2] }
+                }
                 var v = value.replace(/\s\(ID:[0-9]*\)/,'')
                 if (v.length > 80) { v = v.substring(0, 55) + '[..]' + v.substring(v.length - 20) }  /* erms-4787 */
                 return v

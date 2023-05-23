@@ -1,8 +1,6 @@
 token,value_de,value_en
 access.choice.remote,Zugangswahl Remote,Access choice remote
 access.limitation,Zugangsbegrenzung,Access limitation
-access.method,Access Method,Access Method
-access.method.ip,Access Method IP,Access Method IP
 access.point.type,Access Point Type,Access Point Type
 address.type,Art der Adresse,Address Type
 archiving.agency,Archivierungsplattform,Archiving Agency
@@ -47,7 +45,6 @@ filter.fake.values,filter.fake.values,filter.fake.values
 funder.type,Trägerschaft,Funder Type
 funder.hsk.type,Trägerschaft,Funder Type HSK
 gender,Geschlecht,Gender
-ie.accept.status,IE Accept Status,IE Accept Status
 ie.access.status,IE Access Status,IE Access Status
 ie.medium,IEMedium,IEMedium
 ill.code,Fernleihindikator,Ill code
@@ -92,6 +89,8 @@ license.structure,Vertragskonstruktion,License Structure
 link.type,Link Type,Link Type
 mail.template.language,MailTemplate Sprache,MailTemplate Language
 mail.template.type,MailTemplate Typ,MailTemplate Type
+mail.status,Mail Status, Mail Status
+mail.type, Mail Type, Mail Type
 number.type,Zahlen-Typ,Number Type
 oa.content.receiver,OA-Inhalte Empfänger,OA content receiver
 oa.author.identification,OA Autorenidentifikation,OA author identification
@@ -129,6 +128,7 @@ reminder.unit,ReminderUnit,ReminderUnit
 reporting.contact.type,Art des Kontaktes,Contact Type
 semester,Semester,Semester
 share.configuration,Share Configuration,Share Configuration
+shibboleth.federation,Shibboleth Federation,Shibboleth Federation
 sim.user.number,Sim User Zahl,Sim-User Number
 sis.access.extensions,FID - Zugriffserweiterungen / -ergänzungen, SIS - access extensions / completions
 sis.access.kind,FID - Art der erworbenen Zugriffsrechte,SIS - kind of purchased access rights
@@ -153,6 +153,7 @@ platform.statistics.format,Statistik Auslieferungsformat (Plattform),Statistics 
 platform.statistics.frequency,Statistik Auslieferungsfrequenz (Plattform),Statistics Frequency (Platform)
 subjectgroup,Fächergruppe,Subject Group
 subscription.form,Lizenzform,Subscription Form
+subscription.holding,Paketzuschnitt,Holding Selection
 subscription.resource,Ressourcentyp,Resource type
 subscription.status,Lizenzstatus,Subscription Status
 subscription.type,Subscription Type,Subscription Type

@@ -35,11 +35,9 @@
     </g:form>
 </ui:filter>
 <laser:script file="${this.getGroovyPageFileName()}">
-    JSPC.app.cfg = {}
-    JSPC.app.cfg.org = false;
-    JSPC.app.cfg.lic = false
-    JSPC.app.cfg.sub = false;
-    JSPC.app.cfg.pkg = false;
+    JSPC.app.cfg = {
+        org: false, lic: false, sub: false, pkg: false
+    }
 
     JSPC.app.setupDropdown = function () {
         $("#docTarget").dropdown({

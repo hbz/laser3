@@ -11,11 +11,7 @@
                 <% data.each{ it -> print "[${it[0]}, '${it[1].replaceAll("'", BaseQuery.SQM_MASK)}', ${it[2]}, ${it[3]}, ${it[2] + it[3]}]," } %>
             ]
         },
-        legend: {
-            bottom: 0,
-            left: 'center',
-            z: 1
-        },
+        legend: JSPC.app.reporting.helper._pie.legend,
         toolbox: JSPC.app.reporting.helper._pie.toolbox,
         tooltip: {
             trigger: 'item',

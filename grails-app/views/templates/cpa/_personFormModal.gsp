@@ -258,7 +258,7 @@
                 <br />
                 <br />
             <div class="field">
-                <div class="three fields contactField" id="contactFields1">
+                <div class="three fields contactField" id="contactFields${personInstance?.contacts ? personInstance.contacts.size()+1 : 1}">
                     <div class="field wide four">
                         <label></label>
                         <ui:select class="ui dropdown" name="contentType.id"
@@ -292,7 +292,7 @@
 
         </g:if>
 
-        <g:if test="${showAddresses}">
+        <%--<g:if test="${showAddresses}">
             <div class="field">
                 <br />
                 <label>
@@ -329,7 +329,7 @@
                 <div id="addressElements"></div>
             </g:if>
 
-        </g:if>
+        </g:if>--%>
 
     </g:form>
 

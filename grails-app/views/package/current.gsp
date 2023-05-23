@@ -10,6 +10,7 @@
 
 <ui:controlButtons>
     <ui:exportDropdown>
+        <%--
         <ui:exportDropdownItem>
             <g:if test="${filterSet}">
                 <g:link class="item js-open-confirm-modal"
@@ -23,9 +24,11 @@
                 <g:link class="item" action="current" params="${params + [format: 'csv']}">CSV Export</g:link>
             </g:else>
         </ui:exportDropdownItem>
+        --%>
         <ui:exportDropdownItem>
-            <a class="item" data-ui="modal" href="#individuallyExportTippsModal">Click Me Excel Export</a>
+            <a class="item" data-ui="modal" href="#individuallyExportTippsModal">Export</a>
         </ui:exportDropdownItem>
+        <%--
         <ui:exportDropdownItem>
             <g:if test="${filterSet}">
                 <g:link class="item js-open-confirm-modal"
@@ -41,6 +44,7 @@
                 </g:link>
             </g:else>
         </ui:exportDropdownItem>
+        --%>
         <ui:exportDropdownItem>
             <g:if test="${filterSet}">
                 <g:link class="item js-open-confirm-modal"
@@ -96,13 +100,13 @@
 </div>
 <%
     Map<String, String>
-    sortFieldMap = ['tipp.sortname': message(code: 'title.label')]
+    sortFieldMap = ['sortname': message(code: 'title.label')]
     if (journalsOnly) {
         sortFieldMap['startDate'] = message(code: 'default.from')
         sortFieldMap['endDate'] = message(code: 'default.to')
     } else {
-        sortFieldMap['tipp.dateFirstInPrint'] = message(code: 'tipp.dateFirstInPrint')
-        sortFieldMap['tipp.dateFirstOnline'] = message(code: 'tipp.dateFirstOnline')
+        sortFieldMap['dateFirstInPrint'] = message(code: 'tipp.dateFirstInPrint')
+        sortFieldMap['dateFirstOnline'] = message(code: 'tipp.dateFirstOnline')
     }
 %>
 <div class="ui form">

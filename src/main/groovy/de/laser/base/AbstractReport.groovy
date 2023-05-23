@@ -19,33 +19,27 @@ abstract class AbstractReport implements Comparable<AbstractReport> {
     String proprietaryIdentifier
     //only to use for database reports
     String databaseName
-    String identifierHash
     String reportType
     String publisher
     String metricType
-    String platformUID
-    String reportInstitutionUID
+    Platform platform
+    Org reportInstitution
     Date reportFrom
     Date reportTo
     Integer reportCount
     //only for Journal Report 5 in COUNTER 4 resp. tr_j4 in COUNTER 5
     Date yop
 
-    Platform getPlatform() {
-        return platformUID ? Platform.findByGlobalUID(platformUID) : null
-    }
+    static final String COUNTER_4 = 'counter4'
+    static final String COUNTER_5 = 'counter5'
 
-    void setPlatform(Platform platform) {
-        this.platformUID = platform.globalUID
-    }
-
-    Org getReportInstitution() {
-        return reportInstitutionUID ? Org.findByGlobalUID(reportInstitutionUID) : null
-    }
-
-    void setReportInstitution(Org reportInstitution) {
-        this.reportInstitutionUID = reportInstitution.globalUID
-    }
+    //implementation base for ERMS-4813
+    static Map ERROR_CODES = [:]
+    static final String API_AUTH_CUSTOMER_REQUESTOR_API = "Requestor Key+Customer ID+central API Key"
+    static final String API_AUTH_REQUESTOR_API = "Requestor Key+API Key"
+    static final String API_AUTH_CUSTOMER_API = "Customer Key+API Key"
+    static final String API_AUTH_CUSTOMER_REQUESTOR = "Requestor Key+Customer ID"
+    static final String API_IP_WHITELISTING = "IP whitelisting"
 
     @Override
     int compareTo(AbstractReport that) {

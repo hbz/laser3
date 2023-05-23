@@ -41,6 +41,7 @@ import javax.servlet.ServletOutputStream
 import java.text.DateFormat
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
+import java.time.Year
 import java.util.concurrent.ExecutorService
 
 /**
@@ -55,6 +56,7 @@ class SurveyController {
     AccessService accessService
     ContextService contextService
     ComparisonService comparisonService
+    CompareService compareService
     CopyElementsService copyElementsService
     CustomWkhtmltoxService wkhtmltoxService
     DocstoreService docstoreService
@@ -74,7 +76,7 @@ class SurveyController {
     SurveyControllerService surveyControllerService
     SurveyService surveyService
     TaskService taskService
-    CompareService compareService
+    UserService userService
 
     //-----
 
@@ -88,9 +90,9 @@ class SurveyController {
      * Redirects the call to the survey details view
      * @return the survey details view of the given survey
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(ctxInstUserCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
+        ctx.accessService.ctxInstUserCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String, Object> redirectSurveyConfig() {
         SurveyConfig surveyConfig = SurveyConfig.get(params.id)
@@ -103,9 +105,9 @@ class SurveyController {
      * Loads for the context consortium the currently running surveys
      * @return a table view of the current surveys
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(ctxInstUserCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
+        ctx.accessService.ctxInstUserCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String, Object> currentSurveysConsortia() {
         Map<String, Object> result = [:]
@@ -114,7 +116,7 @@ class SurveyController {
         result.institution = contextService.getOrg()
         result.user = contextService.getUser()
 
-        result.editable = accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        result.editable = accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
@@ -191,16 +193,16 @@ class SurveyController {
      * Loads the current surveys with their workflows for the given consortium. The workflow list may also be exported as Excel worksheet
      * @return the table view of the current surveys with their attached workflows
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(ctxInstUserCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
+        ctx.accessService.ctxInstUserCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String, Object> workflowsSurveysConsortia() {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = contextService.getUser()
 
-        result.editable = accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        result.editable = accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
@@ -263,16 +265,16 @@ class SurveyController {
      * Call to create a general survey
      * @return the new survey form
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> createGeneralSurvey() {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = contextService.getUser()
 
-        result.editable = accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        result.editable = accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
@@ -286,16 +288,16 @@ class SurveyController {
      * Takes the given parameters and creates a new general survey based on the input
      * @return the new survey details view
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> processCreateGeneralSurvey() {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = contextService.getUser()
 
-        result.editable = accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        result.editable = accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
@@ -355,9 +357,9 @@ class SurveyController {
      * Call to create a subscription survey
      * @return the new survey form
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> createSubscriptionSurvey() {
         Map<String, Object> result = [:]
@@ -375,7 +377,7 @@ class SurveyController {
             date_restriction = sdf.parse(params.validOn)
         }
 
-        result.editable = accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        result.editable = accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
@@ -439,9 +441,9 @@ class SurveyController {
      * Call to create a title survey
      * @return the new survey form
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> createIssueEntitlementsSurvey() {
         Map<String, Object> result = [:]
@@ -460,7 +462,7 @@ class SurveyController {
             date_restriction = sdf.parse(params.validOn)
         }
 
-        result.editable = accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        result.editable = accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
@@ -526,16 +528,16 @@ class SurveyController {
      * @return the survey details form in case of success, the survey creation form if the subscription is missing,
      * a redirect to the referer otherwise
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> addSubtoSubscriptionSurvey() {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = contextService.getUser()
 
-        result.editable = accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        result.editable = accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
@@ -557,16 +559,16 @@ class SurveyController {
      * @return the survey details form in case of success, the survey creation form if the subscription is missing,
      * a redirect to the referer otherwise
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> addSubtoIssueEntitlementsSurvey() {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = contextService.getUser()
 
-        result.editable = accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        result.editable = accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
@@ -588,16 +590,16 @@ class SurveyController {
      * Takes the given parameters and creates a new subscription survey based on the input
      * @return the new survey details view
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> processCreateSubscriptionSurvey() {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = contextService.getUser()
 
-        result.editable = accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        result.editable = accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
@@ -682,16 +684,16 @@ class SurveyController {
      * Takes the given parameters and creates a new title survey based on the input
      * @return the new survey details view
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> processCreateIssueEntitlementsSurvey() {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = contextService.getUser()
 
-        result.editable = accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        result.editable = accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
@@ -707,6 +709,12 @@ class SurveyController {
                 redirect(action: 'addSubtoIssueEntitlementsSurvey', params: params)
                 return
             }
+        }
+
+        if(params.issueEntitlementGroupNew == ''){
+            flash.error = g.message(code: "createSurvey.create.fail.issueEntitlementGroupNew")
+            redirect(action: 'addSubtoIssueEntitlementsSurvey', params: params)
+            return
         }
 
         SurveyInfo surveyInfo
@@ -736,7 +744,8 @@ class SurveyController {
                         surveyInfo: surveyInfo,
                         subSurveyUseForTransfer: false,
                         pickAndChoose: true,
-                        pickAndChoosePerpetualAccess: params.pickAndChoosePerpetualAccess ? true : false
+                        pickAndChoosePerpetualAccess: params.pickAndChoosePerpetualAccess ? true : false,
+                        issueEntitlementGroupName: params.issueEntitlementGroupNew
                 )
                 surveyConfig.save()
                 surveyService.addSubMembers(surveyConfig)
@@ -756,9 +765,9 @@ class SurveyController {
      * Shows the given survey's details
      * @return the survey details view
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(ctxInstUserCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
+        ctx.accessService.ctxInstUserCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     @Check404(domain=SurveyInfo)
     def show() {
@@ -772,6 +781,10 @@ class SurveyController {
 
         if(SurveyLinks.executeQuery("from SurveyLinks where sourceSurvey = :surveyInfo and sourceSurvey.status = :startStatus and targetSurvey.status = sourceSurvey.status and targetSurvey.endDate != sourceSurvey.endDate", [surveyInfo: result.surveyInfo, startStatus: RDStore.SURVEY_SURVEY_STARTED]).size() > 0){
             result.surveyLinksMessage  << message(code: 'surveyLinks.surveysNotSameEndDate')
+        }
+
+        if(params.commentTab){
+            result.commentTab = params.commentTab
         }
 
 
@@ -827,16 +840,6 @@ class SurveyController {
             }
             result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.contextOrg,  result.surveyConfig)
 
-            result.properties = []
-            List allProperties = surveyService.getSurveyProperties(result.contextOrg)
-            result.properties = allProperties
-            /*allProperties.each {
-
-                if (!(it.id in SurveyConfigProperties.findAllBySurveyConfig(result.surveyConfig)?.surveyProperty.id)) {
-                    result.properties << it
-                }
-            }*/
-
         }
 
         if ( params.exportXLSX ) {
@@ -873,34 +876,29 @@ class SurveyController {
      * Lists the titles subject of the given survey
      * @return a list view of the issue entitlements linked to the given survey
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(ctxInstUserCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
+        ctx.accessService.ctxInstUserCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> surveyTitles() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        /*String base_qry = null
-        Map<String,Object> qry_params = [subscription: result.surveyConfig.subscription]
+        if(result.subscription.packages) {
+            params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
+            Map<String, Object> query = filterService.getTippQuery(params, result.subscription.packages.pkg)
+            result.filterSet = query.filterSet
+            List<Long> titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
+            result.titlesList = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList.drop(result.offset).take(result.max), [sort: 'sortname']) : []
+            result.num_tipp_rows = titlesList.size()
 
-        Date date_filter
-        date_filter = new Date()
-        result.as_at_date = date_filter
-        base_qry = " from IssueEntitlement as ie where ie.subscription = :subscription "
-        base_qry += " and (( :startDate >= coalesce(ie.accessStartDate,subscription.startDate) ) OR ( ie.accessStartDate is null )) and ( ( :endDate <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) ) "
-        qry_params.startDate = date_filter
-        qry_params.endDate = date_filter*/
+            result
 
-        params.ieAcceptStatusFixed = true
-        def query = filterService.getIssueEntitlementQuery(params, result.surveyConfig.subscription)
-        result.filterSet = query.filterSet
-
-        result.num_ies_rows = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams).size()
-
-        result.entitlements = IssueEntitlement.executeQuery("select ie " + query.query, query.queryParams, [max: result.max, offset: result.offset])
-
+        }else {
+            result.titlesList = []
+            result.num_tipp_rows = 0
+        }
         result
 
     }
@@ -909,9 +907,9 @@ class SurveyController {
      * Lists the documents attached to the given survey configuration
      * @return a list of the survey config documents
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN")
+    @DebugInfo(ctxInstUserCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO])
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
+        ctx.accessService.ctxInstUserCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> surveyConfigDocs() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -924,9 +922,9 @@ class SurveyController {
      * Lists the participants of the given survey. The result may be filtered
      * @return the participant list for the given tab
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(ctxInstUserCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
+        ctx.accessService.ctxInstUserCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> surveyParticipants() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -975,9 +973,9 @@ class SurveyController {
      * Lists the costs linked to the given survey, reflecting upcoming subscription costs
      * @return a list of costs linked to the survey
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(ctxInstUserCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
+        ctx.accessService.ctxInstUserCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> surveyCostItems() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -1024,7 +1022,7 @@ class SurveyController {
         result.selectedParticipants = surveyService.getfilteredSurveyOrgs(surveyOrgs.orgsWithoutSubIDs, fsq.query, fsq.queryParams, params)
         result.selectedSubParticipants = surveyService.getfilteredSurveyOrgs(surveyOrgs.orgsWithSubIDs, fsq.query, fsq.queryParams, params)
 
-        result.selectedCostItemElement = params.selectedCostItemElement ? params.selectedCostItemElement.toString() : RefdataValue.getByValueAndCategory('price: consortial price', RDConstants.COST_ITEM_ELEMENT).id.toString()
+        result.selectedCostItemElement = params.selectedCostItemElement ? params.selectedCostItemElement.toString() : RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id.toString()
 
         if(result.selectedSubParticipants && (params.sortOnCostItemsDown || params.sortOnCostItemsUp) && !params.sort){
             List<Subscription> orgSubscriptions = result.surveyConfig.orgSubscriptions()
@@ -1065,9 +1063,9 @@ class SurveyController {
      * Takes the given input and processes the change on the selected survey cost items
      * @return a redirect to the referer
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> processSurveyCostItemsBulk() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -1119,7 +1117,7 @@ class SurveyController {
                 RefdataValue taxType = (RefdataValue) genericOIDService.resolveOID(newTaxRate[0])
                 int taxRate = Integer.parseInt(newTaxRate[1])
                 switch (taxType.id) {
-                    case RefdataValue.getByValueAndCategory("taxable", RDConstants.TAX_TYPE).id:
+                    case RDStore.TAX_TYPE_TAXABLE.id:
                         switch (taxRate) {
                             case 5: tax_key = CostItem.TAX_TYPES.TAXABLE_5
                                 break
@@ -1131,16 +1129,16 @@ class SurveyController {
                                 break
                         }
                         break
-                    case RefdataValue.getByValueAndCategory("taxable tax-exempt", RDConstants.TAX_TYPE).id:
+                    case RDStore.TAX_TYPE_TAXABLE_EXEMPT.id:
                         tax_key = CostItem.TAX_TYPES.TAX_EXEMPT
                         break
-                    case RefdataValue.getByValueAndCategory("not taxable", RDConstants.TAX_TYPE).id:
+                    case RDStore.TAX_TYPE_NOT_TAXABLE.id:
                         tax_key = CostItem.TAX_TYPES.TAX_NOT_TAXABLE
                         break
-                    case RefdataValue.getByValueAndCategory("not applicable", RDConstants.TAX_TYPE).id:
+                    case RDStore.TAX_TYPE_NOT_APPLICABLE.id:
                         tax_key = CostItem.TAX_TYPES.TAX_NOT_APPLICABLE
                         break
-                    case RefdataValue.getByValueAndCategory("reverse charge", RDConstants.TAX_TYPE).id:
+                    case RDStore.TAX_TYPE_REVERSE_CHARGE.id:
                         tax_key = CostItem.TAX_TYPES.TAX_REVERSE_CHARGE
                         break
                 }
@@ -1198,9 +1196,9 @@ class SurveyController {
      * Marks the given survey as finished
      * @return a redirect to the referer
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> setSurveyConfigFinish() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -1225,9 +1223,9 @@ class SurveyController {
      * Marks the renewal sending flag as done for the given survey
      * @return a redirect to the referer
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> workflowRenewalSent() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -1252,9 +1250,9 @@ class SurveyController {
      * Marks the establishment of survey cost items as done for the given survey
      * @return a redirect to the referer
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> workflowCostItemsFinish() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -1278,9 +1276,9 @@ class SurveyController {
      * Marks the given survey property (i.e. survey question) as mandatory to fill out
      * @return a redirect to the referer
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> setSurveyPropertyMandatory() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -1306,9 +1304,9 @@ class SurveyController {
      * Marks the given survey as completed; is a toggle between survey completed and survey in evaluation
      * @return a redirect to the referer
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> setSurveyCompleted() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -1332,9 +1330,9 @@ class SurveyController {
      * Marks the given transfer procedure as (un-)checked
      * @return a redirect to the referer
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> setSurveyTransferConfig() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -1387,16 +1385,16 @@ class SurveyController {
      * exported as (configurable) Excel worksheet
      * @return the survey evaluation view, either as HTML or as (configurable) Excel worksheet
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(ctxInstUserCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
+        ctx.accessService.ctxInstUserCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     def surveyEvaluation() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
 
         params.tab = params.tab ?: 'participantsViewAllFinish'
 
-        if ( params.exportXLSX ) {
+        /*if ( params.exportXLSX ) {
             SXSSFWorkbook wb
             if ( params.surveyCostItems ) {
                 SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
@@ -1420,25 +1418,29 @@ class SurveyController {
             response.outputStream.close()
             wb.dispose()
             return
-        }else if (params.exportClickMeExcel) {
+        }else */
+        String message = g.message(code: 'renewalexport.renewals')
+        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
+        String datetoday = sdf.format(new Date())
+
+        String filename
+        Map<String, Object> selectedFields = [:]
+        Set<String> contactSwitch = []
+        if (params.filename) {
+            filename =params.filename
+        }
+        else {
+            filename = message + "_" + result.surveyConfig.getSurveyName() + "_${datetoday}"
+        }
+        if(params.fileformat) {
+            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+
+            contactSwitch.addAll(params.list("contactSwitch"))
+        }
+        if (params.fileformat == 'xlsx') {
             try {
-                String message = g.message(code: 'renewalexport.renewals')
-                SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
-                String datetoday = sdf.format(new Date())
-
-                String filename
-                if (params.filename) {
-                    filename =params.filename
-                }
-                else {
-                    filename = message + "_" + result.surveyConfig.getSurveyName() + "_${datetoday}"
-                }
-
-                Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
-                Map<String, Object> selectedFields = [:]
-                selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
-
-                SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportSurveyEvaluation(result, selectedFields)
+                SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportSurveyEvaluation(result, selectedFields, contactSwitch, ExportClickMeService.FORMAT.XLS)
                 // Write the output to a file
 
                 response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
@@ -1455,26 +1457,33 @@ class SurveyController {
                 return
             }
         }
+        else if(params.fileformat == 'csv') {
+            response.setHeader("Content-disposition", "attachment; filename=${filename}.csv")
+            response.contentType = "text/csv"
+            ServletOutputStream out = response.outputStream
+            out.withWriter { writer ->
+                writer.write((String) exportClickMeService.exportSurveyEvaluation(result, selectedFields, contactSwitch, ExportClickMeService.FORMAT.CSV))
+            }
+            out.close()
+        }
         else {
-
-            if(params.tab == 'participantsViewAllNotFinish'){
+            if (params.tab == 'participantsViewAllNotFinish') {
                 params.participantsNotFinish = true
-            }else if(params.tab == 'participantsViewAllFinish'){
+            } else if (params.tab == 'participantsViewAllFinish') {
                 params.participantsFinish = true
             }
-
             result.participantsNotFinishTotal = SurveyOrg.findAllByFinishDateIsNullAndSurveyConfig(result.surveyConfig).size()
             result.participantsFinishTotal = SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig).size()
             result.participantsTotal = result.surveyConfig.orgs.size()
 
-             Map<String,Object> fsq = filterService.getSurveyOrgQuery(params, result.surveyConfig)
+            Map<String, Object> fsq = filterService.getSurveyOrgQuery(params, result.surveyConfig)
 
             result.participants = SurveyOrg.executeQuery(fsq.query, fsq.queryParams, params)
 
 
-            result.propList    = result.surveyConfig.surveyProperties.surveyProperty
+            result.propList = result.surveyConfig.surveyProperties.surveyProperty
 
-            if(result.surveyInfo.type.id in [RDStore.SURVEY_TYPE_SUBSCRIPTION.id, RDStore.SURVEY_TYPE_RENEWAL.id] ) {
+            if (result.surveyInfo.type.id in [RDStore.SURVEY_TYPE_SUBSCRIPTION.id, RDStore.SURVEY_TYPE_RENEWAL.id]) {
                 result.propertiesChanged = [:]
                 result.propertiesChangedByParticipant = []
                 result.propList.sort { it.getI10n('name') }.each { PropertyDefinition propertyDefinition ->
@@ -1509,20 +1518,19 @@ class SurveyController {
                 }
             }
 
-            result.participants = result.participants.sort{it.org.sortname}
+            result.participants = result.participants.sort { it.org.sortname }
 
             result
         }
-
     }
 
     /**
      * Call to open the participant transfer view
      * @return the participant list with their selections
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(ctxInstUserCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
+        ctx.accessService.ctxInstUserCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> surveyTransfer() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -1576,9 +1584,9 @@ class SurveyController {
      * Call to transfer the survey participants onto the next year's subscription
      * @return the subscription comparison view for the given subscriptions (the predecessor and the successor instances)
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> processTransferParticipants() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -1679,9 +1687,9 @@ class SurveyController {
      * Call to list the members; either those who completed the survey or those who did not
      * @return a list of the participants in the called tab view
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(ctxInstUserCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
+        ctx.accessService.ctxInstUserCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> openParticipantsAgain() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -1711,14 +1719,14 @@ class SurveyController {
      * Opens the survey for the given participants and sends eventual reminders
      * @return the participation view with the counts of execution done
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(ctxInstUserCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
+        ctx.accessService.ctxInstUserCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> processOpenParticipantsAgain() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
 
-        result.editable = accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        result.editable = accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
@@ -1742,19 +1750,6 @@ class SurveyController {
                 if(openAndSendMail || open) {
                     SurveyOrg.withTransaction { TransactionStatus ts ->
                         SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(org, result.surveyConfig)
-                        if (result.surveyConfig.pickAndChoose) {
-
-                            result.subscription = result.surveyConfig.subscription
-
-                            List<IssueEntitlement> ies = subscriptionService.getIssueEntitlementsUnderNegotiation(result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(org))
-
-                            ies.each { ie ->
-                                ie.acceptStatus = RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION
-                                ie.save()
-                            }
-
-
-                        }
 
                         surveyOrg.finishDate = null
                         surveyOrg.save()
@@ -1797,78 +1792,12 @@ class SurveyController {
     }
 
     /**
-     * Call to list the titles attached to the given survey. The list may be exported as KBART or Excel worksheet
-     * @return a list view of titles, either as HTML view or as KBART / Excel worksheet
-     */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = DebugInfo.NOT_TRANSACTIONAL)
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
-    })
-     def renewEntitlements() {
-        Map<String, Object> result = [:]
-        result.institution = contextService.getOrg()
-        result.user = contextService.getUser()
-        SwissKnife.setPaginationParams(result,params,result.user)
-        result.participant = params.participant ? Org.get(params.participant) : null
-
-        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
-        result.surveyInfo = result.surveyConfig.surveyInfo
-
-        result.editable = result.surveyInfo.isEditable() ?: false
-
-        if (!result.editable) {
-            flash.error = g.message(code: "default.notAutorized.message")
-            redirect(url: request.getHeader('referer'))
-        }
-
-        result.surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.participant, result.surveyConfig)
-
-        result.subscriptionParticipant = result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.participant)
-
-        List<Long> ies = subscriptionService.getIssueEntitlementIDsNotFixed(result.subscriptionParticipant)
-        result.ies = ies ? IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.tipp tipp where ie.id in (:ies) order by tipp.sortname asc', [ies: ies]) : []
-
-        String filename = "renewEntitlements_${escapeService.escapeString(result.surveyConfig.subscription.dropdownNamingConvention(result.participant))}"
-
-        if (params.exportKBart) {
-            response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
-            response.contentType = "text/tsv"
-            ServletOutputStream out = response.outputStream
-            Map<String, List> tableData = exportService.generateTitleExportKBART([sub: result.subscriptionParticipant, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT, pkgIds: result.subscriptionParticipant.packages?.pkg?.id] ,IssueEntitlement.class.name)
-            out.withWriter { writer ->
-                writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
-            }
-            out.flush()
-            out.close()
-        }else if(params.exportXLSX) {
-            response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
-            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            Map<String,List> export = exportService.generateTitleExportCustom([sub: result.subscriptionParticipant, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT, pkgIds: result.subscriptionParticipant.packages?.pkg?.id] ,IssueEntitlement.class.name)
-            Map sheetData = [:]
-            sheetData[g.message(code:'subscription.details.renewEntitlements.label')] = [titleRow:export.titles,columnData:export.rows]
-            SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
-            workbook.write(response.outputStream)
-            response.outputStream.flush()
-            response.outputStream.close()
-            workbook.dispose()
-            return
-        }
-        else {
-            withFormat {
-                html {
-                    result
-                }
-            }
-        }
-    }
-
-    /**
      * Reopens the given survey for the given participant
      * @return a redirect to the referer
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> openSurveyAgainForParticipant() {
         Map<String, Object> result = [:]
@@ -1889,17 +1818,6 @@ class SurveyController {
         SurveyOrg.withTransaction { TransactionStatus ts ->
             SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.participant, result.surveyConfig)
 
-            if (surveyOrg && result.surveyConfig.pickAndChoose) {
-
-                List<IssueEntitlement> ies = subscriptionService.getIssueEntitlementsUnderNegotiation(result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.participant))
-
-                ies.each { ie ->
-                    ie.acceptStatus = RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION
-                    ie.save()
-                }
-
-            }
-
             surveyOrg.finishDate = null
             surveyOrg.save()
         }
@@ -1912,9 +1830,9 @@ class SurveyController {
      * Marks the given survey as completed for the given participant
      * @return a redirect to the referer
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> finishSurveyForParticipant() {
         Map<String, Object> result = [:]
@@ -1935,17 +1853,6 @@ class SurveyController {
         SurveyOrg.withTransaction { TransactionStatus ts ->
             SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.participant, result.surveyConfig)
 
-            if (surveyOrg && result.surveyConfig.pickAndChoose) {
-
-                List<IssueEntitlement> ies = subscriptionService.getIssueEntitlementsUnderConsideration(result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.participant))
-
-                ies.each { ie ->
-                    ie.acceptStatus = RDStore.IE_ACCEPT_STATUS_UNDER_NEGOTIATION
-                    ie.save()
-                }
-
-            }
-
             surveyOrg.finishDate = new Date()
             surveyOrg.save()
         }
@@ -1955,90 +1862,12 @@ class SurveyController {
     }
 
     /**
-     * Finalises the title selection for the given participant
-     * @return redirects to the survey titles view
-     */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.IN_BETWEEN)
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
-    })
-     Map<String,Object> completeIssueEntitlementsSurveyforParticipant() {
-        Map<String, Object> result = [:]
-        result.institution = contextService.getOrg()
-        result.user = contextService.getUser()
-        result.participant = params.participant ? Org.get(params.participant) : null
-
-        result.surveyConfig = SurveyConfig.get(params.id)
-        result.surveyInfo = result.surveyConfig.surveyInfo
-
-        result.editable = result.surveyInfo.isEditable() ?: false
-
-        if (!result.editable) {
-            flash.error = g.message(code: "default.notAutorized.message")
-            redirect(url: request.getHeader('referer'))
-        }
-
-        Subscription participantSub = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.participant)
-
-
-        if(params.process == "preliminary" && params.list('selectedIEs')) {
-            IssueEntitlementGroup issueEntitlementGroup
-            if (params.issueEntitlementGroupNew) {
-
-                IssueEntitlementGroup.withTransaction {
-                    issueEntitlementGroup = IssueEntitlementGroup.findBySubAndName(participantSub, params.issueEntitlementGroupNew) ?: new IssueEntitlementGroup(sub: participantSub, name: params.issueEntitlementGroupNew).save()
-                }
-            }
-
-
-            if (params.issueEntitlementGroupID && params.issueEntitlementGroupID != '') {
-                issueEntitlementGroup = IssueEntitlementGroup.findById(Long.parseLong(params.issueEntitlementGroupID))
-            }
-
-            params.list('selectedIEs').each { String ieID ->
-                IssueEntitlement.withTransaction { TransactionStatus ts ->
-                    IssueEntitlement ie = IssueEntitlement.findById(Long.parseLong(ieID))
-                    ie.acceptStatus = RDStore.IE_ACCEPT_STATUS_FIXED
-                    ie.save()
-
-                    if (issueEntitlementGroup && !IssueEntitlementGroupItem.findByIe(ie)) {
-                        //println(issueEntitlementGroup)
-                        IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
-                                ie: ie,
-                                ieGroup: issueEntitlementGroup)
-
-                        if (!issueEntitlementGroupItem.save()) {
-                            log.error("Problem saving IssueEntitlementGroupItem by Survey ${issueEntitlementGroupItem.errors}")
-                        }
-                    }
-                }
-            }
-
-            flash.message = message(code: 'completeIssueEntitlementsSurvey.forParticipant.accept', args: [params.list('selectedIEs').size()]) as String
-        }
-
-        if(params.process == "reject" && params.list('selectedIEs')) {
-            params.list('selectedIEs').each { String ieID ->
-                IssueEntitlement.withTransaction { TransactionStatus ts ->
-                    IssueEntitlement ie = IssueEntitlement.findById(Long.parseLong(ieID))
-                    ie.delete()
-
-                }
-            }
-            flash.message = message(code: 'completeIssueEntitlementsSurvey.forParticipant.reject', args: [params.list('selectedIEs').size()]) as String
-        }
-
-        redirect(action: 'renewEntitlements', id: result.surveyInfo.id, params:[surveyConfigID: result.surveyConfig.id, participant: result.participant.id])
-
-    }
-
-    /**
      * Evaluates the general selection and the costs of the participant
      * @return the participant evaluation view
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(ctxInstUserCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
+        ctx.accessService.ctxInstUserCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> evaluationParticipant() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -2104,26 +1933,26 @@ class SurveyController {
                     /*result.previousIesListPriceSum = 0
                    if(result.previousSubscription){
                        result.previousIesListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
-                               'where p.listPrice is not null and ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus',
-                       [sub: result.previousSubscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0
+                               'where p.listPrice is not null and ie.subscription = :sub and ie.status = :ieStatus',
+                       [sub: result.previousSubscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0
 
                    }*/
 
                     result.iesListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
-                            'where p.listPrice is not null and ie.subscription = :sub and ie.acceptStatus != :acceptStat and ie.status = :ieStatus',
-                            [sub: result.subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0
+                            'where p.listPrice is not null and ie.subscription = :sub and ie.status = :ieStatus',
+                            [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0
 
 
                     /* result.iesFixListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
-                             'where p.listPrice is not null and ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus',
-                             [sub: result.subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0 */
+                             'where p.listPrice is not null and ie.subscription = :sub and ie.status = :ieStatus',
+                             [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0 */
 
-                    result.countSelectedIEs = subscriptionService.countIssueEntitlementsNotFixed(result.subscription)
+                    result.countSelectedIEs = surveyService.countIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig)
 
                     if (result.surveyConfig.pickAndChoosePerpetualAccess) {
                         result.countCurrentIEs = surveyService.countPerpetualAccessTitlesBySub(result.subscription)
                     } else {
-                        result.countCurrentIEs = (result.previousSubscription ? subscriptionService.countIssueEntitlementsFixed(result.previousSubscription) : 0) + subscriptionService.countIssueEntitlementsFixed(result.subscription)
+                        result.countCurrentIEs = (result.previousSubscription ? subscriptionService.countCurrentIssueEntitlements(result.previousSubscription) : 0) + subscriptionService.countCurrentIssueEntitlements(result.subscription)
                     }
 
                     result.subscriber = result.participant
@@ -2155,9 +1984,9 @@ class SurveyController {
         result
     }
 
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(ctxInstUserCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
+        ctx.accessService.ctxInstUserCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> generatePdfForParticipant() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -2207,25 +2036,25 @@ class SurveyController {
                     /*result.previousIesListPriceSum = 0
                    if(result.previousSubscription){
                        result.previousIesListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
-                               'where p.listPrice is not null and ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus',
-                       [sub: result.previousSubscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0
+                               'where p.listPrice is not null and ie.subscription = :sub and ie.status = :ieStatus',
+                       [sub: result.previousSubscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0
 
                    }*/
 
                     result.iesListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
-                            'where p.listPrice is not null and ie.subscription = :sub and ie.acceptStatus != :acceptStat and ie.status = :ieStatus',
-                            [sub: result.subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0
+                            'where p.listPrice is not null and ie.subscription = :sub and ie.status = :ieStatus',
+                            [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0
 
 
                     /* result.iesFixListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
-                             'where p.listPrice is not null and ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus',
-                             [sub: result.subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0 */
+                             'where p.listPrice is not null and ie.subscription = :sub and ie.status = :ieStatus',
+                             [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0 */
 
-                    result.countSelectedIEs = subscriptionService.countIssueEntitlementsNotFixed(result.subscription)
+                    result.countSelectedIEs = surveyService.countIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig)
                     if (result.surveyConfig.pickAndChoosePerpetualAccess) {
                         result.countCurrentIEs = surveyService.countPerpetualAccessTitlesBySub(result.subscription)
                     } else {
-                        result.countCurrentIEs = (result.previousSubscription ? subscriptionService.countIssueEntitlementsFixed(result.previousSubscription) : 0) + subscriptionService.countIssueEntitlementsFixed(result.subscription)
+                        result.countCurrentIEs = (result.previousSubscription ? subscriptionService.countCurrentIssueEntitlements(result.previousSubscription) : 0) + subscriptionService.countCurrentIssueEntitlements(result.subscription)
                     }
                     result.subscriber = result.participant
 
@@ -2284,13 +2113,13 @@ class SurveyController {
      * Call to list all possible survey properties (i.e. the questions which may be asked in a survey)
      * @return a list of properties for the given consortium
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(ctxInstUserCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
+        ctx.accessService.ctxInstUserCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> allSurveyProperties() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
-        if (!accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_USER','ROLE_ADMIN')) {
+        if (!accessService.ctxInstUserCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )) {
             response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
@@ -2306,9 +2135,9 @@ class SurveyController {
      * Adds the given survey property to the survey configuration, i.e. inserts a new question for the given survey
      * @return a redirect to the referer
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> addSurveyPropToConfig() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -2344,16 +2173,16 @@ class SurveyController {
      * Removes the given survey property from the given survey
      * @return a redirect to the referer
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> deleteSurveyPropFromConfig() {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = contextService.getUser()
 
-        result.editable = accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        result.editable = accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
@@ -2387,16 +2216,16 @@ class SurveyController {
      * Creates a new survey property
      * @return a redirect to the referer
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> createSurveyProperty() {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = contextService.getUser()
 
-        result.editable = accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        result.editable = accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
@@ -2449,16 +2278,16 @@ class SurveyController {
      * Deletes the given survey property
      * @return redirects to the survey property listing
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> deleteSurveyProperty() {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = contextService.getUser()
 
-        result.editable = accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        result.editable = accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
@@ -2482,16 +2311,16 @@ class SurveyController {
      * Adds the given institutions to the given survey as new participants
      * @return the updated survey participants list
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> addSurveyParticipants() {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = contextService.getUser()
 
-        result.editable = accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        result.editable = accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
 
         if (!result.editable) {
             flash.error = g.message(code: "default.notAutorized.message")
@@ -2565,9 +2394,9 @@ class SurveyController {
      * Opens the given survey to the public and sends reminders to the participants to call to fill the survey out
      * @return redirects to the survey details page
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> processOpenSurvey() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -2577,34 +2406,60 @@ class SurveyController {
 
         result.editable = (result.surveyInfo && result.surveyInfo.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
 
+        boolean openFailByTitleSelection = false
+
+        Date startDate = params.startNow ? new Date() : result.surveyInfo.startDate
+
         if (result.editable) {
 
             result.surveyConfigs = result.surveyInfo.surveyConfigs.sort { it.configOrder }
             SurveyConfig.withTransaction { TransactionStatus ts ->
                 result.surveyConfigs.each { config ->
                     config.orgs.org.each { org ->
-                        config.surveyProperties.each { property ->
-                            if (!SurveyResult.findWhere(owner: result.institution, participant: org, type: property.surveyProperty, surveyConfig: config)) {
-                                SurveyResult surveyResult = new SurveyResult(
-                                        owner: result.institution,
-                                        participant: org,
-                                        startDate: result.surveyInfo.startDate,
-                                        endDate: result.surveyInfo.endDate ?: null,
-                                        type: property.surveyProperty,
-                                        surveyConfig: config
-                                )
-                                if (surveyResult.save()) {
-                                    log.debug(surveyResult.toString())
-                                } else {
-                                    log.error("Not create surveyResult: " + surveyResult)
+                        if(result.surveyInfo.type == RDStore.SURVEY_TYPE_TITLE_SELECTION){
+                            Subscription subscription = config.subscription.getDerivedSubscriptionBySubscribers(org)
+
+                            if(subscription.packages.size() == 0){
+                                openFailByTitleSelection = true
+                            }
+                        }
+
+                        if(!openFailByTitleSelection) {
+                            config.surveyProperties.each { property ->
+                                if (!SurveyResult.findWhere(owner: result.institution, participant: org, type: property.surveyProperty, surveyConfig: config)) {
+                                    SurveyResult surveyResult = new SurveyResult(
+                                            owner: result.institution,
+                                            participant: org,
+                                            startDate: startDate,
+                                            endDate: result.surveyInfo.endDate ?: null,
+                                            type: property.surveyProperty,
+                                            surveyConfig: config
+                                    )
+                                    if (surveyResult.save()) {
+                                        log.debug(surveyResult.toString())
+                                    } else {
+                                        log.error("Not create surveyResult: " + surveyResult)
+                                    }
                                 }
                             }
                         }
                     }
                 }
-                result.surveyInfo.status = RDStore.SURVEY_READY
-                result.surveyInfo.save()
-                flash.message = g.message(code: "openSurvey.successfully")
+
+                if(!openFailByTitleSelection) {
+                    result.surveyInfo.status = params.startNow ? RDStore.SURVEY_SURVEY_STARTED : RDStore.SURVEY_READY
+                    result.surveyInfo.save()
+                    flash.message = params.startNow ? g.message(code: "openSurveyNow.successfully") : g.message(code: "openSurvey.successfully")
+                }else {
+                    flash.error = g.message(code: "openSurvey.openFailByTitleSelection.noPackagesYetAdded")
+                }
+            }
+
+            if(!openFailByTitleSelection) {
+                executorService.execute({
+                    Thread.currentThread().setName('EmailsToSurveyUsers' + result.surveyInfo.id)
+                    surveyService.emailsToSurveyUsers([result.surveyInfo.id])
+                })
             }
 
         }
@@ -2616,9 +2471,9 @@ class SurveyController {
      * Marks the given survey as in evaluation and closes further survey completion
      * @return either the evaluation view for the renewal or redirects to the referer
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> processEndSurvey() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -2647,9 +2502,9 @@ class SurveyController {
      * Marks the survey as in processing and closes survey completion
      * @return a redirect to the referer
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> processBackInProcessingSurvey() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -2668,78 +2523,12 @@ class SurveyController {
     }
 
     /**
-     * Starts and opens the survey immediately for completion
-     * @return the survey details view
-     */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.IN_BETWEEN)
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
-    })
-     Map<String,Object> processOpenSurveyNow() {
-        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
-        if (!result.editable) {
-            response.sendError(HttpStatus.SC_FORBIDDEN); return
-        }
-
-        result.editable = (result.surveyInfo && result.surveyInfo.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
-
-        Date currentDate = new Date()
-
-        if (result.editable) {
-
-            result.surveyConfigs = result.surveyInfo.surveyConfigs.sort { it.configOrder }
-
-            SurveyResult.withTransaction { TransactionStatus ts ->
-                result.surveyConfigs.each { config ->
-                    config.orgs.org.each { org ->
-
-                        config.surveyProperties.each { property ->
-
-                            if (!SurveyResult.findWhere(owner: result.institution, participant: org, type: property.surveyProperty, surveyConfig: config)) {
-                                SurveyResult surveyResult = new SurveyResult(
-                                        owner: result.institution,
-                                        participant: org,
-                                        startDate: currentDate,
-                                        endDate: result.surveyInfo.endDate,
-                                        type: property.surveyProperty,
-                                        surveyConfig: config
-                                )
-
-                                if (surveyResult.save()) {
-                                    log.debug(surveyResult.toString())
-                                } else {
-                                    log.debug(surveyResult.toString())
-                                }
-                            }
-                        }
-                    }
-                }
-
-                result.surveyInfo.status = RDStore.SURVEY_SURVEY_STARTED
-                result.surveyInfo.startDate = currentDate
-                result.surveyInfo.save()
-            }
-
-            flash.message = g.message(code: "openSurveyNow.successfully")
-
-            executorService.execute({
-                Thread.currentThread().setName('EmailsToSurveyUsers' + result.surveyInfo.id)
-                surveyService.emailsToSurveyUsers([result.surveyInfo.id])
-            })
-            //executorService.shutdown()
-
-        }
-
-        redirect action: 'show', id: params.id
-    }
-
-    /**
      * Opens the survey again after a break
      * @return the survey details view
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> openSurveyAgain() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -2774,9 +2563,9 @@ class SurveyController {
      * Removes the given survey participants from the given survey
      * @return a redirect to the referer
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> deleteSurveyParticipants() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -2814,9 +2603,9 @@ class SurveyController {
      * Call to delete the given documents from the survey
      * @return a redirect to the referer
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> deleteDocuments() {
         log.debug("deleteDocuments ${params}");
@@ -2830,9 +2619,9 @@ class SurveyController {
      * Deletes the entire survey with attached objects
      * @return the survey list in case of success, a redirect to the referer otherwise
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> deleteSurveyInfo() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -2886,8 +2675,10 @@ class SurveyController {
      * Call to edit the given survey cost item
      * @return the cost item editing modal
      */
-    @DebugInfo(test = 'hasAffiliation("INST_EDITOR")', wtc = DebugInfo.NOT_TRANSACTIONAL)
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+    })
      Map<String,Object> editSurveyCostItem() {
         println('editSurveyCostItem')
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -2904,7 +2695,7 @@ class SurveyController {
         }
 
         result.orgConfigurations = orgConfigurations as JSON
-        //result.selectedCostItemElement = params.selectedCostItemElement ?: RefdataValue.getByValueAndCategory('price: consortial price', 'CostItemElement').id.toString()
+        //result.selectedCostItemElement = params.selectedCostItemElement ?: RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id.toString()
 
         result.participant = Org.get(params.participant)
         result.surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(result.surveyConfig, result.participant)
@@ -2920,8 +2711,10 @@ class SurveyController {
      * Call to add a new survey cost item to every participant
      * @return the new cost item modal
      */
-    @DebugInfo(test = 'hasAffiliation("INST_EDITOR")', wtc = DebugInfo.NOT_TRANSACTIONAL)
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+    })
      Object addForAllSurveyCostItem() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
@@ -2936,7 +2729,7 @@ class SurveyController {
         }
 
         result.orgConfigurations = orgConfigurations as JSON
-        //result.selectedCostItemElement = params.selectedCostItemElement ?: RefdataValue.getByValueAndCategory('price: consortial price', 'CostItemElement').id.toString()
+        //result.selectedCostItemElement = params.selectedCostItemElement ?: RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE.id.toString()
 
         result.setting = 'bulkForAll'
 
@@ -2955,9 +2748,9 @@ class SurveyController {
      * Marks the survey as being in evaluation
      * @return redirects to the renewal evaluation view
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> setInEvaluation() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -2981,9 +2774,9 @@ class SurveyController {
      * Marks the survey as completed
      * @return a redirect to the referer
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> setCompleted() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -3007,9 +2800,9 @@ class SurveyController {
      * Marks the survey as finished, i.e. evaluation is over, too
      * @return a redirect to the referer
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> setCompletedSurvey() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -3033,9 +2826,9 @@ class SurveyController {
      * Sets the given comment for the given survey
      * @return a redirect to the referer
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> setSurveyConfigComment() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -3053,7 +2846,7 @@ class SurveyController {
             }
         }
 
-        redirect(url: request.getHeader('referer'))
+        redirect(action: 'show', params: [id: params.id, surveyConfigID: result.surveyConfig.id, commentTab: params.commentTab])
 
     }
 
@@ -3062,9 +2855,9 @@ class SurveyController {
      * Excel worksheet
      * @return the evaluation view for the given renewal survey
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> renewalEvaluation() {
         Map<String,Object> ctrlResult = surveyControllerService.renewalEvaluation(params)
@@ -3073,26 +2866,27 @@ class SurveyController {
                 return
         }
         else {
+            String message = g.message(code: 'renewalexport.renewals')
+            SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
+            String datetoday = sdf.format(new Date())
 
-            if (params.exportClickMeExcel) {
+            String filename
+            Map<String, Object> selectedFields = [:]
+            if(params.fileformat) {
+                Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+                selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+                if (params.filename) {
+                    filename =params.filename
+                }
+                else {
+                    filename = message + "_" + ctrlResult.result.surveyConfig.getSurveyName() + "_${datetoday}"
+                }
+            }
+
+
+            if (params.fileformat == 'xlsx') {
                 try {
-                    String message = g.message(code: 'renewalexport.renewals')
-                    SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
-                    String datetoday = sdf.format(new Date())
-
-                    String filename
-                    if (params.filename) {
-                        filename =params.filename
-                    }
-                    else {
-                        filename = message + "_" + ctrlResult.result.surveyConfig.getSurveyName() + "_${datetoday}"
-                    }
-
-                    Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
-                    Map<String, Object> selectedFields = [:]
-                    selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
-
-                    SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportRenewalResult(ctrlResult.result, selectedFields)
+                    SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportRenewalResult(ctrlResult.result, selectedFields, ExportClickMeService.FORMAT.XLS)
                     // Write the output to a file
 
                     response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
@@ -3109,8 +2903,17 @@ class SurveyController {
                     return
                 }
             }
-
-            ctrlResult.result
+            else if(params.fileformat == 'csv') {
+                response.setHeader("Content-disposition", "attachment; filename=${filename}.csv")
+                response.contentType = "text/csv"
+                ServletOutputStream out = response.outputStream
+                out.withWriter { writer ->
+                    writer.write((String) exportClickMeService.exportRenewalResult(ctrlResult.result, selectedFields, ExportClickMeService.FORMAT.CSV))
+                }
+                out.close()
+            }
+            else
+                ctrlResult.result
         }
     }
 
@@ -3119,9 +2922,9 @@ class SurveyController {
      * @return a modal to show the differences between this and next year ring's subscription parameters (= the selected
      * parameters by each member)
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> showPropertiesChanged() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -3194,9 +2997,9 @@ class SurveyController {
      * Call to copy the given survey
      * @return the view with the base parameters for the survey copy
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> copySurvey() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -3227,7 +3030,7 @@ class SurveyController {
                 date_restriction = sdf.parse(params.validOn)
             }
 
-            result.editable = accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+            result.editable = accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
 
             if (!result.editable) {
                 flash.error = g.message(code: "default.notAutorized.message")
@@ -3286,9 +3089,9 @@ class SurveyController {
      * Call to add the subscription members as participants to the survey
      * @return the survey participants list
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> addSubMembersToSurvey() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -3306,9 +3109,9 @@ class SurveyController {
      * Takes the submitted base parameters and creates a copy of the given survey
      * @return either the survey list view for consortia or the survey details view
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> processCopySurvey() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -3389,15 +3192,15 @@ class SurveyController {
      * Initialises the subscription renewal for the parent subscription after a survey
      * @return the view for the successor subscription base parameter's configuration
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> renewSubscriptionConsortiaWithSurvey() {
 
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         result.institution = contextService.getOrg()
-        if (!(result || accessService.checkPerm("ORG_CONSORTIUM"))) {
+        if (!(result || accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_PRO))) {
             response.sendError(401); return
         }
 
@@ -3414,15 +3217,16 @@ class SurveyController {
         }
         params.surveyConfig = params.surveyConfig ?: null
         result.isRenewSub = true
-        result.permissionInfo = [sub_startDate: newStartDate ? sdf.format(newStartDate) : null,
-                                 sub_endDate  : newEndDate ? sdf.format(newEndDate) : null,
-                                 sub_name     : subscription.name,
-                                 sub_id       : subscription.id,
-                                 sub_status   : RDStore.SUBSCRIPTION_INTENDED.id.toString(),
-                                 sub_type     : subscription.type?.id?.toString(),
-                                 sub_form     : subscription.form?.id?.toString(),
-                                 sub_resource : subscription.resource?.id?.toString(),
-                                 sub_kind     : subscription.kind?.id?.toString(),
+        result.permissionInfo = [sub_startDate    : newStartDate ? sdf.format(newStartDate) : null,
+                                 sub_endDate      : newEndDate ? sdf.format(newEndDate) : null,
+                                 sub_referenceYear: subscription.referenceYear,
+                                 sub_name         : subscription.name,
+                                 sub_id           : subscription.id,
+                                 sub_status       : RDStore.SUBSCRIPTION_INTENDED.id.toString(),
+                                 sub_type         : subscription.type?.id?.toString(),
+                                 sub_form         : subscription.form?.id?.toString(),
+                                 sub_resource     : subscription.resource?.id?.toString(),
+                                 sub_kind         : subscription.kind?.id?.toString(),
                                  sub_isPublicForApi : subscription.isPublicForApi ? RDStore.YN_YES.id.toString() : RDStore.YN_NO.id.toString(),
                                  //sub_hasPerpetualAccess : subscription.hasPerpetualAccess,
                                  sub_hasPerpetualAccess : subscription.hasPerpetualAccess ? RDStore.YN_YES.id.toString() : RDStore.YN_NO.id.toString(),
@@ -3439,14 +3243,14 @@ class SurveyController {
      * linked to the predecessor instance. The element copy workflow is triggered right after
      * @return the subscription element copy starting view
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      def processRenewalWithSurvey() {
 
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
-        if (!(result || accessService.checkPerm("ORG_CONSORTIUM"))) {
+        if (!(result || accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_PRO))) {
             response.sendError(401); return
         }
 
@@ -3458,6 +3262,7 @@ class SurveyController {
         } else {
             Date sub_startDate = params.subscription.start_date ? DateUtils.parseDateGeneric(params.subscription.start_date) : null
             Date sub_endDate = params.subscription.end_date ? DateUtils.parseDateGeneric(params.subscription.end_date) : null
+            Year sub_refYear = params.subscription.reference_year ? Year.parse(params.subscription.reference_year) : null
             def sub_status = params.subStatus
             RefdataValue sub_type = RDStore.SUBSCRIPTION_TYPE_CONSORTIAL
             def sub_kind = params.subKind
@@ -3479,6 +3284,7 @@ class SurveyController {
                         name: new_subname,
                         startDate: sub_startDate,
                         endDate: sub_endDate,
+                        referenceYear: sub_refYear,
                         manualCancellationDate: manualCancellationDate,
                         identifier: java.util.UUID.randomUUID().toString(),
                         isSlaved: baseSub.isSlaved,
@@ -3540,8 +3346,10 @@ class SurveyController {
      * Exports the survey costs in an Excel worksheet
      * @return an Excel worksheet containing the survey cost data
      */
-    @DebugInfo(test = 'hasAffiliation("INST_USER")', wtc = DebugInfo.NOT_TRANSACTIONAL)
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+    })
      def exportSurCostItems() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
@@ -3576,8 +3384,10 @@ class SurveyController {
      * Call to copy the mail adresses of all participants
      * @return the modal containing the participant's mail addresses
      */
-    @DebugInfo(test = 'hasAffiliation("INST_USER")', wtc = DebugInfo.NOT_TRANSACTIONAL)
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+    })
      Map<String,Object> copyEmailaddresses() {
         Map<String, Object> result = [:]
         result.modalID = params.targetId
@@ -3595,8 +3405,10 @@ class SurveyController {
      * Takes the submitted input and creates cost items based on the given parameters for every selected survey participant
      * @return a redirect to the referer
      */
-    @DebugInfo(test = 'hasAffiliation("INST_EDITOR")', wtc = DebugInfo.IN_BETWEEN)
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], wtc = DebugInfo.IN_BETWEEN)
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+    })
      Map<String,Object> newSurveyCostItem() {
         SimpleDateFormat dateFormat = DateUtils.getLocalizedSDF_noTime()
 
@@ -3612,7 +3424,7 @@ class SurveyController {
             User user = contextService.getUser()
             result.error = [] as List
 
-            if (!accessService.checkMinUserOrgRole(user, result.institution, "INST_EDITOR")) {
+            if (!userService.checkAffiliationAndCtxOrg(user, result.institution, 'INST_EDITOR')) {
                 result.error = message(code: 'financials.permission.unauthorised', args: [result.institution ? result.institution.name : 'N/A']) as String
                 response.sendError(HttpStatus.SC_FORBIDDEN)
                 return
@@ -3660,7 +3472,7 @@ class SurveyController {
                 RefdataValue taxType = (RefdataValue) genericOIDService.resolveOID(newTaxRate[0])
                 int taxRate = Integer.parseInt(newTaxRate[1])
                 switch (taxType.id) {
-                    case RefdataValue.getByValueAndCategory("taxable", RDConstants.TAX_TYPE).id:
+                    case RDStore.TAX_TYPE_TAXABLE.id:
                         switch (taxRate) {
                             case 7: tax_key = CostItem.TAX_TYPES.TAXABLE_7
                                 break
@@ -3668,16 +3480,16 @@ class SurveyController {
                                 break
                         }
                         break
-                    case RefdataValue.getByValueAndCategory("taxable tax-exempt", RDConstants.TAX_TYPE).id:
+                    case RDStore.TAX_TYPE_TAXABLE_EXEMPT.id:
                         tax_key = CostItem.TAX_TYPES.TAX_EXEMPT
                         break
-                    case RefdataValue.getByValueAndCategory("not taxable", RDConstants.TAX_TYPE).id:
+                    case RDStore.TAX_TYPE_NOT_TAXABLE.id:
                         tax_key = CostItem.TAX_TYPES.TAX_NOT_TAXABLE
                         break
-                    case RefdataValue.getByValueAndCategory("not applicable", RDConstants.TAX_TYPE).id:
+                    case RDStore.TAX_TYPE_NOT_APPLICABLE.id:
                         tax_key = CostItem.TAX_TYPES.TAX_NOT_APPLICABLE
                         break
-                    case RefdataValue.getByValueAndCategory("reverse charge", RDConstants.TAX_TYPE).id:
+                    case RDStore.TAX_TYPE_REVERSE_CHARGE.id:
                         tax_key = CostItem.TAX_TYPES.TAX_REVERSE_CHARGE
                         break
                 }
@@ -3816,9 +3628,9 @@ class SurveyController {
      * in each year
      * @return a list of members for each subscription
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> compareMembersOfTwoSubs() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -3837,7 +3649,7 @@ class SurveyController {
         result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
 
         result.superOrgType = []
-        if(accessService.checkPerm('ORG_CONSORTIUM')) {
+        if(accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)) {
             result.superOrgType << message(code:'consortium.superOrgType')
         }
 
@@ -3879,9 +3691,9 @@ class SurveyController {
      * Call to copy the survey cost items
      * @return a list of each participant's survey costs
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> copySurveyCostItems() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -3929,9 +3741,9 @@ class SurveyController {
      * Takes the given parameters and creates copies of the given cost items, based on the submitted data
      * @return the survey cost copy overview
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> proccessCopySurveyCostItems() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -3948,7 +3760,7 @@ class SurveyController {
         result.targetSubscription =  result.parentSuccessorSubscription
 
         Integer countNewCostItems = 0
-        //RefdataValue costElement = RefdataValue.getByValueAndCategory('price: consortial price', RDConstants.COST_ITEM_ELEMENT)
+        //RefdataValue costElement = RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE
         CostItem.withTransaction { TransactionStatus ts ->
             params.list('selectedSurveyCostItem').each { costItemId ->
 
@@ -3998,9 +3810,9 @@ class SurveyController {
      * Call to open the transfer of survey cost items into the respective member subscriptions
      * @return a list of participants with their respective survey cost items
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> copySurveyCostItemsToSub() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -4038,9 +3850,9 @@ class SurveyController {
      * Takes the submitted parameters and copies the survey cost items into the subscriptions
      * @return the survey-subscription cost transfer view
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> proccessCopySurveyCostItemsToSub() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -4052,7 +3864,7 @@ class SurveyController {
 
 
         Integer countNewCostItems = 0
-        //RefdataValue costElement = RefdataValue.getByValueAndCategory('price: consortial price', RDConstants.COST_ITEM_ELEMENT)
+        //RefdataValue costElement = RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE
         CostItem.withTransaction { TransactionStatus ->
             params.list('selectedSurveyCostItem').each { costItemId ->
 
@@ -4093,9 +3905,9 @@ class SurveyController {
      * Call to open the property copying view from one subscription into another
      * @return the list of properties for each year ring
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> copyProperties() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -4199,9 +4011,9 @@ class SurveyController {
      * Takes the submitted data and creates copies of the selected properties into the successor subscriptions
      * @return the property copy overview
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> proccessCopyProperties() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -4337,9 +4149,9 @@ class SurveyController {
      * the following year along with their depending data
      * @return a redirect to the member comparison view
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> processTransferParticipantsByRenewal() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -4357,8 +4169,22 @@ class SurveyController {
         result.properties = []
         result.properties.addAll(SurveyConfigProperties.findAllBySurveyPropertyNotEqualAndSurveyConfig(result.participationProperty, result.surveyConfig)?.surveyProperty)
 
+        result.multiYearTermFiveSurvey = null
+        result.multiYearTermFourSurvey = null
         result.multiYearTermThreeSurvey = null
         result.multiYearTermTwoSurvey = null
+
+        if (PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_5.id in result.properties.id) {
+            result.multiYearTermFiveSurvey = PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_5
+            result.properties.remove(result.multiYearTermFiveSurvey)
+
+        }
+
+        if (PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_4.id in result.properties.id) {
+            result.multiYearTermFourSurvey = PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_4
+            result.properties.remove(result.multiYearTermFourSurvey)
+
+        }
 
         if (PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_3.id in result.properties.id) {
             result.multiYearTermThreeSurvey = PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_3
@@ -4435,6 +4261,48 @@ class SurveyController {
                         use(TimeCategory) {
                             newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
                             newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 3.year) : null
+                        }
+                        countNewSubs++
+                        result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, params))
+                    }
+                    else {
+                        use(TimeCategory) {
+                            newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
+                            newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 1.year) : null
+                        }
+                        countNewSubs++
+                        result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, false, params))
+                    }
+                }
+                //Umfrage-Merkmal MJL4
+                else if (result.multiYearTermFourSurvey) {
+
+                    SurveyResult participantPropertyFour = SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it.participant, result.institution, result.surveyConfig, result.multiYearTermFourSurvey)
+                    if (participantPropertyFour && participantPropertyFour.refValue?.id == RDStore.YN_YES.id) {
+                        use(TimeCategory) {
+                            newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
+                            newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 4.year) : null
+                        }
+                        countNewSubs++
+                        result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, params))
+                    }
+                    else {
+                        use(TimeCategory) {
+                            newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
+                            newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 1.year) : null
+                        }
+                        countNewSubs++
+                        result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, false, params))
+                    }
+                }
+                //Umfrage-Merkmal MJL5
+                else if (result.multiYearTermFiveSurvey) {
+
+                    SurveyResult participantPropertyFive = SurveyResult.findByParticipantAndOwnerAndSurveyConfigAndType(it.participant, result.institution, result.surveyConfig, result.multiYearTermFiveSurvey)
+                    if (participantPropertyFive && participantPropertyFive.refValue?.id == RDStore.YN_YES.id) {
+                        use(TimeCategory) {
+                            newStartDate = oldSubofParticipant.startDate ? (oldSubofParticipant.endDate + 1.day) : null
+                            newEndDate = oldSubofParticipant.endDate ? (oldSubofParticipant.endDate + 5.year) : null
                         }
                         countNewSubs++
                         result.newSubs.addAll(_processAddMember(((oldSubofParticipant != result.parentSubscription) ? oldSubofParticipant: null), result.parentSuccessorSubscription, it.participant, newStartDate, newEndDate, true, params))
@@ -4540,7 +4408,7 @@ class SurveyController {
 
         Org institution = contextService.getOrg()
 
-        if (accessService.checkPerm("ORG_CONSORTIUM")) {
+        if (accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)) {
 
                 License licenseCopy
 
@@ -4572,6 +4440,7 @@ class SurveyController {
                         name: newParentSub.name,
                         startDate: startDate,
                         endDate: endDate,
+                        referenceYear: newParentSub.referenceYear ?: null,
                         administrative: newParentSub._getCalculatedType() == CalculatedType.TYPE_ADMINISTRATIVE,
                         manualRenewalDate: newParentSub.manualRenewalDate,
                         identifier: UUID.randomUUID().toString(),
@@ -4592,7 +4461,7 @@ class SurveyController {
                 }
 
                 if (memberSub) {
-                    if(accessService.checkPerm("ORG_CONSORTIUM")) {
+                    if(accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)) {
 
                         new OrgRole(org: org, sub: memberSub, roleType: RDStore.OR_SUBSCRIBER_CONS).save()
                         new OrgRole(org: institution, sub: memberSub, roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA).save()
@@ -4647,7 +4516,7 @@ class SurveyController {
                         Links.construct([linkType: RDStore.LINKTYPE_FOLLOWS, source: memberSub, destination: oldSub, owner: contextService.getOrg()]).save()
                     }
 
-                    if(org.getCustomerType() == 'ORG_INST') {
+                    if (org.isCustomerType_Inst_Pro()) {
                         PendingChange.construct([target: memberSub, oid: "${memberSub.getClass().getName()}:${memberSub.id}", msgToken: "pendingChange.message_SU_NEW_01", status: RDStore.PENDING_CHANGE_PENDING, owner: org])
                     }
 
@@ -4798,9 +4667,9 @@ class SurveyController {
      * the call will process copying of the given survey elements
      * @return the given tab with the copy parameters
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_USER", specRole = "ROLE_ADMIN", wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(ctxInstUserCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
+        ctx.accessService.ctxInstUserCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
      Map<String,Object> copyElementsIntoSurvey() {
         def result             = [:]
@@ -4874,8 +4743,10 @@ class SurveyController {
      * Lists the tasks attached to the given survey
      * @return the list of tasks of the given survey
      */
-    @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_USER", ctrlService = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER") })
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.ORG_CONSORTIUM_PRO, 'INST_USER'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_PRO, 'INST_USER')
+    })
     def tasks() {
         Map<String,Object> ctrlResult = surveyControllerService.tasks(this,params)
         if(ctrlResult.error == SurveyControllerService.STATUS_ERROR) {
@@ -4898,8 +4769,10 @@ class SurveyController {
      * Lists the notes attached to the given survey
      * @return the list of notes of the given survey
      */
-    @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_USER", ctrlService = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER") })
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.ORG_CONSORTIUM_PRO, 'INST_USER'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_PRO, 'INST_USER')
+    })
     def notes() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result) {
@@ -4913,9 +4786,9 @@ class SurveyController {
      * Set link to license or provider
      * @return a redirect to the referer
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> setProviderOrLicenseLink() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -4967,9 +4840,9 @@ class SurveyController {
      * Set link to license or provider
      * @return a redirect to the referer
      */
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = 1)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> setSurveyLink() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -5018,9 +4891,9 @@ class SurveyController {
 
     }
 
-    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     Map<String,Object> addSurveyUrl() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)

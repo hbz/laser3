@@ -4,6 +4,7 @@ import de.laser.annotations.RefdataInfo
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
+import de.laser.CustomerTypeService
 import de.laser.interfaces.CalculatedType
 import de.laser.interfaces.Permissions
 import de.laser.interfaces.ShareSupport
@@ -18,7 +19,6 @@ import de.laser.utils.LocaleUtils
 import grails.plugins.orm.auditable.Auditable
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
-import javax.persistence.Transient
 import java.text.Normalizer
 import java.text.SimpleDateFormat
 
@@ -74,7 +74,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
     SortedSet ids
 
     static transients = [
-            'referenceConcatenated', 'licensingConsortium', 'licensor', 'licensee',
+            'referenceConcatenated', 'licensingConsortium', 'licensor', 'licensee', 'providers', 'agencies',
             'calculatedPropDefGroups', 'genericLabel', 'nonDeletedDerivedLicenses'
     ] // mark read-only accessor methods
 
@@ -86,7 +86,6 @@ class License extends AbstractBaseWithCalculatedLastUpdated
           orgRelations       :     OrgRole,
           prsLinks       :     PersonRole,
           derivedLicenses:    License,
-          pendingChanges :     PendingChange,
           propertySet    :   LicenseProperty
   ]
 
@@ -98,7 +97,6 @@ class License extends AbstractBaseWithCalculatedLastUpdated
           orgRelations:      'lic',
           prsLinks:      'lic',
           derivedLicenses: 'instanceOf',
-          pendingChanges:  'license',
           propertySet:  'owner'
   ]
 
@@ -126,7 +124,6 @@ class License extends AbstractBaseWithCalculatedLastUpdated
       lastUpdatedCascading column: 'lic_last_updated_cascading'
 
        propertySet sort:'type', order:'desc', batchSize: 10
-         pendingChanges sort: 'ts', order: 'asc', batchSize: 10
 
               ids               sort: 'ns', batchSize: 10
               //pkgs            batchSize: 10
@@ -302,6 +299,24 @@ class License extends AbstractBaseWithCalculatedLastUpdated
     }
 
     /**
+     * Retrieves all organisation linked as providers to this license
+     * @return a {@link List} of {@link Org}s linked as provider
+     */
+    List<Org> getProviders() {
+        Org.executeQuery("select og.org from OrgRole og where og.lic =:lic and og.roleType in (:provider)",
+                [lic: this, provider: [RDStore.OR_PROVIDER, RDStore.OR_LICENSOR]])
+    }
+
+    /**
+     * Retrieves all organisation linked as agencies to this license
+     * @return a {@link List} of {@link Org}s linked as agency
+     */
+    List<Org> getAgencies() {
+        Org.executeQuery("select og.org from OrgRole og where og.lic =:lic and og.roleType = :agency",
+                [lic: this, agency: RDStore.OR_AGENCY])
+    }
+
+    /**
      * Gets all members (!) of this (consortial parent) license
      * @return a {@link List} of subscriber institutions ({@link Org})
      */
@@ -356,6 +371,16 @@ class License extends AbstractBaseWithCalculatedLastUpdated
         orgRelations.find { OrgRole or ->
             or.roleType == RDStore.OR_LICENSOR
         }?.org
+    }
+
+    /**
+     * Retrieves the providers and agencies for this license
+     * @return a set of {@link Org}s
+     */
+    Set<Org> getProviderAgency() {
+        orgRelations.findAll { OrgRole or ->
+            or.roleType in [RDStore.OR_LICENSOR, RDStore.OR_AGENCY]
+        }.org
     }
 
     /**
@@ -434,7 +459,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
                 return cons || licseeCons || licsee
             }
             if (perm == 'edit') {
-                if(BeanStore.getAccessService().checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN'))
+                if(BeanStore.getAccessService().ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC ))
                     return cons || licsee
             }
         }
@@ -477,67 +502,6 @@ class License extends AbstractBaseWithCalculatedLastUpdated
   int compareTo(License other){
       return other.id? other.id.compareTo(this.id) : -1
   }
-
-    /**
-     * Registers the change done on this license and hands the changes over to the member objects. A {@link PendingChange} is being set up for each; if the changes are auto-accepted (= slaved), the change is being accepted right away
-     * @param changeDocument the {@link Map} of change being processed
-     */
-    @Transient
-    void notifyDependencies(Map changeDocument) {
-        log.debug("notifyDependencies(${changeDocument})")
-
-        List<PendingChange> slavedPendingChanges = []
-        // Find any licenses derived from this license
-        // create a new pending change object
-        //def derived_licenses = License.executeQuery('select l from License as l where exists ( select link from Link as link where link.toLic=l and link.fromLic=? )',this)
-        def derived_licenses = getNonDeletedDerivedLicenses()
-
-        derived_licenses.each { dl ->
-            log.debug("Send pending change to ${dl.id}")
-
-            Locale locale = LocaleUtils.getCurrentLocale()
-            String description = BeanStore.getMessageSource().getMessage('default.accept.placeholder',null, locale)
-
-            String definedType = 'text'
-            if (this."${changeDocument.prop}" instanceof RefdataValue) {
-                definedType = 'rdv'
-            }
-            else if (this."${changeDocument.prop}" instanceof Date) {
-                definedType = 'date'
-            }
-
-            List<String> msgParams = [
-                    definedType,
-                    "${changeDocument.prop}",
-                    "${changeDocument.old}",
-                    "${changeDocument.new}",
-                    "${description}"
-            ]
-
-            PendingChange newPendingChange = BeanStore.getChangeNotificationService().registerPendingChange(
-                        PendingChange.PROP_LICENSE,
-                        dl,
-                        dl.getLicensee(),
-                              [
-                                changeTarget:"${License.class.name}:${dl.id}",
-                                changeType:PendingChangeService.EVENT_PROPERTY_CHANGE,
-                                changeDoc:changeDocument
-                              ],
-                        PendingChange.MSG_LI01,
-                        msgParams,
-                    "<strong>${changeDocument.prop}</strong> hat sich von <strong>\"${changeDocument.oldLabel?:changeDocument.old}\"</strong> zu <strong>\"${changeDocument.newLabel?:changeDocument.new}\"</strong> von der Vertragsvorlage geändert. " + description
-            )
-
-            if (newPendingChange && dl.isSlaved) {
-                slavedPendingChanges << newPendingChange
-            }
-        }
-
-        slavedPendingChanges.each { spc ->
-            log.debug('autoAccept! performing: ' + spc)
-            BeanStore.getPendingChangeService().performAccept(spc)
-        }
-    }
 
     /**
      * Gets all member licenses of this consortia license

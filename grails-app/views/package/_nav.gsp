@@ -12,9 +12,9 @@
     <ui:subNavItem controller="package" action="deleted" counts="${deletedTippsCounts}" params="${[id:params.id]}" message="package.show.nav.deleted" />
 
     <ui:subNavItem controller="package" action="tippChanges" params="${[id:params.id]}" message="package.show.nav.tippChanges" />
-%{--    <ui:securedSubNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" controller="package" action="tasks" params="${[id:params.id]}" message="task.plural" />
+%{--    <ui:securedSubNavItem affiliation="INST_USER" orgPerm="${CustomerTypeService.PERMS_PRO}" controller="package" action="tasks" params="${[id:params.id]}" message="task.plural" />
 
-    <ui:securedSubNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" controller="package" action="documents" params="${[id:params.id]}" message="package.show.nav.docs" />
+    <ui:securedSubNavItem orgPerm="${CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC}" controller="package" action="documents" params="${[id:params.id]}" message="package.show.nav.docs" />
 
     <ui:subNavItem controller="package" action="notes" params="${[id:params.id]}" message="package.show.nav.notes" />--}%
 

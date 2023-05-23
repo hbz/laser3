@@ -1,81 +1,110 @@
-<%@ page import="de.laser.storage.RDStore; de.laser.workflow.*; de.laser.WorkflowService" %>
+<%@ page import="de.laser.Subscription; de.laser.workflow.*; de.laser.storage.RDStore;" %>
 
 <%
-    // TODO
+    Set<WfChecklist> wfTemplateList = WfChecklist.getAllTemplatesByOwnerAndObjType(contextService.getOrg(), target)
 
     String targetText = '?'
-    String targetController = '?'
-    String targetType_plural = '?'
-    
-    if (cmd == RDStore.WF_WORKFLOW_TARGET_TYPE_INSTITUTION) {
+
+    if (target instanceof de.laser.Org) {
         targetText = target.name
-        targetController = 'org'
-        targetType_plural = message(code:'org.institution.plural')
     }
-    else if (cmd == RDStore.WF_WORKFLOW_TARGET_TYPE_PROVIDER) {
-        targetText = target.name
-        targetController = 'org'
-        targetType_plural = message(code:'default.provider.label')
-    }
-    else if (cmd == RDStore.WF_WORKFLOW_TARGET_TYPE_LICENSE) {
+    else if (target instanceof de.laser.License) {
         targetText = target.reference
-        targetController = 'license'
-        targetType_plural = message(code:'license.plural')
     }
-    else if (cmd == RDStore.WF_WORKFLOW_TARGET_TYPE_SUBSCRIPTION) {
+    else if (target instanceof de.laser.Subscription) {
         targetText = target.name
-        targetController = 'subscription'
-        targetType_plural = message(code:'subscription.plural')
     }
 %>
 
-<g:set var="wfPrototypeList" value="${WfWorkflowPrototype.findAllByStateAndTargetType( RDStore.WF_WORKFLOW_STATE_ACTIVE, cmd ).findAll{ !it.hasCircularReferences() }}" />
+<ui:modal id="modalCreateWorkflow" text="Workflow für '${targetText}' erstellen">
 
-<g:if test="${wfPrototypeList}">
-    <ui:modal id="modalInstantiateWorkflow" text="Workflow für '${targetText}' erstellen">
+    <g:if test="${true}"> %{-- DEV-BLOCKER --}%
 
-        <g:form controller="${targetController}" action="workflows" id="${target.id}" method="POST" class="ui form">
-            <div class="fields two" style="margin-bottom:0;">
-            <div class="field">
-                <label for="workflowName">${message(code:'default.title.label')}</label>
-                <input id="workflowName" name="workflowName" type="text" value="Mein neuer Workflow">
+    <g:form controller="${controllerName}" action="${actionName}" id="${target.id}" method="POST" class="ui form">
+        <div class="ui grid">
+            <div class="four wide column">
+                <div id="modalTabMenu" class="ui pointing secondary vertical la-tab-with-js menu">
+                    <a data-tab="newWorkflow" class="item">Workflow neu anlegen</a>
+                    <a data-tab="copyWorkflow" class="item">Vorlage kopieren</a>
+                </div>
             </div>
-            <div class="field">
-                <label for="workflowUser">${message(code:'task.responsible.label')}</label>
-                <g:set var="responsibleList" value="${taskService.getUserDropdown(contextService.getOrg())}" />
-                <g:select id="workflowUser"
-                          name="workflowUser"
-                          from="${ responsibleList + [id:'all', display:message(code:'workflow.user.noCurrentUser')] }"
-                          optionValue="${{it.display}}"
-                          optionKey="${{it.id}}"
-                          value="all"
-                          class="ui dropdown search la-not-clearable"
-                />
-            </div>
-            </div>
-            <div class="field">
-                <label for="workflowId">${message(code:'workflow.template')}</label>
 
-                <ui:dropdownWithI18nExplanations class="ui dropdown la-not-clearable"
-                                                 name="workflowId" id="workflowId"
-                                                 noSelection="${message(code:'default.select.choose.label')}"
-                                                 from="${wfPrototypeList}"
-                                                 optionKey="id"
-                                                 optionValue="title"
-                                                 optionExpl="${{ it.description + ' (Version: ' + it.variant + ')'}}" />
+            <div class="twelve wide column">
+                <div data-tab="newWorkflow" class="ui tab active" style="padding: 0 1em;">
 
+                    <div class="field required">
+                        <g:set var="fieldName" value="${WfChecklist.KEY}_title" />
+                        <label for="${fieldName}">${message(code:'default.title.label')}</label>
+                        <input type="text" name="${fieldName}" id="${fieldName}" value="${wfcl?.title}" required="required" />
+                    </div>
+
+                    <div class="field">
+                        <g:set var="fieldName" value="${WfChecklist.KEY}_description" />
+                        <label for="${fieldName}">${message(code:'default.description.label')}</label>
+                        <input type="text" name="${fieldName}" id="${fieldName}" value="${wfcl?.description}" />
+                    </div>
+
+                    <div class="field required">
+                        <g:set var="fieldName" value="${WfChecklist.KEY}_numberOfPoints" />
+                        <label for="${fieldName}">Anzahl der Einträge (kann später geändert werden)</label>
+                        <input type="text" name="${fieldName}" id="${fieldName}" value="3" required="required" />
+                    </div>
+
+                    <input type="hidden" name="cmd" value="create:${WfChecklist.KEY}" />
+                    <input type="hidden" name="target" value="${target.class.name}:${target.id}" />
+
+                </div>
+                <div data-tab="copyWorkflow" class="ui tab" style="padding: 0 1em;">
+                    <g:if test="${wfTemplateList}">
+
+                        <div class="field">
+                            <g:set var="fieldName" value="${WfChecklist.KEY}_title" />
+                            <label for="${fieldName}">Neuer ${message(code:'default.title.label')}</label>
+                            <input type="text" name="${fieldName}" id="${fieldName}" />
+                        </div>
+
+                        <div class="field">
+                            <g:set var="fieldName" value="${WfChecklist.KEY}_description" />
+                            <label for="${fieldName}">Neue ${message(code:'default.description.label')}</label>
+                            <input type="text" name="${fieldName}" id="${fieldName}" />
+                        </div>
+
+                        <div class="field required">
+                            <label for="sourceId">${message(code:'workflow.template')}</label>
+
+                            <ui:dropdownWithI18nExplanations class="ui dropdown la-not-clearable"
+                                                             name="sourceId" id="sourceId"
+                                                             from="${wfTemplateList}"
+                                                             value="${wfTemplateList.first().id}"
+                                                             optionKey="id"
+                                                             optionValue="title"
+                                                             optionExpl="${{ (it.description ?: '') + ' (' + it.getSequence().size() + ' Aufgaben)'}}" />
+                        </div>
+
+                        <input type="hidden" name="cmd" value="instantiate:${WfChecklist.KEY}" />
+                        <input type="hidden" name="target" value="${target.class.name}:${target.id}" />
+                    </g:if>
+                    <g:else>
+                        <p>Es wurden (noch) keine Vorlagen gefunden.</p>
+                    </g:else>
+                </div>
             </div>
-            <input type="hidden" name="cmd" value="instantiate:${WfWorkflowPrototype.KEY}" />
-            <input type="hidden" name="target" value="${target.class.name}:${target.id}" />
-        </g:form>
+        </div>
+    </g:form>
+    </g:if>
+    <g:else>
+        <p>Derzeit sind keine Workflows verfügar.</p>
+    </g:else>
+</ui:modal>
 
-    </ui:modal>
-</g:if>
-<g:else>
-    <ui:modal id="modalInstantiateWorkflow" text="Workflow für '${targetText}' erstellen" hideSubmitButton="true">
-        <p>
-            ${message(code:'workflow.info.noActivePrototypes', args: [targetType_plural])}
-        </p>
-        %{--<ui:msg class="info" text="${message(code:'workflow.info.noActivePrototypes', args: [targetType_plural])}" noClose="true" />--}%
-    </ui:modal>
-</g:else>
+<laser:script file="${this.getGroovyPageFileName()}">
+    $('#modalTabMenu .item').tab({ onVisible : function () {
+        $('#modalCreateWorkflow .tab[data-tab=newWorkflow] input').addClass ('disabled').attr ('disabled', 'disabled')
+        $('#modalCreateWorkflow .tab[data-tab=copyWorkflow] input').addClass ('disabled').attr ('disabled', 'disabled')
+        $(this).find ('input').removeClass ('disabled').removeAttr ('disabled')
+    } })
+
+    JSPC.callbacks.modal.onShow.modalCreateWorkflow = function (trigger) {
+        $('#modalTabMenu .item').tab('change tab', 'copyWorkflow').tab('change tab', 'newWorkflow')
+    }
+</laser:script>

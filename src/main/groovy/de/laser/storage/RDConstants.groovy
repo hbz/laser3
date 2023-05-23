@@ -6,8 +6,6 @@ import groovy.transform.CompileStatic
 class RDConstants {
 
     public static final String ACCESS_CHOICE_REMOTE   = 'access.choice.remote'
-    public static final String ACCESS_METHOD          = 'access.method'
-    public static final String ACCESS_METHOD_IP       = 'access.method.ip'
     public static final String ACCESS_POINT_TYPE      = 'access.point.type'
     public static final String ADDRESS_TYPE           = 'address.type'
     public static final String ARCHIVING_AGENCY       = 'archiving.agency'
@@ -55,7 +53,7 @@ class RDConstants {
 
     public static final String GENDER                 = 'gender'
 
-    public static final String IE_ACCEPT_STATUS       = 'ie.accept.status'
+
     public static final String IE_ACCESS_STATUS       = 'ie.access.status'
     public static final String IE_MEDIUM              = 'ie.medium'
     public static final String ILL_CODE               = 'ill.code'
@@ -64,6 +62,9 @@ class RDConstants {
     public static final String IP_AUTHENTICATION      = 'ip.authentication'
     public static final String IPV4_ADDRESS_FORMAT    = 'ipv4.address.format'
     public static final String IPV6_ADDRESS_FORMAT    = 'ipv6.address.format'
+
+    public static final String MAIL_STATUS            = 'mail.status'
+    public static final String MAIL_TYPE              = 'mail.type'
 
     public static final String LANGUAGE               = 'language'
     public static final String LANGUAGE_ISO           = 'language.iso'
@@ -75,28 +76,28 @@ class RDConstants {
     public static final String LICENSE_TYPE           = 'license.type'
     public static final String LINK_TYPE              = 'link.type'
 
-    public static final String LICENSE_ARC_ARCHIVAL_COPY_CONTENT  = "license.arc.archival.copy.content"
-    public static final String LICENSE_ARC_ARCHIVAL_COPY_COST     = "license.arc.archival.copy.cost"
-    public static final String LICENSE_ARC_ARCHIVAL_COPY_TIME     = "license.arc.archival.copy.time"
-    public static final String LICENSE_ARC_ARCHIVAL_COPY_TRANSMISSION_FORMAT  = "license.arc.archival.copy.transmission.format"
-    public static final String LICENSE_ARC_AUTHORIZED             = "license.arc.authorized"
-    public static final String LICENSE_ARC_HOSTING_RESTRICTION    = "license.arc.hosting.restriction"
-    public static final String LICENSE_ARC_HOSTING_SOLUTION       = "license.arc.hosting.solution"
-    public static final String LICENSE_ARC_HOSTING_TIME           = "license.arc.hosting.time"
-    public static final String LICENSE_ARC_PAYMENT_NOTE           = "license.arc.payment.note"
-    public static final String LICENSE_ARC_TITLE_TRANSFER_REGULATION          = "license.arc.title.transfer.regulation"
-    public static final String LICENSE_OA_CORRESPONDING_AUTHOR_IDENTIFICATION = "license.oa.corresponding.author.identification"
-    public static final String LICENSE_OA_EARC_VERSION            = "license.oa.earc.version"
-    public static final String LICENSE_OA_LICENSE_TO_PUBLISH      = "license.oa.license.to.publish"
-    public static final String LICENSE_OA_RECEIVING_MODALITIES    = "license.oa.receiving.modalities"
-    public static final String LICENSE_OA_REPOSITORY              = "license.oa.repository"
-    public static final String LICENSE_OA_TYPE                    = "license.oa.type"
-    public static final String LICENSE_REMOTE_ACCESS2             = "license.remote.access2"
-    public static final String LICENSE_STATISTICS_DELIVERY        = "license.statistics.delivery"
-    public static final String LICENSE_STATISTICS_FORMAT          = "license.statistics.format"
-    public static final String LICENSE_STATISTICS_FREQUENCY       = "license.statistics.frequency"
-    public static final String LICENSE_STATISTICS_STANDARDS       = "license.statistics.standards"
-    public static final String LICENSE_STATISTICS_USER_CREDS      = "license.statistics.user.creds"
+    public static final String LICENSE_ARC_ARCHIVAL_COPY_CONTENT                = 'license.arc.archival.copy.content'
+    public static final String LICENSE_ARC_ARCHIVAL_COPY_COST                   = 'license.arc.archival.copy.cost'
+    public static final String LICENSE_ARC_ARCHIVAL_COPY_TIME                   = 'license.arc.archival.copy.time'
+    public static final String LICENSE_ARC_ARCHIVAL_COPY_TRANSMISSION_FORMAT    = 'license.arc.archival.copy.transmission.format'
+    public static final String LICENSE_ARC_AUTHORIZED                           = 'license.arc.authorized'
+    public static final String LICENSE_ARC_HOSTING_RESTRICTION                  = 'license.arc.hosting.restriction'
+    public static final String LICENSE_ARC_HOSTING_SOLUTION                     = 'license.arc.hosting.solution'
+    public static final String LICENSE_ARC_HOSTING_TIME                         = 'license.arc.hosting.time'
+    public static final String LICENSE_ARC_PAYMENT_NOTE                         = 'license.arc.payment.note'
+    public static final String LICENSE_ARC_TITLE_TRANSFER_REGULATION            = 'license.arc.title.transfer.regulation'
+    public static final String LICENSE_OA_CORRESPONDING_AUTHOR_IDENTIFICATION   = 'license.oa.corresponding.author.identification'
+    public static final String LICENSE_OA_EARC_VERSION            = 'license.oa.earc.version'
+    public static final String LICENSE_OA_LICENSE_TO_PUBLISH      = 'license.oa.license.to.publish'
+    public static final String LICENSE_OA_RECEIVING_MODALITIES    = 'license.oa.receiving.modalities'
+    public static final String LICENSE_OA_REPOSITORY              = 'license.oa.repository'
+    public static final String LICENSE_OA_TYPE                    = 'license.oa.type'
+    public static final String LICENSE_REMOTE_ACCESS2             = 'license.remote.access2'
+    public static final String LICENSE_STATISTICS_DELIVERY        = 'license.statistics.delivery'
+    public static final String LICENSE_STATISTICS_FORMAT          = 'license.statistics.format'
+    public static final String LICENSE_STATISTICS_FREQUENCY       = 'license.statistics.frequency'
+    public static final String LICENSE_STATISTICS_STANDARDS       = 'license.statistics.standards'
+    public static final String LICENSE_STATISTICS_USER_CREDS      = 'license.statistics.user.creds'
 
     public static final String MAIL_TEMPLATE_LANGUAGE = 'mail.template.language'
     public static final String MAIL_TEMPLATE_TYPE     = 'mail.template.type'
@@ -122,8 +123,8 @@ class RDConstants {
     public static final String PERSON_FUNCTION                = 'person.function'
     public static final String PERSON_POSITION                = 'person.position'
     public static final String PERSON_RESPONSIBILITY          = 'person.responsibility'
-    public static final String PLATFORM_STATISTICS_FORMAT     = "platform.statistics.format"
-    public static final String PLATFORM_STATISTICS_FREQUENCY  = "platform.statistics.frequency"
+    public static final String PLATFORM_STATISTICS_FORMAT     = 'platform.statistics.format'
+    public static final String PLATFORM_STATISTICS_FREQUENCY  = 'platform.statistics.frequency'
     public static final String PLATFORM_STATUS                = 'platform.status'
 
     public static final String REGIONS_DE             = 'regions.de'
@@ -138,14 +139,16 @@ class RDConstants {
 
     public static final String SEMESTER               = 'semester'
     public static final String SHARE_CONFIGURATION    = 'share.configuration'
-    public static final String SIM_USER_NUMBER        = 'sim.user.number'
-    public static final String SIS_BUSINESS_MODEL_BASE = "sis.business.model.base"
-    public static final String SIS_REJECTION_REASON   = "sis.rejection.reason"
-    public static final String SIS_USER_GROUP_BASE    = "sis.user.group.base"
-    public static final String SIS_USER_GROUP_ATTR1   = "sis.user.group.attr1"
-    public static final String SIS_USER_GROUP_ATTR2   = "sis.user.group.attr2"
+    public static final String SHIBBOLETH_FEDERATION  = 'shibboleth.federation'
+    public static final String SIM_USER_NUMBER          = 'sim.user.number'
+    public static final String SIS_BUSINESS_MODEL_BASE  = 'sis.business.model.base'
+    public static final String SIS_REJECTION_REASON     = 'sis.rejection.reason'
+    public static final String SIS_USER_GROUP_BASE      = 'sis.user.group.base'
+    public static final String SIS_USER_GROUP_ATTR1     = 'sis.user.group.attr1'
+    public static final String SIS_USER_GROUP_ATTR2     = 'sis.user.group.attr2'
     public static final String SUBJECT_GROUP          = 'subjectgroup'
     public static final String SUBSCRIPTION_FORM      = 'subscription.form'
+    public static final String SUBSCRIPTION_HOLDING   = 'subscription.holding'
     public static final String SUBSCRIPTION_RESOURCE  = 'subscription.resource'
     public static final String SUBSCRIPTION_STATUS    = 'subscription.status'
     public static final String SUBSCRIPTION_TYPE      = 'subscription.type'

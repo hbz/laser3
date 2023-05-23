@@ -219,9 +219,9 @@
 
                 packageInfos.packageInstance = subscriptionPackage.pkg
 
-                Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/find?uuid=${subscriptionPackage.pkg.gokbId}")
+                Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/searchApi?uuid=${subscriptionPackage.pkg.gokbId}")
                 if (queryResult.warning) {
-                    List records = queryResult.warning.records
+                    List records = queryResult.warning.result
                     packageInfos.packageInstanceRecord = records ? records[0] : [:]
                 }
                 packages << packageInfos
@@ -276,7 +276,7 @@
                                     </dd>
                                 </dl>
                                 <dl>
-                                    <dt>${message(code: 'package.source.label')}</dt>
+                                    <dt>${message(code: 'package.source.automaticUpdates')}</dt>
                                     <dd>
                                         <g:if test="${pkgInfo.packageInstanceRecord.source?.automaticUpdates}">
                                             <g:message code="package.index.result.automaticUpdates"/>
@@ -347,7 +347,7 @@
                                 </dl>
                                 <dl>
                                     <dt>${message(code: 'package.openAccess.label')}</dt>
-                                    <dd>${pkgInfo.packageInstanceRecord.openAccess ? RefdataValue.getByValueAndCategory(pkgInfo.packageInstanceRecord.openAccess, RDConstants.LICENSE_OA_TYPE)?.getI10n("value") : RefdataValue.getByValueAndCategory('Empty', RDConstants.LICENSE_OA_TYPE).getI10n("value")}</dd>
+                                    <dd>${pkgInfo.packageInstanceRecord.openAccess ? RefdataValue.getByValueAndCategory(pkgInfo.packageInstanceRecord.openAccess, RDConstants.LICENSE_OA_TYPE)?.getI10n("value") : RDStore.LICENSE_OA_TYPE_EMPTY.getI10n("value")}</dd>
                                 </dl>
                                 <dl>
                                     <dt>${message(code: 'package.ddc.label')}</dt>

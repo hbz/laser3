@@ -23,8 +23,6 @@
     <uiSurvey:status object="${surveyInfo}"/>
 </ui:h1HeaderWithIcon>
 
-
-
 <laser:render template="nav"/>
 
 <ui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
@@ -73,7 +71,8 @@
 
                 <laser:render template="evaluationParticipantsView" model="[showCheckbox: true,
                                                                         showOpenParticipantsAgainButtons: true,
-                                                                        processAction: 'processOpenParticipantsAgain',
+                                                                        processAction: 'createOwnMail',
+                                                                        processController: 'mail',
                                                                         tmplConfigShow   : ['lineNumber', 'name', (surveyConfig.pickAndChoose ? 'finishedDate' : ''), (surveyConfig.pickAndChoose ? 'surveyTitlesCount' : ''), 'surveyProperties', 'commentOnlyForOwner', 'reminderMailDate']]"/>
 
         </ui:greySegment>

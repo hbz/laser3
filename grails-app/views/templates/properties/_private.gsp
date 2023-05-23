@@ -3,12 +3,12 @@
 %{-- on head of container page, and on window load execute  --}%
 %{-- c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#private-property-wrapper-xxx"); --}%
 
-<%@ page import="de.laser.License; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; java.net.URL" %>
+<%@ page import="de.laser.CustomerTypeService; de.laser.License; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; java.net.URL" %>
 <laser:serviceInjection />
 
 
-<%-- OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')} --%>
-<g:set var="overwriteEditable" value="${editable || accessService.checkPermAffiliationX('ORG_INST','INST_EDITOR','ROLE_ADMIN')}" />
+<%-- OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${userService.checkAffiliationAndCtxOrg(user, contextService.getOrg(), 'INST_EDITOR')} --%>
+<g:set var="overwriteEditable" value="${editable || accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_INST_PRO )}" />
 
 <g:if test="${newProp}">
     <ui:errors bean="${newProp}" />
@@ -133,16 +133,23 @@
                                       class="ui properties form"
                                       data-update="${propertyWrapper}"
                                       data-done="c3po.initProperties('${createLink(controller:'ajaxJson', action:'lookup')}', '#${propertyWrapper}', ${tenant?.id})">
+
                         <!-- The actionName? and controllerName? need for PDF generation! In PDF generation actionName and controllerName not set! -->
                         <g:if test="${!(actionName?.contains('survey') || controllerName?.contains('survey'))}">
-                            <input type="hidden" name="propIdent"  data-desc="${prop_desc}" class="customPropSelect"/>
+                            <div class="two fields" style="margin-bottom:0">
+                                <div class="field" style="margin-bottom:0">
+                                    <select class="ui search selection dropdown remotePropertySearch" name="propIdent" data-desc="${prop_desc}"></select>
+                                </div>
+                                <div class="field" style="margin-bottom:0">
+                                    <input type="submit" value="${message(code:'default.button.add.label')}" class="ui button js-wait-wheel"/>
+                                </div>
+                            </div>
+
                             <input type="hidden" name="ownerId"    value="${ownobj?.id}"/>
                             <input type="hidden" name="tenantId"   value="${tenant?.id}"/>
                             <input type="hidden" name="editable"   value="${editable}"/>
                             <input type="hidden" name="ownerClass" value="${ownobj?.class?.name}"/>
                             <input type="hidden" name="withoutRender" value="${withoutRender}"/>
-
-                            <input type="submit" value="${message(code:'default.button.add.label')}" class="ui button js-wait-wheel"/>
                         </g:if>
                     </ui:remoteForm>
 

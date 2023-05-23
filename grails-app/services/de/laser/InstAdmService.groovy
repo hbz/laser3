@@ -2,13 +2,10 @@ package de.laser
 
 import de.laser.auth.Role
 import de.laser.auth.User
-import de.laser.auth.UserOrg
-import de.laser.utils.AppUtils
-import de.laser.config.ConfigMapper
+import de.laser.auth.UserOrgRole
 import de.laser.storage.RDStore
 import de.laser.utils.LocaleUtils
 import grails.gorm.transactions.Transactional
-import grails.plugins.mail.MailService
 import groovy.util.logging.Slf4j
 import org.springframework.context.MessageSource
 
@@ -21,8 +18,8 @@ class InstAdmService {
 
     AccessService accessService
     ContextService contextService
-    MailService mailService
     MessageSource messageSource
+    UserService userService
 
     /**
      * Checks if the given institution has an administrator
@@ -30,11 +27,9 @@ class InstAdmService {
      * @return true if there is at least one user affiliated as INST_ADM, false otherwise
      */
     boolean hasInstAdmin(Org org) {
-        //selecting IDs is much more performant than whole objects
         List<Long> admins = User.executeQuery("select u.id from User u join u.affiliations uo join uo.formalRole role where " +
                 "uo.org = :org and role.authority = :role and u.enabled = true",
-                [org: org,
-                 role: 'INST_ADM'])
+                [org: org, role: 'INST_ADM'])
         admins.size() > 0
     }
 
@@ -46,7 +41,7 @@ class InstAdmService {
      * @return true if the user has an INST_ADM grant to either the consortium or one of the members, false otherwise
      */
     boolean hasInstAdmPivileges(User user, Org org, List<RefdataValue> types) {
-        boolean result = accessService.checkMinUserOrgRole(user, org, 'INST_ADM')
+        boolean result = userService.checkAffiliationAndCtxOrg(user, org, 'INST_ADM')
 
         List<Org> topOrgs = Org.executeQuery(
                 'select c.toOrg from Combo c where c.fromOrg = :org and c.type in (:types)', [
@@ -54,7 +49,7 @@ class InstAdmService {
             ]
         )
         topOrgs.each{ top ->
-            if (accessService.checkMinUserOrgRole(user, top, 'INST_ADM')) {
+            if (userService.checkAffiliationAndCtxOrg(user, top, 'INST_ADM')) {
                 result = true
             }
         }
@@ -85,7 +80,7 @@ class InstAdmService {
             return result
         }
         else {
-            return accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_ADM")
+            return accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_ADM')
         }
     }
 
@@ -108,25 +103,10 @@ class InstAdmService {
      * @return true if the given user is the last admin of the given institution
      */
     boolean isUserLastInstAdminForOrg(User user, Org org){
-
-        List<UserOrg> userOrgs = UserOrg.findAllByOrgAndFormalRole(
-                org,
-                Role.findByAuthority("INST_ADM")
-        )
+        List<UserOrgRole> userOrgs = UserOrgRole.findAllByOrgAndFormalRole(org, Role.findByAuthority('INST_ADM'))
 
         return (userOrgs.size() == 1 && userOrgs[0].user == user)
     }
-
-	@Deprecated
-	// moved here from AccessService
-	boolean isUserEditableForInstAdm(User user, User editor, Org org) {
-
-		boolean roleAdmin = editor.hasRole('ROLE_ADMIN')
-		boolean instAdmin = editor.hasAffiliation('INST_ADM') // check @ contextService.getOrg()
-		boolean orgMatch  = accessService.checkUserIsMember(user, contextService.getOrg())
-
-		roleAdmin || (instAdmin && orgMatch)
-	}
 
     /**
      * Links the given user to the given institution with the given role
@@ -139,10 +119,10 @@ class InstAdmService {
 
         try {
             Locale loc = LocaleUtils.getCurrentLocale()
-            UserOrg check = UserOrg.findByOrgAndUserAndFormalRole(org, user, formalRole)
+            UserOrgRole check = UserOrgRole.findByOrgAndUserAndFormalRole(org, user, formalRole)
 
             if (formalRole.roleType == 'user') {
-                check = UserOrg.findByOrgAndUserAndFormalRoleInList(org, user, Role.findAllByRoleType('user'))
+                check = UserOrgRole.findByOrgAndUserAndFormalRoleInList(org, user, Role.findAllByRoleType('user'))
             }
 
             if (check) {
@@ -154,10 +134,7 @@ class InstAdmService {
             }
             else {
                 log.debug("Create new user_org entry....");
-                UserOrg uo = new UserOrg(
-                        org: org,
-                        user: user,
-                        formalRole: formalRole)
+                UserOrgRole uo = new UserOrgRole( org: org, user: user, formalRole: formalRole )
 
                 if (uo.save()) {
                     flash?.message = messageSource.getMessage('user.affiliation.request.success', null, loc)
@@ -169,37 +146,6 @@ class InstAdmService {
         }
         catch (Exception e) {
             flash?.error = messageSource.getMessage('user.affiliation.request.failed', null, loc)
-        }
-    }
-
-    /**
-     * Sends a mail to the given user
-     * @param user the user to whom the mail should be sent
-     * @param subj the subject of the mail
-     * @param view the template of the mail body
-     * @param model the parameters for the mail template
-     */
-    void sendMail(User user, String subj, String view, Map model) {
-
-        if (AppUtils.getCurrentServer() == AppUtils.LOCAL) {
-            log.info "--- instAdmService.sendMail() --- IGNORED SENDING MAIL because of SERVER_LOCAL ---"
-            return
-        }
-
-        model.serverURL = ConfigMapper.getGrailsServerURL()
-
-        try {
-
-            mailService.sendMail {
-                to      user.email
-                from    ConfigMapper.getNotificationsEmailFrom()
-                replyTo ConfigMapper.getNotificationsEmailReplyTo()
-                subject ConfigMapper.getLaserSystemId() + ' - ' + subj
-                body    view: view, model: model
-            }
-        }
-        catch (Exception e) {
-            log.error "Unable to perform email due to exception ${e.message}"
         }
     }
 }

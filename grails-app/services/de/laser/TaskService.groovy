@@ -317,7 +317,7 @@ class TaskService {
      */
     List<User> getUserDropdown(Org org) { // modal_create
         List<User> validResponsibleUsers   = org ? User.executeQuery(
-                "select u from User as u where exists (select uo from UserOrg as uo where uo.user = u and uo.org = :org) order by lower(u.display)",
+                "select u from User as u where exists (select uo from UserOrgRole as uo where uo.user = u and uo.org = :org) order by lower(u.display)",
                 [org: org]) : []
 
         validResponsibleUsers
@@ -331,13 +331,13 @@ class TaskService {
     private Set<Map> _getOrgsDropdown(Org contextOrg) {
         Set validOrgs = [], validOrgsDropdown = []
         if (contextOrg) {
-            boolean isInstitution = (contextOrg.getCustomerType() in ['ORG_BASIC_MEMBER','ORG_INST'])
-            boolean isConsortium  = (contextOrg.getCustomerType() == 'ORG_CONSORTIUM')
+            boolean isInstitution = (contextOrg.isCustomerType_Inst())
+            boolean isConsortium  = (contextOrg.isCustomerType_Consortium())
 
             GrailsParameterMap params = new GrailsParameterMap(WebUtils.retrieveGrailsWebRequest().getCurrentRequest())
-            params.sort      = isInstitution ? " LOWER(o.name), LOWER(o.shortname)" : " LOWER(o.sortname), LOWER(o.name)"
+            params.sort      = " LOWER(o.sortname), LOWER(o.name)"
             //def fsq          = filterService.getOrgQuery(params)
-            //validOrgs = Org.executeQuery('select o.id, o.name, o.shortname, o.sortname from Org o where (o.status is null or o.status != :orgStatus) order by  LOWER(o.sortname), LOWER(o.name) asc', fsq.queryParams)
+            //validOrgs = Org.executeQuery('select o.id, o.name, o.sortname from Org o where (o.status is null or o.status != :orgStatus) order by  LOWER(o.sortname), LOWER(o.name) asc', fsq.queryParams)
 
             String comboQuery = 'select new map(o.id as id, o.name as name, o.sortname as sortname) from Org o join o.outgoingCombos c where c.toOrg = :toOrg and c.type = :type order by '+params.sort
             if (isConsortium){
@@ -369,7 +369,7 @@ class TaskService {
         List validSubscriptionsWithInstanceOf = []
         List validSubscriptionsWithoutInstanceOf = []
         List<Map> validSubscriptionsDropdown = []
-        boolean isConsortium = contextOrg.getCustomerType()  == 'ORG_CONSORTIUM'
+        boolean isConsortium = contextOrg.isCustomerType_Consortium()
 
         if (contextOrg) {
             if (isConsortium) {
@@ -466,7 +466,7 @@ class TaskService {
             String licensesQueryOhneInstanceOf =
                     'SELECT lic.id, lic.reference, o.roleType, lic.startDate, lic.endDate from License lic left join lic.orgRelations o WHERE  o.org = :lic_org AND o.roleType.id IN (:org_roles) and lic.instanceOf is null order by lic.sortableReference asc'
 
-            if(accessService.checkPerm("ORG_CONSORTIUM")){
+            if (accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)){
                 Map<String, Object> qry_params_for_lic = [
                     lic_org:    contextOrg,
                     org_roles:  [
@@ -480,7 +480,7 @@ class TaskService {
                 }
 
             }
-            else if (accessService.checkPerm("ORG_INST")) {
+            else if (accessService.ctxPerm(CustomerTypeService.ORG_INST_PRO)) {
                 Map<String, Object> qry_params_for_lic = [
                     lic_org:    contextOrg,
                     org_roles:  [

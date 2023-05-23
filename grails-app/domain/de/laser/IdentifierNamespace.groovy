@@ -27,17 +27,23 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
     public static final NS_TITLE        = TitleInstance.class.name
 
     //organisation identifier namespaces
-    public static final String ISIL        = "ISIL"
-    public static final String WIBID       = "wibid"
-    public static final String GND_ORG_NR  = "gnd_org_nr"
-    public static final String EZB_ORG_ID  = "ezb_org_id"
-    public static final String GRID_ID     = "GRID ID"
+    public static final String CROSSREF_FUNDER_ID = "crossref funder id"
+    public static final String DBPEDIA     = "dbpedia"
     public static final String DBS_ID      = "DBS-ID"
     public static final String DBIS_ORG_ID = "dbis_org_id"
-    public static final String VAT         = "VAT"
+    public static final String EZB_ORG_ID  = "ezb_org_id"
+    public static final String GND_ORG_NR  = "gnd_org_nr"
+    public static final String ISIL        = "ISIL"
+    public static final String ISNI        = "isni"
+    public static final String ROR_ID      = "ROR ID"
     public static final String LEIT_ID     = "Leitweg-ID"
     public static final String LEIT_KR     = "Leitkriterium (intern)"
     public static final String LEIBNIZ_ID  = "leibniz"
+    public static final String LOC_ID      = "loc id"
+    public static final String VAT         = "VAT"
+    public static final String VIAF        = "viaf"
+    public static final String WIBID       = "wibid"
+    public static final String WIKIDATA_ID = "wikidata id"
 
     //title identifier namespaces
     public static final String ZDB        = 'zdb'
@@ -67,13 +73,24 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
             WIBID,
             GND_ORG_NR,
             EZB_ORG_ID,
-            GRID_ID,
+            ROR_ID,
             DBS_ID,
             DBIS_ORG_ID,
             VAT,
             LEIT_ID,
             LEIT_KR,
             LEIBNIZ_ID
+    ]
+
+    public static final List<String> CORE_PROVIDER_NS = [
+            CROSSREF_FUNDER_ID,
+            DBPEDIA,
+            GND_ORG_NR,
+            ISNI,
+            LOC_ID,
+            ROR_ID,
+            VIAF,
+            WIKIDATA_ID
     ]
 
     /**

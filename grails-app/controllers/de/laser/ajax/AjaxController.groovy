@@ -10,7 +10,9 @@ import de.laser.base.AbstractI10n
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.cache.EhcacheWrapper
 import de.laser.cache.SessionCacheWrapper
+import de.laser.ctrl.SubscriptionControllerService
 import de.laser.helper.*
+import de.laser.interfaces.CalculatedType
 import de.laser.interfaces.ShareSupport
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
@@ -27,6 +29,7 @@ import de.laser.utils.SwissKnife
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
+import grails.web.servlet.mvc.GrailsParameterMap
 import org.apache.http.HttpStatus
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
@@ -37,6 +40,7 @@ import de.laser.exceptions.ChangeAcceptException
 import javax.servlet.ServletOutputStream
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
+import java.time.Year
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
@@ -56,6 +60,8 @@ class AjaxController {
     FilterService filterService
     PendingChangeService pendingChangeService
     PropertyService propertyService
+    SubscriptionControllerService subscriptionControllerService
+    UserService userService
 
     def refdata_config = [
     "ContentProvider" : [
@@ -292,9 +298,8 @@ class AjaxController {
      * @return a {@link List} of {@link Map}s of structure [value: oid, text: text] to be used in dropdowns; the list may be returned purely or as JSON
      */
     @Secured(['ROLE_USER'])
-    def select2RefdataSearch() {
-
-        log.debug("select2RefdataSearch params: ${params}")
+    def remoteRefdataSearch() {
+        log.debug("remoteRefdataSearch params: ${params}")
     
         List result = []
         Map<String, Object> config = refdata_config.get(params.id?.toString()) //we call toString in case we got a GString
@@ -343,13 +348,13 @@ class AjaxController {
               log.debug('ignored value "' + it + '" from result because of constraint: '+ params.constraint)
           }
           //value is correct incorrectly translated!
-          if (it.value.equalsIgnoreCase('local subscription') && accessService.checkPerm("ORG_CONSORTIUM") && params.constraint?.contains('removeValue_localSubscription')) {
+          if (it.value.equalsIgnoreCase('local subscription') && accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && params.constraint?.contains('removeValue_localSubscription')) {
               log.debug('ignored value "' + it + '" from result because of constraint: '+ params.constraint)
           }
           // default ..
           else {
               if (it instanceof AbstractI10n) {
-                  result.add([value: "${rowobj.class.name}:${rowobj.id}", text: "${it.getI10n(config.cols[0])}"])
+                  result.add([value: "${rowobj.class.name}:${rowobj.id}", text: "${it.getI10n(config.cols[0])}", order: it.order])
               }
               else {
                   def objTest = rowobj[config.cols[0]]
@@ -366,18 +371,14 @@ class AjaxController {
       log.error("No config for refdata search ${params.id}");
     }
 
-      if (result && defaultOrder) {
+        if(params.id == 'Currency') {
+            result.sort{ x,y -> x.order.compareTo y.order  }
+        }
+      else if (result && defaultOrder) {
           result.sort{ x,y -> x.text.compareToIgnoreCase y.text  }
       }
 
-        withFormat {
-            html {
-                result
-            }
-            json {
-                render result as JSON
-            }
-        }
+    render result as JSON
     }
 
     /**
@@ -442,37 +443,20 @@ class AjaxController {
 		  Map<String, String> newChecked = checked ?: [:]
           if(params.referer == 'renewEntitlementsWithSurvey'){
 
-              Subscription baseSub = Subscription.get(params.baseSubID)
+              /*Subscription baseSub = Subscription.get(params.baseSubID)
               Subscription newSub = Subscription.get(params.newSubID)
               Subscription previousSubscription = newSub._getCalculatedPreviousForSurvey()
 
               List<Long> sourceTipps
-
-              Map query2 = filterService.getIssueEntitlementQuery(params+[ieAcceptStatusNotFixed: true], newSub)
+              GrailsParameterMap parameterMap = params.clone()
+              Map query2 = filterService.getIssueEntitlementQuery(parameterMap+[titleGroup: params.titleGroup], newSub)
               List<Long> selectedIETipps = IssueEntitlement.executeQuery("select ie.tipp.id " + query2.query, query2.queryParams)
 
-              Map query3 = filterService.getIssueEntitlementQuery(params+[ieAcceptStatusFixed: true], newSub)
+              Map query3 = filterService.getIssueEntitlementQuery(params, newSub)
               List<Long> targetIETipps = IssueEntitlement.executeQuery("select ie.tipp.id " + query3.query, query3.queryParams)
 
               List<IssueEntitlement> sourceIEs
 
-              if(params.tab == 'currentIEs') {
-                  Map query = filterService.getIssueEntitlementQuery(params+[ieAcceptStatusFixed: true], previousSubscription)
-                  List<IssueEntitlement> previousTipps = previousSubscription ? IssueEntitlement.executeQuery("select ie.tipp.id " + query.query, query.queryParams) : []
-                  sourceIEs = previousTipps ? IssueEntitlement.findAllByTippInListAndSubscriptionAndStatusNotEqual(TitleInstancePackagePlatform.findAllByIdInList(previousTipps), previousSubscription, RDStore.TIPP_STATUS_REMOVED) : []
-                  sourceIEs = sourceIEs + (sourceTipps ? IssueEntitlement.findAllByTippInListAndSubscriptionAndStatusNotEqual(TitleInstancePackagePlatform.findAllByIdInList(targetIETipps), newSub, RDStore.TIPP_STATUS_REMOVED) : [])
-
-              }
-
-              //TODO @Moe please verify
-              if(params.tab in ['allIEs', 'toBeSelectedIEs']) {
-                  Map query = filterService.getIssueEntitlementQuery(params, baseSub)
-                  List<Long> allIETipps = IssueEntitlement.executeQuery("select ie.tipp.id " + query.query, query.queryParams)
-                  sourceTipps = allIETipps
-                  sourceTipps = sourceTipps.minus(selectedIETipps)
-                  sourceTipps = sourceTipps.minus(targetIETipps)
-                  sourceIEs = sourceTipps ? IssueEntitlement.findAllByTippInListAndSubscriptionAndStatus(TitleInstancePackagePlatform.findAllByIdInList(sourceTipps), baseSub, RDStore.TIPP_STATUS_CURRENT) : []
-              }
               if(params.tab == 'selectedIEs') {
                   sourceTipps = selectedIETipps
                   sourceTipps = sourceTipps.minus(targetIETipps)
@@ -481,7 +465,7 @@ class AjaxController {
 
               sourceIEs.each { IssueEntitlement ie ->
                   newChecked[ie.id.toString()] = params.checked == 'true' ? 'checked' : null
-              }
+              }*/
 
           }
           else {
@@ -1525,7 +1509,7 @@ class AjaxController {
         result.institution = contextService.getOrg()
         flash.error = ''
 
-        if (! accessService.checkUserIsMember(result.user, result.institution)) {
+        if (! (result.user as User).isMemberOf(result.institution as Org)) {
             flash.error = "You do not have permission to access ${contextService.getOrg().name} pages. Please request access on the profile page"
             response.sendError(HttpStatus.SC_FORBIDDEN)
             return
@@ -1545,8 +1529,8 @@ class AjaxController {
             else            flash.error += message(code:'dashboardDueDate.err.toShow.doesNotExist')
         }
 
-        result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
+        result.is_inst_admin = userService.checkAffiliationAndCtxOrg(result.user, result.institution, 'INST_ADM')
+        result.editable = userService.checkAffiliationAndCtxOrg(result.user, result.institution, 'INST_EDITOR')
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
         result.dashboardDueDatesOffset = result.offset
@@ -1587,7 +1571,7 @@ class AjaxController {
         result.institution = contextService.getOrg()
         flash.error = ''
 
-        if (! accessService.checkUserIsMember(result.user, result.institution)) {
+        if (! (result.user as User).isMemberOf(result.institution as Org)) {
             flash.error = "You do not have permission to access ${contextService.getOrg().name} pages. Please request access on the profile page"
             response.sendError(HttpStatus.SC_FORBIDDEN)
             return
@@ -1614,8 +1598,8 @@ class AjaxController {
             else          flash.error += message(code:'dashboardDueDate.err.toSetUndone.doesNotExist')
         }
 
-        result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
-        result.editable = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
+        result.is_inst_admin = userService.checkAffiliationAndCtxOrg(result.user, result.institution, 'INST_ADM')
+        result.editable = userService.checkAffiliationAndCtxOrg(result.user, result.institution, 'INST_EDITOR')
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
         result.dashboardDueDatesOffset = result.offset
@@ -1907,6 +1891,30 @@ class AjaxController {
                             ReaderNumber.executeUpdate('update ReaderNumber rn set rn.dateGroupNote = :note where rn.org = :org and rn.dueDate = :dueDate',[org: target_object.org, dueDate: target_object.dueDate, note: params.value])
                         result = params.value
                         break
+                    case 'year':
+                        def backup = target_object."${params.name}"
+
+                        try {
+                            if (params.value && params.value.size() > 0) {
+                                // parse new year
+                                Year parsed_year = Year.parse(params.value)
+                                target_object."${params.name}" = parsed_year
+                            } else {
+                                // delete existing year
+                                target_object."${params.name}" = null
+                            }
+                            target_object.save(failOnError: true)
+                        }
+                        catch (Exception e) {
+                            target_object."${params.name}" = backup
+                            log.error(e.toString())
+                        }
+                        finally {
+                            if (target_object."${params.name}") {
+                                result = target_object."${params.name}"
+                            }
+                        }
+                        break
                     default:
                         Map binding_properties = [:]
 
@@ -2011,9 +2019,9 @@ class AjaxController {
     /**
      * Deletes the given task
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR")
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR'])
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')
     })
     def deleteTask() {
 
@@ -2071,7 +2079,7 @@ class AjaxController {
         result.institution = contextService.getOrg()
         flash.error = ''
 
-        if (! accessService.checkUserIsMember(result.user, result.institution)) {
+        if (! (result.user as User).isMemberOf(result.institution as Org)) {
             flash.error = "You do not have permission to access ${contextService.getOrg().name} pages. Please request access on the profile page"
             response.sendError(HttpStatus.SC_FORBIDDEN)
             return
@@ -2096,10 +2104,27 @@ class AjaxController {
         result.acceptedOffset = params.acceptedOffset ? params.int("acceptedOffset") : result.offset
         result.pendingOffset = params.pendingOffset ? params.int("pendingOffset") : result.offset
         def periodInDays = result.user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)
-        Map<String, Object> pendingChangeConfigMap = [contextOrg:result.institution,consortialView:accessService.checkPerm(result.institution,"ORG_CONSORTIUM"),periodInDays:periodInDays,max:result.max,acceptedOffset:result.acceptedOffset, pendingOffset: result.pendingOffset]
+        Map<String, Object> pendingChangeConfigMap = [contextOrg:result.institution, consortialView:accessService.otherOrgPerm(result.institution, 'ORG_CONSORTIUM_BASIC'), periodInDays:periodInDays, max:result.max, acceptedOffset:result.acceptedOffset, pendingOffset: result.pendingOffset]
         Map<String, Object> changes = pendingChangeService.getChanges(pendingChangeConfigMap)
         changes.max = result.max
         changes.editable = result.editable
         render template: '/myInstitution/changesWrapper', model: changes
+    }
+
+    @Secured(['ROLE_USER'])
+    def generateCostPerUse() {
+        Map<String, Object> ctrlResult = subscriptionControllerService.getStatsDataForCostPerUse(params)
+        if(ctrlResult.status == SubscriptionControllerService.STATUS_OK) {
+            ctrlResult.result.costPerUse = [:]
+            if(ctrlResult.result.subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION) {
+                ctrlResult.result.costPerUse.consortialData = subscriptionControllerService.calculateCostPerUse(ctrlResult.result, "consortial")
+                if (ctrlResult.result.institution.isCustomerType_Inst_Pro()) {
+                    ctrlResult.result.costPerUse.ownData = subscriptionControllerService.calculateCostPerUse(ctrlResult.result, "own")
+                }
+            }
+            else ctrlResult.result.costPerUse.ownData = subscriptionControllerService.calculateCostPerUse(ctrlResult.result, "own")
+            render template: "/subscription/costPerUse", model: ctrlResult.result
+        }
+        else [error: ctrlResult.error]
     }
 }

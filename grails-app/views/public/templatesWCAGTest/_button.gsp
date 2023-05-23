@@ -1,6 +1,6 @@
 <h3 class="ui dividing header">3.1. Link funktioniert als Button mit Tooltip</h3>
 <a  role="button" class="ui icon button la-audit-button la-popup-tooltip la-delay" href='https://www.w3.org/' data-content="Das ist der Inhalt des Tooltips">
-    <i  class="icon thumbtack la-js-editmode-icon"></i>
+    <i class="icon thumbtack la-js-editmode-icon"></i>
 </a>
 <h3 class="ui dividing header">3.2. Link funktioniert als Button ohne Tooltip</h3>
 <g:link aria-label="Das ist eine Beschreibung für den Accessibility Tree" controller="public" action="wcagTest" params="" class="ui icon positive button">
@@ -76,7 +76,7 @@
         <div class="content">
             <dl>
                 <dt class="control-label">Status</dt>
-                <dd><span><a href="#" id="de.laser.Subscription:11636:status" class="xEditableManyToOne editable editable-click" data-value="de.laser.RefdataValue:103" data-pk="de.laser.Subscription:11636" data-type="select" data-name="status" data-source="/laser/ajax/select2RefdataSearch/subscription.status?format=json&amp;oid=de.laser.Subscription%3A11636&amp;constraint=removeValue_deleted" data-url="/laser/ajax/genericSetData" data-emptytext="Bearbeiten">Aktiv</a></span></dd>
+                <dd><span><a href="#" id="de.laser.Subscription:11636:status" class="xEditableManyToOne editable editable-click" data-value="de.laser.RefdataValue:103" data-pk="de.laser.Subscription:11636" data-type="select" data-name="status" data-source="/ajax/remoteRefdataSearch/subscription.status?oid=de.laser.Subscription%3A11636&amp;constraint=removeValue_deleted" data-url="/laser/ajax/genericSetData" data-emptytext="Bearbeiten">Aktiv</a></span></dd>
                 <dd class="la-js-editmode-container">
 
                     <g:if test="${params.toggle=="true"}">

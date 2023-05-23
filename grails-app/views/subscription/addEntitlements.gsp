@@ -15,7 +15,7 @@
     <laser:render template="actions"/>
 </ui:controlButtons>
 
-<ui:h1HeaderWithIcon floated="true">
+<ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}" floated="true">
 <g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
     <laser:render template="iconSubscriptionIsChild"/>
 </g:if>
@@ -213,7 +213,7 @@
         <g:each in="${tipps}" var="tipp">
 
             <g:set var="perpetualAccessToTitle"
-                   value="${surveyService.hasParticipantPerpetualAccessToTitle2(subscriptionIDs, tipp)}"/>
+                   value="${surveyService.hasParticipantPerpetualAccessToTitle3(result.subscriber, tipp)}"/>
 
             <tr data-index="${tipp.gokbId}">
                 <td>

@@ -5,11 +5,11 @@ import de.laser.auth.User
 import de.laser.config.ConfigMapper
 import de.laser.properties.PropertyDefinition
 import de.laser.remote.ApiSource
-import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.AppUtils
 import de.laser.utils.LocaleUtils
 import grails.gorm.transactions.Transactional
+import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
 
 /**
@@ -57,7 +57,6 @@ class OrganisationService {
 
     /**
      * Exports organisation data in the given format. It can be specified if higher education titles should be outputted or not.
-     * Do NOT mix this method with {@link ExportClickMeService#exportOrgs(java.util.List, java.util.Map, java.lang.String)} which is for consortia subscription members!
      * @param orgs the {@link List} of {@link Org}s
      * @param message the title of the Excel sheet (not used in csv)
      * @param addHigherEducationTitles add columns library type, library network, funder type, federal state, country with respective values
@@ -69,7 +68,6 @@ class OrganisationService {
 
         List<String> titles = [
                 messageSource.getMessage('org.sortname.label',null, locale),
-                messageSource.getMessage('org.shortname.label',null, locale),
                 'Name'
         ]
         if(addHigherEducationTitles) {
@@ -79,15 +77,18 @@ class OrganisationService {
             titles.add(messageSource.getMessage('org.region.label',null, locale))
             titles.add(messageSource.getMessage('org.country.label',null, locale))
         }
-        RefdataValue generalContact = RDStore.PRS_FUNC_GENERAL_CONTACT_PRS
-        RefdataValue responsibleAdmin = RefdataValue.getByValueAndCategory('Responsible Admin', RDConstants.PERSON_FUNCTION)
-        RefdataValue billingContact = RefdataValue.getByValueAndCategory('Functional Contact Billing Adress', RDConstants.PERSON_FUNCTION)
-        titles.addAll(['ISIL','WIB-ID','EZB-ID',generalContact.getI10n('value'),responsibleAdmin.getI10n('value'),billingContact.getI10n('value')])
+        RefdataValue generalContact     = RDStore.PRS_FUNC_GENERAL_CONTACT_PRS
+        RefdataValue responsibleAdmin   = RDStore.PRS_FUNC_RESPONSIBLE_ADMIN
+        RefdataValue billingContact     = RDStore.PRS_FUNC_FC_BILLING_ADDRESS
+        titles.addAll(['ISIL','WIB-ID','EZB-ID',generalContact.getI10n('value')])
+        if(addHigherEducationTitles)
+            titles.add(responsibleAdmin.getI10n('value'))
+        titles.add(billingContact.getI10n('value'))
         Set<PropertyDefinition> propertyDefinitions = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
         titles.addAll(exportService.loadPropListHeaders(propertyDefinitions))
         List orgData = []
         Map<Org,Map<String,String>> identifiers = [:]
-        List identifierList = Identifier.executeQuery("select ident, ident.org from Identifier ident where ident.org in (:orgs) and ident.ns.ns in (:namespaces)",[orgs:orgs,namespaces:['wibid','ezb','ISIL']])
+        List identifierList = Identifier.executeQuery("select ident, ident.org from Identifier ident where ident.org in (:orgs) and ident.ns.ns in (:namespaces) and ident.value != null and ident.value != :unknown",[orgs:orgs,namespaces:['wibid','ezb','ISIL'],unknown:IdentifierNamespace.UNKNOWN])
         identifierList.each { row ->
             Identifier io = (Identifier) row[0]
             Org o = (Org) row[1]
@@ -126,8 +127,6 @@ class OrganisationService {
                                                       billingContact: contacts[org]?.get("Functional Contact Billing Adress")?.join(";")]
                     //Sortname
                     row.add([field: org.sortname ?: '',style: null])
-                    //Shortname
-                    row.add([field: org.shortname ?: '',style: null])
                     //Name
                     row.add([field: org.name ?: '',style: null])
                     if(addHigherEducationTitles) {
@@ -149,7 +148,8 @@ class OrganisationService {
                     //General contact
                     row.add([field: furtherData.generalContact ?: '', style: null])
                     //Responsible admin
-                    row.add([field: furtherData.responsibleAdmin ?: '', style: null])
+                    if(addHigherEducationTitles)
+                        row.add([field: furtherData.responsibleAdmin ?: '', style: null])
                     //Billing contact
                     row.add([field: furtherData.billingContact ?: '', style: null])
                     row.addAll(exportService.processPropertyListValues(propertyDefinitions, format, org, null, null, null))
@@ -169,8 +169,6 @@ class OrganisationService {
                                                       billingContact: contacts[org]?.get("Functional Contact Billing Adress")?.join(";")]
                     //Sortname
                     row.add(org.sortname ? org.sortname.replaceAll(',','') : '')
-                    //Shortname
-                    row.add(org.shortname ? org.shortname.replaceAll(',','') : '')
                     //Name
                     row.add(org.name ? org.name.replaceAll(',','') : '')
                     if(addHigherEducationTitles) {
@@ -192,7 +190,8 @@ class OrganisationService {
                     //General contact
                     row.add(furtherData.generalContact ?: '')
                     //Responsible admin
-                    row.add(furtherData.responsibleAdmin ?: '')
+                    if(addHigherEducationTitles)
+                        row.add(furtherData.responsibleAdmin ?: '')
                     //Billing contact
                     row.add(furtherData.billingContact ?: '')
                     row.addAll(exportService.processPropertyListValues(propertyDefinitions, format, org, null, null, null))
@@ -219,15 +218,17 @@ class OrganisationService {
      */
     void createOrgsFromScratch() {
         String currentServer = AppUtils.getCurrentServer()
-        Map<String,Role> customerTypes = [konsorte:Role.findByAuthority('ORG_BASIC_MEMBER'),
-                                          vollnutzer:Role.findByAuthority('ORG_INST'),
-                                          konsortium:Role.findByAuthority('ORG_CONSORTIUM')]
-        RefdataValue institution = RefdataValue.getByValueAndCategory('Institution', RDConstants.ORG_TYPE)
-        RefdataValue consortium = RefdataValue.getByValueAndCategory('Consortium', RDConstants.ORG_TYPE)
+        Map<String,Role> customerTypes = [
+                konsorte:   Role.findByAuthority( CustomerTypeService.ORG_INST_BASIC ),
+                vollnutzer: Role.findByAuthority( CustomerTypeService.ORG_INST_PRO ),
+                konsortium: Role.findByAuthority( CustomerTypeService.ORG_CONSORTIUM_BASIC )
+        ]
+        RefdataValue institution = RDStore.OT_INSTITUTION
+        RefdataValue consortium = RDStore.OT_CONSORTIUM
         //create home org
         Org hbz = Org.findByName('hbz Konsortialstelle Digitale Inhalte')
         if(!hbz) {
-            hbz = createOrg([name: 'hbz Konsortialstelle Digitale Inhalte',shortname: 'hbz Konsortium', sortname: 'Köln, hbz', orgType: [consortium], sector: RDStore.O_SECTOR_HIGHER_EDU])
+            hbz = createOrg([name: 'hbz Konsortialstelle Digitale Inhalte', sortname: 'Köln, hbz', orgType: [consortium], sector: RDStore.O_SECTOR_HIGHER_EDU])
             if(!hbz.hasErrors()) {
                 OrgSetting.add(hbz,OrgSetting.KEYS.CUSTOMER_TYPE,customerTypes.konsortium)
                 ConfigMapper.getConfig('systemUsers', List)?.each { su ->
@@ -242,15 +243,15 @@ class OrganisationService {
             }
         }
         if(currentServer == AppUtils.QA) { //include SERVER_LOCAL when testing in local environment
-            Map<String,Map> modelOrgs = [konsorte: [name:'Musterkonsorte',shortname:'Muster', sortname:'Musterstadt, Muster', orgType: [institution]],
+            Map<String,Map> modelOrgs = [konsorte: [name:'Musterkonsorte', sortname:'Musterstadt, Muster', orgType: [institution]],
                                          vollnutzer: [name:'Mustereinrichtung',sortname:'Musterstadt, Uni', orgType: [institution]],
-                                         konsortium: [name:'Musterkonsortium',shortname:'Musterkonsortium',orgType: [consortium]]]
-            Map<String,Map> testOrgs = [konsorte: [name:'Testkonsorte',shortname:'Test', sortname:'Teststadt, Test',orgType: [institution]],
+                                         konsortium: [name:'Musterkonsortium',orgType: [consortium]]]
+            Map<String,Map> testOrgs = [konsorte: [name:'Testkonsorte',sortname:'Teststadt, Test',orgType: [institution]],
                                         vollnutzer: [name:'Testeinrichtung',sortname:'Teststadt, Uni',orgType: [institution]],
-                                        konsortium: [name:'Testkonsortium',shortname:'Testkonsortium',orgType: [consortium]]]
-            Map<String,Map> QAOrgs = [konsorte: [name:'QA-Konsorte',shortname:'QA', sortname:'QA-Stadt, QA',orgType: [institution]],
+                                        konsortium: [name:'Testkonsortium',orgType: [consortium]]]
+            Map<String,Map> QAOrgs = [konsorte: [name:'QA-Konsorte',sortname:'QA-Stadt, QA',orgType: [institution]],
                                       vollnutzer: [name:'QA-Einrichtung',sortname:'QA-Stadt, Uni',orgType: [institution]],
-                                      konsortium: [name:'QA-Konsortium',shortname:'QA-Konsortium',orgType: [consortium]]]
+                                      konsortium: [name:'QA-Konsortium',orgType: [consortium]]]
             [modelOrgs,testOrgs,QAOrgs].each { Map<String,Map> orgs ->
                 Map<String,Org> orgMap = [:]
                 orgs.each { String customerType, Map orgData ->
@@ -280,11 +281,11 @@ class OrganisationService {
 
     /**
      * Creates a new organisation with the given basic parameters and sets the mandatory config settings for it
-     * @param params the parameter {@link Map} containing name, shortname, sortname, type and sector
+     * @param params the parameter {@link Map} containing name, sortname, type and sector
      * @return the new {@link Org}
      */
     Org createOrg(Map params) {
-        Org obj = new Org(name: params.name,shortname: params.shortname, sortname: params.sortname, orgType: params.orgType, sector: params.orgSector)
+        Org obj = new Org(name: params.name, sortname: params.sortname, orgType: params.orgType, sector: params.orgSector)
         if(obj.save()) {
             initMandatorySettings(obj)
         }
@@ -317,9 +318,23 @@ class OrganisationService {
     List<Platform> getAllPlatforms() {
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         Set<String> uuids = []
-        Map<String, Object> result = gokbService.doQuery([user: contextService.getUser(), editUrl: apiSource.editUrl], [max: '1000', offset: '0'], "?componentType=Platform&status=Current")
+        Map<String, Object> result = gokbService.doQuery([user: contextService.getUser(), editUrl: apiSource.editUrl], [max: '1000', offset: '0'], [componentType: 'Platform', status: 'Current'])
         uuids.addAll(result.records.collect { Map platRecord -> platRecord.uuid })
         Platform.executeQuery('select p from Platform p join p.org o where p.gokbId in (:uuids) and p.org is not null order by o.name, o.sortname, p.name', [uuids: uuids])
+    }
+
+    Map<String, Map> getWekbOrgRecords(GrailsParameterMap params, Map result) {
+        Map<String, Object> queryParams = [componentType: "Org"]
+        if (params.curatoryGroup || params.providerRole) {
+            if(params.curatoryGroup)
+                queryParams.curatoryGroupExact = params.curatoryGroup.replaceAll('&','ampersand').replaceAll('\\+','%2B').replaceAll(' ','%20')
+            if(params.providerRole)
+                queryParams.role = RefdataValue.get(params.providerRole).value.replaceAll(' ','%20')
+        }
+        Map<String, Object> wekbResult = gokbService.doQuery(result, [max: 10000, offset: 0], queryParams)
+        if(wekbResult.recordsCount > 0)
+            wekbResult.records.collectEntries { Map wekbRecord -> [wekbRecord.uuid, wekbRecord] }
+        else [:]
     }
 
 }

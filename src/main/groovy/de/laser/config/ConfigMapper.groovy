@@ -46,16 +46,19 @@ class ConfigMapper {
     static final List QUARTZ_HEARTBEAT      = ['quartzHeartbeat', Date]
     static final List REPORTING             = ['reporting', Map]
 
-    static final List SHOW_DEBUG_INFO       = ['showDebugInfo',  Boolean]
-    static final List SHOW_SYSTEM_INFO      = ['showSystemInfo', Boolean]
-    static final List SHOW_STATS_INFO       = ['showStatsInfo',  Boolean]
-    static final List STATS_API_URL         = ['statsApiUrl', String]
-    static final List STATS_SYNC_JOB_ACTIVE = ['statsSyncJobActive', Boolean]
-    static final List SYSTEM_EMAIL          = ['systemEmail', String]
-    static final List SYSTEM_INSIGHT_INDEX      = ['systemInsightIndex', String]
-    static final List SYSTEM_INSIGHT_JOB_ACTIVE = ['systemInsightJobActive', Boolean]
+    static final List SHOW_DEBUG_INFO            = ['showDebugInfo',  Boolean]
+    static final List SHOW_SYSTEM_INFO           = ['showSystemInfo', Boolean]
+    static final List SHOW_STATS_INFO            = ['showStatsInfo',  Boolean]
+    static final List STATS_API_URL              = ['statsApiUrl', String]
+    static final List STATS_REPORT_SAVE_LOCATION = ['statsReportSaveLocation', String]
+    static final List STATS_SYNC_JOB_ACTIVE      = ['statsSyncJobActive', Boolean]
+    static final List SYSTEM_EMAIL               = ['systemEmail', String]
+    static final List SYSTEM_INSIGHT_INDEX       = ['systemInsightIndex', String]
+    static final List SYSTEM_INSIGHT_JOB_ACTIVE  = ['systemInsightJobActive', Boolean]
 
     static final List TEST_JOB_ACTIVE       = ['testJobActivate', Boolean]
+    static final List WEKB_API_USERNAME     = ['wekbApiUsername', String]
+    static final List WEKB_API_PASSWORD     = ['wekbApiPassword', String]
 
     static final List<List> CONTROLLED_CONFIGURATION_LIST = [
 
@@ -70,7 +73,8 @@ class ConfigMapper {
             QUARTZ_HEARTBEAT,
             REPORTING,
             SHOW_DEBUG_INFO, SHOW_SYSTEM_INFO, SHOW_STATS_INFO, STATS_API_URL, STATS_SYNC_JOB_ACTIVE, SYSTEM_EMAIL, SYSTEM_INSIGHT_INDEX, SYSTEM_INSIGHT_JOB_ACTIVE,
-            TEST_JOB_ACTIVE
+            TEST_JOB_ACTIVE,
+            WEKB_API_USERNAME, WEKB_API_PASSWORD
 
     ]
 
@@ -201,6 +205,9 @@ class ConfigMapper {
     static String getStatsApiUrl(int output = LOGGER) {
         readConfig( STATS_API_URL, output )
     }
+    static String getStatsReportSaveLocation(int output = LOGGER) {
+        readConfig( STATS_REPORT_SAVE_LOCATION, output )
+    }
     static boolean getStatsSyncJobActive(int output = LOGGER) {
         readConfig( STATS_SYNC_JOB_ACTIVE, output )
     }
@@ -215,6 +222,12 @@ class ConfigMapper {
     }
     static boolean getTestJobActive(int output = LOGGER) {
         readConfig( TEST_JOB_ACTIVE, output )
+    }
+    static String getWekbApiUsername(int output = LOGGER) {
+        readConfig( WEKB_API_USERNAME, output )
+    }
+    static String getWekbApiPassword(int output = LOGGER) {
+        readConfig( WEKB_API_PASSWORD, output )
     }
 
     // -- raw --

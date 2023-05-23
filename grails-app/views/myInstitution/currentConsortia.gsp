@@ -8,38 +8,41 @@
 </ui:breadcrumbs>
 
 <ui:controlButtons>
-    <%-- needs to be done separately if needed at all
     <ui:exportDropdown>
         <ui:exportDropdownItem>
-            <a class="item" data-ui="modal" href="#individuallyExportModal">Click Me Excel Export</a>
+            <a class="item" data-ui="modal" href="#individuallyExportModal">Export</a>
         </ui:exportDropdownItem>
         <g:if test="${filterSet}">
+            <%--
             <ui:exportDropdownItem>
                 <g:link class="item js-open-confirm-modal"
                         data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
-                        data-confirm-term-how="ok" controller="myInstitution" action="manageMembers"
+                        data-confirm-term-how="ok" controller="myInstitution" action="currentConsortia"
                         params="${params+[exportXLS:true]}">
                     ${message(code:'default.button.exports.xls')}
                 </g:link>
             </ui:exportDropdownItem>
+            --%>
             <ui:exportDropdownItem>
                 <g:link class="item js-open-confirm-modal"
                         data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
-                        data-confirm-term-how="ok" controller="myInstitution" action="manageMembers"
+                        data-confirm-term-how="ok" controller="myInstitution" action="currentConsortia"
                         params="${params+[format:'csv']}">
                     ${message(code:'default.button.exports.csv')}
                 </g:link>
             </ui:exportDropdownItem>
         </g:if>
         <g:else>
+            <%--
             <ui:exportDropdownItem>
-                <g:link class="item" action="manageMembers" params="${params+[exportXLS:true]}">${message(code:'default.button.exports.xls')}</g:link>
+                <g:link class="item" action="currentConsortia" params="${params+[exportXLS:true]}">${message(code:'default.button.exports.xls')}</g:link>
             </ui:exportDropdownItem>
+            --%>
             <ui:exportDropdownItem>
-                <g:link class="item" action="manageMembers" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link>
+                <g:link class="item" action="currentConsortia" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link>
             </ui:exportDropdownItem>
         </g:else>
-    </ui:exportDropdown>--%>
+    </ui:exportDropdown>
     <g:if test="${editable}">
         <laser:render template="actions"/>
     </g:if>
@@ -64,7 +67,7 @@
     </ui:filter>
 <div class="la-clear-before">
     <g:if test="${consortia}">
-        <laser:render template="export/individuallyExportModalOrgs" model="[modalID: 'individuallyExportModal', orgType: 'institution']" />
+        <laser:render template="export/individuallyExportModalOrgs" model="[modalID: 'individuallyExportModal', orgType: 'consortium', contactSwitch: true]" />
 
             <laser:render template="/templates/filter/orgFilterTable"
                       model="[orgList: consortia,

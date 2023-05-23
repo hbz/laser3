@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.FormService; de.laser.Subscription; de.laser.interfaces.CalculatedType;" %>
+<%@ page import="de.laser.CustomerTypeService; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.FormService; de.laser.Subscription; de.laser.interfaces.CalculatedType;" %>
 <laser:serviceInjection/>
 
 <g:if test="${filteredSubscriptions}">
@@ -14,6 +14,7 @@
                     <th>${message(code: 'subscription')}</th>
                     <th>${message(code: 'default.startDate.label')}</th>
                     <th>${message(code: 'default.endDate.label')}</th>
+                    <th>${message(code: 'subscription.referenceYear.label')}</th>
                     <th>${message(code: 'default.status.label')}</th>
                     <th>${message(code: 'subscription.kind.label')}</th>
                     <th>${message(code: 'subscription.form.label')}</th>
@@ -21,6 +22,9 @@
                     <th>${message(code: 'subscription.isPublicForApi.label')}</th>
                     <th>${message(code: 'subscription.hasPerpetualAccess.label')}</th>
                     <th>${message(code: 'subscription.hasPublishComponent.label')}</th>
+                    <g:if test="${subscription.packages}">
+                        <th>${message(code: 'subscription.holdingSelection.label')}</th>
+                    </g:if>
                     <th>${message(code: 'default.actions.label')}</th>
                 </tr>
                 </thead>
@@ -35,6 +39,10 @@
                     <td>
                         <g:formatDate formatName="default.date.format.notime" date="${subscription.endDate}"/>
                         <ui:auditButton auditable="[subscription, 'endDate']"/>
+                    </td>
+                    <td>
+                        ${subscription.referenceYear}
+                        <ui:auditButton auditable="[subscription, 'referenceYear']"/>
                     </td>
                     <td>
                         ${subscription.status.getI10n('value')}
@@ -64,6 +72,12 @@
                         ${subscription.hasPublishComponent ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
                         <ui:auditButton auditable="[subscription, 'hasPublishComponent']"/>
                     </td>
+                    <g:if test="${subscription.packages}">
+                        <td>
+                            ${subscription.holdingSelection?.getI10n('value')}
+                            <ui:auditButton auditable="[subscription, 'holdingSelection']"/>
+                        </td>
+                    </g:if>
 
                     <td class="x">
                         <g:link controller="subscription" action="show" id="${subscription.id}"
@@ -89,13 +103,13 @@
 
             <h4 class="ui header">${message(code: 'subscriptionsManagement.info.subscriptionProperty')}</h4>
 
-            <div class="two fields">
+            <div class="four fields">
                 <ui:datepicker label="subscription.startDate.label" id="valid_from" name="valid_from"/>
 
                 <ui:datepicker label="subscription.endDate.label" id="valid_to" name="valid_to"/>
-            </div>
 
-            <div class="four fields">
+                <ui:datepicker label="subscription.referenceYear.label" id="reference_year" name="reference_year" type="year"/>
+
                 <div class="field">
                     <label>${message(code: 'default.status.label')}</label>
                     <%
@@ -104,9 +118,12 @@
                         fakeList.remove(RefdataValue.getByValueAndCategory('Deleted', RDConstants.SUBSCRIPTION_STATUS))
                     %>
                     <ui:select name="process_status" from="${fakeList}" optionKey="id" optionValue="value"
-                                  noSelection="${['': '']}"
-                                  value="${['': '']}"/>
+                               noSelection="${['': '']}"
+                               value="${['': '']}"/>
                 </div>
+            </div>
+
+            <div class="four fields">
 
                 <div class="field">
                     <label>${message(code: 'subscription.kind.label')}</label>
@@ -131,17 +148,17 @@
                                   optionKey="id" optionValue="value" noSelection="${['': '']}"
                                   value="${['': '']}"/>
                 </div>
-            </div>
-
-            <div class="four fields">
 
                 <div class="field">
                     <label>${message(code: 'subscription.isPublicForApi.label')}</label>
                     <ui:select name="process_isPublicForApi"
-                                  from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
-                                  optionKey="id" optionValue="value" noSelection="${['': '']}"
-                                  value="${['': '']}"/>
+                               from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
+                               optionKey="id" optionValue="value" noSelection="${['': '']}"
+                               value="${['': '']}"/>
                 </div>
+            </div>
+
+            <div class="four fields">
 
                 <div class="field">
                     <label>${message(code: 'subscription.hasPerpetualAccess.label')}</label>
@@ -159,7 +176,15 @@
                                   value="${['': '']}"/>
                 </div>
 
-                <g:if test="${accessService.checkPerm('ORG_INST')}">
+                <div class="field">
+                    <label>${message(code: 'subscription.holdingSelection.label')}</label>
+                    <ui:select name="process_holding"
+                               from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_HOLDING)}"
+                               optionKey="id" optionValue="value" noSelection="${['': '']}"
+                               value="${['': '']}"/>
+                </div>
+
+                <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_INST_PRO)}">
                     <div class="field">
                         <label>${message(code: 'subscription.isAutomaticRenewAnnually.label')}</label>
                         <ui:select name="process_isAutomaticRenewAnnually"
@@ -202,6 +227,7 @@
                     </g:if>
                     <th>${message(code: 'default.startDate.label')}</th>
                     <th>${message(code: 'default.endDate.label')}</th>
+                    <th>${message(code: 'subscription.referenceYear.label')}</th>
                     <th>${message(code: 'default.status.label')}</th>
                     <th>${message(code: 'subscription.kind.label')}</th>
                     <th>${message(code: 'subscription.form.label')}</th>
@@ -209,7 +235,8 @@
                     <th>${message(code: 'subscription.isPublicForApi.label')}</th>
                     <th>${message(code: 'subscription.hasPerpetualAccess.label')}</th>
                     <th>${message(code: 'subscription.hasPublishComponent.label')}</th>
-                    <g:if test="${accessService.checkPerm('ORG_INST')}">
+                    <th>${message(code: 'subscription.holdingSelection.label')}</th>
+                    <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_INST_PRO)}">
                         <th>${message(code: 'subscription.isAutomaticRenewAnnually.label')}</th>
                     </g:if>
                     <th class="la-no-uppercase">
@@ -253,13 +280,7 @@
                                     </span>
                                 </g:if>
 
-                                <g:if test="${subscr.getCustomerType() == 'ORG_INST'}">
-                                    <span class="la-long-tooltip la-popup-tooltip la-delay"
-                                          data-position="bottom center"
-                                          data-content="${subscr.getCustomerTypeI10n()}">
-                                        <i class="chess rook grey icon"></i>
-                                    </span>
-                                </g:if>
+                                <ui:customerTypeIcon org="${subscr}" />
                             </td>
                         </g:if>
                         <g:if test="${controllerName == "myInstitution"}">
@@ -274,6 +295,11 @@
                         <td><ui:xEditable owner="${sub}" field="endDate" type="date"
                                              overwriteEditable="${editableOld}" validation="datesCheck"/>
                         <ui:auditButton auditable="[sub, 'endDate']"/>
+                        </td>
+                        <td>
+                            <ui:xEditable owner="${sub}" field="referenceYear" type="year"
+                                          overwriteEditable="${editableOld}"/>
+                            <ui:auditButton auditable="[sub, 'referenceYear']"/>
                         </td>
                         <td>
                             <ui:xEditableRefData owner="${sub}" field="status"
@@ -318,7 +344,15 @@
                                                     overwriteEditable="${editableOld}"/>
                             <ui:auditButton auditable="[sub, 'hasPublishComponent']"/>
                         </td>
-                        <g:if test="${accessService.checkPerm('ORG_INST')}">
+                        <td>
+                            <g:if test="${sub.packages}">
+                                <ui:xEditableRefData owner="${sub}" field="holdingSelection"
+                                                     config="${RDConstants.SUBSCRIPTION_HOLDING}"
+                                                     overwriteEditable="${editableOld}"/>
+                                <ui:auditButton auditable="[sub, 'holdingSelection']"/>
+                            </g:if>
+                        </td>
+                        <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_INST_PRO)}">
                             <td>
                                 <g:if test="${(sub.type == RDStore.SUBSCRIPTION_TYPE_LOCAL && sub._getCalculatedType() == CalculatedType.TYPE_LOCAL)}">
                                     <ui:xEditableBoolean owner="${sub}" field="isAutomaticRenewAnnually" overwriteEditable="${editable && sub.isAllowToAutomaticRenewAnnually()}"/>

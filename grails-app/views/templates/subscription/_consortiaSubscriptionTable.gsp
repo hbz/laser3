@@ -12,12 +12,7 @@
                     <p>
                         <strong>
                             <g:link controller="organisation" action="show" id="${chosenOrg.id}">${chosenOrg.name}</g:link>
-                            <g:if test="${chosenOrg.getCustomerType() == 'ORG_INST'}">
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                                      data-content="${chosenOrg.getCustomerTypeI10n()}">
-                                    <i class="chess rook grey icon"></i>
-                                </span>
-                            </g:if>
+                            <ui:customerTypeIcon org="${chosenOrg}" />
                         </strong>
                     </p>
                     ${chosenOrg.libraryType?.getI10n('value')}
@@ -48,7 +43,7 @@
             <g:if test="${'withCostItems' in tableConfig}">
                 <th rowspan="2">${message(code:'financials.amountFinal')}</th>
                 <th class="la-no-uppercase" rowspan="2">
-                    <span  class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center">
+                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center">
                         <i class="money bill alternate icon"></i>
                     </span>&nbsp;/&nbsp;
                     <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
@@ -105,13 +100,8 @@
                             <i class="low vision grey icon"></i>
                         </span>
                     </g:if>
-                    <g:if test="${subscr.getCustomerType() == 'ORG_INST'}">
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                              data-content="${subscr.getCustomerTypeI10n()}">
-                            <i class="chess rook grey icon"></i>
-                        </span>
-                    </g:if>
 
+                    <ui:customerTypeIcon org="${subscr}" />
                 </td>
                 <th scope="row" class="la-th-column">
 

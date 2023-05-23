@@ -70,16 +70,16 @@
                         <laser:render template="/contact/formModal" model="['prsId': person.id, prId: personRole.id, modalId: 'contactFormModal' + personRole.id]"/>
                     </g:if>
 
-                    <g:if test="${tmplShowAddAddresses}">
+                    <%--<g:if test="${tmplShowAddAddresses}">
                         <% Map model = [:]
                         model.prsId = person?.id
-                        model.typeId = RDStore.ADRESS_TYPE_LIBRARY
+                        model.typeId = RDStore.ADDRESS_TYPE_LIBRARY
                         model.redirect = '.'
                         model.hideType = true%>
                         <input class="ui icon button" type="button"
                                value="${message(code: 'person.addresses.label')}"
                                onclick="JSPC.app.addresscreate_prs('${model.prsId}', '${model.typeId}', '${model.redirect}', '${model.modalId}', '${model.hideType}');" >
-                    </g:if>
+                    </g:if>--%>
 
                 </g:if>
             </div>
@@ -98,14 +98,14 @@
             </g:each>
 
         </g:if>
-        <g:if test="${tmplConfigShow.contains('address') && person.addresses}">
+        <%--<g:if test="${tmplConfigShow.contains('address') && person.addresses}">
 
             <g:each in="${person.addresses.sort { it.type.each{it?.getI10n('value') }}}" var="address">
                 <laser:render template="/templates/cpa/address"
                           model="${[address: address, tmplShowDeleteButton: tmplShowDeleteButton, editable: editable]}"/>
             </g:each>
 
-        </g:if>
+        </g:if>--%>
         <g:if test="${tmplShowFunctions}">
             <g:each in="${person.roleLinks.toSorted()}" var="personRoleLink">
                 <g:if test="${personRoleLink.org.id == personContext.id && personRoleLink.functionType}">
@@ -249,13 +249,13 @@
 <laser:script file="${this.getGroovyPageFileName()}">
         JSPC.app.addresscreate_prs = function (prsId, typeId, redirect, hideType) {
             var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>?prsId=' + prsId + '&typeId=' + typeId + '&redirect=' + redirect + '&hideType=' + hideType;
-            var func = bb8.ajax4SimpleModalFunction("#addressFormModal", url, false);
+            var func = bb8.ajax4SimpleModalFunction("#addressFormModal", url);
             func();
         }
 
         JSPC.app.editPerson = function (id) {
             var url = '<g:createLink controller="ajaxHtml" action="editPerson" params="[showAddresses: showAddresses ?: false, showContacts: showContacts ?: false, org: (restrictToOrg ? restrictToOrg?.id : '')]"/>&id=' + id;
-            var func = bb8.ajax4SimpleModalFunction("#personModal", url, false);
+            var func = bb8.ajax4SimpleModalFunction("#personModal", url);
             func();
         }
 </laser:script>

@@ -12,6 +12,18 @@ import groovy.util.logging.Slf4j
 @Slf4j
 class Role extends AbstractI10n {
 
+	// global roles and permissions
+
+	public static final String ROLE_USER	= 'ROLE_USER'
+	public static final String ROLE_ADMIN   = 'ROLE_ADMIN'
+	public static final String ROLE_YODA  	= 'ROLE_YODA'
+
+	// context depending roles and permissions
+
+	public static final String INST_USER    = 'INST_USER'
+	public static final String INST_EDITOR  = 'INST_EDITOR'
+	public static final String INST_ADM     = 'INST_ADM'
+
 	/**
 	 * the name of the role
 	 */

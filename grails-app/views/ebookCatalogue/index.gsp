@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Org; de.laser.PersonRole; de.laser.OrgRole; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.Contact; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.storage.RDConstants;" %>
+<%@ page import="de.laser.storage.PropertyStore; de.laser.Org; de.laser.PersonRole; de.laser.OrgRole; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.Contact; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.storage.RDConstants;" %>
 
 <!doctype html>
 <html>
@@ -96,7 +96,6 @@
     <laser:script file="${this.getGroovyPageFileName()}">
 
             function toggleFilterPart() {
-                console.log('! 1')
                 if ($('.js-consLic input').prop('checked')) {
                     $('#js-consAuth select').removeAttr('disabled')
                 } else {
@@ -104,7 +103,6 @@
                 }
             }
             function toggleTableHeading() {
-                console.log('! 2')
                 if ($('.js-natLic input').prop('checked') || $('.js-allLic input').prop('checked')) {
                     $('#js-negotiator-header').show()
                     $('#js-consortium-header').hide()
@@ -150,9 +148,9 @@
             </tr>
             </thead>
             <tbody>
-            <g:set var="GASCO_INFORMATION_LINK" value="${PropertyDefinition.getByNameAndDescr('GASCO information link', PropertyDefinition.SUB_PROP)}" />
-            <g:set var="GASCO_ANZEIGENAME" value="${PropertyDefinition.getByNameAndDescr('GASCO display name', PropertyDefinition.SUB_PROP)}" />
-            <g:set var="GASCO_VERHANDLERNAME" value="${PropertyDefinition.getByNameAndDescr('GASCO negotiator name', PropertyDefinition.SUB_PROP)}" />
+            <g:set var="GASCO_INFORMATION_LINK" value="${PropertyStore.SUB_PROP_GASCO_INFORMATION_LINK}" />
+            <g:set var="GASCO_ANZEIGENAME" value="${PropertyStore.SUB_PROP_GASCO_DISPLAY_NAME}" />
+            <g:set var="GASCO_VERHANDLERNAME" value="${PropertyStore.SUB_PROP_GASCO_NEGOTIATOR_NAME}" />
 
                 <g:each in="${subscriptions}" var="sub" status="i">
                     <g:set var="gasco_infolink" value="${sub.propertySet.find{ it.type == GASCO_INFORMATION_LINK}?.urlValue}" />

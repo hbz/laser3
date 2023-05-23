@@ -7,11 +7,10 @@
 			<ui:crumb message="menu.admin.managePropertyDefinitions" class="active"/>
 		</ui:breadcrumbs>
 
+%{--
         <ui:controlButtons>
-            <%--<laser:render template="actions"/>--%>
-            <%--
+            <laser:render template="actions"/>
             <button class="ui button" value="" data-href="#addPropertyDefinitionModal" data-ui="modal" >${message(code:'propertyDefinition.create_new.label')}</button>
-            --%>
             <%-- included in case someone of the admins wishes this export
             <ui:exportDropdown>
                 <ui:exportDropdownItem>
@@ -19,6 +18,7 @@
                 </ui:exportDropdownItem>
             </ui:exportDropdown>--%>
         </ui:controlButtons>
+--}%
 
         <ui:h1HeaderWithIcon message="menu.admin.managePropertyDefinitions" type="admin"/>
 
@@ -192,6 +192,7 @@
 
         <laser:render template="/myInstitution/replacePropertyDefinition" model="[action: actionName]"/>
 
+%{--
         <ui:modal id="addPropertyDefinitionModal" message="propertyDefinition.create_new.label">
 
             <g:form class="ui form" id="create_cust_prop" url="[controller: 'ajax', action: 'addCustomPropertyType']" >
@@ -218,16 +219,16 @@
                             from="${PropertyDefinition.validTypes.entrySet()}"
                             optionKey="key" optionValue="${{PropertyDefinition.getLocalizedValue(it.key)}}"
                             name="cust_prop_type"
-                            id="cust_prop_modal_select" />
+                            id="pd_type" />
                     </div>
                     <div class="field five wide">
                         <label class="property-label">${message(code:'propertyDefinition.expl.label')}</label>
                         <textarea name="cust_prop_expl" id="eust_prop_expl" class="ui textarea"></textarea>
                     </div>
 
-                    <div class="field six wide hide" id="cust_prop_ref_data_name">
+                    <div class="field six wide hide" id="remoteRefdataSearchWrapper">
                         <label class="property-label"><g:message code="refdataCategory.label" /></label>
-                        <input type="hidden" name="refdatacategory" id="cust_prop_refdatacatsearch"/>
+                        <select class="ui search selection dropdown remoteRefdataSearch" name="refdatacategory"></select>
                     </div>
                 </div>
 
@@ -243,51 +244,22 @@
         </ui:modal>
 
 		<laser:script file="${this.getGroovyPageFileName()}">
-
-            if( $( "#cust_prop_modal_select option:selected" ).val() == "${RefdataValue.class.name}") {
-                $("#cust_prop_ref_data_name").show();
+            if( $( "#pd_type option:selected" ).val() == "${RefdataValue.class.name}") {
+                $("#remoteRefdataSearchWrapper").show();
             } else {
-                 $("#cust_prop_ref_data_name").hide();
+                 $("#remoteRefdataSearchWrapper").hide();
             }
 
-			$('#cust_prop_modal_select').change(function() {
-				var selectedText = $( "#cust_prop_modal_select option:selected" ).val();
+			$('#pd_type').change(function() {
+				var selectedText = $( "#pd_type option:selected" ).val();
 				if( selectedText == "${RefdataValue.class.name}") {
-					$("#cust_prop_ref_data_name").show();
+					$("#remoteRefdataSearchWrapper").show();
 				}else{
-					$("#cust_prop_ref_data_name").hide();
+					$("#remoteRefdataSearchWrapper").hide();
 				}
 			});
 
-			$("#cust_prop_refdatacatsearch").select2({
-				placeholder: "Kategorie eintippen...",
-                minimumInputLength: 1,
-
-                formatInputTooShort: function () {
-                    return "${message(code:'select2.minChars.note')}";
-                },
-                formatNoMatches: function() {
-                    return "${message(code:'select2.noMatchesFound')}";
-                },
-                formatSearching:  function() {
-                    return "${message(code:'select2.formatSearching')}";
-                },
-				ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
-					url: '${createLink(controller:'ajaxJson', action:'lookup')}',
-					dataType: 'json',
-					data: function (term, page) {
-						return {
-							q: term, // search term
-							page_limit: 10,
-							baseClass:'${RefdataCategory.class.name}'
-						};
-					},
-					results: function (data, page) {
-						return {results: data.values};
-					}
-				}
-			});
-
+            c3po.remoteRefdataSearch('${createLink(controller:'ajaxJson', action:'lookup')}', '#remoteRefdataSearchWrapper');
 		</laser:script>
-
+--}%
 <laser:htmlEnd />

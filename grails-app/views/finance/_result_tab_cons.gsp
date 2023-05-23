@@ -1,5 +1,5 @@
 <!-- _result_tab_cons.gsp -->
-<%@ page import="de.laser.storage.RDStore; de.laser.finance.CostItemElementConfiguration;de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.FinanceController;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.finance.CostItemElementConfiguration;de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.FinanceController;de.laser.finance.CostItem" %>
 
 <laser:serviceInjection />
 
@@ -65,13 +65,13 @@
                 <th class="la-no-uppercase"><span class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center"><i class="money bill alternate icon"></i></span></th>
                 <g:sortableColumn property="ci.billingCurrency" title="${message(code:'default.currency.label')}" params="${sorting}"/>
                 <g:sortableColumn property="ci.costInBillingCurrency" title="${message(code:'financials.invoice_total')}" params="${sorting}"/>
-                <g:sortableColumn property="ci.taxKey.taxRate" title="${message(code:'financials.taxRate')}" params="${sorting}"/>
+                <g:sortableColumn property="ci.taxKey" title="${message(code:'financials.taxRate')}" params="${sorting}"/>
                 <th>${message(code:'financials.amountFinal')}</th>
                 <g:sortableColumn property="ci.costInLocalCurrency" title="${message(code:'financials.newCosts.value')}" params="${sorting}"/>
                 <g:sortableColumn property="ci.startDate" title="${message(code:'financials.dateFrom')}" params="${sorting}"/>
                 <g:sortableColumn property="ci.costItemElement" title="${message(code:'financials.costItemElement')}" params="${sorting}"/>
                 <%-- editable must be checked here as well because of the consortia preview! --%>
-                <g:if test="${editable && accessService.checkPermAffiliation("ORG_CONSORTIUM,ORG_INST","INST_EDITOR")}">
+                <g:if test="${editable && accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')}">
                     <th class="la-action-info"><g:message code="default.actions.label"/></th>
                 </g:if>
             </g:if>
@@ -84,12 +84,12 @@
                 <th class="la-no-uppercase"><span class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center"><i class="money bill alternate icon"></i></span></th>
                 <g:sortableColumn property="billingCurrency" title="${message(code:'default.currency.label')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance"/>
                 <g:sortableColumn property="costInBillingCurrency" title="${message(code:'financials.invoice_total')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance"/>
-                <g:sortableColumn property="taxKey.taxRate" title="${message(code:'financials.taxRate')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance"/>
+                <g:sortableColumn property="taxKey" title="${message(code:'financials.taxRate')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance"/>
                 <th>${message(code:'financials.amountFinal')}</th>
                 <g:sortableColumn property="costInLocalCurrency" title="${message(code:'financials.newCosts.value')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance"/>
                 <g:sortableColumn property="startDate" title="${message(code:'financials.dateFrom')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance"/>
                 <g:sortableColumn property="costItemElement" title="${message(code:'financials.costItemElement')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance"/>
-                <g:if test="${accessService.checkPermAffiliation("ORG_CONSORTIUM,ORG_INST","INST_EDITOR") && !params.orgBasicMemberView}">
+                <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR') && !params.orgBasicMemberView}">
                     <th class="la-action-info"><g:message code="default.actions.label"/></th>
                 </g:if>
             </g:else>
@@ -237,7 +237,7 @@
                             ${ci.taxKey.taxRate+'%'}
                         </g:if>
                         <g:elseif test="${ci.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE}">
-                            ${RDStore.TAX_REVERSE_CHARGE.getI10n("value")}
+                            ${RDStore.TAX_TYPE_REVERSE_CHARGE.getI10n("value")}
                         </g:elseif>
                         <g:elseif test="${ci.taxKey in [CostItem.TAX_TYPES.TAX_CONTAINED_7,CostItem.TAX_TYPES.TAX_CONTAINED_19]}">
                             ${ci.taxKey.taxType.getI10n("value")}
@@ -267,7 +267,7 @@
                         ${ci.costItemElement?.getI10n("value")}
                     </td>
                     <g:if test="${!params.orgBasicMemberView}">
-                        <g:if test="${accessService.checkPermAffiliation("ORG_CONSORTIUM","INST_EDITOR")}">
+                        <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR')}">
                             <td class="x">
                                 <g:if test="${fixedSubscription}">
                                     <g:link mapping="subfinanceEditCI" params='[sub:"${fixedSubscription.id}", id:"${ci.id}", showView:"cons", offset: params.offset]' class="ui icon button blue la-modern-button trigger-modal" data-id_suffix="edit_${ci.id}"
@@ -287,7 +287,7 @@
                                         aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                         <i aria-hidden="true" class="write icon"></i>
                                     </g:link>
-                                    <span  class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'financials.costItem.copy.tooltip')}">
+                                    <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'financials.costItem.copy.tooltip')}">
                                         <g:link controller="finance" action="copyCostItem" params='[sub:"${ci.sub?.id}", id:"${ci.id}", showView:"cons", offset: params.offset]' class="ui icon button blue la-modern-button trigger-modal" data-id_suffix="copy_${ci.id}">
                                             <i class="copy icon"></i>
                                         </g:link>
@@ -302,7 +302,7 @@
                                 </g:link>
                             </td>
                         </g:if>
-                        <g:elseif test="${accessService.checkPermAffiliation("ORG_INST","INST_EDITOR")}">
+                        <g:elseif test="${accessService.ctxPermAffiliation(CustomerTypeService.ORG_INST_PRO, 'INST_EDITOR')}">
                             <td class="x">
                                 <g:if test="${fixedSubscription}">
                                     <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'financials.costItem.transfer.tooltip')}">

@@ -1,7 +1,7 @@
 <%@ page import="de.laser.storage.RDStore" %>
 
     <g:set var="entityName" value="${message(code: 'org.label')}"/>
-    <g:set var="title" value="${message(code: 'menu.institutions.manage_consortia')}"/>
+    <g:set var="title" value="${message(code: 'menu.my.insts')}"/>
     <g:set var="memberPlural" value="${message(code: 'consortium.member.plural')}"/>
 
 <laser:htmlStart text="${title}" serviceInjection="true" />
@@ -13,8 +13,9 @@
 <ui:controlButtons>
     <ui:exportDropdown>
         <ui:exportDropdownItem>
-            <a class="item" data-ui="modal" href="#individuallyExportModal">Click Me Excel Export</a>
+            <a class="item" data-ui="modal" href="#individuallyExportModal">Export</a>
         </ui:exportDropdownItem>
+        <%--
         <g:if test="${filterSet}">
             <ui:exportDropdownItem>
                 <g:link class="item js-open-confirm-modal"
@@ -41,6 +42,7 @@
                 <g:link class="item" action="manageMembers" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link>
             </ui:exportDropdownItem>
         </g:else>
+        --%>
     </ui:exportDropdown>
     <g:if test="${editable}">
         <laser:render template="actions"/>
@@ -51,8 +53,8 @@
 
 <ui:messages data="${flash}"/>
     <%
-        List configShowFilter = [['name', 'identifier', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value'], ['subStatus', 'subValidOn'], ['subPerpetualAccess'], ['providers']]
-        List configShowTable = ['sortname', 'name', 'status', 'mainContact', 'libraryType', 'legalInformation', 'numberOfSubscriptions', 'numberOfSurveys']
+        List configShowFilter = [['name', 'identifier'], ['identifierNamespace', 'customerIDNamespace'], ['country&region', 'libraryNetwork', 'libraryType', 'subjectGroup'], ['property&value', 'subStatus', 'subValidOn'], ['subPerpetualAccess'], ['providers']]
+        List configShowTable = ['sortname', 'name', 'mainContact', 'libraryType', 'status', 'legalInformation', 'numberOfSubscriptions', 'numberOfSurveys']
     %>
 
     <ui:filter>
@@ -66,7 +68,7 @@
     </ui:filter>
 <div class="la-clear-before">
     <g:if test="${members}">
-        <laser:render template="export/individuallyExportModalOrgs" model="[modalID: 'individuallyExportModal', orgType: 'institution']" />
+        <laser:render template="export/individuallyExportModalOrgs" model="[modalID: 'individuallyExportModal', orgType: 'institution', contactSwitch: true]" />
         <g:form action="manageMembers" controller="myInstitution" method="post" class="ui form la-clear-before" data-confirm-id="manageMembers_form">
             <laser:render template="/templates/filter/orgFilterTable"
                       model="[orgList: members,

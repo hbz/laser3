@@ -4,7 +4,6 @@ import de.laser.finance.CostItem
 import de.laser.finance.PriceItem
 import de.laser.config.ConfigDefaults
 import de.laser.config.ConfigMapper
-import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.base.AbstractLockableService
 import de.laser.interfaces.CalculatedType
@@ -73,7 +72,6 @@ class RenewSubscriptionService extends AbstractLockableService {
                             copySub.orgRelations = null
                             copySub.prsLinks = null
                             copySub.derivedSubscriptions = null
-                            copySub.pendingChanges = null
                             copySub.propertySet = null
                             copySub.costItems = null
                             copySub.ieGroups = null
@@ -343,7 +341,7 @@ class RenewSubscriptionService extends AbstractLockableService {
 
                                 }
 
-                                Doc docContent = new Doc(contentType: Doc.CONTENT_TYPE_STRING, content: 'Diese Lizenz ist eine Kopie der vorherigen Lizenz. Es wurde automatisch vom System erstellt, da in der vorherigen Lizenz das Flag "Automatisch um ein Jahr verlängern" gesetzt war. (This subscription is a copy of the previous subscription. It was created automatically by the system because the flag "Automatic renew annually" was set in the previous subscription.)', title: AUTOMATIC_RENEW_ANNUALLY_DOC_TITLE, type: RefdataValue.getByValueAndCategory('Note', RDConstants.DOCUMENT_TYPE), owner: org, user: null)
+                                Doc docContent = new Doc(contentType: Doc.CONTENT_TYPE_STRING, content: 'Diese Lizenz ist eine Kopie der vorherigen Lizenz. Es wurde automatisch vom System erstellt, da in der vorherigen Lizenz das Flag "Automatisch um ein Jahr verlängern" gesetzt war. (This subscription is a copy of the previous subscription. It was created automatically by the system because the flag "Automatic renew annually" was set in the previous subscription.)', title: AUTOMATIC_RENEW_ANNUALLY_DOC_TITLE, type: RDStore.DOC_TYPE_NOTE, owner: org, user: null)
                                 if(docContent.save()) {
                                     DocContext dc = new DocContext(subscription: copySub, owner: docContent)
                                     dc.save()

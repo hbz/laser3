@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.DateUtils; de.laser.License; de.laser.Subscription; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.workflow.*; de.laser.WorkflowService" %>
+<%@ page import="de.laser.utils.DateUtils; de.laser.License; de.laser.Subscription; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.workflow.*; de.laser.WorkflowOldService" %>
 
 <laser:htmlStart message="menu.admin.manageWorkflows" serviceInjection="true" />
 
@@ -49,20 +49,20 @@
         </div>
     </ui:msg>
 
-    <g:set var="currentWorkflows" value="${workflowService.sortByLastUpdated( WfWorkflow.findAll() )}" />
+    <g:set var="currentWorkflows" value="${workflowOldService.sortByLastUpdated( WfWorkflow.findAll() )}" />
     <p class="ui header">
         * Workflows insgesamt: <ui:totalNumber total="${currentWorkflows.size()}"/>
     </p>
     <br />
 
     <g:if test="${key == WfWorkflow.KEY}">
-        <laser:render template="/templates/workflow/opResult" model="${[key:key, cmd:cmd, status:status, obj:workflow]}" />
+        <laser:render template="/templates/workflow/old/opResult" model="${[key:key, cmd:cmd, status:status, obj:workflow]}" />
     </g:if>
     <g:elseif test="${key == WfTask.KEY}">
-        <laser:render template="/templates/workflow/opResult" model="${[key:key, cmd:cmd, status:status, obj:task]}" />
+        <laser:render template="/templates/workflow/old/opResult" model="${[key:key, cmd:cmd, status:status, obj:task]}" />
     </g:elseif>
     <g:elseif test="${key == WfCondition.KEY}">
-        <laser:render template="/templates/workflow/opResult" model="${[key:key, cmd:cmd, status:status, obj:condition]}" />
+        <laser:render template="/templates/workflow/old/opResult" model="${[key:key, cmd:cmd, status:status, obj:condition]}" />
     </g:elseif>
 
     <g:each in="${currentWorkflows}" var="wf">
@@ -202,7 +202,7 @@
     </p>
 
     <g:if test="${key == WfWorkflowPrototype.KEY}">
-        <laser:render template="/templates/workflow/opResult" model="${[key:key, cmd:cmd, status:status, obj:workflow]}" />
+        <laser:render template="/templates/workflow/old/opResult" model="${[key:key, cmd:cmd, status:status, obj:workflow]}" />
     </g:if>
 
     <table class="ui celled la-js-responsive-table la-table compact table">
@@ -277,7 +277,7 @@
     </p>
 
     <g:if test="${key == WfTaskPrototype.KEY}">
-        <laser:render template="/templates/workflow/opResult" model="${[key:key, cmd:cmd, status:status, obj:task]}" />
+        <laser:render template="/templates/workflow/old/opResult" model="${[key:key, cmd:cmd, status:status, obj:task]}" />
     </g:if>
 
     <table class="ui celled la-js-responsive-table la-table compact table">
@@ -372,7 +372,7 @@
     </p>
 
     <g:if test="${key == WfConditionPrototype.KEY}">
-        <laser:render template="/templates/workflow/opResult" model="${[key:key, cmd:cmd, status:status, obj:condition]}" />
+        <laser:render template="/templates/workflow/old/opResult" model="${[key:key, cmd:cmd, status:status, obj:condition]}" />
     </g:if>
 
     <table class="ui celled la-js-responsive-table la-table compact table">
@@ -559,7 +559,7 @@
 
     $('.wfModalLink').on('click', function(e) {
         e.preventDefault();
-        var func = bb8.ajax4SimpleModalFunction("#wfModal", $(e.currentTarget).attr('href'), false);
+        var func = bb8.ajax4SimpleModalFunction("#wfModal", $(e.currentTarget).attr('href'));
         func();
     });
 </laser:script>

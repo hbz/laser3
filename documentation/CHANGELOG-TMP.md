@@ -7,15 +7,201 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+#### day of release 3.1
+
+5062    23.05.2023  rc-3.1  3.1         Andreas Bug         Paketzuschnitt wurde nicht verarbeitet
+
+--      23.05.2023  rc-3.1  3.1         Andreas Feature     Bezeichner "Bestand" auf "Paket" umgestellt
+
+5058    23.05.2023  rc-3.1  3.1         Andreas Bug         Einrichtungen konnten nicht hinzugefügt werden
+
+5056    23.05.2023  rc-3.1  3.1         David   Feature     Reporting: Bestand sinngemäß in Paket umbenennen
+
+5055    23.05.2023  rc-3.1  3.1         David   Feature     Reporting: Lizenz > Bestand > Erscheinungsjahr
+
+5051    22.05.2023  rc-3.1  3.1         Andreas Feature     Designanpassungen in der Paketdetailsicht
+
+5050    22.05.2023  rc-3.1  3.1         Andreas Bug         Kosten waren nicht sortierbar
+
+--      22.05.2023  rc-3.1  3.1         Andreas Feature     Export per Konfiguration für Meine Verträge ist jetzt auch für PDF verfügbar
+
+5049    22.05.2023  rc-3.1  3.1         David   Bug         500er QA Titelumfrage nicht aufrufbar
+
+5002    22.05.2023  rc-3.1  3.1         David   Feature     DEV: Kosten-Export im Reporting
+
+5038    19.05.2023  rc-3.1  3.1         Andreas Feature     Hinweis auf Maximaleintrag
+
+5039    17.05.2023  dev     3.1         David   Feature     Umfragen - Navigation & weitere Anpassungen
+
+5047    17.05.2023  dev     3.1         Andreas Bug         Statistik lokaler Lizenzen konnte nicht aufgerufen werden
+
+5044    17.05.2023  dev     3.1         Andreas Bug         Tippfehler in Referenzwert behoben
+
+5027    17.05.2023  dev     3.1         Andreas Feature     Umstrukturierungen bei den Kontaktkacheln
+
+4924    17.05.2023  dev     3.1         Andreas Feature     Entfernen des überflüssigen Reiters
+
+5028    16.05.2023  dev     3.1         Andreas Feature     Umstellung der we:kb-Kommunikation auf POST
+
+5039    15.05.2023  dev     3.1         David   Feature     Umfragen - Navigation & weitere Anpassungen
+
+5017    12.05.2023  dev     3.1         Andreas Feature     verschiedene Umbauten im Excel-Export
+
+5030    10.05.2023  dev     3.1         Andreas Bug         Identifier-Namensraum-Auswahl korrigiert
+
+5024    09.05.2023  dev     3.1         Moe     Feature     Einführung Dauerhaft-Sternchen / bestehende Bestände nachziehen
+
+4933    09.05.2023  dev     3.1         Moe     Feature     Umfrage-Merkmale gruppieren
+
+5025    09.05.2023  dev     3.1         Moe     Bug         GASCO-Monitor: Paketverknüpfung Journals
+
+4754    08.05.2023  dev     3.1         Moe     Feature     Dauerhafttitel Container
+
+4986    09.05.2023  dev     3.1         Andreas Feature     Schaltschrank-betreffende Teile umgesetzt
+
+5022    09.05.2023  dev     3.1         David   Feature     Aufgabe erstellen: Vorauswahl Bearbeiter auf "einzelnen Mitarbeiter" umstellen
+
+5018    09.05.2023  dev     3.1         Andreas Bug         obsolete Exporteinstellungen herausgenommen
+
+5009    09.05.2023  dev     3.1         Andreas Feature     Verschiedene Optimierungen in der Statistik
+
+5007    09.05.2023  dev     3.1         Andreas Bug         falsche Summierungen behoben
+
+5008    08.05.2023  dev     3.1         David   Feature     Zauberstab-Actions vereinheitlichen
+
+5003    08.05.2023  dev     3.1         David   Bug         DEV: Meine Anbieter - Funktionen eingeschränkt für Pro-Nutzer
+
+4998    03.05.2023  dev     3.1         Andreas Bug         Bugs beim Erzeugen und Export von Nutzerzahlen behoben
+
+4997    02.05.2023  dev     3.1         David   Feature     Sicherheitsabfrage Merkmale umbennen
+
+4994    02.05.2023  dev     3.1         David   Feature     DEV: Workflow braucht noch Sicherheitsabfrage
+
+4993    02.05.2023  dev     3.1         David   Feature     Javascript: JSPC - dynPostFunc entfernen
+
+4977    02.05.2023  dev     3.1         Andreas Bug         Unterbinden der Statistikgeneration wenn keine SUSHI-Quelle vorhanden
+
+4975    02.05.2023  dev     3.1         Andreas Feature     Umstellung des Statistikabrufes auf konfigurierbare Authentifizierungsparameter
+
+4874    29.04.2023  dev     3.1         Andreas Feature     Umstellung sämtlicher ClickMich-Exporte und Sicht "Alle Anbieter" aufgeräumt
+
+4983    28.04.2023  dev     3.1         David   Feature     Autofocus für modale Dialoge
+
+4986    27.04.2023  dev     3.1         Moe     Feature     Konzept: Schaltpult und Paketverknüpfung + Bestandsreiter
+
+4985    27.04.2023  dev     3.1         Andreas Bug         fehlender Referenzwert nachgetragen
+
+4989    27.04.2023  dev     3.1         Moe     Feature     AsynchronousMail Plugin in LASER hinzufügen
+
+4935    26.04.2023  dev     3.1         Moe     Feature     Umfrageübersicht: Bei Kostenangabe Bezug zu aktuellem Lizenzjahr visualisieren
+
+4407    27.04.2023  dev     3.1         David   Feature     API_LEVEL_READ automatisch für Vollnutzer setzen
+
+4984    27.04.2023  dev     3.1         David   Feature     Reporting "Bestand": Sortierung und Beschränkung
+
+4972    26.04.2023  dev     3.1         David   Feature     Zugriffs- und Bearbeitungsrechte
+
+4971    26.04.2023  dev     3.1         David   Feature     Hauptnavigation anpassen
+
+4970    26.04.2023  dev     3.1         David   Feature     Subnavigation anpassen
+
+4944    26.04.2023  dev     3.1         Andreas Feature     Paketsynchronisationsmechanismus eingebaut
+
+4802    26.04.2023  dev     3.1         Andreas Feature     Massenbearbeitung von Beständen angepasst
+
+4979    25.04.2023  dev     3.1         Andreas Bug         Nutzerzahl ließ sich nicht löschen
+
+4840    25.04.2023  dev     3.1         Andreas Feature     Datenkommunikation mit we:kb auf api2 umgerüstet
+
+4927    24.04.2023  dev     3.1         Moe     Feature     Betreff E-Mails aus LAS:eR
+
+4894    24.04.2023  dev     3.1         Moe     Feature     Neue Funktion: Benachrichtigung Benutzername 
+
+4927    24.04.2023  dev     3.1         Moe     Feature     Betreff E-Mails aus LAS:eR
+
+4878    24.04.2023  dev     3.1         Moe     Feature     Titelumfrage: Auswählbare Titel
+
+4906    24.04.2023  dev     3.1         Moe     Feature     Titelumfrage Export: Extra Spalte für Titel im Bestand
+
+4835    24.04.2023  dev     3.1         Andreas Feature     neue Struktur der Titeländerungen implementiert
+
+4619    24.04.2023  dev     3.1         Andreas Feature     Generierung des Sortiertitels umgestellt
+
+4963    21.04.2023  dev     3.1         Andreas Bug         Bug im Titelexport behoben
+
+4951    21.04.2023  dev     3.1         Andreas Feature     verschiedene Umstellungen im Vertrag-Lizenz-Filter
+
+4958    20.04.2023  dev     3.1         Moe     Feature     Titelumfrage Zwischenebene überarbeiten
+
+4968    20.04.2023  dev     3.1         Moe     Feature     Remove AcceptStatus
+
+4969    20.04.2023  dev     3.1         Andreas Feature     Umgestaltung des Kontaktpanels bei Anbieter
+
+4967    20.04.2023  dev     3.1         Andreas Feature     Auflösung des Panels orgSector und Statusanzeige
+
+4965    20.04.2023  dev     3.1         Andreas Bug         Kontaktmodal ließ sich nicht öffnen
+
+4952    20.04.2023  dev     3.1         Andreas Feature     Kurznamen der Anbieter werden aus der we:kb geholt
+
+4922    20.04.2023  dev     3.1         Andreas Feature     Shibboleth-Federations in LAS:eR angezeigt
+
+----    18.04.2023  dev     3.1         Moe     Feature     delete PlatformAccessMethod
+
+4932    18.04.2023  dev     3.1         Moe     Feature     zugangskonfiguration anpassen
+
+4829    18.04.2023  dev     3.1         David   Bug         Javascript Library Trumbowyg v2.26.0 funktioniert nicht mehr richtig
+
+4962    17.04.2023  dev     3.1         David   Feature     Sicherheitsabfrage bei Anmerkungen ändern
+
 --      13.04.2023  rc-3.0  3.0.7       Andreas Bug         Brücke für Statistik-Sync eingebaut
+
+4955    12.04.2023  dev     3.1         Moe     Feature     Umfrage erweiteren auf 4-MJL und 5-MJL
+
+4928    12.04.2023  dev     3.1         Moe     Feature     Umfragen: Bemerkungsfelder
+
+4956    11.04.2023  dev     3.1         Andreas Bug         Auslesefehler bei Mailadressen behoben
+
+4918    11.04.2023  dev     3.1         Andreas Feature     Titel-Status ist nicht mehr nullable
 
 4954    05.04.2023  rc-3.0  3.0.6       Moe     Feature     allgemeine Merkmale Lizenzebene
 
+4951    04.04.2023  dev     3.1         Andreas Bug         Filter "Dauerhafter Zugriff" fehlte in Übersicht von verknüpften Lizenzen eines Vertrages
+
+4950    04.04.2023  dev     3.1         David   Feature     Filter bei "Anbieter/Lieferant" (alle und meine)
+
 4948    04.04.2023  rc-3.0  3.0.6       Moe     Bug         Lizenz erst nach Ablaufdatum auf abgelaufen setzen
+
+4947    04.04.2023  rc-3.0  3.0.6       Moe     Bug         Erinnerung an eigene Organisationsmerkmale vom Typ datum funktioniert nicht
 
 4946    04.04.2023  rc-3.0  3.0.6       Moe     Bug         Automatische Verlängerung erzeugt keine Nachfolge-Lizenz
 
-4947    04.04.2023  rc-3.0  3.0.6       Moe     Bug         Erinnerung an eigene Organisationsmerkmale vom Typ datum funktioniert nicht
+4789    31.03.2023  dev     3.1         Andreas Feature     Aktualisieren der Anbieterdaten
+
+4741    31.03.2023  dev     3.1         Andreas Feature     Zusammenführung von Einrichtungen
+
+4834    30.03.2023  dev     3.1         Andreas Feature     Umstellung der Statistikladevorgänge auf direkten Abruf vom Anbieter
+
+4904    29.03.2023  dev     3.1         David   Feature     GASCO Sicht anpassen
+
+4942    29.03.2023  dev     3.1         David   Feature     GASCO und we:kb mit separatem Tab öffnen
+
+4930    28.03.2023  dev     3.1         David   Feature     "Teilnehmer" durch "Einrichtung" ersetzen
+
+4893    28.03.2023  dev     3.1         Andreas Feature     Umgang mit leeren Reports implementiert
+
+4892    28.03.2023  dev     3.1         Andreas Feature     Reports werden kohärent angeboten
+
+4813    28.03.2023  dev     3.1         Andreas Feature     (siehe 4893) Umgang mit leeren Reports implementiert
+
+4931    27.03.2023  dev     3.1         David   Bug         Verlorene Rechte "meine Einrichtungen"
+
+4908    24.03.2023  dev     3.1         Andreas Bug         Ausschlussliste war nicht vollständig, was das Hinzufügen von Teilnehmern verhinderte
+
+4881    24.03.2023  dev     3.1         Andreas Feature     Kundennummer-Schlüsselpaare können ab jetzt auch beim Hinzufügen von Teilnehmern angelegt werden
+
+4860    24.03.2023  dev     3.1         Andreas Bug         (betraf nur DEV) Deadlock verhinderte den Übertrag von Merkmalen
+
+4911    22.03.2023  dev     3.1         David   Feature     Refactoring: Kundentyp
 
 4914    21.03.2023  rc-3.0  3.0.5       Andreas Bug         fehlendes Komma in der Abfrage ergänzt
 
@@ -29,7 +215,35 @@
 
 4869    20.03.2023  rc-3.0  3.0.5       Andreas Bug         API-Version 1.7 nach RC migriert, Bugs behoben
 
+4842    17.03.2023  dev     3.1         Moe     Feature     Optimierung Reminder-Mail in Umfragen
+
+4875    14.03.2023  dev     3.1         David   Feature     Breadcumb / Seitentitel für Orgs aufräumen
+
+4879    13.03.2023  dev     3.1         David   Feature     Kennzeichnung von 'Meine'-Objekten
+
+4751    10.03.2023  dev     3.1         Moe     Feature     Umfrage-Kategorie "neu"
+
+4696    10.03.2023  dev     3.1         Moe     Feature     Überprüfung: Titel-Umfrage - Bestand verknüpft?
+
+4684    10.03.2023  dev     3.1         Moe     Feature     Titel-Umfrage: Paket-Verknüpfung bei Teilnehmer 
+
+4888    10.03.2023  dev     3.1         Moe     Feature     Titelauswahl: Summe des Gesamtbestandes
+
+4778    10.03.2023  dev     3.1         Moe     Feature     GRID-ID löschen und neue ROR-ID
+
+4871    07.03.2023  dev     3.1         Moe     Bug         Aufgaben-Erinnerungsmail: Fälligkeitsdatum wird nicht aktualisiert
+
+4738    07.03.2023  dev     3.1         Moe     Feature     Neue Kunden-Typen -> Konsortialstelle Basis
+
+4859    22.02.2023  dev     3.1         Andreas Bug         Umwandlungsvorschrift bei Tausender/Dezimaltrenner korrigiert
+
 --      22.02.2023  rc-3.0  3.0.5       Andreas Bug         Umstrukturierungen für Database Reports
+
+4843    16.02.2023  dev     3.0.5       David   Feature     Database Migration Plugin aktualisieren
+
+4843    16.02.2023  dev     3.1         David   Feature     Database Migration Plugin aktualisieren
+
+--      15.02.2023  dev     3.1         David   Feature     Grails 5.3.2
 
 --      15.02.2023  rc-3.0  3.0.4       Andreas Bug         Synchronisationsfehler behoben
 
@@ -37,19 +251,51 @@
 
 4818    14.02.2023  rc-3.0  3.0.4       Moe     Bug         Individuelle Umfrage Mails erstellen: Nachbesserung/Bug
 
+4831    13.02.2023  dev     3.1         David   Feature     Darstellung: Seitenkacheln
+
 4828    13.02.2023  rc-3.0  3.0.4       Andreas Bug         Merkmalswertfilter schaut bei Konsortialstellen nur noch auf die Elternebene
+
+4826    10.02.2023  dev     3.1         Andreas Bug         verschiedene Bugs und Ausbesserungen bei der Paketverwaltung der Teilnehmer
 
 4824    09.02.2023  rc-3.0  3.0.4       Andreas Feature     EZB-Lizenzlistenendpunkt um Einrichtungsfilter erweitert
 
+4823    09.02.2023  dev     3.1         David   Feature     Menü und Funktionen aufräumen: Data Manager
+
+4819    09.02.2023  dev     3.1         Andreas Feature     Anmerkungsfeld für Zugangskonfigurationen angelegt
+
+4817    09.02.2023  dev     3.1         Andreas Feature     verbesserte Anzeige der Alternativnamen bei Anbieter
+
+4812    08.02.2023  dev     3.1         Andreas Bug         Anbieter wurde nicht im Dropdown vorbelegt
+
+4808    08.02.2023  dev     3.1         Andreas Bug         500er bei der Teilnehmersicht
+
+4806    08.02.2023  dev     3.1         Andreas Bug         Funktionalität zum Löschen von nicht hart kodierten Merkmalen korrigiert
+
+3767    08.02.2023  dev     3.1         Andreas Feature     Bezeichner korrigiert
+
 4820    07.02.2023  rc-3.0  3.0.4       Andreas Feature     seltsamer Bug unterschlug Kosten
 
+4758    07.02.2023  dev     3.1         Andreas Feature     Weiterbau des ClickMichExcels
+
+4779    06.02.2023  dev     3.1         Andreas Feature     Umstrukturierung der Organisationssicht
+
 4798    03.02.2023  rc-3.0  3.0.4       David   Feature     Allgemeine Merkmale für Organisationen entfernen
+
+4492    02.02.2023  dev     3.1         Andreas Feature     Adressen können nicht mehr zu Personen neu angelegt werden
 
 --      02.02.2023  rc-3.0  3.0.3       Andreas Bug         Meine Lizenzen pro Einrichtung lieferte unvollständige Daten
 
 --      02.02.2023  rc-3.0  3.0.3       Andreas Bug         inkorrekte Rundung der Rechnungssumme behoben
 
 4799    01.02.2023  rc-3.0  3.0.3       Moe     Bug         Automatische Verlängerung erzeugt doppelte Anmerkung
+
+4772    01.02.2023  dev     3.1         Andreas Bug         Entfernen zweier funktionsloser Checkboxen
+
+4766    01.02.2023  dev     3.1         Andreas Feature     Brotkrümelweiche bei Einrichtungen eingebaut
+
+4764    01.02.2023  dev     3.1         Andreas Bug         Ausbau einer Mehrfachsicherung, die zum Verhängnis wurde
+
+4585    01.02.2023  dev     3.1         Andreas Feature     weitreichende Umstrukturierung des Vererbungsmechanismusses
 
 4790    01.02.2023  rc-3.0  3.0.3       Andreas Bug         Absturz bei Ablehnen einer Änderung behoben
 
@@ -77,6 +323,12 @@
 
 --      16.01.2023  rc-3.0  3.0.3       Moe     Bug         allgemeine Umfrage öffnen sich nicht mehr
 
+4785    24.01.2023  dev     3.1         David   Feature     Javascript: Select2 durch Fomantic (remote) ersetzen
+
+4761    13.01.2023  dev     3.1         Andreas Feature     Entknüpfen ohne Titel umgestellt auf Nur Titel entknüpfen
+
+4638    13.01.2023  dev     3.1         Andreas Feature     Umstrukturierung der Paketverwaltung
+
 4757    12.01.2023  rc-3.0  3.0.2       Moe     Feature     Titelumfrage: Reiter + Export Auswählbar ausblenden bei Dauerhafte Titel-Umfrage
 
 4756    12.01.2023  rc-3.0  3.0.2       Andreas Bug         Export der Lizenzen beschleunigt
@@ -101,6 +353,12 @@
 
 4743    10.01.2023  rc-3.0  3.0.2       Moe     Bug         Automatische Verlängerung 2023 ist nicht ausgeführt worden
 
+4739    10.01.2023  dev     3.1         Andreas Feature     Plattformsynchronisation und -bereinigung
+
+4585    10.01.2023  dev     3.1         Andreas Feature     Überarbeitung des Schaltschrankes, Entfall nicht mehr verwendeter Logik
+
+4261    10.01.2023  dev     3.1         Andreas Feature     Abbau der komplexen Vererbungslogik
+
 4740    05.01.2023  rc-3.0  3.0.2       Andreas Bug         Ausblenden entfernter Plattformen
 
 4735    03.01.2023  rc-3.0  3.0.1       Andreas Bug         Ladelogik der Finanzen umgestellt
@@ -109,9 +367,19 @@
 
 4733    02.01.2023  rc-3.0  3.0.1       Andreas Bug         Adressmodal war falsch verdrahtet
 
+4724    02.01.2023  dev     3.1         David   Feature     Javascript: Select2
+
+4438    29.12.2022  dev     3.1         Andreas Feature     Erweiterung des Vertragsfilters
+
 4730    28.12.2022  rc-3.0  3.0.1       Andreas Bug         Kostenausschüttung überschreibt Sichtbarkeitseinstellung trotz fehlender Eingabe
 
+3996    28.12.2022  dev     3.1         Andreas Feature     Umsetzung der Kostenberechnung
+
 4729    27.12.2022  rc-3.0  3.0.1       Andreas Bug         Kostenmodal löste bei Vollnutzern nicht aus
+
+4668    27.12.2022  dev     3.1         Andreas Feature     Export von Einrichtungsdaten korrigiert und teilweise neu implementiert
+
+4663    23.12.2022  dev     3.1         Andreas Feature     neues Lizenzmerkmal "Zuordnungsjahr"
 
 4223    22.12.2022  rc-3.0  3.0.1       Moe     Bug         Bestand aus Vorgängerlizenz bei Titelauswahl in lokalen Lizenzen blocken
 
@@ -119,17 +387,21 @@
 
 4717    22.12.2022  rc-3.0  3.0.1       David   Bug         500er in Meine Lizenzverwaltung
 
+4597    22.12.2022  dev     3.1         Andreas Feature     Massenbearbeitung von Beständen erweitert
+
 4719    21.12.2022  rc-3.0  3.0.1       Moe     Bug         Meine Umfragen pro TN: Export funktioniert nicht
 
 4686    21.12.2022  rc-3.0  3.0.1       Moe     Bug         Bestehende Titelumfrage lässt sich nicht öffnen
 
 4718    20.12.2022  rc-3.0  3.0.1       Andreas Bug         fehlende Exportfelder in Lizenzexport nachgereicht
 
-4709    20.12.2022  rc-3.0  3.0.1       Moe     Bug         Üertrag von Merkmalen bei der Lizenzverlängerung
+4709    20.12.2022  rc-3.0  3.0.1       Moe     Bug         Übertrag von Merkmalen bei der Lizenzverlängerung
 
 4711    20.12.2022  rc-3.0  3.0.1       Moe     Bug         Titel hinzufügen: Reiter Ausgewählter Bestand zeigt bei nächstem Aufruf Zahl in Bubble, Buttonsan
 
 4716    20.12.2022  rc-3.0  3.0.1       Andreas Bug         falsche Kopie der Mailadressen
+
+4699    19.12.2022  dev     3.1         Andreas Feature     neue Filterfelder "Identifikatorbereich" und "Kundennummerbereich"
 
 4714    19.12.2022  rc-3.0  3.0         Andreas Feature     URL-Präfixes nachgereicht
 

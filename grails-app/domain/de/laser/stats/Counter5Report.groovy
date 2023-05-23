@@ -9,7 +9,6 @@ import groovy.util.logging.Slf4j
 @Slf4j
 class Counter5Report extends AbstractReport {
 
-
     static final String PLATFORM_MASTER_REPORT          = "pr"
     static final String PLATFORM_USAGE                  = "pr_p1"
     static final String DATABASE_MASTER_REPORT          = "dr"
@@ -100,9 +99,9 @@ class Counter5Report extends AbstractReport {
      * These are the column headers which are mandatory for the respective COUNTER 5 report
      */
     static enum COLUMN_HEADERS {
-        PR (['Platform', 'Metric_Type', 'Reporting_Period_Total'] as LinkedHashSet<String>),
-        PR_P1 (['Platform', 'Metric_Type', 'Reporting_Period_Total'] as LinkedHashSet<String>),
-        DR (['Database', 'Publisher', 'Publisher_ID', 'Platform', 'Proprietary_ID', 'Metric_Type', 'Reporting_Period_Total'] as LinkedHashSet<String>),
+        PR (['Platform', 'Data_Type', 'Metric_Type', 'Reporting_Period_Total'] as LinkedHashSet<String>),
+        PR_P1 (['Platform', 'Data_Type', 'Metric_Type', 'Reporting_Period_Total'] as LinkedHashSet<String>),
+        DR (['Database', 'Publisher', 'Publisher_ID', 'Platform', 'Proprietary_ID', 'Data_Type', 'Metric_Type', 'Reporting_Period_Total'] as LinkedHashSet<String>),
         DR_D1 (['Database', 'Publisher', 'Publisher_ID', 'Platform', 'Proprietary_ID', 'Metric_Type', 'Reporting_Period_Total'] as LinkedHashSet<String>),
         DR_D2 (['Database', 'Publisher', 'Publisher_ID', 'Platform', 'Proprietary_ID', 'Metric_Type', 'Reporting_Period_Total'] as LinkedHashSet<String>),
         TR (['Title', 'Publisher', 'Publisher_ID', 'Platform', 'DOI', 'Proprietary_ID', 'ISBN', 'Print_ISSN', 'Online_ISSN', 'URI', 'Metric_Type', 'Reporting_Period_Total'] as LinkedHashSet<String>),
@@ -124,9 +123,96 @@ class Counter5Report extends AbstractReport {
         public LinkedHashSet<String> headers
     }
 
+    static enum METRIC_TYPES {
+        PR (['Searches_Platform', 'Total_Item_Investigations', 'Total_Item_Requests', 'Unique_Item_Investigations', 'Unique_Item_Requests', 'Unique_Title_Investigations', 'Unique_Title_Requests'] as LinkedHashSet<String>),
+        //PR_P1 (['Searches_Platform', 'Total_Item_Requests', 'Unique_Item_Requests', 'Unique_Title_Requests'] as LinkedHashSet<String>),
+        DR (['Searches_Automated', 'Searches_Federated', 'Searches_Regular', 'Total_Item_Investigations', 'Total_Item_Requests', 'Unique_Item_Investigations', 'Unique_Item_Requests', 'Unique_Title_Investigations', 'Unique_Title_Requests', 'Limit_Exceeded', 'No_License'] as LinkedHashSet<String>),
+        /*
+        DR_D1 (['Searches_Automated', 'Searches_Federated', 'Searches_Regular', 'Total_Item_Investigations', 'Total_Item_Requests'] as LinkedHashSet<String>),
+        DR_D2 (['Limit_Exceeded', 'No_License'] as LinkedHashSet<String>),
+        */
+        TR (['Total_Item_Investigations', 'Total_Item_Requests', 'Unique_Item_Investigations', 'Unique_Item_Requests', 'Unique_Title_Investigations', 'Unique_Title_Requests', 'Limit_Exceeded', 'No_License'] as LinkedHashSet<String>),
+        /*
+        TR_B1 (['Total_Item_Requests', 'Unique_Item_Requests'] as LinkedHashSet<String>),
+        TR_B2 (['Limit_Exceeded', 'No_License'] as LinkedHashSet<String>),
+        TR_B3 (['Total_Item_Investigations', 'Total_Item_Requests', 'Unique_Item_Investigations', 'Unique_Item_Requests', 'Unique_Title_Investigations', 'Unique_Title_Requests'] as LinkedHashSet<String>),
+        TR_J1 (['Total_Item_Requests', 'Unique_Item_Requests'] as LinkedHashSet<String>),
+        TR_J2 (['Limit_Exceeded', 'No_License'] as LinkedHashSet<String>),
+        TR_J3 (['Total_Item_Investigations', 'Total_Item_Requests', 'Unique_Item_Investigations', 'Unique_Item_Requests'] as LinkedHashSet<String>),
+        TR_J4 (['Total_Item_Requests', 'Unique_Item_Requests'] as LinkedHashSet<String>),
+        */
+        IR (['Total_Item_Investigations', 'Total_Item_Requests', 'Unique_Item_Investigations', 'Unique_Item_Requests', 'Limit_Exceeded', 'No_License'] as LinkedHashSet<String>)
+        /*
+        IR_A1 (['Total_Item_Requests', 'Unique_Item_Requests'] as LinkedHashSet<String>),
+        IR_M1 (['Total_Item_Requests'] as LinkedHashSet<String>)
+        */
+
+        METRIC_TYPES(LinkedHashSet<String> metricTypes) {
+            this.metricTypes = metricTypes
+        }
+
+        public LinkedHashSet<String> metricTypes
+    }
+
+    static enum ACCESS_METHODS {
+        PR (['Regular', 'TDM'] as LinkedHashSet<String>),
+        //PR_P1 (['Regular'] as LinkedHashSet<String>),
+        DR (['Regular', 'TDM'] as LinkedHashSet<String>),
+        /*
+        DR_D1 (['Regular'] as LinkedHashSet<String>),
+        DR_D2 (['Regular'] as LinkedHashSet<String>),
+        */
+        TR (['Regular', 'TDM'] as LinkedHashSet<String>),
+        /*
+        TR_B1 (['Regular'] as LinkedHashSet<String>),
+        TR_B2 (['Regular'] as LinkedHashSet<String>),
+        TR_B3 (['Regular'] as LinkedHashSet<String>),
+        TR_J1 (['Regular'] as LinkedHashSet<String>),
+        TR_J2 (['Regular'] as LinkedHashSet<String>),
+        TR_J3 (['Regular'] as LinkedHashSet<String>),
+        TR_J4 (['Regular'] as LinkedHashSet<String>),
+        */
+        IR (['Regular', 'TDM'] as LinkedHashSet<String>)
+        /*
+        IR_A1 (['Regular'] as LinkedHashSet<String>),
+        IR_M1 (['Regular'] as LinkedHashSet<String>)
+        */
+
+        ACCESS_METHODS(LinkedHashSet<String> accessMethods) {
+            this.accessMethods = accessMethods
+        }
+
+        public LinkedHashSet<String> accessMethods
+    }
+
+    static enum ACCESS_TYPES {
+        TR (['Controlled', 'OA_Gold'] as LinkedHashSet<String>),
+        /*
+        TR_B1 (['Controlled'] as LinkedHashSet<String>),
+        TR_J1 (['Controlled'] as LinkedHashSet<String>),
+        TR_J4 (['Controlled'] as LinkedHashSet<String>),
+        */
+        IR (['Controlled', 'OA_Gold', 'Other_Free_To_Read'] as LinkedHashSet<String>)
+        /*
+        IR_A1 (['Total_Item_Requests', 'Unique_Item_Requests'] as LinkedHashSet<String>),
+        IR_M1 (['Total_Item_Requests'] as LinkedHashSet<String>)
+        */
+
+        ACCESS_TYPES(LinkedHashSet<String> accessTypes) {
+            this.accessTypes = accessTypes
+        }
+
+        public LinkedHashSet<String> accessTypes
+    }
+
     String accessType
     String accessMethod
     String dataType
+
+    static mapWith = "none"
+
+    /*
+    domain mapping unused as usage data is being fetched on-the-fly
 
     static mapping = {
         datasource           'storage'
@@ -170,5 +256,5 @@ class Counter5Report extends AbstractReport {
     }
 
     static transients = ['platform', 'reportInstitution']
-
+    */
 }

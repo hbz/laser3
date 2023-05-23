@@ -59,7 +59,7 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
         roleType        column:'prs_role_type_rv_fk'
 
         roleLinks           cascade: 'all', batchSize: 10
-        addresses           cascade: 'all', lazy: false
+        //addresses           cascade: 'all', lazy: false
         contacts            cascade: 'all', lazy: false
         propertySet   cascade: 'all', batchSize: 10
 
@@ -70,14 +70,14 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
     
     static mappedBy = [
         roleLinks:          'prs',
-        addresses:          'prs',
+        //addresses:          'prs',
         contacts:           'prs',
         propertySet:        'owner'
     ]
   
     static hasMany = [
             roleLinks: PersonRole,
-            addresses: Address,
+            //addresses: Address,
             contacts:  Contact,
             propertySet: PersonProperty
     ]

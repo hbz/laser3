@@ -39,8 +39,10 @@ class PersonController  {
      * @return redirect back to the referer -> an updated list of person contacts
      * @see Person
      */
-    @DebugInfo(test='hasAffiliation("INST_EDITOR")', wtc = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], wtc = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+    })
     def create() {
         Person.withTransaction {
             Org contextOrg = contextService.getOrg()
@@ -203,11 +205,11 @@ class PersonController  {
 
         List<PersonRole> gcp = PersonRole.where {
             prs == personInstance &&
-            functionType == RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)
+            functionType == RDStore.PRS_FUNC_GENERAL_CONTACT_PRS
         }.findAll()
         List<PersonRole> fcba = PersonRole.where {
             prs == personInstance &&
-            functionType == RefdataValue.getByValueAndCategory('Functional Contact Billing Adress', RDConstants.PERSON_FUNCTION)
+            functionType == RDStore.PRS_FUNC_FC_BILLING_ADDRESS
         }.findAll()
         
 
@@ -227,8 +229,10 @@ class PersonController  {
      * Takes the submitted parameters and updates the person contact based on the given parameter map
      * @return redirect to the referer -> the updated view of the person contact
      */
-    @DebugInfo(test='hasAffiliation("INST_EDITOR")', wtc = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], wtc = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+    })
     def edit() {
         //redirect controller: 'person', action: 'show', params: params
         //return // ----- deprecated
@@ -341,7 +345,7 @@ class PersonController  {
                 params.list('content').eachWithIndex { content, i ->
                     if (content) {
                         RefdataValue rdvCT = RefdataValue.get(params.list('contentType.id')[i])
-                        RefdataValue contactLang = params['contactLang.id'] ? RefdataValue.get(params['contactLang.id']) : null
+                        RefdataValue contactLang = params['contactLang.id'][i] ? RefdataValue.get(params['contactLang.id'][i]) : null
                         if (RDStore.CCT_EMAIL == rdvCT) {
                             if (!formService.validateEmailAddress(content)) {
                                 flash.error = message(code: 'contact.create.email.error') as String
@@ -397,8 +401,10 @@ class PersonController  {
      * Deletes the given person contact
      * @return redirects to one of the list views from which the person contact to be deleted has been called
      */
-    @DebugInfo(test='hasAffiliation("INST_EDITOR")', wtc = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], wtc = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+    })
     def delete() {
         Person.withTransaction {
             Person personInstance = Person.get(params.id)
@@ -635,7 +641,7 @@ class PersonController  {
         if (params.functionType) {
             PersonRole result
 
-            RefdataValue functionRdv = RefdataValue.get(params.functionType) ?: RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)
+            RefdataValue functionRdv = RefdataValue.get(params.functionType) ?: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS
             Org functionOrg = Org.get(params.functionOrg)
 
             if (functionRdv && functionOrg) {

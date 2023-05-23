@@ -6,7 +6,12 @@
 <ui:modeSwitch controller="platform" action="show" params="${params}"/>
 
 <ui:breadcrumbs>
-    <ui:crumb controller="platform" action="index" message="platform.show.all"/>
+    <g:if test="${isMyPlatform}">
+        <ui:crumb controller="myInstitution" action="currentPlatforms" message="menu.my.platforms"/>
+    </g:if>
+    <g:else>
+        <ui:crumb controller="platform" action="list" message="platform.show.all"/>
+    </g:else>
     <ui:crumb class="active" id="${platformInstance.id}" text="${platformInstance.name}"/>
 </ui:breadcrumbs>
 
@@ -50,7 +55,7 @@
                                     <a role="button" class="ui icon blue button la-modern-button la-js-dont-hide-button la-popup-tooltip la-delay"
                                        data-content="${message(code: 'tipp.tooltip.callUrl')}"
                                        href="${platformInstance.primaryUrl.startsWith('http') ? platformInstance.primaryUrl : 'http://' + platformInstance.primaryUrl}"
-                                       target="_blank"><i class="share square icon"></i></a>
+                                       target="_blank"><i class="external alternate icon"></i></a>
                                 </g:if>
                             </dd>
                         </dl>
@@ -69,6 +74,16 @@
                     <dl>
                         <dt><g:message code="platform.auth.shibboleth.supported"/></dt>
                         <dd>${platformInstanceRecord.shibbolethAuthentication ? RefdataValue.getByValueAndCategory(platformInstanceRecord.shibbolethAuthentication, RDConstants.Y_N).getI10n("value") : message(code: 'default.not.available')}</dd>
+                    </dl>
+                    <dl>
+                        <dt><g:message code="platform.auth.shibboleth.federations"/></dt>
+                        <dd>
+                            <ul>
+                                <g:each in="${platformInstanceRecord.federations}" var="fedRec">
+                                    <li>${fedRec.federation}</li>
+                                </g:each>
+                            </ul>
+                        </dd>
                     </dl>
                     <dl>
                         <dt><g:message code="platform.auth.userPass.supported"/></dt>
@@ -106,7 +121,7 @@
                             <dt><g:message code="platform.stats.adminURL"/></dt>
                             <dd>
                                 <g:if test="${platformInstanceRecord.statisticsAdminPortalUrl.startsWith('http')}">
-                                    ${platformInstanceRecord.statisticsAdminPortalUrl} <a href="${platformInstanceRecord.statisticsAdminPortalUrl}"><i title="${message(code: 'platform.stats.adminURL')} Link" class="external alternate icon"></i></a>
+                                    ${platformInstanceRecord.statisticsAdminPortalUrl} <ui:linkWithIcon href="${platformInstanceRecord.statisticsAdminPortalUrl}"/>
                                 </g:if>
                                 <g:else>
                                     <g:message code="default.url.invalid"/>
@@ -131,7 +146,7 @@
                             <dt><g:message code="platform.stats.counter.registryURL"/></dt>
                             <dd>
                                 <g:if test="${platformInstanceRecord.counterRegistryUrl.startsWith('http')}">
-                                    ${platformInstanceRecord.counterRegistryUrl} <a href="${platformInstanceRecord.counterRegistryUrl}"><i title="${message(code: 'platform.stats.counter.registryURL')} Link" class="external alternate icon"></i></a>
+                                    ${platformInstanceRecord.counterRegistryUrl} <ui:linkWithIcon href="${platformInstanceRecord.counterRegistryUrl}"/>
                                 </g:if>
                                 <g:else>
                                     <g:message code="default.url.invalid"/>
@@ -168,7 +183,7 @@
                             <dt><g:message code="platform.stats.counter.r4serverURL"/></dt>
                             <dd>
                                 <g:if test="${platformInstanceRecord.counterR4SushiServerUrl.startsWith('http')}">
-                                    ${platformInstanceRecord.counterR4SushiServerUrl} <a href="${platformInstanceRecord.counterR4SushiServerUrl}"><i title="${message(code: 'platform.stats.counter.r4serverURL')} Link" class="external alternate icon"></i></a>
+                                    ${platformInstanceRecord.counterR4SushiServerUrl} <ui:linkWithIcon href="${platformInstanceRecord.counterR4SushiServerUrl}"/>
                                 </g:if>
                                 <g:else>
                                     ${platformInstanceRecord.counterR4SushiServerUrl}
@@ -181,7 +196,7 @@
                             <dt><g:message code="platform.stats.counter.r5serverURL"/></dt>
                             <dd>
                                 <g:if test="${platformInstanceRecord.counterR5SushiServerUrl.startsWith('http')}">
-                                    ${platformInstanceRecord.counterR5SushiServerUrl} <a href="${platformInstanceRecord.counterR5SushiServerUrl}"><i title="${message(code: 'platform.stats.counter.r5serverURL')} Link" class="external alternate icon"></i></a>
+                                    ${platformInstanceRecord.counterR5SushiServerUrl} <ui:linkWithIcon href="${platformInstanceRecord.counterR5SushiServerUrl}"/>
                                 </g:if>
                                 <g:else>
                                     ${platformInstanceRecord.counterR5SushiServerUrl}
@@ -223,7 +238,7 @@
                             <tr>
                                 <th scope="row" class="control-label la-js-dont-hide-this-card">${message(code: 'platform.accessPoint')}</th>
                                 <td>
-                                    <g:link controller="accessPoint" action="edit_${orgAccessPoint.oap.accessMethod}"  id="${orgAccessPoint.oap.id}">
+                                    <g:link controller="accessPoint" action="edit_${orgAccessPoint.oap.accessMethod.value.toLowerCase()}"  id="${orgAccessPoint.oap.id}">
                                         ${orgAccessPoint.oap.name}  (${orgAccessPoint.oap.accessMethod.getI10n('value')})
                                     </g:link>
                                 </td>

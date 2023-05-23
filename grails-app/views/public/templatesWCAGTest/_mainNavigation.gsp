@@ -6,7 +6,7 @@
                 </a>
                 <div class="ui dropdown item" role="menuitem" aria-haspopup="true">
                     Alle
-                    <i  class="dropdown icon"></i>
+                    <i class="dropdown icon"></i>
                    <div class="menu" role="menu" aria-label="das Menu">
                         <a id="1" href="#" class="item"  role="menuitem" aria-label="Alle Pakete" >Alle Pakete</a>
                         <a id="2" href="#" class="item" role="menuitem" aria-label="Alle Titel" >Alle Titel</a>
@@ -15,7 +15,7 @@
                 </div>
                 <div class="ui dropdown item" role="menuitem" aria-haspopup="true">
                     Meine Objekte
-                    <i  class="dropdown icon"></i>
+                    <i class="dropdown icon"></i>
                     <div class="menu" role="menu">
                         <a id="4" href="#" class="item" role="menuitem" >Meine Lizenzen</a>
                         <a id="5" href="#" class="item" role="menuitem" >Meine Verträge</a>
@@ -28,7 +28,7 @@
                 </div>
                 <div class="ui dropdown item" role="menuitem" aria-haspopup="true">
                     Meine Einrichtung
-                    <i  class="dropdown icon"></i>
+                    <i class="dropdown icon"></i>
                     <div class="menu" role="menu">
                         <a id="11" href="#" class="item" role="menuitem" >Dashboard</a>
                         <a id="12" href="#" class="item" role="menuitem" >Einrichtungsprofil</a>
@@ -63,7 +63,7 @@
                     </a>
                     <div class="ui dropdown item la-noBorder" role="menuitem" aria-haspopup="true">
                         Ingrid Bluoss
-                        <i  class="dropdown icon"></i>
+                        <i class="dropdown icon"></i>
                         <div class="menu" role="menu">
                             <a  id="23" href="#" class="item" role="menuitem" >DWI -
                             Leibniz-Institut f&uuml;r Interaktive Materialien (DWI)</a>

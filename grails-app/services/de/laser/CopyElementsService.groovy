@@ -70,7 +70,9 @@ class CopyElementsService {
                 result = ['startDate', 'endDate', 'status', 'licenseCategory', 'openEnded', 'isPublicForApi']
                 break
             case Subscription.class.simpleName:
-                result = ['startDate', 'endDate', 'manualCancellationDate', 'status', 'kind', 'form', 'resource', 'isPublicForApi', 'hasPerpetualAccess', 'hasPublishComponent']
+                result = ['startDate', 'endDate', 'manualCancellationDate', 'referenceYear', 'status', 'kind', 'form', 'resource', 'isPublicForApi', 'hasPerpetualAccess', 'hasPublishComponent']
+                if(obj.packages)
+                    result << 'holdingSelection'
                 break
             case SurveyInfo.class.simpleName:
                 result = ['startDate', 'endDate', 'comment']
@@ -828,7 +830,7 @@ class CopyElementsService {
                 }
             }
 
-            log.debug(params.toMapString())
+            //log.debug(params.toMapString())
             if(!bulkOperationRunning && isBothObjectsSet(sourceObject, targetObject, flash) && params.copyElementsSubmit) {
                 flash.message = messageSource.getMessage('subscription.details.linkPackage.thread.running',null, LocaleUtils.getCurrentLocale())
                 executorService.execute({
@@ -918,7 +920,7 @@ class CopyElementsService {
      */
     boolean deleteTasks(List<Long> toDeleteTasks, Object targetObject, def flash) {
         Locale locale = LocaleUtils.getCurrentLocale()
-        boolean isInstAdm = contextService.getUser().hasAffiliation("INST_ADM")
+        boolean isInstAdm = contextService.getUser().hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
         def userId = contextService.getUser().id
         toDeleteTasks.each { deleteTaskId ->
             Task dTask = Task.get(deleteTaskId)
@@ -1533,7 +1535,7 @@ class CopyElementsService {
                     }
                     Sql sql = GlobalService.obtainSqlConnection()
                     //List subscriptionHolding = sql.rows("select * from title_instance_package_platform join issue_entitlement on tipp_id = ie_tipp_fk where tipp_pkg_fk = :pkgId and ie_subscription_fk = :source", [pkgId: newSubscriptionPackage.pkg.id, source: subscriptionPackage.subscription.id])
-                    packageService.bulkAddHolding(sql, targetObject.id, newSubscriptionPackage.pkg.id, targetObject.hasPerpetualAccess)
+                    packageService.bulkAddHolding(sql, targetObject.id, newSubscriptionPackage.pkg.id, targetObject.hasPerpetualAccess, null, subscriptionPackage.subscription.id)
                     /*
                     List<IssueEntitlement> targetIEs = subscriptionService.getIssueEntitlements(targetObject)
                             //.findAll { it.tipp.id == ie.tipp.id && it.status != RDStore.TIPP_STATUS_REMOVED }

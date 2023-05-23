@@ -22,6 +22,7 @@ class OrgAccessPoint extends AbstractBase {
 
     String name
     Org org
+    String note
     Date dateCreated
     Date lastUpdated
 
@@ -44,6 +45,7 @@ class OrgAccessPoint extends AbstractBase {
         version         column:'oar_version'
         name            column:'oar_name'
         org             column:'oar_org_fk'
+        note            column:'oar_note', type: 'text'
         globalUID       column:'oar_guid'
         accessMethod    column:'oar_access_method_rv_fk'
         dateCreated     column:'oar_date_created'
@@ -52,6 +54,7 @@ class OrgAccessPoint extends AbstractBase {
     
     static constraints = {
         globalUID(nullable:true, blank:false, unique:true, maxSize:255)
+        note(nullable: true)
         name(unique: ['org'])
   }
 
@@ -105,21 +108,18 @@ class OrgAccessPoint extends AbstractBase {
         if (!currentSubIds){
             return
         }
-        String qry = "select distinct p from SubscriptionPackage subPkg join subPkg.subscription s join subPkg.pkg pkg, " +
-            "TitleInstancePackagePlatform tipp join tipp.platform p " +
-            "where tipp.pkg = pkg and s.id in (:currentSubIds) " +
+        String qry = "select distinct p from SubscriptionPackage subPkg join subPkg.subscription s join subPkg.pkg pkg join pkg.nominalPlatform p " +
+            "where s.id in (:currentSubIds) " +
             " and not exists (select 1 from OrgAccessPointLink oapl where oapl.platform = p and oapl.active = true and oapl.oap = :orgAccessPoint) "
 
         qry += " and ((pkg.packageStatus is null) or (pkg.packageStatus != :pkgDeleted))"
         qry += " and ((p.status is null) or (p.status != :platformDeleted))"
-        qry += " and ((tipp.status is null) or (tipp.status != :tippRemoved))"
         qry += " order by p.normname asc"
 
         Map<String, Object> qryParams = [
             currentSubIds: currentSubIds,
             pkgDeleted: RDStore.PACKAGE_STATUS_DELETED,
             platformDeleted: RDStore.PLATFORM_STATUS_DELETED,
-            tippRemoved: RDStore.TIPP_STATUS_REMOVED,
             orgAccessPoint: this
         ]
 

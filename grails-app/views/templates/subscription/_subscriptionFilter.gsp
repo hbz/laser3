@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Org; de.laser.RefdataCategory; de.laser.interfaces.CalculatedType;de.laser.storage.RDStore; de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.CustomerTypeService; de.laser.Org; de.laser.RefdataCategory; de.laser.interfaces.CalculatedType;de.laser.storage.RDStore; de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
 <laser:serviceInjection />
 
 <ui:filter>
@@ -11,7 +11,7 @@
             <input type="hidden" name="tab" value="${params.tab}"/>
             <input type="hidden" name="propertiesFilterPropDef" value="${propertiesFilterPropDef}"/>
         </g:if>
-        <div class="three fields">
+        <div class="five fields">
             %{--<div class="four fields">--}%
             <% /* 1-1 */ %>
             <div class="field">
@@ -45,6 +45,19 @@
             <div class="field">
                 <ui:datepicker label="default.valid_on.label" id="validOn" name="validOn" placeholder="filter.placeholder" value="${validOn}" />
             </div>
+            <% /* 1-4 */ %>
+            <div class="field">
+                <label for="referenceYears">${message(code: 'subscription.referenceYear.label')}</label>
+                <select id="referenceYears" name="referenceYears" multiple="" class="ui search selection fluid dropdown">
+                    <option value="">${message(code: 'default.select.choose.label')}</option>
+                    <g:each in="${referenceYears}" var="referenceYear">
+                        <option <%=(params.list('referenceYears').contains(referenceYear.toString())) ? 'selected="selected"' : ''%>
+                                value="${referenceYear}">
+                            ${referenceYear}
+                        </option>
+                    </g:each>
+                </select>
+            </div>
             <% /*
             <!-- 1-4 -->
             <div class="field disabled">
@@ -57,7 +70,7 @@
                                   id="durationDate" name="durationDate" placeholder="filter.placeholder" value="${params.durationDate}"/>
             </div>
             */ %>
-            <% /* 1-4 */ %>
+            <% /* 1-5 */ %>
             <div class="field">
                 <label for="status"><g:message code="default.status.label"/></label>
                 <select id="status" name="status" multiple="" class="ui search selection fluid dropdown">
@@ -180,7 +193,20 @@
             </div>
         </div>
 
-        <div class="three fields">
+        <div class="four fields">
+            <div class="field">
+                <label>${message(code: 'subscription.holdingSelection.label')}</label>
+                <select id="holdingSelection" name="holdingSelection" multiple="" class="ui search selection fluid dropdown">
+                    <option value="">${message(code: 'default.select.choose.label')}</option>
+
+                    <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_HOLDING)}" var="holdingSelection">
+                        <option <%=(params.list('holdingSelection').contains(holdingSelection.id.toString())) ? 'selected="selected"' : ''%>
+                                value="${holdingSelection.id}">
+                            ${holdingSelection.getI10n('value')}
+                        </option>
+                    </g:each>
+                </select>
+            </div>
             <div class="field">
                 <label>${message(code: 'myinst.currentSubscriptions.subscription.runTime')}</label>
                 <div class="inline fields la-filter-inline">
@@ -202,7 +228,7 @@
             </div>
             <% /* 4-2 */ %>
         <%-- TODO [ticket=2276] provisoric, name check is in order to prevent id mismatch --%>
-            <g:if test="${!accessService.checkPerm("ORG_CONSORTIUM") || institution.globalUID == Org.findByName('LAS:eR Backoffice').globalUID}">
+            <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_INST_PRO) || institution.globalUID == Org.findByName('LAS:eR Backoffice').globalUID}">
                 <div class="field">
                     <fieldset id="subscritionType">
                         <label>${message(code: 'myinst.currentSubscriptions.subscription_type')}</label>
@@ -232,7 +258,7 @@
                 <div class="field"></div>
             </g:else>
 
-            <g:if test="${accessService.checkPerm("ORG_BASIC_MEMBER")}">
+            <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_INST_BASIC)}">
                 <div class="field">
                     <fieldset>
                         <legend id="la-legend-searchDropdown">${message(code: 'gasco.filter.consortialAuthority')}</legend>

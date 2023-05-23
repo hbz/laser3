@@ -81,6 +81,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
             //ORG_PROP, // erms-4798
             SUB_PROP,
             PLA_PROP,
+            SVY_PROP,
             LIC_PROP
     ]
 
@@ -336,10 +337,12 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
             String classString = owner.class.name
             String ownerClassName = classString.substring(classString.lastIndexOf(".") + 1)
             boolean isPublic = false
-            if(owner instanceof Subscription)
-                isPublic = owner._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && owner.getConsortia()?.id == contextOrg.id
-            else if(owner instanceof License)
-                isPublic = owner._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && owner.getLicensingConsortium()?.id == contextOrg.id
+            if(flag == CUSTOM_PROPERTY) {
+                if(owner instanceof Subscription)
+                    isPublic = owner._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE, CalculatedType.TYPE_PARTICIPATION] && owner.getConsortia()?.id == contextOrg.id
+                else if(owner instanceof License)
+                    isPublic = owner._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE, CalculatedType.TYPE_PARTICIPATION] && owner.getLicensingConsortium()?.id == contextOrg.id
+            }
             ownerClassName = "de.laser.properties.${ownerClassName}Property"
 
             def newProp = (new GroovyClassLoader()).loadClass(ownerClassName).newInstance(type: type, owner: owner, isPublic: isPublic, tenant: contextOrg)
@@ -422,6 +425,10 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
             if (parts[0] == "Organisation") {
                 parts[0] = "Org"
             }
+            if (parts[0] == "Survey") {
+                parts[0] = "survey.SurveyConfig"
+            }
+
             try {
                 result = Class.forName('de.laser.' + parts[0])?.name
             } catch(Exception e) {

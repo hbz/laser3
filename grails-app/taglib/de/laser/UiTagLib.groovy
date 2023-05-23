@@ -35,21 +35,27 @@ class UiTagLib {
     // </ui:headerWithIcon>
 
     def h1HeaderWithIcon = { attrs, body ->
+
         if (attrs.floated && attrs.floated != 'false') {
             out << '<h1 class="ui icon header la-clear-before left floated aligned la-positionRelative">'
         } else {
             out << '<h1 class="ui icon header la-clear-before la-noMargin-top">'
         }
-
+        if (attrs.referenceYear){
+            out << '<div class="la-subPlusYear">'
+        }
         if (attrs.type) {
             out << ui.headerTitleIcon([type: attrs.type])
         } else {
             out << ui.headerIcon()
         }
-
+        if (attrs.referenceYear){
+            out << '<div class="la-subPlusYear-texts">'
+        }
         if (attrs.text) {
             out << attrs.text
         }
+
         if (attrs.message) {
             SwissKnife.checkMessageKey(attrs.message as String)
             out << "${message(code: attrs.message, args: attrs.args)}"
@@ -60,6 +66,13 @@ class UiTagLib {
         }
         if ( body ) {
             out << body()
+        }
+        if (attrs.referenceYear) {
+            out << '<span class="la-subPlusYear-year" >'
+            out << attrs.referenceYear
+            out << '</span>'
+            out << '</div>'
+            out << '</div>'
         }
         out << '</h1>'
     }
@@ -237,13 +250,13 @@ class UiTagLib {
                                 out << '<div class="ui simple dropdown icon green button la-modern-button ' + attrs.class + ' la-audit-button" data-content="Wert wird vererbt">'
                                 out   << '<i aria-hidden="true" class="icon la-js-editmode-icon thumbtack"></i>'
                                 out   << '<div class="menu">'
-                                out << g.link( 'Vererbung deaktivieren. Wert für Teilnehmer <strong>löschen</strong>',
+                                out << g.link( 'Vererbung deaktivieren. Wert für Einrichtung <strong>löschen</strong>',
                                         controller: 'ajax',
                                         action: 'toggleAudit',
                                         params: ['owner': oid, 'property': [objAttr]],
                                         class: 'item'
                                 )
-                                out << g.link( 'Vererbung deaktivieren. Wert für Teilnehmer <strong>erhalten</strong>',
+                                out << g.link( 'Vererbung deaktivieren. Wert für Einrichtung <strong>erhalten</strong>',
                                         controller: 'ajax',
                                         action: 'toggleAudit',
                                         params: ['owner': oid, 'property': [objAttr], keep: true],
@@ -371,7 +384,7 @@ class UiTagLib {
 				// default profile setting
                 else {
                     User currentUser = contextService.getUser()
-                    String settingValue = currentUser.getSettingsValue(UserSetting.KEYS.SHOW_EXTENDED_FILTER, RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N)).value
+                    String settingValue = currentUser.getSettingsValue(UserSetting.KEYS.SHOW_EXTENDED_FILTER, RDStore.YN_YES).value
 
                     if (settingValue.toLowerCase() == 'no') {
                         extended = false
@@ -419,6 +432,16 @@ class UiTagLib {
         out << '</div>'
     }
 
+    def flagDeprecated = { attrs, body ->
+
+        out << '<div class="ui icon message error">'
+        out << '<i class="icon exclamation triangle"></i>'
+        out << '<div class="content">'
+        out << 'Diese Funktionalität wird demnächst entfernt.<br/>Bitte nicht mehr verwenden und ggfs. Daten migrieren.'
+        out << '</div>'
+        out << '</div>'
+    }
+
     /**
      * @attr hideWrapper Renders only the &lt;form&gt; without a &lt;div&gt; wrapper
      * @attr action The name of the action to use in the link, if not specified the default action will be linked
@@ -457,7 +480,7 @@ class UiTagLib {
         }
     }
 
-    //<ui:datepicker class="grid stuff here" label="" bean="${objInstance}" name="fieldname" value="" required="" modifiers="" />
+    //<ui:datepicker class="grid stuff here" type="" label="" bean="${objInstance}" name="fieldname" value="" required="" modifiers="" />
 
     def datepicker = { attrs, body ->
 
@@ -536,7 +559,8 @@ class UiTagLib {
         if (hideLabel) {
             out << '<label for="' + id + '">' + label + ' ' + mandatoryField + '</label>'
         }
-        out <<   '<div class="ui calendar datepicker">'
+        String type = attrs.type == 'year' ? 'yearpicker' : 'datepicker'
+        out <<   '<div class="ui calendar '+type+'">'
         out <<     '<div class="ui input left icon">'
         out <<       '<i aria-hidden="true" class="calendar icon"></i>'
         out <<       '<input class="' + inputCssClass + '" name="' + name +  '" id="' + id +'" type="text" placeholder="' + placeholder + '" value="' + value + '" ' + required + '>'
@@ -578,13 +602,17 @@ class UiTagLib {
         }
         out << '<div class="ui large label la-annual-rings">'
 
-        if (object.startDate) {
-            startDate = g.formatDate(date: object.startDate, format: ddf_notime)
+        if (object.hasProperty('startDate') && object.hasProperty('endDate')) {
+            if (object.startDate) {
+                startDate = g.formatDate(date: object.startDate, format: ddf_notime)
+            }
+            if (object.endDate) {
+                dash = '–'
+                endDate = g.formatDate(date: object.endDate, format: ddf_notime)
+            }
         }
-        if (object.endDate) {
-            dash = '–'
-            endDate = g.formatDate(date: object.endDate, format: ddf_notime)
-        }
+        else if(object.hasProperty('retirementDate'))
+            startDate = g.formatDate(date: object.retirementDate, format: ddf_notime)
         if (prev) {
             if (prev.size() == 1) {
                 prev.each { p ->
@@ -600,11 +628,13 @@ class UiTagLib {
                 out << '<div class="ui right pointing dropdown"> <i class="arrow left icon"></i> <div class="menu">'
 
                 prev.each { p ->
-                    if (p.startDate) {
-                        prevStartDate = g.formatDate(date: p.startDate, format: ddf_notime)
-                    }
-                    if (p.endDate) {
-                        prevEndDate = g.formatDate(date: p.endDate, format: ddf_notime)
+                    if (p.hasProperty('startDate') && p.hasProperty('endDate')) {
+                        if (p.startDate) {
+                            prevStartDate = g.formatDate(date: p.startDate, format: ddf_notime)
+                        }
+                        if (p.endDate) {
+                            prevEndDate = g.formatDate(date: p.endDate, format: ddf_notime)
+                        }
                     }
                     if (attrs.mapping) {
                         out << g.link("<strong>${p instanceof License ? p.reference : p.name}:</strong> " + "${prevStartDate}" + "${dash}" + "${prevEndDate}", controller: attrs.controller, action: attrs.action, class: "item", params: [sub: p.id], mapping: attrs.mapping)
@@ -637,11 +667,13 @@ class UiTagLib {
                 out << '<div class="ui left pointing dropdown"> <i class="arrow right icon"></i> <div class="menu">'
 
                 next.each { n ->
-                    if (n.startDate) {
-                        nextStartDate = g.formatDate(date: n.startDate, format: ddf_notime)
-                    }
-                    if (n.endDate) {
-                        nextEndDate = g.formatDate(date: n.endDate, format: ddf_notime)
+                    if (n.hasProperty('startDate') && n.hasProperty('endDate')) {
+                        if (n.startDate) {
+                            nextStartDate = g.formatDate(date: n.startDate, format: ddf_notime)
+                        }
+                        if (n.endDate) {
+                            nextEndDate = g.formatDate(date: n.endDate, format: ddf_notime)
+                        }
                     }
                     if (attrs.mapping) {
                         out << g.link("<strong>${n instanceof License ? n.reference : n.name}:</strong> " + "${nextStartDate}" + "${dash}" + "${nextEndDate}", controller: attrs.controller, action: attrs.action, class: "item", params: [sub: n.id], mapping: attrs.mapping)
@@ -657,7 +689,7 @@ class UiTagLib {
         out << '</div>'
     }
 
-    def anualRingsModern = { attrs, body ->
+/*    def anualRingsModern = { attrs, body ->
         String ddf_notime = message(code: 'default.date.format.notime')
 
         def object = attrs.object
@@ -764,7 +796,7 @@ class UiTagLib {
             out << '<i aria-hidden="true" class="arrow right icon disabled"></i>'
         }
         out << '</div>'
-    }
+    }*/
 
     def totalNumber = { attrs, body ->
         def total = attrs.total ?: 0

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyConfig; de.laser.Subscription; de.laser.storage.RDConstants; de.laser.storage.RDStore; de.laser.RefdataCategory; de.laser.License" %>
+<%@ page import="de.laser.CustomerTypeService; de.laser.survey.SurveyConfig; de.laser.Subscription; de.laser.storage.RDConstants; de.laser.storage.RDStore; de.laser.RefdataCategory; de.laser.License" %>
 <laser:serviceInjection/>
 <g:if test="${!(sourceObject && targetObject)}">
     <% if (params) {
@@ -39,7 +39,7 @@
                                       noSelection="${['': message(code: 'default.select.choose.label')]}"
                                       onchange="JSPC.app.adjustDropdown()"/>
                     </div><br/>
-                    <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
+                    <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
                         <div class="ui checkbox">
                             <g:checkBox name="show.subscriber" value="true" checked="false"
                                         onchange="JSPC.app.adjustDropdown()"/>
@@ -67,7 +67,7 @@
                                       noSelection="${['': message(code: 'default.select.choose.label')]}"
                                       onchange="JSPC.app.adjustDropdown()"/>
                     </div><br/>
-                    <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
+                    <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
                         <div class="ui checkbox">
                             <g:checkBox name="show.subscriber" value="true" checked="false"
                                         onchange="JSPC.app.adjustDropdown()"/>
@@ -109,8 +109,8 @@
 
     JSPC.app.adjustDropdown = function () {
 
-        var showSubscriber = $("input[name='show.subscriber'").prop('checked');
-        var showConnectedObjs = $("input[name='show.connectedObjects'").prop('checked');
+        var showSubscriber = $("input[name='show.subscriber']").prop('checked');
+        var showConnectedObjs = $("input[name='show.connectedObjects']").prop('checked');
         var url = '<g:createLink controller="ajaxJson" action="${sourceObject instanceof License ? 'adjustLicenseList' : 'adjustSubscriptionList'}"/>'
 
         url = url + '?valueAsOID=true&showSubscriber=' + showSubscriber + '&showConnectedObjs=' + showConnectedObjs + '&context=' + ${sourceObject.id}

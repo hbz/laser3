@@ -6,6 +6,9 @@
 <g:if test="${actionName in ['currentProviders','listProvider']}">
     <g:set var="exportFileName" value="${message(code: 'default.ProviderAgency.export.label')}"/>
 </g:if>
+<g:elseif test="${actionName in ['currentConsortia','listConsortia']}">
+    <g:set var="exportFileName" value="${message(code: 'consortium.plural.label')}"/>
+</g:elseif>
 <g:elseif test="${actionName in ['listInstitution']}">
     <g:set var="exportFileName" value="${message(code: 'menu.institutions')}"/>
 </g:elseif>
@@ -15,9 +18,9 @@
 
 <ui:modal id="${modalID}" text="Excel-Export" refreshModal="true" hideSubmitButton="true">
 
-    <g:form action="${actionName}" controller="${controllerName}" params="${params+[exportClickMeExcel: true]}">
+    <g:form action="${actionName}" controller="${controllerName}" params="${params}">
 
-        <laser:render template="/templates/export/individuallyExportForm" model="${[formFields: formFields, exportFileName: exportFileName, contactSwitch: actionName == 'manageMembers']}"/>
+        <laser:render template="/templates/export/individuallyExportForm" model="${[formFields: formFields, exportFileName: exportFileName, contactSwitch: contactSwitch, csvFieldSeparator: ',']}"/>
 
     </g:form>
 

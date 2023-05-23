@@ -1,5 +1,5 @@
 <!-- _costItemInput.gsp -->
-<%@ page import="de.laser.finance.BudgetCode; de.laser.finance.CostItem; de.laser.IssueEntitlement; de.laser.IssueEntitlementGroup; de.laser.Subscription; de.laser.SubscriptionPackage; de.laser.UserSetting; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.*; de.laser.interfaces.CalculatedType; de.laser.finance.CostItemElementConfiguration" %>
+<%@ page import="de.laser.CustomerTypeService; de.laser.finance.BudgetCode; de.laser.finance.CostItem; de.laser.IssueEntitlement; de.laser.IssueEntitlementGroup; de.laser.Subscription; de.laser.SubscriptionPackage; de.laser.UserSetting; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.*; de.laser.interfaces.CalculatedType; de.laser.finance.CostItemElementConfiguration" %>
 <laser:serviceInjection />
 
         <g:if test="${costItem}">
@@ -51,7 +51,7 @@
                 <div class="two fields">
                     <div class="field">
                         <label><g:message code="financials.budgetCode"/></label>
-                        <select name="newBudgetCodes" class="ui fluid search dropdown" multiple="multiple">
+                        <select name="newBudgetCodes" class="ui fluid search dropdown multiple" multiple="multiple">
                             <g:each in="${budgetCodes}" var="bc">
                                 <g:if test="${costItem?.getBudgetcodes()?.contains(bc)}">
                                     <option selected="selected" value="${bc.class.name}:${bc.id}">${bc.value}</option>
@@ -154,7 +154,7 @@
                                placeholder="${g.message(code:'financials.newCosts.exchangeRate')}"
                                value="${value}" />
 
-                        <div id="calculateExchangeRate_${idSuffix}" class="ui icon blue button la-popup-tooltip la-delay" data-content="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
+                        <div  id="calculateExchangeRate_${idSuffix}" class="ui icon blue button la-popup-tooltip la-delay" data-content="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
                             <i class="calculator icon"></i>
                         </div>
                     </div><!-- .field -->
@@ -331,7 +331,7 @@
                     <ui:datepicker label="financials.datePaid" name="newDatePaid" id="newDatePaid_${idSuffix}" placeholder="financials.datePaid" value="${costItem?.datePaid}" />
 
                     <%-- to restrict upon year: https://jsbin.com/ruqakehefa/1/edit?html,js,output , cf. example 8! --%>
-                    <ui:datepicker label="financials.financialYear" name="newFinancialYear" id="newFinancialYear_${idSuffix}" placeholder="financials.financialYear" value="${costItem?.financialYear}" />
+                    <ui:datepicker type="year" label="financials.financialYear" name="newFinancialYear" id="newFinancialYear_${idSuffix}" placeholder="financials.financialYear" value="${costItem?.financialYear}" />
                 </div>
                 <div class="two fields">
                     <ui:datepicker label="financials.dateFrom" name="newStartDate" id="newStartDate_${idSuffix}" placeholder="default.date.label" value="${costItem?.startDate}" />
@@ -380,7 +380,7 @@
                         </select>
 
                     </div>
-                    <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
+                    <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
                         <div class="ui checkbox">
                             <g:checkBox name="show.subscriber" value="true" checked="true"
                                         onchange="JSPC.app.adjustDropdown()"/>
@@ -596,22 +596,19 @@
                 output = parseFloat(input);
             }
             else {
-                if(input.match(/(\d+,?)*\d+(\.\d{2,})?/g))
-                    output = parseFloat(input.replace(/,/g, "."));
-                else if(input.match(/(\d+\.?)*\d+(,\d{2,})?/g))
-                    output = parseFloat(input.replace(/\./g,"").replace(/,/g,"."));
+                output = parseFloat(input.replaceAll(/[.']/g,"").replaceAll(",","."));
                 //else console.log("Please check over regex!");
             }
-            console.log(output);
             return output;
         },
         doubleToString: function (input) {
-            //console.log(userLang);
-            let output;
-            if(JSPC.app.finance${idSuffix}.userLang !== 'en')
-                output = input.toFixed(2).toString().replace(".",",");
-            else output = input.toFixed(2).toString();
-            return output;
+            if(!isNaN(input)) {
+                let output;
+                if(JSPC.app.finance${idSuffix}.userLang !== 'en')
+                    output = input.toFixed(2).toString().replace(".",",");
+                else output = input.toFixed(2).toString();
+                return output;
+            }
         },
         init: function(elem) {
             //console.log(this);
@@ -673,7 +670,7 @@
                     JSPC.app.finance${idSuffix}.calcTaxResults();
                 }
             });
-            this.costBillingCurrency.change( function(){
+            this.costBillingCurrency.change(function(){
                 if(!JSPC.app.finance${idSuffix}.costElems.hasClass("focused")) {
                     if(JSPC.app.finance${idSuffix}.costCurrency.val() == JSPC.app.finance${idSuffix}.eurVal) {
                         JSPC.app.finance${idSuffix}.calculateLocalCurrency.click();
@@ -782,7 +779,7 @@
                             alert("${message(code:'financials.newCosts.entitlementError')}");
                         else {
                             if(JSPC.app.finance${idSuffix}.newLicenseeTarget.length === 1 && JSPC.app.finance${idSuffix}.newLicenseeTarget.val().length === 0) {
-                                let alertText = "${institution.getCustomerType() == "ORG_CONSORTIUM" ? message(code:'financials.newCosts.noSubscriptionErrorConsortia') : message(code:'financials.newCosts.noSubscriptionError')}"
+                                let alertText = "${institution.isCustomerType_Consortium() ? message(code:'financials.newCosts.noSubscriptionErrorConsortia') : message(code:'financials.newCosts.noSubscriptionError')}"
                                 alert(alertText);
                             }
                             else {
@@ -806,21 +803,11 @@
         }
     }
     JSPC.app.finance${idSuffix}.init();
-    JSPC.app.setupCalendar = function () {
-        //console.log($("#newFinancialYear_${idSuffix}").parents(".datepicker").calendar());
-        $("#newFinancialYear_${idSuffix}").parents(".datepicker").calendar({
-            type: 'year',
-            minDate: new Date('1582-10-15'),
-            maxDate: new Date('2099-12-31')
-        });
-    }
-
-    JSPC.app.setupCalendar();
 
     JSPC.app.adjustDropdown = function () {
 
-        var showSubscriber = $("input[name='show.subscriber'").prop('checked');
-        var showConnectedObjs = $("input[name='show.connectedObjects'").prop('checked');
+        var showSubscriber = $("input[name='show.subscriber']").prop('checked');
+        var showConnectedObjs = $("input[name='show.connectedObjects']").prop('checked');
         var url = '<g:createLink controller="ajaxJson" action="adjustCompareSubscriptionList"/>?showSubscriber=' + showSubscriber + '&showConnectedObjs=' + showConnectedObjs
 
         var status = $("select#status").serialize()

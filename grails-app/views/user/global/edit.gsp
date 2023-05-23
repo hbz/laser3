@@ -7,7 +7,7 @@
             <laser:render template="/user/global/actions" />
         </ui:controlButtons>
 
-        <ui:h1HeaderWithIcon message="user.edit.label" />
+        <ui:h1HeaderWithIcon message="user.edit.label" type="user" />
         <h2 class="ui header la-noMargin-top">${user.username}</h2>
 
     <ui:messages data="${flash}" />
@@ -60,6 +60,15 @@
                         </div>
                     </g:form>
 
+                    <g:form controller="user" action="sendUsername" params="${[id: user.id]}">
+                        <div class="ui two fields">
+                            <div class="ui field">
+                                <label>${message(code:'user.username.label')}</label>
+                                <input type="submit" class="ui button orange" value="${message(code:'menu.user.forgottenUsername.send')}">
+                            </div>
+                        </div>
+                    </g:form>
+
                 </g:if>
 
             </div>
@@ -104,9 +113,19 @@
                                         <input type="hidden" name="__context" value="${user.class.name}:${user.id}"/>
                                         <input type="hidden" name="__newObjectClass" value="${UserRole.class.name}"/>
                                         <input type="hidden" name="__recip" value="user"/>
-                                        <div class="ui field">
-                                            <input type="hidden" name="role" id="userRoleSelect"/>
-                                            <input type="submit" class="ui button" value="${message(code:'user.role.add')}"/>
+                                        <div class="ui fields">
+                                            <div class="field">
+                                                <g:select from="${Role.findAllByRoleType('global')}"
+                                                          class="ui dropdown fluid"
+                                                          name="role"
+                                                          optionKey="${{ it.class.name + ':' + it.id }}"
+                                                          optionValue="${{ it.getI10n('authority') }}"
+                                                          noSelection="${['': message(code: 'default.select.choose.label')]}"
+                                                />
+                                            </div>
+                                            <div class="field">
+                                                <input type="submit" class="ui button" value="${message(code:'user.role.add')}"/>
+                                            </div>
                                         </div>
                                     </g:form>
                                 </td>
@@ -114,31 +133,6 @@
                             </tfoot>
                         </g:if>
                     </table>
-
-                    <laser:script file="${this.getGroovyPageFileName()}">
-                        $("#userRoleSelect").select2({
-                          placeholder: "${message(code:'user.role.search.ph')}",
-                                minimumInputLength: 0,
-                                formatInputTooShort: function () {
-                                    return "${message(code:'select2.minChars.note')}";
-                                },
-                                ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
-                                  url: "<g:createLink controller='ajaxJson' action='lookup'/>",
-                                  dataType: 'json',
-                                  data: function (term, page) {
-                                      return {
-                                          q: term, // search term
-                                          page_limit: 10,
-                                          baseClass: '${Role.class.name}'
-                                      };
-                                  },
-                                  results: function (data, page) {
-                                    return {results: data.values};
-                                  }
-                                }
-                              });
-                    </laser:script>
-
                 </div>
             </div><!-- .column -->
         </sec:ifAnyGranted>
@@ -158,12 +152,12 @@
             %{-- TODO: overwrite for ROLE_ADMIN ? all available Orgs --}%
         </g:if>
         %{-- not found -- <g:elseif test="${availableComboConsOrgs}">
-            <g:set var="orgLabel" value="Teilnehmer" />
+            <g:set var="orgLabel" value="Einrichtung" />
             <g:set var="availableOrgs" value="${availableComboConsOrgs}" />
         </g:elseif> --}%
 
         <g:if test="${ availableOrgs }">
-            <g:if test="${controllerName == 'user' || (controllerName in ['myInstitution', 'organisation'] && ! user.hasInstMemberAffiliation(orgInstance))}">
+            <g:if test="${controllerName == 'user' || (controllerName in ['myInstitution', 'organisation'] && ! user.isMemberOf(orgInstance))}">
                 <div class="ui segment form">
 
                     <g:form controller="${controllerName}" action="addAffiliation" class="ui form" method="get">

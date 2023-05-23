@@ -1,4 +1,4 @@
-<%@ page import="java.time.temporal.ChronoUnit; de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.survey.SurveyResult; de.laser.Subscription; de.laser.PersonRole; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.ReaderNumber; de.laser.Contact; de.laser.auth.User; de.laser.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.SubscriptionsQueryService; de.laser.storage.RDConstants; de.laser.storage.RDStore; java.text.SimpleDateFormat; de.laser.License; de.laser.Org; de.laser.OrgRole; de.laser.OrgSetting; de.laser.remote.ApiSource" %>
+<%@ page import="java.time.temporal.ChronoUnit; de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.survey.SurveyResult; de.laser.Subscription; de.laser.PersonRole; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.ReaderNumber; de.laser.Contact; de.laser.auth.User; de.laser.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.SubscriptionsQueryService; de.laser.storage.RDConstants; de.laser.storage.RDStore; java.text.SimpleDateFormat; de.laser.License; de.laser.Org; de.laser.OrgRole; de.laser.OrgSetting; de.laser.remote.ApiSource; de.laser.AlternativeName" %>
 <laser:serviceInjection/>
 <g:if test="${'surveySubCostItem' in tmplConfigShow}">
     <g:set var="oldCostItem" value="${0.0}"/>
@@ -40,10 +40,6 @@
                 <g:sortableColumn title="${message(code: 'org.sortname.label')}"
                                   property="lower(o.sortname)" params="${request.getParameterMap()}"/>
             </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('shortname')}">
-                <g:sortableColumn title="${message(code: 'org.shortname.label')}"
-                                  property="lower(o.shortname)" params="${request.getParameterMap()}"/>
-            </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('name')}">
                 <g:sortableColumn title="${message(code: 'org.fullName.label')}" property="lower(o.name)"
                                   params="${request.getParameterMap()}"/>
@@ -65,8 +61,7 @@
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('legalInformation')}">
                 <th class="la-no-uppercase">
-                    <span class="la-popup-tooltip la-delay"
-                          data-content="${message(code: 'org.legalInformation.tooltip')}">
+                    <span class="la-popup-tooltip la-delay" data-content="${message(code: 'org.legalInformation.tooltip')}">
                         <i class="handshake outline icon"></i>
                     </span>
                 </th>
@@ -77,10 +72,10 @@
             <g:if test="${tmplConfigItem.equalsIgnoreCase('privateContacts')}">
                 <th>${message(code: 'org.privateContacts.label')}</th>
             </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('currentFTEs')}">
-                <th class="la-th-wrap">${message(code: 'org.currentFTEs.label')}</th>
-            </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('numberOfSubscriptions')}">
+                <th class="la-th-wrap">${message(code: 'org.subscriptions.label')}</th>
+            </g:if>
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('currentSubscriptions')}">
                 <th class="la-th-wrap">${message(code: 'org.subscriptions.label')}</th>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('numberOfSurveys')}">
@@ -147,7 +142,6 @@
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('surveySubCostItem')}">
                 <th>
-
                     <g:if test="${actionName == 'surveyCostItems'}">
                         <%
                             def tmpParams = params.clone()
@@ -190,6 +184,20 @@
                     ${message(code: 'surveyCostItems.label')}
                 </th>
                 <th></th>
+            </g:if>
+
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('isMyX')}">
+                <th class="center aligned">
+                    <g:if test="${actionName == 'listProvider'}">
+                        <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.providers')}"><i class="icon star"></i></span>
+                    </g:if>
+                    <g:if test="${actionName == 'listInstitution'}">
+                        <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.insts')}"><i class="icon star"></i></span>
+                    </g:if>
+                    <g:if test="${actionName == 'listConsortia'}">
+                        <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.consortia')}"><i class="icon star"></i></span>
+                    </g:if>
+                </th>
             </g:if>
 
         </g:each>
@@ -240,44 +248,16 @@
                     ${org.sortname}
                 </td>
             </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('shortname')}">
-                <td>
-                    <g:if test="${tmplDisableOrgIds && (org.id in tmplDisableOrgIds)}">
-                        <g:if test="${org.shortname}">
-                            ${fieldValue(bean: org, field: "shortname")}
-                        </g:if>
-                    </g:if>
-                    <g:else>
-                        <g:link controller="organisation" action="show" id="${org.id}" params="${actionName == "currentProviders" ? [my: true] : [:]}">
-                            <g:if test="${org.shortname}">
-                                ${fieldValue(bean: org, field: "shortname")}
-                            </g:if>
-                        </g:link>
-                    </g:else>
-                </td>
-            </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('name')}">
                 <th scope="row" class="la-th-column la-main-object">
                     <div class="la-flexbox">
-                        <g:if test="${org.getCustomerType() in ['ORG_INST']}">
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                                  data-content="${org.getCustomerTypeI10n()}">
-                                <i class="chess rook grey la-list-icon icon"></i>
-                            </span>
-                        </g:if>
+                        <ui:customerTypeIcon org="${org}" cssClass="la-list-icon" />
                         <g:if test="${tmplDisableOrgIds && (org.id in tmplDisableOrgIds)}">
-                            ${fieldValue(bean: org, field: "name")} <br />
-                            <g:if test="${org.shortname && !tmplConfigItem.equalsIgnoreCase('shortname')}">
-                                (${fieldValue(bean: org, field: "shortname")})
-                            </g:if>
+                            ${fieldValue(bean: org, field: "name")}
                         </g:if>
                         <g:else>
-                            <g:link controller="organisation" action="show" id="${org.id}" params="${actionName == "currentProviders" ? [my: true] : [:]}">
+                            <g:link controller="organisation" action="show" id="${org.id}">
                                 ${fieldValue(bean: org, field: "name")}
-                                <g:if test="${org.shortname && !tmplConfigItem.equalsIgnoreCase('shortname')}">
-                                    <br />
-                                    (${fieldValue(bean: org, field: "shortname")})
-                                </g:if>
                             </g:link>
                         </g:else>
 
@@ -291,19 +271,34 @@
                 </th>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('altname')}">
+                <%
+                    SortedSet<String> altnames = new TreeSet<String>()
+                    if(params.orgNameContains) {
+                        altnames.addAll(org.altnames.findAll { AlternativeName altname -> altname.name.toLowerCase().contains(params.orgNameContains.toLowerCase()) }.name)
+                    }
+                    else altnames.addAll(org.altnames.name)
+                %>
                 <td>
-                    <ul>
-                        <g:each in="${org.altnames}" var="altname">
-                            <li>
-                                <g:if test="${org.gokbId}">
-                                    <g:link url="${apiSource.baseUrl}/public/orgContent/${org.gokbId}#altnames">${altname.name}</g:link>
-                                </g:if>
-                                <g:else>
-                                    ${altname.name}
-                                </g:else>
-                            </li>
+                    <ul class="la-simpleList">
+                        <g:each in="${altnames}" var="altname" status="a">
+                            <g:if test="${a < 10}">
+                                <li>${altname}</li>
+                            </g:if>
                         </g:each>
                     </ul>
+                    <g:if test="${altnames.size() > 10}">
+                        <div class="ui accordion">
+                            <%-- TODO translation string if this solution is going to be accepted --%>
+                            <div class="title">Weitere ...<i class="ui dropdown icon"></i></div>
+                            <div class="content">
+                                <ul class="la-simpleList">
+                                    <g:each in="${altnames.drop(10)}" var="altname">
+                                        <li>${altname}</li>
+                                    </g:each>
+                                </ul>
+                            </div>
+                        </div>
+                    </g:if>
                 </td>
             </g:if>
 
@@ -325,8 +320,7 @@
                                 ${personRole.getPrs()?.getFirst_name()} ${personRole.getPrs()?.getLast_name()} <br />
 
                                 <g:each in="${Contact.findAllByPrsAndContentType(
-                                        personRole.getPrs(),
-                                        RDStore.CCT_EMAIL
+                                        personRole.getPrs(), RDStore.CCT_EMAIL
                                 )}" var="email">
                                     <div class="item js-copyTriggerParent">
                                             <span data-position="right center"
@@ -338,8 +332,7 @@
                                     </div>
                                 </g:each>
                                 <g:each in="${Contact.findAllByPrsAndContentType(
-                                        personRole.getPrs(),
-                                        RDStore.CCT_PHONE
+                                        personRole.getPrs(), RDStore.CCT_PHONE
                                 )}" var="telNr">
                                     <div class="item">
                                         <span data-position="right center">
@@ -356,14 +349,14 @@
                 </td>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('hasInstAdmin')}">
-                <td>
+                <td class="center aligned">
                     <%
                         String instAdminIcon = '<i class="large red times icon"></i>'
-                        List<User> users = User.executeQuery('select uo.user from UserOrg uo where uo.org = :org and uo.formalRole = :instAdmin', [org: org, instAdmin: Role.findByAuthority('INST_ADM')])
+                        List<User> users = User.executeQuery('select uo.user from UserOrgRole uo where uo.org = :org and uo.formalRole = :instAdmin', [org: org, instAdmin: Role.findByAuthority('INST_ADM')])
                         if (users)
                             instAdminIcon = '<i class="large green check icon"></i>'
                     %>
-                    <g:if test="${contextService.getUser().hasAffiliation('INST_ADM') || SpringSecurityUtils.ifAllGranted("ROLE_ADMIN")}">
+                    <g:if test="${contextService.getUser().hasCtxAffiliation_or_ROLEADMIN('INST_ADM')}">
                         <br /><g:link controller="organisation" action="users"
                                     params="${[id: org.id]}">${raw(instAdminIcon)}</g:link>
                     </g:if>
@@ -373,17 +366,14 @@
                 </td>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('isWekbCurated')}">
-                <td>
+                <td class="center aligned">
                     <g:if test="${org.gokbId != null && RDStore.OT_PROVIDER.id in org.getAllOrgTypeIds()}">
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                              data-content="${message(code:'org.isWekbCurated.header.label')}">
-                            <i class="grey la-gokb la-list-icon icon"></i>
-                        </span>
+                        <ui:wekbButtonLink type="org" gokbId="${org.gokbId}" />
                     </g:if>
                 </td>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('status')}">
-                <td>
+                <td class="center aligned">
                     <g:if test="${org.status == RDStore.ORG_STATUS_CURRENT}">
                         <g:set var="precedents" value="${Org.executeQuery('select c.toOrg from Combo c where c.fromOrg = :org and c.type = :follows',[org: org, follows: RDStore.COMBO_TYPE_FOLLOWS])}"/>
                         <g:each in="${precedents}" var="precedent">
@@ -485,7 +475,7 @@
                                             tmplShowDeleteButton   : true,
                                             tmplShowAddPersonRoles : false,
                                             tmplShowAddContacts    : false,
-                                            tmplShowAddAddresses   : false,
+                                            //tmplShowAddAddresses   : false,
                                             tmplShowFunctions      : true,
                                             tmplShowPositions      : true,
                                             tmplShowResponsiblities: false,
@@ -510,7 +500,7 @@
                                             tmplShowDeleteButton   : true,
                                             tmplShowAddPersonRoles : false,
                                             tmplShowAddContacts    : false,
-                                            tmplShowAddAddresses   : false,
+                                            //tmplShowAddAddresses   : false,
                                             tmplShowFunctions      : true,
                                             tmplShowPositions      : true,
                                             tmplShowResponsiblities: false,
@@ -540,17 +530,6 @@
                     </g:each>
                 </td>
             </g:if>
-            <g:if test="${tmplConfigItem.equalsIgnoreCase('currentFTEs')}">
-                <td>
-                    <g:each in="${ReaderNumber.findAllByOrgAndReferenceGroup(org, RefdataValue.getByValueAndCategory('Students', RDConstants.NUMBER_TYPE).getI10n('value'))?.sort {
-                        it.type?.getI10n("value")
-                    }}" var="fte">
-                        <g:if test="${fte.startDate <= sqlDateToday && fte.endDate >= sqlDateToday}">
-                            ${fte.type?.getI10n("value")} : ${fte.number} <br />
-                        </g:if>
-                    </g:each>
-                </td>
-            </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('numberOfSubscriptions')}">
                 <td class="center aligned">
                     <div class="la-flexbox">
@@ -574,7 +553,7 @@
                         %>
                         <g:if test="${actionName == 'manageMembers'}">
                             <g:link controller="myInstitution" action="manageConsortiaSubscriptions"
-                                    params="${[member: org.id, status: params.subStatus ?: null, validOn: params.subValidOn, filterSet: true]}">
+                                    params="${[member: org.id, status: params.subStatus ?: null, validOn: params.subValidOn, filterSet: true, filterPvd: params.list('filterPvd')]}">
                                 <div class="ui blue circular label">
                                     ${numberOfSubscriptions}
                                 </div>
@@ -608,6 +587,31 @@
                             </g:link>
                         </g:else>
                     </div>
+                </td>
+            </g:if>
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('currentSubscriptions')}">
+                <td>
+                    <g:if test="${actionName == 'currentProviders'}">
+                        <%
+                            if (params.filterPvd && params.filterPvd != "" && params.list('filterPvd')){
+                                (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(
+                                        [org: org, actionName: actionName, status: RDStore.SUBSCRIPTION_CURRENT.id, date_restr: params.subValidOn ? DateUtils.parseDateGeneric(params.subValidOn) : null, providers: params.list('filterPvd')],
+                                        contextService.getOrg())
+                            } else {
+                                (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(
+                                        [org: org, actionName: actionName, status: RDStore.SUBSCRIPTION_CURRENT.id, date_restr: params.subValidOn ? DateUtils.parseDateGeneric(params.subValidOn) : null],
+                                        contextService.getOrg())
+                            }
+                            List<Subscription> currentSubscriptions = Subscription.executeQuery("select s " + base_qry, qry_params)
+                        %>
+                        <g:if test="${currentSubscriptions}">
+                            <ul class="la-simpleList">
+                                <g:each in="${currentSubscriptions}" var="sub">
+                                    <li><g:link controller="subscription" action="show" id="${sub.id}">${sub}</g:link></li>
+                                </g:each>
+                            </ul>
+                        </g:if>
+                    </g:if>
                 </td>
             </g:if>
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('numberOfSurveys')}">
@@ -680,11 +684,13 @@
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('platform')}">
                 <td>
-                    <ul>
                         <g:each in="${org.platforms}" var="platform">
-                            <li><g:link controller="platform" action="show" id="${platform.id}">${platform.name}</g:link></li>
+                                <g:if test="${platform.gokbId != null}">
+                                    <ui:wekbIconLink type="platform" gokbId="${platform.gokbId}" />
+                                </g:if>
+                                <g:link controller="platform" action="show" id="${platform.id}">${platform.name}</g:link>
+                                <br />
                         </g:each>
-                    </ul>
                 </td>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('type')}">
@@ -924,6 +930,26 @@
                 </td>
             </g:if>
 
+            <g:if test="${tmplConfigItem.equalsIgnoreCase('isMyX')}">
+                <td class="center aligned">
+                    <g:if test="${actionName == 'listProvider'}">
+                        <g:if test="${currentProviderIdList && (org.id in currentProviderIdList)}">
+                            <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.providers')}"><i class="icon yellow star"></i></span>
+                        </g:if>
+                    </g:if>
+                    <g:if test="${actionName == 'listInstitution'}">
+                        <g:if test="${currentConsortiaMemberIdList && (org.id in currentConsortiaMemberIdList)}">
+                            <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.insts')}"><i class="icon yellow star"></i></span>
+                        </g:if>
+                    </g:if>
+                    <g:if test="${actionName == 'listConsortia'}">
+                        <g:if test="${currentConsortiaIdList && (org.id in currentConsortiaIdList)}">
+                            <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.consortia')}"><i class="icon yellow star"></i></span>
+                        </g:if>
+                    </g:if>
+                </td>
+            </g:if>
+
         </g:each><!-- tmplConfigShow -->
         </tr>
     </g:each><!-- orgList -->
@@ -1010,9 +1036,6 @@
                             onVisible: function () {
                                 r2d2.initDynamicUiStuff('#costItem_ajaxModal');
                                 r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
-
-                                JSPC.callbacks.dynPostFunc();
-                                JSPC.app.setupCalendar();
                             },
                             detachable: true,
                             closable: false,

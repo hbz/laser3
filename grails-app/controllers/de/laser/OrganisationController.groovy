@@ -7,10 +7,9 @@ import de.laser.ctrl.UserControllerService
 import de.laser.properties.OrgProperty
 import de.laser.auth.Role
 import de.laser.auth.User
-import de.laser.auth.UserOrg
+import de.laser.auth.UserOrgRole
 import de.laser.properties.PropertyDefinition
- 
-import de.laser.helper.*
+import de.laser.remote.ApiSource
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
@@ -19,6 +18,7 @@ import de.laser.utils.SwissKnife
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
+import grails.web.servlet.mvc.GrailsParameterMap
 import org.apache.http.HttpStatus
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.springframework.validation.FieldError
@@ -47,14 +47,17 @@ class OrganisationController  {
     ExportClickMeService exportClickMeService
     FilterService filterService
     GenericOIDService genericOIDService
+    GokbService gokbService
     IdentifierService identifierService
     InstAdmService instAdmService
     OrganisationControllerService organisationControllerService
     OrganisationService organisationService
+    OrgTypeService orgTypeService
     PropertyService propertyService
     TaskService taskService
     UserControllerService userControllerService
     UserService userService
+    WorkflowService workflowService
 
     //-----
 
@@ -86,22 +89,22 @@ class OrganisationController  {
      *     <li>oamonitor: permissions to the Open Access harvest access</li>
      * </ul>
      */
-    @DebugInfo(perm="FAKE,ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_ADM", specRole="ROLE_ADMIN")
+    @DebugInfo(ctxInstAdmCheckPerm_or_ROLEADMIN = ['FAKE,ORG_INST_BASIC,ORG_CONSORTIUM_BASIC'])
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("FAKE,ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN")
+        ctx.accessService.ctxInstAdmCheckPerm_or_ROLEADMIN( 'FAKE,ORG_INST_BASIC,ORG_CONSORTIUM_BASIC' )
     })
     @Check404(domain=Org)
     def settings() {
         Map<String,Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
 
         if(!params.containsKey("tab"))
-            params.tab = "general"
+            params.tab = "ezb"
         Boolean isComboRelated = Combo.findByFromOrgAndToOrg(result.orgInstance, result.institution)
         result.isComboRelated = isComboRelated
         result.contextOrg = result.institution //for the properties template
 
-        Boolean hasAccess = (result.inContextOrg && accessService.checkMinUserOrgRole(result.user, result.orgInstance, 'INST_ADM')) ||
-                (isComboRelated && accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')) ||
+        Boolean hasAccess = (result.inContextOrg && userService.checkAffiliationAndCtxOrg(result.user, result.orgInstance, 'INST_ADM')) ||
+                (isComboRelated && userService.checkAffiliationAndCtxOrg(result.user, result.institution, 'INST_ADM')) ||
                 SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
         // forbidden access
@@ -121,10 +124,10 @@ class OrganisationController  {
                 OrgSetting.KEYS.API_KEY,
                 OrgSetting.KEYS.API_PASSWORD
         ]
-        List<OrgSetting.KEYS> generalSet = [
-                OrgSetting.KEYS.CUSTOMER_TYPE,
-                OrgSetting.KEYS.GASCO_ENTRY
-        ]
+//        List<OrgSetting.KEYS> generalSet = [
+//                OrgSetting.KEYS.CUSTOMER_TYPE,
+//                OrgSetting.KEYS.GASCO_ENTRY
+//        ]
         List<OrgSetting.KEYS> ezbSet = [
                 OrgSetting.KEYS.EZB_SERVER_ACCESS
         ]
@@ -140,8 +143,8 @@ class OrganisationController  {
         result.settings = []
 
         switch(params.tab) {
-            case 'general': result.settings.addAll(allSettings.findAll { OrgSetting os -> os.key in generalSet })
-                break
+//            case 'general': result.settings.addAll(allSettings.findAll { OrgSetting os -> os.key in generalSet })
+//                break
             case 'api': result.settings.addAll(allSettings.findAll { OrgSetting os -> os.key in apiSet })
                 break
             case 'ezb': result.settings.addAll(allSettings.findAll { OrgSetting os -> os.key in ezbSet })
@@ -161,11 +164,11 @@ class OrganisationController  {
             log.debug( 'settings for own org')
             result.settings.addAll(allSettings.findAll { it.key in ownerSet })
 
-            if (result.institution.hasPerm('ORG_CONSORTIUM,ORG_INST')) {
+            if (result.institution.hasPerm(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC)) {
                 result.settings.addAll(allSettings.findAll { it.key in accessSet })
                 result.settings.addAll(allSettings.findAll { it.key in credentialsSet })
             }
-            else if (['ORG_BASIC_MEMBER'].contains(result.institution.getCustomerType())) {
+            else if (['ORG_INST_BASIC'].contains(result.institution.getCustomerType())) {
                 result.settings.addAll(allSettings.findAll { it.key == OrgSetting.KEYS.NATSTAT_SERVER_ACCESS })
             }
             else if (['FAKE'].contains(result.institution.getCustomerType())) {
@@ -189,7 +192,7 @@ class OrganisationController  {
         result.user = contextService.getUser()
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        params.sort = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
+        params.sort = params.sort ?: " LOWER(o.sortname), LOWER(o.name)"
 
         result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
@@ -247,38 +250,62 @@ class OrganisationController  {
      * Call to list the academic institutions without consortia
      * @return a list of institutions; basic consortia members or single users
      */
-    @DebugInfo(perm="ORG_CONSORTIUM", type="Consortium", affil="INST_USER", specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = {
-        ctx.accessService.checkPermTypeAffiliationX("ORG_CONSORTIUM", "Consortium", "INST_USER", "ROLE_ADMIN")
+    @DebugInfo(ctxConsortiumCheckPermAffiliation_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_USER'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = { 
+        ctx.accessService.ctxConsortiumCheckPermAffiliation_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_USER')
     })
-    Map listInstitution() {
+    def listInstitution() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
         params.orgType   = RDStore.OT_INSTITUTION.id.toString()
         params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id.toString()
         if(!params.sort)
             params.sort = " LOWER(o.sortname)"
+        if(!params.orgStatus && !params.filterSet) {
+            params.orgStatus = [RDStore.ORG_STATUS_CURRENT.id]
+        }
         Map<String, Object> fsq = filterService.getOrgQuery(params)
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         List<Org> availableOrgs = Org.executeQuery(fsq.query, fsq.queryParams, [sort:params.sort])
         result.consortiaMemberIds = Combo.executeQuery('select cmb.fromOrg.id from Combo cmb where cmb.toOrg = :toOrg and cmb.type = :type',[toOrg: result.institution, type: RDStore.COMBO_TYPE_CONSORTIUM])
-        result.consortiaMemberTotal = availableOrgs.size()
 
+        if (params.isMyX) {
+            List xFilter = params.list('isMyX')
+            Set<Long> f1Result = []
+
+            if (xFilter.contains('ismyx_exclusive')) {
+                f1Result.addAll( availableOrgs.findAll { result.consortiaMemberIds.contains( it.id ) }.collect{ it.id } )
+            }
+            if (xFilter.contains('ismyx_not')) {
+                f1Result.addAll( availableOrgs.findAll { ! result.consortiaMemberIds.contains( it.id ) }.collect{ it.id }  )
+            }
+            availableOrgs = availableOrgs.findAll { f1Result.contains(it.id) } as List<Org>
+
+//            if (xFilter.contains('ismyx_exclusive')) {
+//                availableOrgs = availableOrgs.findAll { result.consortiaMemberIds.contains( it.id ) }
+//            }
+//            else if (xFilter.contains('ismyx_not')) {
+//                availableOrgs = availableOrgs.findAll { ! result.consortiaMemberIds.contains( it.id ) }
+//            }
+        }
+        result.consortiaMemberTotal = availableOrgs.size()
 
         String message = message(code: 'menu.institutions') as String
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         String datetoday = sdf.format(new Date(System.currentTimeMillis()))
         String filename = message+"_${datetoday}"
-        if(params.exportClickMeExcel) {
+        Map<String, Object> selectedFields = [:]
+        Set<String> contactSwitch = []
+        if(params.fileformat) {
             if (params.filename) {
                 filename =params.filename
             }
-
             Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
-            Map<String, Object> selectedFields = [:]
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
-
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(availableOrgs, selectedFields, 'institution')
+            contactSwitch.addAll(params.list("contactSwitch"))
+        }
+        if(params.fileformat == 'xlsx') {
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(availableOrgs, selectedFields, 'institution', ExportClickMeService.FORMAT.XLS, contactSwitch)
 
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -288,8 +315,19 @@ class OrganisationController  {
             wb.dispose()
             return //IntelliJ cannot know that the return prevents an obsolete redirect
         }
-        result.availableOrgs = availableOrgs.drop(result.offset).take(result.max)
-        result
+        else if(params.fileformat == 'csv') {
+            response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
+            response.contentType = "text/csv"
+            ServletOutputStream out = response.outputStream
+            out.withWriter { writer ->
+                writer.write((String) exportClickMeService.exportOrgs(availableOrgs, selectedFields, 'institution', ExportClickMeService.FORMAT.CSV, contactSwitch))
+            }
+            out.close()
+        }
+        else {
+            result.availableOrgs = availableOrgs.drop(result.offset).take(result.max)
+            result
+        }
     }
 
     /**
@@ -299,7 +337,7 @@ class OrganisationController  {
     @Secured(['ROLE_USER'])
     Map listConsortia() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
-        params.customerType   = Role.findByAuthority('ORG_CONSORTIUM').id.toString()
+        params.customerType   = Role.findByAuthority('ORG_CONSORTIUM_PRO').id.toString()
         if(!params.sort)
             params.sort = " LOWER(o.sortname)"
         Map<String, Object> fsq = filterService.getOrgQuery(params)
@@ -307,10 +345,85 @@ class OrganisationController  {
 
         List<Org> availableOrgs = Org.executeQuery(fsq.query, fsq.queryParams, [sort:params.sort])
         availableOrgs.remove(Org.findByName("LAS:eR Backoffice"))
-        result.consortiaTotal = availableOrgs.size()
-        result.availableOrgs = availableOrgs.drop(result.offset).take(result.max)
 
-        result
+        String header = message(code: 'menu.public.all_cons')
+        String exportHeader = message(code: 'export.all.consortia')
+        SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
+        // Write the output to a file
+        String file = "${sdf.format(new Date())}_"+exportHeader
+
+        // ? --- copied from myInstitutionController.currentConsortia()
+        GrailsParameterMap queryParams = params.clone() as GrailsParameterMap
+        queryParams.clear()
+        queryParams.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
+        queryParams.subStatus = RDStore.SUBSCRIPTION_CURRENT.id.toString()
+        queryParams.invertDirection = true
+        Map<String, Object> currentConsortiaQMap = filterService.getOrgComboQuery(queryParams, result.contextOrg as Org)
+        result.consortiaIds = Org.executeQuery(currentConsortiaQMap.query, currentConsortiaQMap.queryParams).collect{ it.id }
+        // ? ---
+
+        if (params.isMyX) {
+            List xFilter = params.list('isMyX')
+            Set<Long> f1Result = []
+
+            if (xFilter.contains('ismyx_exclusive')) {
+                f1Result.addAll( availableOrgs.findAll { result.consortiaIds.contains( it.id ) }.collect{ it.id } )
+            }
+            if (xFilter.contains('ismyx_not')) {
+                f1Result.addAll( availableOrgs.findAll { ! result.consortiaIds.contains( it.id ) }.collect{ it.id }  )
+            }
+            availableOrgs = availableOrgs.findAll { f1Result.contains(it.id) } as List<Org>
+        }
+
+        result.consortiaTotal = availableOrgs.size()
+        result.availableOrgs  = availableOrgs.drop(result.offset).take(result.max)
+
+        Set<String> contactSwitch = []
+        Map<String, Object> selectedFields = [:]
+        if(params.fileformat) {
+            if (params.filename) {
+                file = params.filename
+            }
+            contactSwitch.addAll(params.list("contactSwitch"))
+            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+        }
+
+        /*
+        if ( params.exportXLS ) {
+            SXSSFWorkbook wb = (SXSSFWorkbook) organisationService.exportOrg(availableOrgs, header, false, 'xls')
+            response.setHeader "Content-disposition", "attachment; filename=\"${file}.xlsx\""
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
+            return
+        }
+        else */
+        if(params.fileformat == 'xlsx') {
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(availableOrgs, selectedFields, 'consortium', ExportClickMeService.FORMAT.XLS, contactSwitch)
+
+            response.setHeader "Content-disposition", "attachment; filename=\"${file}.xlsx\""
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
+            return
+        }
+        else if(params.fileformat == 'csv') {
+            response.setHeader("Content-disposition", "attachment; filename=\"${file}.csv\"")
+            response.contentType = "text/csv"
+            ServletOutputStream out = response.outputStream
+            out.withWriter { writer ->
+                writer.write((String) exportClickMeService.exportOrgs(availableOrgs, selectedFields, 'consortium', ExportClickMeService.FORMAT.CSV, contactSwitch))
+            }
+            out.close()
+        }
+        else {
+            result
+        }
     }
 
     /**
@@ -326,11 +439,36 @@ class OrganisationController  {
         Map<String, Object> result = [:]
         result.propList    = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
         result.user        = contextService.getUser()
-        result.editable    = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || accessService.checkConstraint_ORG_COM_EDITOR()
+        result.editable    = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || accessService.is_ORG_COM_EDITOR()
+
+        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        Map queryCuratoryGroups = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/groups', [:])
+        if(queryCuratoryGroups.error == 404) {
+            result.error = message(code:'wekb.error.'+queryCuratoryGroups.error) as String
+        }
+        else {
+            if (queryCuratoryGroups.warning) {
+                List recordsCuratoryGroups = queryCuratoryGroups.warning.result
+                result.curatoryGroups = recordsCuratoryGroups?.findAll { it.status == "Current" }
+            }
+        }
+        /*
+        we:kb implementation missing but currently not needed anyway; see _orgFilter
+        Map queryRoles = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/refdatas?category=Role') //await Moe's construction
+        if(queryRoles.error == 404) {
+            result.error = message(code:'wekb.error.'+queryRoles.error) as String
+        }
+        else {
+            if (queryRoles.warning) {
+                List recordsRoles = queryRoles.warning.result
+                result.roles = recordsRoles
+            }
+        }
+        */
 
         params.orgSector    = RDStore.O_SECTOR_PUBLISHER?.id?.toString()
         params.orgType      = RDStore.OT_PROVIDER?.id?.toString()
-        params.sort        = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
+        params.sort        = params.sort ?: " LOWER(o.sortname), LOWER(o.name)"
 
         def fsq            = filterService.getOrgQuery(params)
         result.filterSet = params.filterSet ? true : false
@@ -341,9 +479,41 @@ class OrganisationController  {
             fsq = filterService.getOrgQuery(params)
             fsq = propertyService.evalFilterQuery(params, fsq.query, 'o', fsq.queryParams)
         }
+
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        List orgListTotal   = Org.findAll(fsq.query, fsq.queryParams)
+        List orgListTotal            = Org.findAll(fsq.query, fsq.queryParams)
+        result.currentProviderIdList = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies(contextService.getOrg()).toList()
+        result.wekbRecords = organisationService.getWekbOrgRecords(params, result)
+        if (params.curatoryGroup || params.providerRole)
+            orgListTotal = orgListTotal.findAll { Org org -> org.gokbId in result.wekbRecords.keySet() }
+
+        if (params.isMyX) {
+            List xFilter = params.list('isMyX')
+            Set<Long> f1Result = [], f2Result = []
+            boolean   f1Set = false, f2Set = false
+
+            if (xFilter.contains('ismyx_exclusive')) {
+                f1Result.addAll( orgListTotal.findAll { result.currentProviderIdList.contains( it.id ) }.collect{ it.id } )
+                f1Set = true
+            }
+            if (xFilter.contains('ismyx_not')) {
+                f1Result.addAll( orgListTotal.findAll { ! result.currentProviderIdList.contains( it.id ) }.collect{ it.id }  )
+                f1Set = true
+            }
+            if (xFilter.contains('wekb_exclusive')) {
+                f2Result.addAll( orgListTotal.findAll {it.gokbId != null }.collect{ it.id } )
+                f2Set = true
+            }
+            if (xFilter.contains('wekb_not')) {
+                f2Result.addAll( orgListTotal.findAll { it.gokbId == null }.collect{ it.id }  )
+                f2Set = true
+            }
+
+            if (f1Set) { orgListTotal = orgListTotal.findAll { f1Result.contains(it.id) } }
+            if (f2Set) { orgListTotal = orgListTotal.findAll { f2Result.contains(it.id) } }
+        }
+
         result.orgListTotal = orgListTotal.size()
         result.orgList      = orgListTotal.drop((int) result.offset).take((int) result.max)
 
@@ -352,6 +522,7 @@ class OrganisationController  {
         String datetoday = sdf.format(new Date())
         String filename = message+"_${datetoday}"
 
+        /*
         if ( params.exportXLS) {
             params.remove('max')
             try {
@@ -373,16 +544,19 @@ class OrganisationController  {
                 return
             }
         }
-        else if(params.exportClickMeExcel) {
+        else */
+        Map<String, Object> selectedFields = [:]
+        Set<String> contactSwitch = []
+        if(params.fileformat) {
             if (params.filename) {
                 filename =params.filename
             }
-
             Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
-            Map<String, Object> selectedFields = [:]
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
-
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(orgListTotal, selectedFields, 'provider')
+            contactSwitch.addAll(params.list("contactSwitch"))
+        }
+        if(params.fileformat == 'xlsx') {
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(orgListTotal, selectedFields, 'provider', ExportClickMeService.FORMAT.XLS, contactSwitch)
 
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -392,19 +566,17 @@ class OrganisationController  {
             wb.dispose()
             return //IntelliJ cannot know that the return prevents an obsolete redirect
         }
-        withFormat {
-            html {
-                result
+        else if(params.fileformat == 'csv') {
+            response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
+            response.contentType = "text/csv"
+            ServletOutputStream out = response.outputStream
+            out.withWriter { writer ->
+                writer.write((String) exportClickMeService.exportOrgs(orgListTotal, selectedFields, 'provider', ExportClickMeService.FORMAT.CSV, contactSwitch))
             }
-            csv {
-                response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
-                response.contentType = "text/csv"
-                ServletOutputStream out = response.outputStream
-                out.withWriter { writer ->
-                    writer.write((String) organisationService.exportOrg(orgListTotal,message,true,"csv"))
-                }
-                out.close()
-            }
+            out.close()
+        }
+        else {
+            result
         }
     }
 
@@ -442,6 +614,7 @@ class OrganisationController  {
             nsList = nsList - IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS)
         }
         else {
+            nsList = nsList - IdentifierNamespace.findAllByNsInList([IdentifierNamespace.CROSSREF_FUNDER_ID, IdentifierNamespace.DBPEDIA, IdentifierNamespace.LOC_ID, IdentifierNamespace.ROR_ID, IdentifierNamespace.VIAF, IdentifierNamespace.WIKIDATA_ID])
             if(org.ids.find { Identifier id -> id.ns == IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_ID) })
                 nsList = nsList - IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_ID)
             if(org.ids.find { Identifier id -> id.ns == IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_KR) })
@@ -541,7 +714,7 @@ class OrganisationController  {
                     note: params.note?.trim(),
                     owner: contextService.getOrg(),
                     isPublic: true,
-                    type: RefdataValue.getByValueAndCategory('Default', RDConstants.CUSTOMER_IDENTIFIER_TYPE)
+                    type: RDStore.CUSTOMER_IDENTIFIER_TYPE_DEFAULT
             )
             if(!ci.save())
                 log.error("error on inserting customer identifier: ${ci.getErrors().getAllErrors().toListString()}")
@@ -717,9 +890,9 @@ class OrganisationController  {
      * Creates a new provider organisation with the given parameters
      * @return the details view of the provider or the creation view in case of an error
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN", wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def createProvider() {
         Org.withTransaction {
@@ -747,16 +920,16 @@ class OrganisationController  {
      * Call to create a new provider; offers first a query for the new name to insert in order to exclude duplicates
      * @return the empty form (with a submit to proceed with the new organisation) or a list of eventual name matches
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def findProviderMatches() {
 
         Map<String, Object> result = [:]
         if ( params.proposedProvider ) {
 
-            result.providerMatches= Org.executeQuery("from Org as o where exists (select roletype from o.orgType as roletype where roletype = :provider ) and (lower(o.name) like :searchName or lower(o.shortname) like :searchName or lower(o.sortname) like :searchName ) ",
+            result.providerMatches= Org.executeQuery("from Org as o where exists (select roletype from o.orgType as roletype where roletype = :provider ) and (lower(o.name) like :searchName or lower(o.sortname) like :searchName ) ",
                     [provider: RDStore.OT_PROVIDER, searchName: "%${params.proposedProvider.toLowerCase()}%"])
         }
         result
@@ -766,8 +939,10 @@ class OrganisationController  {
      * Call to create a new member with the given parameter map
      * @return the details view of the new member in case of success, the creation page otherwise
      */
-    @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_EDTIOR",specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM","INST_EDITOR","ROLE_ADMIN") })
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
+    })
     def createMember() {
         Map<String,Object> ctrlResult = organisationControllerService.createMember(this,params)
         if(ctrlResult.status == OrganisationControllerService.STATUS_ERROR) {
@@ -784,8 +959,10 @@ class OrganisationController  {
      * Call to create a new consortium member; opens a form to check the new name against existing ones in order to exclude duplicates
      * @return the form with eventual name matches
      */
-    @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_EDITOR",specRole="ROLE_ADMIN")
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM","INST_EDITOR","ROLE_ADMIN") })
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC])
+    @Secured(closure = {
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
+    })
     Map findOrganisationMatches() {
         Map memberMap = [:]
 
@@ -803,7 +980,7 @@ class OrganisationController  {
         Map result = [institution:contextService.getOrg(), organisationMatches:[], members:memberMap, comboType:RDStore.COMBO_TYPE_CONSORTIUM]
         //searching members for consortium, i.e. the context org is a consortium
         if (params.proposedOrganisation) {
-            result.organisationMatches.addAll(Org.executeQuery("select o from Org as o where exists (select roletype from o.orgType as roletype where roletype = :institution ) and (lower(o.name) like :searchName or lower(o.shortname) like :searchName or lower(o.sortname) like :searchName) ",
+            result.organisationMatches.addAll(Org.executeQuery("select o from Org as o where exists (select roletype from o.orgType as roletype where roletype = :institution ) and (lower(o.name) like :searchName or lower(o.sortname) like :searchName) ",
                     [institution: RDStore.OT_INSTITUTION, searchName: "%${params.proposedOrganisation.toLowerCase()}%"]))
         }
         if (params.proposedOrganisationID) {
@@ -821,11 +998,8 @@ class OrganisationController  {
     @Secured(['ROLE_USER'])
     @Check404(domain=Org)
     def show() {
-
-        Profiler prf = new Profiler()
-        prf.setBenchmark('this-n-that')
-
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
+
         if (! result) {
             response.sendError(401)
             return
@@ -845,13 +1019,7 @@ class OrganisationController  {
                 result.missing.leitID = message(code: 'org.eInvoice.info.missing.leitID')
         }
 
-        prf.setBenchmark('orgRoles & editable')
-
-        prf.setBenchmark('tasks')
-
         result.tasks = taskService.getTasksByResponsiblesAndObject(result.user,result.institution,result.orgInstance)
-
-        prf.setBenchmark('properties')
 
         result.authorizedOrgs = result.user?.getAffiliationOrgs()
 
@@ -872,28 +1040,32 @@ class OrganisationController  {
             }
         }
 
-        prf.setBenchmark('identifier')
-
         if(!result.isProviderOrAgency){
             result.orgInstance.createCoreIdentifiersIfNotExist()
         }
         else {
             Set<Package> packages = []
-            OrgRole.executeQuery('select oo from OrgRole oo where oo.org = :org and exists(select sp from SubscriptionPackage sp join sp.subscription s join s.orgRelations ooo where ooo.org = :ctx and sp.pkg = oo.pkg) or exists(select oo.id from IssueEntitlement ie join ie.subscription s join s.orgRelations ooo join ie.tipp tipp where oo.tipp = tipp and oo.org = :org and ooo.org = :ctx)', [ctx: result.institution, org: result.orgInstance]).each { OrgRole oo ->
-                if (oo.pkg)
-                    packages << oo.pkg
-                else if (oo.tipp)
-                    packages << oo.tipp.pkg
+            OrgRole.executeQuery('select oo from OrgRole oo where oo.org = :org and exists(select sp from SubscriptionPackage sp join sp.subscription s join s.orgRelations ooo where ooo.org = :ctx and sp.pkg = oo.pkg)', [ctx: result.institution, org: result.orgInstance]).each { OrgRole oo ->
+                packages << oo.pkg
             }
+            /*
+            ATTEMPT! Tendancy goes over to link packages with providers, not as much titles with packages. If data gets missing, this query must be reconsidered and reactivated!
+            OrgRole.executeQuery('select oo from OrgRole oo where oo.org = :org and oo.tipp in (select ie.tipp from IssueEntitlement ie join ie.subscription s join s.orgRelations ooo where ooo.org = :ctx)', [ctx: result.institution, org: result.orgInstance]).each { OrgRole oo ->
+                packages << oo.tipp.pkg
+            }
+            */
             result.packages = packages.sort { Package pkg -> pkg.sortname }
             //may become a performance bottleneck - SUBJECT OF OBSERVATION!
-            String consortialFilter = ''
-            if (result.institution.getCustomerType() == 'ORG_CONSORTIUM')
-                consortialFilter = " and s.instanceOf is null"
-            result.subLinks = OrgRole.executeQuery('select distinct(oo.sub) from OrgRole oo join oo.sub s where oo.org = :org and exists(select ooo from OrgRole ooo where s = ooo.sub and ooo.org = :ctx)'+consortialFilter+' order by s.name, s.startDate, s.endDate',[org: result.orgInstance, ctx: result.institution])
+            String subConsortialFilter = '', licConsortialFilter = ''
+            if (result.institution.isCustomerType_Consortium()) {
+                subConsortialFilter = " and s.instanceOf is null"
+                licConsortialFilter = " and l.instanceOf is null"
+            }
+            result.subLinks = OrgRole.executeQuery('select distinct(oo.sub) from OrgRole oo join oo.sub s where oo.org = :org and exists(select ooo from OrgRole ooo where s = ooo.sub and ooo.org = :ctx)'+subConsortialFilter+' order by s.name, s.startDate, s.endDate',[org: result.orgInstance, ctx: result.institution])
+            result.currentSubscriptionsCount = OrgRole.executeQuery('select distinct(oo.sub) from OrgRole oo join oo.sub s where s.status = :current and oo.org = :org and exists(select ooo from OrgRole ooo where s = ooo.sub and ooo.org = :ctx)'+subConsortialFilter+' order by s.name, s.startDate, s.endDate',[org: result.orgInstance, ctx: result.institution, current: RDStore.SUBSCRIPTION_CURRENT]).size()
+            result.licLinks = OrgRole.executeQuery('select distinct(oo.lic) from OrgRole oo join oo.lic l where oo.org = :org and exists(select ooo from OrgRole ooo where l = ooo.lic and ooo.org = :ctx)'+licConsortialFilter+' order by l.reference, l.startDate, l.endDate',[org: result.orgInstance, ctx: result.institution])
+            result.currentLicensesCount = OrgRole.executeQuery('select distinct(oo.lic) from OrgRole oo join oo.lic l where l.status = :current and oo.org = :org and exists(select li from Links li where li.sourceLicense = l and li.destinationSubscription in (select s from OrgRole oos join oos.sub s where oos.org = :ctx and s.status = :subCurrent'+subConsortialFilter+')) and exists(select ooo from OrgRole ooo where l = ooo.lic and ooo.org = :ctx)'+licConsortialFilter+' order by l.reference, l.startDate, l.endDate',[org: result.orgInstance, ctx: result.institution, subCurrent: RDStore.SUBSCRIPTION_CURRENT, current: RDStore.LICENSE_CURRENT]).size()
         }
-
-        prf.setBenchmark('createdBy and legallyObligedBy')
 
         if (result.orgInstance.createdBy) {
 			result.createdByOrgGeneralContacts = PersonRole.executeQuery(
@@ -909,9 +1081,8 @@ class OrganisationController  {
 					[org: result.orgInstance.legallyObligedBy, ft: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]
 			)
 		}
-        List bm = prf.stopBenchmark()
-        result.benchMark = bm
 
+        workflowService.executeCmdAndUpdateResult(result, params)
         result
     }
 
@@ -925,10 +1096,8 @@ class OrganisationController  {
     @Secured(['ROLE_USER'])
     @Check404(domain=Org)
     def ids() {
-        Profiler prf = new Profiler()
-        prf.setBenchmark('this-n-that')
-
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
+
         if(!result) {
             response.sendError(401)
             return
@@ -940,27 +1109,20 @@ class OrganisationController  {
         if(!params.tab)
             params.tab = 'identifier'
 
-        prf.setBenchmark('editable_identifier')
-
         //IF ORG is a Provider and is NOT ex we:kb
         if(!result.orgInstance.gokbId && (result.orgInstance.sector == RDStore.O_SECTOR_PUBLISHER || RDStore.OT_PROVIDER.id in result.allOrgTypeIds)) {
-            prf.setBenchmark('editable_identifier2')
-            result.editable_identifier = accessService.checkMinUserOrgRole(result.user, result.orgInstance, 'INST_EDITOR') ||
-                    accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+            result.editable_identifier = userService.checkAffiliationAndCtxOrg(result.user, result.orgInstance, 'INST_EDITOR') ||
+                    accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
         }
         else if(!result.orgInstance.gokbId) {
-            prf.setBenchmark('editable_identifier2')
-            if(accessService.checkPerm("ORG_CONSORTIUM")) {
+            if (accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
                 List<Long> consortia = Combo.executeQuery('select c.id from Combo c where c.type = :type and c.fromOrg = :target and c.toOrg = :context',[type:RDStore.COMBO_TYPE_CONSORTIUM,target:result.orgInstance,context:result.institution])
-                if(consortia.size() == 1 && accessService.checkMinUserOrgRole(result.user,result.institution,'INST_EDITOR'))
+                if(consortia.size() == 1 && userService.checkAffiliationAndCtxOrg(result.user, result.institution, 'INST_EDITOR'))
                     result.editable_identifier = true
             }
             else
-                result.editable_identifier = accessService.checkMinUserOrgRole(result.user, result.orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+                result.editable_identifier = userService.checkAffiliationAndCtxOrg_or_ROLEADMIN(result.user, result.orgInstance, 'INST_EDITOR')
         }
-
-        prf.setBenchmark('create Identifiers if necessary')
-
         // TODO: experimental asynchronous task
         //waitAll(task_orgRoles, task_properties)
 
@@ -968,19 +1130,18 @@ class OrganisationController  {
             result.orgInstance.createCoreIdentifiersIfNotExist()
         }
 
-        prf.setBenchmark('orgsettings')
         Boolean inContextOrg = result.inContextOrg
         Boolean isComboRelated = Combo.findByFromOrgAndToOrg(result.orgInstance, result.institution)
         result.isComboRelated = isComboRelated
 
-        result.hasAccessToCustomeridentifier = ((inContextOrg && accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_USER')) ||
-                (isComboRelated && accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_USER')) ||
+        result.hasAccessToCustomeridentifier = ((inContextOrg && userService.checkAffiliationAndCtxOrg(result.user, result.institution, 'INST_USER')) ||
+                (isComboRelated && userService.checkAffiliationAndCtxOrg(result.user, result.institution, 'INST_USER')) ||
                 SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) && OrgSetting.get(result.orgInstance, OrgSetting.KEYS.CUSTOMER_TYPE) != OrgSetting.SETTING_NOT_FOUND
 
         if (result.hasAccessToCustomeridentifier) {
 
-            result.editable_customeridentifier = (inContextOrg && accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) ||
-                    (isComboRelated && accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')) ||
+            result.editable_customeridentifier = (inContextOrg && userService.checkAffiliationAndCtxOrg(result.user, result.institution, 'INST_EDITOR')) ||
+                    (isComboRelated && userService.checkAffiliationAndCtxOrg(result.user, result.institution, 'INST_EDITOR')) ||
                     SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
             // adding default settings
@@ -1013,9 +1174,9 @@ class OrganisationController  {
                     result.customerIdentifier = CustomerIdentifier.executeQuery(query+sort, queryParams)
                 } else if (inContextOrg) {
 
-                    if (result.institution.hasPerm('ORG_CONSORTIUM,ORG_INST')) {
+                    if (result.institution.isCustomerType_Consortium()) {
                         result.customerIdentifier = CustomerIdentifier.executeQuery(query+sort, queryParams)
-                    } else if (['ORG_BASIC_MEMBER'].contains(result.institution.getCustomerType())) {
+                    } else if (result.institution.isCustomerType_Inst()) {
                         result.customerIdentifier = CustomerIdentifier.executeQuery(query+sort, queryParams)
                     }
                 } else if (isComboRelated) {
@@ -1025,8 +1186,6 @@ class OrganisationController  {
             }
 
         }
-        List bm = prf.stopBenchmark()
-        result.benchMark = bm
         result
     }
 
@@ -1039,8 +1198,10 @@ class OrganisationController  {
      * @return the task table view
      * @see Task
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER") })
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_PRO, 'INST_USER'])
+    @Secured(closure = {
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_USER')
+    })
     @Check404(domain=Org)
     def tasks() {
         Map<String,Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
@@ -1054,12 +1215,13 @@ class OrganisationController  {
         result
     }
 
-    @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_USER")
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER") })
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_PRO, 'INST_USER'])
+    @Secured(closure = {
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_USER')
+    })
     @Check404()
     def workflows() {
         Map<String,Object> ctrlResult = organisationControllerService.workflows( this, params )
-
         render view: 'workflows', model: ctrlResult.result
     }
 
@@ -1072,8 +1234,10 @@ class OrganisationController  {
      * @see Doc
      * @see DocContext
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER") })
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER'])
+    @Secured(closure = {
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER')
+    })
     @Check404(domain=Org)
     def documents() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
@@ -1093,8 +1257,10 @@ class OrganisationController  {
      * it has been attached to; content editing of an uploaded document is not possible in this app!
      * @return the modal to edit the document parameters
      */
-    @DebugInfo(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'])
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+    })
     def editDocument() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
         if(!result) {
@@ -1116,8 +1282,10 @@ class OrganisationController  {
      * @return the document table view ({@link #documents()})
      * @see DocstoreService#unifiedDeleteDocuments()
      */
-    @DebugInfo(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'])
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+    })
     def deleteDocuments() {
         log.debug("deleteDocuments ${params}");
 
@@ -1134,8 +1302,10 @@ class OrganisationController  {
      * @see Doc
      * @see DocContext
      */
-    @DebugInfo(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'])
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+    })
     @Check404(domain=Org)
     def notes() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
@@ -1150,9 +1320,9 @@ class OrganisationController  {
      * Call to delete the given customer identifier
      * @return the customer identifier table view
      */
-    @DebugInfo(perm="FAKE,ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = ['FAKE,ORG_INST_BASIC,ORG_CONSORTIUM_BASIC'], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("FAKE,ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( 'FAKE,ORG_INST_BASIC,ORG_CONSORTIUM_BASIC' )
     })
     def deleteCustomerIdentifier() {
         Map<String,Object> ctrlResult = organisationControllerService.deleteCustomerIdentifier(this,params)
@@ -1175,11 +1345,13 @@ class OrganisationController  {
     /**
      * Shows all user accounts affiliated to (at least) the given institution
      * @return renders the user list template with the users affiliated to this institution
-     * @see UserOrg
+     * @see UserOrgRole
      * @see User
      */
-    @DebugInfo(test = 'hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_ADM") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_ADM'])
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
+    })
     @Check404(domain=Org)
     def users() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
@@ -1233,8 +1405,10 @@ class OrganisationController  {
      * Data the given user may have authored will be reassigned to another user
      * @return the user deletion view where eventual conflicts are being listed
      */
-    @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_ADM", specRole = "ROLE_ADMIN")
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN") })
+    @DebugInfo(ctxInstAdmCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC])
+    @Secured(closure = {
+        ctx.accessService.ctxInstAdmCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
+    })
     def deleteUser() {
         Map<String, Object> result = userControllerService.getResultGenericsERMS3067(params)
         result.orgInstance = Org.get(params.id) // overwrite
@@ -1245,7 +1419,7 @@ class OrganisationController  {
         }
 
         if (result.user) {
-            List<Org> affils = Org.executeQuery('select distinct uo.org from UserOrg uo where uo.user = :user', [user: result.user])
+            List<Org> affils = Org.executeQuery('select distinct uo.org from UserOrgRole uo where uo.user = :user', [user: result.user])
 
             if (affils.size() > 1) {
                 flash.error = message(code: 'user.delete.error.multiAffils') as String
@@ -1280,14 +1454,19 @@ class OrganisationController  {
      * Call to edit the given user profile
      * @return the profile editing template
      */
-    @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_ADM", specRole = "ROLE_ADMIN")
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN") })
+    @DebugInfo(ctxInstAdmCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC])
+    @Secured(closure = {
+        ctx.accessService.ctxInstAdmCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
+    })
     def editUser() {
         Map result = [
                 user: genericOIDService.resolveOID(params.uoid),
                 orgInstance: Org.get(params.id),
-                manipulateAffiliations: contextService.getUser().hasRole(['ROLE_ADMIN', 'ROLE_YODA'])
+                manipulateAffiliations: SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
         ]
+        // TODO: --> CHECK LOGIC IMPLEMENTATION <--
+        // TODO: userIsYoda != SpringSecurityUtils.ifAnyGranted('ROLE_YODA') @ user.hasMinRole('ROLE_YODA')
+
         result.editable = checkIsEditable(result.user, contextService.getOrg())
         result.availableOrgs = [ result.orgInstance ]
 
@@ -1298,8 +1477,10 @@ class OrganisationController  {
      * Call to create a new user profile
      * @return the profile creation template
      */
-    @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_ADM", specRole = "ROLE_ADMIN")
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN") })
+    @DebugInfo(ctxInstAdmCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC])
+    @Secured(closure = {
+        ctx.accessService.ctxInstAdmCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
+    })
     def createUser() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
         result.availableOrgs = Org.get(params.id)
@@ -1312,8 +1493,10 @@ class OrganisationController  {
      * Takes the submitted parameters and creates a new user record with the given parameters
      * @return the user editing template in case of success, redirects back to the creation page otherwise
      */
-    @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_ADM", specRole = "ROLE_ADMIN")
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM","INST_ADM","ROLE_ADMIN") })
+    @DebugInfo(ctxInstAdmCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC])
+    @Secured(closure = {
+        ctx.accessService.ctxInstAdmCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
+    })
     def processCreateUser() {
         def success = userService.addNewUser(params, flash)
         //despite IntelliJ's warnings, success may be an array other than the boolean true
@@ -1333,8 +1516,10 @@ class OrganisationController  {
      * Attaches the given user to the given institution
      * @return the user editing profile with the updated data
      */
-    @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_ADM", specRole = "ROLE_ADMIN")
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM","INST_ADM","ROLE_ADMIN") })
+    @DebugInfo(ctxInstAdmCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC])
+    @Secured(closure = {
+        ctx.accessService.ctxInstAdmCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
+    })
     def addAffiliation() {
         Map<String, Object> result = userControllerService.getResultGenericsERMS3067(params)
         result.orgInstance = Org.get(params.id) // overwrite
@@ -1364,7 +1549,7 @@ class OrganisationController  {
                 result.delResult = deletionService.deleteOrganisation(result.orgInstance, null, DeletionService.DRY_RUN)
             }
 
-            if (contextService.getUser().isAdmin()) {
+            if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
                 result.substituteList = Org.executeQuery("select distinct o from Org o where o.status != :delState", [delState: RDStore.O_STATUS_DELETED])
             }
             else {
@@ -1384,8 +1569,10 @@ class OrganisationController  {
      * Call to list the public contacts of the given organisation
      * @return a table view of public contacts
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER") })
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER'])
+    @Secured(closure = {
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER')
+    })
     @Check404(domain=Org)
     def addressbook() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
@@ -1423,8 +1610,10 @@ class OrganisationController  {
      * @return a table view of the reader numbers, grouped by semesters on the one hand, due dates on the other
      * @see ReaderNumber
      */
-    @DebugInfo(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_USER")
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_USER") })
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_BASIC, 'INST_USER'])
+    @Secured(closure = {
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_BASIC, 'INST_USER')
+    })
     @Check404(domain=Org)
     def readerNumber() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
@@ -1505,8 +1694,10 @@ class OrganisationController  {
      * @return a list view of access points
      * @see de.laser.oap.OrgAccessPoint
      */
-    @DebugInfo(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_USER")
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_USER") })
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_BASIC, 'INST_USER'])
+    @Secured(closure = {
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_BASIC, 'INST_USER')
+    })
     @Check404(domain=Org)
     def accessPoints() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
@@ -1518,6 +1709,8 @@ class OrganisationController  {
         List orgAccessPointList = accessPointService.getOapListWithLinkCounts(result.orgInstance)
         result.orgAccessPointList = orgAccessPointList.groupBy {it.oap.accessMethod.value}.sort {it.key}
 
+        result.activeTab = params.activeTab ?: 'ip'
+
         if (params.exportXLSX) {
 
             SXSSFWorkbook wb
@@ -1526,7 +1719,7 @@ class OrganisationController  {
             String filename = "${datetoday}_" + g.message(code: "org.accessPoints.export")
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            wb = (SXSSFWorkbook) accessPointService.exportAccessPoints(orgAccessPointList.collect {it.oap}, result.institution)
+            wb = (SXSSFWorkbook) accessPointService.exportAccessPoints(orgAccessPointList.collect {it.oap}, ExportClickMeService.FORMAT.XLS)
             wb.write(response.outputStream)
             response.outputStream.flush()
             response.outputStream.close()
@@ -1672,8 +1865,10 @@ class OrganisationController  {
      * (adds or removes a combo link between the institution and the consortium)
      * @see Combo
      */
-    @DebugInfo(perm="ORG_CONSORTIUM", type="Consortium", affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = { ctx.accessService.checkPermTypeAffiliationX("ORG_CONSORTIUM", "Consortium", "INST_EDITOR", "ROLE_ADMIN") })
+    @DebugInfo(ctxConsortiumCheckPermAffiliation_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.accessService.ctxConsortiumCheckPermAffiliation_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR')
+    })
     def toggleCombo() {
         Map<String,Object> ctrlResult = organisationControllerService.toggleCombo(this,params)
         if(ctrlResult.status == OrganisationControllerService.STATUS_ERROR) {
@@ -1695,18 +1890,20 @@ class OrganisationController  {
      * Call to list the contacts the context institution has attached to the given organisation
      * @return a table view of the contacts
      */
-    @DebugInfo(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'])
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+    })
     @Check404(domain=Org)
     def myPublicContacts() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        result.rdvAllPersonFunctions = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_CONTACT_PRS, RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN]
+        result.rdvAllPersonFunctions = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_CONTACT_PRS, RDStore.PRS_FUNC_FC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN]
         result.rdvAllPersonPositions = PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION) - [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS]
 
-        if(result.institution.getCustomerType() == 'ORG_CONSORTIUM' && result.orgInstance)
+        if(result.institution.isCustomerType_Consortium() && result.orgInstance)
         {
             params.org = result.orgInstance
             result.rdvAllPersonFunctions << RDStore.PRS_FUNC_GASCO_CONTACT
@@ -1716,7 +1913,7 @@ class OrganisationController  {
 
         List allOrgTypeIds = result.orgInstance.getAllOrgTypeIds()
         if(RDStore.OT_PROVIDER.id in allOrgTypeIds || RDStore.OT_AGENCY.id in allOrgTypeIds){
-            result.rdvAllPersonFunctions = PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION) - [RDStore.PRS_FUNC_GASCO_CONTACT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_FUNC_LIBRARY_ADDRESS, RDStore.PRS_FUNC_FUNC_LEGAL_PATRON_ADDRESS, RDStore.PRS_FUNC_FUNC_POSTAL_ADDRESS, RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS, RDStore.PRS_FUNC_FUNC_DELIVERY_ADDRESS]
+            result.rdvAllPersonFunctions = PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION) - [RDStore.PRS_FUNC_GASCO_CONTACT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_FC_LIBRARY_ADDRESS, RDStore.PRS_FUNC_FC_LEGAL_PATRON_ADDRESS, RDStore.PRS_FUNC_FC_POSTAL_ADDRESS, RDStore.PRS_FUNC_FC_BILLING_ADDRESS, RDStore.PRS_FUNC_FC_DELIVERY_ADDRESS]
             result.rdvAllPersonPositions = [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_DIREKTION, RDStore.PRS_POS_DIREKTION_ASS, RDStore.PRS_POS_RB, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS, RDStore.PRS_POS_TS]
 
         }
@@ -1746,11 +1943,15 @@ class OrganisationController  {
      * @return true if edit rights are granted to the given user/org/view context, false otherwise
      */
     boolean checkIsEditable(User user, Org org) {
-        boolean isEditable
+        boolean isEditable = false
         Org contextOrg = contextService.getOrg()
         Org orgInstance = org
         boolean inContextOrg =  orgInstance?.id == contextOrg.id
-        boolean userHasEditableRights = user.hasRole('ROLE_ADMIN') || user.hasAffiliation('INST_EDITOR')
+        boolean userHasEditableRights = user.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+        boolean userIsYoda            = user.isYoda()
+        // TODO: --> CHECK LOGIC IMPLEMENTATION <--
+        // TODO: userIsYoda != SpringSecurityUtils.ifAnyGranted('ROLE_YODA') @ user.hasMinRole('ROLE_YODA')
+
         switch(params.action){
             case 'editUser':
                 isEditable = true
@@ -1759,55 +1960,49 @@ class OrganisationController  {
                 isEditable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
                 break
             case 'properties':
-                isEditable = accessService.checkMinUserOrgRole(user, Org.get(params.id), 'INST_EDITOR') || SpringSecurityUtils.ifAllGranted('ROLE_ADMIN')
+                isEditable = userService.checkAffiliationAndCtxOrg_or_ROLEADMIN(user, Org.get(params.id), 'INST_EDITOR')
                 break
             case 'users':
-                isEditable = accessService.checkMinUserOrgRole(user, Org.get(params.id), 'INST_ADM') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+                isEditable = userService.checkAffiliationAndCtxOrg_or_ROLEADMIN(user, Org.get(params.id), 'INST_ADM')
                 break
             case [ 'addOrgType', 'deleteOrgType' ]:
-                isEditable = accessService.checkMinUserOrgRole(user, Org.get(params.org), 'INST_ADM') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+                isEditable = userService.checkAffiliationAndCtxOrg_or_ROLEADMIN(user, Org.get(params.org), 'INST_ADM')
                 break
             case 'myPublicContacts':
                 if (inContextOrg) {
                     isEditable = userHasEditableRights
                 }else{
-                    isEditable = user.hasRole('ROLE_YODA')
+                    isEditable = userIsYoda
                 }
                 break
-            case [ 'show', 'ids', 'readerNumber', 'accessPoints', 'addSubjectGroup', 'deleteSubjectGroup', 'addressbook' ]:
+            case [ 'show', 'ids', 'addSubjectGroup', 'deleteSubjectGroup', 'readerNumber', 'accessPoints', 'addressbook' ]:
                 if (inContextOrg) {
                     isEditable = userHasEditableRights
                 } else {
                     switch (contextOrg.getCustomerType()){
-                        case 'ORG_BASIC_MEMBER':
+                        case [ CustomerTypeService.ORG_INST_BASIC, CustomerTypeService.ORG_INST_PRO ] :
                             switch (orgInstance.getCustomerType()){
-                                case 'ORG_BASIC_MEMBER':    isEditable = user.hasRole('ROLE_YODA'); break
-                                case 'ORG_INST':            isEditable = user.hasRole('ROLE_YODA'); break
-                                case 'ORG_CONSORTIUM':      isEditable = user.hasRole('ROLE_YODA'); break
-                                default:                    isEditable = user.hasRole('ROLE_YODA'); break
+                                case CustomerTypeService.ORG_INST_BASIC:        isEditable = userIsYoda; break
+                                case CustomerTypeService.ORG_INST_PRO:          isEditable = userIsYoda; break
+                                case CustomerTypeService.ORG_CONSORTIUM_BASIC:  isEditable = userIsYoda; break
+                                case CustomerTypeService.ORG_CONSORTIUM_PRO:    isEditable = userIsYoda; break
+                                default:                                        isEditable = userIsYoda; break
                             }
                             break
-                        case 'ORG_INST':
+                        case [ CustomerTypeService.ORG_CONSORTIUM_BASIC, CustomerTypeService.ORG_CONSORTIUM_PRO ] :
                             switch (orgInstance.getCustomerType()){
-                                case 'ORG_BASIC_MEMBER':    isEditable = user.hasRole('ROLE_YODA'); break
-                                case 'ORG_INST':            isEditable = user.hasRole('ROLE_YODA'); break
-                                case 'ORG_CONSORTIUM':      isEditable = user.hasRole('ROLE_YODA'); break
-                                default:                    isEditable = userHasEditableRights; break //means providers and agencies
-                            }
-                            break
-                        case 'ORG_CONSORTIUM':
-                            switch (orgInstance.getCustomerType()){
-                                case 'ORG_BASIC_MEMBER':    isEditable = userHasEditableRights; break
-                                case 'ORG_INST':            isEditable = userHasEditableRights; break
-                                case 'ORG_CONSORTIUM':      isEditable = user.hasRole('ROLE_YODA'); break
-                                default:                    isEditable = userHasEditableRights; break //means providers and agencies
+                                case CustomerTypeService.ORG_INST_BASIC:        isEditable = userHasEditableRights; break
+                                case CustomerTypeService.ORG_INST_PRO:          isEditable = userHasEditableRights; break
+                                case CustomerTypeService.ORG_CONSORTIUM_BASIC:  isEditable = userIsYoda; break
+                                case CustomerTypeService.ORG_CONSORTIUM_PRO:    isEditable = userIsYoda; break
+                                default:                                        isEditable = userHasEditableRights; break //means providers and agencies
                             }
                             break
                     }
                 }
                 break
             default:
-                isEditable = accessService.checkMinUserOrgRole(user, org,'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+                isEditable = userService.checkAffiliationAndCtxOrg_or_ROLEADMIN(user, org,'INST_EDITOR')
         }
         isEditable
     }

@@ -2,7 +2,7 @@ package de.laser
 
 
 import de.laser.properties.SubscriptionProperty
-import de.laser.properties.PropertyDefinition
+import de.laser.storage.PropertyStore
 import de.laser.storage.RDStore
 import grails.plugin.springsecurity.annotation.Secured
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -44,7 +44,7 @@ class EbookCatalogueController {
             query += "          ( select scp from s.propertySet as scp where "
             query += "               scp.type = :gasco and lower(scp.refValue.value) = 'yes'"
             query += "           )"
-            queryParams.put('gasco', PropertyDefinition.getByNameAndDescr('GASCO Entry', PropertyDefinition.SUB_PROP))
+            queryParams.put('gasco', PropertyStore.SUB_PROP_GASCO_ENTRY)
             query += "        ) "
 
             query += " and exists ( select ogr from OrgRole ogr where ogr.sub = s and ogr.org in (:validOrgs) )"
@@ -62,12 +62,12 @@ class EbookCatalogueController {
 
                 query += " or exists ("
                 query += "    select ogr from s.orgRelations as ogr where ("
-                query += "          genfunc_filter_matcher(ogr.org.name, :q) = true or genfunc_filter_matcher(ogr.org.shortname, :q) = true or genfunc_filter_matcher(ogr.org.sortname, :q) = true "
+                query += "          genfunc_filter_matcher(ogr.org.name, :q) = true or genfunc_filter_matcher(ogr.org.sortname, :q) = true "
                 query += "      ) and ogr.roleType.value = 'Provider'"
                 query += "    )"
                 query += " ))"
 
-                queryParams.put('gascoAnzeigenname', PropertyDefinition.getByNameAndDescr('GASCO display name', PropertyDefinition.SUB_PROP))
+                queryParams.put('gascoAnzeigenname', PropertyStore.SUB_PROP_GASCO_DISPLAY_NAME)
                 queryParams.put('q', q)
             }
 
@@ -122,11 +122,7 @@ class EbookCatalogueController {
             SubscriptionPackage sp  = SubscriptionPackage.get(params.long('id'))
             Subscription sub = sp?.subscription
             Package pkg = sp?.pkg
-            SubscriptionProperty scp = SubscriptionProperty.findByOwnerAndTypeAndRefValue(
-                    sub,
-                    PropertyDefinition.getByNameAndDescr('GASCO Entry', PropertyDefinition.SUB_PROP),
-                    RDStore.YN_YES
-            )
+            SubscriptionProperty scp = SubscriptionProperty.findByOwnerAndTypeAndRefValue( sub, PropertyStore.SUB_PROP_GASCO_ENTRY, RDStore.YN_YES )
 
             if (scp) {
                 result.subscription = sub
@@ -197,7 +193,7 @@ class EbookCatalogueController {
                     """select o from Org o, OrgSetting os_gs, OrgSetting os_ct where 
                         os_gs.org = o and os_gs.key = 'GASCO_ENTRY' and os_gs.rdValue.value = 'Yes' and 
                         os_ct.org = o and os_ct.key = 'CUSTOMER_TYPE' and 
-                        os_ct.roleValue in (select r from Role r where authority  = 'ORG_CONSORTIUM')
+                        os_ct.roleValue in (select r from Role r where authority  = 'ORG_CONSORTIUM_PRO')
                         order by lower(o.name)"""
             ))
         }
@@ -215,7 +211,7 @@ class EbookCatalogueController {
                             and exists 
                                 ( select ogr from OrgRole ogr where ogr.sub = s and ogr.org in (:validOrgs) )""",
                     [
-                    gasco    : PropertyDefinition.getByNameAndDescr('GASCO Entry', PropertyDefinition.SUB_PROP),
+                    gasco    : PropertyStore.SUB_PROP_GASCO_ENTRY,
                     validOrgs: result.allConsortia
                     ]
             ))

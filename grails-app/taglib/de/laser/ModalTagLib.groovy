@@ -34,35 +34,6 @@ class ModalTagLib {
         }
     }
 
-    def systemInfo = { attrs, body ->
-
-        Map<String, Object> systemChecks = systemService.serviceCheck()
-
-        if (systemChecks) {
-
-            out << '<a href="#systemInfo" id="showSystemInfo" role="dialog" aria-label="System Info" class="ui secondary button icon" data-ui="modal">'
-            out << '<i aria-hidden="true" class="exclamation triangle icon"></i>'
-            out << '</a>'
-
-            out << '<div id="systemInfo" class="ui modal">'
-            out << '<h4 class="ui red header"> <i aria-hidden="true" class="exclamation triangle icon"></i> SYSTEM-INFORMATION</h4>'
-            out << '<div class="scrolling content">'
-            out << '<div class="ui list">'
-            systemChecks.each {systemCheck ->
-                out << '<div class="item">'
-                out << "<strong>${systemCheck.key}</strong>: ${systemCheck.value}"
-                out << '</div>'
-            }
-            out << '</div>'
-            out << '<br />'
-            out << '</div>'
-            out << '<div class="actions">'
-            out << '<a href="#" class="ui button" onclick="$(\'#systemInfo\').modal(\'hide\')">Schließen</a>'
-            out << '</div>'
-            out << '</div>'
-        }
-    }
-
     //<ui:modal id="myModalDialog" text="${text}" message="local.string" hideSubmitButton="true" modalSize="large/small/tiny/mini" >
     // CONTENT
     // </ui:modal>
@@ -102,7 +73,9 @@ class ModalTagLib {
             out << '"/>'
         }
 
-        if (attrs.hideSubmitButton == null) {
+        if (attrs.hideSubmitButton == true || attrs.hideSubmitButton == 'true') {
+        }
+        else {
             if (attrs.formID) {
                 out << '<input type="submit" class="ui button green" name="save" value="' + msgSave + '" onclick="event.preventDefault(); $(\'#' + attrs.id + '\').find(\'#' + attrs.formID + '\').submit()"/>'
             } else {

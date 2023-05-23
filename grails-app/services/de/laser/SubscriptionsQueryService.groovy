@@ -7,6 +7,7 @@ import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 
 import java.text.SimpleDateFormat
+import java.time.Year
 
 /**
  * This service generates compley subscription queries
@@ -52,7 +53,7 @@ class SubscriptionsQueryService {
         Map qry_params = [:]
 
         if (! params.orgRole) {
-            if (accessService.checkPerm(contextOrg,'ORG_CONSORTIUM')) {
+            if (accessService.otherOrgPerm(contextOrg, 'ORG_CONSORTIUM_BASIC')) {
                 params.orgRole = 'Subscription Consortia'
             }
             else {
@@ -184,7 +185,6 @@ class SubscriptionsQueryService {
                             " or exists ( select orgR from OrgRole as orgR where orgR.sub = s and" +
                             "   orgR.roleType in (:subRoleTypes) and ( " +
                                 " genfunc_filter_matcher(orgR.org.name, :name_filter) = true " +
-                                " or genfunc_filter_matcher(orgR.org.shortname, :name_filter) = true " +
                                 " or genfunc_filter_matcher(orgR.org.sortname, :name_filter) = true " +
                             " ) ) " + // filter by Anbieter, Konsortium, Agency
                          " ) "
@@ -313,6 +313,12 @@ class SubscriptionsQueryService {
             filterSet = true
         }
 
+        if (params.holdingSelection) {
+          base_qry += " and s.holdingSelection.id in (:holdingSelection) "
+          qry_params.put('holdingSelection', params.list("holdingSelection").collect { Long.parseLong(it) })
+            filterSet = true
+        }
+
         if (params.isPublicForApi) {
             base_qry += " and s.isPublicForApi = :isPublicForApi "
             qry_params.put('isPublicForApi', (params.isPublicForApi == RDStore.YN_YES.id.toString()) ? true : false)
@@ -336,6 +342,16 @@ class SubscriptionsQueryService {
                 qry_params.put('subRunTimeMultiYear', false)
                 filterSet = true
             }
+        }
+
+        if (params.referenceYears) {
+            base_qry += " and s.referenceYear in (:referenceYears) "
+            Set<Year> referenceYears = []
+            params.list('referenceYears').each { String referenceYear ->
+                referenceYears << Year.parse(referenceYear)
+            }
+            qry_params.put('referenceYears', referenceYears)
+            filterSet = true
         }
 
         if ((params.sort != null) && (params.sort.length() > 0)) {

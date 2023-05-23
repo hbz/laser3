@@ -15,17 +15,17 @@
         <ui:controlButtons>
             <ui:exportDropdown>
                 <g:if test="${filterSet}">
-                    <ui:exportDropdownItem>
-                        <g:link  class="item js-open-confirm-modal"
+                    <%--<ui:exportDropdownItem>
+                        <g:link class="item js-open-confirm-modal"
                                  data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
                                  data-confirm-term-how="ok"
                                  controller="finance"
                                  action="financialsExport"
                                  params="${params+[exportXLS:true,sub:subscription.id]}">${message(code:'default.button.exports.xls')}
                         </g:link>
-                    </ui:exportDropdownItem>
+                    </ui:exportDropdownItem>--%>
                     <ui:exportDropdownItem>
-                        <a class="item" data-ui="modal" href="#individuallyExportModal">Click Me Excel Export</a>
+                        <a class="item" data-ui="modal" href="#individuallyExportModal">Export</a>
                     </ui:exportDropdownItem>
                     <ui:exportDropdownItem>
                         <g:link class="item exportCSV js-open-confirm-modal"
@@ -38,11 +38,11 @@
                     </ui:exportDropdownItem>
                 </g:if>
                 <g:else>
-                    <ui:exportDropdownItem>
+                    <%--<ui:exportDropdownItem>
                         <g:link class="item" controller="finance" action="financialsExport" params="${params+[exportXLS:true,sub:subscription.id]}">${message(code:'default.button.exports.xls')}</g:link>
-                    </ui:exportDropdownItem>
+                    </ui:exportDropdownItem>--%>
                     <ui:exportDropdownItem>
-                        <a class="item" data-ui="modal" href="#individuallyExportModal">Click Me Excel Export</a>
+                        <a class="item" data-ui="modal" href="#individuallyExportModal">Export</a>
                     </ui:exportDropdownItem>
                     <ui:exportDropdownItem>
                         <g:link class="item exportCSV js-open-confirm-modal"
@@ -77,11 +77,12 @@
             }
         %>
 
-        <ui:h1HeaderWithIcon type="Subscription">
+        <ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}" type="Subscription">
             <laser:render template="/subscription/iconSubscriptionIsChild"/>
 
-            ${message(code:'subscription.details.financials.label')} ${message(code:'default.for')} ${subscription} <ui:totalNumber total="${total.join(' / ')}"/>
+            ${message(code:'subscription.details.financials.label')} ${message(code:'default.for')} ${subscription}
         </ui:h1HeaderWithIcon>
+        <ui:totalNumber class="la-numberHeader" total="${total.join(' / ')}"/>
         <ui:anualRings mapping="subfinance" object="${subscription}" controller="finance" action="index" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
         <laser:render template="/subscription/nav" model="${[subscription:subscription, params:(params << [id:subscription.id, showConsortiaFunctions:showConsortiaFunctions])]}"/>

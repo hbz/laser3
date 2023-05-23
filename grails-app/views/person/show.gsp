@@ -91,7 +91,8 @@
                         </dd>
                     </dl>
 
-                    <dl><dt><g:message code="person.addresses.label" /></dt>
+                    <%--<dl>
+                        <dt><g:message code="person.addresses.label" /></dt>
                         <dd>
                             <div class="ui divided middle aligned selection list la-flex-list">
                                 <g:each in="${personInstance.addresses.sort{it.type.each {it?.getI10n('value')}}}" var="a">
@@ -110,7 +111,7 @@
                                 <% Map model = [:]
                                 model.prsId = personInstance.id
                                 model.redirect = '.'
-                                model.typeId = RDStore.ADRESS_TYPE_LIBRARY.id
+                                model.typeId = RDStore.ADDRESS_TYPE_LIBRARY.id
                                 model.hideType = true%>
                                 <input class="ui icon button" type="button"
                                        value="${message(code: 'default.add.label', args: [message(code: 'address.label')])}"
@@ -118,7 +119,7 @@
                                 >
                             </g:if>
                         </dd>
-                    </dl>
+                    </dl>--%>
 
                 </div>
             </div><!-- .card -->
@@ -424,7 +425,7 @@
 
     JSPC.app.addresscreate_prs = function (prsId, typeId, redirect, modalId, hideType) {
         var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>'?prsId=' + prsId + '&typeId=' + typeId + '&redirect=' + redirect + '&modalId=' + modalId + '&hideType=' + hideType;
-        var func = bb8.ajax4SimpleModalFunction("#addressFormModal", url, false);
+        var func = bb8.ajax4SimpleModalFunction("#addressFormModal", url);
         func();
     }
 </laser:script>

@@ -1,5 +1,6 @@
 package de.laser.http
 
+import de.laser.utils.AppUtils
 import grails.converters.JSON
 import groovy.json.JsonOutput
 import groovy.util.logging.Slf4j
@@ -150,6 +151,12 @@ class BasicHttpClient {
                 onFailure.call(response, response.getBody())
             }
         }
+        else if (sc < 0) {
+            if (onFailure) {
+                log.warn '[ request ] ' + url + ' > '+ sc
+                onFailure.call(response, response?.getBody())
+            }
+        }
         response
     }
 
@@ -216,7 +223,9 @@ class BasicHttpClient {
                         log.warn '[ innerPOST ] too complex URLENC found! Check payload to avoid possible problems'
                     }
                 }
-                log.debug '[ innerPOST ] payload: ' + body.toString()
+                if (AppUtils.getCurrentServer() == AppUtils.LOCAL) {
+                    log.debug '[ innerPOST ] payload: ' + body.toString()
+                }
             }
             HttpRequest request = HttpRequest.POST(url.toURI(), body)
 

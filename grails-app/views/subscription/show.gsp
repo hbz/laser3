@@ -19,13 +19,16 @@
     <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]"/>
 </ui:debugInfo>
 <laser:render template="breadcrumb" model="${[params: params]}"/>
+
 <ui:controlButtons>
     <laser:render template="actions"/>
 </ui:controlButtons>
-<ui:h1HeaderWithIcon>
+
+<ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}">
 <laser:render template="iconSubscriptionIsChild"/>
 <ui:xEditable owner="${subscription}" field="name"/>
 </ui:h1HeaderWithIcon>
+
 <g:if test="${editable}">
     <ui:auditButton class="la-auditButton-header" auditable="[subscription, 'name']" auditConfigs="${auditConfigs}" withoutOptions="true"/>
 </g:if>
@@ -40,6 +43,7 @@
 
 
 <ui:messages data="${flash}"/>
+<laser:render template="/templates/workflow/status" model="${[cmd: cmd, status: status]}" />
 
 <div id="collapseableSubDetails" class="ui stackable grid">
     <div class="eleven wide column">
@@ -77,6 +81,28 @@
                             </g:if>
                         </dl>
 
+                        <dl>
+                            <dt class="control-label">${message(code: 'subscription.referenceYear.label')}</dt>
+                            <dd><ui:xEditable owner="${subscription}" field="referenceYear"
+                                                 type="year"/></dd>
+                            <g:if test="${editable}">
+                                <dd class="la-js-editmode-container"><ui:auditButton
+                                        auditable="[subscription, 'referenceYear']"
+                                        auditConfigs="${auditConfigs}"/></dd>
+                            </g:if>
+                        </dl>
+
+                        <dl>
+                            <dt class="control-label">${message(code: 'default.status.label')}</dt>
+                            <dd><ui:xEditableRefData owner="${subscription}" field="status"
+                                                     config="${RDConstants.SUBSCRIPTION_STATUS}"
+                                                     constraint="removeValue_deleted"/></dd>
+                            <g:if test="${editable}">
+                                <dd class="la-js-editmode-container"><ui:auditButton
+                                        auditable="[subscription, 'status']" auditConfigs="${auditConfigs}"/></dd>
+                            </g:if>
+                        </dl>
+
                         <g:if test="${(subscription.type == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL &&
                                 subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION) ||
                                 (subscription.type == RDStore.SUBSCRIPTION_TYPE_LOCAL &&
@@ -101,16 +127,6 @@
 
                 <div class="ui card">
                     <div class="content">
-                        <dl>
-                            <dt class="control-label">${message(code: 'default.status.label')}</dt>
-                            <dd><ui:xEditableRefData owner="${subscription}" field="status"
-                                                        config="${RDConstants.SUBSCRIPTION_STATUS}"
-                                                        constraint="removeValue_deleted"/></dd>
-                            <g:if test="${editable}">
-                                <dd class="la-js-editmode-container"><ui:auditButton
-                                        auditable="[subscription, 'status']" auditConfigs="${auditConfigs}"/></dd>
-                            </g:if>
-                        </dl>
                         <sec:ifAnyGranted roles="ROLE_YODA">
                             <dl>
                                 <dt class="control-label">alter Lizenztyp</dt>
@@ -158,17 +174,6 @@
                                             id="${subscription.instanceOf.id}">${subscription.instanceOf}</g:link>
                                 </dd>
                             </dl>
-
-                            <sec:ifAnyGranted roles="ROLE_ADMIN">
-                                <dl>
-                                    <dt class="control-label">
-                                        ${message(code: 'license.details.linktoLicense.pendingChange')}
-                                    </dt>
-                                    <dd>
-                                        <ui:xEditableBoolean owner="${subscription}" field="isSlaved"/>
-                                    </dd>
-                                </dl>
-                            </sec:ifAnyGranted>
                         </g:if>
 
                         <dl>
@@ -201,6 +206,18 @@
                                         auditConfigs="${auditConfigs}"/></dd>
                             </g:if>
                         </dl>
+
+                        <g:if test="${subscription.packages}">
+                            <dl>
+                                <dt class="control-label">${message(code: 'subscription.holdingSelection.label')}</dt>
+                                <dd><ui:xEditableRefData owner="${subscription}" field="holdingSelection" config="${RDConstants.SUBSCRIPTION_HOLDING}"/></dd>
+                                <g:if test="${editable}">
+                                    <dd class="la-js-editmode-container"><ui:auditButton
+                                            auditable="[subscription, 'holdingSelection']"
+                                            auditConfigs="${auditConfigs}"/></dd>
+                                </g:if>
+                            </dl>
+                        </g:if>
 
                     </div>
                 </div>
@@ -458,7 +475,7 @@
             <div id="container-links">
                 <div class="ui card"  id="links"></div>
             </div>
-            <laser:render template="/templates/aside1" model="${[ownobj: subscription, owntp: 'subscription']}"/>
+            <laser:render template="/templates/sidebar/aside" model="${[ownobj: subscription, owntp: 'subscription']}"/>
         </div>
     </aside><!-- .four -->
 </div><!-- .grid -->

@@ -37,8 +37,10 @@
                     </g:else>
                 </ui:exportDropdown>
 
-                <g:if test="${accessService.checkPermX('ORG_INST,ORG_CONSORTIUM', 'ROLE_ADMIN')}">
-                    <laser:render template="actions" />
+                <g:if test="${accessService.ctxPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )}">
+                    <ui:actionsDropdown>
+                        <ui:actionsDropdownItem controller="organisation" action="create" message="org.create_new.label"/>
+                    </ui:actionsDropdown>
                 </g:if>
 
             </ui:controlButtons>
@@ -62,8 +64,7 @@
         <laser:render template="/templates/filter/orgFilterTable"
               model="[orgList: orgList,
                       tmplShowCheckbox: false,
-                      tmplConfigShow: ['lineNumber', 'sortname', 'name', 'status', 'wibid', 'isil', 'type', 'sector', 'region',
-                                       'libraryNetwork', 'libraryType']
+                      tmplConfigShow: ['lineNumber', 'sortname', 'name', 'wibid', 'isil', 'type', 'sector', 'region', 'libraryNetwork', 'libraryType', 'status']
               ]"/>
 
         <ui:paginate total="${orgListTotal}" params="${params}" max="${max}" offset="${offset}" />

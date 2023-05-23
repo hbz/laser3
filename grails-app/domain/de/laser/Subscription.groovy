@@ -4,6 +4,7 @@ import de.laser.annotations.RefdataInfo
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
+import de.laser.CustomerTypeService
 import de.laser.finance.CostItem
 import de.laser.interfaces.CalculatedType
 import de.laser.interfaces.Permissions
@@ -24,6 +25,7 @@ import grails.web.servlet.mvc.GrailsParameterMap
 import javax.persistence.Transient
 import java.text.SimpleDateFormat
 import java.time.LocalDate
+import java.time.Year
 
 import static java.time.temporal.ChronoUnit.DAYS
 
@@ -88,13 +90,12 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     @RefdataInfo(cat = RDConstants.SUBSCRIPTION_RESOURCE)
     RefdataValue resource
 
+    @RefdataInfo(cat = RDConstants.SUBSCRIPTION_HOLDING)
+    RefdataValue holdingSelection
+
     // If a subscription is slaved then any changes to instanceOf will automatically be applied to this subscription
     boolean isSlaved = false
 	boolean isPublicForApi = false
-
-    //explicitely demanded as of ERMS-2503 - but demand has been revoked! Keep in u.f.n. until discussions on orderer side are terminated!
-    //@RefdataInfo(cat = RDConstants.Y_N)
-    //RefdataValue hasPerpetualAccess
     boolean hasPerpetualAccess = false
     boolean hasPublishComponent = false
     boolean isMultiYear = false
@@ -102,20 +103,21 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     //Only for Subscription with Type = Local
     boolean isAutomaticRenewAnnually = false
 
-  String name
-  String identifier
-  Date startDate
-  Date endDate
-  Date manualRenewalDate
-  Date manualCancellationDate
-  String cancellationAllowances
+    String name
+    String identifier
+    Date startDate
+    Date endDate
+    Date manualRenewalDate
+    Date manualCancellationDate
+    Year referenceYear
+    String cancellationAllowances
 
-  //Only for Consortia: ERMS-2098
-  String comment
+    //Only for Consortia: ERMS-2098
+    String comment
 
-  Subscription instanceOf
-  // If a subscription is administrative, subscription members will not see it resp. there is a toggle which en-/disables visibility
-  boolean administrative = false
+    Subscription instanceOf
+    // If a subscription is administrative, subscription members will not see it resp. there is a toggle which en-/disables visibility
+    boolean administrative = false
 
     String noticePeriod
 
@@ -123,9 +125,9 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     Date lastUpdated
     Date lastUpdatedCascading
 
-  SortedSet issueEntitlements
-  SortedSet packages
-  SortedSet ids
+    SortedSet issueEntitlements
+    SortedSet packages
+    SortedSet ids
 
   static hasMany = [
           ids                 : Identifier,
@@ -135,7 +137,6 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
           orgRelations        : OrgRole,
           prsLinks            : PersonRole,
           derivedSubscriptions: Subscription,
-          pendingChanges      : PendingChange,
           propertySet         : SubscriptionProperty,
           costItems           : CostItem,
           ieGroups            : IssueEntitlementGroup
@@ -149,13 +150,12 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
                       orgRelations: 'sub',
                       prsLinks: 'sub',
                       derivedSubscriptions: 'instanceOf',
-                      pendingChanges: 'subscription',
                       costItems: 'sub',
                       propertySet: 'owner'
                       ]
 
     static transients = [
-            'nameConcatenated', 'isSlavedAsString', 'provider', 'multiYearSubscription',
+            'isSlavedAsString', 'provider', 'multiYearSubscription',
             'currentMultiYearSubscription', 'currentMultiYearSubscriptionNew', 'renewalDate',
             'commaSeperatedPackagesIsilList', 'calculatedPropDefGroups', 'allocationTerm',
             'subscriber', 'providers', 'agencies', 'consortia'
@@ -171,6 +171,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         kind        column:'sub_kind_rv_fk'
         form        column:'sub_form_fk'
         resource    column:'sub_resource_fk'
+        holdingSelection column:'sub_holding_selection_rv_fk', index: 'sub_holding_selection_idx'
         name        column:'sub_name'
         comment     column: 'sub_comment', type: 'text'
         identifier  column:'sub_identifier'
@@ -178,6 +179,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         endDate     column:'sub_end_date',          index: 'sub_dates_idx'
         manualRenewalDate       column:'sub_manual_renewal_date'
         manualCancellationDate  column:'sub_manual_cancellation_date'
+        referenceYear            column:'sub_reference_year', index: 'sub_reference_year_idx'
         instanceOf              column:'sub_parent_sub_fk', index:'sub_parent_idx'
         administrative          column:'sub_is_administrative'
         isSlaved        column:'sub_is_slaved'
@@ -193,7 +195,6 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         noticePeriod    column:'sub_notice_period'
         isMultiYear column: 'sub_is_multi_year'
         isAutomaticRenewAnnually column: 'sub_is_automatic_renew_annually'
-        pendingChanges  sort: 'ts', order: 'asc', batchSize: 10
 
         ids             sort: 'ns', batchSize: 10
         packages            batchSize: 10
@@ -212,6 +213,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         kind        (nullable:true)
         form        (nullable:true)
         resource    (nullable:true)
+        holdingSelection (nullable:true)
         startDate(nullable:true, validator: { val, obj ->
             if(obj.startDate != null && obj.endDate != null) {
                 if(obj.startDate > obj.endDate) return ['startDateAfterEndDate']
@@ -224,6 +226,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         })
         manualRenewalDate       (nullable:true)
         manualCancellationDate  (nullable:true)
+        referenceYear            (nullable:true)
         instanceOf              (nullable:true)
         comment(nullable: true, blank: true)
         //hasPerpetualAccess(nullable: true) keep in case has perpetual access becomes nullable
@@ -235,7 +238,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
     @Override
     Collection<String> getLogIncluded() {
-        [ 'name', 'startDate', 'endDate', 'manualCancellationDate', 'status', 'type', 'kind', 'form', 'resource', 'isPublicForApi', 'hasPerpetualAccess', 'hasPublishComponent' ]
+        [ 'name', 'startDate', 'endDate', 'manualCancellationDate', 'referenceYear', 'status', 'type', 'kind', 'form', 'resource', 'isPublicForApi', 'hasPerpetualAccess', 'hasPublishComponent', 'holdingSelection' ]
     }
     @Override
     Collection<String> getLogExcluded() {
@@ -277,19 +280,32 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
                 && changes.newMap.containsKey('hasPerpetualAccess')
                 && changes.oldMap.hasPerpetualAccess != changes.newMap.hasPerpetualAccess) {
             if(changes.newMap.hasPerpetualAccess == true) {
-                List<Long> ieIDs = IssueEntitlement.executeQuery('select ie.id from IssueEntitlement ie where ie.subscription = :sub and ie.status = :status and ie.acceptStatus = :acceptStatus and ie.perpetualAccessBySub is null', [sub: this, status: RDStore.TIPP_STATUS_CURRENT, acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED])
+                List<Long> ieIDs = IssueEntitlement.executeQuery('select ie.id from IssueEntitlement ie where ie.subscription = :sub and ie.perpetualAccessBySub is null', [sub: this])
                 if (ieIDs.size() > 0) {
                     log.debug("beforeUpdate() set perpetualAccessBySub of ${ieIDs.size()} IssueEntitlements to sub:" + this)
-                    ieIDs.collate(32767).each {
-                        IssueEntitlement.executeUpdate("update IssueEntitlement ie set ie.perpetualAccessBySub = :sub where ie.id in (:idList)", [sub: this, idList: it])
+                    Org owner = this.subscriber
+
+                    ieIDs.each { Long ieID ->
+                        IssueEntitlement.executeUpdate("update IssueEntitlement ie set ie.perpetualAccessBySub = :sub where ie.id = :ieID ", [sub: this, ieID: ieID])
+
+                        IssueEntitlement issueEntitlement = IssueEntitlement.get(ieID)
+                        TitleInstancePackagePlatform titleInstancePackagePlatform = issueEntitlement.tipp
+
+                        if(!PermanentTitle.findByOwnerAndTipp(owner, titleInstancePackagePlatform)){
+                            PermanentTitle permanentTitle = new PermanentTitle(subscription: this,
+                                    issueEntitlement: issueEntitlement,
+                                    tipp: titleInstancePackagePlatform,
+                                    owner: owner).save()
+                        }
                     }
                 }
             }else {
-                List<Long> ieIDs = IssueEntitlement.executeQuery('select ie.id from IssueEntitlement ie where ie.subscription = :sub and ie.status = :status and ie.acceptStatus = :acceptStatus and ie.perpetualAccessBySub is not null', [sub: this, status: RDStore.TIPP_STATUS_CURRENT, acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED])
+                List<Long> ieIDs = IssueEntitlement.executeQuery('select ie.id from IssueEntitlement ie where ie.subscription = :sub and ie.perpetualAccessBySub is not null', [sub: this])
                 if (ieIDs.size() > 0) {
                     log.debug("beforeUpdate() set perpetualAccessBySub of ${ieIDs.size()} IssueEntitlements to null:" + this)
                     ieIDs.collate(32767).each {
                         IssueEntitlement.executeUpdate("update IssueEntitlement ie set ie.perpetualAccessBySub = null where ie.id in (:idList)", [idList: it])
+                        PermanentTitle.executeUpdate("delete PermanentTitle pt where pt.issueEntitlement.id in (:idList)", [idList: it])
                     }
 
 
@@ -457,22 +473,6 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     List<Org> getAgencies() {
         Org.executeQuery("select og.org from OrgRole og where og.sub =:sub and og.roleType = :agency",
                 [sub: this, agency: RDStore.OR_AGENCY])
-    }
-
-    // used for views and dropdowns
-    @Deprecated
-    String getNameConcatenated() {
-        Org cons = getConsortia()
-        List<Org> subscr = getAllSubscribers()
-        if (subscr) {
-            "${name} (" + subscr.join(', ') + ")"
-        }
-        else if (cons){
-            "${name} (${cons})"
-        }
-        else {
-            name
-        }
     }
 
     /**
@@ -742,71 +742,12 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
                 return cons || subscrCons || subscr
             }
             if (perm == 'edit') {
-                if (BeanStore.getAccessService().checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN'))
+                if (BeanStore.getAccessService().ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC ))
                     return cons || subscr
             }
         }
 
         return false
-    }
-
-    /**
-     * Method used by generic call. Propagates changes to a consortial subscription to member objects, i.e. triggers inheritance
-     * @param changeDocument the change map as JSON document which will be passed to the child objects
-     */
-    @Transient
-    void notifyDependencies(Map changeDocument) {
-        log.debug("notifyDependencies(${changeDocument})")
-
-        List<PendingChange> slavedPendingChanges = []
-        List<Subscription> derived_subscriptions = getNonDeletedDerivedSubscriptions()
-
-        derived_subscriptions.each { ds ->
-
-            log.debug("Send pending change to ${ds.id}")
-
-            Locale locale = LocaleUtils.getCurrentLocale()
-            String description = BeanStore.getMessageSource().getMessage('default.accept.placeholder',null, locale)
-            String definedType = 'text'
-
-            if (this."${changeDocument.prop}" instanceof RefdataValue) {
-                definedType = 'rdv'
-            }
-            else if (this."${changeDocument.prop}" instanceof Date) {
-                definedType = 'date'
-            }
-
-            List<String> msgParams = [
-                    definedType,
-                    "${changeDocument.prop}",
-                    "${changeDocument.old}",
-                    "${changeDocument.new}",
-                    "${description}"
-            ]
-
-            PendingChange newPendingChange = BeanStore.getChangeNotificationService().registerPendingChange(
-                    PendingChange.PROP_SUBSCRIPTION,
-                    ds,
-                    ds.getSubscriber(),
-                    [
-                            changeTarget:"${Subscription.class.name}:${ds.id}",
-                            changeType:PendingChangeService.EVENT_PROPERTY_CHANGE,
-                            changeDoc:changeDocument
-                    ],
-                    PendingChange.MSG_SU01,
-                    msgParams,
-                    "<strong>${changeDocument.prop}</strong> hat sich von <strong>\"${changeDocument.oldLabel?:changeDocument.old}\"</strong> zu <strong>\"${changeDocument.newLabel?:changeDocument.new}\"</strong> von der Lizenzvorlage geändert. " + description
-            )
-
-            if (newPendingChange && ds.isSlaved) {
-                slavedPendingChanges << newPendingChange
-            }
-        }
-
-        slavedPendingChanges.each { spc ->
-            log.debug('autoAccept! performing: ' + spc)
-            BeanStore.getPendingChangeService().performAccept(spc)
-        }
     }
 
     /**
@@ -866,7 +807,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
   /**
    * Retrieves a list of subscriptions for dropdown display. The display can be parametrised, possible options are:
-   * startDate, endDate, hideIdent, inclSubStartDate, hideDeleted, accessibleToUser, inst_shortcode
+   * startDate, endDate, hideIdent, inclSubStartDate, hideDeleted, inst_shortcode
    * @param the display and filter parameter map
    * @return a {@link List} of {@link Map}s of structure [id: oid, text: subscription text] with the query results
    */
@@ -904,16 +845,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
       hqlParams.put('inst', params.inst_shortcode)
     }
 
-
     List results = Subscription.executeQuery(hqlString, hqlParams)
-
-    if(params.accessibleToUser){
-      for(int i=0;i<results.size();i++){
-        if(! results.get(i).checkPermissionsNew("view",User.get(params.accessibleToUser))){
-          results.remove(i)
-        }
-      }
-    }
 
     results?.each { t ->
       String resultText = t.name

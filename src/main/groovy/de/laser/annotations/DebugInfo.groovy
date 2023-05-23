@@ -14,11 +14,19 @@ import java.lang.annotation.Target
     public static final int IN_BETWEEN         = 1
     public static final int WITH_TRANSACTION   = 2
 
-    String test() default ''
-    String perm() default ''
-    String type() default ''
-    String affil() default ''
-    String specRole() default ''
+    // accessService
+
+    String[] ctxPermAffiliation() default []                                    // [orgPerms, instUserRole]
+    String[] ctxInstUserCheckPerm_or_ROLEADMIN() default []                     // [orgPerms]
+    String[] ctxInstEditorCheckPerm_or_ROLEADMIN() default []                   // [orgPerms]
+    String[] ctxInstAdmCheckPerm_or_ROLEADMIN() default []                      // [orgPerms]
+    String[] ctxConsortiumCheckPermAffiliation_or_ROLEADMIN() default []        // [orgPerms, instUserRole]
+
+    // user
+
+    String[] hasCtxAffiliation_or_ROLEADMIN() default []                        // [instUserRole]
+
+    // legacy
 
     int ctrlService() default 0
     // NOT_TRANSACTIONAL    - no use of associated controllerService

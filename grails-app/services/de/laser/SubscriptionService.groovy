@@ -33,6 +33,7 @@ import org.springframework.web.multipart.MultipartFile
 
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
+import java.time.Year
 
 @Transactional
 class SubscriptionService {
@@ -42,14 +43,15 @@ class SubscriptionService {
     EscapeService escapeService
     FilterService filterService
     GenericOIDService genericOIDService
+    GokbService gokbService
     LinksGenerationService linksGenerationService
     MessageSource messageSource
     PackageService packageService
     PropertyService propertyService
     RefdataService refdataService
     SubscriptionsQueryService subscriptionsQueryService
-    GokbService gokbService
     SurveyService surveyService
+    UserService userService
 
     /**
      * ex MyInstitutionController.currentSubscriptions()
@@ -75,7 +77,7 @@ class SubscriptionService {
         prf.setBenchmark('consortia')
         result.availableConsortia = Combo.executeQuery("select c.toOrg from Combo as c where c.fromOrg = :fromOrg", [fromOrg: contextOrg])
 
-        List<Role> consRoles = Role.findAll { authority == 'ORG_CONSORTIUM' }
+        List<Role> consRoles = Role.findAll { authority in ['ORG_CONSORTIUM_BASIC', 'ORG_CONSORTIUM_PRO'] }
         prf.setBenchmark('all consortia')
         result.allConsortia = Org.executeQuery(
                 """select o from Org o, OrgSetting os_ct, OrgSetting os_gs where 
@@ -95,6 +97,13 @@ class SubscriptionService {
 
         viableOrgs.add(contextOrg)
 
+        String consortiaFilter = ''
+        if(contextOrg.isCustomerType_Consortium())
+            consortiaFilter = 'and s.instanceOf = null'
+
+        Set<Year> availableReferenceYears = Subscription.executeQuery('select s.referenceYear from OrgRole oo join oo.sub s where s.referenceYear != null and oo.org = :contextOrg '+consortiaFilter+' order by s.referenceYear', [contextOrg: contextOrg])
+        result.referenceYears = availableReferenceYears
+
         def date_restriction = null
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
 
@@ -105,7 +114,7 @@ class SubscriptionService {
             date_restriction = sdf.parse(params.validOn)
         }
 
-        result.editable = accessService.checkMinUserOrgRole(contextUser, contextOrg, 'INST_EDITOR')
+        result.editable = userService.checkAffiliationAndCtxOrg(contextUser, contextOrg, 'INST_EDITOR')
 
         if (! params.status) {
             if (params.isSiteReloaded != "yes") {
@@ -143,7 +152,7 @@ class SubscriptionService {
         /* deactivated as statistics key is submitted nowhere, as of July 16th, '20
         if (OrgSetting.get(contextOrg, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID) instanceof OrgSetting){
             result.statsWibid = contextOrg.getIdentifierByType('wibid')?.value
-            result.usageMode = accessService.checkPerm("ORG_CONSORTIUM") ? 'package' : 'institution'
+            result.usageMode = accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) ? 'package' : 'institution'
         }
          */
         prf.setBenchmark('end properties')
@@ -183,6 +192,9 @@ class SubscriptionService {
 
         result.filterSubTypes = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE).minus(RDStore.SUBSCRIPTION_TYPE_LOCAL)
         result.filterPropList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextOrg)
+
+        Set<Year> availableReferenceYears = Subscription.executeQuery('select s.referenceYear from OrgRole oo join oo.sub s where s.referenceYear != null and oo.org = :contextOrg and s.instanceOf != null order by s.referenceYear', [contextOrg: contextOrg])
+        result.referenceYears = availableReferenceYears
 
         /*
         String query = "select ci, subT, roleT.org from CostItem ci join ci.owner orgK join ci.sub subT join subT.instanceOf subK " +
@@ -341,6 +353,15 @@ class SubscriptionService {
             }
         }
 
+        if (params.referenceYears) {
+            query += " and subT.referenceYear in (:referenceYears) "
+            Set<Year> referenceYears = []
+            params.list('referenceYears').each { String referenceYear ->
+                referenceYears << Year.parse(referenceYear)
+            }
+            qarams.put('referenceYears', referenceYears)
+        }
+
         String orderQuery = " order by roleT.org.sortname, subT.name, subT.startDate, subT.endDate"
         if (params.sort?.size() > 0) {
             orderQuery = " order by " + params.sort + " " + params.order
@@ -355,12 +376,33 @@ class SubscriptionService {
         if('withCostItems' in tableConf) {
             prf.setBenchmark('costs init')
 
-            Set costs = CostItem.executeQuery(
+            if (params.filterPvd && params.filterPvd != "" && params.list('filterPvd')) {
+                query = query + " and exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.sub.id = subT.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and exists (select orgRole from OrgRole orgRole where orgRole.sub = sub and orgRole.org.id in (:filterPvd))) "
+                qarams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIA, context: contextOrg, filterPvd: params.list('filterPvd').collect { Long.parseLong(it) }]
+            }
+
+
+                Set costs = CostItem.executeQuery(
                     query + " " + orderQuery, qarams
             )
             prf.setBenchmark('read off costs')
             //post filter; HQL cannot filter that parameter out
             result.costs = costs
+
+            Map queryParamsProviders = [
+                    subOrg      : contextOrg,
+                    subRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA],
+                    paRoleTypes : [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]
+            ]
+
+            String queryProviders = '''select distinct(or_pa.org) from OrgRole or_pa 
+join or_pa.sub sub 
+join sub.orgRelations or_sub where
+    ( sub = or_sub.sub and or_sub.org = :subOrg ) and
+    ( or_sub.roleType in (:subRoleTypes) ) and
+        ( or_pa.roleType in (:paRoleTypes) )'''
+
+            result.providers = Org.executeQuery(queryProviders + " and sub in (:subs)", queryParamsProviders+[subs: costs.sub])
             result.totalCount = costs.size()
             result.totalMembers = []
             costs.each { row ->
@@ -415,11 +457,6 @@ class SubscriptionService {
         result
     }
 
-    @Deprecated
-    Set<Org> getAllTimeSubscribersForConsortiaSubscription(Set<Subscription> entrySet) {
-        Org.executeQuery('select oo.org from OrgRole oo join oo.org org where oo.sub.instanceOf in (:entry) and oo.roleType in (:subscriberRoleTypes) order by org.sortname asc, org.name asc',[entry:entrySet,subscriberRoleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])
-    }
-
     /**
      * Gets a (filtered) list of subscriptions to which the context institution has reading rights
      * @param params the filter parameter map
@@ -434,7 +471,7 @@ class SubscriptionService {
             params.joinQuery = "join s.orgRelations so"
         }
 
-        if(accessService.checkPerm("ORG_CONSORTIUM")) {
+        if (accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
             tmpQ = _getSubscriptionsConsortiaQuery(params)
             result.addAll(Subscription.executeQuery(queryStart + tmpQ[0], tmpQ[1]))
 
@@ -463,7 +500,7 @@ class SubscriptionService {
         List result = []
         List tmpQ
 
-        if(accessService.checkPerm("ORG_CONSORTIUM")) {
+        if (accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
             tmpQ = _getSubscriptionsConsortiaQuery(params)
             result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
             if (params.showSubscriber) {
@@ -497,7 +534,7 @@ class SubscriptionService {
         List result = []
         List tmpQ
 
-        if(accessService.checkPerm("ORG_INST")) {
+        if(accessService.ctxPerm(CustomerTypeService.ORG_INST_PRO)) {
 
             tmpQ = _getSubscriptionsConsortialLicenseQuery(params)
             result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
@@ -518,7 +555,7 @@ class SubscriptionService {
         List result = []
         List tmpQ
 
-        if(accessService.checkPerm("ORG_INST")) {
+        if(accessService.ctxPerm(CustomerTypeService.ORG_INST_PRO)) {
 
             tmpQ = _getSubscriptionsConsortialLicenseQuery(params)
             result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
@@ -678,126 +715,10 @@ class SubscriptionService {
      */
     List getIssueEntitlements(Subscription subscription) {
         List<IssueEntitlement> ies = subscription?
-                IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.status != :ieStatus",
+                IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.status != :ieStatus order by ie.tipp.sortname",
                         [sub: subscription, ieStatus: RDStore.TIPP_STATUS_REMOVED])
                 : []
-        ies.sort {it.sortname}
         ies
-    }
-
-    @Deprecated
-    List getIssueEntitlementsWithFilter(Subscription subscription, params) {
-
-        if(subscription) {
-            String base_qry = null
-            Map<String,Object> qry_params = [subscription: subscription]
-
-            SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
-            def date_filter
-            if (params.asAt && params?.asAt?.length() > 0) {
-                date_filter = sdf.parse(params.asAt)
-            } else {
-                date_filter = new Date()
-            }
-
-            if (params.filter) {
-                base_qry = " from IssueEntitlement as ie where ie.subscription = :subscription "
-                if (params.mode != 'advanced') {
-                    // If we are not in advanced mode, hide IEs that are not current, otherwise filter
-                    // base_qry += "and ie.status <> ? and ( ? >= coalesce(ie.accessStartDate,subscription.startDate) ) and ( ( ? <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) )  "
-                    // qry_params.add(deleted_ie);
-                    base_qry += "and (( :startDate >= coalesce(ie.accessStartDate,subscription.startDate) ) OR ( ie.accessStartDate is null )) and ( ( :endDate <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) )  "
-                    qry_params.startDate = date_filter
-                    qry_params.endDate = date_filter
-                }
-                base_qry += "and ( ( lower(ie.name) like :title ) or ( exists ( from Identifier ident where ident.tipp.id = ie.tipp.id and ident.value like :identifier ) ) ) "
-                qry_params.title = "%${params.filter.trim().toLowerCase()}%"
-                qry_params.identifier = "%${params.filter}%"
-            } else {
-                base_qry = " from IssueEntitlement as ie where ie.subscription = :subscription "
-                if (params.mode != 'advanced') {
-                    // If we are not in advanced mode, hide IEs that are not current, otherwise filter
-
-                    base_qry += " and (( :startDate >= coalesce(ie.accessStartDate,subscription.startDate) ) OR ( ie.accessStartDate is null )) and ( ( :endDate <= coalesce(ie.accessEndDate,subscription.endDate) ) OR ( ie.accessEndDate is null ) ) "
-                    qry_params.startDate = date_filter
-                    qry_params.endDate = date_filter
-                }
-            }
-
-            if(params.mode != 'advanced') {
-                base_qry += " and ie.status = :current "
-                qry_params.current = RDStore.TIPP_STATUS_CURRENT
-            }
-            else {
-                base_qry += " and ie.status != :ieStatus "
-                qry_params.ieStatus = RDStore.TIPP_STATUS_REMOVED
-            }
-
-            if(params.ieAcceptStatusFixed) {
-                base_qry += " and ie.acceptStatus = :ieAcceptStatus "
-                qry_params.ieAcceptStatus = RDStore.IE_ACCEPT_STATUS_FIXED
-            }
-
-            if(params.ieAcceptStatusNotFixed) {
-                base_qry += " and ie.acceptStatus != :ieAcceptStatus "
-                qry_params.ieAcceptStatus = RDStore.IE_ACCEPT_STATUS_FIXED
-            }
-
-            if(params.summaryOfContent) {
-                base_qry += " and lower(ie.tipp.summaryOfContent) like :summaryOfContent "
-                qry_params.summaryOfContent = "%${params.summaryOfContent.trim().toLowerCase()}%"
-            }
-
-            if (params.subject_references && params.subject_references != "" && params.list('subject_references')) {
-                Set<String> subjectQuery = []
-                params.list('subject_references').each { String subReference ->
-                    subjectQuery << "genfunc_filter_matcher(ie.tipp.subjectReference, '${subReference.toLowerCase()}') = true"
-                }
-                base_qry += " and (${subjectQuery.join(" or ")}) "
-            }
-
-            if (params.series_names && params.series_names != "" && params.list('series_names')) {
-                base_qry += " and lower(ie.tipp.seriesName) in (:series_names)"
-                qry_params.series_names = params.list('series_names').collect { ""+it.toLowerCase()+"" }
-            }
-
-            if(params.ebookFirstAutorOrFirstEditor) {
-                base_qry += " and (lower(ie.tipp.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(ie.tipp.firstEditor) like :ebookFirstAutorOrFirstEditor) "
-                qry_params.ebookFirstAutorOrFirstEditor = "%${params.ebookFirstAutorOrFirstEditor.trim().toLowerCase()}%"
-            }
-
-            if (params.pkgfilter && (params.pkgfilter != '')) {
-                base_qry += " and ie.tipp.pkg.id = :pkgId "
-                qry_params.pkgId = Long.parseLong(params.pkgfilter)
-            }
-
-            //dateFirstOnline from
-            if(params.dateFirstOnlineFrom) {
-                base_qry += " and (ie.tipp.dateFirstOnline is not null AND ie.tipp.dateFirstOnline >= :dateFirstOnlineFrom) "
-                qry_params.dateFirstOnlineFrom = sdf.parse(params.dateFirstOnlineFrom)
-
-            }
-            //dateFirstOnline to
-            if(params.dateFirstOnlineTo) {
-                base_qry += " and (ie.tipp.dateFirstOnline is not null AND ie.tipp.dateFirstOnline <= :dateFirstOnlineTo) "
-                qry_params.dateFirstOnlineTo = sdf.parse(params.dateFirstOnlineTo)
-            }
-
-            if ((params.sort != null) && (params.sort.length() > 0)) {
-                base_qry += "order by ie.${params.sort} ${params.order} "
-            } else {
-                base_qry += "order by lower(ie.sortname) asc"
-            }
-
-            List<IssueEntitlement> ies = IssueEntitlement.executeQuery("select ie " + base_qry, qry_params, [max: params.max, offset: params.offset])
-
-
-            ies.sort { it.sortname }
-            ies
-        }else{
-            List<IssueEntitlement> ies = []
-            ies
-        }
     }
 
     /**
@@ -807,114 +728,10 @@ class SubscriptionService {
      */
     List getIssueEntitlementsUnderConsideration(Subscription subscription) {
         List<IssueEntitlement> ies = subscription?
-                IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus",
-                        [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION, ieStatus: RDStore.TIPP_STATUS_CURRENT])
-                : []
-        ies.sort {it.sortname}
-        ies
-    }
-
-    /**
-     * Gets issue entitlements for the given subscription which are under negotiation
-     * @param subscription the subscription whose titles should be returned
-     * @return a sorted list of issue entitlements which are currently under negotiation
-     */
-    List getIssueEntitlementsUnderNegotiation(Subscription subscription) {
-        List<IssueEntitlement> ies = subscription?
-                IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus",
-                        [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_UNDER_NEGOTIATION, ieStatus: RDStore.TIPP_STATUS_CURRENT])
-                : []
-        ies.sort {it.sortname}
-        ies
-    }
-
-    /**
-     * Gets issue entitlements for the given subscription which are not fixed yet
-     * @param subscription the subscription whose titles should be returned
-     * @return a sorted list of issue entitlements which are not fixed
-     */
-    List getIssueEntitlementsNotFixed(Subscription subscription) {
-        List<IssueEntitlement> ies = subscription?
-                IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus != :acceptStat and ie.status = :ieStatus",
-                        [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])
-                : []
-        ies.sort {it.sortname}
-        ies
-    }
-
-    /**
-     * Counts the issue entitlements for the given subscription which are not fixed
-     * @param subscription the subscription whose titles should be counted
-     * @return a sorted list of issue entitlements which are not fixed
-     */
-    Integer countIssueEntitlementsNotFixed(Subscription subscription) {
-        Integer iesCount = subscription?
-                IssueEntitlement.executeQuery("select count(ie) from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus != :acceptStat and ie.status = :ieStatus",
-                        [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0]
-                : 0
-        iesCount
-    }
-
-    /**
-     * Retrieves issue entitlement IDs for the given subscription which are not fixed yet
-     * @param subscription the subscription whose titles should be returned
-     * @return a list of issue entitlements IDs which are not fixed
-     */
-    List<Long> getIssueEntitlementIDsNotFixed(Subscription subscription) {
-        List<Long> ies = subscription?
-                IssueEntitlement.executeQuery("select ie.id from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus != :acceptStat and ie.status = :ieStatus order by ie.sortname",
-                        [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])
+                IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :ieStatus order by ie.tipp.sortname",
+                        [sub: subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])
                 : []
         ies
-    }
-
-    /**
-     * Gets issue entitlements for the given subscription which are fixed
-     * @param subscription the subscription whose titles should be returned
-     * @return a sorted list of issue entitlements which are fixed
-     */
-    List getIssueEntitlementsFixed(Subscription subscription) {
-        List<IssueEntitlement> ies = subscription?
-                IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus",
-                        [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])
-                : []
-        ies.sort {it.sortname}
-        ies
-    }
-
-    /**
-     * Counts the issue entitlements for the given subscription which are fixed
-     * @param subscription the subscription whose titles should be counted
-     * @return a sorted list of issue entitlements which are fixed
-     */
-    Integer countIssueEntitlementsFixed(Subscription subscription) {
-        Integer countIes = subscription?
-                IssueEntitlement.executeQuery("select count(ie) from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus",
-                        [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0]
-                : 0
-        countIes
-    }
-
-    /**
-     * Gets issue entitlement IDs for the given subscription which are fixed
-     * @param subscription the subscription whose titles should be returned
-     * @return a sorted list of issue entitlement IDs which are fixed
-     */
-    List<Long> getIssueEntitlementIDsFixed(Subscription subscription) {
-        List<Long> ies = subscription?
-                IssueEntitlement.executeQuery("select ie.id from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus",
-                        [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])
-                : []
-        ies
-    }
-
-    @Deprecated
-    List<Long> getTippIDsFixed(Subscription subscription) {
-        List<Long> tipps = subscription?
-                IssueEntitlement.executeQuery("select ie.tipp.id from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus",
-                        [sub: subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])
-                : []
-        tipps
     }
 
     /**
@@ -924,11 +741,23 @@ class SubscriptionService {
      */
     List getCurrentIssueEntitlements(Subscription subscription) {
         List<IssueEntitlement> ies = subscription?
-                IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :cur",
+                IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :cur order by ie.tipp.sortname",
                         [sub: subscription, cur: RDStore.TIPP_STATUS_CURRENT])
                 : []
-        ies.sort {it.sortname}
         ies
+    }
+
+    /**
+     * Gets the current issue entitlements for the given subscription
+     * @param subscription the subscription whose titles should be returned
+     * @return integer of current issue entitlements
+     */
+    Integer countCurrentIssueEntitlements(Subscription subscription) {
+        Integer countIes = subscription ?
+                IssueEntitlement.executeQuery("select count(ie) from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :ieStatus",
+                        [sub: subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0]
+                : 0
+        countIes
     }
 
     /**
@@ -937,19 +766,8 @@ class SubscriptionService {
      * @return a list of issue entitlement IDs
      */
     List getCurrentIssueEntitlementIDs(Subscription subscription) {
-        List<Long> ieIDs = subscription ? IssueEntitlement.executeQuery("select ie.id from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :cur and ie.acceptStatus = :fixed", [sub: subscription, cur: RDStore.TIPP_STATUS_CURRENT, fixed: RDStore.IE_ACCEPT_STATUS_FIXED]) : []
+        List<Long> ieIDs = subscription ? IssueEntitlement.executeQuery("select ie.id from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :cur ", [sub: subscription, cur: RDStore.TIPP_STATUS_CURRENT]) : []
         ieIDs
-    }
-
-    @Deprecated
-    List getVisibleOrgRelationsWithoutConsortia(Subscription subscription) {
-        List visibleOrgRelations = []
-        subscription?.orgRelations?.each { OrgRole or ->
-            if (!(or.org?.id == contextService.getOrg().id) && !(or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA])) {
-                visibleOrgRelations << or
-            }
-        }
-        visibleOrgRelations.sort { it.org?.name?.toLowerCase() }
     }
 
     /**
@@ -1006,8 +824,8 @@ class SubscriptionService {
 
         if ( createEntitlements ) {
             //List packageTitles = sql.rows("select * from title_instance_package_platform where tipp_pkg_fk = :pkgId and tipp_status_rv_fk = :current", [pkgId: pkg.id, current: RDStore.TIPP_STATUS_CURRENT.id])
-            sql.withBatch('insert into issue_entitlement (ie_version, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_medium_rv_fk, ie_status_rv_fk, ie_accept_status_rv_fk, ie_name, ie_sortname, ie_perpetual_access_by_sub_fk) select ' +
-                    '0, now(), now(), (select sub_id from subscription where sub_id = :subId), ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_medium_rv_fk, ie_status_rv_fk, ie_accept_status_rv_fk, ie_name, ie_sortname, (select case sub_has_perpetual_access when true then sub_id else null end from subscription where sub_id = :subId) from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id ' +
+            sql.withBatch('insert into issue_entitlement (ie_version, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_medium_rv_fk, ie_status_rv_fk, ie_access_type_rv_fk, ie_open_access_rv_fk, ie_perpetual_access_by_sub_fk) select ' +
+                    '0, now(), now(), (select sub_id from subscription where sub_id = :subId), ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_medium_rv_fk, ie_status_rv_fk, ie_access_type_rv_fk, ie_open_access_rv_fk, (select case sub_has_perpetual_access when true then sub_id else null end from subscription where sub_id = :subId) from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id ' +
                     'where tipp_pkg_fk = :pkgId and ie_subscription_fk = :parentId and ie_status_rv_fk != :removed') { BatchingPreparedStatementWrapper stmt ->
                 memberSubs.each { Subscription memberSub ->
                     stmt.addBatch([pkgId: pkg.id, subId: memberSub.id, parentId: subscription.id, removed: RDStore.TIPP_STATUS_REMOVED.id])
@@ -1037,11 +855,12 @@ class SubscriptionService {
      * @param consortia the consortial subscription whose holding should be taken
      * @param pkg the package to be linked
      */
-    void addToSubscriptionCurrentStock(Subscription target, Subscription consortia, Package pkg) {
+    void addToSubscriptionCurrentStock(Subscription target, Subscription consortia, Package pkg, boolean withEntitlements) {
         Sql sql = GlobalService.obtainSqlConnection()
         sql.executeInsert('insert into subscription_package (sp_version, sp_pkg_fk, sp_sub_fk, sp_freeze_holding, sp_date_created, sp_last_updated) values (0, :pkgId, :subId, false, now(), now()) on conflict on constraint sub_package_unique do nothing', [pkgId: pkg.id, subId: target.id])
         //List consortiumHolding = sql.rows("select * from title_instance_package_platform join issue_entitlement on tipp_id = ie_tipp_fk where tipp_pkg_fk = :pkgId and ie_subscription_fk = :consortium and ie_status_rv_fk = :current", [pkgId: pkg.id, consortium: consortia.id, current: RDStore.TIPP_STATUS_CURRENT.id])
-        packageService.bulkAddHolding(sql, target.id, pkg.id, target.hasPerpetualAccess)
+        if(withEntitlements)
+            packageService.bulkAddHolding(sql, target.id, pkg.id, target.hasPerpetualAccess, consortia.id)
         /*
         List<SubscriptionPackage> dupe = SubscriptionPackage.executeQuery(
                 "from SubscriptionPackage where subscription = :sub and pkg = :pkg", [sub: target, pkg: pkg])
@@ -1065,8 +884,8 @@ class SubscriptionService {
                         name: ie.name,
                         medium: ie.medium ?: ie.tipp.medium,
                         accessStartDate: ie.tipp.accessStartDate,
-                        accessEndDate: ie.tipp.accessEndDate,
-                        acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED
+                        accessEndDate: ie.tipp.accessEndDate
+
                 )
                 newIe.generateSortTitle()
                 if(newIe.save()) {
@@ -1231,31 +1050,32 @@ class SubscriptionService {
     }
 
     /**
-     * Substitution call for {@link #addEntitlement(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, boolean)}
+     * Substitution call for {@link #addEntitlement(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, boolean)}
      * @param sub the subscription to which the title should be added
      * @param gokbId the we:kb ID of the title
      * @param issueEntitlementOverwrite eventually cached imported local data
      * @param withPriceData should price data be added as well?
-     * @param acceptStatus the accept status of the issue entitlement
-     * @return the result of {@link #addEntitlement(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, boolean)}
+     * @return the result of {@link #addEntitlement(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, boolean, java.lang.Object,)}
      */
-    boolean addEntitlement(sub, gokbId, issueEntitlementOverwrite, withPriceData, acceptStatus){
-        addEntitlement(sub, gokbId, issueEntitlementOverwrite, withPriceData, acceptStatus, false)
+    boolean addEntitlement(sub, gokbId, issueEntitlementOverwrite, withPriceData){
+        addEntitlement(sub, gokbId, issueEntitlementOverwrite, withPriceData, false, null)
     }
 
     /**
-     * Substitution call for {@link #addEntitlement(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, boolean)}
+     * Substitution call for {@link #addEntitlement(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, boolean, java.lang.Object)}
      * @param sub the subscription to which the title should be added
      * @param gokbId the we:kb ID of the title
      * @param issueEntitlementOverwrite eventually cached imported local data
      * @param withPriceData should price data be added as well?
-     * @param acceptStatus the accept status of the issue entitlement
+     * @param set ie in issueEntitlementGroup
      * @return true if the adding was successful, false otherwise
      */
-    boolean addEntitlement(sub, gokbId, issueEntitlementOverwrite, withPriceData, acceptStatus, pickAndChoosePerpetualAccess) throws EntitlementCreationException {
+    boolean addEntitlement(sub, gokbId, issueEntitlementOverwrite, withPriceData, pickAndChoosePerpetualAccess, issueEntitlementGroup) throws EntitlementCreationException {
         TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGokbId(gokbId)
         if (tipp == null) {
             throw new EntitlementCreationException("Unable to tipp ${gokbId}")
+        }else if(!PermanentTitle.findByOwnerAndTipp(sub.subscriber, tipp)){
+            throw new EntitlementCreationException("Unable to create IssueEntitlement because IssueEntitlement exist as PermanentTitle")
         }
         else if(IssueEntitlement.findAllBySubscriptionAndTippAndStatusInList(sub, tipp, [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_RETIRED])) {
             throw new EntitlementCreationException("Unable to create IssueEntitlement because IssueEntitlement exist with tipp ${gokbId}")
@@ -1273,9 +1093,9 @@ class SubscriptionService {
                     tipp: tipp,
                     name: tipp.name,
                     medium: tipp.medium,
-                    // ieReason: 'Manually Added by User',
-                    acceptStatus: acceptStatus)
-            new_ie.generateSortTitle()
+                    // ieReason: 'Manually Added by User'
+                    )
+            //new_ie.generateSortTitle()
 
             //fix for renewEntitlementsWithSurvey, overwrite TIPP status if holding's status differ
             IssueEntitlement parentIE = IssueEntitlement.findBySubscriptionAndTippAndStatusNotEqual(sub.instanceOf, tipp, RDStore.TIPP_STATUS_REMOVED)
@@ -1284,6 +1104,14 @@ class SubscriptionService {
 
             if(pickAndChoosePerpetualAccess || sub.hasPerpetualAccess){
                 new_ie.perpetualAccessBySub = sub
+
+                if(!PermanentTitle.findByOwnerAndTipp(sub.subscriber, tipp)){
+                    PermanentTitle permanentTitle = new PermanentTitle(subscription: sub,
+                            issueEntitlement: new_ie,
+                            tipp: tipp,
+                            owner: sub.subscriber).save()
+                }
+
             }
 
             Date accessStartDate, accessEndDate
@@ -1314,6 +1142,15 @@ class SubscriptionService {
             new_ie.accessStartDate = accessStartDate
             new_ie.accessEndDate = accessEndDate
             if (new_ie.save()) {
+
+                if(issueEntitlementGroup) {
+                    IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(ie: new_ie, ieGroup: issueEntitlementGroup)
+
+                    if (!issueEntitlementGroupItem.save()) {
+                        throw new EntitlementCreationException(issueEntitlementGroupItem.errors)
+                    }
+                }
+
                 Set coverageStatements
                 Set fallback = tipp.coverages
                 if(issueEntitlementOverwrite?.coverages) {
@@ -1413,6 +1250,11 @@ class SubscriptionService {
         }
         else {
             ie.status = RDStore.TIPP_STATUS_REMOVED
+            PermanentTitle permanentTitle = PermanentTitle.findByOwnerAndTipp(sub.subscriber, ie.tipp)
+            if (permanentTitle) {
+                permanentTitle.delete()
+            }
+
             if(ie.save()) {
                 return true
             }
@@ -1435,6 +1277,12 @@ class SubscriptionService {
         }
         else {
             ie.status = RDStore.TIPP_STATUS_REMOVED
+
+            PermanentTitle permanentTitle = PermanentTitle.findByOwnerAndTipp(sub.subscriber, ie.tipp)
+            if (permanentTitle) {
+                permanentTitle.delete()
+            }
+
             if(ie.save()) {
                 return true
             }
@@ -1450,10 +1298,9 @@ class SubscriptionService {
      * @param issueEntitlementOverwrites the {@link Map} containing the data to submit for each issue entitlement
      * @param checkMap the {@link Map} containing identifiers of titles which have been selected for the enrichment
      * @param withPriceData should price data be added as well?
-     * @param acceptStatus the accept status reference data key
      * @param pickAndChoosePerpetualAccess are the given titles purchased perpetually?
      */
-    void bulkAddEntitlements(Subscription sub, Map<String, Object> issueEntitlementOverwrites, Map<String, String> checkMap, withPriceData, Long acceptStatus, pickAndChoosePerpetualAccess) {
+    void bulkAddEntitlements(Subscription sub, Map<String, Object> issueEntitlementOverwrites, Map<String, String> checkMap, withPriceData, pickAndChoosePerpetualAccess) {
         Sql sql = GlobalService.obtainSqlConnection()
         Object[] keys = checkMap.keySet().toArray()
         Map<String, Object> fallbackMap = [:]
@@ -1508,7 +1355,7 @@ class SubscriptionService {
                     log.debug "processing ${wekbId}"
                     List<GroovyRowResult> existingEntitlements = sql.rows('select ie_id from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where ie_subscription_fk = :subId and ie_status_rv_fk = :current and tipp_gokb_id = :key',[subId: sub.id, current: RDStore.TIPP_STATUS_CURRENT.id, key: wekbId])
                     if(existingEntitlements.size() == 0) {
-                        Map<String, Object> configMap = [wekbId: wekbId, subId: sub.id, acceptStatus: acceptStatus, removed: RDStore.TIPP_STATUS_REMOVED.id], coverageMap = [wekbId: wekbId, subId: sub.id, removed: RDStore.TIPP_STATUS_REMOVED.id], priceMap = [wekbId: wekbId, subId: sub.id, removed: RDStore.TIPP_STATUS_REMOVED.id]
+                        Map<String, Object> configMap = [wekbId: wekbId, subId: sub.id, removed: RDStore.TIPP_STATUS_REMOVED.id], coverageMap = [wekbId: wekbId, subId: sub.id, removed: RDStore.TIPP_STATUS_REMOVED.id], priceMap = [wekbId: wekbId, subId: sub.id, removed: RDStore.TIPP_STATUS_REMOVED.id]
                         if(pickAndChoosePerpetualAccess || sub.hasPerpetualAccess){
                             configMap.perpetualAccessBySub = sub.id
                         }
@@ -1564,8 +1411,8 @@ class SubscriptionService {
                     accessStartDate = "'${ configMap.accessStartDate }'"
                 if(configMap.accessEndDate)
                     accessEndDate = "'${ configMap.accessEndDate }'"
-                sql.withBatch("insert into issue_entitlement (ie_version, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_name, ie_sortname, ie_medium_rv_fk, ie_status_rv_fk, ie_accept_status_rv_fk, ie_access_start_date, ie_access_end_date, ie_perpetual_access_by_sub_fk) " +
-                        "select 0, now(), now(), ${sub.id}, tipp_id, tipp_name, tipp_sort_name, tipp_medium_rv_fk, tipp_status_rv_fk, ${configMap.acceptStatus}, ${accessStartDate}, ${accessEndDate}, ${configMap.perpetualAccessBySub} from title_instance_package_platform where tipp_gokb_id = :wekbId") { BatchingStatementWrapper stmt ->
+                sql.withBatch("insert into issue_entitlement (ie_version, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_name, ie_sortname, ie_medium_rv_fk, ie_status_rv_fk, ie_access_start_date, ie_access_end_date, ie_perpetual_access_by_sub_fk) " +
+                        "select 0, now(), now(), ${sub.id}, tipp_id, tipp_name, tipp_sort_name, tipp_medium_rv_fk, tipp_status_rv_fk, ${accessStartDate}, ${accessEndDate}, ${configMap.perpetualAccessBySub} from title_instance_package_platform where tipp_gokb_id = :wekbId") { BatchingStatementWrapper stmt ->
                     stmt.addBatch([wekbId: configMap.wekbId])
                 }
             }
@@ -1590,8 +1437,8 @@ class SubscriptionService {
                 }
             }
             ieDirectMapSet.each { Map<String, Object> configMap ->
-                sql.withBatch("insert into issue_entitlement (ie_version, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_name, ie_sortname, ie_medium_rv_fk, ie_status_rv_fk, ie_accept_status_rv_fk, ie_access_start_date, ie_access_end_date, ie_perpetual_access_by_sub_fk) " +
-                        "select 0, now(), now(), ${sub.id}, tipp_id, tipp_name, tipp_sort_name, tipp_medium_rv_fk, tipp_status_rv_fk, ${configMap.acceptStatus}, tipp_access_start_date, tipp_access_end_date, ${configMap.perpetualAccessBySub} from title_instance_package_platform where tipp_gokb_id = :wekbId") { BatchingStatementWrapper stmt ->
+                sql.withBatch("insert into issue_entitlement (ie_version, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_name, ie_sortname, ie_medium_rv_fk, ie_status_rv_fk, ie_access_start_date, ie_access_end_date, ie_perpetual_access_by_sub_fk) " +
+                        "select 0, now(), now(), ${sub.id}, tipp_id, tipp_name, tipp_sort_name, tipp_medium_rv_fk, tipp_status_rv_fk, tipp_access_start_date, tipp_access_end_date, ${configMap.perpetualAccessBySub} from title_instance_package_platform where tipp_gokb_id = :wekbId") { BatchingStatementWrapper stmt ->
                     stmt.addBatch([wekbId: configMap.wekbId])
                 }
             }
@@ -1631,7 +1478,7 @@ class SubscriptionService {
                     name: tipp.name,
                     medium: tipp.medium,
                     // ieReason: 'Manually Added by User',
-                    acceptStatus: acceptStatus)
+                    )
             new_ie.generateSortTitle()
 
             if(pickAndChoosePerpetualAccess || sub.hasPerpetualAccess){
@@ -1795,9 +1642,9 @@ class SubscriptionService {
         boolean result = false
         subscribedPlatforms.each { Platform platformInstance ->
             if(!result) {
-                Map queryResult = gokbService.queryElasticsearch(wekbSource.baseUrl + wekbSource.fixToken + "/find?uuid=${platformInstance.gokbId}")
+                Map queryResult = gokbService.queryElasticsearch(wekbSource.baseUrl + wekbSource.fixToken + "/searchApi", [uuid: platformInstance.gokbId])
                 if (queryResult.warning) {
-                    List records = queryResult.warning.records
+                    List records = queryResult.warning.result
                     if(records) {
                         if(records[0].statisticsFormat != null)
                             result = true
@@ -1885,7 +1732,7 @@ class SubscriptionService {
         Org contextOrg = contextService.getOrg()
         RefdataValue comboType
         String[] parentSubType
-        if(accessService.checkPerm("ORG_CONSORTIUM")) {
+        if (accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
             comboType = RDStore.COMBO_TYPE_CONSORTIUM
             parentSubType = [RDStore.SUBSCRIPTION_KIND_CONSORTIAL.getI10n('value')]
         }
@@ -1915,7 +1762,7 @@ class SubscriptionService {
                 case "konsortiallizenz":
                 case "parent subscription":
                 case "consortial subscription":
-                    if(accessService.checkPerm("ORG_CONSORTIUM"))
+                    if(accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC))
                         colMap.instanceOf = c
                     break
                 case "status": colMap.status = c
@@ -2289,7 +2136,7 @@ class SubscriptionService {
                         kind: genericOIDService.resolveOID(entry.kind),
                         form: genericOIDService.resolveOID(entry.form),
                         resource: genericOIDService.resolveOID(entry.resource),
-                        type: contextOrg.getCustomerType() == "ORG_CONSORTIUM" ? RDStore.SUBSCRIPTION_TYPE_CONSORTIAL : RDStore.SUBSCRIPTION_TYPE_LOCAL,
+                        type: (contextOrg.isCustomerType_Consortium()) ? RDStore.SUBSCRIPTION_TYPE_CONSORTIAL : RDStore.SUBSCRIPTION_TYPE_LOCAL,
                         isPublicForApi: entry.isPublicForApi,
                         hasPerpetualAccess: entry.hasPerpetualAccess,
                         hasPublishComponent: entry.hasPublishComponent,
@@ -2310,7 +2157,7 @@ class SubscriptionService {
                     sub.refresh() //needed for dependency processing
                     //create the org role associations
                     RefdataValue parentRoleType, memberRoleType
-                    if(accessService.checkPerm("ORG_CONSORTIUM")) {
+                    if (accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
                         parentRoleType = RDStore.OR_SUBSCRIPTION_CONSORTIA
                         memberRoleType = RDStore.OR_SUBSCRIBER_CONS
                     }
@@ -2365,7 +2212,7 @@ class SubscriptionService {
                     }
                     if(entry.notes) {
                         Object[] args = [sdf.format(new Date())]
-                        Doc docContent = new Doc(contentType: Doc.CONTENT_TYPE_STRING, content: entry.notes, title: messageSource.getMessage('myinst.subscriptionImport.notes.title',args,locale), type: RefdataValue.getByValueAndCategory('Note', RDConstants.DOCUMENT_TYPE), owner: contextOrg, user: contextService.getUser())
+                        Doc docContent = new Doc(contentType: Doc.CONTENT_TYPE_STRING, content: entry.notes, title: messageSource.getMessage('myinst.subscriptionImport.notes.title',args,locale), type: RDStore.DOC_TYPE_NOTE, owner: contextOrg, user: contextService.getUser())
                         if(docContent.save()) {
                             DocContext dc = new DocContext(subscription: sub, owner: docContent)
                             dc.save()
@@ -2530,13 +2377,13 @@ class SubscriptionService {
                                             case "listCurrencyCol": priceItem.listCurrency = cellEntry ? RefdataValue.getByValueAndCategory(cellEntry, RDConstants.CURRENCY) : null
                                                 break
                                             case "listPriceEurCol": priceItem.listPrice = cellEntry ? escapeService.parseFinancialValue(cellEntry) : null
-                                                priceItem.listCurrency = RefdataValue.getByValueAndCategory("EUR", RDConstants.CURRENCY)
+                                                priceItem.listCurrency = RDStore.CURRENCY_EUR
                                                 break
                                             case "listPriceUsdCol": priceItem.listPrice = cellEntry ?  escapeService.parseFinancialValue(cellEntry) : null
-                                                priceItem.listCurrency = RefdataValue.getByValueAndCategory("USD", RDConstants.CURRENCY)
+                                                priceItem.listCurrency = RDStore.CURRENCY_USD
                                                 break
                                             case "listPriceGbpCol": priceItem.listPrice = cellEntry ? escapeService.parseFinancialValue(cellEntry) : null
-                                                priceItem.listCurrency = RefdataValue.getByValueAndCategory("GBP", RDConstants.CURRENCY)
+                                                priceItem.listCurrency = RDStore.CURRENCY_GBP
                                                 break
                                             case "localPriceCol": priceItem.localPrice = cellEntry ? escapeService.parseFinancialValue(cellEntry) : null
                                                 break
@@ -2596,7 +2443,7 @@ class SubscriptionService {
         Map<String, Object> selectedIEs = [:]
         Org contextOrg = contextService.getOrg()
 
-        List<Long> subscriptionIDs = surveyService.subscriptionsOfOrg(newSub.getSubscriber())
+        //List<Long> subscriptionIDs = surveyService.subscriptionsOfOrg(newSub.getSubscriber())
 
         ArrayList<String> rows = stream.text.split('\n')
         Map<String, Integer> colMap = [zdbCol: -1, onlineIdentifierCol: -1, printIdentifierCol: -1, pick: -1]
@@ -2612,6 +2459,8 @@ class SubscriptionService {
                 case "print identifier": colMap.printIdentifierCol = c
                     break
                 case "online identifier": colMap.onlineIdentifierCol = c
+                    break
+                case "doi": colMap.doiTitleCol = c
                     break
                 case "pick": colMap.pick = c
                     break
@@ -2657,15 +2506,15 @@ class SubscriptionService {
                                 String cellEntry = cols[colNo].trim()
                                     switch (colName) {
                                         case "pick":
-                                            if(cellEntry.toLowerCase() == RDStore.YN_YES.value_de.toLowerCase() || cellEntry == RDStore.YN_YES.value_en.toLowerCase()) {
+                                            if(cellEntry.toLowerCase() == RDStore.YN_YES.value_de.toLowerCase() || cellEntry.toLowerCase() == RDStore.YN_YES.value_en.toLowerCase()) {
                                                 TitleInstancePackagePlatform tipp = issueEntitlement.tipp
                                                 IssueEntitlement ieInNewSub = surveyService.titleContainedBySubscription(newSub, tipp)
                                                 boolean allowedToSelect = false
                                                 if (surveyConfig.pickAndChoosePerpetualAccess) {
-                                                    boolean participantPerpetualAccessToTitle = surveyService.hasParticipantPerpetualAccessToTitle2(subscriptionIDs, tipp)
-                                                    allowedToSelect = !(participantPerpetualAccessToTitle) && (!ieInNewSub || (ieInNewSub && (ieInNewSub.acceptStatus == RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION || contextOrg.id == surveyConfig.surveyInfo.owner.id)))
+                                                    boolean participantPerpetualAccessToTitle = surveyService.hasParticipantPerpetualAccessToTitle3(newSub.getSubscriber(), tipp)
+                                                    allowedToSelect = !(participantPerpetualAccessToTitle) && (!ieInNewSub || (ieInNewSub && (contextOrg.id == surveyConfig.surveyInfo.owner.id)))
                                                 } else {
-                                                    allowedToSelect = !ieInNewSub || (ieInNewSub && (ieInNewSub.acceptStatus == RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION || contextOrg.id == surveyConfig.surveyInfo.owner.id))
+                                                    allowedToSelect = !ieInNewSub || (ieInNewSub && (contextOrg.id == surveyConfig.surveyInfo.owner.id))
                                                 }
 
                                                 if(!ieInNewSub && allowedToSelect) {
@@ -2689,7 +2538,7 @@ class SubscriptionService {
     def copySpecificSubscriptionEditorOfProvideryAndAgencies(Subscription sourceSub, Subscription targetSub){
 
         sourceSub.getProviders().each { provider ->
-            RefdataValue refdataValue = RefdataValue.getByValueAndCategory('Specific subscription editor', RDConstants.PERSON_RESPONSIBILITY)
+            RefdataValue refdataValue = RDStore.PRS_RESP_SPEC_SUB_EDITOR
 
             Person.getPublicByOrgAndObjectResp(provider, sourceSub, 'Specific subscription editor').each { prs ->
 
@@ -2723,7 +2572,7 @@ class SubscriptionService {
             }
         }
         sourceSub.getAgencies().each { agency ->
-            RefdataValue refdataValue = RefdataValue.getByValueAndCategory('Specific subscription editor', RDConstants.PERSON_RESPONSIBILITY)
+            RefdataValue refdataValue = RDStore.PRS_RESP_SPEC_SUB_EDITOR
 
             Person.getPublicByOrgAndObjectResp(agency, sourceSub, 'Specific subscription editor').each { prs ->
                 if(!(agency in targetSub.orgRelations.org)){

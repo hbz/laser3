@@ -142,8 +142,8 @@ class SubscriptionQuery extends BaseQuery {
                     // Subscriptions with existing tipps -> platform
                     subIdList.each { subId ->
                         List<Long> pltIdList = TitleInstancePackagePlatform.executeQuery(
-                                'select distinct tipp.platform.id from IssueEntitlement ie join ie.tipp tipp where ie.subscription.id = :subId and ie.status = :status and ie.acceptStatus = :acceptStatus',
-                                [subId: subId, status: RDStore.TIPP_STATUS_CURRENT, acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED]
+                                'select distinct tipp.platform.id from IssueEntitlement ie join ie.tipp tipp where ie.subscription.id = :subId and ie.status = :status ',
+                                [subId: subId, status: RDStore.TIPP_STATUS_CURRENT]
                         )
                         if (pltIdList[0] == d[0]) {
                             positiveList.add(subId)

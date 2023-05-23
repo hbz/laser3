@@ -10,7 +10,7 @@ import de.laser.utils.SwissKnife
 import de.laser.remote.FTControl
 import de.laser.auth.Role
 import de.laser.auth.User
-import de.laser.auth.UserOrg
+import de.laser.auth.UserOrgRole
 import de.laser.auth.UserRole
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
@@ -24,14 +24,15 @@ import de.laser.system.SystemMessage
 import de.laser.workflow.WfConditionPrototype
 import de.laser.workflow.WfWorkflowPrototype
 import de.laser.workflow.WfTaskPrototype
+import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import grails.plugins.mail.MailService
 import groovy.sql.Sql
+import org.grails.web.json.JSONElement
 import org.hibernate.SessionFactory
 import org.hibernate.query.NativeQuery
-import org.springframework.web.multipart.commons.CommonsMultipartFile
 import de.laser.config.ConfigMapper
 
 import java.nio.file.Files
@@ -47,7 +48,6 @@ import java.time.LocalDate
 class AdminController  {
 
     CacheService cacheService
-    ChangeNotificationService changeNotificationService
     ContextService contextService
     DataConsistencyService dataConsistencyService
     DataloadService dataloadService
@@ -60,7 +60,7 @@ class AdminController  {
     RefdataService refdataService
     SessionFactory sessionFactory
     StatsSyncService statsSyncService
-    WorkflowService workflowService
+    WorkflowOldService workflowOldService
 
     /**
      * Empty call, loads empty admin dashboard
@@ -430,23 +430,23 @@ class AdminController  {
     @Transactional
     def copyUserRoles(User usrMrg, User usrKeep){
         Set<Role> mergeRoles = usrMrg.getAuthorities()
-        Set<UserOrg> mergeAffil = usrMrg.affiliations
+        Set<UserOrgRole> mergeAffil = usrMrg.affiliations
         Set<Role> currentRoles = usrKeep.getAuthorities()
-        Set<UserOrg> currentAffil = usrKeep.affiliations
+        Set<UserOrgRole> currentAffil = usrKeep.affiliations
 
         mergeRoles.each{ role ->
-            if (!currentRoles.contains(role) && role.authority != "ROLE_YODA") {
+            if (!currentRoles.contains(role) && role.authority != 'ROLE_YODA') {
                 UserRole.create(usrKeep,role)
             }
         }
         mergeAffil.each{affil ->
             if(!currentAffil.contains(affil)){
                 // We should check that the new role does not already exist
-                UserOrg existing_affil_check = UserOrg.findByOrgAndUserAndFormalRole(affil.org,usrKeep,affil.formalRole)
+                UserOrgRole existing_affil_check = UserOrgRole.findByOrgAndUserAndFormalRole(affil.org, usrKeep, affil.formalRole)
 
         if ( existing_affil_check == null ) {
             log.debug("No existing affiliation")
-            UserOrg newAffil = new UserOrg(org:affil.org,user:usrKeep,formalRole:affil.formalRole)
+            UserOrgRole newAffil = new UserOrgRole(org:affil.org, user:usrKeep, formalRole:affil.formalRole)
             if(!newAffil.save(failOnError:true)){
                 log.error("Probem saving user roles")
                 newAffil.errors.each { e ->
@@ -465,11 +465,12 @@ class AdminController  {
      * Gets the current workflows and returns a dashboard-like overview of the outstanding tasks
      */
     @Secured(['ROLE_ADMIN'])
+    @Deprecated
     def manageWorkflows() {
         Map<String, Object> result = [:]
 
         if (params.cmd) {
-            result = workflowService.cmd(params)
+            result = workflowOldService.cmd(params)
         }
         if (params.tab) {
             result.tab = params.tab
@@ -515,6 +516,35 @@ class AdminController  {
         if (params.filter_limit)    { result.put('filter_limit', params.filter_limit) }
 
         result.events = SystemEvent.executeQuery('select se from SystemEvent se where se.created >= :limit order by se.created desc', [limit: limit])
+        result
+    }
+
+    @Secured(['ROLE_ADMIN'])
+    def systemEventsLW() {
+        Map<String, Object> result = [:]
+
+        result.limit = params.long('limit') ?: 30
+        Date limit = DateUtils.localDateToSqlDate( LocalDate.now().minusDays(result.limit as long) )
+
+        result.events = SystemEvent.executeQuery(
+                'select se from SystemEvent se where se.created >= :limit and se.token = :token order by se.created desc',
+                [token: 'LOGIN_WARNING', limit: limit]
+        )
+
+        result.data = []
+        result.events.each { it ->
+            JSONElement je = new JSON().parse(it.payload) as JSONElement
+            result.data << [
+                    id: it.id,
+                    created: it.created,
+                    host: je.headers[0],
+                    url: je.url,
+                    remote: je.remote,
+                    useragent: je.headers[1] ?: '',
+                    x_date: DateUtils.getLocalizedSDF_noTime().format(it.created),
+                    x_time: DateUtils.getSDF_onlyTime().format(it.created)
+            ]
+        }
         result
     }
     
@@ -847,13 +877,6 @@ class AdminController  {
 
     }
 
-    @Deprecated
-    @Secured(['ROLE_ADMIN'])
-    def forceSendNotifications() {
-        changeNotificationService.aggregateAndNotifyChanges()
-        redirect(controller:'home')
-    }
-
     /**
      * Lists all organisations (i.e. institutions, providers, agencies), their customer types, GASCO entry, legal information and API information
      */
@@ -882,6 +905,8 @@ class AdminController  {
             }
             target.lastUpdated = new Date()
             target.save()
+
+            ApiToolkit.removeApiLevel(target)
         }
         else if (params.cmd == 'changeCustomerType') {
             Org target = (Org) genericOIDService.resolveOID(params.target)
@@ -901,6 +926,13 @@ class AdminController  {
             }
             target.lastUpdated = new Date()
             target.save()
+
+            if (target.isCustomerType_Pro()) {
+                ApiToolkit.setApiLevel(target, ApiToolkit.API_LEVEL_READ)
+            }
+            else if (target.isCustomerType_Basic()){
+                ApiToolkit.removeApiLevel(target)
+            }
         }
         else if (params.cmd == 'changeGascoEntry') {
             Org target = (Org) genericOIDService.resolveOID(params.target)
@@ -935,7 +967,7 @@ class AdminController  {
         result.orgListTotal = result.orgList.size()
 
         result.allConsortia = Org.executeQuery(
-                "select o from OrgSetting os join os.org o where os.key = 'CUSTOMER_TYPE' and os.roleValue.authority  = 'ORG_CONSORTIUM' order by o.sortname, o.name"
+                "select o from OrgSetting os join os.org o where os.key = 'CUSTOMER_TYPE' and (os.roleValue.authority  = 'ORG_CONSORTIUM_BASIC' or os.roleValue.authority  = 'ORG_CONSORTIUM_PRO') order by o.sortname, o.name"
         )
         result
     }
@@ -1073,10 +1105,10 @@ SELECT * FROM (
                         if (! pd.isHardData) {
                             try {
                                 pd.delete()
-                                flash.message = message(code:'propertyDefinition.delete.success',[pd.name_de]) as String
+                                flash.message = message(code:'propertyDefinition.delete.success') as String
                             }
                             catch(Exception e) {
-                                flash.error = message(code:'propertyDefinition.delete.failure.default',[pd.name_de]) as String
+                                flash.error = message(code:'propertyDefinition.delete.failure.default') as String
                             }
                         }
                     }
@@ -1149,86 +1181,6 @@ SELECT * FROM (
         }
 
         redirect(action: 'managePropertyDefinitions')
-    }
-
-    @Deprecated
-    @Secured(['ROLE_ADMIN'])
-    def managePropertyGroups() {
-        Map<String, Object> result = [:]
-        result.editable = true // true, because action is protected
-
-        if (params.cmd == 'new') {
-            result.formUrl = g.createLink([controller: 'admin', action: 'managePropertyGroups'])
-            render template: '/templates/properties/propertyGroupModal', model: result
-            return
-        }
-        else if (params.cmd == 'edit') {
-            result.pdGroup = genericOIDService.resolveOID(params.oid)
-            result.formUrl = g.createLink([controller: 'admin', action: 'managePropertyGroups'])
-
-            render template: '/templates/properties/propertyGroupModal', model: result
-            return
-        }
-        else if (params.cmd == 'delete') {
-            def pdg = genericOIDService.resolveOID(params.oid)
-            try {
-                pdg.delete()
-                flash.message = "Die Gruppe ${pdg.name} wurde gelöscht."
-            }
-            catch (e) {
-                flash.error = "Die Gruppe ${params.oid} konnte nicht gelöscht werden."
-            }
-        }
-        else if (params.cmd == 'processing') {
-            def valid
-            def propDefGroup
-            String ownerType = PropertyDefinition.getDescrClass(params.prop_descr)
-
-            if (params.oid) {
-                propDefGroup = genericOIDService.resolveOID(params.oid)
-                propDefGroup.name = params.name ?: propDefGroup.name
-                propDefGroup.description = params.description
-                propDefGroup.ownerType = ownerType
-
-                if (propDefGroup.save()) {
-                    valid = true
-                }
-            }
-            else {
-                if (params.name && ownerType) {
-                    propDefGroup = new PropertyDefinitionGroup(
-                            name: params.name,
-                            description: params.description,
-                            tenant: null,
-                            ownerType: ownerType,
-                            isVisible: true
-                    )
-                    if (propDefGroup.save()) {
-                        valid = true
-                    }
-                }
-            }
-
-            if (valid) {
-                PropertyDefinitionGroupItem.executeUpdate(
-                        "DELETE PropertyDefinitionGroupItem pdgi WHERE pdgi.propDefGroup = :pdg",
-                        [pdg: propDefGroup]
-                )
-
-                params.list('propertyDefinition')?.each { pd ->
-
-                    new PropertyDefinitionGroupItem(
-                            propDef: pd,
-                            propDefGroup: propDefGroup
-                    ).save()
-                }
-            }
-        }
-
-        result.propDefGroups = PropertyDefinitionGroup.findAllWhere(
-                tenant: null
-        )
-        result
     }
 
     /**
@@ -1406,5 +1358,59 @@ SELECT * FROM (
         ]
 
         result
+    }
+
+    /**
+     * Lists the current email templates in the app
+     */
+    @Secured(['ROLE_ADMIN'])
+    def listMailTemplates() {
+        Map<String, Object> result = [:]
+        result.mailTemplates = MailTemplate.getAll()
+        result
+    }
+
+    /**
+     * Creates a new email template with the given parameters
+     * @return the updated list view
+     */
+    @Transactional
+    @Secured(['ROLE_ADMIN'])
+    def createMailTemplate() {
+        MailTemplate mailTemplate = new MailTemplate(params)
+
+        if (mailTemplate.save()) {
+            flash.message = message(code: 'default.created.message', args: [message(code: 'mailTemplate.label'), mailTemplate.name]) as String
+        }
+        else {
+            flash.error = message(code: 'default.save.error.message', args: [message(code: 'mailTemplate.label')]) as String
+        }
+        redirect(action: 'listMailTemplates')
+    }
+
+    /**
+     * Updates the given email template
+     * @return
+     */
+    @Transactional
+    @Secured(['ROLE_ADMIN'])
+    def editMailTemplate() {
+        MailTemplate mailTemplate = (MailTemplate) genericOIDService.resolveOID(params.target)
+
+        if (mailTemplate) {
+            mailTemplate.name = params.name
+            mailTemplate.subject = params.subject
+            mailTemplate.text = params.text
+            mailTemplate.language = params.language ? RefdataValue.get(params.language) : mailTemplate.language
+            mailTemplate.type = params.type ? RefdataValue.get(params.type) : mailTemplate.type
+        }
+
+        if (mailTemplate.save()) {
+            flash.message = message(code: 'default.updated.message', args: [message(code: 'mailTemplate.label'), mailTemplate.name]) as String
+        }
+        else{
+            flash.error = message(code: 'default.not.updated.message', args: [message(code: 'mailTemplate.label'), mailTemplate.name]) as String
+        }
+        redirect(action: 'listMailTemplates')
     }
 }

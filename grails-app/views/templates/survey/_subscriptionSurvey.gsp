@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.DateUtils; java.text.SimpleDateFormat; java.text.DateFormat; de.laser.storage.PropertyStore; de.laser.survey.SurveyConfigProperties; de.laser.SubscriptionPackage; de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig; de.laser.DocContext; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.Subscription; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.Platform; de.laser.SubscriptionPackage; de.laser.Org" %>
+<%@ page import="de.laser.CustomerTypeService; de.laser.utils.DateUtils; java.text.SimpleDateFormat; java.text.DateFormat; de.laser.storage.PropertyStore; de.laser.survey.SurveyConfigProperties; de.laser.SubscriptionPackage; de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig; de.laser.DocContext; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.Subscription; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.Platform; de.laser.SubscriptionPackage; de.laser.Org" %>
 <laser:serviceInjection/>
 <g:set var="surveyOrg"
        value="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution)}"/>
@@ -36,7 +36,7 @@
         <div class="ui card ">
             <div class="content">
 
-                <g:if test="${accessService.checkPerm('ORG_CONSORTIUM') && surveyOrg}">
+                <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_PRO) && surveyOrg}">
                     <dl>
                         <dt class="control-label">
                             ${message(code: 'surveyOrg.ownerComment.label', args: [institution.sortname])}
@@ -127,7 +127,7 @@
                         </g:each>
 
                         <g:if test="${editable}">
-                            <g:render template="/survey/surveyUrlsModal"/>
+                            <laser:render template="/survey/surveyUrlsModal"/>
                         </g:if>
                     </ui:card>
 
@@ -137,14 +137,14 @@
                         <g:form action="setSurveyConfigComment" controller="survey" method="post"
                                 params="[surveyConfigID: surveyConfig.id, id: surveyInfo.id]">
                             <div class="ui top attached tabular menu">
-                                <a class="item active" data-tab="comment">
+                                <a class="item ${commentTab != 'commentForNewParticipants' ? 'active' : ''}" data-tab="comment">
                                     <div class="ui icon la-popup-tooltip la-delay"
                                          data-content="${message(code: "surveyconfig.comment.comment")}">
                                         ${message(code: 'surveyconfig.comment.label')}
                                         <i class="question small circular inverted icon"></i>
                                     </div>
                                 </a>
-                                <a class="item" data-tab="commentForNewParticipants">
+                                <a class="item ${commentTab == 'commentForNewParticipants' ? 'active' : ''}" data-tab="commentForNewParticipants">
                                     <div class="ui icon la-popup-tooltip la-delay"
                                          data-content="${message(code: "surveyconfig.commentForNewParticipants.comment")}">
                                         ${message(code: 'surveyconfig.commentForNewParticipants.label')}
@@ -153,7 +153,7 @@
                                 </a>
                             </div>
 
-                            <div class="ui bottom attached tab segment active" data-tab="comment">
+                            <div class="ui bottom attached tab segment ${commentTab != 'commentForNewParticipants' ? 'active' : ''}" data-tab="comment">
                                 <g:if test="${surveyConfig.dateCreated > DateUtils.getSDF_yyyyMMdd().parse('2023-01-12')}">
                                     <div id="commentDiv">
                                         <div id="comment">${raw(surveyConfig.comment)}</div>
@@ -175,11 +175,11 @@
 
                                 <div class="left aligned">
                                     <button type="submit"
-                                            class="ui button">${message(code: 'default.button.save_changes')}</button>
+                                            class="ui button" value="comment" name="commentTab">${message(code: 'default.button.save_changes')}</button>
                                 </div>
                             </div>
 
-                            <div class="ui bottom attached tab segment" data-tab="commentForNewParticipants">
+                            <div class="ui bottom attached tab segment ${commentTab == 'commentForNewParticipants' ? 'active' : ''}" data-tab="commentForNewParticipants">
                                 <g:if test="${surveyConfig.dateCreated > DateUtils.getSDF_yyyyMMdd().parse('2023-01-12')}">
                                     <div id="commentForNewParticipantsDiv">
                                         <div id="commentForNewParticipants">${raw(surveyConfig.commentForNewParticipants)}</div>
@@ -201,7 +201,7 @@
 
                                 <div class="left aligned">
                                     <button type="submit"
-                                            class="ui button">${message(code: 'default.button.save_changes')}</button>
+                                            class="ui button" value="commentForNewParticipants" name="commentTab">${message(code: 'default.button.save_changes')}</button>
                                 </div>
 
                             </div>
@@ -638,21 +638,18 @@
         <div class="ui one cards">
 
             <div id="container-documents">
-                <g:render template="/survey/surveyLinkCard"/>
+                <laser:render template="/survey/surveyLinkCard"/>
             </div>
 
             <g:if test="${controllerName == 'survey' && actionName == 'show'}">
+                <div id="container-notes">
+                    <laser:render template="/templates/notes/card"
+                                  model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '', editable: accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_PRO, 'INST_EDITOR')]}"/>
+                </div>
                 <div id="container-tasks">
                     <laser:render template="/templates/tasks/card"
                               model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '']}"/>
-
                 </div>
-
-                <div id="container-notes">
-                    <laser:render template="/templates/notes/card"
-                              model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '', editable: accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')]}"/>
-                </div>
-
             </g:if>
 
             <div id="container-documents">
@@ -978,12 +975,12 @@
             <div class="content">
                 <g:if test="${costItemSums.ownCosts}">
                     <g:if test="${(contextOrg.id != subscription.getConsortia()?.id && subscription.instanceOf) || !subscription.instanceOf}">
-                        <h2 class="ui header">${message(code: 'financials.label')} : ${message(code: 'financials.tab.ownCosts')}</h2>
+                        <h2 class="ui header">${message(code: 'financials.label')} : ${message(code: 'financials.tab.ownCosts')} </h2>
                         <laser:render template="/subscription/financials" model="[data: costItemSums.ownCosts]"/>
                     </g:if>
                 </g:if>
                 <g:if test="${costItemSums.consCosts}">
-                    <h2 class="ui header">${message(code: 'financials.label')} : ${message(code: 'financials.tab.consCosts')}</h2>
+                    <h2 class="ui header">${message(code: 'financials.label')} : ${message(code: 'financials.tab.consCosts')} ${message(code: 'surveyCostItem.info')}</h2>
                     <laser:render template="/subscription/financials" model="[data: costItemSums.consCosts]"/>
                 </g:if>
             </div>
@@ -991,298 +988,7 @@
     </g:if>
 </g:if>
 
-<g:if test="${controllerName == 'survey' && actionName == 'show'}">
-    <g:set var="surveyProperties" value="${surveyConfig.getSortedSurveyConfigProperties()}"/>
-
-    <ui:greySegment>
-
-        <h4 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'surveyProperty.selected.label')} <ui:totalNumber
-                total="${surveyProperties.size()}"/></h4>
-
-        <table class="ui celled sortable table la-js-responsive-table la-table">
-            <thead>
-            <tr>
-                <th class="center aligned">${message(code: 'sidewide.number')}</th>
-                <th>${message(code: 'surveyProperty.name')}</th>
-                <th>${message(code: 'surveyProperty.expl.label')}</th>
-                <th>${message(code: 'default.type.label')}</th>
-                <th>${message(code: 'surveyProperty.mandatoryProperty')}</th>
-                <g:if test="${editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING && surveyProperties}">
-                    <th>${message(code: 'default.actions.label')}</th>
-                </g:if>
-            </tr>
-            </thead>
-
-            <tbody>
-            <g:each in="${surveyProperties}" var="surveyPropertyConfig" status="i">
-                <tr>
-                    <td class="center aligned">
-                        ${i + 1}
-                    </td>
-                    <td>
-                        ${surveyPropertyConfig.surveyProperty.getI10n('name')}
-
-                        <g:if test="${surveyPropertyConfig.surveyProperty.tenant?.id == contextService.getOrg().id}">
-                            <i class='shield alternate icon'></i>
-                        </g:if>
-
-                        <g:if test="${surveyPropertyConfig.surveyProperty.getI10n('expl')}">
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                  data-content="${surveyPropertyConfig.surveyProperty.getI10n('expl')}">
-                                <i class="question circle icon"></i>
-                            </span>
-                        </g:if>
-
-                    </td>
-
-                    <td>
-                        <g:if test="${surveyPropertyConfig.surveyProperty.getI10n('expl')}">
-                            ${surveyPropertyConfig.surveyProperty.getI10n('expl')}
-                        </g:if>
-                    </td>
-                    <td>
-                        ${PropertyDefinition.getLocalizedValue(surveyPropertyConfig.surveyProperty.type)}
-                        <g:if test="${surveyPropertyConfig.surveyProperty.isRefdataValueType()}">
-                            <g:set var="refdataValues" value="${[]}"/>
-                            <g:each in="${RefdataCategory.getAllRefdataValues(surveyPropertyConfig.surveyProperty.refdataCategory)}"
-                                    var="refdataValue">
-                                <g:set var="refdataValues"
-                                       value="${refdataValues + refdataValue?.getI10n('value')}"/>
-                            </g:each>
-                            <br/>
-                            (${refdataValues.join('/')})
-                        </g:if>
-                    </td>
-
-                    <td>
-                        <g:set var="surveyPropertyMandatoryEditable"
-                               value="${(editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING &&
-                                       (surveyInfo.type != RDStore.SURVEY_TYPE_RENEWAL || (surveyInfo.type == RDStore.SURVEY_TYPE_RENEWAL && surveyPropertyConfig.surveyProperty != PropertyStore.SURVEY_PROPERTY_PARTICIPATION)))}"/>
-                        <g:form action="setSurveyPropertyMandatory" method="post" class="ui form"
-                                params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, surveyConfigProperties: surveyPropertyConfig.id]">
-
-                            <div class="ui checkbox">
-                                <input type="checkbox"
-                                       onchange="${surveyPropertyMandatoryEditable ? 'this.form.submit()' : ''}" ${!surveyPropertyMandatoryEditable ? 'readonly="readonly" disabled="true"' : ''}
-                                       name="mandatoryProperty" ${surveyPropertyConfig.mandatoryProperty ? 'checked' : ''}>
-                            </div>
-                        </g:form>
-                    </td>
-                    <g:if test="${editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING &&
-                            SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyConfig, surveyPropertyConfig.surveyProperty)
-                            && ((PropertyStore.SURVEY_PROPERTY_PARTICIPATION.id != surveyPropertyConfig.surveyProperty.id) || surveyInfo.type != RDStore.SURVEY_TYPE_RENEWAL)}">
-                        <td>
-                            <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
-                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.surveyElements", args: [surveyPropertyConfig.surveyProperty.getI10n('name')])}"
-                                    data-confirm-term-how="delete"
-                                    controller="survey" action="deleteSurveyPropFromConfig"
-                                    id="${surveyPropertyConfig.id}"
-                                    role="button"
-                                    aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                <i class="trash alternate outline icon"></i>
-                            </g:link>
-                        </td>
-                    </g:if>
-                </tr>
-            </g:each>
-            </tbody>
-            <tfoot>
-            <tr>
-                <g:if test="${editable && properties && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING}">
-                    <td colspan="6">
-                        <g:form action="addSurveyPropToConfig" controller="survey" method="post" class="ui form">
-                            <g:hiddenField name="id" value="${surveyInfo.id}"/>
-                            <g:hiddenField name="surveyConfigID" value="${surveyConfig.id}"/>
-
-                            <div class="field required">
-                                <label>${message(code: 'surveyConfigs.property')} <g:message
-                                        code="messageRequiredField"/></label>
-                                <ui:dropdown name="selectedProperty"
-
-                                                class="la-filterPropDef"
-                                                from="${properties}"
-                                                iconWhich="shield alternate"
-                                                optionKey="${{ "${it.id}" }}"
-                                                optionValue="${{ it.getI10n('name') }}"
-                                                noSelection="${message(code: 'default.search_for.label', args: [message(code: 'surveyProperty.label')])}"
-                                                required=""/>
-
-                            </div>
-                            <input type="submit" class="ui button"
-                                   value="${message(code: 'surveyConfigsInfo.add.button')}"/>
-
-                        </g:form>
-                    </td>
-                </g:if>
-            </tr>
-            </tfoot>
-
-        </table>
-
-    </ui:greySegment>
-</g:if>
-
-<g:if test="${surveyResults}">
-
-    <ui:greySegment>
-        <h3 class="ui header"><g:message code="surveyConfigsInfo.properties"/>
-        <ui:totalNumber total="${surveyResults.size()}"/>
-        </h3>
-
-        <table class="ui celled sortable table la-js-responsive-table la-table">
-            <thead>
-            <tr>
-                <th class="center aligned">${message(code: 'sidewide.number')}</th>
-                <th>${message(code: 'surveyProperty.label')}</th>
-                <th>${message(code: 'default.type.label')}</th>
-                <th>${message(code: 'surveyResult.result')}</th>
-                <th>
-                    <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_USER')}">
-                        ${message(code: 'surveyResult.participantComment')}
-                    </g:if>
-                    <g:else>
-                        ${message(code: 'surveyResult.commentParticipant')}
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                              data-content="${message(code: 'surveyResult.commentParticipant.info')}">
-                            <i class="question circle icon"></i>
-                        </span>
-                    </g:else>
-                </th>
-                <th>
-                    <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_USER')}">
-                        ${message(code: 'surveyResult.commentOnlyForOwner')}
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                              data-content="${message(code: 'surveyResult.commentOnlyForOwner.info')}">
-                            <i class="question circle icon"></i>
-                        </span>
-                    </g:if>
-                    <g:else>
-                        ${message(code: 'surveyResult.commentOnlyForParticipant')}
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                              data-content="${message(code: 'surveyResult.commentOnlyForParticipant.info')}">
-                            <i class="question circle icon"></i>
-                        </span>
-                    </g:else>
-                </th>
-            </tr>
-            </thead>
-            <g:each in="${surveyResults}" var="surveyResult" status="i">
-
-                <tr>
-                    <td class="center aligned">
-                        ${i + 1}
-                    </td>
-                    <td>
-                        ${surveyResult.type.getI10n('name')}
-
-                        <g:if test="${surveyResult.type.getI10n('expl')}">
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                                  data-content="${surveyResult.type.getI10n('expl')}">
-                                <i class="question circle icon"></i>
-                            </span>
-                        </g:if>
-
-                        <g:set var="surveyConfigProperties"
-                               value="${SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(surveyResult.surveyConfig, surveyResult.type)}"/>
-                        <g:if test="${surveyConfigProperties && surveyConfigProperties.mandatoryProperty}">
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                                  data-content="${message(code: 'default.mandatory.tooltip')}">
-                                <i class="info circle icon"></i>
-                            </span>
-                        </g:if>
-
-                    </td>
-                    <td>
-                        ${PropertyDefinition.getLocalizedValue(surveyResult.type.type)}
-                        <g:if test="${surveyResult.type.isRefdataValueType()}">
-                            <g:set var="refdataValues" value="${[]}"/>
-                            <g:each in="${RefdataCategory.getAllRefdataValues(surveyResult.type.refdataCategory)}"
-                                    var="refdataValue">
-                                <g:if test="${refdataValue.getI10n('value')}">
-                                    <g:set var="refdataValues"
-                                           value="${refdataValues + refdataValue.getI10n('value')}"/>
-                                </g:if>
-                            </g:each>
-                            <br/>
-                            (${refdataValues.join('/')})
-                        </g:if>
-                    </td>
-                    <g:set var="surveyOrg"
-                           value="${SurveyOrg.findBySurveyConfigAndOrg(surveyResult.surveyConfig, institution)}"/>
-
-                    <g:if test="${surveyResult.surveyConfig.subSurveyUseForTransfer && surveyOrg && surveyOrg.existsMultiYearTerm()}">
-                        <td>
-                            <g:message code="surveyOrg.perennialTerm.available"/>
-                        </td>
-                        <td>
-
-                        </td>
-                        <td>
-
-                        </td>
-                    </g:if>
-                    <g:else>
-                        <td>
-                            <g:if test="${surveyResult.type.isIntegerType()}">
-                                <ui:xEditable owner="${surveyResult}" type="text" field="intValue"/>
-                            </g:if>
-                            <g:elseif test="${surveyResult.type.isStringType()}">
-                                <ui:xEditable owner="${surveyResult}" type="text" field="stringValue"/>
-                            </g:elseif>
-                            <g:elseif test="${surveyResult.type.isBigDecimalType()}">
-                                <ui:xEditable owner="${surveyResult}" type="text" field="decValue"/>
-                            </g:elseif>
-                            <g:elseif test="${surveyResult.type.isDateType()}">
-                                <ui:xEditable owner="${surveyResult}" type="date" field="dateValue"/>
-                            </g:elseif>
-                            <g:elseif test="${surveyResult.type.isURLType()}">
-                                <ui:xEditable owner="${surveyResult}" type="url" field="urlValue"
-                                                 overwriteEditable="${overwriteEditable}"
-                                                 class="la-overflow la-ellipsis"/>
-                                <g:if test="${surveyResult.urlValue}">
-                                    <ui:linkWithIcon href="${surveyResult.urlValue}"/>
-                                </g:if>
-                            </g:elseif>
-                            <g:elseif test="${surveyResult.type.isRefdataValueType()}">
-
-                                <g:if test="${surveyResult.surveyConfig.subSurveyUseForTransfer && surveyResult.type == PropertyStore.SURVEY_PROPERTY_PARTICIPATION && surveyResult.owner?.id != contextService.getOrg().id}">
-                                    <ui:xEditableRefData
-                                            data_confirm_tokenMsg="${surveyOrg.orgInsertedItself ? message(code: 'survey.participationProperty.confirmation2') : message(code: 'survey.participationProperty.confirmation')}"
-                                            data_confirm_term_how="ok"
-                                            class="js-open-confirm-modal-xEditableRefData"
-                                            data_confirm_value="${RefdataValue.class.name}:${RDStore.YN_NO.id}"
-                                            owner="${surveyResult}"
-                                            field="refValue" type="text"
-                                            id="participation"
-                                            config="${surveyResult.type.refdataCategory}"/>
-                                </g:if>
-                                <g:else>
-                                    <ui:xEditableRefData owner="${surveyResult}" type="text" field="refValue"
-                                                            config="${surveyResult.type.refdataCategory}"/>
-                                </g:else>
-                            </g:elseif>
-                        </td>
-                        <td>
-                            <ui:xEditable owner="${surveyResult}" type="textarea" field="comment"/>
-                        </td>
-                        <td>
-                            <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_USER')}">
-                                <ui:xEditable owner="${surveyResult}" type="textarea" field="ownerComment"/>
-                            </g:if>
-                            <g:else>
-                                <ui:xEditable owner="${surveyResult}" type="textarea" field="participantComment"/>
-                            </g:else>
-                        </td>
-                    </g:else>
-
-                </tr>
-            </g:each>
-        </table>
-    </ui:greySegment>
-    <br/>
-</g:if>
-
-
+<laser:render template="/templates/survey/properties" model="${[surveyConfig: surveyConfig]}"/>
 
 <laser:script file="${this.getGroovyPageFileName()}">
 

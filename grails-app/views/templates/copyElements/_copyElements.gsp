@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Subscription; de.laser.License; de.laser.PersonRole; de.laser.Person; de.laser.SubscriptionController; de.laser.storage.RDStore; de.laser.AuditConfig; de.laser.RefdataValue; de.laser.FormService;" %>
+<%@ page import="de.laser.CustomerTypeService; de.laser.Subscription; de.laser.License; de.laser.PersonRole; de.laser.Person; de.laser.SubscriptionController; de.laser.storage.RDStore; de.laser.AuditConfig; de.laser.RefdataValue; de.laser.FormService;" %>
 <laser:serviceInjection/>
 
 <g:set var="copyElementsService" bean="copyElementsService"/>
@@ -133,7 +133,7 @@
                 </tr>
             </g:each>
 
-            <g:if test="${copyObject && accessService.checkPerm("ORG_CONSORTIUM") && sourceObject.hasProperty("instanceOf") && sourceObject instanceof Subscription}">
+            <g:if test="${copyObject && accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && sourceObject.hasProperty("instanceOf") && sourceObject instanceof Subscription}">
                 <tr>
                     <td>
                         <div>
@@ -161,7 +161,7 @@
                 </tr>
             </g:if>
 
-            <g:if test="${copyObject && accessService.checkPerm("ORG_CONSORTIUM") && sourceObject.hasProperty("instanceOf") && sourceObject instanceof License}">
+            <g:if test="${copyObject && accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && sourceObject.hasProperty("instanceOf") && sourceObject instanceof License}">
                 <tr>
                     <td>
                         <div>

@@ -4,7 +4,6 @@ import de.laser.*
 import de.laser.auth.User
 import de.laser.utils.SwissKnife
 import de.laser.interfaces.CalculatedType
-import de.laser.workflow.WfWorkflow
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 
@@ -25,26 +24,13 @@ class LicenseControllerService {
     TaskService taskService
     WorkflowService workflowService
 
+
     //--------------------------------------------- workflows -------------------------------------------------
 
     Map<String,Object> workflows(LicenseController controller, GrailsParameterMap params) {
         Map<String, Object> result = getResultGenericsAndCheckAccess(controller, params, AccessService.CHECK_VIEW)
 
-        if (params.cmd) {
-            String[] cmd = params.cmd.split(':')
-            if (cmd[0] in ['edit']) {
-                result.putAll( workflowService.cmd(params) ) // @ workflows
-            }
-            else {
-                result.putAll( workflowService.usage(params) ) // @ workflows
-            }
-        }
-        if (params.info) {
-            result.info = params.info // @ currentWorkflows @ dashboard
-        }
-
-        result.workflows = workflowService.sortByLastUpdated( WfWorkflow.findAllByLicenseAndOwner(result.license as License, result.contextOrg as Org) )
-        result.workflowCount = result.workflows.size()
+        workflowService.executeCmdAndUpdateResult(result, params)
 
         [result: result, status: (result ? STATUS_OK : STATUS_ERROR)]
     }
@@ -103,12 +89,8 @@ class LicenseControllerService {
         int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.license).size()
         result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
 
-        result.notesCount = docstoreService.getNotes(result.license, result.contextOrg).size()
-
-        result.workflowCount = WfWorkflow.executeQuery(
-                'select count(wf) from WfWorkflow wf where wf.license = :lic and wf.owner = :ctxOrg',
-                [lic: result.license, ctxOrg: result.contextOrg]
-        )[0]
+        result.notesCount       = docstoreService.getNotes(result.license, result.contextOrg).size()
+        result.checklistCount   = workflowService.getWorkflowCount(result.license, result.contextOrg)
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 

@@ -350,7 +350,7 @@
         </g:if>
         <article>
             <header>
-                <h2><g:message code="license.licensor.label"/></h2>
+                <h2><g:message code="default.ProviderAgency.singular"/></h2>
                 <table>
                     <g:each in="${visibleOrgRelations}" var="role">
                         <g:if test="${role.org}">
@@ -371,10 +371,10 @@
                                                 <i>${message(code:'address.public')}</i>
                                             </td>
                                             <td>
-                                                ${RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION).getI10n('value')}
+                                                ${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')}
                                             </td>
                                             <td>
-                                                <g:link controller="organisation" action="${institution.getCustomerType() in ['ORG_INST', 'ORG_CONSORTIUM'] ? 'addressbook' : 'show'}" params="[id: role.org.id]" absolute="true">${func}</g:link>
+                                                <g:link controller="organisation" action="${(institution.isCustomerType_Consortium() || institution.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.org.id]" absolute="true">${func}</g:link>
                                             </td>
                                             <td>
                                                 <ul>
@@ -391,10 +391,10 @@
                                                 <i>${message(code:'address.public')}</i>
                                             </td>
                                             <td>
-                                                ${RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION).getI10n('value')}
+                                                ${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')}
                                             </td>
                                             <td>
-                                                <g:link controller="organisation" action="${institution.getCustomerType() in ['ORG_INST', 'ORG_CONSORTIUM'] ? 'addressbook' : 'show'}" params="[id: role.org.id]" absolute="true">${resp}</g:link>
+                                                <g:link controller="organisation" action="${(institution.isCustomerType_Consortium() || institution.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.org.id]" absolute="true">${resp}</g:link>
                                             </td>
                                             <td>
                                                 <ul>
@@ -415,10 +415,10 @@
                                                 <i>${message(code:'address.private')}</i>
                                             </td>
                                             <td>
-                                                ${RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION).getI10n('value')}
+                                                ${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')}
                                             </td>
                                             <td>
-                                                <g:link controller="organisation" action="${institution.getCustomerType() in ['ORG_INST', 'ORG_CONSORTIUM'] ? 'addressbook' : 'show'}" params="[id: role.org.id]" absolute="true">${func}</g:link>
+                                                <g:link controller="organisation" action="${(institution.isCustomerType_Consortium() || institution.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.org.id]" absolute="true">${func}</g:link>
                                             </td>
                                             <td>
                                                 <ul>
@@ -438,7 +438,7 @@
                                                 ${RefdataValue.getByValue('Specific license editor').getI10n('value')}
                                             </td>
                                             <td>
-                                                <g:link controller="organisation" action="${institution.getCustomerType() in ['ORG_INST', 'ORG_CONSORTIUM'] ? 'addressbook' : 'show'}" params="[id: role.org.id]" absolute="true">${resp}</g:link>
+                                                <g:link controller="organisation" action="${(institution.isCustomerType_Consortium() || institution.isCustomerType_Inst_Pro()) ? 'addressbook' : 'show'}" params="[id: role.org.id]" absolute="true">${resp}</g:link>
                                             </td>
                                             <td>
                                                 <ul>

@@ -4,12 +4,9 @@ import de.laser.helper.FactoryResult
 import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.storage.BeanStore
 import de.laser.titles.TitleInstance
-import de.laser.utils.LocaleUtils
-import grails.converters.JSON
 import grails.plugins.orm.auditable.Auditable
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.util.logging.Slf4j
-import org.grails.web.json.JSONElement
 
 /**
  * A class to retain identifiers for objects. Identifiers may be for example ISBNs for books ISSNs for journals, ISILs for packages, VIAF or other normed tokens for organisations.
@@ -304,17 +301,23 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
      * @return the value as an URL, prefixed by {@link IdentifierNamespace#urlPrefix}
      */
     String getURL() {
-        if (ns.urlPrefix && value && value != IdentifierNamespace.UNKNOWN) {
-            if (ns.urlPrefix.endsWith('=')) {
-                return "${ns.urlPrefix}${value}"
+        if(value && value != IdentifierNamespace.UNKNOWN) {
+            if (ns.urlPrefix) {
+                if (ns.urlPrefix.endsWith('=')) {
+                    return "${ns.urlPrefix}${value}"
+                }
+                else if (ns.urlPrefix.endsWith('/')) {
+                    return "${ns.urlPrefix}${value}"
+                }
+                else {
+                    return "${ns.urlPrefix}/${value}"
+                }
             }
-            else if (ns.urlPrefix.endsWith('/')) {
-                return "${ns.urlPrefix}${value}"
-            }
-            else {
-                return "${ns.urlPrefix}/${value}"
+            else if(value.startsWith('http')) {
+                return value
             }
         }
+
         null
     }
 
@@ -387,138 +390,6 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
         }
         BeanStore.getAuditService().beforeUpdateHandler(this, changes.oldMap, changes.newMap)
     }
-
-    /**
-     * Triggered by generic method; triggers itself update of all inheriting objects
-     * @param changeDocument the map of changes to be passed onto inheriting identifiers; processed by {@link PendingChange} object
-     */
-    void notifyDependencies(Map changeDocument) {
-        log.debug("notifyDependencies(${changeDocument})")
-        if (changeDocument.event.equalsIgnoreCase('Identifier.updated')) {
-
-            Locale locale = LocaleUtils.getCurrentLocale()
-            String description = BeanStore.getMessageSource().getMessage('default.accept.placeholder',null, locale)
-
-            List<PendingChange> slavedPendingChanges = []
-
-            List<Identifier> depedingProps = Identifier.findAllByInstanceOf( this )
-            depedingProps.each{ Identifier childId ->
-
-                String definedType = 'text'
-
-                // overwrite specials ..
-                if (changeDocument.prop == 'note') {
-                    definedType = 'text'
-                    description = '(NOTE)'
-                }
-
-                List<String> msgParams = [
-                        definedType,
-                        "${childId.ns.class.name}:${childId.ns.id}",
-                        (changeDocument.prop in ['note'] ? "${changeDocument.oldLabel}" : "${changeDocument.old}"),
-                        (changeDocument.prop in ['note'] ? "${changeDocument.newLabel}" : "${changeDocument.new}"),
-                        "${description}"
-                ]
-
-                if(childId.sub) {
-                    PendingChange newPendingChange = BeanStore.getChangeNotificationService().registerPendingChange(
-                            PendingChange.PROP_SUBSCRIPTION,
-                            childId.sub,
-                            childId.sub.getSubscriber(),
-                            [
-                                    changeTarget:"${Subscription.class.name}:${childId.sub.id}",
-                                    changeType: PendingChangeService.EVENT_PROPERTY_CHANGE,
-                                    changeDoc:changeDocument
-                            ],
-                            PendingChange.MSG_SU02,
-                            msgParams,
-                            "Der Identifikator <strong>${childId.ns.getI10n("name")}</strong> hat sich von <strong>\"${changeDocument.oldLabel?:changeDocument.old}\"</strong> zu <strong>\"${changeDocument.newLabel?:changeDocument.new}\"</strong> von der Lizenzvorlage geändert. " + description
-                    )
-                    if (newPendingChange && childId.sub.isSlaved) {
-                        slavedPendingChanges << newPendingChange
-                    }
-                }
-                else if(childId.lic) {
-                    PendingChange newPendingChange = BeanStore.getChangeNotificationService().registerPendingChange(
-                            PendingChange.PROP_LICENSE,
-                            childId.lic,
-                            childId.lic.getLicensee(),
-                            [
-                                    changeTarget:"${License.class.name}:${childId.lic.id}",
-                                    changeType: PendingChangeService.EVENT_PROPERTY_CHANGE,
-                                    changeDoc:changeDocument
-                            ],
-                            PendingChange.MSG_LI02,
-                            msgParams,
-                            "Der Identifikator <strong>${childId.ns.getI10n("name")}</strong> hat sich von <strong>\"${changeDocument.oldLabel?:changeDocument.old}\"</strong> zu <strong>\"${changeDocument.newLabel?:changeDocument.new}\"</strong> von der Lizenzvorlage geändert. " + description
-                    )
-                    if (newPendingChange && childId.lic.isSlaved) {
-                        slavedPendingChanges << newPendingChange
-                    }
-                }
-            }
-
-            slavedPendingChanges.each { spc ->
-                log.debug('autoAccept! performing: ' + spc)
-                BeanStore.getPendingChangeService().performAccept(spc)
-            }
-        }
-        else if (changeDocument.event.equalsIgnoreCase('Identifier.deleted')) {
-            GenericOIDService genericOIDService = BeanStore.getGenericOIDService()
-
-            List<PendingChange> openPD = PendingChange.executeQuery("select pc from PendingChange as pc where pc.status is null and pc.payload is not null and pc.oid = :objectID",
-                    [objectID: "${this.class.name}:${this.id}"] )
-            openPD.each { pc ->
-                if (pc.payload) {
-                    JSONElement payload = JSON.parse(pc.payload)
-                    if (payload.changeDoc) {
-                        def scp = genericOIDService.resolveOID(payload.changeDoc.OID)
-                        if (scp?.id == id) {
-                            pc.delete()
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    @Deprecated
-  static Identifier lookupOrCreateCanonicalIdentifier(ns, value) {
-        log.log("loc canonical identifier")
-
-      value = value?.trim()
-      ns = ns?.trim()
-      // println ("lookupOrCreateCanonicalIdentifier(${ns},${value})");
-      IdentifierNamespace namespace
-      Identifier result
-      if(IdentifierNamespace.findByNsIlike(ns)) {
-          namespace = IdentifierNamespace.findByNsIlike(ns)
-          if(Identifier.findByNsAndValue(namespace,value)) {
-              Identifier.findByNsAndValue(namespace,value)
-          }
-          else {
-              result = new Identifier(ns:namespace, value:value)
-              if(result.save())
-                  result
-          }
-      }
-      else {
-          namespace = new IdentifierNamespace(ns:ns, isUnique: false, isHidden: false)
-          if(namespace.save()) {
-              result = new Identifier(ns:namespace, value:value)
-              if(result.save())
-                  result
-              else {
-                  log.log("error saving identifier")
-                  log.log(result.errors.toString())
-              }
-          }
-          else {
-              log.log("error saving namespace")
-              log.log(namespace.errors.toString())
-          }
-      }
-  }
 
     /**
      * Retrieves a list of identifiers for a dropdown menu

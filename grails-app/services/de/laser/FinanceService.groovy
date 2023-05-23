@@ -415,7 +415,7 @@ class FinanceService {
             RefdataValue taxType = (RefdataValue) genericOIDService.resolveOID(newTaxRate[0])
             int taxRate = Integer.parseInt(newTaxRate[1])
             switch(taxType.id) {
-                case RefdataValue.getByValueAndCategory("taxable", RDConstants.TAX_TYPE).id:
+                case RDStore.TAX_TYPE_TAXABLE.id:
                     switch(taxRate) {
                         case 5: tax_key = CostItem.TAX_TYPES.TAXABLE_5
                             break
@@ -427,22 +427,22 @@ class FinanceService {
                             break
                     }
                     break
-                case RefdataValue.getByValueAndCategory("taxable tax-exempt",RDConstants.TAX_TYPE).id:
+                case RDStore.TAX_TYPE_TAXABLE_EXEMPT.id:
                     tax_key = CostItem.TAX_TYPES.TAX_EXEMPT
                     break
-                case RefdataValue.getByValueAndCategory("not taxable",RDConstants.TAX_TYPE).id:
+                case RDStore.TAX_TYPE_NOT_TAXABLE.id:
                     tax_key = CostItem.TAX_TYPES.TAX_NOT_TAXABLE
                     break
-                case RefdataValue.getByValueAndCategory("not applicable",RDConstants.TAX_TYPE).id:
+                case RDStore.TAX_TYPE_NOT_APPLICABLE.id:
                     tax_key = CostItem.TAX_TYPES.TAX_NOT_APPLICABLE
                     break
-                case RefdataValue.getByValueAndCategory("reverse charge",RDConstants.TAX_TYPE).id:
+                case RDStore.TAX_TYPE_REVERSE_CHARGE.id:
                     tax_key = CostItem.TAX_TYPES.TAX_REVERSE_CHARGE
                     break
-                case RefdataValue.getByValueAndCategory("tax contained 7",RDConstants.TAX_TYPE).id:
+                case RDStore.TAX_TYPE_TAX_CONTAINED_7.id:
                     tax_key = CostItem.TAX_TYPES.TAX_CONTAINED_7
                     break
-                case RefdataValue.getByValueAndCategory("tax contained 19",RDConstants.TAX_TYPE).id:
+                case RDStore.TAX_TYPE_TAX_CONTAINED_19.id:
                     tax_key = CostItem.TAX_TYPES.TAX_CONTAINED_19
                     break
             }
@@ -680,7 +680,7 @@ class FinanceService {
                 case "own":
                     //exclude double listing of cost items belonging to member subscriptions
                     String instanceFilter = ""
-                    if(org.hasPerm("ORG_CONSORTIUM")) {
+                    if (org.isCustomerType_Consortium()) {
                         instanceFilter = " and sub.instanceOf = null "
                     }
                     String subJoin = filterQuery.subFilter || instanceFilter ? "join ci.sub sub " : ""
@@ -1204,9 +1204,9 @@ class FinanceService {
                 if(subIdentifier) {
                     //fetch possible identifier namespaces
                     List<Subscription> subMatches
-                    if(accessService.checkPerm("ORG_CONSORTIUM"))
+                    if(accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC))
                         subMatches = Subscription.executeQuery("select oo.sub from OrgRole oo where (cast(oo.sub.id as string) = :idCandidate or oo.sub.globalUID = :idCandidate) and oo.org = :org and oo.roleType in :roleType",[idCandidate:subIdentifier,org:costItem.owner,roleType:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER]])
-                    else if(accessService.checkPerm("ORG_INST"))
+                    else if(accessService.ctxPerm(CustomerTypeService.ORG_INST_PRO))
                         subMatches = Subscription.executeQuery("select oo.sub from OrgRole oo where (cast(oo.sub.id as string) = :idCandidate or oo.sub.globalUID = :idCandidate) and oo.org = :org and oo.roleType in :roleType",[idCandidate:subIdentifier,org:costItem.owner,roleType:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER]])
                     if(!subMatches)
                         mappingErrorBag.noValidSubscription = subIdentifier
@@ -1463,15 +1463,15 @@ class FinanceService {
                             taxType = RefdataValue.getByCategoryDescAndI10nValueDe(RDConstants.TAX_TYPE, taxTypeKey)
                         //reverse charge must not be displayed here according to Micha, December 3rd, '20!
                         switch(taxType) {
-                            case RefdataValue.getByValueAndCategory('not taxable', RDConstants.TAX_TYPE): taxKey = CostItem.TAX_TYPES.TAX_NOT_TAXABLE
+                            case RDStore.TAX_TYPE_NOT_TAXABLE: taxKey = CostItem.TAX_TYPES.TAX_NOT_TAXABLE
                                 break
-                            case RefdataValue.getByValueAndCategory('not applicable', RDConstants.TAX_TYPE): taxKey = CostItem.TAX_TYPES.TAX_NOT_APPLICABLE
+                            case RDStore.TAX_TYPE_NOT_APPLICABLE: taxKey = CostItem.TAX_TYPES.TAX_NOT_APPLICABLE
                                 break
-                            case RefdataValue.getByValueAndCategory('taxable tax-exempt', RDConstants.TAX_TYPE): taxKey = CostItem.TAX_TYPES.TAX_EXEMPT
+                            case RDStore.TAX_TYPE_TAXABLE_EXEMPT: taxKey = CostItem.TAX_TYPES.TAX_EXEMPT
                                 break
-                            case RefdataValue.getByValueAndCategory('tax contained 19', RDConstants.TAX_TYPE): taxKey = CostItem.TAX_TYPES.TAX_CONTAINED_19
+                            case RDStore.TAX_TYPE_TAX_CONTAINED_19: taxKey = CostItem.TAX_TYPES.TAX_CONTAINED_19
                                 break
-                            case RefdataValue.getByValueAndCategory('tax contained 7', RDConstants.TAX_TYPE): taxKey = CostItem.TAX_TYPES.TAX_CONTAINED_7
+                            case RDStore.TAX_TYPE_TAX_CONTAINED_7: taxKey = CostItem.TAX_TYPES.TAX_CONTAINED_7
                                 break
                             default: mappingErrorBag.invalidTaxType = true
                                 break

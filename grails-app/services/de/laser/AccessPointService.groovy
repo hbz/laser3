@@ -16,6 +16,7 @@ import org.springframework.context.MessageSource
 class AccessPointService {
 
     ExportService exportService
+    ExportClickMeService exportClickMeService
     EscapeService escapeService
     MessageSource messageSource
 
@@ -86,12 +87,12 @@ class AccessPointService {
     }
 
     /**
-     * Exports the given list of access points as an Excel worksheet
+     * Exports the given list of access points in the format specified
      * @param accessPoints the access points to export
-     * @param contextOrg unused
+     * @param format {@link ExportClickMeService.FORMAT} output format enum constant
      * @return an Excel worksheet containing the access point methods and properties
      */
-    def exportAccessPoints(List<OrgAccessPoint> accessPoints, Org contextOrg) {
+    def exportAccessPoints(List<OrgAccessPoint> accessPoints, ExportClickMeService.FORMAT format) {
         List titles = []
 
         Locale locale = LocaleUtils.getCurrentLocale()
@@ -103,83 +104,92 @@ class AccessPointService {
         List accessPointData = []
         accessPoints.sort {it.accessMethod.value}.each { accessPoint ->
             if (accessPoint.accessMethod == RDStore.ACCESS_POINT_TYPE_IP) {
-                accessPoint.getIpRangeStrings('ipv4', 'ranges').each {
+                accessPoint.getIpRangeStrings('ipv4', 'ranges').each { String ipRangeString ->
                     List row = []
-                    row.add([field: accessPoint.name ?: '', style: null])
-                    row.add([field: accessPoint.accessMethod.getI10n('value'), style: null])
-                    row.add([field: it ?: '', style: null])
+                    String accessPointName = accessPoint.name ?: ' '
+                    row.add(exportClickMeService.createTableCell(format, accessPointName))
+                    row.add(exportClickMeService.createTableCell(format, accessPoint.accessMethod.getI10n('value')))
+                    row.add(exportClickMeService.createTableCell(format, ipRangeString))
                     accessPointData.add(row)
                 }
 
-                accessPoint.getIpRangeStrings('ipv6', 'ranges').each {
+                accessPoint.getIpRangeStrings('ipv6', 'ranges').each { String ipRangeString ->
                     List row = []
-                    row.add([field: accessPoint.name ?: '', style: null])
-                    row.add([field: accessPoint.accessMethod.getI10n('value'), style: null])
-                    row.add([field: it ?: '', style: null])
+                    String accessPointName = accessPoint.name ?: ' '
+                    row.add(exportClickMeService.createTableCell(format, accessPointName))
+                    row.add(exportClickMeService.createTableCell(format, accessPoint.accessMethod.getI10n('value')))
+                    row.add(exportClickMeService.createTableCell(format, ipRangeString))
                     accessPointData.add(row)
                 }
             }
 
             if (accessPoint.accessMethod == RDStore.ACCESS_POINT_TYPE_EZPROXY) {
-                accessPoint.getIpRangeStrings('ipv4', 'ranges').each {
+                accessPoint.getIpRangeStrings('ipv4', 'ranges').each { String ipRangeString ->
                     List row = []
-                    row.add([field: accessPoint.name ?: '', style: null])
-                    row.add([field: accessPoint.accessMethod.getI10n('value'), style: null])
-                    row.add([field: it ?: '', style: null])
-                    row.add([field: accessPoint.url ?: '', style: null])
+                    String accessPointName = accessPoint.name ?: ' ', accessPointUrl = accessPoint.url ?: ' '
+                    row.add(exportClickMeService.createTableCell(format, accessPointName))
+                    row.add(exportClickMeService.createTableCell(format, accessPoint.accessMethod.getI10n('value')))
+                    row.add(exportClickMeService.createTableCell(format, ipRangeString))
+                    row.add(exportClickMeService.createTableCell(format, accessPointUrl))
                     accessPointData.add(row)
                 }
 
-                accessPoint.getIpRangeStrings('ipv6', 'ranges').each {
+                accessPoint.getIpRangeStrings('ipv6', 'ranges').each { String ipRangeString ->
                     List row = []
-                    row.add([field: accessPoint.name ?: '', style: null])
-                    row.add([field: accessPoint.accessMethod.getI10n('value'), style: null])
-                    row.add([field: it ?: '', style: null])
-                    row.add([field: accessPoint.url ?: '', style: null])
+                    String accessPointName = accessPoint.name ?: ' ', accessPointUrl = accessPoint.url ?: ' '
+                    row.add(exportClickMeService.createTableCell(format, accessPointName))
+                    row.add(exportClickMeService.createTableCell(format, accessPoint.accessMethod.getI10n('value')))
+                    row.add(exportClickMeService.createTableCell(format, ipRangeString))
+                    row.add(exportClickMeService.createTableCell(format, accessPointUrl))
                     accessPointData.add(row)
                 }
             }
 
             if (accessPoint.accessMethod == RDStore.ACCESS_POINT_TYPE_PROXY) {
-                accessPoint.getIpRangeStrings('ipv4', 'ranges').each {
+                accessPoint.getIpRangeStrings('ipv4', 'ranges').each { String ipRangeString ->
                     List row = []
-                    row.add([field: accessPoint.name ?: '', style: null])
-                    row.add([field: accessPoint.accessMethod.getI10n('value'), style: null])
-                    row.add([field: it ?: '', style: null])
+                    String accessPointName = accessPoint.name ?: ' '
+                    row.add(exportClickMeService.createTableCell(format, accessPointName))
+                    row.add(exportClickMeService.createTableCell(format, accessPoint.accessMethod.getI10n('value')))
+                    row.add(exportClickMeService.createTableCell(format, ipRangeString))
                     accessPointData.add(row)
                 }
 
-                accessPoint.getIpRangeStrings('ipv6', 'ranges').each {
+                accessPoint.getIpRangeStrings('ipv6', 'ranges').each { String ipRangeString ->
                     List row = []
-                    row.add([field: accessPoint.name ?: '', style: null])
-                    row.add([field: accessPoint.accessMethod.getI10n('value'), style: null])
-                    row.add([field: it ?: '', style: null])
+                    String accessPointName = accessPoint.name ?: ' '
+                    row.add(exportClickMeService.createTableCell(format, accessPointName))
+                    row.add(exportClickMeService.createTableCell(format, accessPoint.accessMethod.getI10n('value')))
+                    row.add(exportClickMeService.createTableCell(format, ipRangeString))
                     accessPointData.add(row)
                 }
             }
 
             if (accessPoint.accessMethod == RDStore.ACCESS_POINT_TYPE_SHIBBOLETH) {
                 List row = []
-                row.add([field: accessPoint.name ?: '', style: null])
-                row.add([field: accessPoint.accessMethod.getI10n('value'), style: null])
-                row.add([field: accessPoint.entityId ?: '', style: null])
+                String accessPointName = accessPoint.name ?: ' ', entityId = accessPoint.entityId ?: ' '
+                row.add(exportClickMeService.createTableCell(format, accessPointName))
+                row.add(exportClickMeService.createTableCell(format, accessPoint.accessMethod.getI10n('value')))
+                row.add(exportClickMeService.createTableCell(format, entityId))
                 accessPointData.add(row)
             }
 
             if (accessPoint.accessMethod == RDStore.ACCESS_POINT_TYPE_OA) {
                 List row = []
-                row.add([field: accessPoint.name ?: '', style: null])
-                row.add([field: accessPoint.accessMethod.getI10n('value'), style: null])
-                row.add([field: accessPoint.entityId ?: '', style: null])
+                String accessPointName = accessPoint.name ?: ' ', entityId = accessPoint.entityId ?: ' '
+                row.add(exportClickMeService.createTableCell(format, accessPointName))
+                row.add(exportClickMeService.createTableCell(format, accessPoint.accessMethod.getI10n('value')))
+                row.add(exportClickMeService.createTableCell(format, entityId))
                 accessPointData.add(row)
             }
 
             if (accessPoint.accessMethod == RDStore.ACCESS_POINT_TYPE_MAIL_DOMAIN) {
-                accessPoint.accessPointData.each {
+                accessPoint.accessPointData.each { AccessPointData apd ->
                     List row = []
-                    row.add([field: accessPoint.name ?: '', style: null])
-                    row.add([field: accessPoint.accessMethod.getI10n('value'), style: null])
-                    row.add([field: it.data ?: '', style: null])
+                    String accessPointName = accessPoint.name ?: ' ', data = apd.data ?: ' '
+                    row.add(exportClickMeService.createTableCell(format, accessPointName))
+                    row.add(exportClickMeService.createTableCell(format, accessPoint.accessMethod.getI10n('value')))
+                    row.add(exportClickMeService.createTableCell(format, data))
                     accessPointData.add(row)
                 }
             }
@@ -197,14 +207,13 @@ class AccessPointService {
      * @param onlyMap output the raw map or an Excel worksheet?
      * @return a map containing the results if onlyMap is true, an Excel worksheet with the IP ranges otherwise
      */
-    def exportIPsOfOrgs(List<Org> orgs, boolean onlyMap = false) {
+    def exportIPsOfOrgs(List<Org> orgs, ExportClickMeService.FORMAT format, boolean onlyMap = false) {
 
         List titles = []
         Locale locale = LocaleUtils.getCurrentLocale()
 
         titles.addAll([messageSource.getMessage('org.sortname.label',null, locale),
                        'Name',
-                       messageSource.getMessage('org.shortname.label',null, locale),
                        messageSource.getMessage('accessPoint.ip.name.label',null, locale),
                        messageSource.getMessage('accessMethod.label',null, locale),
                        messageSource.getMessage('accessPoint.ip.format.range',null, locale),
@@ -216,7 +225,7 @@ class AccessPointService {
             List row = []
 
             List<OrgAccessPoint> accessPoints = OrgAccessPoint.findAllByOrg(org, [sort: ["name": 'asc', "accessMethod": 'asc']])
-            accessPoints.each { accessPoint ->
+            accessPoints.each { OrgAccessPoint accessPoint ->
 
                 if (accessPoint.accessMethod == RDStore.ACCESS_POINT_TYPE_IP) {
 
@@ -224,30 +233,30 @@ class AccessPointService {
 
                     accessPointDataList.ipv4Ranges.each {
                         row = []
-                        row.add([field: org.sortname ?: '', style: null])
-                        row.add([field: org.name ?: '', style: null])
-                        row.add([field: org.shortname ?: '', style: null])
-                        row.add([field: it.name ?: '', style: null])
-                        row.add([field: 'IPv4', style: null])
-                        row.add([field: it.ipRange ?: '', style: null])
-                        row.add([field: it.ipCidr ?: '', style: null])
+                        String sortname = org.sortname ?: ' ', name = it.name ?: ' ', ipRange = it.ipRange ?: ' ', ipCidr = it.ipCidr ?: ' '
+                        row.add(exportClickMeService.createTableCell(format, sortname))
+                        row.add(exportClickMeService.createTableCell(format, org.name))
+                        row.add(exportClickMeService.createTableCell(format, name))
+                        row.add(exportClickMeService.createTableCell(format, 'IPv4'))
+                        row.add(exportClickMeService.createTableCell(format, ipRange))
+                        row.add(exportClickMeService.createTableCell(format, ipCidr))
                         accessPointData.add(row)
                     }
 
                     accessPointDataList.ipv6Ranges.each {
                         row = []
-                        row.add([field: org.sortname ?: '', style: null])
-                        row.add([field: org.name ?: '', style: null])
-                        row.add([field: org.shortname ?: '', style: null])
-                        row.add([field: it.name ?: '', style: null])
-                        row.add([field: 'IPv6', style: null])
-                        row.add([field: it.ipRange ?: '', style: null])
-                        row.add([field: it.ipCidr ?: '', style: null])
+                        String sortname = org.sortname ?: ' ', name = it.name ?: ' ', ipRange = it.ipRange ?: ' ', ipCidr = it.ipCidr ?: ' '
+                        row.add(exportClickMeService.createTableCell(format, sortname))
+                        row.add(exportClickMeService.createTableCell(format, org.name))
+                        row.add(exportClickMeService.createTableCell(format, name))
+                        row.add(exportClickMeService.createTableCell(format, 'IPv6'))
+                        row.add(exportClickMeService.createTableCell(format, ipRange))
+                        row.add(exportClickMeService.createTableCell(format, ipCidr))
                         accessPointData.add(row)
                     }
                 }
             }
-            accessPointData.add([[field: '', style: null]])
+            accessPointData.add([exportClickMeService.createTableCell(format, ' ')])
 
         }
 
@@ -264,14 +273,13 @@ class AccessPointService {
      * @param onlyMap output the raw map or an Excel worksheet?
      * @return a map containing the results if onlyMap is true, an Excel worksheet with the proxy configurations otherwise
      */
-    def exportProxysOfOrgs(List<Org> orgs, boolean onlyMap = false) {
+    def exportProxysOfOrgs(List<Org> orgs, ExportClickMeService.FORMAT format, boolean onlyMap = false) {
 
         List titles = []
         Locale locale = LocaleUtils.getCurrentLocale()
 
         titles.addAll([messageSource.getMessage('org.sortname.label',null, locale),
                        'Name',
-                       messageSource.getMessage('org.shortname.label',null, locale),
                        messageSource.getMessage('accessPoint.ip.name.label',null, locale),
                        messageSource.getMessage('accessMethod.label',null, locale),
                        messageSource.getMessage('accessPoint.ip.format.range',null, locale),
@@ -291,25 +299,25 @@ class AccessPointService {
 
                     accessPointDataList.ipv4Ranges.each {
                         row = []
-                        row.add([field: org.sortname ?: '', style: null])
-                        row.add([field: org.name ?: '', style: null])
-                        row.add([field: org.shortname ?: '', style: null])
-                        row.add([field: it.name ?: '', style: null])
-                        row.add([field: 'IPv4', style: null])
-                        row.add([field: it.ipRange ?: '', style: null])
-                        row.add([field: it.ipCidr ?: '', style: null])
+                        String sortname = org.sortname ?: ' ', name = it.name ?: ' ', ipRange = it.ipRange ?: ' ', ipCidr = it.ipCidr ?: ' '
+                        row.add(exportClickMeService.createTableCell(format, sortname))
+                        row.add(exportClickMeService.createTableCell(format, org.name))
+                        row.add(exportClickMeService.createTableCell(format, name))
+                        row.add(exportClickMeService.createTableCell(format, 'IPv4'))
+                        row.add(exportClickMeService.createTableCell(format, ipRange))
+                        row.add(exportClickMeService.createTableCell(format, ipCidr))
                         accessPointData.add(row)
                     }
 
                     accessPointDataList.ipv6Ranges.each {
                         row = []
-                        row.add([field: org.sortname ?: '', style: null])
-                        row.add([field: org.name ?: '', style: null])
-                        row.add([field: org.shortname ?: '', style: null])
-                        row.add([field: it.name ?: '', style: null])
-                        row.add([field: 'IPv6', style: null])
-                        row.add([field: it.ipRange ?: '', style: null])
-                        row.add([field: it.ipCidr ?: '', style: null])
+                        String sortname = org.sortname ?: ' ', name = it.name ?: ' ', ipRange = it.ipRange ?: ' ', ipCidr = it.ipCidr ?: ' '
+                        row.add(exportClickMeService.createTableCell(format, sortname))
+                        row.add(exportClickMeService.createTableCell(format, org.name))
+                        row.add(exportClickMeService.createTableCell(format, name))
+                        row.add(exportClickMeService.createTableCell(format, 'IPv6'))
+                        row.add(exportClickMeService.createTableCell(format, ipRange))
+                        row.add(exportClickMeService.createTableCell(format, ipCidr))
                         accessPointData.add(row)
                     }
                 }
@@ -330,14 +338,13 @@ class AccessPointService {
      * @param onlyMap output the raw map or an Excel worksheet?
      * @return a map containing the results if onlyMap is true, an Excel worksheet with the EZProxy ranges otherwise
      */
-    def exportEZProxysOfOrgs(List<Org> orgs, boolean onlyMap = false) {
+    def exportEZProxysOfOrgs(List<Org> orgs, ExportClickMeService.FORMAT format, boolean onlyMap = false) {
 
         List titles = []
         Locale locale = LocaleUtils.getCurrentLocale()
 
         titles.addAll([messageSource.getMessage('org.sortname.label',null, locale),
                        'Name',
-                       messageSource.getMessage('org.shortname.label',null, locale),
                        messageSource.getMessage('accessPoint.ezproxy.name.label',null, locale),
                        messageSource.getMessage('accessMethod.label',null, locale),
                        messageSource.getMessage('accessPoint.ip.format.range',null, locale),
@@ -358,27 +365,27 @@ class AccessPointService {
 
                     accessPointDataList.ipv4Ranges.each {
                         row = []
-                        row.add([field: org.sortname ?: '', style: null])
-                        row.add([field: org.name ?: '', style: null])
-                        row.add([field: org.shortname ?: '', style: null])
-                        row.add([field: it.name ?: '', style: null])
-                        row.add([field: 'IPv4', style: null])
-                        row.add([field: it.ipRange ?: '', style: null])
-                        row.add([field: it.ipCidr ?: '', style: null])
-                        row.add([field: accessPoint.url ?: '', style: null])
+                        String sortname = org.sortname ?: ' ', name = it.name ?: ' ', ipRange = it.ipRange ?: ' ', ipCidr = it.ipCidr ?: ' ', accessPointUrl = accessPoint.url ?: ''
+                        row.add(exportClickMeService.createTableCell(format, sortname))
+                        row.add(exportClickMeService.createTableCell(format, org.name))
+                        row.add(exportClickMeService.createTableCell(format, name))
+                        row.add(exportClickMeService.createTableCell(format, 'IPv4'))
+                        row.add(exportClickMeService.createTableCell(format, ipRange))
+                        row.add(exportClickMeService.createTableCell(format, ipCidr))
+                        row.add(exportClickMeService.createTableCell(format, accessPointUrl))
                         accessPointData.add(row)
                     }
 
                     accessPointDataList.ipv6Ranges.each {
                         row = []
-                        row.add([field: org.sortname ?: '', style: null])
-                        row.add([field: org.name ?: '', style: null])
-                        row.add([field: org.shortname ?: '', style: null])
-                        row.add([field: it.name ?: '', style: null])
-                        row.add([field: 'IPv6', style: null])
-                        row.add([field: it.ipRange ?: '', style: null])
-                        row.add([field: it.ipCidr ?: '', style: null])
-                        row.add([field: accessPoint.url ?: '', style: null])
+                        String sortname = org.sortname ?: ' ', name = it.name ?: ' ', ipRange = it.ipRange ?: ' ', ipCidr = it.ipCidr ?: ' ', accessPointUrl = accessPoint.url ?: ''
+                        row.add(exportClickMeService.createTableCell(format, sortname))
+                        row.add(exportClickMeService.createTableCell(format, org.name))
+                        row.add(exportClickMeService.createTableCell(format, name))
+                        row.add(exportClickMeService.createTableCell(format, 'IPv6'))
+                        row.add(exportClickMeService.createTableCell(format, ipRange))
+                        row.add(exportClickMeService.createTableCell(format, ipCidr))
+                        row.add(exportClickMeService.createTableCell(format, accessPointUrl))
                         accessPointData.add(row)
                     }
                 }
@@ -400,14 +407,13 @@ class AccessPointService {
      * @param onlyMap output the raw map or an Excel worksheet?
      * @return a map containing the results if onlyMap is true, an Excel worksheet with the Shibboleth settings otherwise
      */
-    def exportShibbolethsOfOrgs(List<Org> orgs, boolean onlyMap = false) {
+    def exportShibbolethsOfOrgs(List<Org> orgs, ExportClickMeService.FORMAT format, boolean onlyMap = false) {
 
         List titles = []
         Locale locale = LocaleUtils.getCurrentLocale()
 
         titles.addAll([messageSource.getMessage('org.sortname.label',null, locale),
                        'Name',
-                       messageSource.getMessage('org.shortname.label',null, locale),
                        messageSource.getMessage('accessPoint.shibboleth.name.label',null, locale),
                        messageSource.getMessage('accessMethod.label',null, locale),
                        messageSource.getMessage('accessPoint.entitiyId.label',null, locale)
@@ -421,12 +427,12 @@ class AccessPointService {
             accessPoints.each { accessPoint ->
 
                 if (accessPoint.accessMethod == RDStore.ACCESS_POINT_TYPE_SHIBBOLETH) {
-                    row.add([field: org.sortname ?: '', style: null])
-                    row.add([field: org.name ?: '', style: null])
-                    row.add([field: org.shortname ?: '', style: null])
-                    row.add([field: accessPoint.name ?: '', style: null])
-                    row.add([field: accessPoint.accessMethod ? accessPoint.accessMethod.getI10n('value') : '', style: null])
-                    row.add([field: accessPoint.entityId ?: '', style: null])
+                    String sortname = org.sortname ?: ' ', name = it.name ?: ' ', accessPointName = accessPoint.name ?: ' ', accessMethod = accessPoint.accessMethod ? accessPoint.accessMethod.getI10n('value') : ' ', entityId = accessPoint.entityId ?: ' '
+                    row.add(exportClickMeService.createTableCell(format, sortname))
+                    row.add(exportClickMeService.createTableCell(format, org.name))
+                    row.add(exportClickMeService.createTableCell(format, accessPointName))
+                    row.add(exportClickMeService.createTableCell(format, accessMethod))
+                    row.add(exportClickMeService.createTableCell(format, entityId))
                 }
             }
             accessPointData.add(row)
@@ -439,6 +445,48 @@ class AccessPointService {
             return [titleRow: titles, columnData: accessPointData]
         }else {
             return exportService.generateXLSXWorkbook(["${messageSource.getMessage('subscriptionDetails.members.exportShibboleths.fileName',null, locale)}": [titleRow: titles, columnData: accessPointData]])
+        }
+
+    }
+
+    /**
+     * Exports the mail domain settings of the given institutions
+     * @param orgs the institutions whose data should be exported
+     * @param onlyMap output the raw map or an Excel worksheet?
+     * @return a map containing the results if onlyMap is true, an Excel worksheet with the Shibboleth settings otherwise
+     */
+    def exportMailDomainsOfOrgs(List<Org> orgs, ExportClickMeService.FORMAT format, boolean onlyMap = false) {
+
+        List titles = []
+        Locale locale = LocaleUtils.getCurrentLocale()
+
+        titles.addAll([messageSource.getMessage('org.sortname.label',null, locale),
+                       'Name',
+                       messageSource.getMessage('accessPoint.mailDomain.name.label',null, locale),
+                       'Mail-Domain'
+        ])
+
+        List accessPointData = []
+        orgs.each { Org org ->
+
+            List<OrgAccessPoint> accessPoints = OrgAccessPoint.findAllByOrg(org, [sort: ["name": 'asc', "accessMethod": 'asc']])
+            accessPoints.each { OrgAccessPoint accessPoint ->
+                accessPoint.getAccessPointMailDomains().accessPointMailDomains.each { Map apd ->
+                    List row = []
+                    String sortname = org.sortname ?: ' ', accessPointName = accessPoint.name ?: ' '
+                    row.add(exportClickMeService.createTableCell(format, sortname))
+                    row.add(exportClickMeService.createTableCell(format, org.name))
+                    row.add(exportClickMeService.createTableCell(format, accessPointName))
+                    row.add(exportClickMeService.createTableCell(format, apd.mailDomain))
+                    accessPointData.add(row)
+                }
+            }
+        }
+
+        if(onlyMap){
+            return [titleRow: titles, columnData: accessPointData]
+        }else {
+            return exportService.generateXLSXWorkbook(["${messageSource.getMessage('subscriptionDetails.members.exportMailDomains.fileName',null, locale)}": [titleRow: titles, columnData: accessPointData]])
         }
 
     }

@@ -83,7 +83,7 @@ aside.la-metabox + .la-metabox-spacer {
   .ui.segment:nth-child(2).content {
     .ui.table thead tr:first-child > th,
     .ui.table thead tr:nth-child(2) > th{
-      background: @white;
+      background: #f4f8f9;
     }
     background:@laAlternativeBackground;
   }

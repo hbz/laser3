@@ -12,8 +12,9 @@
     <ui:controlButtons>
         <ui:exportDropdown>
             <ui:exportDropdownItem>
-                <a class="item" data-ui="modal" href="#individuallyExportModal">Click Me Excel Export</a>
+                <a class="item" data-ui="modal" href="#individuallyExportModal">Export</a>
             </ui:exportDropdownItem>
+            <%--
             <g:if test="${filterSet}">
                 <ui:exportDropdownItem>
                     <g:link class="item js-open-confirm-modal"
@@ -40,10 +41,13 @@
                     <g:link class="item" action="listProvider" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link>
                 </ui:exportDropdownItem>
             </g:else>
+            --%>
         </ui:exportDropdown>
 
-            <g:if test="${accessService.checkPermX('ORG_INST,ORG_CONSORTIUM', 'ROLE_ADMIN') || accessService.checkConstraint_ORG_COM_EDITOR()}">
-                <laser:render template="actions" />
+            <g:if test="${accessService.ctxPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC ) || accessService.is_ORG_COM_EDITOR()}">
+                <ui:actionsDropdown>
+                    <ui:actionsDropdownItem controller="organisation" action="findProviderMatches" message="org.create_new_provider.label"/>
+                </ui:actionsDropdown>
             </g:if>
     </ui:controlButtons>
 
@@ -55,7 +59,7 @@
             <g:form action="listProvider" method="get" class="ui form">
                 <laser:render template="/templates/filter/orgFilter"
                           model="[
-                                  tmplConfigShow: [['name', 'identifier'], ['platform', '']],
+                                  tmplConfigShow: [['name', 'identifier'], ['curatoryGroup', 'orgStatus'], ['providerRole', 'isMyX']],
                                   tmplConfigFormFilter: true
                           ]"/>
             </g:form>
@@ -64,8 +68,9 @@
             <g:if test="${orgList}">
                 <laser:render template="/templates/filter/orgFilterTable"
                       model="[orgList: orgList,
+                              currentProviderIdList: currentProviderIdList,
                               tmplShowCheckbox: false,
-                              tmplConfigShow: ['lineNumber', 'shortname', 'name', 'isWekbCurated', 'altname', 'platform']
+                              tmplConfigShow: ['lineNumber', 'sortname', 'name', 'altname', 'platform', 'isMyX', 'isWekbCurated']
                       ]"/>
             </g:if>
             <g:else>
@@ -79,6 +84,6 @@
         </div>
         <ui:paginate total="${orgListTotal}" params="${params}" max="${max}" offset="${offset}" />
 
-        <laser:render template="/myInstitution/export/individuallyExportModalOrgs" model="[modalID: 'individuallyExportModal', orgType: 'provider']" />
+        <laser:render template="/myInstitution/export/individuallyExportModalOrgs" model="[modalID: 'individuallyExportModal', orgType: 'provider', contactSwitch: true]" />
 
 <laser:htmlEnd />

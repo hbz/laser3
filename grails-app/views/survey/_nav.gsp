@@ -22,31 +22,6 @@
                 </g:each>
             </ui:menuDropdownItems>
 
-
-            <ui:menuDropdownItems actionName="surveyConfigDocs" message="surveyConfigDocs.label">
-                <g:each in="${surveyInfo.surveyConfigs.sort { it.getConfigNameShort() }}" var="surveyConfig">
-                    <ui:menuDropdownItem controller="survey" action="surveyConfigDocs"
-                                            params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
-                                            text="${surveyConfig.getConfigNameShort()}"/>
-                </g:each>
-            </ui:menuDropdownItems>
-
-            <ui:menuDropdownItems actionName="tasks" message="task.plural">
-                <g:each in="${surveyInfo.surveyConfigs.sort { it.getConfigNameShort() }}" var="surveyConfig">
-                    <ui:menuDropdownItem controller="survey" action="tasks"
-                                            params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
-                                            text="${surveyConfig.getConfigNameShort()}"/>
-                </g:each>
-            </ui:menuDropdownItems>
-
-            <ui:menuDropdownItems actionName="notes" message="default.notes.label">
-                <g:each in="${surveyInfo.surveyConfigs.sort { it.getConfigNameShort() }}" var="surveyConfig">
-                    <ui:menuDropdownItem controller="survey" action="notes"
-                                            params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
-                                            text="${surveyConfig.getConfigNameShort()}"/>
-                </g:each>
-            </ui:menuDropdownItems>
-
             <ui:menuDropdownItems actionName="surveyParticipants" message="surveyParticipants.label">
                 <g:each in="${surveyInfo.surveyConfigs.sort { it.getConfigNameShort() }}" var="surveyConfig">
                     <ui:menuDropdownItem controller="survey" action="surveyParticipants"
@@ -93,22 +68,34 @@
                 </g:each>
             </ui:menuDropdownItems>
 
+            <ui:menuDropdownItems actionName="notes" message="default.notes.label">
+                <g:each in="${surveyInfo.surveyConfigs.sort { it.getConfigNameShort() }}" var="surveyConfig">
+                    <ui:menuDropdownItem controller="survey" action="notes"
+                                         params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
+                                         text="${surveyConfig.getConfigNameShort()}"/>
+                </g:each>
+            </ui:menuDropdownItems>
+
+            <ui:menuDropdownItems actionName="tasks" message="task.plural">
+                <g:each in="${surveyInfo.surveyConfigs.sort { it.getConfigNameShort() }}" var="surveyConfig">
+                    <ui:menuDropdownItem controller="survey" action="tasks"
+                                         params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
+                                         text="${surveyConfig.getConfigNameShort()}"/>
+                </g:each>
+            </ui:menuDropdownItems>
+
+            <ui:menuDropdownItems actionName="surveyConfigDocs" message="surveyConfigDocs.label">
+                <g:each in="${surveyInfo.surveyConfigs.sort { it.getConfigNameShort() }}" var="surveyConfig">
+                    <ui:menuDropdownItem controller="survey" action="surveyConfigDocs"
+                                         params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
+                                         text="${surveyConfig.getConfigNameShort()}"/>
+                </g:each>
+            </ui:menuDropdownItems>
+
         </g:if>
         <g:else>
 
             <ui:subNavItem controller="survey" action="show" params="${[id: params.id]}" message="surveyShow.label"/>
-
-            <ui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="surveyConfigDocs"
-                              params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
-                              message="surveyConfigDocs.label"/>
-
-            <ui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="tasks"
-                              params="${[id: params.id, surveyConfigID: surveyConfig.id]}" counts="${tasksCount}"
-                              message="task.plural"/>
-
-            <ui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="notes"
-                              params="${[id: params.id, surveyConfigID: surveyConfig.id]}" counts="${notesCount}"
-                              message="default.notes.label"/>
 
             <ui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="surveyParticipants"
                               params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
@@ -141,6 +128,17 @@
                               message="surveyTransfer.label"/>
             </g:else>
 
+            <ui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="notes"
+                           params="${[id: params.id, surveyConfigID: surveyConfig.id]}" counts="${notesCount}"
+                           message="default.notes.label"/>
+
+            <ui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="tasks"
+                           params="${[id: params.id, surveyConfigID: surveyConfig.id]}" counts="${tasksCount}"
+                           message="task.plural"/>
+
+            <ui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="surveyConfigDocs"
+                           params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
+                           message="surveyConfigDocs.label"/>
         </g:else>
 
     </g:if>
@@ -152,18 +150,6 @@
                           params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
                           message="title.plural"/>
 
-        <ui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="surveyConfigDocs"
-                          params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
-                          message="surveyConfigDocs.label"/>
-
-        <ui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="tasks"
-                          params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
-                          message="task.plural"/>
-
-        <ui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="notes"
-                          params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
-                          message="default.notes.label"/>
-
         <ui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="surveyParticipants"
                           params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
                           message="surveyParticipants.label"/>
@@ -172,6 +158,18 @@
                           params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
                           message="surveyEvaluation.titles.label"
                           class="${(actionName in evalutionsViews) ? "active" : ""}"/>
+
+        <ui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="notes"
+                       params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
+                       message="default.notes.label"/>
+
+        <ui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="tasks"
+                       params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
+                       message="task.plural"/>
+
+        <ui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="surveyConfigDocs"
+                       params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
+                       message="surveyConfigDocs.label"/>
 
     </g:else>
 

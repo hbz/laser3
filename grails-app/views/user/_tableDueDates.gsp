@@ -24,12 +24,12 @@
                 <td>
                     <g:formatDate format="${message(code:'default.date.format.notime')}" date="${dashDueDate.dueDateObject.date}"/>
                     <g:if test="${SqlDateUtils.isToday(dashDueDate.dueDateObject.date)}">
-                        <span  class="la-popup-tooltip la-delay" data-content="${message(code:'myinst.dash.due_date.enddate.isDueToday.label')}" data-position="top right">
+                        <span class="la-popup-tooltip la-delay" data-content="${message(code:'myinst.dash.due_date.enddate.isDueToday.label')}" data-position="top right">
                             <i class="icon yellow exclamation"></i>
                         </span>
                     </g:if>
                     <g:elseif test="${SqlDateUtils.isBeforeToday(dashDueDate.dueDateObject.date)}">
-                        <span  class="la-popup-tooltip la-delay" data-content="${message(code:'myinst.dash.due_date.enddate.isOverdue.label')}" data-position="top right">
+                        <span class="la-popup-tooltip la-delay" data-content="${message(code:'myinst.dash.due_date.enddate.isOverdue.label')}" data-position="top right">
                             <i class="icon red exclamation"></i>
                         </span>
                     </g:elseif>
@@ -46,7 +46,7 @@
                         </g:elseif>
                         <g:elseif test="${obj instanceof SurveyInfo}">
                             <i class="icon chart pie la-list-icon"></i>
-                            <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
+                            <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
                                 <g:link controller="survey" action="show" params="[surveyConfigID: obj.surveyConfigs[0].id]"
                                         id="${obj.id}">${obj.surveyConfigs[0].getSurveyName()}
                                 </g:link>
@@ -60,7 +60,7 @@
                             <span data-position="top right" class="la-popup-tooltip la-delay" data-content="Aufgabe">
                                 <i class="calendar check outline icon la-list-icon"></i>
                             </span>
-                            <a href="#" class="header" onclick="JSPC.app.taskedit(${obj?.id});">${obj?.title}</a>
+                            <a href="#" class="header" onclick="JSPC.app.editTask(${obj?.id});">${obj?.title}</a>
                         </g:elseif>
                         <g:elseif test="${obj instanceof AbstractPropertyWithCalculatedLastUpdated}">
                             <g:if test="${obj.owner instanceof Person}">

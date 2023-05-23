@@ -156,7 +156,7 @@ class InstitutionsService {
 
             log.debug("adding org link to new license")
 
-            if (accessService.checkPerm("ORG_CONSORTIUM")) {
+            if (accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
                 new OrgRole(lic: licenseInstance, org: org, roleType: lic_cons_role).save()
             }
             else {
@@ -168,70 +168,5 @@ class InstitutionsService {
 
             return licenseInstance
         }
-    }
-
-    /**
-     * Should build a comparison map; is in this state subject of refactoring since it is based on the
-     * outdated central title instance model
-     */
-    @Deprecated
-    def generateComparisonMap(unionList, mapA, mapB, offset, toIndex, rules){
-      def result = new TreeMap()
-      def insert = rules[0]
-      def delete = rules[1]
-      def update = rules[2]
-      def noChange = rules[3]
-
-      for (unionTitle in unionList){
-
-        def objA = mapA.get(unionTitle)
-        def objB = mapB.get(unionTitle)
-        def comparison = null
-
-        if(objA.getClass() == ArrayList || objB.getClass() == ArrayList){
-          if(objA && !objB){
-            comparison = -1
-          }
-          else if(objA && objB && objA.size() == objB.size()){
-            def tipp_matches = 0
-
-            objA.each { a ->
-              objB.each { b ->
-                if(a.compare(b) == 0){
-                  tipp_matches++;
-                }
-              }
-            }
-
-            if(tipp_matches == objA.size()){
-              comparison = 0
-            }else{
-              comparison = 1
-            }
-          }
-        }else{
-          comparison = objA?.compare(objB);
-        }
-        def value = null;
-
-        if(delete && comparison == -1 ) value = [objA,null, "danger"];
-        else if(update && comparison == 1) value = [objA,objB, "warning"];
-        else if(insert && comparison == null) value = [null, objB, "success"];
-        else if (noChange && comparison == 0) value = [objA,objB, ""];
-
-        if(value != null) result.put(unionTitle, value);
-
-        if (result.size() == toIndex ) {
-            break;
-        }
-      }
-
-      if(result.size() <= offset ){
-        result.clear()
-      }else if(result.size() > (toIndex - offset) ){
-        def keys = result.keySet().toArray();
-        result = result.tailMap(keys[offset],true)
-      }
-      result
     }
 }

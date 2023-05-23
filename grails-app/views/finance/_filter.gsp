@@ -119,6 +119,7 @@
                         <div class="default text"><g:message code="default.select.all.label"/></div>
                     </div>--%>
                     <g:select id="filterCIBudgetCode" class="ui multiple dropdown search selection"
+                              multiple="multiple"
                               name="filterCIBudgetCode"
                               from="${budgetCodes}"
                               optionKey="id" optionValue="value"
@@ -327,7 +328,6 @@
                     values = [<g:each in="${filterPresets?.filterCIReference}" var="reference" status="i">'${reference}'<g:if test="${i < filterPresets.filterCIReference.size()-1}">,</g:if></g:each>];
                     break;
             }
-            $(this).dropdown('set value',values);
             $(this).dropdown({
                 apiSettings: {
                     url: links[$(this).attr("id")],
@@ -339,6 +339,9 @@
                 onChange: function (value, text, $selectedItem) {
                     value !== '' ? $(this).addClass("la-filter-selected") : $(this).removeClass("la-filter-selected");
                 }
+            });
+            $(this).dropdown('queryRemote', '', () => {
+                $(this).dropdown('set selected', values);
             });
         });
         $(".newFilter").keypress(function(e){

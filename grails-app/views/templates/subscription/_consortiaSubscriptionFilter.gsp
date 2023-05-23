@@ -130,7 +130,19 @@
             </div>
         </div>
 
-        <div class="${institution.globalUID == Org.findByName('LAS:eR Backoffice').globalUID ? 'three' : 'two'} fields">
+        <div class="four fields">
+            <div class="field">
+                <label for="referenceYears">${message(code: 'subscription.referenceYear.label')}</label>
+                <select id="referenceYears" name="referenceYears" multiple="" class="ui search selection fluid dropdown">
+                    <option value="">${message(code: 'default.select.choose.label')}</option>
+                    <g:each in="${referenceYears}" var="referenceYear">
+                        <option <%=(params.list('referenceYears').contains(referenceYear.toString())) ? 'selected="selected"' : ''%>
+                                value="${referenceYear}">
+                            ${referenceYear}
+                        </option>
+                    </g:each>
+                </select>
+            </div>
             <div class="field">
                 <label>${message(code: 'myinst.currentSubscriptions.subscription.runTime')}</label>
                 <div class="inline fields la-filter-inline">
@@ -150,8 +162,24 @@
                     </div>
                 </div>
             </div>
-            <g:if test="${institution.globalUID == Org.findByName('LAS:eR Backoffice').globalUID}">
-                <div class="field">
+            <div class="field">
+                <g:if test="${'withCostItems' in tableConfig}">
+                    <label for="filterPvd">${message(code: 'menu.my.providers')}</label>
+                    <select id="filterPvd" name="filterPvd" multiple="" class="ui search selection fluid dropdown">
+                        <option value="">${message(code: 'default.select.choose.label')}</option>
+
+                        <g:each in="${providers.sort { it.name }}" var="provider">
+                            <option <%=(params.list('filterPvd').contains(provider.id.toString())) ? 'selected="selected"' : ''%>
+                                    value="${provider.id}">
+                                ${provider.name}
+                            </option>
+                        </g:each>
+                    </select>
+
+                </g:if>
+            </div>
+            <div class="field">
+                <g:if test="${institution.globalUID == Org.findByName('LAS:eR Backoffice').globalUID}">
                     <fieldset id="subscritionType">
                         <label>${message(code: 'myinst.currentSubscriptions.subscription_type')}</label>
                         <div class="inline fields la-filter-inline">
@@ -171,8 +199,9 @@
                             </g:each>
                         </div>
                     </fieldset>
-                </div>
-            </g:if>
+                </g:if>
+            </div>
+        </div>
             <div class="field la-field-right-aligned">
                 <g:if test="${license && !request.forwardURI.contains(license.id.toString())}">
                     <g:set var="returnURL" value="${request.forwardURI+"/"+license.id}"/>
@@ -184,8 +213,6 @@
                 <g:hiddenField name="filterSet" value="true"/>
                 <input type="submit" class="ui primary button" value="${message(code:'default.button.filter.label')}">
             </div>
-
-        </div>
     </g:form>
 </ui:filter>
 

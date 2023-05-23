@@ -4,11 +4,11 @@
 </laser:htmlStart>
 
         <ui:breadcrumbs>
-            <ui:crumb controller="myInstitution" action="dashboard" text="${institution.getDesignation()}"/>
+            <ui:crumb controller="org" action="show" id="${institution.id}" text="${institution.getDesignation()}"/>
             <ui:crumb text="${message(code:'myinst.reporting')}" class="active" />
         </ui:breadcrumbs>
 
-        <ui:h1HeaderWithIcon message="myinst.reporting" />
+        <ui:h1HeaderWithIcon message="myinst.reporting" type="reporting" />
 
         <laser:render template="/templates/reporting/helper" />%{--js--}%
 
@@ -192,7 +192,7 @@
                     url: '<g:createLink controller="myInstitution" action="reporting" />',
                     data: { init: true, filter: $(this).val() },
                     dataType: 'html',
-                    beforeSend: function (xhr) { $('#loadingIndicator').show(); }
+                    beforeSend: function (xhr) { $('#globalLoadingIndicator').show(); }
                 })
                 .done (function (data) {
                     $('#filter-wrapper').html(data);
@@ -203,7 +203,7 @@
                     $('#filter-wrapper > div').removeClass('hidden');
                 })
                 .fail (function () { $("#reporting-modal-error").modal('show'); })
-                .always (function () { $('#loadingIndicator').hide(); });
+                .always (function () { $('#globalLoadingIndicator').hide(); });
             })
 
             /*-- charts --*/
@@ -233,7 +233,7 @@
                         method: 'post',
                         data: JSPC.app.reporting.current.request,
                         beforeSend: function (xhr) {
-                            $('#loadingIndicator').show();
+                            $('#globalLoadingIndicator').show();
                             $('#query-export-button, #query-help-button').attr('disabled', 'disabled');
                         }
                     })
@@ -258,6 +258,7 @@
                             }
                             else if (JSPC.app.reporting.current.request.chart == 'pie') {
                                 chartHeight = Math.min(1800, 380 + (12 * JSPC.app.reporting.current.chart.option.dataset.source.length));
+                                JSPC.app.reporting.current.myCountsToggle = false;
                             }
                             else if (JSPC.app.reporting.current.request.chart == 'radar') {
                                 chartHeight = 400 + (8 * JSPC.app.reporting.current.chart.option.dataset.source.length);
@@ -290,7 +291,7 @@
                         $('#reporting-chart-nodata').hide();
                         $("#reporting-modal-error").modal('show');
                     })
-                    .always (function () { $('#loadingIndicator').hide(); });
+                    .always (function () { $('#globalLoadingIndicator').hide(); });
                 }
             }
 

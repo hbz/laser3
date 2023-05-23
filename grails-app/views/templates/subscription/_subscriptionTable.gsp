@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyConfig; de.laser.Subscription; de.laser.finance.CostItem; de.laser.interfaces.CalculatedType;de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.License;de.laser.Links" %>
+<%@ page import="de.laser.CustomerTypeService; de.laser.survey.SurveyConfig; de.laser.Subscription; de.laser.finance.CostItem; de.laser.interfaces.CalculatedType;de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.License;de.laser.Links" %>
 <laser:serviceInjection />
 
 <g:form action="compareSubscriptions" controller="compare" method="post">
@@ -34,7 +34,7 @@
                             ${message(code: 'myinst.currentSubscriptions.subscription_type', default: RDConstants.SUBSCRIPTION_TYPE)}
                         </th>
                         */ %>
-                        <g:if test="${params.orgRole in ['Subscriber'] && accessService.checkPerm("ORG_BASIC_MEMBER")}">
+                        <g:if test="${params.orgRole in ['Subscriber'] && accessService.ctxPerm(CustomerTypeService.ORG_INST_BASIC)}">
                             <th scope="col" rowspan="2" >${message(code: 'consortium')}</th>
                         </g:if>
                         <g:elseif test="${params.orgRole == 'Subscriber'}">
@@ -60,7 +60,7 @@
                                 </a>
                             </th>
                         </g:if>
-                        <g:if test="${!(institution.getCustomerType()  == 'ORG_CONSORTIUM')}">
+                        <g:if test="${!(institution.isCustomerType_Consortium())}">
                             <th class="la-no-uppercase" scope="col" rowspan="2" >
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                                       data-content="${message(code: 'subscription.isMultiYear.label')}">
@@ -89,6 +89,10 @@
                             <g:link controller="subscription" class="la-main-object" action="show" id="${s.id}">
                                 <g:if test="${s.name}">
                                     ${s.name}
+                                    <g:if test="${s?.referenceYear}">
+                                        ( ${s.referenceYear} )
+                                    </g:if>
+
                                 </g:if>
                                 <g:else>
                                     -- ${message(code: 'myinst.currentSubscriptions.name_not_set')}  --
@@ -144,7 +148,7 @@
                             </g:if>
                             <g:if test="${s.isEditableBy(user) && (s.packages == null || s.packages.size() == 0)}">
                                 <i>
-                                    <g:if test="${accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM","INST_EDITOR","ROLE_ADMIN")}">
+                                    <g:if test="${accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )}">
                                         <g:message code="myinst.currentSubscriptions.no_links" />
                                         <g:link controller="subscription" action="linkPackage"
                                                 id="${s.id}">${message(code: 'subscription.details.linkPackage.label')}</g:link>
@@ -161,7 +165,7 @@
                         </td>--%>
                         <g:if test="${params.orgRole == 'Subscriber'}">
                             <td>
-                                <g:if test="${accessService.checkPerm("ORG_BASIC_MEMBER")}">
+                                <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_INST_BASIC)}">
                                     ${s.getConsortia()?.name}
                                 </g:if>
                             </td>
@@ -170,18 +174,18 @@
                             <%-- as of ERMS-584, these queries have to be deployed onto server side to make them sortable --%>
                             <g:each in="${s.providers}" var="org">
                                 <g:link controller="organisation" action="show" id="${org.id}">${fieldValue(bean: org, field: "name")}
-                                    <g:if test="${org.shortname}">
+                                    <g:if test="${org.sortname}">
                                         <br />
-                                        (${fieldValue(bean: org, field: "shortname")})
+                                        (${fieldValue(bean: org, field: "sortname")})
                                     </g:if>
                                 </g:link><br />
                             </g:each>
                             <g:each in="${s.agencies}" var="org">
                                 <g:link controller="organisation" action="show" id="${org.id}">
                                     ${fieldValue(bean: org, field: "name")}
-                                    <g:if test="${org.shortname}">
+                                    <g:if test="${org.sortname}">
                                         <br />
-                                        (${fieldValue(bean: org, field: "shortname")})
+                                        (${fieldValue(bean: org, field: "sortname")})
                                     </g:if> (${message(code: 'default.agency.label')})
                                 </g:link><br />
                             </g:each>
@@ -217,7 +221,7 @@
                             </td>
                             <td>
                                 <g:link mapping="subfinance" controller="finance" action="index" params="${[sub:s.id]}">
-                                    <g:if test="${institution.getCustomerType()  == 'ORG_CONSORTIUM'}">
+                                    <g:if test="${institution.isCustomerType_Consortium()}">
                                         <div class="ui blue circular label">
                                             ${childSubIds.isEmpty() ? 0 : CostItem.executeQuery('select count(ci.id) from CostItem ci where ci.sub.id in (:subs) and ci.owner = :context and ci.costItemStatus != :deleted',[subs:childSubIds, context:institution, deleted:RDStore.COST_ITEM_DELETED])[0]}
                                         </div>
@@ -225,7 +229,7 @@
                                 </g:link>
                             </td>
                         </g:if>
-                        <g:if test="${!(institution.getCustomerType()  == 'ORG_CONSORTIUM')}">
+                        <g:if test="${!(institution.isCustomerType_Consortium())}">
                             <td>
                                 <g:if test="${s.isMultiYear}">
                                     <g:if test="${(s.type == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL &&
@@ -246,7 +250,7 @@
                         </g:if>
                         <td class="x">
                             <g:if test="${'showActions' in tableConfig}">
-                                <g:if test="${institution.getCustomerType() in ['ORG_INST', 'ORG_BASIC_MEMBER'] && s.instanceOf}">
+                                <g:if test="${institution.isCustomerType_Inst() && s.instanceOf}">
                                     <g:set var="surveysSub" value="${SurveyConfig.executeQuery("select surConfig.id from SurveyConfig as surConfig where surConfig.subscription = :sub and surConfig.surveyInfo.status not in (:invalidStatuses) and surConfig.surveyInfo.type = :type and (exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org))",
                                             [sub: s.instanceOf, org: institution, invalidStatuses: [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY], type: [RDStore.SURVEY_TYPE_RENEWAL]])}" />
                                     <g:if test="${surveysSub}">
@@ -258,7 +262,7 @@
                                         </g:link>
                                     </g:if>
                                 </g:if>
-                                <g:if test="${institution.getCustomerType()  == 'ORG_CONSORTIUM'}">
+                                <g:if test="${institution.isCustomerType_Consortium()}">
                                     <g:set var="surveysConsortiaSub" value="${SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(s ,true)}" />
                                     <g:if test="${surveysConsortiaSub}">
 

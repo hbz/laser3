@@ -27,13 +27,13 @@ class IssueEntitlementExport extends BaseDetailsExport {
                                     '@-entitlement-tippName'              : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
                                     '@-entitlement-tippTitleType'         : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
                                     'medium'                              : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
-                                    'acceptStatus'                        : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
                                     'status'                              : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
                                     '@-entitlement-tippFirstAuthor'       : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
                                     '@-entitlement-tippEditionStatement'  : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
                                     '@-entitlement-tippPublisherName'     : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
                                     '@-entitlement-tippSeriesName'        : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
                                     '@-entitlement-tippFirstEditor'       : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
+                                    '@-entitlement-tippDateFirstOnline'   : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
                                     '@-entitlement-tippOpenAccessX'       : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
                                     '@-entitlement-tippDeweyDecimalClassification' : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
                                     '@-entitlement-tippLanguage'          : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
@@ -124,6 +124,9 @@ class IssueEntitlementExport extends BaseDetailsExport {
                 }
                 else if (key == '@-entitlement-tippFirstEditor') {
                     content.add( ie.tipp.firstEditor ?: '' )
+                }
+                else if (key == '@-entitlement-tippDateFirstOnline') {
+                    content.add( ie.tipp.dateFirstOnline ?: '' )
                 }
                 else if (key == '@-entitlement-tippHostPlatformURL') {
                     content.add( ie.tipp.hostPlatformURL ?: '' )

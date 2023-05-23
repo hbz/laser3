@@ -92,6 +92,8 @@ deckSaver = {
             // ***************************
             // show Contoll Elements
             // ***************************
+            $('body').removeClass('la-decksaver-active');
+
             $('.button').removeClass('hidden');
             deckSaver.removeClone();
             deckSaver.removePopupFromClone();
@@ -110,16 +112,19 @@ deckSaver = {
             deckSaver.enableXeditable('.xEditableValue');
             deckSaver.enableXeditable('.xEditableDatepicker');
             deckSaver.enableXeditable('.xEditableManyToOne');
+            deckSaver.enableXeditable('.xEditableBoolean');
 
             $('.la-action-info').css('text-align', 'left').text(JSPC.dict.get('default.actions.label', JSPC.currLanguage))
 
             $('.la-js-toggle-hideThis').addClass('hidden');    // generic toggle selector - erms-4688
             $('.la-js-toggle-showThis').removeClass('hidden'); // generic toggle selector - erms-4688
-        } else {
-
+        }
+        else {
             // ***************************
             // hide Contoll Elements
             // ***************************
+            $('body').addClass('la-decksaver-active');
+
             deckSaver.configs.icon = $(".la-js-editmode-icon");
             deckSaver.configs.icon.each(function () {
                 var container = $(this).closest('.la-js-editmode-container');
@@ -152,6 +157,7 @@ deckSaver = {
             deckSaver.disableXeditable('.xEditableValue');
             deckSaver.disableXeditable('.xEditableDatepicker');
             deckSaver.disableXeditable('.xEditableManyToOne');
+            deckSaver.enableXeditable('.xEditableBoolean');
 
             $('.la-action-info').css('text-align', 'right').text(JSPC.dict.get('default.informations', JSPC.currLanguage))
 

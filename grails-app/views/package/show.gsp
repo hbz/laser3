@@ -40,7 +40,7 @@
 
         <div class="eleven wide column">
             <div class="la-inline-lists">
-                <div class="ui two cards">
+                <div class="ui two doubling stackable cards">
                     <div class="ui card la-time-card">
                         <div class="content">
                             <dl>
@@ -60,9 +60,12 @@
                             <dl>
                                 <dt>${message(code: 'package.curatoryGroup.label')}</dt>
                                 <dd>
-                                    <div class="ui bulleted list">
+                                    <div class="ui list">
                                         <g:each in="${packageInstanceRecord.curatoryGroups}" var="curatoryGroup">
-                                            <div class="item"><g:link url="${editUrl}resource/show/${curatoryGroup.curatoryGroup}">${curatoryGroup.name} ${curatoryGroup.type ? "(${curatoryGroup.type})" : ""}</g:link></div>
+                                            <div class="item">
+                                                ${curatoryGroup.name} ${curatoryGroup.type ? "(${curatoryGroup.type})" : ""}
+                                                <ui:wekbIconLink type="curatoryGroup" gokbId="${curatoryGroup.curatoryGroup}"/>
+                                            </div>
                                         </g:each>
                                     </div>
                                 </dd>
@@ -77,19 +80,12 @@
                                 </dd>
                             </dl>
                             <dl>
-                                <dt>${message(code: 'package.source.label')}</dt>
-                                <dd>
-                                    <g:if test="${packageInstanceRecord.source?.automaticUpdates}">
-                                        <g:message code="package.index.result.automaticUpdates"/>
-                                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                              data-content="${packageInstanceRecord.source.frequency}">
-                                            <i class="question circle icon"></i>
-                                        </span>
-                                    </g:if>
-                                    <g:else>
-                                        <g:message code="package.index.result.noAutomaticUpdates"/>
-                                    </g:else>
-                                </dd>
+                                <dt>${message(code: 'package.breakable')}</dt>
+                                <dd>${packageInstanceRecord.breakable ? RefdataValue.getByValueAndCategory(packageInstanceRecord.breakable, RDConstants.PACKAGE_BREAKABLE).getI10n("value") : message(code: 'default.not.available')}</dd>
+                            </dl>
+                            <dl>
+                                <dt>${message(code: 'package.contentType.label')}</dt>
+                                <dd>${packageInstance.contentType?.getI10n("value")}</dd>
                             </dl>
                             <dl>
                                 <dt>${message(code: 'package.file')}</dt>
@@ -100,14 +96,6 @@
 
                     <div class="ui card">
                         <div class="content">
-                            <dl>
-                                <dt>${message(code: 'package.contentType.label')}</dt>
-                                <dd>${packageInstance.contentType?.getI10n("value")}</dd>
-                            </dl>
-                            <dl>
-                                <dt>${message(code: 'package.breakable')}</dt>
-                                <dd>${packageInstanceRecord.breakable ? RefdataValue.getByValueAndCategory(packageInstanceRecord.breakable, RDConstants.PACKAGE_BREAKABLE).getI10n("value") : message(code: 'default.not.available')}</dd>
-                            </dl>
                             <%--<dl>
                                 <dt>${message(code: 'package.consistent')}</dt>
                                 <dd>${packageInstanceRecord.consistent ? RefdataValue.getByValueAndCategory(packageInstanceRecord.consistent, RDConstants.PACKAGE_CONSISTENT).getI10n("value") : message(code: 'default.not.available')}</dd>
@@ -150,7 +138,15 @@
                             </dl>
                             <dl>
                                 <dt>${message(code: 'package.openAccess.label')}</dt>
-                                <dd>${packageInstanceRecord.openAccess ? RefdataValue.getByValueAndCategory(packageInstanceRecord.openAccess, RDConstants.LICENSE_OA_TYPE)?.getI10n("value") : RefdataValue.getByValueAndCategory('Empty', RDConstants.LICENSE_OA_TYPE).getI10n("value")}</dd>
+                                <dd>${packageInstanceRecord.openAccess ? RefdataValue.getByValueAndCategory(packageInstanceRecord.openAccess, RDConstants.LICENSE_OA_TYPE)?.getI10n("value") : RDStore.LICENSE_OA_TYPE_EMPTY.getI10n("value")}</dd>
+                            </dl>
+                            <dl>
+                                <dt>${message(code: 'package.freeTrial.label')}</dt>
+                                <dd>${packageInstanceRecord.freeTrial ? RefdataValue.getByValueAndCategory(packageInstanceRecord.freeTrial,RDConstants.Y_N).getI10n("value") : message(code: 'default.not.available')}</dd>
+                            </dl>
+                            <dl>
+                                <dt>${message(code: 'package.freeTrialPhase.label')}</dt>
+                                <dd>${packageInstanceRecord.freeTrialPhase ?: message(code: 'default.not.available')}</dd>
                             </dl>
                             <dl>
                                 <dt>${message(code: 'package.ddc.label')}</dt>
@@ -184,12 +180,59 @@
 
                 <div class="ui card">
                     <div class="content">
+                        <h2 class="ui header">${message(code: 'package.source.label')}</h2>
+                        <g:if test="${packageInstanceRecord?.source}">
+                            <div class="ui accordion la-accordion-showMore">
+                                <div class="ui raised segments la-accordion-segments">
+                                    <div class="ui fluid segment title">
+                                        ${packageInstanceRecord.source.name} <ui:wekbIconLink type="source" gokbId="${packageInstanceRecord.source.uuid}"/>
+                                        <div class="ui icon blue button la-modern-button ${buttonColor} la-js-dont-hide-button la-popup-tooltip la-delay"
+                                             data-content="${message(code: 'platform.details')}">
+                                            <i class="ui angle double down icon"></i>
+                                        </div>
+                                    </div>
+                                    <div class="ui fluid segment content">
+                                        <dl>
+                                            <dt><g:message code="package.source.url.label"/></dt>
+                                            <dd>
+                                                <g:if test="${packageInstanceRecord.source.url}">
+                                                    ${packageInstanceRecord.source.url} <ui:linkWithIcon target="_blank" href="${packageInstanceRecord.source.url}"/>
+                                                </g:if>
+                                            </dd>
+                                        </dl>
+                                        <dl>
+                                            <dt><g:message code="package.source.frequency"/></dt>
+                                            <dd>${packageInstanceRecord.source.frequency ? RefdataValue.getByValueAndCategory(packageInstanceRecord.source.frequency, RDConstants.PLATFORM_STATISTICS_FREQUENCY)?.getI10n('value') : packageInstanceRecord.source.frequency}</dd>
+                                        </dl>
+                                        <dl>
+                                            <dt><g:message code="package.source.automaticUpdates"/></dt>
+                                            <dd>${Boolean.valueOf(packageInstanceRecord.source.automaticUpdates) ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}</dd>
+                                        </dl>
+                                        <dl>
+                                            <dt><g:message code="package.source.lastRun"/></dt>
+                                            <dd>
+                                                <g:if test="${packageInstanceRecord.source.lastRun}">
+                                                    <g:set var="sourceLastRun" value="${DateUtils.parseDateGeneric(packageInstanceRecord.source.lastRun)}"/>
+                                                    <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${sourceLastRun}"/>
+                                                </g:if>
+                                            </dd>
+                                        </dl>
+                                    </div>
+                                </div>
+                            </div>
+                        </g:if>
+                    </div>
+                </div>
+
+                <div class="ui card">
+                    <div class="content">
                         <h2 class="ui header">${message(code: 'platform.label')}</h2>
                         <g:if test="${platformInstanceRecord}">
                             <div class="ui accordion la-accordion-showMore">
                                 <div class="ui raised segments la-accordion-segments">
                                     <div class="ui fluid segment title">
                                         <g:link controller="platform" action="show" id="${platformInstanceRecord.id}">${platformInstanceRecord.name}</g:link>
+                                        <ui:wekbIconLink type="platform" gokbId="${platformInstanceRecord.uuid}"/>
                                         <g:if test="${platformInstanceRecord.primaryUrl}">
                                             <ui:linkWithIcon href="${platformInstanceRecord.primaryUrl?.startsWith('http') ? platformInstanceRecord.primaryUrl : 'http://' + platformInstanceRecord.primaryUrl}"/>
                                         </g:if>
@@ -223,6 +266,16 @@
                                             <dd>${platformInstanceRecord.shibbolethAuthentication ? RefdataValue.getByValueAndCategory(platformInstanceRecord.shibbolethAuthentication, RDConstants.Y_N).getI10n("value") : message(code: 'default.not.available')}</dd>
                                         </dl>
                                         <dl>
+                                            <dt><g:message code="platform.auth.shibboleth.federations"/></dt>
+                                            <dd>
+                                                <ul>
+                                                    <g:each in="${platformInstanceRecord.federations}" var="fedRec">
+                                                        <li>${fedRec.federation}</li>
+                                                    </g:each>
+                                                </ul>
+                                            </dd>
+                                        </dl>
+                                        <dl>
                                             <dt><g:message code="platform.auth.userPass.supported"/></dt>
                                             <dd>${platformInstanceRecord.passwordAuthentication ? RefdataValue.getByValueAndCategory(platformInstanceRecord.passwordAuthentication, RDConstants.Y_N).getI10n("value") : message(code: 'default.not.available')}</dd>
                                         </dl>
@@ -254,7 +307,7 @@
                                                 <dt><g:message code="platform.stats.adminURL"/></dt>
                                                 <dd>
                                                     <g:if test="${platformInstanceRecord.statisticsAdminPortalUrl.startsWith('http')}">
-                                                        ${platformInstanceRecord.statisticsAdminPortalUrl} <a href="${platformInstanceRecord.statisticsAdminPortalUrl}"><i title="${message(code: 'platform.stats.adminURL')} Link" class="external alternate icon"></i></a>
+                                                        ${platformInstanceRecord.statisticsAdminPortalUrl} <ui:linkWithIcon href="${platformInstanceRecord.statisticsAdminPortalUrl}"/>
                                                     </g:if>
                                                     <g:else>
                                                         <g:message code="default.url.invalid"/>
@@ -279,7 +332,7 @@
                                                 <dt><g:message code="platform.stats.counter.registryURL"/></dt>
                                                 <dd>
                                                     <g:if test="${platformInstanceRecord.counterRegistryUrl.startsWith('http')}">
-                                                        ${platformInstanceRecord.counterRegistryUrl} <a href="${platformInstanceRecord.counterRegistryUrl}"><i title="${message(code: 'platform.stats.counter.registryURL')} Link" class="external alternate icon"></i></a>
+                                                        ${platformInstanceRecord.counterRegistryUrl} <ui:linkWithIcon href="${platformInstanceRecord.counterRegistryUrl}"/>
                                                     </g:if>
                                                     <g:else>
                                                         <g:message code="default.url.invalid"/>
@@ -316,7 +369,7 @@
                                                 <dt><g:message code="platform.stats.counter.r4serverURL"/></dt>
                                                 <dd>
                                                     <g:if test="${platformInstanceRecord.counterR4SushiServerUrl.startsWith('http')}">
-                                                        ${platformInstanceRecord.counterR4SushiServerUrl} <a href="${platformInstanceRecord.counterR4SushiServerUrl}"><i title="${message(code: 'platform.stats.counter.r4serverURL')} Link" class="external alternate icon"></i></a>
+                                                        ${platformInstanceRecord.counterR4SushiServerUrl} <ui:linkWithIcon href="${platformInstanceRecord.counterR4SushiServerUrl}"/>
                                                     </g:if>
                                                     <g:else>
                                                         ${platformInstanceRecord.counterR4SushiServerUrl}
@@ -329,7 +382,7 @@
                                                 <dt><g:message code="platform.stats.counter.r5serverURL"/></dt>
                                                 <dd>
                                                     <g:if test="${platformInstanceRecord.counterR5SushiServerUrl.startsWith('http')}">
-                                                        ${platformInstanceRecord.counterR5SushiServerUrl} <a href="${platformInstanceRecord.counterR5SushiServerUrl}"><i title="${message(code: 'platform.stats.counter.r5serverURL')} Link" class="external alternate icon"></i></a>
+                                                        ${platformInstanceRecord.counterR5SushiServerUrl} <ui:linkWithIcon href="${platformInstanceRecord.counterR5SushiServerUrl}"/>
                                                     </g:if>
                                                     <g:else>
                                                         ${platformInstanceRecord.counterR5SushiServerUrl}
@@ -447,7 +500,7 @@
                         <div class="ui card ">
                             <div class="content">
                                 <h2 class="ui header">${message(code: 'gasco.contacts.plural')}</h2>
-                                <table class="ui table">
+                                <table class="ui compact table">
                                     <g:each in="${gascoContacts}" var="entry">
                                         <g:set var="gascoContact" value="${entry.getValue()}"/>
                                         <g:each in ="${gascoContact.personRoles}" var="personRole">
@@ -485,7 +538,7 @@
                                                                                 ]}" />
                                                                             <%--<div class="js-copyTriggerParent">
                                                                                 <i class="ui icon envelope outline la-list-icon js-copyTrigger"></i>
-                                                                                <span  class="la-popup-tooltip la-delay" data-position="right center " data-content="Mail senden an ${person?.getFirst_name()} ${person?.getLast_name()}">
+                                                                                <span class="la-popup-tooltip la-delay" data-position="right center " data-content="Mail senden an ${person?.getFirst_name()} ${person?.getLast_name()}">
                                                                                     <a class="la-break-all js-copyTopic" href="mailto:${prsContact?.content}" >${prsContact?.content}</a>
                                                                                 </span>
                                                                             </div>--%>
@@ -509,7 +562,7 @@
         </aside>
 
     %{-- <aside class="four wide column la-sidekick">
-         <laser:render template="/templates/aside1" model="${[ownobj:packageInstance, owntp:'pkg']}" />
+         <laser:render template="/templates/sidebar/aside" model="${[ownobj:packageInstance, owntp:'pkg']}" />
      </aside><!-- .four -->--}%
 
     </div><!-- .grid -->

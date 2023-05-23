@@ -1,4 +1,4 @@
-<%@ page import="de.laser.PersonRole; de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.CustomerTypeService; de.laser.PersonRole; de.laser.storage.RDStore;" %>
 <laser:serviceInjection/>
 
 <g:set var="showOnlyPublic" value="${true}"/>
@@ -38,15 +38,15 @@
     </div>
     <div class="card">
         <div class="content">
-            <div class="header la-primary-header">${RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS.getI10n('value')}</div>
+            <div class="header la-primary-header">${RDStore.PRS_FUNC_FC_BILLING_ADDRESS.getI10n('value')}</div>
 
             <div class="description">
                 <g:set var="persons"
-                       value="${orgInstance.getContactPersonsByFunctionType(showOnlyPublic, RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS)}"/>
+                       value="${orgInstance.getContactPersonsByFunctionType(showOnlyPublic, RDStore.PRS_FUNC_FC_BILLING_ADDRESS)}"/>
                 <g:each in="${persons}" var="prs">
                     <laser:render template="/templates/cpa/person_full_details" model="${[
                             person                 : prs,
-                            personRole             : PersonRole.findByOrgAndFunctionTypeAndPrs(orgInstance, RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS, prs),
+                            personRole             : PersonRole.findByOrgAndFunctionTypeAndPrs(orgInstance, RDStore.PRS_FUNC_FC_BILLING_ADDRESS, prs),
                             personContext          : orgInstance,
                             tmplShowDeleteButton   : true,
                             tmplShowFunctions      : false,
@@ -61,7 +61,7 @@
                     ]}"/>
                 </g:each>
                 <g:if test="${!persons}">
-                    <g:message code="person.function.notExist" args="[RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS.getI10n('value')]"/>
+                    <g:message code="person.function.notExist" args="[RDStore.PRS_FUNC_FC_BILLING_ADDRESS.getI10n('value')]"/>
                 </g:if>
             </div>
         </div>
@@ -70,10 +70,10 @@
     <div class="card">
         <div class="content">
             <div class="header la-primary-header">
-                ${RDStore.PRS_FUNC_TECHNICAL_SUPPORT.getI10n('value')}
                 <g:if test="${existsWekbRecord == true}">
                     <i class="ui light grey la-gokb icon la-popup-tooltip" data-content="${message(code:'org.isWekbCurated.header.label')}"></i>
                 </g:if>
+                ${RDStore.PRS_FUNC_TECHNICAL_SUPPORT.getI10n('value')}
             </div>
 
             <div class="description">
@@ -85,7 +85,7 @@
                             person                 : prs,
                             personRole             : PersonRole.findByOrgAndFunctionTypeAndPrs(orgInstance, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, prs),
                             personContext          : orgInstance,
-                            tmplShowDeleteButton   : (isProviderOrAgency && (accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN'))),
+                            tmplShowDeleteButton   : (isProviderOrAgency && (accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC ))),
                             tmplShowFunctions      : false,
                             tmplShowPositions      : true,
                             tmplShowResponsiblities: true,
@@ -94,7 +94,7 @@
                             controller             : 'organisation',
                             action                 : 'show',
                             id                     : orgInstance.id,
-                            editable               : (isProviderOrAgency && accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN') && !existsWekbRecord),
+                            editable               : (isProviderOrAgency && accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC ) && !existsWekbRecord),
                             noSelection            : true
                     ]}"/>
                 </g:each>
@@ -108,10 +108,10 @@
         <div class="card">
             <div class="content">
                 <div class="header la-primary-header">
-                    ${RDStore.PRS_FUNC_SERVICE_SUPPORT.getI10n('value')}
                     <g:if test="${existsWekbRecord == true}">
                         <i class="ui light grey la-gokb icon la-popup-tooltip" data-content="${message(code:'org.isWekbCurated.header.label')}"></i>
                     </g:if>
+                    ${RDStore.PRS_FUNC_SERVICE_SUPPORT.getI10n('value')}
                 </div>
 
                 <div class="description">
@@ -122,7 +122,7 @@
                                 person                 : prs,
                                 personRole             : PersonRole.findByOrgAndFunctionTypeAndPrs(orgInstance, RDStore.PRS_FUNC_SERVICE_SUPPORT, prs),
                                 personContext          : orgInstance,
-                                tmplShowDeleteButton   : (isProviderOrAgency && (accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN'))),
+                                tmplShowDeleteButton   : (isProviderOrAgency && (accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC ))),
                                 tmplShowFunctions      : false,
                                 tmplShowPositions      : true,
                                 tmplShowResponsiblities: true,
@@ -131,7 +131,7 @@
                                 controller             : 'organisation',
                                 action                 : 'show',
                                 id                     : orgInstance.id,
-                                editable               : (isProviderOrAgency && accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN') && !existsWekbRecord),
+                                editable               : (isProviderOrAgency && accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC ) && !existsWekbRecord),
                                 noSelection            : true
                         ]}"/>
                     </g:each>
@@ -144,21 +144,21 @@
         <div class="card">
             <div class="content">
                 <div class="header la-primary-header">
-                    ${RDStore.PRS_FUNC_METADATA.getI10n('value')}
                     <g:if test="${existsWekbRecord == true}">
                         <i class="ui light grey la-gokb icon la-popup-tooltip" data-content="${message(code:'org.isWekbCurated.header.label')}"></i>
                     </g:if>
+                    ${RDStore.PRS_FUNC_METADATA.getI10n('value')}
                 </div>
 
                 <div class="description">
                     <g:set var="serviceSupports"
                            value="${orgInstance.getContactPersonsByFunctionType(showOnlyPublic, RDStore.PRS_FUNC_METADATA, existsWekbRecord)}"/>
                     <g:each in="${serviceSupports}" var="prs">
-                        <g:render template="/templates/cpa/person_full_details" model="${[
+                        <laser:render template="/templates/cpa/person_full_details" model="${[
                                 person                 : prs,
                                 personRole             : PersonRole.findByOrgAndFunctionTypeAndPrs(orgInstance, RDStore.PRS_FUNC_METADATA, prs),
                                 personContext          : orgInstance,
-                                tmplShowDeleteButton   : (isProviderOrAgency && (accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN'))),
+                                tmplShowDeleteButton   : (isProviderOrAgency && (accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC ))),
                                 tmplShowFunctions      : false,
                                 tmplShowPositions      : true,
                                 tmplShowResponsiblities: true,
@@ -167,7 +167,7 @@
                                 controller             : 'organisation',
                                 action                 : 'show',
                                 id                     : orgInstance.id,
-                                editable               : (isProviderOrAgency && accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN') && !existsWekbRecord),
+                                editable               : (isProviderOrAgency && accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC ) && !existsWekbRecord),
                                 noSelection            : true
                         ]}"/>
                     </g:each>

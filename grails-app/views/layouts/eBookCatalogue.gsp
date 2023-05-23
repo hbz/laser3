@@ -9,7 +9,7 @@
 
     <asset:stylesheet src="eBookCatalogue.css"/><laser:javascript src="eBookCatalogue.js"/>%{-- dont move --}%
 
-    <tmpl:/layouts/favicon />
+    <g:render template="/layouts/favicon" />
 </head>
 
 <body>

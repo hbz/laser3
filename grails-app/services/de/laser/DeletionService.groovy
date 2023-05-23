@@ -4,7 +4,6 @@ package de.laser
 import de.laser.auth.User
 import de.laser.finance.*
 import de.laser.stats.Fact
-import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.oap.OrgAccessPoint
 import de.laser.properties.*
@@ -13,8 +12,6 @@ import de.laser.survey.SurveyConfigProperties
 import de.laser.survey.SurveyInfo
 import de.laser.survey.SurveyOrg
 import de.laser.survey.SurveyResult
-import de.laser.stats.Counter4Report
-import de.laser.stats.Counter5Report
 import de.laser.system.SystemProfiler
 import de.laser.titles.TitleHistoryEvent
 import de.laser.titles.TitleHistoryEventParticipant
@@ -79,7 +76,7 @@ class DeletionService {
         // collecting informations
 
         result.info = []
-        result.info << ['Referenzen: Teilnehmer', ref_instanceOf, FLAG_BLOCKER]
+        result.info << ['Referenzen: Einrichtungen', ref_instanceOf, FLAG_BLOCKER]
 
         result.info << ['Links: Verträge bzw. Lizenzen', links]
         result.info << ['Aufgaben', tasks]
@@ -270,7 +267,7 @@ class DeletionService {
 
         result.info = []
 
-        result.info << ['Referenzen: Teilnehmer', ref_instanceOf, FLAG_BLOCKER]
+        result.info << ['Referenzen: Einrichtungen', ref_instanceOf, FLAG_BLOCKER]
         result.info << ['Referenzen: Vorgänger/Nachfolger', links.findAll { it.linkType == RDStore.LINKTYPE_FOLLOWS }]
 
         result.info << ['Links: Lizenzen', links.findAll { it.linkType == RDStore.LINKTYPE_LICENSE }]
@@ -423,7 +420,7 @@ class DeletionService {
                     // ----- keep foreign object, change state
 
                     nonDeletedCosts.each{ tmp ->
-                        tmp.costItemStatus = RefdataValue.getByValueAndCategory('Deleted', RDConstants.COST_ITEM_STATUS)
+                        tmp.costItemStatus = RDStore.COST_ITEM_DELETED
                         tmp.sub = null
                         tmp.subPkg = null
                         tmp.issueEntitlement = null

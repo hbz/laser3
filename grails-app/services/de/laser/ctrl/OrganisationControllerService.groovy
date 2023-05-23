@@ -7,7 +7,6 @@ import de.laser.remote.ApiSource
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.LocaleUtils
-import de.laser.workflow.WfWorkflow
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -156,21 +155,7 @@ class OrganisationControllerService {
     Map<String,Object> workflows(OrganisationController controller, GrailsParameterMap params) {
         Map<String, Object> result = getResultGenericsAndCheckAccess(controller, params)
 
-        if (params.cmd) {
-            String[] cmd = params.cmd.split(':')
-            if (cmd[0] in ['edit']) {
-                result.putAll( workflowService.cmd(params) ) // @ workflows
-            }
-            else {
-                result.putAll( workflowService.usage(params) ) // @ workflows
-            }
-        }
-        if (params.info) {
-            result.info = params.info // @ currentWorkflows @ dashboard
-        }
-
-        result.workflows = workflowService.sortByLastUpdated( WfWorkflow.findAllByOrgAndOwner(result.orgInstance as Org, result.contextOrg as Org) )
-        result.workflowCount = result.workflows.size()
+        workflowService.executeCmdAndUpdateResult(result, params)
 
         [result: result, status: (result ? STATUS_OK : STATUS_ERROR)]
     }
@@ -225,10 +210,10 @@ class OrganisationControllerService {
                                       isGrantedOrgRoleAdmin: SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'),
                                       contextCustomerType:org.getCustomerType()]
 
-        //if(result.contextCustomerType == 'ORG_CONSORTIUM')
+        //if(result.contextCustomerType == 'ORG_CONSORTIUM_BASIC')
 
         result.availableConfigs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.SHARE_CONFIGURATION)
-        if(result.contextCustomerType == "ORG_CONSORTIUM"){
+        if (org.isCustomerType_Consortium()) {
             result.availableConfigs-RDStore.SHARE_CONF_CONSORTIUM
         }
 
@@ -241,12 +226,12 @@ class OrganisationControllerService {
             if(result.orgInstance.gokbId) {
                 ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
                 result.editUrl = apiSource.editUrl.endsWith('/') ? apiSource.editUrl : apiSource.editUrl+'/'
-                Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/find?uuid=${result.orgInstance.gokbId}")
+                Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: result.orgInstance.gokbId])
                 if (queryResult.error && queryResult.error == 404) {
                     result.error = messageSource.getMessage('wekb.error.404', null, LocaleUtils.getCurrentLocale())
                 }
                 else if (queryResult.warning) {
-                    List records = queryResult.warning.records
+                    List records = queryResult.warning.result
                     result.orgInstanceRecord = records ? records[0] : [:]
                 }
             }
@@ -263,9 +248,9 @@ class OrganisationControllerService {
                     result.consortialView = true
             }
             //restrictions hold if viewed org is not the context org
-            if (!result.inContextOrg && !accessService.checkPerm("ORG_CONSORTIUM") && !SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN")) {
+            if (!result.inContextOrg && !accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && !SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
                 //restrictions further concern only single users or consortium members, not consortia
-                if (!accessService.checkPerm("ORG_CONSORTIUM") && result.orgInstance.getCustomerType() in ["ORG_BASIC_MEMBER","ORG_INST"]) {
+                if (!accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && result.orgInstance.isCustomerType_Inst()) {
                     return null
                 }
             }
@@ -280,14 +265,13 @@ class OrganisationControllerService {
         int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.orgInstance).size()
         result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
 
-        result.notesCount = docstoreService.getNotes(result.orgInstance, result.contextOrg).size()
-
-        result.workflowCount = WfWorkflow.executeQuery(
-                'select count(wf) from WfWorkflow wf where wf.org = :org and wf.owner = :ctxOrg',
-                [org: result.orgInstance, ctxOrg: result.contextOrg]
-        )[0]
+        result.notesCount       = docstoreService.getNotes(result.orgInstance, result.contextOrg).size()
+        result.checklistCount   = workflowService.getWorkflowCount(result.orgInstance, result.contextOrg)
 
         result.links = linksGenerationService.getOrgLinks(result.orgInstance)
+        Map<String, List> nav = (linksGenerationService.generateNavigation(result.orgInstance, true))
+        result.navPrevOrg = nav.prevLink
+        result.navNextOrg = nav.nextLink
         result.targetCustomerType = result.orgInstance.getCustomerType()
         result.allOrgTypeIds = result.orgInstance.getAllOrgTypeIds()
         result.isProviderOrAgency = (RDStore.OT_PROVIDER.id in result.allOrgTypeIds) || (RDStore.OT_AGENCY.id in result.allOrgTypeIds)

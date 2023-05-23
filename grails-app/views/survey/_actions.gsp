@@ -1,8 +1,8 @@
-<%@ page import="de.laser.storage.RDStore; de.laser.Org" %>
+<%@ page import="de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.Org" %>
 <laser:serviceInjection/>
 
 <ui:actionsDropdown>
-    <g:if test="${contextService.getUser().hasAffiliation("INST_EDITOR")}">
+    <g:if test="${contextService.getUser().hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')}">
         <g:if test="${actionName == 'currentSurveysConsortia' || actionName == 'workflowsSurveysConsortia'}">
 
             <laser:render template="actionsCreate"/>
@@ -10,9 +10,9 @@
         </g:if>
         <g:else>
 
+            <ui:actionsDropdownItem message="template.addNote" data-ui="modal" href="#modalCreateNote" />
             <ui:actionsDropdownItem message="task.create.new" data-ui="modal" href="#modalCreateTask" />
             <ui:actionsDropdownItem message="template.documents.add" data-ui="modal" href="#modalCreateDocument" />
-            <ui:actionsDropdownItem message="template.addNote" data-ui="modal" href="#modalCreateNote" />
             <div class="divider"></div>
 
             <g:if test="${surveyInfo.type.id != RDStore.SURVEY_TYPE_RENEWAL.id}">
@@ -35,8 +35,8 @@
                 <ui:actionsDropdownItem controller="survey" action="processOpenSurvey" params="[id: params.id]"
                                            message="openSurvey.button"
                                            tooltip="${message(code: "openSurvey.button.info2")}"/>
-                <ui:actionsDropdownItem controller="survey" action="processOpenSurveyNow"
-                                           params="[id: params.id]"
+                <ui:actionsDropdownItem controller="survey" action="processOpenSurvey"
+                                           params="[id: params.id, startNow: true]"
                                            message="openSurveyNow.button"
                                            tooltip="${message(code: "openSurveyNow.button.info2")}"/>
                 <div class="ui divider"></div>
@@ -48,8 +48,8 @@
                                                    message="openSurvey.button"
                                                    tooltip="${message(code: "openSurvey.button.info")}"/>
 
-                <ui:actionsDropdownItemDisabled controller="survey" action="processOpenSurveyNow"
-                                                   params="[id: params.id]"
+                <ui:actionsDropdownItemDisabled controller="survey" action="processOpenSurvey"
+                                                   params="[id: params.id, startNow: true]"
                                                    message="openSurveyNow.button"
                                                    tooltip="${message(code: "openSurveyNow.button.info")}"/>
                 <div class="ui divider"></div>
@@ -162,54 +162,8 @@
     </ui:modal>
 </g:if>
 
-<g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR') && (actionName != 'currentSurveysConsortia' && actionName != 'workflowsSurveysConsortia')}">
-    <laser:render template="/templates/documents/modal" model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
-    <laser:render template="/templates/tasks/modal_create" model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
+<g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_PRO, 'INST_EDITOR') && (actionName != 'currentSurveysConsortia' && actionName != 'workflowsSurveysConsortia')}">
     <laser:render template="/templates/notes/modal_create" model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
+    <laser:render template="/templates/tasks/modal_create" model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
+    <laser:render template="/templates/documents/modal" model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
 </g:if>
-
-<laser:script file="${this.getGroovyPageFileName()}">
-
-$('.trigger-modal').on('click', function(e) {
-    e.preventDefault();
-    var orgIdList = $(this).attr('data-orgIdList');
-    var targetId = $(this).attr('data-targetId');
-
-    if (orgIdList && targetId) {
-        $("html").css("cursor", "wait");
-
-        $.ajax({
-            url: "<g:createLink controller='survey' action='copyEmailaddresses'/>",
-            data: {
-                orgListIDs: orgIdList,
-                targetId: targetId
-            }
-        }).done( function(data) {
-            console.log(targetId)
-            $('.ui.dimmer.modals > #' + targetId).remove();
-            $('#dynamicModalContainer').empty().html(data);
-
-            $('#dynamicModalContainer .ui.modal').modal({
-
-                onVisible: function () {
-                    console.log(targetId)
-                    r2d2.initDynamicUiStuff('#' + targetId);
-                    r2d2.initDynamicXEditableStuff('#' + targetId);
-                }
-                ,
-                detachable: true,
-                autofocus: false,
-                closable: false,
-                transition: 'scale',
-                onApprove : function() {
-                    $(this).find('.ui.form').submit();
-                    return false;
-                }
-            }).modal('show');
-        }).always( function() {
-            $("html").css("cursor", "auto");
-        });
-    }
-})
-
-</laser:script>

@@ -276,7 +276,7 @@
                     <g:set var="oldCostItem" value="${0.0}"/>
                     <g:set var="oldCostItemAfterTax" value="${0.0}"/>
                     <g:set var="costElement"
-                           value="${RefdataValue.getByValueAndCategory('price: consortial price', de.laser.storage.RDConstants.COST_ITEM_ELEMENT)}"/>
+                           value="${RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE}"/>
 
                     <g:if test="${participant.surveyCostItem}">
                         <g:set var="costElement"

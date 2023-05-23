@@ -11,7 +11,7 @@
 %{--        </div>--}%
 
         <div id="note-wrapper-${noteInstance.id}">
-            <article id="note-${noteInstance.id}" class="ui segment trumbowyg-editor trumbowyg-reset-css" style="margin:0; padding:0.5em 1em; box-shadow:none;">
+            <article id="note-${noteInstance.id}" class="trumbowyg-editor trumbowyg-reset-css" style="margin:0; padding:0.5em 1em; box-shadow:none;">
                 ${raw(noteInstance.content)}
             </article>
             <laser:script file="${this.getGroovyPageFileName()}">

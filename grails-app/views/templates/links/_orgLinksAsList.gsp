@@ -1,7 +1,7 @@
 <%@ page import="de.laser.PersonRole; de.laser.RefdataValue; de.laser.Person; de.laser.Contact; de.laser.storage.RDConstants; de.laser.storage.RDStore; de.laser.remote.ApiSource" %>
 <laser:serviceInjection />
 <g:set var="wekbAPI" value="${ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"/>
-<table class="ui table">
+<table class="ui compact table">
     <g:each in="${roleLinks.sort{it.roleType.id}}" var="role">
         <g:if test="${role.org}">
             <g:set var="cssId" value="prsLinksModal-${role.org.id}-${role.roleType.id}" />
@@ -40,7 +40,7 @@
                             </g:if>
                             <g:else>
                                 <span class="la-js-editmode-container">
-                                    <g:link  class="ui icon button blue la-modern-button la-selectable-button la-popup-tooltip la-delay  "
+                                    <g:link class="ui icon button blue la-modern-button la-selectable-button la-popup-tooltip la-delay  "
                                             controller="ajax" action="toggleShare"
                                             params="${[owner:genericOIDService.getOID(roleObject), sharedObject:genericOIDService.getOID(role), ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]}"
                                              data-position="top right" data-content="${message(code:'property.share.tooltip.off')}"
@@ -63,7 +63,7 @@
                         </g:if>
 
                         <g:if test="${!role.isShared && role.sharedFrom}">
-                            <span  class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.sharedFrom')}">
+                            <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.sharedFrom')}">
                                 <i class="grey alternate share icon"></i>
                             </span>
                         </g:if>
@@ -108,9 +108,9 @@
                                                 <div class="two wide column">
                                                     <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
                                                 </div>
-                                                <div class="twelve wide column">
+                                                <div class="thirteen wide column">
                                                     <div class="ui  label">
-                                                        ${(RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)).getI10n('value')}
+                                                        ${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')}
                                                     </div>
                                                     <div class="ui header">
                                                         ${func}
@@ -154,9 +154,9 @@
                                                             <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
                                                         </g:else>
                                                     </div>
-                                                    <div class="twelve wide column">
+                                                    <div class="thirteen wide column">
                                                         <div class="ui  label">
-                                                            ${(RefdataValue.getByValueAndCategory('Technical Support', RDConstants.PERSON_FUNCTION)).getI10n('value')}
+                                                            ${RDStore.PRS_FUNC_TECHNICAL_SUPPORT.getI10n('value')}
                                                         </div>
                                                         <div class="ui header">
                                                             ${func}
@@ -184,9 +184,9 @@
                                                             <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
                                                         </g:else>
                                                     </div>
-                                                    <div class="twelve wide column">
+                                                    <div class="thirteen wide column">
                                                         <div class="ui  label">
-                                                            ${(RefdataValue.getByValueAndCategory('Service Support', RDConstants.PERSON_FUNCTION)).getI10n('value')}
+                                                            ${RDStore.PRS_FUNC_SERVICE_SUPPORT.getI10n('value')}
                                                         </div>
                                                         <div class="ui header">
                                                             ${func}
@@ -214,7 +214,7 @@
                                                             <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
                                                         </g:else>
                                                     </div>
-                                                    <div class="twelve wide column">
+                                                    <div class="thirteen wide column">
                                                         <div class="ui  label">
                                                             ${(RefdataValue.getByValueAndCategory('Metadata Contact', RDConstants.PERSON_FUNCTION)).getI10n('value')}
                                                         </div>
@@ -240,7 +240,7 @@
                                                 <div class="two wide column">
                                                     <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
                                                 </div>
-                                                <div class="twelve wide column">
+                                                <div class="thirteen wide column">
                                                     <div class="ui  label">
                                                         ${(RefdataValue.getByValue(roleRespValue)).getI10n('value')}
                                                     </div>
@@ -292,9 +292,9 @@
                                                 <div class="two wide column">
                                                     <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
                                                 </div>
-                                                <div class="twelve wide column">
+                                                <div class="thirteen wide column">
                                                     <div class="ui  label">
-                                                        ${(RefdataValue.getByValueAndCategory('General contact person', RDConstants.PERSON_FUNCTION)).getI10n('value')}
+                                                        ${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.getI10n('value')}
                                                     </div>
                                                     <div class="ui header">
                                                         ${func}
@@ -318,9 +318,9 @@
                                                     <div class="two wide column">
                                                         <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
                                                     </div>
-                                                    <div class="twelve wide column">
+                                                    <div class="thirteen wide column">
                                                         <div class="ui  label">
-                                                            ${(RefdataValue.getByValueAndCategory('Technical Support', RDConstants.PERSON_FUNCTION)).getI10n('value')}
+                                                            ${RDStore.PRS_FUNC_TECHNICAL_SUPPORT.getI10n('value')}
                                                         </div>
                                                         <div class="ui header">
                                                             ${func}
@@ -343,9 +343,9 @@
                                                     <div class="two wide column">
                                                         <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
                                                     </div>
-                                                    <div class="twelve wide column">
+                                                    <div class="thirteen wide column">
                                                         <div class="ui  label">
-                                                            ${(RefdataValue.getByValueAndCategory('Service Support', RDConstants.PERSON_FUNCTION)).getI10n('value')}
+                                                            ${RDStore.PRS_FUNC_SERVICE_SUPPORT.getI10n('value')}
                                                         </div>
                                                         <div class="ui header">
                                                             ${func}
@@ -368,7 +368,7 @@
                                                     <div class="two wide column">
                                                         <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
                                                     </div>
-                                                    <div class="twelve wide column">
+                                                    <div class="thirteen wide column">
                                                         <div class="ui  label">
                                                             ${(RefdataValue.getByValueAndCategory('Metadata Contact', RDConstants.PERSON_FUNCTION)).getI10n('value')}
                                                         </div>

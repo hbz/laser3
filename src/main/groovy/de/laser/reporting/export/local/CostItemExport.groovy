@@ -16,7 +16,7 @@ class CostItemExport extends BaseDetailsExport {
 
     static String KEY = 'cost'
 
-    static Map<String, Object> CONFIG_ORG_CONSORTIUM = [
+    static Map<String, Object> CONFIG_ORG_CONSORTIUM_BASIC = [
 
             base : [
                     meta : [
@@ -98,7 +98,7 @@ class CostItemExport extends BaseDetailsExport {
                             content.add( ci.taxKey.taxRate + '%' )
                         }
                         else if (ci.taxKey == CostItem.TAX_TYPES.TAX_REVERSE_CHARGE) {
-                            content.add( RDStore.TAX_REVERSE_CHARGE.getI10n('value') )
+                            content.add( RDStore.TAX_TYPE_REVERSE_CHARGE.getI10n('value') )
                         }
                         else if (ci.taxKey in [CostItem.TAX_TYPES.TAX_CONTAINED_7, CostItem.TAX_TYPES.TAX_CONTAINED_19]) {
                             content.add( ci.taxKey.taxType.getI10n('value') )

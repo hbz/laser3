@@ -210,7 +210,7 @@
 
     <div class="help-section" data-help-section="subscription-x-memberSubscriptionProperty">
         <g:if test="${lang == 'de'}">
-            ${hc_property( 'Teilnehmerlizenzen', 'Teilnehmerlizenzen', 'Teilnehmerlizenzen' )}
+            ${hc_property( 'Einrichtungslizenzen', 'Einrichtungslizenzen', 'Einrichtungslizenzen' )}
         </g:if>
         <g:else>
             ${hc_property( 'Participant subscriptions', 'participant subscriptions', 'Participant subscriptions' )}
@@ -228,7 +228,7 @@
 
     <div class="help-section" data-help-section="subscription-x-memberAnnual">
         <g:if test="${lang == 'de'}">
-            ${hc_generic_annual( 'Teilnehmerlizenzen', 'Teilnehmerlizenzen', 'Teilnehmerlizenz', 'Teilnehmerlizenzen' )}
+            ${hc_generic_annual( 'Einrichtungslizenzen', 'Einrichtungslizenzen', 'Einrichtungslizenz', 'Einrichtungslizenzen' )}
         </g:if>
         <g:else>
             ${hc_generic_annual( 'participant subscriptions', 'participant subscriptions', 'participant subscription', 'Participant subscriptions' )}
@@ -256,14 +256,14 @@
 
     <div class="help-section" data-help-section="subscription-x-memberProvider">
         <g:if test="${lang == 'de'}">
-            <p class="ui header"> Anbieter von Teilnehmerlizenzen </p>
+            <p class="ui header"> Anbieter von Einrichtungslizenzen </p>
             <p>
-                Gelistet werden alle relevanten Anbieter - also Anbieter, die Teilnehmerlizenzen konkret zugeordnet werden können.
-                Genauer muss ein solcher Anbieter gleichzeitig <strong>einer Lizenz sowie der zugehörigen Teilnehmerlizenz</strong> zugeordnet sein.
-                Die Basissuche bestimmt dabei die Menge der betrachteten Lizenzen, Teilnehmerlizenzen und Anbieter.
+                Gelistet werden alle relevanten Anbieter - also Anbieter, die Einrichtungslizenzen konkret zugeordnet werden können.
+                Genauer muss ein solcher Anbieter gleichzeitig <strong>einer Lizenz sowie der zugehörigen Einrichtungslizenz</strong> zugeordnet sein.
+                Die Basissuche bestimmt dabei die Menge der betrachteten Lizenzen, Einrichtungslizenzen und Anbieter.
             </p>
             <p>
-                Teilnehmerlizenzen ohne ausgewiesenen Anbieter oder ohne passende Übereinstimmung werden in der Gruppe ${icon_pink}<strong>* keine Übereinstimmung</strong> zusammmen gefasst.
+                Einrichtungslizenzen ohne ausgewiesenen Anbieter oder ohne passende Übereinstimmung werden in der Gruppe ${icon_pink}<strong>* keine Übereinstimmung</strong> zusammmen gefasst.
             </p>
         </g:if>
         <g:else>
@@ -310,10 +310,10 @@
 
     <div class="help-section" data-help-section="subscription-x-memberSubscription">
         <g:if test="${lang == 'de'}">
-            <p class="ui header"> Teilnehmerlizenzen von Lizenzen </p>
+            <p class="ui header"> Einrichtungslizenzen von Lizenzen </p>
             <p>
-                Gelistet werden alle relevanten Lizenzen - also Lizenzen, denen entsprechende Teilnehmerlizenzen zugeordnet werden können.
-                Die Basissuche bestimmt dabei die Menge der betrachteten Lizenzen und Teilnehmerlizenzen.
+                Gelistet werden alle relevanten Lizenzen - also Lizenzen, denen entsprechende Einrichtungslizenzen zugeordnet werden können.
+                Die Basissuche bestimmt dabei die Menge der betrachteten Lizenzen und Einrichtungslizenzen.
             </p>
             <p> Ohne übereinstimmende Zuordnung sind ggf. vorhandene Lizenzen <strong>nicht</strong> im Ergebnis sichtbar. </p>
         </g:if>
@@ -329,10 +329,10 @@
 
     <div class="help-section" data-help-section="subscription-x-member">
         <g:if test="${lang == 'de'}">
-            <p class="ui header"> Teilnehmer von Lizenzen </p>
+            <p class="ui header"> Einrichtungen von Lizenzen </p>
             <p>
-                Gelistet werden alle relevanten Lizenzen - also Lizenzen, denen entsprechende Teilnehmerlizenzen mit konkreten Organisationen als Teilnehmer zugeordnet werden können.
-                Die Basissuche bestimmt dabei die Menge der betrachteten Lizenzen, Teilnehmerlizenzen und Organisationen.
+                Gelistet werden alle relevanten Lizenzen - also Lizenzen, denen entsprechende Einrichtungslizenzen mit konkreten Organisationen als Einrichtungen zugeordnet werden können.
+                Die Basissuche bestimmt dabei die Menge der betrachteten Lizenzen, Einrichtungslizenzen und Organisationen.
             </p>
             <p> Ohne übereinstimmende Zuordnung sind ggf. vorhandene Lizenzen <strong>nicht</strong> im Ergebnis sichtbar. </p>
         </g:if>
@@ -529,7 +529,7 @@
 </style>
 
 <laser:script file="${this.getGroovyPageFileName()}">
-    JSPC.callbacks.modal.show['${modalID}'] = function() {
+    JSPC.callbacks.modal.onShow['${modalID}'] = function(trigger) {
         $('#${modalID} .help-section').hide();
         $current = $('#${modalID} .help-section[data-help-section=' + JSPC.app.reporting.current.request.query + ']');
         if (! $current.length) {

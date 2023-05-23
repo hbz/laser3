@@ -3,9 +3,6 @@ package de.laser
 import de.laser.auth.User
 import de.laser.storage.RDStore
 import grails.gorm.transactions.Transactional
-import grails.plugin.springsecurity.SpringSecurityUtils
-import grails.web.servlet.mvc.GrailsParameterMap
-import org.codehaus.groovy.syntax.Numbers
 
 /**
  * This service handles retrieval and processing of contact data
@@ -18,7 +15,9 @@ class AddressbookService {
 
     AccessService accessService
     ContextService contextService
+    FilterService filterService
     PropertyService propertyService
+    UserService userService
 
     /**
      * Retrieves all private contacts for the given tenant institution
@@ -47,7 +46,7 @@ class AddressbookService {
      */
     boolean isAddressEditable(Address address, User user) {
         Org org = address.getPrs()?.tenant ?: address.org
-        accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+        userService.checkAffiliationAndCtxOrg_or_ROLEADMIN(user, org, 'INST_EDITOR')
     }
 
     /**
@@ -58,7 +57,7 @@ class AddressbookService {
      */
     boolean isContactEditable(Contact contact, User user) {
         Org org = contact.getPrs()?.tenant ?: contact.org
-        accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+        userService.checkAffiliationAndCtxOrg_or_ROLEADMIN(user, org, 'INST_EDITOR')
     }
 
     /**
@@ -68,12 +67,7 @@ class AddressbookService {
      * @return true if the user is affiliated at least as INST_EDITOR with the given tenant or is a global admin, false otherwise
      */
     boolean isPersonEditable(Person person, User user) {
-        accessService.checkMinUserOrgRole(user, person.tenant , 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
-    }
-
-    @Deprecated
-    boolean isNumbersEditable(Numbers numbers, User user) {
-        accessService.checkMinUserOrgRole(user, person.tenant , 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+        userService.checkAffiliationAndCtxOrg_or_ROLEADMIN(user, person.tenant , 'INST_EDITOR')
     }
 
     /**
@@ -112,26 +106,30 @@ class AddressbookService {
             qParams << [org: params.org]
         }
         else if(params.org && params.org instanceof String) {
-            qParts << "( genfunc_filter_matcher(pr.org.name, :name) = true or genfunc_filter_matcher(pr.org.shortname, :name) = true or genfunc_filter_matcher(pr.org.sortname, :name) = true )"
+            qParts << "( genfunc_filter_matcher(pr.org.name, :name) = true or genfunc_filter_matcher(pr.org.sortname, :name) = true )"
             qParams << [name: "${params.org}"]
         }
 
-        if (params.function){
-            qParts << "pr.functionType.id in (:selectedFunctions) "
-            qParams << [selectedFunctions: params.list('function').collect{Long.parseLong(it)}]
+        if (params.function || params.position) {
+            List<String> posParts = []
+            if (params.function){
+                posParts << "pr.functionType.id in (:selectedFunctions) "
+                qParams << [selectedFunctions: filterService.listReaderWrapper(params, 'function').collect{ it -> it instanceof String ? Long.parseLong(it) : it }]
+            }
+
+            if (params.position){
+                posParts << "pr.positionType.id in (:selectedPositions) "
+                qParams << [selectedPositions: filterService.listReaderWrapper(params, 'position').collect{ it -> it instanceof String ? Long.parseLong(it) : it }]
+            }
+            qParts << '('+posParts.join(' OR ')+')'
         }
 
-        if (params.position){
-            qParts << "pr.positionType.id in (:selectedPositions) "
-            qParams << [selectedPositions: params.list('position').collect{Long.parseLong(it)}]
+        if (params.showOnlyContactPersonForInstitution || params.exportOnlyContactPersonForInstitution){
+            qParts << "(exists (select roletype from pr.org.orgType as roletype where roletype.id = :instType ) and pr.org.sector.id = :instSector )"
+            qParams << [instSector: RDStore.O_SECTOR_HIGHER_EDU.id, instType: RDStore.OT_INSTITUTION.id]
         }
 
-        if (params.showOnlyContactPersonForInstitution){
-            qParts << "(exists (select roletype from pr.org.orgType as roletype where roletype.id = :orgType ) and pr.org.sector.id = :orgSector )"
-            qParams << [orgSector: RDStore.O_SECTOR_HIGHER_EDU.id, orgType: RDStore.OT_INSTITUTION.id]
-        }
-
-        if (params.showOnlyContactPersonForProviderAgency){
+        if (params.showOnlyContactPersonForProviderAgency || params.exportOnlyContactPersonForProviderAgency){
             qParts << "(exists (select roletype from pr.org.orgType as roletype where roletype.id in (:orgType)) and pr.org.sector.id = :orgSector )"
             qParams << [orgSector: RDStore.O_SECTOR_PUBLISHER.id, orgType: [RDStore.OT_PROVIDER.id, RDStore.OT_AGENCY.id]]
         }

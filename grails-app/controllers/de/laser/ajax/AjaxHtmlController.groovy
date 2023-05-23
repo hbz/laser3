@@ -1,15 +1,16 @@
 package de.laser.ajax
 
 import de.laser.AlternativeName
+import de.laser.CustomerTypeService
 import de.laser.DocContext
 import de.laser.GenericOIDService
 import de.laser.PendingChangeService
 import de.laser.AccessService
 import de.laser.AddressbookService
+import de.laser.WorkflowService
 import de.laser.config.ConfigDefaults
 import de.laser.config.ConfigMapper
 import de.laser.ctrl.SubscriptionControllerService
-import de.laser.interfaces.CalculatedType
 import de.laser.remote.ApiSource
 import de.laser.CacheService
 import de.laser.ContextService
@@ -67,6 +68,9 @@ import de.laser.workflow.WfWorkflow
 import de.laser.workflow.WfWorkflowPrototype
 import de.laser.workflow.WfTask
 import de.laser.workflow.WfTaskPrototype
+import de.laser.workflow.WfChecklist
+import de.laser.workflow.WfCheckpoint
+import de.laser.workflow.WorkflowHelper
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.poi.ss.usermodel.Workbook
 import org.mozilla.universalchardet.UniversalDetector
@@ -84,22 +88,23 @@ import java.nio.charset.Charset
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AjaxHtmlController {
 
+    AccessService accessService
     AddressbookService addressbookService
     CacheService cacheService
     ContextService contextService
+    CustomWkhtmltoxService wkhtmltoxService // custom
+    GenericOIDService genericOIDService
+    GokbService gokbService
+    LicenseControllerService licenseControllerService
+    LinksGenerationService linksGenerationService
     MyInstitutionControllerService myInstitutionControllerService
     PendingChangeService pendingChangeService
-    GenericOIDService genericOIDService
-    TaskService taskService
-    LinksGenerationService linksGenerationService
-    AccessService accessService
     ReportingGlobalService reportingGlobalService
     ReportingLocalService reportingLocalService
     SubscriptionService subscriptionService
     SubscriptionControllerService subscriptionControllerService
-    LicenseControllerService licenseControllerService
-    CustomWkhtmltoxService wkhtmltoxService // custom
-    GokbService gokbService
+    TaskService taskService
+    WorkflowService workflowService
 
     /**
      * Test render call
@@ -113,17 +118,6 @@ class AjaxHtmlController {
         }
         result += '</p>'
         render result
-    }
-
-    /**
-     * Loads the display configuration fragment for the given entry point and the queried parameters
-     * @return the display configurations fragment
-     */
-    @Deprecated
-    @Secured(['ROLE_USER'])
-    def loadGeneralFilter() {
-        Map<String,Object> result = [entry:params.entry,queried:params.queried]
-        render view: '/reporting/_displayConfigurations', model: result
     }
 
     @Secured(['ROLE_USER'])
@@ -156,8 +150,8 @@ class AjaxHtmlController {
         result.acceptedOffset = params.acceptedOffset ? params.int("acceptedOffset") : result.offset
         result.pendingOffset = params.pendingOffset ? params.int("pendingOffset") : result.offset
         def periodInDays = result.user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)
-        Map<String, Object> pendingChangeConfigMap = [contextOrg:result.institution,consortialView:accessService.checkPerm(result.institution,"ORG_CONSORTIUM"),periodInDays:periodInDays,max:result.max,acceptedOffset:result.acceptedOffset, pendingOffset: result.pendingOffset]
-        Map<String, Object> changes = pendingChangeService.getChanges(pendingChangeConfigMap)
+        Map<String, Object> pendingChangeConfigMap = [contextOrg:result.institution, consortialView:accessService.otherOrgPerm(result.institution, 'ORG_CONSORTIUM_BASIC'), periodInDays:periodInDays, max:result.max, acceptedOffset:result.acceptedOffset, pendingOffset: result.pendingOffset]
+        Map<String, Object> changes = pendingChangeService.getSubscriptionChanges(pendingChangeConfigMap)
         changes.max = result.max
         changes.editable = result.editable
         render template: '/myInstitution/changesWrapper', model: changes
@@ -176,7 +170,7 @@ class AjaxHtmlController {
                 [org: result.institution,
                  status: RDStore.SURVEY_SURVEY_STARTED])
 
-        if(accessService.checkPerm('ORG_CONSORTIUM')){
+        if (accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)){
             activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where surConfig.surveyInfo.status = :status  and surConfig.surveyInfo.owner = :org " +
                     " order by surConfig.surveyInfo.endDate",
                     [org: result.institution,
@@ -227,16 +221,25 @@ class AjaxHtmlController {
      */
     @Secured(['ROLE_USER'])
     def getPackageData() {
-        Map<String,Object> result = [subscription:Subscription.get(params.subscription), curatoryGroups: []], packageMetadata
+        Map<String,Object> result = [subscription:Subscription.get(params.subscription), curatoryGroups: []], packageMetadata = [:]
         Org contextOrg = contextService.getOrg()
         result.contextCustomerType = contextOrg.getCustomerType()
         result.institution = contextOrg
-        result.showConsortiaFunctions = result.contextCustomerType == 'ORG_CONSORTIUM'
+        result.showConsortiaFunctions = contextOrg.isCustomerType_Consortium()
         result.roleLinks = result.subscription.orgRelations.findAll { OrgRole oo -> !(oo.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA]) }
         result.roleObject = result.subscription
         result.roleRespValue = 'Specific subscription editor'
         result.editmode = result.subscription.isEditableBy(contextService.getUser())
-        result.accessConfigEditable = accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_EDITOR') || (accessService.checkPermAffiliation('ORG_CONSORTIUM','INST_EDITOR') && result.subscription.getSubscriber().id == contextOrg.id)
+        result.accessConfigEditable = accessService.ctxPermAffiliation(CustomerTypeService.ORG_INST_BASIC, 'INST_EDITOR') || (accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR') && result.subscription.getSubscriber().id == contextOrg.id)
+        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        result.subscription.packages.pkg.gokbId.each { String uuid ->
+            Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: uuid])
+            if (queryResult.warning) {
+                List records = queryResult.warning.result
+                packageMetadata.put(uuid, records[0])
+            }
+        }
+        result.packageMetadata = packageMetadata
         render template: '/subscription/packages', model: result
     }
 
@@ -255,11 +258,11 @@ class AjaxHtmlController {
 
             packageInfos.packageInstance = subscriptionPackage.pkg
 
-            Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/find?uuid=${subscriptionPackage.pkg.gokbId}")
+            Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: subscriptionPackage.pkg.gokbId])
             if (queryResult.error && queryResult.error == 404) {
                 flash.error = message(code: 'wekb.error.404') as String
             } else if (queryResult.warning) {
-                List records = queryResult.warning.records
+                List records = queryResult.warning.result
                 packageInfos.packageInstanceRecord = records ? records[0] : [:]
             }
             result.packages << packageInfos
@@ -304,18 +307,15 @@ class AjaxHtmlController {
         }
     }
 
+    /**
+     * Generates a list of selectable metrics or access types for the given report types in the statistics filter
+     * @return a {@link List} of available metric types
+     */
     @Secured(['ROLE_USER'])
-    def generateCostPerUse() {
-        Map<String, Object> ctrlResult = subscriptionControllerService.getStatsDataForCostPerUse(params)
-        ctrlResult.result.costPerUse = [:]
-        if(ctrlResult.result.subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION) {
-            ctrlResult.result.costPerUse.consortialData = subscriptionControllerService.calculateCostPerUse(ctrlResult.result, "consortial")
-            if(ctrlResult.result.institution.getCustomerType() == "ORG_INST") {
-                ctrlResult.result.costPerUse.ownData = subscriptionControllerService.calculateCostPerUse(ctrlResult.result, "own")
-            }
-        }
-        else ctrlResult.result.costPerUse.ownData = subscriptionControllerService.calculateCostPerUse(ctrlResult.result, "own")
-        render template: "/subscription/costPerUse", model: ctrlResult.result
+    def loadFilterList() {
+        Map<String, Object> result = subscriptionControllerService.loadFilterList(params)
+        result.noMultiple = params.noMultiple == 'true'
+        render template: "/templates/filter/statsFilter", model: result
     }
 
     /**
@@ -395,19 +395,19 @@ class AjaxHtmlController {
 
         if (model.orgId && model.typeId) {
             String messageCode = 'addressFormModalLibraryAddress'
-            if (model.typeId == RDStore.ADRESS_TYPE_LEGAL_PATRON.id)  {
+            if (model.typeId == RDStore.ADDRESS_TYPE_LEGAL_PATRON.id)  {
                 messageCode = 'addressFormModalLegalPatronAddress'
             }
-            else if (model.typeId == RDStore.ADRESS_TYPE_BILLING.id)  {
+            else if (model.typeId == RDStore.ADDRESS_TYPE_BILLING.id)  {
                 messageCode = 'addressFormModalBillingAddress'
             }
-            else if (model.typeId == RDStore.ADRESS_TYPE_POSTAL.id)   {
+            else if (model.typeId == RDStore.ADDRESS_TYPE_POSTAL.id)   {
                 messageCode = 'addressFormModalPostalAddress'
             }
-            else if (model.typeId == RDStore.ADRESS_TYPE_DELIVERY.id) {
+            else if (model.typeId == RDStore.ADDRESS_TYPE_DELIVERY.id) {
                 messageCode = 'addressFormModalDeliveryAddress'
             }
-            else if (model.typeId == RDStore.ADRESS_TYPE_LIBRARY.id)  {
+            else if (model.typeId == RDStore.ADDRESS_TYPE_LIBRARY.id)  {
                 messageCode = 'addressFormModalLibraryAddress'
             }
 
@@ -433,10 +433,10 @@ class AjaxHtmlController {
             model.modalId = 'addressFormModal'
             String messageCode = 'person.address.label'
             model.typeId = model.addressInstance.type.id
-            if(model.addressInstance.prs) {
+            /*if(model.addressInstance.prs) {
                 model.modalText = message(code: 'default.edit.label', args: [message(code: messageCode)]) + ' (' + model.addressInstance.prs.toString() + ')'
-            }
-            else if(model.addressInstance.org) {
+            }*/
+            if(model.addressInstance.org) {
                 model.modalText = message(code: 'default.edit.label', args: [message(code: messageCode)]) + ' (' + model.addressInstance.org.toString() + ')'
             }
             else{
@@ -464,8 +464,8 @@ class AjaxHtmlController {
         result.showAddresses = params.showAddresses == "true" ? true : ''
         result.addAddresses = params.showAddresses == "true" ? true : ''
         result.org = params.org ? Org.get(Long.parseLong(params.org)) : null
-        result.functions = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_CONTACT_PRS, RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_OA_CONTACT]
-        if(result.contextOrg.getCustomerType() == 'ORG_CONSORTIUM'){
+        result.functions = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_CONTACT_PRS, RDStore.PRS_FUNC_FC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_OA_CONTACT]
+        if(result.contextOrg.isCustomerType_Consortium()){
             result.functions << RDStore.PRS_FUNC_GASCO_CONTACT
         }
         result.positions = PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION) - [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS]
@@ -482,7 +482,10 @@ class AjaxHtmlController {
                 break
             case 'contactPersonForProviderAgency':
                 result.isPublic    = false
-                result.functions = PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION) - [RDStore.PRS_FUNC_GASCO_CONTACT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_FUNC_LIBRARY_ADDRESS, RDStore.PRS_FUNC_FUNC_LEGAL_PATRON_ADDRESS, RDStore.PRS_FUNC_FUNC_POSTAL_ADDRESS, RDStore.PRS_FUNC_FUNC_DELIVERY_ADDRESS]
+                Set<RefdataValue> excludes = [RDStore.PRS_FUNC_GASCO_CONTACT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_FC_LIBRARY_ADDRESS, RDStore.PRS_FUNC_FC_LEGAL_PATRON_ADDRESS, RDStore.PRS_FUNC_FC_POSTAL_ADDRESS, RDStore.PRS_FUNC_FC_DELIVERY_ADDRESS]
+                if(params.existsWekbRecord)
+                    excludes.addAll([RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_SERVICE_SUPPORT, RDStore.PRS_FUNC_METADATA])
+                result.functions = PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION) - excludes
                 result.positions = [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_DIREKTION, RDStore.PRS_POS_DIREKTION_ASS, RDStore.PRS_POS_RB, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS, RDStore.PRS_POS_TS]
                 if (result.org) {
                     result.modalText = message(code: "person.create_new.contactPersonForProviderAgency.label") + ' (' + result.org.toString() + ')'
@@ -495,7 +498,7 @@ class AjaxHtmlController {
                 result.contactPersonForProviderAgencyPublic = true
                 result.isPublic    = true
                 result.presetFunctionType = RefdataValue.get(params.supportType)
-                //result.functions = PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION) - [RDStore.PRS_FUNC_GASCO_CONTACT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_FUNC_LIBRARY_ADDRESS, RDStore.PRS_FUNC_FUNC_LEGAL_PATRON_ADDRESS, RDStore.PRS_FUNC_FUNC_POSTAL_ADDRESS, RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS, RDStore.PRS_FUNC_FUNC_DELIVERY_ADDRESS]
+                //result.functions = PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION) - [RDStore.PRS_FUNC_GASCO_CONTACT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_FC_LIBRARY_ADDRESS, RDStore.PRS_FUNC_FC_LEGAL_PATRON_ADDRESS, RDStore.PRS_FUNC_FC_POSTAL_ADDRESS, RDStore.PRS_FUNC_FC_BILLING_ADDRESS, RDStore.PRS_FUNC_FC_DELIVERY_ADDRESS]
                 //result.positions = [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_DIREKTION, RDStore.PRS_POS_DIREKTION_ASS, RDStore.PRS_POS_RB, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS, RDStore.PRS_POS_TS]
                 if(result.org){
                     result.modalText = message(code: "person.create_new.contactPersonForProviderAgency.label") + ' (' + result.org.toString() + ')'
@@ -527,8 +530,8 @@ class AjaxHtmlController {
 
         if (result.personInstance){
             result.org = result.personInstance.getBelongsToOrg()
-            result.functions = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_CONTACT_PRS, RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_OA_CONTACT]
-            if(contextOrg.getCustomerType() == 'ORG_CONSORTIUM'){
+            result.functions = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_CONTACT_PRS, RDStore.PRS_FUNC_FC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_OA_CONTACT]
+            if(contextOrg.isCustomerType_Consortium()){
                 result.functions << RDStore.PRS_FUNC_GASCO_CONTACT
             }
             result.positions = PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION) - [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS]
@@ -537,7 +540,7 @@ class AjaxHtmlController {
                 result.org = params.org ? Org.get(Long.parseLong(params.org)) : result.org
                 List allOrgTypeIds =result.org.getAllOrgTypeIds()
                 if(RDStore.OT_PROVIDER.id in allOrgTypeIds || RDStore.OT_AGENCY.id in allOrgTypeIds){
-                    result.functions = PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION) - [RDStore.PRS_FUNC_GASCO_CONTACT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_FUNC_LIBRARY_ADDRESS, RDStore.PRS_FUNC_FUNC_LEGAL_PATRON_ADDRESS, RDStore.PRS_FUNC_FUNC_POSTAL_ADDRESS, RDStore.PRS_FUNC_FUNC_DELIVERY_ADDRESS]
+                    result.functions = PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION) - [RDStore.PRS_FUNC_GASCO_CONTACT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_FC_LIBRARY_ADDRESS, RDStore.PRS_FUNC_FC_LEGAL_PATRON_ADDRESS, RDStore.PRS_FUNC_FC_POSTAL_ADDRESS, RDStore.PRS_FUNC_FC_DELIVERY_ADDRESS]
                     result.positions = [RDStore.PRS_POS_ACCOUNT, RDStore.PRS_POS_DIREKTION, RDStore.PRS_POS_DIREKTION_ASS, RDStore.PRS_POS_RB, RDStore.PRS_POS_SD, RDStore.PRS_POS_SS, RDStore.PRS_POS_TS]
                     result.modalText = message(code: 'default.edit.label', args: [message(code: "person.contactPersonForProviderAgency.label")]) + ' (' + result.org.toString() + ')'
                     result.contactPersonForProviderAgencyPublic = result.personInstance.isPublic
@@ -635,9 +638,9 @@ class AjaxHtmlController {
      * Retrieves the filter history and bookmarks for the given reporting view.
      * If a command is being submitted, the cache is being updated. The updated view is being rendered afterwards
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_PRO, 'INST_USER'])
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_USER')
     })
     def reporting() {
         Map<String, Object> result = [
@@ -686,9 +689,9 @@ class AjaxHtmlController {
     /**
      * Retrieves the details for the given charts
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_PRO, 'INST_USER'])
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_USER')
     })
     def chartDetails() {
         // TODO - SESSION TIMEOUTS
@@ -723,9 +726,9 @@ class AjaxHtmlController {
      *     <li>PDF</li>
      * </ul>
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_PRO, 'INST_USER'])
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_USER')
     })
     def chartDetailsExport() {
 
@@ -889,9 +892,9 @@ class AjaxHtmlController {
      *     <li>PDF</li>
      * </ul>
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_PRO, 'INST_USER'])
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_USER')
     })
     def chartQueryExport() {
 
@@ -1081,6 +1084,102 @@ class AjaxHtmlController {
         render template: '/templates/workflow/forms/modalWrapper', model: result
     }
 
+
+    @Secured(['ROLE_USER'])
+    def workflowFlyout() {
+        Map<String, Object> result = [
+                tmplCmd:    'usage',
+                tmplFormUrl: createLink(controller: 'myInstitution', action: 'currentWorkflows')
+        ]
+
+        if (params.cmd) {
+            String[] cmd = params.cmd.split(':')
+
+            if (cmd[1] in [WfChecklist.KEY, WfCheckpoint.KEY] ) {
+                result.putAll( workflowService.executeCmd(params) )
+            }
+        }
+//        if (params.info) {
+//            result.info = params.info // @ currentWorkflows @ dashboard
+//        }
+
+        if (params.key) {
+            String[] key = (params.key as String).split(':')
+            result.prefix = key[0]
+
+            if (result.prefix == WfChecklist.KEY) {
+                result.clist      = WfChecklist.get( key[1] )
+            }
+//            else if (result.prefix == WfCheckpoint.KEY) {
+//                result.checkpoint     = WfCheckpoint.get( key[1] )
+//                result.tmplModalTitle = g.message(code:'task.label') + ': ' +  result.checkpoint.title
+//            }
+        }
+        result.referer = request.getHeader('referer')
+
+        render template: '/templates/workflow/flyout', model: result
+    }
+
+    @Secured(['ROLE_USER'])
+    def workflowModal() {
+        Map<String, Object> result = [
+                tmplCmd:    'usage',
+                tmplFormUrl: createLink(controller: 'myInstitution', action: 'currentWorkflows')
+        ]
+
+        if (params.key) {
+            String[] key = (params.key as String).split(':')
+            //println key
+
+            result.prefix = key[3]
+
+            // myInstitution::action:WF_X:id
+            // subscription:id:action:WF_X:id
+            if (key[0] in [License.class.name, Subscription.class.name, Org.class.name]) {
+
+                if (key[0] == License.class.name) {
+                    result.targetObject = License.get( key[1] )
+                    result.tmplFormUrl  = createLink(controller: 'lic', action: key[2], id: key[1])
+                }
+                else if (key[0] == Subscription.class.name) {
+                    result.targetObject = Subscription.get( key[1] )
+                    result.tmplFormUrl  = createLink(controller: 'subscription', action: key[2], id: key[1])
+                }
+                else {
+                    result.targetObject = Org.get( key[1] )
+                    result.tmplFormUrl  = createLink(controller: 'org', action: key[2], id: key[1])
+                }
+            }
+            else if (key[0] == 'myInstitution') {
+//                result.workflow = WfWorkflow.get (key[1] ) // TODO
+                result.tmplFormUrl  = createLink(controller: 'myInstitution', action: key[2])
+                if (key[2] == 'dashboard') {
+                    result.tmplFormUrl = result.tmplFormUrl + '?view=Workflows'
+                }
+            }
+
+            if (result.prefix == WfChecklist.KEY) {
+                result.checklist      = WfChecklist.get( key[4] )
+                result.tmplModalTitle = g.message(code:'workflow.label') as String
+            }
+            else if (result.prefix == WfCheckpoint.KEY) {
+                result.checkpoint     = WfCheckpoint.get( key[4] )
+
+                if (result.checkpoint.done) {
+                    result.tmplModalTitle = '<i class="icon ' + WorkflowHelper.getCssIconAndColorByStatus( RDStore.WF_TASK_STATUS_DONE ) + '"></i>&nbsp;' + result.checkpoint.title
+                }
+                else {
+                    result.tmplModalTitle = '<i class="icon ' + WorkflowHelper.getCssIconAndColorByStatus( RDStore.WF_TASK_STATUS_OPEN ) + '"></i>&nbsp;' + result.checkpoint.title
+                }
+            }
+        }
+        if (params.info) {
+            result.info = params.info
+        }
+
+        render template: '/templates/workflow/modal', model: result
+    }
+
     /**
      * Opens a modal to display workflow details
      */
@@ -1091,6 +1190,9 @@ class AjaxHtmlController {
                 tmplFormUrl: createLink(controller: 'myInstitution', action: 'currentWorkflows')
         ]
 
+        String template = '/templates/workflow/forms/modalWrapper' // todo
+
+        //println params
         if (params.key) {
             String[] key = (params.key as String).split(':')
 
@@ -1122,16 +1224,20 @@ class AjaxHtmlController {
 
             if (result.prefix == WfWorkflow.KEY) {
                 result.workflow       = WfWorkflow.get( key[3] )
-                //result.tmplModalTitle = '<i class="icon tasks"></i> ' + result.workflow.title
                 result.tmplModalTitle = g.message(code:'workflow.label') + ': ' + result.workflow.title
-                //g.message(code: 'default.edit.label', args: [g.message(code:'workflow.label')])
 
             }
             else if (result.prefix == WfTask.KEY) {
                 result.task           = WfTask.get( key[3] )
-                //result.tmplModalTitle = '<i class="icon check circle outline"></i> ' + result.task.title
                 result.tmplModalTitle = g.message(code:'task.label') + ': ' +  result.task.title
-                //g.message(code: 'default.edit.label', args: [g.message(code:'task.label')])
+            }
+            else if (result.prefix == WfChecklist.KEY) {
+                result.checklist      = WfChecklist.get( key[3] )
+                result.tmplModalTitle = g.message(code:'task.label') + ': ' +  result.checklist.title
+            }
+            else if (result.prefix == WfCheckpoint.KEY) {
+                result.checkpoint     = WfCheckpoint.get( key[3] )
+                result.tmplModalTitle = g.message(code:'task.label') + ': ' +  result.checkpoint.title
             }
         }
 
@@ -1139,7 +1245,7 @@ class AjaxHtmlController {
             result.info = params.info
         }
 
-        render template: '/templates/workflow/forms/modalWrapper', model: result
+        render template: template, model: result
     }
 
     /**

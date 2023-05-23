@@ -1,4 +1,4 @@
-<%@ page import="de.laser.PendingChangeConfiguration; de.laser.IssueEntitlement; de.laser.SubscriptionController; de.laser.storage.RDStore; de.laser.Person; de.laser.Subscription; de.laser.FormService; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.I10nTranslation" %>
+<%@ page import="de.laser.CustomerTypeService; de.laser.PendingChangeConfiguration; de.laser.IssueEntitlement; de.laser.SubscriptionController; de.laser.storage.RDStore; de.laser.Person; de.laser.Subscription; de.laser.FormService; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.I10nTranslation" %>
 <laser:serviceInjection/>
 
 <ui:greySegment>
@@ -121,7 +121,7 @@
                                                                     <i class="ui large icon bullhorn"></i>
                                                                 </span>
                                                             </th>
-                                                            <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')}">
+                                                            <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR')}">
                                                                 <th>
                                                                     <span class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.packages.auditable')}">
                                                                         <i class="ui large icon thumbtack"></i>
@@ -138,9 +138,6 @@
                                                     <tbody>
                                                         <g:each in="${packageSettings}"
                                                                 var="pcc">
-                                                            <g:if test="${!(pcc.settingKey in [PendingChangeConfiguration.NEW_PRICE,
-                                                                                               PendingChangeConfiguration.PRICE_UPDATED,
-                                                                                               PendingChangeConfiguration.PRICE_DELETED])}">
                                                                 <tr class="la-copyPack-item" data-pkgid="${sp.id}">
                                                                     <td><g:message code="subscription.packages.${pcc.settingKey}"/></td>
                                                                     <td>
@@ -158,7 +155,7 @@
                                                                                         data-action="copy" checked="${true}"/>
                                                                         </div>
                                                                     </td>
-                                                                    <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')}">
+                                                                    <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR')}">
                                                                         <g:if test="${!(pcc.settingKey in excludes)}">
                                                                             <td>
                                                                                 <div class="ui checkbox la-toggle-radio la-inherit">
@@ -181,7 +178,6 @@
                                                                         </g:else>
                                                                     </g:if>
                                                                 </tr>
-                                                            </g:if>
                                                         </g:each>
                                                     </tbody>
                                                 </table>
@@ -268,14 +264,11 @@
                                                 <ul>
                                                     <g:each in="${packageSettings}"
                                                             var="pcc">
-                                                        <g:if test="${!(pcc.settingKey in [PendingChangeConfiguration.NEW_PRICE,
-                                                                                           PendingChangeConfiguration.PRICE_UPDATED,
-                                                                                           PendingChangeConfiguration.PRICE_DELETED])}">
                                                             <li class="la-copyPack-item">
                                                                 <g:message
                                                                         code="subscription.packages.${pcc.settingKey}"/>: ${pcc.settingValue ? pcc.settingValue.getI10n('value') : RDStore.PENDING_CHANGE_CONFIG_PROMPT.getI10n('value')} (<g:message
                                                                     code="subscription.packages.notification.label"/>: ${pcc.withNotification ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')})
-                                                                <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')}">
+                                                                <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR')}">
                                                                     <g:if test="${!(pcc.settingKey in excludes)}">
                                                                         <g:if test="${auditService.getAuditConfig(targetObject, pcc.settingKey)}">
                                                                             <span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.packages.auditable')}"><i
@@ -284,7 +277,6 @@
                                                                     </g:if>
                                                                 </g:if>
                                                             </li>
-                                                        </g:if>
                                                     </g:each>
                                                 </ul>
                                             </div>
@@ -337,7 +329,7 @@
 
                                         <div class="content">
                                             <div class="ui list">
-                                                <g:each in="${titleGroup.items?.sort { it.ie.sortname }}"
+                                                <g:each in="${titleGroup.items?.sort { it.ie.tipp.sortname }}"
                                                         var="item">
                                                     <div class="item">
                                                         <ui:listIcon hideTooltip="true" type="${item.ie.tipp.titleType}"/>

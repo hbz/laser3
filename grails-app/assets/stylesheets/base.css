@@ -2,5 +2,7 @@
  * bundle: assets/stylesheets/base.css
  *
  *= require libs/jquery-editable.css
- *= require /select2/css/select2-modified.css       //--> assets/vendor
+ *
+ *= require /trumbowyg/ui/trumbowyg-base-modified.css        //--> assets/vendor
+ *= require /trumbowyg/ui/trumbowyg-reset-modified.css       //--> assets/vendor
  */

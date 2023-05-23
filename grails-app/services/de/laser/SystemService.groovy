@@ -9,7 +9,6 @@ import de.laser.system.SystemSetting
 import de.laser.utils.AppUtils
 import de.laser.utils.DateUtils
 import grails.gorm.transactions.Transactional
-import grails.plugin.springsecurity.SpringSecurityUtils
 import groovy.json.JsonOutput
 import org.elasticsearch.action.index.IndexRequest
 import org.elasticsearch.action.index.IndexResponse
@@ -35,13 +34,10 @@ class SystemService {
     Map<String, Object> serviceCheck() {
         Map<String, Object> checks = [:]
 
-        if(SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_YODA') || ConfigMapper.getShowSystemInfo()) {
-            //GlobalData Sync
-            if ((GlobalRecordSource.findAllByActive(false)?.size() == GlobalRecordSource.findAll()?.size()) || GlobalRecordSource.findAll()?.size() == 0) {
+            if (GlobalRecordSource.findAll().size() in [0, GlobalRecordSource.findAllByActive(false).size()]) {
                 checks.globalSync = "NOT active"
             }
-
-            if ((ApiSource.findAllByActive(false)?.size() == ApiSource.findAll()?.size()) || ApiSource.findAll()?.size() == 0) {
+            if (ApiSource.findAll().size() in [0, ApiSource.findAllByActive(false).size()]) {
                 checks.apiSource = "NOT active"
             }
 
@@ -63,7 +59,6 @@ class SystemService {
             if (ConfigMapper.getConfig('grails.mail.disabled', Boolean)) {
                 checks.MailService = "NOT active"
             }
-        }
 
         return checks
     }

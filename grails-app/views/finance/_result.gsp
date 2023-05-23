@@ -177,10 +177,12 @@
                                     r2d2.initDynamicUiStuff('#costItem_ajaxModal');
                                     r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
                                     JSPC.app['finance'+idSuffix].updateTitleDropdowns();
-                                    JSPC.app.setupCalendar();
                                     JSPC.app['finance'+idSuffix].preselectMembers();
+
+                                    r2d2.helper.focusFirstFormElement(this);
                                 },
                                 detachable: true,
+                                autofocus: false,
                                 closable: false,
                                 transition: 'scale',
                                 onApprove: function () {
@@ -214,11 +216,12 @@
                             onVisible: function () {
                                 r2d2.initDynamicUiStuff('#costItem_ajaxModal');
                                 r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
-
                                 JSPC.app['finance'+idSuffix].updateTitleDropdowns();
-                                JSPC.app.setupCalendar();
+
+                                r2d2.helper.focusFirstFormElement(this);
                             },
                             detachable: true,
+                            autofocus: false,
                             closable: false,
                             transition: 'scale',
                             onApprove : function() {

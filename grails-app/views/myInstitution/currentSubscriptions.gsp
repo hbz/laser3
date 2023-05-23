@@ -1,4 +1,4 @@
-<%@ page import="de.laser.interfaces.CalculatedType;de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.CustomerTypeService; de.laser.interfaces.CalculatedType;de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
 
 <laser:htmlStart message="myinst.currentSubscriptions.label" serviceInjection="true" />
 
@@ -9,8 +9,9 @@
         <ui:controlButtons>
             <ui:exportDropdown>
                 <ui:exportDropdownItem>
-                    <a class="item" data-ui="modal" href="#individuallyExportModal">Click Me Excel Export</a>
+                    <a class="item" data-ui="modal" href="#individuallyExportModal">Export</a>
                 </ui:exportDropdownItem>
+                <%--
                 <g:if test="${filterSet || defaultSet}">
                     <ui:exportDropdownItem>
                         <g:link class="item js-open-confirm-modal"
@@ -37,9 +38,10 @@
                         <g:link class="item" controller="myInstitution" action="currentSubscriptions" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link>
                     </ui:exportDropdownItem>
                 </g:else>
+                --%>
             </ui:exportDropdown>
 
-            <g:if test="${accessService.checkPermX('ORG_INST,ORG_CONSORTIUM', 'ROLE_ADMIN')}">
+            <g:if test="${accessService.ctxPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )}">
                 <laser:render template="actions" />
             </g:if>
         </ui:controlButtons>

@@ -4,7 +4,6 @@ import de.laser.finance.CostItem
 import de.laser.oap.OrgAccessPointLink
 import de.laser.storage.RDStore
 import de.laser.utils.LocaleUtils
-import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.web.mapping.LinkGenerator
 import groovy.sql.Sql
@@ -101,19 +100,35 @@ class PackageService {
      * @param pkgId the ID of the package whose holding should be added to the subscription
      * @param hasPerpetualAccess the flag whether the title access have been purchased perpetually
      */
-    void bulkAddHolding(Sql sql, Long subId, Long pkgId, boolean hasPerpetualAccess) {
+    void bulkAddHolding(Sql sql, Long subId, Long pkgId, boolean hasPerpetualAccess, Long consortiumId = null, Long sourceSubId = null) {
         String perpetualAccessCol = '', perpetualAccessColHeader = ''
         if(hasPerpetualAccess) {
             perpetualAccessColHeader = ', ie_perpetual_access_by_sub_fk'
             perpetualAccessCol = ", ${subId}"
         }
+        if(consortiumId) {
+            sql.executeInsert("insert into issue_entitlement (ie_version, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_medium_rv_fk, ie_status_rv_fk, ie_access_type_rv_fk, ie_open_access_rv_fk ${perpetualAccessColHeader}) " +
+                    "select 0, now(), now(), ${subId}, tipp_id, tipp_access_start_date, tipp_access_end_date, tipp_medium_rv_fk, tipp_status_rv_fk, tipp_access_type_rv_fk, tipp_open_access_rv_fk ${perpetualAccessCol} from title_instance_package_platform where tipp_pkg_fk = :pkgId and tipp_status_rv_fk != :removed and tipp_id in (select ie_tipp_fk from issue_entitlement where ie_subscription_fk = :consortiumId and ie_status_rv_fk != :removed) and not exists(select ie_id from issue_entitlement where ie_subscription_fk = :subId and ie_tipp_fk = tipp_id and ie_status_rv_fk != :removed)", [subId: subId, pkgId: pkgId, removed: RDStore.TIPP_STATUS_REMOVED.id, consortiumId: consortiumId])
+            sql.executeInsert("insert into issue_entitlement_coverage (ic_version, ic_ie_fk, ic_date_created, ic_last_updated) " +
+                    "select 0, (select ie_id from issue_entitlement where ie_tipp_fk = tipp_id and ie_subscription_fk = :subId and ie_status_rv_fk = tipp_status_rv_fk), now(), now() from tippcoverage join title_instance_package_platform on tc_tipp_fk = tipp_id where tipp_pkg_fk = :pkgId and tipp_status_rv_fk != :removed and tipp_id in (select ie_tipp_fk from issue_entitlement where ie_subscription_fk = :consortiumId and ie_status_rv_fk != :removed) and not exists(select ie_id from issue_entitlement where ie_subscription_fk = :subId and ie_tipp_fk = tipp_id and ie_status_rv_fk != :removed)", [subId: subId, pkgId: pkgId, removed: RDStore.TIPP_STATUS_REMOVED.id, consortiumId: consortiumId])
+        }
+        else if(sourceSubId) {
+            sql.executeInsert("insert into issue_entitlement (ie_version, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_medium_rv_fk, ie_status_rv_fk, ie_access_type_rv_fk, ie_open_access_rv_fk, ie_notes ${perpetualAccessColHeader}) " +
+                    "select 0, now(), now(), ${subId}, ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_medium_rv_fk, ie_status_rv_fk, ie_access_type_rv_fk, ie_open_access_rv_fk, ie_notes ${perpetualAccessCol} from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where ie_subscription_fk = :sourceSubId and ie_status_rv_fk != :removed and tipp_pkg_fk = :pkgId and not exists(select ie_id from issue_entitlement where ie_subscription_fk = :subId and ie_tipp_fk = tipp_id and ie_status_rv_fk != :removed)", [subId: subId, pkgId: pkgId, removed: RDStore.TIPP_STATUS_REMOVED.id, sourceSubId: sourceSubId])
+            sql.executeInsert("insert into issue_entitlement_coverage (ic_version, ic_ie_fk, ic_start_date, ic_start_volume, ic_start_issue, ic_end_date, ic_end_volume, ic_end_issue, ic_date_created, ic_last_updated) " +
+                    "select 0, (select ie_id from issue_entitlement where ie_tipp_fk = tipp_id and ie_subscription_fk = :subId and ie_status_rv_fk = tipp_status_rv_fk), ic_start_date, ic_start_volume, ic_start_issue, ic_end_date, ic_end_volume, ic_end_issue, now(), now() from issue_entitlement_coverage join issue_entitlement on ic_ie_fk = ie_id join title_instance_package_platform on ie_tipp_fk = tipp_id where ie_subscription_fk = :sourceSubId and tipp_pkg_fk = :pkgId and ie_status_rv_fk != :removed and not exists(select ic_id from issue_entitlement_coverage join issue_entitlement on ic_ie_fk = ie_id where ic_ie_fk = :subId and ie_tipp_fk = tipp_id and ie_status_rv_fk != :removed)", [subId: subId, pkgId: pkgId, removed: RDStore.TIPP_STATUS_REMOVED.id, sourceSubId: sourceSubId])
+            sql.executeInsert("insert into price_item (pi_version, pi_ie_fk, pi_local_price, pi_local_currency_rv_fk, pi_date_created, pi_last_updated, pi_guid) " +
+                    "select 0, (select ie_id from issue_entitlement where ie_tipp_fk = tipp_id and ie_subscription_fk = :subId and ie_status_rv_fk = tipp_status_rv_fk), pi_local_price, pi_local_currency_rv_fk, now(), now(), concat('priceitem:',gen_random_uuid()) from price_item join issue_entitlement on pi_ie_fk = ie_id join title_instance_package_platform on ie_tipp_fk = tipp_id where ie_subscription_fk = :sourceSubId and tipp_pkg_fk = :pkgId and ie_status_rv_fk != :removed and not exists(select pi_id from price_item join issue_entitlement on pi_ie_fk = ie_id where pi_ie_fk = :subId and ie_tipp_fk = tipp_id and ie_status_rv_fk != :removed)", [subId: subId, pkgId: pkgId, removed: RDStore.TIPP_STATUS_REMOVED.id, sourceSubId: sourceSubId])
+        }
+        else {
+            sql.executeInsert("insert into issue_entitlement (ie_version, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_medium_rv_fk, ie_status_rv_fk, ie_access_type_rv_fk, ie_open_access_rv_fk ${perpetualAccessColHeader}) " +
+                    "select 0, now(), now(), ${subId}, tipp_id, tipp_access_start_date, tipp_access_end_date, tipp_medium_rv_fk, tipp_status_rv_fk, tipp_access_type_rv_fk, tipp_open_access_rv_fk ${perpetualAccessCol} from title_instance_package_platform where tipp_pkg_fk = :pkgId and tipp_status_rv_fk != :removed and not exists(select ie_id from issue_entitlement where ie_subscription_fk = :subId and ie_tipp_fk = tipp_id and ie_status_rv_fk != :removed)", [subId: subId, pkgId: pkgId, removed: RDStore.TIPP_STATUS_REMOVED.id])
+            sql.executeInsert("insert into issue_entitlement_coverage (ic_version, ic_ie_fk, ic_date_created, ic_last_updated) " +
+                    "select 0, (select ie_id from issue_entitlement where ie_tipp_fk = tipp_id and ie_subscription_fk = :subId and ie_status_rv_fk = tipp_status_rv_fk), now(), now() from tippcoverage join title_instance_package_platform on tc_tipp_fk = tipp_id where tipp_pkg_fk = :pkgId and tipp_status_rv_fk != :removed and not exists(select ie_id from issue_entitlement where ie_subscription_fk = :subId and ie_tipp_fk = tipp_id and ie_status_rv_fk != :removed)", [subId: subId, pkgId: pkgId, removed: RDStore.TIPP_STATUS_REMOVED.id])
+            sql.executeInsert("insert into price_item (pi_version, pi_ie_fk, pi_date_created, pi_last_updated, pi_guid) " +
+                    "select 0, (select ie_id from issue_entitlement where ie_tipp_fk = tipp_id and ie_subscription_fk = :subId and ie_status_rv_fk = tipp_status_rv_fk), now(), now(), concat('priceitem:',gen_random_uuid()) from price_item join title_instance_package_platform on pi_tipp_fk = tipp_id where tipp_pkg_fk = :pkgId and tipp_status_rv_fk != :removed and not exists(select ie_id from issue_entitlement where ie_subscription_fk = :subId and ie_tipp_fk = tipp_id and ie_status_rv_fk != :removed)", [subId: subId, pkgId: pkgId, removed: RDStore.TIPP_STATUS_REMOVED.id])
+        }
 
-        sql.executeInsert("insert into issue_entitlement (ie_version, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_medium_rv_fk, ie_status_rv_fk, ie_accept_status_rv_fk, ie_name, ie_sortname ${perpetualAccessColHeader}) " +
-                "select 0, now(), now(), ${subId}, tipp_id, tipp_access_start_date, tipp_access_end_date, tipp_medium_rv_fk, tipp_status_rv_fk, ${RDStore.IE_ACCEPT_STATUS_FIXED.id}, tipp_name, tipp_sort_name ${perpetualAccessCol} from title_instance_package_platform where tipp_pkg_fk = :pkgId and tipp_status_rv_fk != :removed", [pkgId: pkgId, removed: RDStore.TIPP_STATUS_REMOVED.id])
-        sql.executeInsert("insert into issue_entitlement_coverage (ic_version, ic_ie_fk, ic_date_created, ic_last_updated, ic_start_date, ic_start_volume, ic_start_issue, ic_end_date, ic_end_volume, ic_end_issue, ic_coverage_depth, ic_coverage_note, ic_embargo) " +
-                "select 0, (select ie_id from issue_entitlement where ie_tipp_fk = tipp_id and ie_subscription_fk = :subId and ie_status_rv_fk = tipp_status_rv_fk), now(), now(), tc_start_date, tc_start_volume, tc_start_issue, tc_end_date, tc_end_volume, tc_end_issue, tc_coverage_depth, tc_coverage_note, tc_embargo from tippcoverage join title_instance_package_platform on tc_tipp_fk = tipp_id where tipp_pkg_fk = :pkgId and tipp_status_rv_fk != :removed", [subId: subId, pkgId: pkgId, removed: RDStore.TIPP_STATUS_REMOVED.id])
-        sql.executeInsert("insert into price_item (pi_version, pi_ie_fk, pi_date_created, pi_last_updated, pi_guid, pi_list_currency_rv_fk, pi_list_price) " +
-                "select 0, (select ie_id from issue_entitlement where ie_tipp_fk = tipp_id and ie_subscription_fk = :subId and ie_status_rv_fk = tipp_status_rv_fk), now(), now(), concat('priceitem:',gen_random_uuid()), pi_list_currency_rv_fk, pi_list_price from price_item join title_instance_package_platform on pi_tipp_fk = tipp_id where tipp_pkg_fk = :pkgId and tipp_status_rv_fk != :removed", [subId: subId, pkgId: pkgId, removed: RDStore.TIPP_STATUS_REMOVED.id])
     }
 
     /**
@@ -121,24 +136,23 @@ class PackageService {
      * The unlinking can be done iff no cost items are linked to the (subscription) package
      * @param subscription the {@link Subscription} from which the package should be detached
      * @param contextOrg the {@link de.laser.Org} whose cost items should be verified
-     * @param deleteEntitlements should the linked entitlements being deleted?
+     * @param deletePackage should the package be unlinked, too?
      * @return true if the unlink was successful, false otherwise
      */
-    boolean unlinkFromSubscription(de.laser.Package pkg, Subscription subscription, Org contextOrg, deleteEntitlements) {
+    boolean unlinkFromSubscription(de.laser.Package pkg, Subscription subscription, Org contextOrg, deletePackage) {
         SubscriptionPackage subPkg = SubscriptionPackage.findByPkgAndSubscription(pkg, subscription)
 
         //Not Exist CostItem with Package
         if(!CostItem.executeQuery('select ci from CostItem ci where ci.subPkg.subscription = :sub and ci.subPkg.pkg = :pkg and ci.owner = :context and ci.costItemStatus != :deleted',[pkg:pkg, deleted: RDStore.COST_ITEM_DELETED, sub:subscription, context: contextOrg])) {
 
-            if (deleteEntitlements) {
-                List<Long> subList = [subscription.id]
-                Map<String,Object> queryParams = [sub: subList, pkg_id: pkg.id]
-                //delete matches
-                //IssueEntitlement.withSession { Session session ->
-                String updateQuery = "update IssueEntitlement ie set ie.status.id = ${RDStore.TIPP_STATUS_REMOVED.id} where ie.subscription.id in (:sub) and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) "
-                IssueEntitlement.executeUpdate(updateQuery, queryParams)
+            List<Long> subList = [subscription.id]
+            Map<String,Object> queryParams = [sub: subList, pkg_id: pkg.id]
+            //delete matches
+            //IssueEntitlement.withSession { Session session ->
+            String updateQuery = "update IssueEntitlement ie set ie.status.id = ${RDStore.TIPP_STATUS_REMOVED.id} where ie.subscription.id in (:sub) and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) "
+            IssueEntitlement.executeUpdate(updateQuery, queryParams)
+            if (deletePackage) {
                 removePackagePendingChanges(pkg, subList, true)
-                //continue here: test with package unlinking! Fix also the error 500 when unlinking from /memberSubscriptionsManagement
                 SubscriptionPackage.executeQuery('select sp from SubscriptionPackage sp where sp.pkg = :pkg and sp.subscription.id in (:subList)',[subList:subList,pkg:pkg]).each { SubscriptionPackage delPkg ->
                     OrgAccessPointLink.executeUpdate("delete from OrgAccessPointLink oapl where oapl.subPkg = :subPkg", [subPkg:delPkg])
                     CostItem.executeQuery('select ci from CostItem ci where ci.costItemStatus != :deleted and ci.subPkg = :delPkg and ci.owner != :ctx', [delPkg: delPkg, deleted: RDStore.COST_ITEM_DELETED, ctx: contextOrg]).each { CostItem ci ->
@@ -151,26 +165,9 @@ class PackageService {
                 SubscriptionPackage.executeUpdate("delete from SubscriptionPackage sp where sp.pkg=:pkg and sp.subscription.id in (:subList)", [pkg:pkg, subList:subList])
                 //log.debug("before flush")
                 //session.flush()
-                return true
                 //}
-            } else {
-
-                if (subPkg) {
-                    OrgAccessPointLink.executeUpdate("delete from OrgAccessPointLink oapl where oapl.subPkg = :sp", [sp: subPkg])
-                    CostItem.findAllBySubPkg(subPkg).each { costItem ->
-                        costItem.subPkg = null
-                        costItem.costItemStatus = RDStore.COST_ITEM_DELETED
-                        if (!costItem.sub) {
-                            costItem.sub = subPkg.subscription
-                        }
-                        costItem.save()
-                    }
-                    PendingChangeConfiguration.executeUpdate("delete from PendingChangeConfiguration pcc where pcc.subscriptionPackage=:sp",[sp:subPkg])
-                }
-
-                SubscriptionPackage.executeUpdate("delete from SubscriptionPackage sp where sp.pkg = :pkg and sp.subscription = :sub ", [pkg: pkg, sub:subscription])
-                return true
             }
+            return true
         }else{
             log.error("!!! unlinkFromSubscription fail: CostItems are still linked -> [pkg:${pkg},sub:${subscription}]!!!!")
             return false
@@ -187,101 +184,17 @@ class PackageService {
      */
     int removePackagePendingChanges(de.laser.Package pkg, List subIds, boolean confirmed) {
         int count = 0
+        //continue here with package unlinking!
         List<Long> tippIDs = TitleInstancePackagePlatform.executeQuery('select tipp.id from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg', [pkg: pkg])
         if(confirmed) {
-            count = PendingChange.executeUpdate('delete from PendingChange pc where (pc.tipp in (select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkgId) and pc.oid in (:subOIDs) and pc.payload is null)', [pkgId: pkg.id, subOIDs: subIds.collect { subId -> Subscription.class.name+':'+subId }])
-            List oldStylePCs = PendingChange.executeQuery('select pc.id, pc.payload from PendingChange pc where pc.subscription.id in (:subIds) and pc.payload != null', [subIds: subIds])
-            List<Long> pcsToDelete = []
-            oldStylePCs.eachWithIndex { pc, int i ->
-                def payload = JSON.parse(pc[1])
-                if (payload.tippID) {
-                    pcsToDelete << pc[0]
-                }else if (payload.tippId) {
-                    pcsToDelete << pc[0]
-                } else if (payload.changeDoc) {
-                    def (oid_class, ident) = payload.changeDoc.OID.split(":")
-                    if (oid_class == TitleInstancePackagePlatform.class.name && tippIDs.contains(ident.toLong())) {
-                        pcsToDelete << pc[0]
-                    }
-                } else {
-                    log.error("Could not decide if we should delete the pending change id:${pc[0]} - ${payload}")
-                }
-                if(i % 32500 == 0 && i > 0) {
-                    count += PendingChange.executeUpdate("delete from PendingChange where id in (:del_list)", [del_list: pcsToDelete])
-                    pcsToDelete.clear()
-                }
-            }
+            count = PendingChange.executeUpdate('delete from PendingChange pc where (pc.tipp in (select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkgId) and pc.oid in (:subOIDs))', [pkgId: pkg.id, subOIDs: subIds.collect { subId -> Subscription.class.name+':'+subId }])
         }
         else {
             if(subIds) {
-                count = PendingChange.executeQuery('select count(pc.id) from PendingChange pc where (pc.tipp in (select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkgId) and pc.oid in (:subOIDs) and pc.payload is null)', [pkgId: pkg.id, subOIDs: subIds.collect { subId -> Subscription.class.name+':'+subId }])[0]
-                List oldStylePCs = PendingChange.executeQuery('select pc.payload from PendingChange pc where pc.subscription.id in (:subIds) and pc.payload != null', [subIds: subIds])
-                oldStylePCs.each { String pc ->
-                    def payload = JSON.parse(pc)
-                    if (payload.tippID) {
-                        count++
-                    }else if (payload.tippId) {
-                        count++
-                    } else if (payload.changeDoc) {
-                        def (oid_class, ident) = payload.changeDoc.OID.split(":")
-                        if (oid_class == TitleInstancePackagePlatform.class.name && tippIDs.contains(ident.toLong())) {
-                            count++
-                        }
-                    } else {
-                        log.error("Could not decide if we should delete the pending change id:${pc} - ${payload}")
-                    }
-                }
+                count = PendingChange.executeQuery('select count(pc.id) from PendingChange pc where (pc.tipp in (select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkgId) and pc.oid in (:subOIDs))', [pkgId: pkg.id, subOIDs: subIds.collect { subId -> Subscription.class.name+':'+subId }])[0]
             }
         }
         count
-        //log.debug("begin remove pending changes")
-        /*
-        String tipp_class = TitleInstancePackagePlatform.class.getName()
-        List<Long> tipp_ids = TitleInstancePackagePlatform.executeQuery(
-                "select tipp.id from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkgId", [pkgId: pkg.id]
-        )
-        List pendingChanges = subIds ? PendingChange.executeQuery(
-                "select pc.id, pc.payload from PendingChange pc where pc.subscription.id in (:subIds)" , [subIds: subIds]
-        ) : []
-
-        List pc_to_delete = []
-        pendingChanges.each { pc ->
-            //log.debug("begin pending changes")
-            if(pc[1]){
-                def payload = JSON.parse(pc[1])
-                if (payload.tippID) {
-                    pc_to_delete << pc[0]
-                }else if (payload.tippId) {
-                    pc_to_delete << pc[0]
-                } else if (payload.changeDoc) {
-                    def (oid_class, ident) = payload.changeDoc.OID.split(":")
-                    if (oid_class == tipp_class && tipp_ids.contains(ident.toLong())) {
-                        pc_to_delete << pc[0]
-                    }
-                } else {
-                    log.error("Could not decide if we should delete the pending change id:${pc[0]} - ${payload}")
-                }
-            }
-            else {
-                pc_to_delete << pc[0]
-            }
-        }
-        if (confirmed && pc_to_delete) {
-            String del_pc_query = "delete from PendingChange where id in (:del_list) "
-            if(pc_to_delete.size() > 32766) { //cf. https://stackoverflow.com/questions/49274390/postgresql-and-hibernate-java-io-ioexception-tried-to-send-an-out-of-range-inte
-                pc_to_delete.collate(32766).each { subList ->
-                    log.debug("Deleting Pending Change Slice: ${subList}")
-                    executeUpdate(del_pc_query,[del_list:subList])
-                }
-            }
-            else {
-                log.debug("Deleting Pending Changes: ${pc_to_delete}")
-                executeUpdate(del_pc_query, [del_list: pc_to_delete])
-            }
-        } else {
-            return pc_to_delete.size()
-        }
-         */
     }
 
     boolean clearRemovedTitles() {

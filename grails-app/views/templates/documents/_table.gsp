@@ -109,8 +109,9 @@
                         <g:if test="${!(controllerName == 'myInstitution' && actionName == 'subscriptionsManagement')}">
                             <td class="center aligned">
                                 <g:if test="${docctx.owner.owner.id == contextService.getOrg().id && !docctx.sharedFrom}">
-                                    <g:set var="blukEnabled" value="${true}" />
-                                    <g:checkBox id="bulk_doc_${docctx.owner.id}" name="bulk_doc" value="${docctx.owner.id}" checked="false"/>
+                                    <g:if test="${editable}">
+                                        <g:checkBox id="bulk_doc_${docctx.owner.id}" name="bulk_doc" value="${docctx.owner.id}" checked="false"/>
+                                    </g:if>
                                 </g:if>
                             </td>
                         </g:if>
@@ -175,7 +176,7 @@
                             </td>
                         --%>
                         </g:if>
-                        <td class="x">
+                        <td class="center aligned x">
                             <g:if test="${docctx.isDocAFile()}">
                                 <g:if test="${instance?.respondsTo('showUIShareButton')}">
                                     <g:if test="${docctx.sharedFrom}">
@@ -204,13 +205,13 @@
                                 </g:if>
                                 <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i class="download icon"></i></g:link>
                                 %{-- todo: !docctx.sharedFrom --}%
-                                <g:if test="${accessService.checkMinUserOrgRole(user,docctx.owner.owner,"INST_EDITOR") && inOwnerOrg && !docctx.sharedFrom}">
+                                <g:if test="${userService.checkAffiliationAndCtxOrg(user, docctx.owner.owner, 'INST_EDITOR') && inOwnerOrg && !docctx.sharedFrom}">
                                     <button type="button" class="ui icon blue button la-modern-button la-popup-tooltip la-delay" data-ui="modal" data-href="#modalEditDocument_${docctx.id}" data-content="${message(code:"template.documents.edit")}"><i class="pencil icon"></i></button>
                                     <%
                                         securityWorkaroundList.add(docctx as DocContext)
                                     %>
                                 </g:if>
-                                <g:if test="${!docctx.sharedFrom && !docctx.isShared && accessService.checkMinUserOrgRole(user,docctx.owner.owner,"INST_EDITOR") && inOwnerOrg}">
+                                <g:if test="${!docctx.sharedFrom && !docctx.isShared && userService.checkAffiliationAndCtxOrg(user, docctx.owner.owner, 'INST_EDITOR') && inOwnerOrg}">
                                     <g:link controller="${controllerName}" action="deleteDocuments" class="ui icon negative button la-modern-button js-open-confirm-modal"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"
                                             data-confirm-term-how="delete"
@@ -226,7 +227,7 @@
                 </g:if>
             </g:each>
         </tbody>
-        <g:if test="${blukEnabled}">
+        <g:if test="${editable && documentSet}">
             <tfoot>
                 <tr>
                     <td class="center aligned">

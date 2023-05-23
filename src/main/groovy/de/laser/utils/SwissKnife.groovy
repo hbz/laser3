@@ -115,7 +115,7 @@ class SwissKnife {
         return cloned
     }
 
-    static boolean checkAndCacheNavPerms(GroovyPageAttributes attrs, HttpServletRequest request) {
+    static boolean checkAndCacheNavPermsForCurrentRequest(GroovyPageAttributes attrs, HttpServletRequest request) {
         ContextService contextService = BeanStore.getContextService()
         AccessService accessService   = BeanStore.getAccessService()
 
@@ -146,20 +146,14 @@ class SwissKnife {
             check = SpringSecurityUtils.ifAnyGranted(attrs.specRole ?: [])
 
             if (!check) {
-                if (attrs.affiliation && attrs.orgPerm) {
-                    if (user.hasAffiliation(attrs.affiliation) && accessService.checkPerm(attrs.orgPerm)) {
-                        check = true
-                    }
-                }
-                else if (attrs.affiliation && user.hasAffiliation(attrs.affiliation)) {
-                    check = true
-                }
-                else if (attrs.orgPerm && accessService.checkPerm(attrs.orgPerm)) {
-                    check = true
-                }
+
+                boolean affiliationCheck = attrs.affiliation ? user.hasCtxAffiliation_or_ROLEADMIN(attrs.affiliation) : true
+                boolean orgPermCheck     = attrs.orgPerm ? accessService.ctxPerm(attrs.orgPerm) : true
+
+                check = affiliationCheck && orgPermCheck
 
                 if (attrs.affiliation && attrs.affiliationOrg && check) {
-                    check = user.hasAffiliationForForeignOrg(attrs.affiliation, attrs.affiliationOrg)
+                    check = user.hasOrgAffiliation_or_ROLEADMIN(attrs.affiliationOrg, attrs.affiliation)
                 }
             }
             checkMap.put(lsmnic, check)

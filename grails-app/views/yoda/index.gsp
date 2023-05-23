@@ -10,6 +10,8 @@
 
     <h2 class="ui header">&nbsp;</h2>
 
+<ui:messages data="${flash}"/>
+
 <div class="ui equal width grid">
     <div class="row">
 
@@ -74,6 +76,9 @@
                     </div>
                     <div class="item">
                         <g:link controller="yoda" action="systemCache" target="_blank">${message(code:'menu.yoda.systemCache')}</g:link>
+                    </div>
+                    <div class="item">
+                        <g:link controller="yoda" action="systemOddments" target="_blank">${message(code:'menu.yoda.systemOddments')}</g:link>
                     </div>
                     <div class="item">
                         <g:link controller="admin" action="appInfo" target="_blank">${message(code:'menu.admin.appInfo')}</g:link> <span class="ui mini label">Admin</span>

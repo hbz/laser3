@@ -1,11 +1,16 @@
 package de.laser
 
+import de.laser.auth.Role
+import de.laser.auth.UserOrgRole
+import de.laser.remote.ApiSource
 import de.laser.storage.RDStore
 import de.laser.titles.BookInstance
 import de.laser.titles.DatabaseInstance
 import de.laser.titles.JournalInstance
 
 class IconTagLib {
+
+    ContextService contextService
 
     static namespace = 'ui'
 
@@ -18,11 +23,37 @@ class IconTagLib {
 
         if (attrs.type) {
         switch (attrs.type.toLowerCase()) {
+            case 'addressbook':
+                icon = 'bordered inverted teal address book la-object-extended'
+                break
+            case 'admin':
+                icon = 'la-object trophy'
+                break
+            case 'affiliation':
+                int level = 0
+                UserOrgRole.findAllByUserAndOrg(contextService.getUser(), contextService.getOrg()).each{
+                    if (level < 1 && it.formalRole.authority == Role.INST_USER)   { level = 1; icon = 'user bordered inverted grey la-object-extended' }
+                    if (level < 2 && it.formalRole.authority == Role.INST_EDITOR) { level = 2; icon = 'user edit bordered inverted grey la-object-extended' }
+                    if (level < 3 && it.formalRole.authority == Role.INST_ADM)    { level = 3; icon = 'user cog bordered inverted grey la-object-extended' }
+                }
+                break
             case 'database':
                 icon = 'bordered la-object-database'
                 break
+            case 'datamanager':
+                icon = 'la-object hdd'
+                break
             case 'ebook':
                 icon = 'bordered la-object-ebook'
+                break
+            case 'file':
+                icon = 'bordered inverted blue file alternate la-object-extended'
+                break
+            case 'finance':
+                icon = 'bordered inverted teal euro sign la-object-extended'
+                break
+            case 'help':
+                icon = 'question circle bordered inverted grey la-object-extended'
                 break
             case 'journal':
                 icon = 'bordered la-object-journal'
@@ -30,20 +61,23 @@ class IconTagLib {
             case 'search':
                 icon = 'search'
                 break
+            case 'reporting':
+                icon = 'bordered inverted teal chartline icon la-object-extended'
+                break
             case 'subscription':
                 icon = 'bordered inverted orange clipboard la-object-extended'
                 break
             case 'survey':
                 icon = 'bordered inverted pink chart pie la-object-extended'
                 break
+            case 'task':
+                icon = 'bordered inverted green calendar check outline la-object-extended'
+                break
+            case 'user':
+                icon = 'user bordered inverted grey la-object-extended'
+                break
             case 'workflow':
                 icon = 'bordered inverted brown tasks la-object-extended'
-                break
-            case 'admin':
-                icon = 'la-object trophy'
-                break
-            case 'datamanager':
-                icon = 'la-object hdd'
                 break
             case 'yoda':
                 icon = 'la-object tools'
@@ -92,6 +126,9 @@ class IconTagLib {
             case 'hasPublishComponent':
                 icon = 'comment'
                 break
+            case 'holdingSelection':
+                icon = 'pizza slice'
+                break
             case 'startDate':
                 icon = 'calendar alternate outline'
                 break
@@ -102,6 +139,9 @@ class IconTagLib {
                 icon = 'image outline'
                 break
             case 'manualCancellationDate':
+                icon = 'calendar alternate outline'
+                break
+            case 'referenceYear':
                 icon = 'calendar alternate outline'
                 break
             case 'licenseUrl':
@@ -164,40 +204,6 @@ class IconTagLib {
         }
     }
 
-    def ieAcceptStatusIcon = { attrs, body ->
-        boolean hideTooltip = attrs.hideTooltip ? false : true
-
-        switch (attrs.status) {
-            case 'Fixed':
-                out << '<div class="la-inline-flexbox la-popup-tooltip la-delay" '
-                if (hideTooltip) {
-                    out << 'data-content="' + message(code: 'issueEntitlement.acceptStatus.fixed') + '" data-position="left center" data-variation="tiny"'
-                }
-                out << '><i aria-hidden="true" class="icon certificate green"></i>'
-                out << '</div>'
-                break
-            case 'Under Negotiation':
-                out << '<div class="la-inline-flexbox la-popup-tooltip la-delay" '
-                if (hideTooltip) {
-                    out << 'data-content="' + message(code: 'issueEntitlement.acceptStatus.underNegotiation') + '" data-position="left center" data-variation="tiny"'
-                }
-                out << '><i aria-hidden="true" class="icon hourglass end yellow"></i>'
-                out << '</div>'
-                break
-            case 'Under Consideration':
-                out << '<div class="la-inline-flexbox la-popup-tooltip la-delay" '
-                if (hideTooltip) {
-                    out << 'data-content="' + message(code: 'issueEntitlement.acceptStatus.underConsideration') + '" data-position="left center" data-variation="tiny"'
-                }
-                out << '><i aria-hidden="true" class="icon hourglass start red"></i>'
-                out << '</div>'
-                break
-            default:
-                out << ''
-                break
-        }
-    }
-
     def contactIcon = { attrs, body ->
 
         String msg = message(code: 'contact.icon.label.contactinfo')
@@ -227,12 +233,16 @@ class IconTagLib {
         out << '</span>'
     }
 
-    def linkWithIcon = { attrs, body ->
-        out << ' <span class="la-popup-tooltip la-delay" style="bottom: -3px" data-position="top right" data-content="Diese URL aufrufen ..">'
-        out << '&nbsp;<a href="' + attrs.href + '" aria-label="' + attrs.href + '" target="_blank" class="ui icon blue la-js-dont-hide-button">'
-        out << '<i aria-hidden="true" class="share square icon"></i>'
-        out << '</a>'
-        out << '</span>'
+    def customerTypeIcon = { attrs, body ->
+        if (attrs.org && attrs.org.isCustomerType_Inst_Pro()) {
+            out << '<span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center" data-content="' + attrs.org.getCustomerTypeI10n() + '">'
+            if (attrs.cssClass) {
+                out << '<i class="icon grey trophy ' + attrs.cssClass + '"></i>'
+            } else {
+                out << '<i class="icon grey trophy"></i>'
+            }
+            out << '</span>'
+        }
     }
 
     def documentIcon = { attrs, body ->

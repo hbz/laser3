@@ -1,4 +1,4 @@
-<%@ page import="de.laser.UserSetting; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.auth.Role; de.laser.auth.UserOrg; de.laser.UserSetting.KEYS; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.UserSetting; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.auth.Role; de.laser.auth.UserOrgRole; de.laser.UserSetting.KEYS; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
 
 <laser:htmlStart message="profile.user" serviceInjection="true" />
 
@@ -14,7 +14,7 @@
     </ui:actionsDropdown>
 </ui:controlButtons>
 
-<ui:h1HeaderWithIcon message="profile.user" />
+<ui:h1HeaderWithIcon message="profile.user" type="affiliation"/>
 
 <ui:messages data="${flash}" />
 
@@ -113,7 +113,7 @@
                                                    value="Y" ${isNotificationForSurveysParticipationFinish ? 'checked' : ''}/>
                                         </div>
                                     </td>
-                                    <td>${contextService.getOrg().getCustomerType()  == 'ORG_CONSORTIUM' ? message(code: 'profile.notification.for.SurveysParticipationFinish') : message(code: 'profile.notification.for.SurveysParticipationFinish2')}</td>
+                                    <td>${contextService.getOrg().isCustomerType_Consortium() ? message(code: 'profile.notification.for.SurveysParticipationFinish') : message(code: 'profile.notification.for.SurveysParticipationFinish2')}</td>
                                 </tr>
 
                                 <tr>
@@ -410,19 +410,19 @@
                         </div>
                         <div class="field">
                             <label>${message(code: 'profile.dashboardTab')}</label>
-                            <g:set var="US_DASHBOARD_TAB" value="${user.getSetting(KEYS.DASHBOARD_TAB, RefdataValue.getByValueAndCategory('Due Dates', RDConstants.USER_SETTING_DASHBOARD_TAB))}" />
+                            <g:set var="US_DASHBOARD_TAB" value="${user.getSetting(KEYS.DASHBOARD_TAB, RDStore.US_DASHBOARD_TAB_DUE_DATES)}" />
                             <ui:xEditableRefData owner="${US_DASHBOARD_TAB}" field="rdValue" config="${US_DASHBOARD_TAB.key.rdc}" />
                         </div>
                         <div class="field">
                             <label>${message(code: 'profile.language')}</label>
-                            <g:set var="US_LANGUAGE" value="${user.getSetting(KEYS.LANGUAGE, RefdataValue.getByValueAndCategory('de', RDConstants.LANGUAGE))}" />
+                            <g:set var="US_LANGUAGE" value="${user.getSetting(KEYS.LANGUAGE, RDStore.LANGUAGE_DE)}" />
                             <ui:xEditableRefData owner="${US_LANGUAGE}" field="rdValue" config="${US_LANGUAGE.key.rdc}" />
                             &nbsp;
                             <g:link controller="profile" action="index" class="ui button icon" style="float:right"><i class="icon sync"></i></g:link>
                         </div>
                         <div class="field">
                             <label>${message(code: 'profile.emailLanguage')}</label>
-                            <g:set var="US_EMAIL_LANGUAGE" value="${user.getSetting(KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', RDConstants.LANGUAGE))}" />
+                            <g:set var="US_EMAIL_LANGUAGE" value="${user.getSetting(KEYS.LANGUAGE_OF_EMAILS, RDStore.LANGUAGE_DE)}" />
                             <ui:xEditableRefData owner="${US_EMAIL_LANGUAGE}" field="rdValue" config="${US_EMAIL_LANGUAGE.key.rdc}" />
                         </div>
 

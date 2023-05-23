@@ -6,7 +6,7 @@ import de.laser.auth.Role
 import de.laser.auth.UserRole
 import de.laser.base.AbstractJob
 import de.laser.config.ConfigDefaults
-import de.laser.finance.CostItem
+import de.laser.config.ConfigMapper
 import de.laser.properties.LicenseProperty
 import de.laser.properties.OrgProperty
 import de.laser.properties.PersonProperty
@@ -23,6 +23,7 @@ import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyResult
 import de.laser.system.SystemActivityProfiler
+import de.laser.system.SystemEvent
 import de.laser.system.SystemProfiler
 import de.laser.system.SystemSetting
 import de.laser.utils.AppUtils
@@ -33,8 +34,6 @@ import grails.plugin.springsecurity.annotation.Secured
 import grails.gorm.transactions.Transactional
 import grails.util.Holders
 import grails.web.Action
-import groovyx.gpars.GParsExecutorsPool
-import groovyx.gpars.GParsPool
 import org.elasticsearch.client.RequestOptions
 import org.elasticsearch.client.RestHighLevelClient
 import org.elasticsearch.client.core.CountRequest
@@ -43,7 +42,10 @@ import org.elasticsearch.client.indices.GetIndexRequest
 import org.hibernate.SessionFactory
 import org.quartz.JobKey
 import org.quartz.impl.matchers.GroupMatcher
+import org.springframework.security.web.FilterChainProxy
+import org.springframework.security.web.SecurityFilterChain
 
+import javax.servlet.Filter
 import javax.servlet.ServletOutputStream
 import java.lang.annotation.Annotation
 import java.lang.reflect.Method
@@ -61,6 +63,7 @@ import java.util.concurrent.ExecutorService
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class YodaController {
 
+    Filter springSecurityFilterChain
     SessionFactory sessionFactory
 
     CacheService cacheService
@@ -103,7 +106,10 @@ class YodaController {
         Map result = [:]
 
         result.blacklist = [
-                'jira', 'dataSource', ConfigDefaults.DATASOURCE_DEFAULT + '.password', ConfigDefaults.DATASOURCE_STORAGE + '.password'
+                'dataSource',
+                ConfigDefaults.DATASOURCE_DEFAULT + '.password',
+                ConfigDefaults.DATASOURCE_STORAGE + '.password',
+                ConfigMapper.WEKB_API_PASSWORD[0]
         ]
         result.editable = true
         result.currentConfig = grails.util.Holders.config.findAll { ! it.key.matches("[A-Z|_]*") }
@@ -165,6 +171,17 @@ class YodaController {
             groups.putAt( groupName, group.sort{ a, b -> (a.name < b.name ? -1 : 1)} )
         }
         result.quartz = groups
+        result
+    }
+
+    @Secured(['ROLE_YODA'])
+    def systemOddments() {
+        Map<String, Object> result = [:]
+
+        FilterChainProxy filterChainProxy = (FilterChainProxy) springSecurityFilterChain
+        List<SecurityFilterChain> list = filterChainProxy.getFilterChains()
+
+        result.filters = list.stream().flatMap(chain -> chain.getFilters().stream()).toArray().toList()
         result
     }
 
@@ -431,13 +448,52 @@ class YodaController {
 
                         Annotation da = method.getAnnotation(DebugInfo)
                         if (da) {
+
                             mInfo.debug = [
-                                    perm     : da.perm(),
-                                    type     : da.type(),
-                                    affil    : da.affil(),
-                                    specRole : da.specRole(),
-                                    test     : da.test()
+                                    specRole : '',
+                                    affil    : '',
+                                    perm     : '',
+                                    type     : '',
+                                    test     : ''
                             ]
+
+                            if (da.ctxPermAffiliation()) {
+                                mInfo.debug.test        = 'ctxPermAffiliation()' //  + da.ctxPermAffiliation().toList()
+                                mInfo.debug.perm        = da.ctxPermAffiliation().toList()[0]
+                                mInfo.debug.affil       = da.ctxPermAffiliation().toList()[1]
+                            }
+                            if (da.ctxInstUserCheckPerm_or_ROLEADMIN()) {
+                                mInfo.debug.test        = 'ctxInstUserCheckPerm_or_ROLEADMIN()' //  + da.ctxInstUserCheckPerm_or_ROLEADMIN().toList()
+                                mInfo.debug.perm        = da.ctxInstUserCheckPerm_or_ROLEADMIN().toList()[0]
+                                mInfo.debug.affil       = 'INST_USER'
+                                mInfo.debug.specRole    = 'ROLE_ADMIN'
+                            }
+                            if (da.ctxInstEditorCheckPerm_or_ROLEADMIN()) {
+                                mInfo.debug.test        = 'ctxInstEditorCheckPerm_or_ROLEADMIN()' //  + da.ctxInstEditorCheckPerm_or_ROLEADMIN().toList()
+                                mInfo.debug.perm        = da.ctxInstEditorCheckPerm_or_ROLEADMIN().toList()[0]
+                                mInfo.debug.affil       = 'INST_EDITOR'
+                                mInfo.debug.specRole    = 'ROLE_ADMIN'
+                            }
+                            if (da.ctxInstAdmCheckPerm_or_ROLEADMIN()) {
+                                mInfo.debug.test        = 'ctxInstAdmCheckPerm_or_ROLEADMIN()' //  + da.ctxInstAdmCheckPerm_or_ROLEADMIN().toList()
+                                mInfo.debug.perm        = da.ctxInstAdmCheckPerm_or_ROLEADMIN().toList()[0]
+                                mInfo.debug.affil       = 'INST_ADM'
+                                mInfo.debug.specRole    = 'ROLE_ADMIN'
+                            }
+                            if (da.ctxConsortiumCheckPermAffiliation_or_ROLEADMIN()) {
+                                mInfo.debug.test        = 'ctxConsortiumCheckPermAffiliation_or_ROLEADMIN()' //  + da.ctxConsortiumCheckPermAffiliation_or_ROLEADMIN().toList()
+                                mInfo.debug.perm        = da.ctxConsortiumCheckPermAffiliation_or_ROLEADMIN().toList()[0]
+                                mInfo.debug.affil       = da.ctxConsortiumCheckPermAffiliation_or_ROLEADMIN().toList()[1]
+                                mInfo.debug.type        = 'Consortium'
+                                mInfo.debug.specRole    = 'ROLE_ADMIN'
+                            }
+
+                            if (da.hasCtxAffiliation_or_ROLEADMIN()) {
+                                mInfo.debug.test        = 'hasCtxAffiliation_or_ROLEADMIN()' //  + da.hasCtxAffiliation_or_ROLEADMIN().toList()
+                                mInfo.debug.affil       = da.hasCtxAffiliation_or_ROLEADMIN().toList()[0]
+                                mInfo.debug.specRole    = 'ROLE_ADMIN'
+                            }
+
                             if (da.ctrlService()) {
                                 mInfo.ctrlService = da.ctrlService()
                                 if (da.ctrlService() == DebugInfo.WITH_TRANSACTION) {
@@ -542,21 +598,14 @@ class YodaController {
         yodaService.getTIPPsWithoutGOKBId()
     }
 
-    @Deprecated
     @Secured(['ROLE_YODA'])
-    def purgeTIPPsWithoutGOKBId() {
-        def toDelete = JSON.parse(params.toDelete)
-        def toUUIDfy = JSON.parse(params.toUUIDfy)
-        if(params.doIt == "true") {
-            yodaService.purgeTIPPsWihtoutGOKBId(toDelete,toUUIDfy)
-            redirect(url: request.getHeader('referer'))
-            return
+    def matchTitleStatus() {
+        if(!yodaService.bulkOperationRunning) {
+            yodaService.matchTitleStatus()
+            log.debug("Titel-Status-Matching läuft ...")
         }
-        else {
-            flash.message = "Betroffene TIPP-IDs wären vereinigt worden: ${toDelete} und folgende hätten einen fehlenden Wert erhalten: ${toUUIDfy}"
-            redirect action: 'getTIPPsWithoutGOKBId'
-            return
-        }
+        else log.error("Prozess läuft schon, kein Neustart")
+        redirect controller: 'home'
     }
 
     /**
@@ -608,7 +657,7 @@ class YodaController {
                 flagContentGokb : true // gokbService.queryElasticsearch
         ]
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
-        Map allPlatforms = gokbService.queryElasticsearch(apiSource.baseUrl+apiSource.fixToken+"/find?componentType=Platform&max=10000&status=Current")
+        Map allPlatforms = gokbService.queryElasticsearch(apiSource.baseUrl+apiSource.fixToken+"/searchApi", [componentType: "Platform", max: 10000, status: "Current"])
         if (allPlatforms.error && allPlatforms.error == 404) {
             result.wekbServerUnavailable = message(code: 'wekb.error.404')
         }
@@ -753,15 +802,19 @@ class YodaController {
     def updateData() {
         if(!globalSourceSyncService.running) {
             log.debug("start reloading ...")
-            if(params.dataToLoad == "iemedium")
-                yodaService.fillIEMedium()
-            else
-                globalSourceSyncService.updateData(params.dataToLoad)
+            String dataToLoad = params.dataToLoad, objType = params.objType
+            executorService.execute({
+                Thread.currentThread().setName("UpdateData")
+                if (dataToLoad in ["medium", "openAccess", "accessType"] && objType == 'issueEntitlement')
+                    yodaService.fillValue(dataToLoad)
+                else
+                    globalSourceSyncService.updateData(dataToLoad)
+            })
         }
         else {
             log.debug("process running, lock is set!")
         }
-        redirect controller: 'package'
+        redirect action: 'systemThreads'
     }
 
     /**
@@ -773,7 +826,10 @@ class YodaController {
     def reloadPackages() {
         if(!globalSourceSyncService.running) {
             log.debug("start reloading ...")
-            globalSourceSyncService.reloadData('TitleInstancePackagePlatform')
+            executorService.execute({
+                Thread.currentThread().setName("GlobalDataUpdate_${componentType}")
+                globalSourceSyncService.reloadData('TitleInstancePackagePlatform')
+            })
         }
         else {
             log.debug("process running, lock is set!")
@@ -831,15 +887,42 @@ class YodaController {
      * if no match is being found for the given we:kb ID, a new record will be created!
      */
     @Secured(['ROLE_YODA'])
-    def reloadWekbOrg() {
+    def reloadWekbProvider() {
         if(!globalSourceSyncService.running) {
+            //continue here and with running GlobalDataSync (beware: other GRS are switched off for test, test also with sources enabled!)
             log.debug("start reloading ...")
-            globalSourceSyncService.reloadData('Org')
+            executorService.execute({
+                Thread.currentThread().setName("GlobalDataUpdate_Org")
+                globalSourceSyncService.reloadData('Org')
+                yodaService.expungeRemovedComponents(Org.class.name)
+            })
         }
         else {
             log.debug("process running, lock is set!")
         }
         redirect controller: 'organisation', action: 'listProvider'
+    }
+
+    /**
+     * Call to reload all platform data from the speicified we:kb instance.
+     * Note that the platforms whose data should be updated need a we:kb ID for match;
+     * if no match is being found for the given we:kb ID, a new record will be created!
+     */
+    @Secured(['ROLE_YODA'])
+    def reloadWekbPlatform() {
+        if(!globalSourceSyncService.running) {
+            log.debug("start reloading ...")
+            //continue here with tests
+            executorService.execute({
+                Thread.currentThread().setName("GlobalDataUpdate_Platform")
+                globalSourceSyncService.reloadData('Platform')
+                yodaService.expungeRemovedComponents(Platform.class.name)
+            })
+        }
+        else {
+            log.debug("process running, lock is set!")
+        }
+        redirect controller: 'platform', action: 'list'
     }
 
     /**
@@ -908,7 +991,6 @@ class YodaController {
             indexInfo.countDB = FTControl.executeQuery(query)[0]
             result.indices << indexInfo
         }
-
             try {
                 esclient.close()
             }
@@ -1086,77 +1168,6 @@ class YodaController {
         }
 
         redirect action:'systemSettings'
-    }
-
-    @Deprecated
-    @Secured(['ROLE_YODA'])
-    def costItemsApi(String owner) {
-        def result = []
-
-        if(owner) {
-            def costItems
-
-            //Für später zur besseren Absicherung
-            //costItems = CostItem.findAllByOwner(contextService.getOrg())
-            if(owner == 'all')
-            {
-                costItems = CostItem.getAll()
-            }
-            else{
-                costItems = CostItem.findAllByOwnerAndCostItemStatusNotEqual(Org.get(owner), RDStore.COST_ITEM_DELETED)
-            }
-
-            costItems.each {
-                Map costItem = [:]
-                costItem.globalUID = it.globalUID
-
-                costItem.costItemStatus = it.costItemStatus?.value
-                costItem.costItemTyp = it.costItemCategory?.value
-                costItem.billingCurrency = it.billingCurrency?.value
-                costItem.costItemElement = it.costItemElement?.value
-                costItem.taxCode = it.taxCode?.value
-
-                costItem.costInBillingCurrency = it.costInBillingCurrency
-                costItem.costInLocalCurrency = it.costInLocalCurrency
-                costItem.currencyRate = it.currencyRate
-
-                costItem.costTitle = it.costTitle
-                costItem.costDescription = it.costDescription
-                costItem.reference = it.reference
-
-                costItem.startDate = it.startDate
-                costItem.endDate = it.endDate
-
-                costItem.owner = [:]
-                it.owner?.each{
-                    costItem.owner.globalUID = it.globalUID ?:''
-                    costItem.owner.name = it.name
-                    costItem.owner.shortname = it.shortname
-                    costItem.owner.sortname = it.sortname
-                    costItem.owner.libraryType = it.libraryType?.value
-                }
-
-                costItem.sub = [:]
-                it.sub?.each {
-                    costItem.sub.name = it.name
-                    costItem.sub.globalUID = it.globalUID ?: ''
-                    costItem.sub.startDate = it.startDate
-                    costItem.sub.endDate = it.endDate
-                }
-
-                costItem.subPkg = it.subPkg
-                costItem.issueEntitlement = it.issueEntitlement
-                costItem.order = it.order
-                costItem.invoice = it.invoice
-
-                result.add(costItem)
-
-            }
-        }else {
-            result=[result:'You must enter an organization!']
-        }
-
-        render result as JSON
     }
 
     /**
@@ -1513,4 +1524,86 @@ class YodaController {
         redirect action: 'dashboard'
     }
 
+    @Secured(['ROLE_YODA'])
+    def setPerpetualAccessByIes() {
+        Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
+        Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
+        threadArray.each { Thread thread ->
+            if (thread.name == 'setPerpetualAccessByIes') {
+                flash.error = 'setPerpetualAccessByIes process still running!'
+                redirect controller: 'yoda', action: 'index'
+                return
+            }
+        }
+        executorService.execute({
+            Thread.currentThread().setName("setPerpetualAccessByIes")
+            List<Subscription> subList = Subscription.findAllByHasPerpetualAccess(true)
+            int countProcess = 0
+            int countProcessPT = 0
+            subList.each { Subscription sub ->
+                List<Long> ieIDs = IssueEntitlement.executeQuery('select ie.id from IssueEntitlement ie where ie.subscription = :sub and ie.perpetualAccessBySub is null', [sub: sub])
+                if (ieIDs.size() > 0) {
+                    Org owner = sub.subscriber
+
+                    ieIDs.each { Long ieID ->
+                        IssueEntitlement.executeUpdate("update IssueEntitlement ie set ie.perpetualAccessBySub = :sub where ie.id = :ieID ", [sub: sub, ieID: ieID])
+
+                        IssueEntitlement issueEntitlement = IssueEntitlement.get(ieID)
+                        TitleInstancePackagePlatform titleInstancePackagePlatform = issueEntitlement.tipp
+
+                        if (!PermanentTitle.findByOwnerAndTipp(owner, titleInstancePackagePlatform)) {
+                            PermanentTitle permanentTitle = new PermanentTitle(subscription: sub,
+                                    issueEntitlement: issueEntitlement,
+                                    tipp: titleInstancePackagePlatform,
+                                    owner: owner).save()
+                            countProcessPT
+                        }
+                        countProcess++
+                    }
+                }
+            }
+
+            SystemEvent.createEvent('YODA_PROCESS', [yodaProcess: 'setPerpetualAccessByIes', countProcessIes: countProcess, countProcessPermanentTitles: countProcessPT])
+        })
+
+        flash.message = 'setPerpetualAccessByIes process is now running. In SystemEvents you see when setPerpetualAccessByIes is finish!'
+        redirect controller: 'yoda', action: 'index'
+    }
+
+    @Secured(['ROLE_YODA'])
+    def setPermanentTitle() {
+        Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
+        Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
+        threadArray.each { Thread thread ->
+            if (thread.name == 'setPermanentTitle') {
+                flash.error = 'setPermanentTitle process still running!'
+                redirect controller: 'yoda', action: 'index'
+                return
+            }
+        }
+        executorService.execute({
+            Thread.currentThread().setName("setPermanentTitle")
+            int countProcess = 0
+                List<Long> ieIDs = IssueEntitlement.executeQuery('select ie.id from IssueEntitlement ie where ie.perpetualAccessBySub is not null')
+                if (ieIDs.size() > 0) {
+                   ieIDs.each { Long ieID ->
+                       IssueEntitlement issueEntitlement = IssueEntitlement.get(ieID)
+                       TitleInstancePackagePlatform titleInstancePackagePlatform = issueEntitlement.tipp
+                        Org owner = issueEntitlement.subscription.subscriber
+
+                        if (!PermanentTitle.findByOwnerAndTipp(owner, titleInstancePackagePlatform)) {
+                            PermanentTitle permanentTitle = new PermanentTitle(subscription: issueEntitlement.subscription,
+                                    issueEntitlement: issueEntitlement,
+                                    tipp: titleInstancePackagePlatform,
+                                    owner: owner).save()
+                            countProcess++
+                        }
+                    }
+                }
+            SystemEvent.createEvent('YODA_PROCESS', [yodaProcess: 'setPermanentTitle', countProcess: countProcess])
+        })
+
+        flash.message = 'setPermanentTitle process is now running. In SystemEvents you see when setPermanentTitle is finish!'
+        redirect controller: 'yoda', action: 'index'
+    }
 }

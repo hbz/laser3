@@ -2,6 +2,7 @@ package de.laser.domain
 
 import de.laser.ContextService
 import de.laser.DocContext
+import de.laser.RefdataValue
 import de.laser.auth.User
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
@@ -9,6 +10,8 @@ import de.laser.workflow.WfWorkflow
 import de.laser.workflow.WorkflowHelper
 import de.laser.workflow.WfCondition
 import de.laser.workflow.WfTask
+import de.laser.workflow.WfChecklist
+import de.laser.workflow.WfCheckpoint
 
 class WorkflowTagLib {
 
@@ -16,27 +19,46 @@ class WorkflowTagLib {
 
     static namespace = 'uiWorkflow'
 
+    // --- workflows AND checklists ---
+
     def statusIcon = { attrs, body ->
 
-        WfWorkflow workflow = attrs.workflow as WfWorkflow
-        Map<String, Object> wfInfo = workflow.getInfo()
+        WfWorkflow workflow
+        WfChecklist checklist
+
+        Map<String, Object> info = [:]
         String iconSize = attrs.get('size') ?: 'large'
 
-        out << '<i class="icon ' + iconSize + ' ' + WorkflowHelper.getCssIconAndColorByStatus(workflow.status) + '"></i>'
+        if (attrs.workflow) {
+            workflow = attrs.workflow as WfWorkflow
+            info = workflow.getInfo()
+            out << '<i class="icon ' + iconSize + ' ' + WorkflowHelper.getCssIconAndColorByStatus(workflow.status) + '"></i>'
+        }
+        else if (attrs.checklist) {
+            checklist = attrs.checklist as WfChecklist
+            info = checklist.getInfo()
+            out << '<i class="icon ' + iconSize + ' ' + WorkflowHelper.getCssIconAndColorByStatus(info.status as RefdataValue) + '"></i>'
+        }
 
-        if (workflow.status == RDStore.WF_WORKFLOW_STATUS_DONE) {
-            if (wfInfo.tasksImportantBlocking) {
-                out << '<span data-position="top left" class="la-popup-tooltip la-delay" data-content="' + message(code:'workflow.blockingTasks.important') + '">'
-                out << '<i class="icon ' + iconSize + ' red frown outline"></i>'
-                out << '</span>'
-            }
-            else if (wfInfo.tasksNormalBlocking) {
-                out << '<span data-position="top left" class="la-popup-tooltip la-delay" data-content="' + message(code:'workflow.blockingTasks.normal') + '">'
-                out << '<i class="icon ' + iconSize + ' yellow frown outline"></i>'
-                out << '</span>'
+        if (workflow) {
+            if (workflow.status == RDStore.WF_WORKFLOW_STATUS_DONE) {
+                if (info.tasksImportantBlocking) {
+                    out << '<span data-position="top left" class="la-popup-tooltip la-delay" data-content="' + message(code:'workflow.blockingTasks.important') + '">'
+                    out << '<i class="icon ' + iconSize + ' red frown outline"></i>'
+                    out << '</span>'
+                }
+                else if (info.tasksNormalBlocking) {
+                    out << '<span data-position="top left" class="la-popup-tooltip la-delay" data-content="' + message(code:'workflow.blockingTasks.normal') + '">'
+                    out << '<i class="icon ' + iconSize + ' yellow frown outline"></i>'
+                    out << '</span>'
+                }
             }
         }
+        else if (checklist) {
+        }
     }
+
+    // --- workflows ---
 
     def usageIconLinkButton = { attrs, body ->
 
@@ -66,6 +88,8 @@ class WorkflowTagLib {
             out <<  '</a>'
         }
     }
+
+    // --- workflows ---
 
     def task = { attrs, body ->
 
@@ -128,6 +152,8 @@ class WorkflowTagLib {
         out <<   '</a>'
         out << '</span>'
     }
+
+    // --- workflows ---
 
     def taskConditionField = { attrs, body ->
 
@@ -210,5 +236,38 @@ class WorkflowTagLib {
         else {
             out << (isListItem ? '<div class="item"><div class="content">' : '') + '[workflow:conditionField]' + (isListItem ? '</div></div>' : '')
         }
+    }
+
+    // --- checklists ---
+
+    def checkpoint = { attrs, body ->
+
+        WfCheckpoint cpoint = attrs.checkpoint as WfCheckpoint
+
+        String tooltip = '<p><strong>' + cpoint.title + '</strong></p>' + ( cpoint.comment ? '<p>' + cpoint.comment + '</p>' : '')
+        tooltip = tooltip + '<div class="ui divider"></div>'
+
+        List<String> fields = []
+
+        fields.add( (cpoint.date ?
+                '<i class="icon calendar alternate outline"></i> ' + message(code:'workflow.checkpoint.date') + ': <strong>' + DateUtils.getLocalizedSDF_noTime().format(cpoint.date) + '</strong>' :
+                '<i class="icon calendar alternate outline la-light-grey"></i> ' + message(code:'workflow.checkpoint.noDate')
+        ))
+        fields.add( (cpoint.done == true ?
+                '<i class="ui icon check square outline"></i> ' + message(code:'workflow.checkpoint.done') :
+                '<i class="ui icon square outline la-light-grey"></i> ' + message(code:'workflow.checkpoint.open')
+        ))
+
+        tooltip = tooltip + '<p>' + fields.join('<br/>') + '</p>'
+
+        String cssColor = WorkflowHelper.getCssColorByStatus( cpoint.done ? RDStore.WF_TASK_STATUS_DONE : RDStore.WF_TASK_STATUS_OPEN )
+//        String cssIcon = WorkflowHelper.getCssIconByTaskPriority( RDStore.WF_TASK_PRIORITY_NORMAL )
+        String cssIcon = cpoint.done ? 'check' : 'circle'
+
+        out << '<span class="la-popup-tooltip la-delay" data-position="top center" data-html="' + tooltip.encodeAsHTML() + '">'
+        out <<   '<a href="' + g.createLink( controller:'ajaxHtml', action:'workflowModal', params:attrs.params ) + '" class="ui icon button wfModalLink">'
+        out <<     '<i class="ui icon ' + cssColor + ' ' + cssIcon + '" style="margin-left:0;"></i>'
+        out <<   '</a>'
+        out << '</span>'
     }
 }

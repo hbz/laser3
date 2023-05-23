@@ -285,7 +285,7 @@ class QueryService {
         Map<String, Object> result = [:]
         def base_qry
         def qry_params
-        boolean isLicensingConsortium = (institution?.hasPerm("ORG_CONSORTIUM"))
+        boolean isLicensingConsortium = (institution?.isCustomerType_Consortium())
         boolean isLicensee = ! isLicensingConsortium
 
         if (isLicensee) {

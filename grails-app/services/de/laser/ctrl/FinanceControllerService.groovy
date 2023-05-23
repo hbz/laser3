@@ -71,7 +71,7 @@ class FinanceControllerService {
         }
 
         if(params.ownSort) {
-            result.sortConfig.ownSort = params.sort
+            result.sortConfig.ownSort = params.sort.contains("ci.") ? params.sort : 'ci.'+params.sort
             result.sortConfig.ownOrder = params.order
         }
         if(params.consSort) {
@@ -79,7 +79,7 @@ class FinanceControllerService {
             result.sortConfig.consOrder = params.order
         }
         if(params.subscrSort) {
-            result.sortConfig.subscrSort = params.sort
+            result.sortConfig.subscrSort = params.sort.contains("ci.") ? params.sort : 'ci.'+params.sort
             result.sortConfig.subscrOrder = params.order
         }
         if (params.forExport) {
@@ -114,7 +114,8 @@ class FinanceControllerService {
         //Determine own org belonging, then, in which relationship I am to the given subscription instance
         switch(result.institution.getCustomerType()) {
         //cases one to three
-            case 'ORG_CONSORTIUM':
+            case CustomerTypeService.ORG_CONSORTIUM_BASIC:
+            case CustomerTypeService.ORG_CONSORTIUM_PRO:
                 if (result.subscription) {
                     //cases two and three: child subscription
                     if (result.subscription.instanceOf) {
@@ -167,7 +168,7 @@ class FinanceControllerService {
                 }
                 break
         //cases four and five
-            case 'ORG_INST':
+            case CustomerTypeService.ORG_INST_PRO:
                 if (result.subscription) {
                     //case four: child subscription
                     if(result.subscription.instanceOf) {
@@ -190,13 +191,13 @@ class FinanceControllerService {
                 }
                 break
         //cases six: basic member
-            case 'ORG_BASIC_MEMBER':
+            case CustomerTypeService.ORG_INST_BASIC:
                 dataToDisplay << 'subscr'
                 result.showView = 'subscr'
                 break
         }
         if (editable)
-            result.editable = accessService.checkPermAffiliationX("ORG_INST, ORG_CONSORTIUM","INST_EDITOR","ROLE_ADMIN")
+            result.editable = accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
         result.dataToDisplay = dataToDisplay
         //override default view to show if checked by pagination or from elsewhere
         if (params.showView){

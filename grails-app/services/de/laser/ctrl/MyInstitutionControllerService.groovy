@@ -8,7 +8,8 @@ import de.laser.storage.RDStore
 import de.laser.utils.SwissKnife
 import de.laser.survey.SurveyInfo
 import de.laser.system.SystemAnnouncement
-import de.laser.workflow.WfWorkflow
+import de.laser.workflow.WfChecklist
+import de.laser.workflow.WfCheckpoint
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -27,6 +28,7 @@ class MyInstitutionControllerService {
     FilterService filterService
     SurveyService surveyService
     TaskService taskService
+    UserService userService
     WorkflowService workflowService
 
     static final int STATUS_OK = 0
@@ -44,11 +46,11 @@ class MyInstitutionControllerService {
         prf.setBenchmark('init')
         Map<String, Object> result = getResultGenerics(controller, params)
 
-        if (! accessService.checkUserIsMember(result.user, result.institution)) {
+        if (! (result.user as User).isMemberOf(result.institution as Org)) {
             return [status: STATUS_ERROR, result: result]
         }
 
-        result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+        result.is_inst_admin = userService.checkAffiliationAndCtxOrg(result.user, result.institution, 'INST_ADM')
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
         result.acceptedOffset = 0
@@ -67,7 +69,7 @@ class MyInstitutionControllerService {
 
         // changes -> to AJAX
 
-        //Map<String,Object> pendingChangeConfigMap = [contextOrg:result.institution,consortialView:accessService.checkPerm(result.institution,"ORG_CONSORTIUM"),periodInDays:periodInDays,max:result.max,offset:result.acceptedOffset]
+        //Map<String,Object> pendingChangeConfigMap = [contextOrg:result.institution,consortialView:accessService.otherOrgPerm(result.institution, 'ORG_CONSORTIUM_BASIC'),periodInDays:periodInDays,max:result.max,offset:result.acceptedOffset]
         //pu.setBenchmark('pending changes')
         //result.putAll(pendingChangeService.getChanges(pendingChangeConfigMap))
 
@@ -86,7 +88,7 @@ class MyInstitutionControllerService {
         result.enableMyInstFormFields = true // enable special form fields
 
 
-        /*def announcement_type = RefdataValue.getByValueAndCategory('Announcement', RDConstants.DOCUMENT_TYPE)
+        /*def announcement_type = RDStore.DOC_TYPE_ANNOUNCEMENT
         result.recentAnnouncements = Doc.findAllByType(announcement_type, [max: result.max,offset:result.announcementOffset, sort: 'dateCreated', order: 'desc'])
         result.recentAnnouncementsCount = Doc.findAllByType(announcement_type).size()*/
         prf.setBenchmark('due dates')
@@ -100,30 +102,40 @@ class MyInstitutionControllerService {
                  status: RDStore.SURVEY_SURVEY_STARTED])
         */
 
-        if (workflowService.hasUserPerm_read()){
-            /*activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where surConfig.surveyInfo.status = :status  and surConfig.surveyInfo.owner = :org " +
-                    " order by surConfig.surveyInfo.endDate",
-                    [org: result.institution,
-                     status: RDStore.SURVEY_SURVEY_STARTED])*/
-
-            if (params.cmd && params.cmd.contains(WfWorkflow.KEY)) {
-                workflowService.usage(params)
-            }
-
-            List<WfWorkflow> workflows = workflowService.sortByLastUpdated(
-                    WfWorkflow.findAllByOwnerAndStatus(result.institution as Org, RDStore.WF_WORKFLOW_STATUS_OPEN)
-            )
-
-            List<WfWorkflow> myWfList  = workflows.findAll { it.user != null && it.user.id == result.user.id }
-            List<WfWorkflow> allWfList = workflows.findAll { it.user == null }
-
-            result.myWorkflowsCount  = myWfList.size()
-            result.allWorkflowsCount = allWfList.size()
-            result.myWorkflows  = myWfList.take(contextService.getUser().getPageSizeOrDefault())
-            result.allWorkflows = allWfList.take(contextService.getUser().getPageSizeOrDefault())
+//            List<WfWorkflow> myWfList  = workflows.findAll { it.user != null && it.user.id == result.user.id }
+//            List<WfWorkflow> allWfList = workflows.findAll { it.user == null }
+//
+//            result.myWorkflowsCount  = myWfList.size()
+//            result.allWorkflowsCount = allWfList.size()
+//            result.myWorkflows  = myWfList.take(contextService.getUser().getPageSizeOrDefault())
+//            result.allWorkflows = allWfList.take(contextService.getUser().getPageSizeOrDefault())
 
 //            result.currentWorkflowsCount = result.myCurrentWorkflows.size() + result.allCurrentWorkflows.size()
 //            result.currentWorkflows      = workflows.take(contextService.getUser().getPageSizeOrDefault())
+
+        if (workflowService.hasUserPerm_edit()) {
+            if (params.cmd) {
+                String[] cmd = params.cmd.split(':')
+
+                if (cmd[1] in [WfChecklist.KEY, WfCheckpoint.KEY]) { // light
+                    workflowService.executeCmd(params)
+//                    result.putAll(workflowService.cmd(params))
+                }
+            }
+        }
+
+        if (workflowService.hasUserPerm_read()){
+            List<WfChecklist> workflows = []
+
+            workflowService.sortByLastUpdated( WfChecklist.findAllByOwner(result.institution) ).each { clist ->
+                Map info = clist.getInfo()
+
+                if (info.status == RDStore.WF_WORKFLOW_STATUS_OPEN) {
+                    workflows.add(clist)
+                }
+            }
+            result.allChecklistsCount = workflows.size()
+            result.allChecklists = workflows.take(contextService.getUser().getPageSizeOrDefault())
         }
         /*
         result.surveys = activeSurveyConfigs.groupBy {it?.id}
@@ -162,26 +174,26 @@ class MyInstitutionControllerService {
         result.institution = org
         result.contextOrg = org
         result.contextCustomerType = org.getCustomerType()
-        result.showConsortiaFunctions = result.contextCustomerType == "ORG_CONSORTIUM"
+        result.showConsortiaFunctions = org.isCustomerType_Consortium()
         switch (params.action) {
             case [ 'processEmptyLicense', 'currentLicenses', 'currentSurveys', 'dashboard', 'getChanges', 'getSurveys', 'emptyLicense', 'surveyInfoFinish' ]:
-                result.editable = accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR')
+                result.editable = userService.checkAffiliationAndCtxOrg(user, org, 'INST_EDITOR')
                 break
             case [ 'addressbook', 'budgetCodes', 'tasks' ]:
-                result.editable = accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+                result.editable = userService.checkAffiliationAndCtxOrg_or_ROLEADMIN(user, org, 'INST_EDITOR')
                 break
             case 'surveyInfos':
                 result.editable = surveyService.isEditableSurvey(org, SurveyInfo.get(params.id) ?: null)
                 break
             case 'users':
-                result.editable = user.hasRole('ROLE_ADMIN') || user.hasAffiliation('INST_ADM')
+                result.editable = user.hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
                 break
             case 'managePropertyDefinitions':
                 result.editable = false
-                result.changeProperties = user.hasRole('ROLE_ADMIN') || user.hasAffiliation('INST_EDITOR')
+                result.changeProperties = user.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
                 break
             default:
-                result.editable = accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_YODA')
+                result.editable = userService.checkAffiliationAndCtxOrg_or_ROLEADMIN(user, org, 'INST_EDITOR')
         }
 
         result

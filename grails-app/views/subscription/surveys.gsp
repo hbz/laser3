@@ -7,11 +7,11 @@
     <laser:render template="actions"/>
 </ui:controlButtons>
 
-<ui:h1HeaderWithIcon>
+<ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}">
 <laser:render template="iconSubscriptionIsChild"/>
 <ui:xEditable owner="${subscription}" field="name"/>
-<ui:totalNumber total="${surveys.size()}"/>
 </ui:h1HeaderWithIcon>
+<ui:totalNumber class="la-numberHeader"  total="${surveys.size()}"/>
 <ui:anualRings object="${subscription}" controller="subscription" action="surveys"
                   navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
@@ -99,7 +99,7 @@
                 </td>
                 <td class="x">
 
-                    <g:if test="${(contextOrg.getCustomerType() in ['ORG_CONSORTIUM'])}">
+                    <g:if test="${(contextOrg.isCustomerType_Consortium())}">
                             <span class="la-popup-tooltip la-delay"
                                   data-content="${message(code: 'surveyInfo.toSurveyInfos')}">
                                 <g:link controller="survey" action="evaluationParticipant"

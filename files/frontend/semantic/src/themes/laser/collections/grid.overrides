@@ -14,7 +14,7 @@
 .ui.segment.la-timeLineSegment-contact {
   background-color:transparent;
   border: none;
-  padding-top: 0;
+  padding-top: 10px;
   padding-bottom: 0;
   .ui.header {
     margin-top: 0.5rem;
@@ -132,4 +132,9 @@
     padding-right: 0em !important;
   }
 
+}
+.ui.grid.positive {
+    box-shadow: 0 0 0 #a3c293 inset;
+    background: #fcfff5;
+    color: #2c662d;
 }

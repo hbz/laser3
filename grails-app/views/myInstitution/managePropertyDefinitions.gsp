@@ -2,7 +2,7 @@
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
 
 <laser:htmlStart message="menu.institutions.prop_defs" />
-        <g:set var="entityName" value="${message(code: 'org.label')}" />
+    <g:set var="entityName" value="${message(code: 'org.label')}" />
 
     <ui:breadcrumbs>
         <ui:crumb message="menu.institutions.manage_props" class="active" />

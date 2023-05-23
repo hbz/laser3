@@ -1,6 +1,6 @@
-<%@ page import="de.laser.TitleInstancePackagePlatform; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.RefdataCategory;" %>
+<%@ page import="de.laser.TitleInstancePackagePlatform; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.base.AbstractReport" %>
 <laser:serviceInjection />
-<g:if test="${controllerName == 'package'}">
+<g:if test="${controllerName == 'package' || fillDropdownsWithPackage}">
     <g:set var="seriesNames"
            value="${packageInstance ? controlledListService.getAllPossibleSeriesByPackage(packageInstance,actionName) : []}"/>
     <g:set var="subjects"
@@ -20,8 +20,7 @@
     <g:set var="coverageDepths"
            value="${packageInstance ? controlledListService.getAllPossibleCoverageDepthsByPackage(packageInstance,actionName) : []}"/>
 </g:if>
-
-<g:if test="${controllerName == 'subscription'}">
+<g:elseif test="${controllerName == 'subscription'}">
     <g:set var="seriesNames"
            value="${subscription ? controlledListService.getAllPossibleSeriesBySub(subscription) : []}"/>
     <g:set var="subjects"
@@ -40,7 +39,28 @@
            value="${subscription ? controlledListService.getAllPossibleMediumTypesBySub(subscription) : []}"/>
     <g:set var="coverageDepths"
            value="${subscription ? controlledListService.getAllPossibleCoverageDepthsBySub(subscription) : []}"/>
-</g:if>
+</g:elseif>
+<g:elseif test="${controllerName == 'title' || actionName == 'currentPermanentTitles'}">
+    <g:set var="seriesNames"
+           value="${params.status ? controlledListService.getAllPossibleSeriesByStatus(params) : []}"/>
+    <g:set var="subjects"
+           value="${params.status ? controlledListService.getAllPossibleSubjectsByStatus(params) : []}"/>
+    <g:set var="ddcs"
+           value="${params.status ? controlledListService.getAllPossibleDdcsByStatus(params) : []}"/>
+    <g:set var="languages"
+           value="${params.status ? controlledListService.getAllPossibleLanguagesByStatus(params) : []}"/>
+    <g:set var="yearsFirstOnline"
+           value="${params.status ? controlledListService.getAllPossibleDateFirstOnlineYearByStatus(params) : []}"/>
+    <g:set var="publishers"
+           value="${params.status ? controlledListService.getAllPossiblePublisherByStatus(params) : []}"/>
+    <g:set var="titleTypes"
+           value="${params.status ? controlledListService.getAllPossibleTitleTypesByStatus(params) : []}"/>
+    <g:set var="mediumTypes"
+           value="${params.status ? controlledListService.getAllPossibleMediumTypesByStatus(params) : []}"/>
+    <g:set var="coverageDepths"
+           value="${params.status ? controlledListService.getAllPossibleCoverageDepthsByStatus(params) : []}"/>
+</g:elseif>
+
 <g:set var="availableStatus" value="${RefdataCategory.getAllRefdataValues(RDConstants.TIPP_STATUS)-RDStore.TIPP_STATUS_REMOVED}"/>
 
 <ui:filter>
@@ -51,7 +71,7 @@
         <g:hiddenField name="surveyConfigID" value="${params.surveyConfigID}"/>
         <g:hiddenField name="tab" value="${params.tab}"/>
         <g:hiddenField name="tabStat" value="${params.tabStat}"/>
-        <g:hiddenField name="titleGroup" value="${params.titleGroup}"/>
+        %{--<g:hiddenField name="titleGroup" value="${params.titleGroup}"/>--}%
 
         <div class="four fields">
             <div class="field">
@@ -262,7 +282,7 @@
 
 
         <div class="three fields">
-            <g:if test="${controllerName == 'subscription' && !showStatsFilter}">
+            <g:if test="${controllerName == 'subscription' && !showStatsFilter && !notShow}">
                 <div class="field">
                     <label>${message(code: 'issueEntitlement.perpetualAccessBySub.label')}</label>
                     <ui:select class="ui fluid dropdown" name="hasPerpetualAccess"
@@ -274,6 +294,16 @@
                 </div>
                 <g:if test="${actionName =='index' && subscription.ieGroups.size() > 0}">
                     <div class="field">
+                        <label>${message(code: 'issueEntitlementGroup.label')}</label>
+                        <g:select class="ui fluid dropdown" name="titleGroup"
+                                   from="${subscription.ieGroups}"
+                                   optionKey="id"
+                                   optionValue="name"
+                                   value="${params.titleGroup}"
+                                   noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+                    </div>
+
+                    %{--<div class="field">
                         <label>${message(code: 'issueEntitlement.inTitleGroups')}</label>
                         <ui:select class="ui fluid dropdown" name="inTitleGroups"
                                       from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
@@ -281,47 +311,16 @@
                                       optionValue="value"
                                       value="${params.inTitleGroups}"
                                       noSelection="${['': message(code: 'default.select.choose.label')]}"/>
-                    </div>
+                    </div>--}%
                 </g:if>
             </g:if>
         </div>
 
         <g:if test="${controllerName == 'subscription' && showStatsFilter}">
-            <div class="${accessTypes ? print('three') : print('two')} fields">
-                <div class="field">
-                    <label for="metricType"><g:message code="default.usage.metricType"/></label>
-                    <select name="metricType" id="metricType" multiple="multiple" class="ui selection dropdown">
-                        <option value=""><g:message code="default.select.choose.label"/></option>
-                        <g:each in="${metricTypes}" var="metricType">
-                            <option <%=(params.metricType == metricType) ? 'selected="selected"' : ''%>
-                                    value="${metricType}">
-                                ${metricType}
-                            </option>
-                        </g:each>
-                        <g:if test="${metricTypes.size() == 0}">
-                            <option value="<g:message code="default.stats.noMetric" />"><g:message code="default.stats.noMetric" /></option>
-                        </g:if>
-                    </select>
-                </div>
-
-                <g:if test="${accessTypes}">
-                    <div class="field">
-                        <label for="accessType"><g:message code="default.usage.accessType"/></label>
-                        <select name="accessType" id="accessType" class="ui selection dropdown">
-                            <option value=""><g:message code="default.select.choose.label"/></option>
-                            <g:each in="${accessTypes}" var="accessType">
-                                <option <%=(params.accessType == accessType) ? 'selected="selected"' : ''%>
-                                        value="${accessType}">
-                                    ${accessType}
-                                </option>
-                            </g:each>
-                            <g:if test="${accessTypes.size() == 0}">
-                                <option value="<g:message code="default.stats.noAccess" />"><g:message code="default.stats.noAccess" /></option>
-                            </g:if>
-                        </select>
-                    </div>
-                </g:if>
-
+            <g:if test="${revision == AbstractReport.COUNTER_4}">
+                <ui:msg icon="ui info icon" class="info" header="${message(code: 'default.usage.counter4reportInfo.header')}" message="default.usage.counter4reportInfo.text" noClose="true"/>
+            </g:if>
+            <div class="five fields" id="filterDropdownWrapper">
                 <div class="field">
                     <label for="reportType"><g:message code="default.usage.reportType"/></label>
                     <select name="reportType" id="reportType" class="ui selection dropdown">
@@ -337,6 +336,73 @@
                         </g:if>
                     </select>
                 </div>
+
+                <div class="field dynFilter">
+                    <g:if test="${metricTypes}">
+                        <label for="metricType"><g:message code="default.usage.metricType"/></label>
+                        <%-- was multiple --%>
+                        <select name="metricType" id="metricType" class="ui selection dropdown">
+                            <option value=""><g:message code="default.select.choose.label"/></option>
+                            <g:each in="${metricTypes}" var="metricType">
+                                <option <%=(metricType in params.metricType) ? 'selected="selected"' : ''%>
+                                        value="${metricType}">
+                                    ${metricType}
+                                </option>
+                            </g:each>
+                            <g:if test="${metricTypes.size() == 0}">
+                                <option value="<g:message code="default.stats.noMetric" />"><g:message code="default.stats.noMetric" /></option>
+                            </g:if>
+                        </select>
+                    </g:if>
+                </div>
+
+                <div class="field dynFilter">
+                    <g:if test="${accessMethods}">
+                        <label for="accessMethod"><g:message code="default.usage.accessMethod"/></label>
+                        <%-- was multiple --%>
+                        <select name="accessMethod" id="accessMethod" class="ui selection dropdown">
+                            <option value=""><g:message code="default.select.choose.label"/></option>
+                            <g:each in="${accessMethods}" var="accessMethod">
+                                <option <%=(accessMethod in params.accessMethod) ? 'selected="selected"' : ''%>
+                                        value="${accessMethod}">
+                                    ${accessMethod}
+                                </option>
+                            </g:each>
+                            <g:if test="${accessMethods.size() == 0}">
+                                <option value="<g:message code="default.stats.noAccessMethod" />"><g:message code="default.stats.noAccessMethod" /></option>
+                            </g:if>
+                        </select>
+                    </g:if>
+                </div>
+
+                <div class="field dynFilter">
+                    <g:if test="${accessTypes}">
+                        <label for="accessType"><g:message code="default.usage.accessType"/></label>
+                        <%-- was multiple --%>
+                        <select name="accessType" id="accessType" class="ui selection dropdown">
+                            <option value=""><g:message code="default.select.choose.label"/></option>
+                            <g:each in="${accessTypes}" var="accessType">
+                                <option <%=(accessType in params.accessType) ? 'selected="selected"' : ''%>
+                                        value="${accessType}">
+                                    ${accessType}
+                                </option>
+                            </g:each>
+                            <g:if test="${accessTypes.size() == 0}">
+                                <option value="<g:message code="default.stats.noAccessType" />"><g:message code="default.stats.noAccessType" /></option>
+                            </g:if>
+                        </select>
+                    </g:if>
+                </div>
+
+                <g:if test="${platformInstanceRecords.size() > 1}">
+                    <div class="field">
+                        <label for="platform"><g:message code="platform"/></label>
+                        <ui:select class="ui search selection dropdown" from="${platformInstanceRecords}" name="platform"/>
+                    </div>
+                </g:if>
+                <g:elseif test="${platformInstanceRecords.size() == 1}">
+                    <g:hiddenField name="platform" value="${platformInstanceRecords.values()[0].id}"/>
+                </g:elseif>
             </div>
         </g:if>
 
@@ -348,3 +414,27 @@
             </div>
     </g:form>
 </ui:filter>
+
+<laser:script file="${this.getGroovyPageFileName()}">
+    <g:if test="${subscription && platformsJSON}">
+        $("#reportType").on('change', function() {
+            let reportType = $(this).val();
+            <g:applyCodec encodeAs="none">
+                let platforms = ${platformsJSON};
+            </g:applyCodec>
+            $.ajax({
+                url: "<g:createLink controller="ajaxHtml" action="loadFilterList"/>",
+                data: {
+                    reportType: reportType,
+                    platforms: platforms,
+                    noMultiple: true,
+                    subscription: ${subscription.id},
+                }
+            }).done(function(response) {
+                $('.dynFilter').remove();
+                $('#filterDropdownWrapper').append(response);
+                r2d2.initDynamicUiStuff('#filterDropdownWrapper');
+            });
+        });
+    </g:if>
+</laser:script>

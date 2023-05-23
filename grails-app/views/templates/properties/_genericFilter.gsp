@@ -1,5 +1,5 @@
 <!-- A: templates/properties/_genericFilter -->
-<%@ page import="de.laser.properties.PropertyDefinition; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.CustomerTypeService; de.laser.properties.PropertyDefinition; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore" %>
 <laser:serviceInjection/>
 <%--params.filterProp: ${params.filterProp}--%>
 <div class="field">
@@ -43,7 +43,7 @@
 
     <g:if test="${params.descr in [PropertyDefinition.ORG_PROP]}">
         <div class="two fields">
-            <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
+            <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
 
                 <div class="field">
                     <div class="inline fields la-filter-inline">
@@ -204,16 +204,15 @@ $.ajax({
                                     var option = data[index];
                                     var optionText = option.text;
 
-                                    select += '<div class="item"
-                                                    data-value="' + option.value + '">' + optionText + '</div>';
+                                    select += '<div class="item" data-value="' + option.value + '">' + optionText + '</div>';
                                 }
 
-                                select = ' <div id="objStatusWrapper" class="ui fluid search selection dropdown">' +
-    '   <input type="hidden" id="objStatus" name="objStatus">' +
-    '   <i class="dropdown icon"></i>' +
-    '   <div class="default text">${message(code: 'default.select.choose.label')}</div>' +
-    '   <div class="menu">'
-    + select +
+                                select = '<div id="objStatusWrapper" class="ui fluid search selection dropdown">' +
+    '<input type="hidden" id="objStatus" name="objStatus">' +
+    '<i class="dropdown icon"></i>' +
+    '<div class="default text">${message(code: 'default.select.choose.label')}</div>' +
+    '<div class="menu">'+
+    select +
     '</div>' +
     '</div>';
                             $('label[for=objStatus]').next().replaceWith(select);

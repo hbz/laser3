@@ -1,8 +1,6 @@
 <ui:modal id="modalCreateNote" text="${message(code:'template.addNote')}">
 
     <g:form id="create_note" class="ui form" url="[controller:'doc', action:'createNote']" method="post">
-        <div class="ui label red" style="float:right">Feature in Entwicklung</div><br />
-
         <input type="hidden" name="ownerid" value="${ownobj.id}"/>
         <input type="hidden" name="ownerclass" value="${ownobj.class.name}"/>
         <input type="hidden" name="ownertp" value="${owntp}"/>
@@ -13,13 +11,13 @@
         </div>
         <div class="field">
             <label for="noteContent">${message(code:'default.content.label')}:</label>
-            <div id="noteContent" placeholder="Tipp: Formatierung beim Kopieren verloren? Einfach erneut mit STRG+A, dann STRG+V einfügen"></div>
+            <div tabindex="0" id="noteContent" placeholder="Tipp: Formatierung beim Kopieren verloren? Einfach erneut mit STRG+A, dann STRG+V einfügen"></div>
 
             <laser:script file="${this.getGroovyPageFileName()}">
                 wysiwyg.initEditor ('#modalCreateNote #noteContent');
 
-                JSPC.callbacks.modal.show.modalCreateNote = function(trigger) {
-                    // r2d2.resetModalForm ('#modalCreateNote');
+                JSPC.callbacks.modal.onShow.modalCreateNote = function(trigger) {
+                    // r2d2.helper.resetModalForm ('#modalCreateNote');
                     $('#modalCreateNote #noteTitle').val('');
                     wysiwyg.resetContent ('#modalCreateNote #noteContent');
                 };

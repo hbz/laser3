@@ -84,7 +84,7 @@
             <tbody>
             <g:each in="${participantsList}" var="participant" status="i">
                 <g:set var="costElement"
-                       value="${RefdataValue.getByValueAndCategory('price: consortial price', de.laser.storage.RDConstants.COST_ITEM_ELEMENT)}"/>
+                       value="${RDStore.COST_ITEM_ELEMENT_CONSORTIAL_PRICE}"/>
 
                 <g:if test="${participant.surveyCostItem}">
                     <g:set var="costElement"

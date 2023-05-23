@@ -17,6 +17,7 @@ class GenericOIDService {
    * @return the OID key of the object
    */
   String getOID(def object) {
+    object = GrailsHibernateUtil.unwrapIfProxy(object)
     (object && DomainClassArtefactHandler.isDomainClass(object.class)) ? "${object.class.name}:${object.id}" : null
   }
 

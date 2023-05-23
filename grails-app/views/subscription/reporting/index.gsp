@@ -8,8 +8,8 @@
         <ui:controlButtons>
             <laser:render template="actions" />
         </ui:controlButtons>
-    
-        <ui:h1HeaderWithIcon>
+
+        <ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}">
             <laser:render template="iconSubscriptionIsChild"/>
             <ui:xEditable owner="${subscription}" field="name" />
         </ui:h1HeaderWithIcon>
@@ -90,7 +90,7 @@
                         method: 'post',
                         data: JSPC.app.reporting.current.request,
                         beforeSend: function (xhr) {
-                            $('#loadingIndicator').show();
+                            $('#globalLoadingIndicator').show();
                             $('#query-export-button, #query-help-button').attr('disabled', 'disabled');
                         }
                     })
@@ -111,7 +111,12 @@
                         else {
                             var dsl = JSPC.app.reporting.current.chart.option.dataset.source.length
                             if (JSPC.app.reporting.current.request.query.split('-')[0] != 'timeline') {
-                                var cwh = (JSPC.app.reporting.current.request.chart == 'pie') ? 320 : 220;
+                                var cwh = 220;
+                                if (JSPC.app.reporting.current.request.chart == 'pie') {
+                                    cwh = 320;
+                                    JSPC.app.reporting.current.myCountsToggle = false;
+                                }
+
                                 $('#chart-wrapper').css('height', cwh + (20 * JSPC.app.reporting.current.chart.option.dataset.source.length) + 'px');
                             } else {
                                 $('#chart-wrapper').removeAttr('style');
@@ -146,7 +151,7 @@
                         $('#reporting-chart-nodata').hide();
                         $("#reporting-modal-error").modal('show');
                     })
-                    .always (function () { $('#loadingIndicator').hide(); });
+                    .always (function () { $('#globalLoadingIndicator').hide(); });
                 }
             }
 

@@ -1,5 +1,5 @@
-<%@ page import="de.laser.storage.RDStore; de.laser.IssueEntitlement;de.laser.Platform; de.laser.remote.ApiSource;" %>
-<laser:htmlStart message="myinst.currentTitles.label" />
+<%@ page import="de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.IssueEntitlement;de.laser.Platform; de.laser.remote.ApiSource; de.laser.PermanentTitle" %>
+<laser:htmlStart message="myinst.currentTitles.label"/>
 
 <ui:breadcrumbs>
     <ui:crumb message="myinst.currentTitles.label" class="active"/>
@@ -7,34 +7,44 @@
 
 <ui:controlButtons>
     <ui:exportDropdown>
-        <ui:exportDropdownItem>
-            <g:if test="${filterSet}">
-                <g:link class="item js-open-confirm-modal"
-                        data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}"
-                        data-confirm-term-how="ok" controller="myInstitution" action="currentTitles"
-                        params="${params + [format: 'csv']}">
-                    <g:message code="default.button.exports.csv"/>
-                </g:link>
-            </g:if>
-            <g:else>
-                <g:link class="item" action="currentTitles" params="${params + [format: 'csv']}">CSV Export</g:link>
-            </g:else>
-        </ui:exportDropdownItem>
-        <ui:exportDropdownItem>
-            <g:if test="${filterSet}">
-                <g:link class="item js-open-confirm-modal"
-                        data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}"
-                        data-confirm-term-how="ok" controller="myInstitution" action="currentTitles"
-                        params="${params + [exportXLSX: true]}">
-                    <g:message code="default.button.exports.xls"/>
-                </g:link>
-            </g:if>
-            <g:else>
-                <g:link class="item" action="currentTitles" params="${params + [exportXLSX: true]}">
-                    <g:message code="default.button.exports.xls"/>
-                </g:link>
-            </g:else>
-        </ui:exportDropdownItem>
+    <%--
+    <ui:exportDropdownItem>
+        <g:if test="${filterSet}">
+            <g:link class="item js-open-confirm-modal"
+                    data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}"
+                    data-confirm-term-how="ok" controller="myInstitution" action="currentTitles"
+                    params="${params + [format: 'csv']}">
+                <g:message code="default.button.exports.csv"/>
+            </g:link>
+        </g:if>
+        <g:else>
+            <g:link class="item" action="currentTitles" params="${params + [format: 'csv']}">CSV Export</g:link>
+        </g:else>
+    </ui:exportDropdownItem>
+    <ui:exportDropdownItem>
+        <g:if test="${filterSet}">
+            <g:link class="item js-open-confirm-modal"
+                    data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}"
+                    data-confirm-term-how="ok" controller="myInstitution" action="currentTitles"
+                    params="${params + [exportXLSX: true]}">
+                <g:message code="default.button.exports.xls"/>
+            </g:link>
+        </g:if>
+        <g:else>
+            <g:link class="item" action="currentTitles" params="${params + [exportXLSX: true]}">
+                <g:message code="default.button.exports.xls"/>
+            </g:link>
+        </g:else>
+    </ui:exportDropdownItem>
+    --%>
+        <g:if test="${num_ti_rows < 100000}">
+            <ui:exportDropdownItem>
+                <a class="item" data-ui="modal" href="#individuallyExportTippsModal">Export</a>
+            </ui:exportDropdownItem>
+        </g:if>
+        <g:else>
+            <ui:actionsDropdownItemDisabled message="Export" tooltip="${message(code: 'export.titles.excelLimit')}"/>
+        </g:else>
         <ui:exportDropdownItem>
             <g:if test="${filterSet}">
                 <g:link class="item js-open-confirm-modal"
@@ -58,9 +68,12 @@
     </ui:exportDropdown>
 </ui:controlButtons>
 
-<ui:h1HeaderWithIcon message="myinst.currentTitles.label" total="${num_ti_rows}" floated="true" />
+<ui:h1HeaderWithIcon message="myinst.currentTitles.label" total="${num_ti_rows}" floated="true"/>
 
 <ui:messages data="${flash}"/>
+
+<g:set var="availableStatus"
+       value="${RefdataCategory.getAllRefdataValues(RDConstants.TIPP_STATUS) - RDStore.TIPP_STATUS_REMOVED}"/>
 
 <ui:filter>
     <g:form id="filtering-form" action="currentTitles" controller="myInstitution" method="get" class="ui form">
@@ -80,7 +93,7 @@
             </div>
 
             <ui:datepicker label="myinst.currentTitles.subs_valid_on" id="validOn" name="validOn"
-                              value="${validOn}"/>
+                           value="${validOn}"/>
 
         </div>
 
@@ -136,6 +149,26 @@
                 </select>
             </div>
 
+            <div class="field">
+                <label for="status">
+                    ${message(code: 'default.status.label')}
+                </label>
+                <select name="status" id="status" multiple=""
+                        class="ui search selection dropdown">
+                    <option value="">${message(code: 'default.select.choose.label')}</option>
+
+                    <g:each in="${availableStatus}" var="status">
+                        <option <%=(params.list('status')?.contains(status.id.toString())) ? 'selected="selected"' : ''%>
+                                value="${status.id}">
+                            ${status.getI10n('value')}
+                        </option>
+                    </g:each>
+                </select>
+            </div>
+
+        </div>
+
+        <div class="two fields">
             <div class="field la-field-right-aligned">
                 <a href="${request.forwardURI}"
                    class="ui reset secondary button">${message(code: 'default.button.reset.label')}</a>
@@ -179,168 +212,227 @@
     </g:form>
 </ui:filter>
 
+<ui:tabs actionName="${actionName}">
+    <ui:tabsItem controller="${controllerName}" action="${actionName}"
+                 params="[tab: 'currentIEs']"
+                 text="${message(code: "package.show.nav.current")}" tab="currentIEs"
+                 counts="${currentIECounts}"/>
+    <ui:tabsItem controller="${controllerName}" action="${actionName}"
+                 params="[tab: 'plannedIEs']"
+                 text="${message(code: "package.show.nav.planned")}" tab="plannedIEs"
+                 counts="${plannedIECounts}"/>
+    <ui:tabsItem controller="${controllerName}" action="${actionName}"
+                 params="[tab: 'expiredIEs']"
+                 text="${message(code: "package.show.nav.expired")}" tab="expiredIEs"
+                 counts="${expiredIECounts}"/>
+    <ui:tabsItem controller="${controllerName}" action="${actionName}"
+                 params="[tab: 'deletedIEs']"
+                 text="${message(code: "package.show.nav.deleted")}" tab="deletedIEs"
+                 counts="${deletedIECounts}"/>
+    <ui:tabsItem controller="${controllerName}" action="${actionName}"
+                 params="[tab: 'allIEs']"
+                 text="${message(code: "menu.public.all_titles")}" tab="allIEs"
+                 counts="${allIECounts}"/>
+</ui:tabs>
+
+<% params.remove('tab') %>
+
+<%
+    Map<String, String>
+    sortFieldMap = ['tipp.sortname': message(code: 'title.label')]
+    if (journalsOnly) {
+        sortFieldMap['startDate'] = message(code: 'default.from')
+        sortFieldMap['endDate'] = message(code: 'default.to')
+    } else {
+        sortFieldMap['tipp.dateFirstInPrint'] = message(code: 'tipp.dateFirstInPrint')
+        sortFieldMap['tipp.dateFirstOnline'] = message(code: 'tipp.dateFirstOnline')
+    }
+    sortFieldMap['tipp.accessStartDate'] = "${message(code: 'subscription.details.access_dates')} ${message(code: 'default.from')}"
+    sortFieldMap['tipp.accessEndDate'] = "${message(code: 'subscription.details.access_dates')} ${message(code: 'default.to')}"
+%>
+
+
 <div class="la-clear-before">
-    <div>
+    <div class="ui bottom attached tab active segment">
+
+        <div class="ui form">
+            <div class="three wide fields">
+                <div class="field">
+                    <ui:sortingDropdown noSelection="${message(code: 'default.select.choose.label')}"
+                                        from="${sortFieldMap}" sort="${params.sort}" order="${params.order}"/>
+                </div>
+            </div>
+        </div>
+
+
         <div>
-            <g:if test="${titles}">
-                <g:set var="counter" value="${offset + 1}"/>
-                <table class="ui sortable celled la-js-responsive-table la-table table ">
-                    <thead>
-                    <tr>
-                        <th>${message(code: 'sidewide.number')}</th>
-                        <g:sortableColumn params="${params}" property="tipp.sortname"
-                                          title="${message(code: 'title.label')}"/>
-                        <th style="width: 50%">
-                            <div class="ui three column grid">
-                                <div class="sixteen wide column">
-                                    ${message(code: 'myinst.currentTitles.sub_content')}
-                                </div>
+            <div>
+                <g:if test="${titles}">
+                    <g:set var="counter" value="${offset + 1}"/>
 
-                                <div class="eight wide column">
-                                    ${message(code: 'default.date.label')}
-                                    <br/>
-                                    ${message(code: 'default.from')}
-                                    <br/>
-                                    ${message(code: 'default.to')}
-                                </div>
 
-                                <div class="eight wide column">
-                                    ${message(code: 'subscription.details.access_dates')}
-                                    <br/>
-                                    ${message(code: 'default.from')}
-                                    <br/>
-                                    ${message(code: 'default.to')}
-                                </div>
-
-                                <div class="sixteen wide column">
-                                    <g:message code="subscription.details.prices"/>
-                                </div>
-
-                                <div class="eight wide column">
-                                    <g:message code="issueEntitlement.perpetualAccessBySub.label"/>
-                                </div>
-                            </div>
-                        </th>
-                    </tr>
-                    </thead>
-                    <g:each in="${titles}" var="tipp" status="jj">
-                        <tr>
-                            <td>${(params.int('offset') ?: 0) + jj + 1}</td>
-                            <td>
-                                <!-- START TEMPLATE -->
-                                <laser:render template="/templates/title_short"
-                                          model="${[ie         : null, tipp: tipp,
-                                                    showPackage: true, showPlattform: true, showCompact: true, showEmptyFields: false]}"/>
-                                <!-- END TEMPLATE -->
-
-                            </td>
-                            <%
-                                String instanceFilter = ''
-                                if (institution.getCustomerType() == "ORG_CONSORTIUM")
-                                    instanceFilter += ' and sub.instanceOf = null'
-                                Set<IssueEntitlement> title_coverage_info = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.subscription sub join sub.orgRelations oo where oo.org = :context and ie.tipp = :tipp and sub.status = :current and ie.status != :ieStatus' + instanceFilter, [ieStatus: RDStore.TIPP_STATUS_REMOVED, context: institution, tipp: tipp, current: RDStore.SUBSCRIPTION_CURRENT])
-                            %>
-                            <td>
-
-                                <div class="ui three column grid">
-                                    <g:each in="${title_coverage_info}" var="ie">
-                                        <div class="sixteen wide column">
-                                            <i class="icon clipboard outline la-list-icon"></i>
-                                            <g:link controller="subscription" action="index"
-                                                    id="${ie.subscription.id}">${ie.subscription.dropdownNamingConvention(institution)}</g:link>
-                                            &nbsp;
-                                            <br/>
-                                            <g:link controller="issueEntitlement" action="show"
-                                                    id="${ie.id}">${message(code: 'myinst.currentTitles.full_ie')}</g:link>
-                                            <br/>
-                                        </div>
-
-                                        <div class="eight wide centered column coverageStatements la-tableCard">
-
-                                            <laser:render template="/templates/tipps/coverages"
-                                                      model="${[ie: ie, tipp: ie.tipp]}"/>
-
-                                        </div>
-
-                                        <div class="eight wide centered column">
-
-                                        <!-- von --->
-                                            <g:if test="${editable}">
-                                                <ui:xEditable owner="${ie}" type="date" field="accessStartDate"/>
-                                                <i class="grey question circle icon la-popup-tooltip la-delay"
-                                                   data-content="${message(code: 'subscription.details.access_start.note')}"></i>
-                                            </g:if>
-                                            <g:else>
-                                                <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                                              date="${ie.accessStartDate}"/>
-                                            </g:else>
-                                            <ui:dateDevider/>
-                                        <!-- bis -->
-                                            <g:if test="${editable}">
-                                                <ui:xEditable owner="${ie}" type="date" field="accessEndDate"/>
-                                                <i class="grey question circle icon la-popup-tooltip la-delay"
-                                                   data-content="${message(code: 'subscription.details.access_end.note')}"></i>
-                                            </g:if>
-                                            <g:else>
-                                                <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                                              date="${ie.accessEndDate}"/>
-                                            </g:else>
-                                        </div>
-
-                                        <div class="sixteen wide column">
-                                            <g:each in="${ie.priceItems}" var="priceItem" status="i">
-                                                <g:message code="tipp.price.listPrice"/>: <ui:xEditable field="listPrice"
-                                                                                                     owner="${priceItem}"
-                                                                                                     format=""/> <ui:xEditableRefData
-                                                    field="listCurrency" owner="${priceItem}"
-                                                    config="Currency"/> <%--<g:formatNumber number="${priceItem.listPrice}" type="currency" currencyCode="${priceItem.listCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%><br/>
-                                                <g:message code="tipp.price.localPrice"/>: <ui:xEditable field="localPrice"
-                                                                                                      owner="${priceItem}"/> <ui:xEditableRefData
-                                                    field="localCurrency" owner="${priceItem}"
-                                                    config="Currency"/> <%--<g:formatNumber number="${priceItem.localPrice}" type="currency" currencyCode="${priceItem.localCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%>
-                                            <%--<ui:xEditable field="startDate" type="date"
-                                                             owner="${priceItem}"/><ui:dateDevider/><ui:xEditable
-                                                field="endDate" type="date"
-                                                owner="${priceItem}"/>  <g:formatDate format="${message(code:'default.date.format.notime')}" date="${priceItem.startDate}"/>--%>
-                                                <g:if test="${i < ie.priceItems.size() - 1}"><hr></g:if>
-                                            </g:each>
-                                        </div>
-
-                                        <div class="eight wide column">
-                                            ${message(code: 'issueEntitlement.perpetualAccessBySub.label') + ':'}
+                    <g:if test="${titles}">
+                        <div class="ui fluid card">
+                            <div class="content">
+                                <div class="ui accordion la-accordion-showMore">
+                                    <g:each in="${titles}" var="tipp">
+                                        <div class="ui raised segments la-accordion-segments">
                                             <%
-                                                if (ie.perpetualAccessBySub) {
-                                                    println g.link([action: 'index', controller: 'subscription', id: ie.perpetualAccessBySub.id], "${RDStore.YN_YES.getI10n('value')}: ${ie.perpetualAccessBySub.dropdownNamingConvention()}")
-                                                } else {
-                                                    println RDStore.YN_NO.getI10n('value')
-                                                }
+                                                String instanceFilter = ''
+                                                if (institution.isCustomerType_Consortium())
+                                                    instanceFilter += ' and sub.instanceOf = null'
+                                                Set<IssueEntitlement> ie_infos = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.subscription sub join sub.orgRelations oo where oo.org = :context and ie.tipp = :tipp and sub.status = :current and ie.status != :ieStatus' + instanceFilter, [ieStatus: RDStore.TIPP_STATUS_REMOVED, context: institution, tipp: tipp, current: RDStore.SUBSCRIPTION_CURRENT])
                                             %>
-                                        </div>
-                                    </g:each>
-                                </div>
-                            </td>
-                        </tr>
-                    </g:each>
 
-                </table>
-            </g:if>
-            <g:else>
-                <g:if test="${filterSet}">
-                    <br/><strong><g:message code="filter.result.empty.object"
-                                            args="${[message(code: "title.plural")]}"/></strong>
+                                            <g:render template="/templates/title_segment_accordion"
+                                                      model="[ie: null, tipp: tipp, permanentTitle: PermanentTitle.findByOwnerAndTipp(institution, tipp)]"/>
+
+                                            <div class="ui fluid segment content" data-ajaxTargetWrap="true">
+                                                <div class="ui stackable grid" data-ajaxTarget="true">
+
+                                                    <laser:render template="/templates/title_long_accordion"
+                                                                  model="${[ie         : null, tipp: tipp,
+                                                                            showPackage: true, showPlattform: true, showEmptyFields: false]}"/>
+
+                                                    <div class="three wide column">
+                                                        <div class="ui list la-label-list">
+                                                            <g:if test="${tipp.accessStartDate}">
+                                                                <div class="ui label la-label-accordion">${message(code: 'tipp.access')}</div>
+
+                                                                <div class="item">
+                                                                    <div class="content">
+                                                                        <g:formatDate
+                                                                                format="${message(code: 'default.date.format.notime')}"
+                                                                                date="${tipp.accessStartDate}"/>
+                                                                    </div>
+                                                                </div>
+
+                                                            </g:if>
+                                                            <g:if test="${tipp.accessEndDate}">
+                                                                <!-- bis -->
+                                                                <!-- DEVIDER  -->
+                                                                <ui:dateDevider/>
+                                                                <div class="item">
+                                                                    <div class="content">
+                                                                        <g:formatDate
+                                                                                format="${message(code: 'default.date.format.notime')}"
+                                                                                date="${tipp.accessEndDate}"/>
+                                                                    </div>
+                                                                </div>
+                                                            </g:if>
+
+                                                        <%-- Coverage Details START --%>
+                                                            <g:each in="${tipp.coverages}" var="covStmt"
+                                                                    status="counterCoverage">
+                                                                <g:if test="${covStmt.coverageNote || covStmt.coverageDepth || covStmt.embargo}">
+                                                                    <div class="ui label la-label-accordion">${message(code: 'tipp.coverageDetails')} ${counterCoverage > 0 ? counterCoverage++ + 1 : ''}</div>
+                                                                </g:if>
+                                                                <g:if test="${covStmt.coverageNote}">
+                                                                    <div class="item">
+                                                                        <i class="grey icon quote right la-popup-tooltip la-delay"
+                                                                           data-content="${message(code: 'default.note.label')}"></i>
+
+                                                                        <div class="content">
+                                                                            <div class="header">
+                                                                                ${message(code: 'default.note.label')}
+                                                                            </div>
+
+                                                                            <div class="description">
+                                                                                ${covStmt.coverageNote}
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </g:if>
+                                                                <g:if test="${covStmt.coverageDepth}">
+                                                                    <div class="item">
+                                                                        <i class="grey icon file alternate right la-popup-tooltip la-delay"
+                                                                           data-content="${message(code: 'tipp.coverageDepth')}"></i>
+
+                                                                        <div class="content">
+                                                                            <div class="header">
+                                                                                ${message(code: 'tipp.coverageDepth')}
+                                                                            </div>
+
+                                                                            <div class="description">
+                                                                                ${covStmt.coverageDepth}
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </g:if>
+                                                                <g:if test="${covStmt.embargo}">
+                                                                    <div class="item">
+                                                                        <i class="grey icon hand paper right la-popup-tooltip la-delay"
+                                                                           data-content="${message(code: 'tipp.embargo')}"></i>
+
+                                                                        <div class="content">
+                                                                            <div class="header">
+                                                                                ${message(code: 'tipp.embargo')}
+                                                                            </div>
+
+                                                                            <div class="description">
+                                                                                ${covStmt.embargo}
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </g:if>
+                                                            </g:each>
+                                                        <%-- Coverage Details END --%>
+                                                        </div>
+                                                    </div>
+                                                    <%-- My Area START--%>
+                                                    <div class="seven wide column">
+                                                        <i class="grey icon circular inverted fingerprint la-icon-absolute la-popup-tooltip la-delay"
+                                                           data-content="${message(code: 'menu.my.subscriptions')}"></i>
+
+                                                        <div class="ui la-segment-with-icon">
+
+                                                            <div class="ui list">
+                                                                <g:each in="${ie_infos}" var="ie">
+                                                                    <div class="item">
+                                                                        <div class="sixteen wide column">
+                                                                            <i class="icon clipboard outline la-list-icon"></i>
+                                                                            <g:link controller="subscription"
+                                                                                    action="index"
+                                                                                    id="${ie.subscription.id}">${ie.subscription.dropdownNamingConvention(institution)}</g:link>
+                                                                            &nbsp;
+                                                                            <br/>
+                                                                            <g:link controller="issueEntitlement"
+                                                                                    action="show"
+                                                                                    id="${ie.id}">${message(code: 'myinst.currentTitles.full_ie')}</g:link>
+                                                                            <br/>
+                                                                        </div>
+                                                                    </div>
+                                                                </g:each>
+
+                                                            </div>
+                                                        </div>
+                                                    </div><%-- My Area END --%>
+                                                </div><%-- .grid --%>
+                                            </div><%-- .segment --%>
+                                        </div><%--.segments --%>
+                                    </g:each>
+                                </div><%-- .accordions --%>
+                            </div><%-- .content --%>
+                        </div><%-- .card --%>
+                    </g:if>
                 </g:if>
                 <g:else>
-                    <br/><strong><g:message code="result.empty.object"
-                                            args="${[message(code: "title.plural")]}"/></strong>
+                    <g:if test="${filterSet}">
+                        <br/><strong><g:message code="filter.result.empty.object"
+                                                args="${[message(code: "title.plural")]}"/></strong>
+                    </g:if>
+                    <g:else>
+                        <br/><strong><g:message code="result.empty.object"
+                                                args="${[message(code: "title.plural")]}"/></strong>
+                    </g:else>
                 </g:else>
-            </g:else>
+            </div>
         </div>
+
     </div>
-
-
     <g:if test="${titles}">
         <ui:paginate action="currentTitles" controller="myInstitution" params="${params}"
-                        max="${max}" total="${num_ti_rows}"/>
+                     max="${max}" total="${num_ti_rows}"/>
     </g:if>
 
 </div>
@@ -349,4 +441,7 @@
     <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]"/>
 </ui:debugInfo>
 
-<laser:htmlEnd />
+<laser:render template="/templates/export/individuallyExportTippsModal"
+              model="[modalID: 'individuallyExportTippsModal']"/>
+
+<laser:htmlEnd/>

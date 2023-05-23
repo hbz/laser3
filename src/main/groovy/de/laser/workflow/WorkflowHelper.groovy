@@ -33,7 +33,7 @@ class WorkflowHelper {
                 return 'tasks la-light-grey'
                 break
             case RDStore.WF_TASK_STATUS_OPEN:
-                return 'circle outline la-light-grey'
+                return 'circle la-light-grey'
                 break
             case [ RDStore.WF_WORKFLOW_STATUS_CANCELED, RDStore.WF_TASK_STATUS_CANCELED ]:
                 return 'x icon orange'

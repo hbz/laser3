@@ -8,6 +8,7 @@ import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.ctrl.UserControllerService
 import de.laser.custom.CustomWkhtmltoxService
 import de.laser.finance.PriceItem
+import de.laser.reporting.export.base.BaseExportHelper
 import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.auth.Role
@@ -35,6 +36,7 @@ import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
 import de.laser.workflow.WfWorkflow
+import de.laser.workflow.WfChecklist
 import grails.gsp.PageRenderer
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
@@ -72,6 +74,7 @@ class MyInstitutionController  {
     AddressbookService addressbookService
     ContextService contextService
     ComparisonService comparisonService
+    CustomerTypeService customerTypeService
     DeletionService deletionService
     DocstoreService docstoreService
     ExportClickMeService exportClickMeService
@@ -99,13 +102,17 @@ class MyInstitutionController  {
     UserService userService
     CustomWkhtmltoxService wkhtmltoxService
     WorkflowService workflowService
+    WorkflowOldService workflowOldService
+    MailSendService mailSendService
 
     /**
      * The landing page after login; this is also the call when the home button is clicked
      * @return the {@link #dashboard()} view
      */
-    @DebugInfo(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'])
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+    })
     def index() {
         redirect(action:'dashboard')
     }
@@ -114,9 +121,9 @@ class MyInstitutionController  {
      * Call for the reporting module
      * @return the reporting entry view
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_PRO, 'INST_USER'])
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_USER')
     })
     def reporting() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -175,23 +182,18 @@ class MyInstitutionController  {
      */
     @Secured(['ROLE_USER'])
     def currentPlatforms() {
-
         Map<String, Object> result = [:]
-		Profiler prf = new Profiler()
-		prf.setBenchmark('init')
 
+        result.flagContentGokb = true // gokbService.doQuery
         result.user = contextService.getUser()
         result.contextOrg = contextService.getOrg()
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        prf.setBenchmark("before loading subscription ids")
-
         String instanceFilter = ""
         Map<String, Object> subscriptionParams = [contextOrg:result.contextOrg, roleTypes:[RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA], current:RDStore.SUBSCRIPTION_CURRENT, expired:RDStore.SUBSCRIPTION_EXPIRED]
-        if(result.contextOrg.getCustomerType() == "ORG_CONSORTIUM")
+        if(result.contextOrg.isCustomerType_Consortium())
             instanceFilter += " and s.instanceOf = null "
         Set<Long> idsCurrentSubscriptions = Subscription.executeQuery('select s.id from OrgRole oo join oo.sub s where oo.org = :contextOrg and oo.roleType in (:roleTypes) and (s.status = :current or (s.status = :expired and s.hasPerpetualAccess = true))'+instanceFilter,subscriptionParams)
-
 
         result.subscriptionMap = [:]
         result.platformInstanceList = []
@@ -210,61 +212,65 @@ class MyInstitutionController  {
                     tippRemoved    : RDStore.TIPP_STATUS_REMOVED
             ]
 
-            String esQuery = "?componentType=Platform"
+            Map<String, Object> queryParams = [componentType: "Platform"]
 
             if (params.q?.length() > 0) {
                 result.filterSet = true
-                esQuery += "&q=${params.q}"
+                queryParams.q = params.q
                 qry3 += "and ("
                 qry3 += "   genfunc_filter_matcher(o.name, :query) = true"
                 qry3 += "   or genfunc_filter_matcher(o.sortname, :query) = true"
-                qry3 += "   or genfunc_filter_matcher(o.shortname, :query) = true "
                 qry3 += ")"
                 qryParams3.put('query', "${params.q}")
             }
 
             if(params.provider) {
                 result.filterSet = true
-                esQuery += "&provider=${params.provider}"
+                queryParams.provider = params.provider
             }
 
             if(params.status) {
                 result.filterSet = true
-                esQuery += "&status=${RefdataValue.get(params.status).value}"
+                queryParams.status = RefdataValue.get(params.status).value
             }
             else if(!params.filterSet) {
                 result.filterSet = true
-                esQuery += "&status=Current"
+                queryParams.status = "Current"
                 params.status = RDStore.PLATFORM_STATUS_CURRENT.id.toString()
             }
 
             if(params.ipSupport) {
                 result.filterSet = true
                 List<String> ipSupport = params.list("ipSupport")
+                queryParams.ipAuthentication = []
                 ipSupport.each { String ip ->
                     RefdataValue rdv = RefdataValue.get(ip)
-                    esQuery += "&ipAuthentication=${rdv.value}"
+                    queryParams.ipAuthentication = rdv.value
                 }
             }
 
             if(params.shibbolethSupport) {
                 result.filterSet = true
                 List<String> shibbolethSupport = params.list("shibbolethSupport")
+                queryParams.shibbolethAuthentication = []
                 shibbolethSupport.each { String shibboleth ->
                     RefdataValue rdv = RefdataValue.get(shibboleth)
-                    esQuery += "&shibbolethAuthentication=${rdv == RDStore.GENERIC_NULL_VALUE ? "null" : rdv.value}"
+                    String shibb = rdv == RDStore.GENERIC_NULL_VALUE ? "null" : rdv.value
+                    queryParams.shibbolethAuthentication = shibb
                 }
             }
 
             if(params.counterCertified) {
                 result.filterSet = true
                 List<String> counterCertified = params.list("counterCertified")
+                queryParams.counterCeritified = []
                 counterCertified.each { String counter ->
                     RefdataValue rdv = RefdataValue.get(counter)
-                    esQuery += "&counterCertified=${rdv == RDStore.GENERIC_NULL_VALUE ? "null" : rdv.value}"
+                    String cert = rdv == RDStore.GENERIC_NULL_VALUE ? "null" : rdv.value
+                    queryParams.counterCertified << cert
                 }
             }
-            List wekbIds = gokbService.doQuery([max:10000, offset:0], params.clone(), esQuery).records.collect { Map hit -> hit.uuid }
+            List wekbIds = gokbService.doQuery([max:10000, offset:0], params.clone(), queryParams).records.collect { Map hit -> hit.uuid }
 
             qryParams3.wekbIds = wekbIds
 
@@ -273,14 +279,13 @@ class MyInstitutionController  {
                 qry3 += " order by ${params.sort} ${params.order}"
             else qry3 += " order by p.normname asc"
 
-            prf.setBenchmark("before loading platforms")
             List platformSubscriptionList = []
             if(wekbIds)
                 platformSubscriptionList.addAll(Platform.executeQuery(qry3, qryParams3))
 
             log.debug("found ${platformSubscriptionList.size()} in list ..")
             /*, [max:result.max, offset:result.offset])) */
-            prf.setBenchmark("before platform subscription list loop")
+
             platformSubscriptionList.each { entry ->
                 Platform pl = (Platform) entry[0]
                 Subscription s = (Subscription) entry[1]
@@ -297,12 +302,26 @@ class MyInstitutionController  {
                 }
             }
         }
-        result.platformInstanceTotal    = result.platformInstanceList.size()
 
+        if (params.isMyX) {
+            List xFilter = params.list('isMyX')
+            Set<Long> f1Result = []
+
+            if (xFilter.contains('wekb_exclusive')) {
+                f1Result.addAll( result.platformInstanceList.findAll {
+                    if (it.org) { return it.org.gokbId != null } else { return false }
+                }.collect{ it.id } )
+            }
+            if (xFilter.contains('wekb_not')) {
+                f1Result.addAll( result.platformInstanceList.findAll {
+                    return it.org?.gokbId == null
+                }.collect{ it.id } )
+            }
+            result.platformInstanceList = result.platformInstanceList.findAll { f1Result.contains(it.id) }
+        }
+
+        result.platformInstanceTotal = result.platformInstanceList.size()
         result.cachedContent = true
-
-		List bm = prf.stopBenchmark()
-		result.benchMark = bm
 
         result
     }
@@ -313,8 +332,10 @@ class MyInstitutionController  {
      * query; licenses without a subscription may get lost if there is no subscription linked to it!
      * @return the license list view
      */
-    @DebugInfo(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'])
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+    })
     def currentLicenses() {
 
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -328,7 +349,7 @@ class MyInstitutionController  {
 		Profiler prf = new Profiler()
 		prf.setBenchmark('init')
 
-        result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
+        result.is_inst_admin = userService.checkAffiliationAndCtxOrg(result.user, result.institution, 'INST_ADM')
 
         Date date_restriction = null
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
@@ -357,14 +378,22 @@ class MyInstitutionController  {
 
         Set<String> licenseFilterTable = []
 
-        if (accessService.checkPerm("ORG_INST")) {
-            base_qry = "from License as l where ( exists ( select o from l.orgRelations as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :lic_org ) ) )"
-            qry_params = [roleType1:RDStore.OR_LICENSEE, roleType2:RDStore.OR_LICENSEE_CONS, lic_org:result.institution]
+        if (accessService.ctxPerm(CustomerTypeService.ORG_INST_PRO)) {
+            Set<RefdataValue> roleTypes = []
+            if(params.licTypes) {
+                Set<String> licTypes = params.list('licTypes')
+                licTypes.each { String licTypeId ->
+                    roleTypes << RefdataValue.get(licTypeId)
+                }
+            }
+            else roleTypes.addAll([RDStore.OR_LICENSEE, RDStore.OR_LICENSEE_CONS])
+            base_qry = "from License as l where ( exists ( select o from l.orgRelations as o where ( ( o.roleType in (:roleTypes) ) AND o.org = :lic_org ) ) )"
+            qry_params = [roleTypes: roleTypes, lic_org:result.institution]
             if(result.editable)
                 licenseFilterTable << "action"
             licenseFilterTable << "licensingConsortium"
         }
-        else if (accessService.checkPerm("ORG_CONSORTIUM")) {
+        else if (accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
             base_qry = "from License as l where exists ( select o from l.orgRelations as o where ( o.roleType = :roleTypeC AND o.org = :lic_org AND l.instanceOf is null AND NOT exists ( select o2 from l.orgRelations as o2 where o2.roleType = :roleTypeL ) ) )"
             qry_params = [roleTypeC:RDStore.OR_LICENSING_CONSORTIUM, roleTypeL:RDStore.OR_LICENSEE_CONS, lic_org:result.institution]
             licenseFilterTable << "memberLicenses"
@@ -403,13 +432,13 @@ class MyInstitutionController  {
         }
 
         if(params.licensor) {
-            base_qry += " and ( exists ( select o from l.orgRelations as o where o.roleType = :licCons and o.org.id in (:licensors) ) ) "
+            base_qry += " and ( exists ( select o from l.orgRelations as o where o.roleType in (:licCons) and o.org.id in (:licensors) ) ) "
             List<Long> licensors = []
             List<String> selLicensors = params.list('licensor')
             selLicensors.each { String sel ->
                 licensors << Long.parseLong(sel)
             }
-            qry_params += [licCons:RDStore.OR_LICENSOR,licensors:licensors]
+            qry_params += [licCons:[RDStore.OR_LICENSOR, RDStore.OR_AGENCY],licensors:licensors]
         }
 
         if(params.categorisation) {
@@ -440,7 +469,6 @@ class MyInstitutionController  {
                     " or exists ( select orgR from OrgRole as orgR where orgR.lic = l and "+
                     "   orgR.roleType in (:licRoleTypes) and ( "+
                     " genfunc_filter_matcher(orgR.org.name, :name_filter) = true "+
-                    " or genfunc_filter_matcher(orgR.org.shortname, :name_filter) = true "+
                     " or genfunc_filter_matcher(orgR.org.sortname, :name_filter) = true "+
                     " ) ) " +
                     " or exists ( select li.id from Links li where li.sourceLicense = l and li.linkType = :linkType and genfunc_filter_matcher(li.destinationSubscription.name, :name_filter) = true ) " +
@@ -474,7 +502,7 @@ class MyInstitutionController  {
                 qry_params.subKinds = subKinds
             }
 
-            if(accessService.checkPerm("ORG_CONSORTIUM")) {
+            if (accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
                 subscrQueryFilter << "s.instanceOf is null"
             }
 
@@ -514,7 +542,7 @@ class MyInstitutionController  {
             result.orgRoles.put(oo.lic.id,oo.roleType)
         }
         prf.setBenchmark('get consortia')
-        Set<Org> consortia = Org.executeQuery("select os.org from OrgSetting os where os.key = 'CUSTOMER_TYPE' and os.roleValue in (select r from Role r where authority = 'ORG_CONSORTIUM') order by os.org.name asc")
+        Set<Org> consortia = Org.executeQuery("select os.org from OrgSetting os where os.key = 'CUSTOMER_TYPE' and os.roleValue in (select r from Role r where authority = 'ORG_CONSORTIUM_BASIC') order by os.org.name asc")
         prf.setBenchmark('get licensors')
         Set<Org> licensors = orgTypeService.getOrgsForTypeLicensor()
         Map<String,Set<Org>> orgs = [consortia:consortia,licensors:licensors]
@@ -529,7 +557,7 @@ class MyInstitutionController  {
                 g.message(code:'license.details.reference'),
                 g.message(code:'license.details.linked_subs'),
                 g.message(code:'consortium'),
-                g.message(code:'license.licensor.label'),
+                g.message(code:'default.ProviderAgency.singular'),
                 g.message(code:'license.startDate.label'),
                 g.message(code:'license.endDate.label')
         ]
@@ -548,10 +576,64 @@ class MyInstitutionController  {
         if(childLicsOfSet) {
             Set rows = OrgRole.executeQuery('select oo.sub,oo.org.sortname from OrgRole oo where oo.sub in (:subChildren) and oo.roleType = :licType',[subChildren:childLicsOfSet,licType:RDStore.OR_LICENSEE_CONS])
             rows.each { row ->
-                log.debug("now processing ${row[0]}:${row[1]}")
+                //log.debug("now processing ${row[0]}:${row[1]}")
                 objectNames.put(row[0],row[1])
             }
         }
+        Map<String, Object> selectedFields = [:]
+
+        if(params.fileformat) {
+            if (params.filename) {
+                filename = params.filename
+            }
+            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+        }
+
+        if(params.fileformat == 'xlsx') {
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportLicenses(totalLicenses, selectedFields, result.institution, ExportClickMeService.FORMAT.XLS)
+            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
+            return
+        }
+        else if(params.fileformat == 'csv') {
+            response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
+            response.contentType = "text/csv"
+            ServletOutputStream out = response.outputStream
+            out.withWriter { writer ->
+                //writer.write((String) _exportcurrentSubscription(result.allSubscriptions,"csv", result.institution))
+                writer.write((String) exportClickMeService.exportLicenses(totalLicenses, selectedFields, result.institution, ExportClickMeService.FORMAT.CSV))
+            }
+            out.close()
+        }
+        else if(params.fileformat == 'pdf') {
+            Map<String, Object> pdfOutput = exportClickMeService.exportLicenses(totalLicenses, selectedFields, result.institution, ExportClickMeService.FORMAT.PDF)
+            Map<String, Object> pageStruct = [orientation: 'Landscape', width: pdfOutput.titleRow.size()*15, height: 35]
+            if (pageStruct.width > 85*4)       { pageStruct.pageSize = 'A0' }
+            else if (pageStruct.width > 85*3)  { pageStruct.pageSize = 'A1' }
+            else if (pageStruct.width > 85*2)  { pageStruct.pageSize = 'A2' }
+            else if (pageStruct.width > 85)    { pageStruct.pageSize = 'A3' }
+            pdfOutput.struct = [pageStruct.pageSize + ' ' + pageStruct.orientation]
+            byte[] pdf = wkhtmltoxService.makePdf(
+                    view: '/templates/export/_individuallyExportPdf',
+                    model: pdfOutput,
+                    pageSize: pageStruct.pageSize,
+                    orientation: pageStruct.orientation,
+                    marginLeft: 10,
+                    marginRight: 10,
+                    marginTop: 15,
+                    marginBottom: 15
+            )
+            response.setHeader('Content-disposition', 'attachment; filename="'+ filename +'.pdf"')
+            response.setContentType('application/pdf')
+            response.outputStream.withStream { it << pdf }
+            return
+        }
+        /*
         if(params.exportXLS) {
             response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -603,8 +685,10 @@ class MyInstitutionController  {
             response.outputStream.withStream { it << pdf }
             return
         }
+        */
+        result
+            /*
         withFormat {
-            html result
             csv {
                 response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
                 response.contentType = "text/csv"
@@ -630,22 +714,23 @@ class MyInstitutionController  {
                 out.close()
             }
         }
+            */
     }
 
     /**
      * Call to create a new license
      * @return the form view to enter the new license parameters
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR")
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR'])
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')
     })
     def emptyLicense() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        if (! accessService.checkUserIsMember(result.user, result.institution)) {
+        if (! (result.user as User).isMemberOf(result.institution as Org)) {
             flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]) as String
             response.sendError(HttpStatus.SC_FORBIDDEN)
             return;
@@ -665,7 +750,7 @@ class MyInstitutionController  {
 
         result.defaultEndYear = sdf.format(cal.getTime())
 
-        result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR')
+        result.is_inst_admin = userService.checkAffiliationAndCtxOrg(result.user, result.institution, 'INST_EDITOR')
 
         result.licenses = [] // ERMS-2431
         result.numLicenses = 0
@@ -682,22 +767,24 @@ class MyInstitutionController  {
      * Creates a new license based on the parameters submitted
      * @return the license details view ({@link LicenseController#show()}) of the new license record
      */
-    @DebugInfo(test='hasAffiliation("INST_USER")', wtc = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'], wtc = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+    })
     def processEmptyLicense() {
         License.withTransaction { TransactionStatus ts ->
             User user = contextService.getUser()
             Org org = contextService.getOrg()
 
             Set<RefdataValue> defaultOrgRoleType = []
-            if(accessService.checkPerm("ORG_CONSORTIUM"))
+            if (accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC))
                 defaultOrgRoleType << RDStore.OT_CONSORTIUM.id.toString()
             else defaultOrgRoleType << RDStore.OT_INSTITUTION.id.toString()
 
             params.asOrgType = params.asOrgType ? [params.asOrgType] : defaultOrgRoleType
 
 
-            if (! accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR')) {
+            if (! userService.checkAffiliationAndCtxOrg(user, org, 'INST_EDITOR')) {
                 flash.error = message(code:'myinst.error.noAdmin', args:[org.name]) as String
                 response.sendError(HttpStatus.SC_FORBIDDEN)
                 // render(status: '403', text:"You do not have permission to access ${org.name}. Please request access on the profile page");
@@ -780,35 +867,24 @@ class MyInstitutionController  {
      * The list results may be filtered with filter parameters
      * @return a list of matching {@link Org} records, as html or as export pipe (Excel / CSV)
      */
-    @DebugInfo(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'])
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+    })
     def currentProviders() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 		Profiler prf = new Profiler()
 		prf.setBenchmark('init')
 
         EhcacheWrapper cache = contextService.getSharedOrgCache('MyInstitutionController/currentProviders')
-        List orgIds = []
+        List<Long> orgIds = []
 
         if (cache.get('orgIds')) {
             orgIds = cache.get('orgIds')
             log.debug('orgIds from cache')
         }
         else {
-
-            List<Org> matches = Org.executeQuery("""
-select distinct(or_pa.org) from OrgRole or_pa 
-join or_pa.sub sub 
-join sub.orgRelations or_sub where
-    ( sub = or_sub.sub and or_sub.org = :subOrg ) and
-    ( or_sub.roleType in (:subRoleTypes) ) and
-        ( or_pa.roleType in (:paRoleTypes) )
-""", [
-        subOrg:       result.institution,
-        subRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA],
-        paRoleTypes:  [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]
-    ])
-            orgIds = matches.collect{ it.id }
+            orgIds = (orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( result.institution )).toList()
             cache.put('orgIds', orgIds)
         }
 
@@ -817,7 +893,7 @@ join sub.orgRelations or_sub where
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        params.sort = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
+        params.sort = params.sort ?: " LOWER(o.sortname), LOWER(o.name)"
         params.subPerpetual = 'on'
 
         GrailsParameterMap tmpParams = (GrailsParameterMap) params.clone()
@@ -829,6 +905,21 @@ join sub.orgRelations or_sub where
             fsq = propertyService.evalFilterQuery(tmpParams, fsq.query, 'o', fsq.queryParams)
         }
         List orgListTotal = Org.findAll(fsq.query, fsq.queryParams)
+        result.wekbRecords = organisationService.getWekbOrgRecords(params, result)
+
+        if (params.isMyX) {
+            List xFilter = params.list('isMyX')
+            Set<Long> f1Result = []
+
+            if (xFilter.contains('wekb_exclusive')) {
+                f1Result.addAll( orgListTotal.findAll {it.gokbId != null }.collect{ it.id } )
+            }
+            if (xFilter.contains('wekb_not')) {
+                f1Result.addAll( orgListTotal.findAll { it.gokbId == null }.collect{ it.id }  )
+            }
+            orgListTotal = orgListTotal.findAll { f1Result.contains(it.id) }
+        }
+
         result.orgListTotal = orgListTotal.size()
         result.orgList = orgListTotal.drop((int) result.offset).take((int) result.max)
 
@@ -842,7 +933,7 @@ join sub.orgRelations or_sub where
 		List bm = prf.stopBenchmark()
 		result.benchMark = bm
 
-        if ( params.exportXLS ) {
+        /*if ( params.exportXLS ) {
             try {
                 SXSSFWorkbook wb = (SXSSFWorkbook) organisationService.exportOrg(orgListTotal, message, true, "xls")
                 // Write the output to a file
@@ -862,16 +953,21 @@ join sub.orgRelations or_sub where
                 return
             }
         }
-        else if(params.exportClickMeExcel) {
+        else */
+        Map<String, Object> selectedFields = [:]
+        Set<String> contactSwitch = []
+
+        if(params.fileformat) {
             if (params.filename) {
                 filename = params.filename
             }
-
             Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
-            Map<String, Object> selectedFields = [:]
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+            contactSwitch.addAll(params.list("contactSwitch"))
+        }
 
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(orgListTotal, selectedFields, 'provider')
+        if(params.fileformat == 'xlsx') {
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(orgListTotal, selectedFields, 'provider', ExportClickMeService.FORMAT.XLS, contactSwitch)
 
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -881,20 +977,16 @@ join sub.orgRelations or_sub where
             wb.dispose()
             return
         }
-        withFormat {
-            html {
-                result
+        else if(params.fileformat == 'csv') {
+            response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
+            response.contentType = "text/csv"
+            ServletOutputStream out = response.outputStream
+            out.withWriter { writer ->
+                writer.write((String) exportClickMeService.exportOrgs(orgListTotal,selectedFields, 'provider',ExportClickMeService.FORMAT.CSV,contactSwitch))
             }
-            csv {
-                response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
-                response.contentType = "text/csv"
-                ServletOutputStream out = response.outputStream
-                out.withWriter { writer ->
-                    writer.write((String) organisationService.exportOrg(orgListTotal,message,true,"csv"))
-                }
-                out.close()
-            }
+            out.close()
         }
+        result
     }
 
     /**
@@ -902,8 +994,10 @@ join sub.orgRelations or_sub where
      * Default filter setting is status: current or with perpetual access
      * @return a (filtered) list of subscriptions, either as direct html output or as export stream (CSV, Excel)
      */
-    @DebugInfo(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'])
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+    })
     def currentSubscriptions() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
@@ -921,7 +1015,37 @@ join sub.orgRelations or_sub where
 
 		//List bm = prf.stopBenchmark()
 		//result.benchMark = bm
+        Map<String, Object> selectedFields = [:]
 
+        if(params.fileformat) {
+            if (params.filename) {
+                filename =params.filename
+            }
+            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+        }
+
+        if(params.fileformat == 'xlsx') {
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportSubscriptions(result.allSubscriptions, selectedFields, result.institution, ExportClickMeService.FORMAT.XLS)
+            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
+            return
+        }
+        else if(params.fileformat == 'csv') {
+            response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
+            response.contentType = "text/csv"
+            ServletOutputStream out = response.outputStream
+            out.withWriter { writer ->
+                //writer.write((String) _exportcurrentSubscription(result.allSubscriptions,"csv", result.institution))
+                writer.write((String) exportClickMeService.exportSubscriptions(result.allSubscriptions, selectedFields, result.institution, ExportClickMeService.FORMAT.CSV))
+            }
+            out.close()
+        }
+        /*
         if ( params.exportXLS ) {
 
             //if(wb instanceof XSSFWorkbook) file += "x";
@@ -934,40 +1058,8 @@ join sub.orgRelations or_sub where
             wb.dispose()
 
             return
-        }else if(params.exportClickMeExcel) {
-            if (params.filename) {
-                filename =params.filename
-            }
-
-            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
-            Map<String, Object> selectedFields = [:]
-            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
-
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportSubscriptions(result.allSubscriptions, selectedFields, result.institution)
-
-            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
-            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            wb.write(response.outputStream)
-            response.outputStream.flush()
-            response.outputStream.close()
-            wb.dispose()
-            return
-        }
-
-        withFormat {
-            html {
-                result
-            }
-            csv {
-                response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
-                response.contentType = "text/csv"
-                ServletOutputStream out = response.outputStream
-                out.withWriter { writer ->
-                    writer.write((String) _exportcurrentSubscription(result.allSubscriptions,"csv", result.institution))
-                }
-                out.close()
-            }
-        }
+        }else*/
+        result
     }
 
     /**
@@ -981,7 +1073,7 @@ join sub.orgRelations or_sub where
      */
     private def _exportcurrentSubscription(List<Subscription> subscriptions, String format, Org contextOrg) {
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
-        boolean asCons = accessService.checkPerm('ORG_CONSORTIUM')
+        boolean asCons = accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)
         List titles = ['Name',
                        g.message(code: 'globalUID.label'),
                        g.message(code: 'license.label'),
@@ -992,6 +1084,7 @@ join sub.orgRelations or_sub where
                        g.message(code: 'subscription.startDate.label'),
                        g.message(code: 'subscription.endDate.label'),
                        g.message(code: 'subscription.manualCancellationDate.label'),
+                       g.message(code: 'subscription.referenceYear.label'),
                        g.message(code: 'subscription.isMultiYear.label')]
         if(!asCons) {
             titles.add(g.message(code: 'subscription.isAutomaticRenewAnnually.label'))
@@ -1096,6 +1189,7 @@ join sub.orgRelations or_sub where
                     row.add([field: sub.startDate ? sdf.format(sub.startDate) : '', style: null])
                     row.add([field: sub.endDate ? sdf.format(sub.endDate) : '', style: null])
                     row.add([field: sub.manualCancellationDate ? sdf.format(sub.manualCancellationDate) : '', style: null])
+                    row.add([field: sub.referenceYear ?: '', style: null])
                     row.add([field: sub.isMultiYear ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
                     if(!asCons) {
                         row.add([field: sub.isAutomaticRenewAnnually ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"), style: null])
@@ -1129,6 +1223,7 @@ join sub.orgRelations or_sub where
                     row.add(sub.startDate ? sdf.format(sub.startDate) : '')
                     row.add(sub.endDate ? sdf.format(sub.endDate) : '')
                     row.add(sub.manualCancellationDate ? sdf.format(sub.manualCancellationDate) : '')
+                    row.add(sub.referenceYear ?: '')
                     row.add(sub.isMultiYear ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"))
                     if(!asCons) {
                         row.add(sub.isAutomaticRenewAnnually ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"))
@@ -1175,9 +1270,9 @@ join sub.orgRelations or_sub where
      *     <li>customerIdentifiers</li>
      * </ol>
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER'])
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER')
     })
     def subscriptionsManagement() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -1186,7 +1281,7 @@ join sub.orgRelations or_sub where
 
         if(!(params.tab in ['notes', 'documents', 'properties'])){
             //Important
-            if(!accessService.checkPerm('ORG_CONSORTIUM')) {
+            if (!accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
                 if(params.subTypes == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id.toString()){
                     flash.error = message(code: 'subscriptionsManagement.noPermission.forSubsWithTypeConsortial') as String
                 }
@@ -1220,8 +1315,10 @@ join sub.orgRelations or_sub where
      * Connects the context subscription with the given pair
      * @return void, redirects to referer
      */
-    @DebugInfo(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'])
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+    })
     def linkObjects() {
         Map<String,Object> ctrlResult = linksGenerationService.createOrUpdateLink(params)
         if(ctrlResult.status == LinksGenerationService.STATUS_ERROR)
@@ -1233,8 +1330,10 @@ join sub.orgRelations or_sub where
      * Removes the given link
      * @return void, redirects to referer
      */
-    @DebugInfo(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'])
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+    })
     def unlinkObjects() {
         linksGenerationService.deleteLink(params.oid)
         redirect(url: request.getHeader('referer'))
@@ -1246,9 +1345,9 @@ join sub.orgRelations or_sub where
      * @see Doc
      * @see DocContext
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER'])
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER')
     })
     Map documents() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -1264,8 +1363,10 @@ join sub.orgRelations or_sub where
      * @return the document table view ({@link #documents()})
      * @see DocstoreService#unifiedDeleteDocuments()
      */
-    @DebugInfo(test='hasAffiliation("INST_EDITOR")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'])
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+    })
     def deleteDocuments() {
         log.debug("deleteDocuments ${params}");
 
@@ -1287,19 +1388,53 @@ join sub.orgRelations or_sub where
      * @see Platform
      * @see IssueEntitlement
      */
-    @DebugInfo(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'])
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+    })
     def currentTitles() {
 
         Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 		Profiler prf = new Profiler()
 		prf.setBenchmark('init')
 
+        if(params.tab){
+            if(params.tab == 'currentIEs'){
+                params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
+            }else if(params.tab == 'plannedIEs'){
+                params.status = [RDStore.TIPP_STATUS_EXPECTED.id.toString()]
+            }else if(params.tab == 'expiredIEs'){
+                params.status = [RDStore.TIPP_STATUS_RETIRED.id.toString()]
+            }else if(params.tab == 'deletedIEs'){
+                params.status = [RDStore.TIPP_STATUS_DELETED.id.toString()]
+            }else if(params.tab == 'allIEs'){
+                params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString(), RDStore.TIPP_STATUS_EXPECTED.id.toString(), RDStore.TIPP_STATUS_RETIRED.id.toString(), RDStore.TIPP_STATUS_DELETED.id.toString()]
+            }
+        }
+        else if(params.list('status').size() == 1) {
+            if(params.list('status')[0] == RDStore.TIPP_STATUS_CURRENT.id.toString()){
+                params.tab = 'currentIEs'
+            }else if(params.list('status')[0] == RDStore.TIPP_STATUS_RETIRED.id.toString()){
+                params.tab = 'expiredIEs'
+            }else if(params.list('status')[0] == RDStore.TIPP_STATUS_EXPECTED.id.toString()){
+                params.tab = 'plannedIEs'
+            }else if(params.list('status')[0] == RDStore.TIPP_STATUS_DELETED.id.toString()){
+                params.tab = 'deletedIEs'
+            }
+        }else{
+            if(params.list('status').size() > 1){
+                params.tab = 'allIEs'
+            }else {
+                params.tab = 'currentIEs'
+                params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
+            }
+        }
+
         Set<RefdataValue> orgRoles = []
         String instanceFilter = ""
         List<String> queryFilter = []
 
-        if(accessService.checkPerm("ORG_CONSORTIUM")) {
+        if (accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
             orgRoles << RDStore.OR_SUBSCRIPTION_CONSORTIA
             queryFilter << " sub.instanceOf is null "
             instanceFilter += "and sub.instanceOf is null"
@@ -1342,7 +1477,7 @@ join sub.orgRelations or_sub where
 
         Map<String,Object> qryParams = [
                 institution: result.institution,
-                ieStatus: RDStore.TIPP_STATUS_REMOVED,
+                //ieStatus: RDStore.TIPP_STATUS_REMOVED,
                 current: RDStore.SUBSCRIPTION_CURRENT,
                 orgRoles: orgRoles
         ]
@@ -1390,23 +1525,64 @@ join sub.orgRelations or_sub where
         //String havingClause = params.filterMultiIE ? 'having count(ie.ie_id) > 1' : ''
 
         String orderByClause
-        if (params.order == 'desc') {
-            orderByClause = 'order by tipp.sortname desc, tipp.name desc'
-        } else {
-            orderByClause = 'order by tipp.sortname asc, tipp.name asc'
+        if ((params.sort != null) && (params.sort.length() > 0)) {
+            orderByClause = " order by ${params.sort} ${params.order} "
+        }
+        else {
+            if (params.order == 'desc') {
+                orderByClause = 'order by tipp.sortname desc, tipp.name desc'
+            } else {
+                orderByClause = 'order by tipp.sortname asc, tipp.name asc'
+            }
         }
 
-        String qryString = "select ie.id from IssueEntitlement ie join ie.tipp tipp join ie.subscription sub join sub.orgRelations oo where ie.status != :ieStatus and sub.status = :current and oo.roleType in (:orgRoles) and oo.org = :institution "
+        String qryString = "from IssueEntitlement ie join ie.tipp tipp join ie.subscription sub join sub.orgRelations oo where sub.status = :current and oo.roleType in (:orgRoles) and oo.org = :institution "
         if(queryFilter)
             qryString += ' and '+queryFilter.join(' and ')
 
+        Map<String,Object> qryParamsClone = qryParams.clone()
+        if(!params.containsKey('fileformat')) {
+            result.currentIECounts = IssueEntitlement.executeQuery('select count(ie) '+ qryString+ ' and ie.tipp.status = :status and ie.status != :ieStatus', qryParamsClone + [status: RDStore.TIPP_STATUS_CURRENT, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+            result.plannedIECounts = IssueEntitlement.executeQuery('select count(ie) '+ qryString+ ' and ie.tipp.status = :status and ie.status != :ieStatus', qryParamsClone + [status: RDStore.TIPP_STATUS_EXPECTED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+            result.expiredIECounts = IssueEntitlement.executeQuery('select count(ie) '+ qryString+ ' and ie.tipp.status = :status and ie.status != :ieStatus', qryParamsClone + [status: RDStore.TIPP_STATUS_RETIRED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+            result.deletedIECounts = IssueEntitlement.executeQuery('select count(ie) '+ qryString+ ' and ie.tipp.status = :status and ie.status != :ieStatus', qryParamsClone + [status: RDStore.TIPP_STATUS_DELETED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+            result.allIECounts = IssueEntitlement.executeQuery('select count(ie) '+ qryString+ ' and ie.tipp.status in (:status) and ie.status != :ieStatus', qryParamsClone + [status: [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_EXPECTED, RDStore.TIPP_STATUS_RETIRED, RDStore.TIPP_STATUS_DELETED], ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+        }
+
+        if(params.status != '' && params.status != null && params.list('status')) {
+            List<Long> status = []
+            params.list('status').each { String statusId ->
+                status << Long.parseLong(statusId)
+            }
+            qryString += " and ie.tipp.status.id in (:status) "
+            qryParams.status = status
+
+        }
+
+        Map<String, Object> selectedFields = [:]
         Set<Long> currentIssueEntitlements = []
-        if(!params.containsKey('exportXLSX') && params.format != 'csv') {
+        Set<Long> tippIDs = []
+        if(params.fileformat) {
+            String consFilter = ""
+            Set<RefdataValue> roleTypes = []
+            if(customerTypeService.isConsortium(result.contextCustomerType)) {
+                consFilter = " and sub.instanceOf = null "
+                roleTypes << RDStore.OR_SUBSCRIPTION_CONSORTIA
+            }
+            else roleTypes.addAll([RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS])
+            //load proxies instead of full objects ... maybe this gonna bring performance?
+            tippIDs.addAll(TitleInstancePackagePlatform.executeQuery("select tipp.id from IssueEntitlement ie join ie.tipp tipp where ie.status != :ieStatus and ie.subscription in (select sub from OrgRole oo join oo.sub sub where oo.org = :contextOrg and oo.roleType in (:roleTypes) and (sub.status = :current or sub.hasPerpetualAccess = true)"+consFilter+")", [ieStatus: RDStore.TIPP_STATUS_REMOVED, contextOrg: result.institution, roleTypes: roleTypes, current: RDStore.SUBSCRIPTION_CURRENT], [sort: 'sortname']))
+            //tipps.addAll(TitleInstancePackagePlatform.findAllByIdInList(titleIDs, [sort: 'sortname']))
+            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+        }
+        else if(!params.containsKey('fileformat')) {
+
             //second filter needed because double-join on same table does deliver me empty results
             if (filterPvd) {
-                currentIssueEntitlements.addAll(IssueEntitlement.executeQuery("select ie.id from IssueEntitlement ie join ie.tipp tipp join tipp.pkg pkg join pkg.orgs oo where oo.roleType in (:cpRole) and oo.org.id in ("+filterPvd.join(", ")+") order by ie.sortname asc",[cpRole:[RDStore.OR_CONTENT_PROVIDER,RDStore.OR_PROVIDER,RDStore.OR_AGENCY,RDStore.OR_PUBLISHER]]))
+                currentIssueEntitlements.addAll(IssueEntitlement.executeQuery("select ie.id from IssueEntitlement ie join ie.tipp tipp join tipp.pkg pkg join pkg.orgs oo where oo.roleType in (:cpRole) and oo.org.id in ("+filterPvd.join(", ")+") order by tipp.sortname asc",[cpRole:[RDStore.OR_CONTENT_PROVIDER,RDStore.OR_PROVIDER,RDStore.OR_AGENCY,RDStore.OR_PUBLISHER]]))
             }
-            else currentIssueEntitlements.addAll(IssueEntitlement.executeQuery(qryString+' group by tipp, ie.id order by ie.sortname asc',qryParams))
+            else currentIssueEntitlements.addAll(IssueEntitlement.executeQuery('select ie.id '+qryString+' group by tipp, ie.id order by tipp.sortname asc',qryParams))
             Set<TitleInstancePackagePlatform> allTitles = currentIssueEntitlements ? TitleInstancePackagePlatform.executeQuery('select tipp from IssueEntitlement ie join ie.tipp tipp where ie.id in (:ids) and ie.status != :ieStatus '+orderByClause,[ieStatus: RDStore.TIPP_STATUS_REMOVED, ids: currentIssueEntitlements.drop(result.offset).take(result.max)]) : []
             result.subscriptions = Subscription.executeQuery('select distinct(sub) from IssueEntitlement ie join ie.subscription sub join sub.orgRelations oo where oo.roleType in (:orgRoles) and oo.org = :institution and (sub.status = :current or sub.hasPerpetualAccess = true) '+instanceFilter+" order by sub.name asc",[
                     institution: result.institution,
@@ -1414,10 +1590,10 @@ join sub.orgRelations or_sub where
                     orgRoles: orgRoles])
             if(result.subscriptions.size() > 0) {
                 Set<Long> allIssueEntitlements = IssueEntitlement.executeQuery('select ie.id from IssueEntitlement ie where ie.subscription in (:currentSubs)',[currentSubs:result.subscriptions])
-                result.providers = Org.executeQuery('select org.id,org.name from IssueEntitlement ie join ie.tipp tipp join tipp.pkg pkg join pkg.orgs oo join oo.org org where ie.id in ('+qryString+' group by tipp, ie.id order by ie.sortname asc) group by org.id order by org.name asc',qryParams)
-                result.hostplatforms = Platform.executeQuery('select plat.id,plat.name from IssueEntitlement ie join ie.tipp tipp join tipp.platform plat where ie.id in ('+qryString+' group by tipp, ie.id order by ie.sortname asc) group by plat.id order by plat.name asc',qryParams)
+                result.providers = Org.executeQuery('select org.id,org.name from TitleInstancePackagePlatform tipp join tipp.pkg pkg join pkg.orgs oo join oo.org org where tipp.id in (select tipp.id '+qryString+') group by org.id order by org.name asc',qryParams)
+                result.hostplatforms = Platform.executeQuery('select plat.id,plat.name from TitleInstancePackagePlatform tipp join tipp.platform plat where tipp.id in (select tipp.id '+qryString+') group by plat.id order by plat.name asc',qryParams)
             }
-            result.num_ti_rows = currentIssueEntitlements.size()
+            result.num_ti_rows = result.allIECounts
             result.titles = allTitles
 
             result.filterSet = params.filterSet || defaultSet
@@ -1427,14 +1603,13 @@ join sub.orgRelations or_sub where
 
 		List bm = prf.stopBenchmark()
 		result.benchMark = bm
-
         if(params.exportKBart) {
             response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
             response.contentType = "text/tsv"
             Map<String, Object> configMap = [:]
             configMap.putAll(params)
             configMap.validOn = checkedDate.getTime()
-            String consFilter = result.institution.getCustomerType() == 'ORG_CONSORTIUM' ? ' and s.instanceOf is null' : ''
+            String consFilter = result.institution.isCustomerType_Consortium() ? ' and s.instanceOf is null' : ''
             configMap.pkgIds = SubscriptionPackage.executeQuery('select sp.pkg.id from SubscriptionPackage sp join sp.subscription s join s.orgRelations oo where oo.org = :context and oo.roleType in (:subscrTypes)'+consFilter, [context: result.institution, subscrTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS]])
             ServletOutputStream out = response.outputStream
             Map<String,List> tableData = exportService.generateTitleExportKBART(configMap, IssueEntitlement.class.name)
@@ -1444,43 +1619,114 @@ join sub.orgRelations or_sub where
             out.flush()
             out.close()
         }
-        else if(params.exportXLSX) {
+        else if(params.fileformat == 'xlsx') {
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportTipps(tippIDs, selectedFields, ExportClickMeService.FORMAT.XLS)
             response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            /*
             Map<String, Object> configMap = [:]
             configMap.putAll(params)
             configMap.validOn = checkedDate.getTime()
-            String consFilter = result.institution.getCustomerType() == 'ORG_CONSORTIUM' ? ' and s.instanceOf is null' : ''
+            String consFilter = result.institution.isCustomerType_Consortium() ? ' and s.instanceOf is null' : ''
             configMap.pkgIds = SubscriptionPackage.executeQuery('select sp.pkg.id from SubscriptionPackage sp join sp.subscription s join s.orgRelations oo where oo.org = :context and oo.roleType in (:subscrTypes)'+consFilter, [context: result.institution, subscrTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS]])
             Map<String,List> export = exportService.generateTitleExportCustom(configMap, IssueEntitlement.class.name) //all subscriptions, all packages
             Map sheetData = [:]
             sheetData[message(code:'menu.my.titles')] = [titleRow:export.titles,columnData:export.rows]
             SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
             workbook.write(response.outputStream)
+            */
+
             response.outputStream.flush()
             response.outputStream.close()
-            workbook.dispose()
+            wb.dispose()
             return
         }
-        else {
-            withFormat {
-                html {
-                    result
-                }
-                csv {
-                    response.setHeader("Content-disposition", "attachment; filename=${filename}.csv")
-                    response.contentType = "text/csv"
+        else if(params.fileformat == 'csv') {
+            response.setHeader("Content-disposition", "attachment; filename=${filename}.csv")
+            response.contentType = "text/csv"
 
-                    ServletOutputStream out = response.outputStream
-                    Map<String,List> tableData = exportService.generateTitleExportCSV(currentIssueEntitlements, IssueEntitlement.class.name)
-                    out.withWriter { writer ->
-                        writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.rows,'|'))
-                    }
-                    out.flush()
-                    out.close()
-                }
+            ServletOutputStream out = response.outputStream
+            out.withWriter { writer ->
+                writer.write(exportClickMeService.exportTipps(tippIDs,selectedFields,ExportClickMeService.FORMAT.CSV))
+            }
+            out.flush()
+            out.close()
+        }
+        else
+            result
+    }
+
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'])
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+    })
+    def currentPermanentTitles() {
+
+        Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params)
+
+
+        if(params.tab){
+            if(params.tab == 'currentIEs'){
+                params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
+            }else if(params.tab == 'plannedIEs'){
+                params.status = [RDStore.TIPP_STATUS_EXPECTED.id.toString()]
+            }else if(params.tab == 'expiredIEs'){
+                params.status = [RDStore.TIPP_STATUS_RETIRED.id.toString()]
+            }else if(params.tab == 'deletedIEs'){
+                params.status = [RDStore.TIPP_STATUS_DELETED.id.toString()]
+            }else if(params.tab == 'allIEs'){
+                params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString(), RDStore.TIPP_STATUS_EXPECTED.id.toString(), RDStore.TIPP_STATUS_RETIRED.id.toString(), RDStore.TIPP_STATUS_DELETED.id.toString()]
             }
         }
+        else if(params.list('status').size() == 1) {
+            if(params.list('status')[0] == RDStore.TIPP_STATUS_CURRENT.id.toString()){
+                params.tab = 'currentIEs'
+            }else if(params.list('status')[0] == RDStore.TIPP_STATUS_RETIRED.id.toString()){
+                params.tab = 'expiredIEs'
+            }else if(params.list('status')[0] == RDStore.TIPP_STATUS_EXPECTED.id.toString()){
+                params.tab = 'plannedIEs'
+            }else if(params.list('status')[0] == RDStore.TIPP_STATUS_DELETED.id.toString()){
+                params.tab = 'deletedIEs'
+            }
+        }else{
+            if(params.list('status').size() > 1){
+                params.tab = 'allIEs'
+            }else {
+                params.tab = 'currentIEs'
+                params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
+            }
+        }
+
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
+
+        Map query = filterService.getPermanentTitlesQuery(params, result.institution)
+        result.filterSet = query.filterSet
+        Set tipps = TitleInstancePackagePlatform.executeQuery("select pt.tipp.id " + query.query, query.queryParams)
+        result.tippIDs = tipps
+
+        result.num_tipp_rows = tipps.size()
+
+        String orderClause = 'order by tipp.sortname'
+        if(params.sort){
+                if(params.sort.contains('sortname'))
+                    orderClause = "order by tipp.sortname ${params.order}, tipp.name ${params.order} "
+                else
+                    orderClause = "order by ${params.sort} ${params.order} "
+        }
+        Set filteredIDs = result.tippIDs.drop(result.offset).take(result.max)
+        result.titles = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp where tipp.id in (:tippIDs) '+orderClause, [tippIDs: filteredIDs])
+
+        result.currentTippCounts = PermanentTitle.executeQuery("select count(pt) from PermanentTitle as pt where pt.owner = :org and pt.tipp.status = :status and pt.issueEntitlement.status != :ieStatus", [org: result.institution, status: RDStore.TIPP_STATUS_CURRENT, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+        result.plannedTippCounts = PermanentTitle.executeQuery("select count(pt) from PermanentTitle as pt where pt.owner = :org and pt.tipp.status = :status and pt.issueEntitlement.status != :ieStatus", [org: result.institution, status: RDStore.TIPP_STATUS_EXPECTED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+        result.expiredTippCounts = PermanentTitle.executeQuery("select count(pt) from PermanentTitle as pt where pt.owner = :org and pt.tipp.status = :status and pt.issueEntitlement.status != :ieStatus", [org: result.institutionn, status: RDStore.TIPP_STATUS_RETIRED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+        result.deletedTippCounts = PermanentTitle.executeQuery("select count(pt) from PermanentTitle as pt where pt.owner = :org and pt.tipp.status = :status and pt.issueEntitlement.status != :ieStatus", [org: result.institution, status: RDStore.TIPP_STATUS_DELETED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+        result.allTippCounts = PermanentTitle.executeQuery("select count(pt) from PermanentTitle as pt where pt.owner = :org and pt.tipp.status in (:status) and pt.issueEntitlement.status != :ieStatus", [org: result.institution, status: [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_EXPECTED, RDStore.TIPP_STATUS_RETIRED, RDStore.TIPP_STATUS_DELETED], ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+
+        //for tipp_ieFilter
+        params.institution = result.institution
+        params.filterForPermanentTitle = true
+
+        result
     }
 
     /**
@@ -1490,8 +1736,10 @@ join sub.orgRelations or_sub where
      * @see SubscriptionPackage
      * @see Package
      */
-    @DebugInfo(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'])
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+    })
     def currentPackages() {
 
         Map<String, Object> result = [:]
@@ -1596,8 +1844,10 @@ join sub.orgRelations or_sub where
      * The information is grouped in tabs where information is being preloaded (except changes, notifications and surveys)
      * @return the dashboard view with the prefilled tabs
      */
-    @DebugInfo(test = 'hasAffiliation("INST_USER")', ctrlService = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+    })
     def dashboard() {
 
         Map<String, Object> ctrlResult = myInstitutionControllerService.dashboard(this, params)
@@ -1615,12 +1865,14 @@ join sub.orgRelations or_sub where
      * Opens the modal to create a new task
      * @return the task creation modal
      */
-    @DebugInfo(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'])
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+    })
     def modal_create() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
-        if (! accessService.checkUserIsMember(result.user, result.institution)) {
+        if (! (result.user as User).isMemberOf(result.institution as Org)) {
             flash.error = "You do not have permission to access ${result.institution.name} pages. Please request access on the profile page";
             response.sendError(HttpStatus.SC_FORBIDDEN)
             return;
@@ -1637,15 +1889,17 @@ join sub.orgRelations or_sub where
      * @return a list of changes to be accepted or rejected
      * @see PendingChange
      */
-    @DebugInfo(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'])
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+    })
     def changes() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
         result.acceptedOffset = 0
         def periodInDays = 600
-        Map<String,Object> pendingChangeConfigMap = [contextOrg: result.institution, consortialView:accessService.checkPerm(result.institution,"ORG_CONSORTIUM"), periodInDays:periodInDays, max:result.max, offset:result.acceptedOffset]
+        Map<String,Object> pendingChangeConfigMap = [contextOrg: result.institution, consortialView:accessService.otherOrgPerm(result.institution, 'ORG_CONSORTIUM_BASIC'), periodInDays:periodInDays, max:result.max, offset:result.acceptedOffset]
 
         result.putAll(pendingChangeService.getChanges_old(pendingChangeConfigMap))
 
@@ -1656,9 +1910,9 @@ join sub.orgRelations or_sub where
      * Call for the finance import starting page; the mappings are being explained here and an example sheet for submitting data to import
      * @return the finance import entry view
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def financeImport() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -1673,9 +1927,9 @@ join sub.orgRelations or_sub where
      * @see Subscription
      * @see CostItem
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def generateFinanceImportWorksheet() {
         Subscription subscription = Subscription.get(params.id)
@@ -1711,9 +1965,9 @@ join sub.orgRelations or_sub where
      * processing whether the imported data is read correctly or not
      * @return the control view with the import preparation result
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN", wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def processFinanceImport() {
         CostItem.withTransaction { TransactionStatus ts ->
@@ -1748,9 +2002,9 @@ join sub.orgRelations or_sub where
      * Call for the subscription import starting page; the mappings are being explained here and an example sheet for submitting data to import
      * @return the subscription import entry view
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def subscriptionImport() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -1765,9 +2019,9 @@ join sub.orgRelations or_sub where
      * processing whether the imported data is read correctly or not
      * @return the control view with the import preparation result
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN", wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def processSubscriptionImport() {
             Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -1803,9 +2057,9 @@ join sub.orgRelations or_sub where
      * Default filter setting is current year
      * @return a (filtered) list of surveys, either displayed as html or returned as Excel worksheet
      */
-    @DebugInfo(perm="ORG_BASIC_MEMBER", affil="INST_USER", specRole="ROLE_ADMIN")
+    @DebugInfo(ctxInstUserCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_INST_BASIC])
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_USER", "ROLE_ADMIN")
+        ctx.accessService.ctxInstUserCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )
     })
     def currentSurveys() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -1816,9 +2070,9 @@ join sub.orgRelations or_sub where
 
         params.tab = params.tab ?: 'new'
 
-        if(params.tab != 'new'){
+        //if(params.tab != 'new'){
             params.sort = 'surInfo.endDate DESC, LOWER(surInfo.name)'
-        }
+        //}
 
         if (params.validOnYear == null || params.validOnYear == '') {
             SimpleDateFormat sdfyear = DateUtils.getSDF_yyyy()
@@ -1896,9 +2150,9 @@ join sub.orgRelations or_sub where
      * The view may be rendered as html or as Excel worksheet to download
      * @return the details view of the given survey
      */
-    @DebugInfo(perm="ORG_BASIC_MEMBER", affil="INST_USER", specRole="ROLE_ADMIN")
+    @DebugInfo(ctxInstUserCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_INST_BASIC])
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_USER", "ROLE_ADMIN")
+        ctx.accessService.ctxInstUserCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )
     })
     def surveyInfos() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -1961,25 +2215,25 @@ join sub.orgRelations or_sub where
                 /*result.previousIesListPriceSum = 0
                 if(result.previousSubscription){
                     result.previousIesListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
-                            'where p.listPrice is not null and ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus',
-                    [sub: result.previousSubscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0
+                            'where p.listPrice is not null and ie.subscription = :sub and ie.status = :ieStatus',
+                    [sub: result.previousSubscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0
 
                 }*/
 
                 result.iesListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
-                        'where p.listPrice is not null and ie.subscription = :sub and ie.acceptStatus != :acceptStat and ie.status = :ieStatus',
-                        [sub: result.subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0
+                        'where p.listPrice is not null and ie.subscription = :sub and ie.status = :ieStatus',
+                        [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0
 
 
                /* result.iesFixListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
-                        'where p.listPrice is not null and ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus',
-                        [sub: result.subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0 */
-                result.countSelectedIEs = subscriptionService.countIssueEntitlementsNotFixed(result.subscription)
+                        'where p.listPrice is not null and ie.subscription = :sub and ie.status = :ieStatus',
+                        [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0 */
+                result.countSelectedIEs = surveyService.countIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig)
 
                 if (result.surveyConfig.pickAndChoosePerpetualAccess) {
                     result.countCurrentIEs = surveyService.countPerpetualAccessTitlesBySub(result.subscription)
                 } else {
-                    result.countCurrentIEs = (result.previousSubscription ? subscriptionService.countIssueEntitlementsFixed(result.previousSubscription) : 0) + subscriptionService.countIssueEntitlementsFixed(result.subscription)
+                    result.countCurrentIEs = (result.previousSubscription ? subscriptionService.countCurrentIssueEntitlements(result.previousSubscription) : 0) + subscriptionService.countCurrentIssueEntitlements(result.subscription)
                 }
 
 
@@ -2021,9 +2275,9 @@ join sub.orgRelations or_sub where
      * pass definitively into the holding of the next year's subscription
      * @return void, returns to the survey details page ({@link #surveyInfos()})
      */
-    @DebugInfo(perm="ORG_BASIC_MEMBER", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_INST_BASIC])
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )
     })
     def surveyInfoFinish() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -2038,35 +2292,6 @@ join sub.orgRelations or_sub where
         boolean sendMailToSurveyOwner = false
 
         SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.institution, surveyConfig)
-
-        IssueEntitlement.withTransaction { TransactionStatus ts ->
-            if(surveyConfig && surveyConfig.pickAndChoose){
-
-                List ies = subscriptionService.getIssueEntitlementsUnderConsideration(surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution))
-                ies.each { ie ->
-                    ie.acceptStatus = RDStore.IE_ACCEPT_STATUS_UNDER_NEGOTIATION
-                    ie.save()
-                }
-
-                /*if(ies.size() > 0) {*/
-
-                if (surveyOrg && surveyConfig) {
-                    surveyOrg.finishDate = new Date()
-                    if (!surveyOrg.save()) {
-                        flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccess') as String
-                    } else {
-                        flash.message = message(code: 'renewEntitlementsWithSurvey.submitSuccess') as String
-                        sendMailToSurveyOwner = true
-                    }
-                } else {
-                    flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccess') as String
-                }
-                /*}else {
-                    flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccessEmptyIEs')
-                }*/
-            }
-        }
-
 
         List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.institution, surveyConfig)
 
@@ -2099,7 +2324,7 @@ join sub.orgRelations or_sub where
                 sendMailToSurveyOwner = true
             }
         }
-        else if(!noParticipation && !allResultHaveValue){
+        else if(!noParticipation && allResultHaveValue){
             surveyOrg.finishDate = new Date()
             if (!surveyOrg.save()) {
                 flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccess') as String
@@ -2110,17 +2335,17 @@ join sub.orgRelations or_sub where
         }
 
         if(sendMailToSurveyOwner) {
-            surveyService.emailToSurveyOwnerbyParticipationFinish(surveyInfo, result.institution)
-            surveyService.emailToSurveyParticipationByFinish(surveyInfo, result.institution)
+            mailSendService.emailToSurveyOwnerbyParticipationFinish(surveyInfo, result.institution)
+            mailSendService.emailToSurveyParticipationByFinish(surveyInfo, result.institution)
         }
 
 
         redirect(url: request.getHeader('referer'))
     }
 
-    @DebugInfo(perm="ORG_BASIC_MEMBER", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_INST_BASIC])
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_EDITOR", "ROLE_ADMIN")
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )
     })
     def surveyLinkOpenNewSurvey() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -2211,10 +2436,12 @@ join sub.orgRelations or_sub where
      * Lists the users of the context institution
      * @return a list of users affiliated to the context institution
      * @see User
-     * @see de.laser.auth.UserOrg
+     * @see de.laser.auth.UserOrgRole
      */
-    @DebugInfo(test = 'hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_ADM") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_ADM'])
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
+    })
     def users() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
@@ -2251,8 +2478,10 @@ join sub.orgRelations or_sub where
      * Call to delete a given user
      * @return the user deletion page where the details of the given user are being enumerated
      */
-    @DebugInfo(test = 'hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_ADM") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_ADM'])
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
+    })
     def deleteUser() {
         Map<String, Object> result = userControllerService.getResultGenericsERMS3067(params)
 
@@ -2262,7 +2491,7 @@ join sub.orgRelations or_sub where
         }
 
         if (result.user) {
-            List<Org> affils = Org.executeQuery('select distinct uo.org from UserOrg uo where uo.user = :user',
+            List<Org> affils = Org.executeQuery('select distinct uo.org from UserOrgRole uo where uo.user = :user',
                     [user: result.user])
 
             if (affils.size() > 1) {
@@ -2298,8 +2527,10 @@ join sub.orgRelations or_sub where
      * Call to edit the given user
      * @return the user details view for editing the profile
      */
-    @DebugInfo(test = 'hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_ADM") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_ADM'])
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
+    })
     def editUser() {
         Map<String, Object> result = userControllerService.getResultGenericsERMS3067(params)
 
@@ -2320,8 +2551,10 @@ join sub.orgRelations or_sub where
      * Call to create a new user for the context institution
      * @return the form to enter the new user's parameters
      */
-    @DebugInfo(test = 'hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_ADM") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_ADM'])
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
+    })
     def createUser() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
         result.orgInstance = result.institution
@@ -2336,8 +2569,10 @@ join sub.orgRelations or_sub where
      * Processes the submitted parameters and creates a new user for the context institution
      * @return a redirect to the profile edit page on success, back to the user creation page otherwise
      */
-    @DebugInfo(test = 'hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_ADM") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_ADM'])
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
+    })
     def processCreateUser() {
         def success = userService.addNewUser(params,flash)
         //despite IntelliJ's warnings, success may be an array other than the boolean true
@@ -2356,10 +2591,12 @@ join sub.orgRelations or_sub where
     /**
      * Attaches a given user to the given institution
      * @return the user editing view
-     * @see de.laser.auth.UserOrg
+     * @see de.laser.auth.UserOrgRole
      */
-    @DebugInfo(test = 'hasAffiliation("INST_ADM")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_ADM") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_ADM'])
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
+    })
     def addAffiliation() {
         Map<String, Object> result = userControllerService.getResultGenericsERMS3067(params)
         if (! result.editable) {
@@ -2375,9 +2612,9 @@ join sub.orgRelations or_sub where
      * Opens the internal address book for the context institution
      * @return a list view of the institution-internal contacts
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER'])
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER')
     })
     def addressbook() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -2385,7 +2622,35 @@ join sub.orgRelations or_sub where
         SwissKnife.setPaginationParams(result, params, (User) result.user)
         params.sort = params.sort ?: 'pr.org.name'
 
-        List visiblePersons = addressbookService.getVisiblePersons("addressbook",params)
+        List visiblePersons = []
+        Map<String, Object> selectedFields = [:]
+        String filename = escapeService.escapeString("${message(code: 'menu.institutions.myAddressbook')}_${DateUtils.getSDF_yyyyMMdd().format(new Date())}")
+        if(params.fileformat) {
+            if (params.filename) {
+                filename = params.filename
+            }
+            Map<String, Object> configMap = [function:[], position: [], sort: 'pr.org.name']
+            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('ief:') }
+            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('ief:', ''), it.value ) }
+            selectedFields.each { String key, value ->
+                List<String> field = key.split('\\.')
+                if(field.size() > 1) {
+                    if(field[0] == 'function') {
+                        configMap.function << field[1]
+                    }
+                    else if(field[0] == 'position') {
+                        configMap.position << field[1]
+                    }
+                }
+            }
+            visiblePersons.addAll(addressbookService.getVisiblePersons("addressbook", configMap))
+            selectedFieldsRaw.clear()
+            selectedFields.clear()
+            selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+        }
+        else
+            visiblePersons.addAll(addressbookService.getVisiblePersons("addressbook",params))
 
         Set<String> filterFields = ['org', 'prs', 'filterPropDef', 'filterProp', 'function', 'position', 'showOnlyContactPersonForInstitution', 'showOnlyContactPersonForProviderAgency']
         result.filterSet = params.keySet().any { String selField -> selField in filterFields }
@@ -2404,7 +2669,7 @@ join sub.orgRelations or_sub where
                     [persons: visiblePersons, contentType: RDStore.CCT_EMAIL])
         }
 
-        String filename = escapeService.escapeString("${message(code: 'menu.institutions.myAddressbook')}_${DateUtils.getSDF_yyyyMMdd().format(new Date())}")
+        /*
         if(params.exportXLS) {
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -2416,16 +2681,10 @@ join sub.orgRelations or_sub where
 
             return
         }
-        else if(params.exportClickMeExcel) {
-            if (params.filename) {
-                filename = params.filename
-            }
+        else */
+        if(params.fileformat == 'xlsx') {
 
-            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
-            Map<String, Object> selectedFields = [:]
-            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
-
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportAddresses(visiblePersons, selectedFields)
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportAddresses(visiblePersons, selectedFields, params.exportOnlyContactPersonForInstitution == 'true', params.exportOnlyContactPersonForProviderAgency == 'true', ExportClickMeService.FORMAT.XLS)
 
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -2435,21 +2694,17 @@ join sub.orgRelations or_sub where
             wb.dispose()
             return
         }
-        else {
-            withFormat {
-                html {
-                    result
-                }
-                csv {
-                    response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
-                    response.contentType = "text/csv"
-                    ServletOutputStream out = response.outputStream
-                    out.withWriter { Writer writer ->
-                        writer.write((String) exportService.exportAddressbook('csv', visiblePersons))
-                    }
-                    out.close()
-                }
+        else if(params.fileformat == 'csv') {
+            response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
+            response.contentType = "text/csv"
+            ServletOutputStream out = response.outputStream
+            out.withWriter { Writer writer ->
+                writer.write((String) exportService.exportAddressbook('csv', visiblePersons))
             }
+            out.close()
+        }
+        else {
+            result
         }
       }
 
@@ -2459,9 +2714,9 @@ join sub.orgRelations or_sub where
      * @see BudgetCode
      * @see CostItemGroup
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN", wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(ctxInstUserCheckPerm_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
+        ctx.accessService.ctxInstUserCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     Map<String, Object> budgetCodes() {
         BudgetCode.withTransaction {
@@ -2517,8 +2772,10 @@ join sub.orgRelations or_sub where
      * @return a table view of tasks
      * @see Task
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER", wtc = DebugInfo.IN_BETWEEN)
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER") })
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_PRO, 'INST_USER'], wtc = DebugInfo.IN_BETWEEN)
+    @Secured(closure = {
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_USER')
+    })
     def tasks() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
@@ -2552,8 +2809,10 @@ join sub.orgRelations or_sub where
      * Call for listing institutions eligible to be attached to or detached from the context consortium
      * @return a list of institutions
      */
-    @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_EDITOR",specRole="ROLE_ADMIN", wtc = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM","INST_EDITOR","ROLE_ADMIN") })
+    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC], wtc = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
+    })
     def addMembers() {
         Combo.withTransaction {
             Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -2594,13 +2853,129 @@ join sub.orgRelations or_sub where
         }
     }
 
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_PRO, 'INST_USER'], ctrlService = DebugInfo.IN_BETWEEN)
+    @Secured(closure = {
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_USER')
+    })
+    def currentWorkflows() {
+
+        SessionCacheWrapper cache = contextService.getSessionCache()
+        String urlKey = 'myInstitution/currentWorkflows'
+        String fmKey  = urlKey + '/_filterMap'
+
+        Map<String, Object> result = [
+                offset: params.offset ? params.int('offset') : 0,
+                max:    params.max    ? params.int('max') : contextService.getUser().getPageSizeOrDefault()
+        ]
+
+        // filter
+
+        Map<String, Object> filter = params.findAll{ it.key.startsWith('filter') } as Map
+
+        if (filter.get('filter') == 'reset') {
+            cache.remove(fmKey)
+        }
+        else if (filter.get('filter') == 'true') {
+            filter.remove('filter') // remove control flag
+            cache.put(fmKey, filter)   // store filter settings
+        }
+        else if (params.size() == 2 && params.containsKey('controller') && params.containsKey('action')) { // first visit
+            cache.remove(fmKey)
+        }
+
+        if (cache.get(fmKey)) {
+            result.putAll(cache.get(fmKey) as Map) // restore filter settings
+        }
+
+        if (params.cmd) {
+            result.putAll(workflowService.executeCmd(params))
+            params.clear()
+        }
+
+        String idQuery = 'select wf.id from WfChecklist wf where wf.owner = :ctxOrg'
+        Map<String, Object> queryParams = [ctxOrg: contextService.getOrg()]
+
+        if (result.filterTargetType) {
+            if (result.filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_AGENCY.id.toString()) {
+                idQuery = idQuery + ' and wf.org is not null'
+                idQuery = idQuery + ' and exists (select ot from wf.org.orgType as ot where ot = :orgType )'
+                queryParams.put('orgType', RDStore.OT_AGENCY)
+            }
+            if (result.filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_INSTITUTION.id.toString()) {
+                idQuery = idQuery + ' and wf.org is not null'
+                idQuery = idQuery + ' and exists (select ot from wf.org.orgType as ot where ot = :orgType )'
+                queryParams.put('orgType', RDStore.OT_INSTITUTION)
+            }
+            else if (result.filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_LICENSE.id.toString()) {
+                idQuery = idQuery + ' and wf.license is not null'
+            }
+            else if (result.filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_OWNER.id.toString()) {
+                idQuery = idQuery + ' and wf.org = :ctxOrg'
+            }
+            else if (result.filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_PROVIDER.id.toString()) {
+                idQuery = idQuery + ' and wf.org is not null'
+                idQuery = idQuery + ' and exists (select ot from wf.org.orgType as ot where ot = :orgType )'
+                queryParams.put('orgType', RDStore.OT_PROVIDER)
+            }
+            if (result.filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_SUBSCRIPTION.id.toString()) {
+                idQuery = idQuery + ' and wf.subscription is not null'
+            }
+        }
+        if (result.filterTemplates) {
+            if (result.filterTemplates == 'yes') {
+                idQuery = idQuery + ' and wf.template = true'
+            }
+            else if (result.filterTemplates == 'no') {
+                idQuery = idQuery + ' and wf.template = false'
+            }
+        }
+
+        // result
+
+        List<Long> checklistIds = WfChecklist.executeQuery(idQuery + ' order by wf.id desc', queryParams)
+
+        result.openWorkflows = []
+        result.doneWorkflows = []
+
+        String resultQuery = 'select wf from WfChecklist wf where wf.id in (:idList)'
+
+        WfChecklist.executeQuery(resultQuery, [idList: checklistIds]).each{ clist ->
+            Map info = clist.getInfo()
+
+            if (info.status == RDStore.WF_WORKFLOW_STATUS_OPEN) {
+                result.openWorkflows << clist
+            }
+            else if (info.status == RDStore.WF_WORKFLOW_STATUS_DONE) {
+                result.doneWorkflows << clist
+            }
+        }
+        result.currentWorkflows = WfChecklist.executeQuery(resultQuery, [idList: checklistIds])
+
+        if (result.filterStatus) {
+            if (result.filterStatus == RDStore.WF_WORKFLOW_STATUS_OPEN.id.toString()) {
+                result.currentWorkflows = result.openWorkflows
+            }
+            else if (result.filterStatus == RDStore.WF_WORKFLOW_STATUS_DONE.id.toString()) {
+                result.currentWorkflows = result.doneWorkflows
+            }
+        }
+
+        result.total = result.currentWorkflows.size()
+        result.currentWorkflows = workflowService.sortByLastUpdated(result.currentWorkflows).drop(result.offset).take(result.max) // pagination
+
+        result
+    }
+
     /**
      * Call for the overview of current workflows for the context institution
      * @return the entry view for the workflows, loading current cache settings
      */
-    @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_USER", ctrlService = DebugInfo.IN_BETWEEN)
-    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER") })
-    def currentWorkflows() {
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.ORG_CONSORTIUM_PRO, 'INST_USER'], ctrlService = DebugInfo.IN_BETWEEN)
+    @Secured(closure = {
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_PRO, 'INST_USER')
+    })
+    @Deprecated
+    def currentWorkflowsOld() {
         Map<String, Object> result = [:]
 
         SessionCacheWrapper cache = contextService.getSessionCache()
@@ -2613,7 +2988,7 @@ join sub.orgRelations or_sub where
             cache.remove(pmKey)
         }
         else if (params.cmd) { // modal,delete, etc. - process and remove form params
-            result.putAll( workflowService.usage(params) )
+            result.putAll( workflowOldService.usage(params) )
             params.clear()
         }
 
@@ -2721,13 +3096,13 @@ join sub.orgRelations or_sub where
         result.currentWorkflowIds_done     = WfWorkflow.executeQuery(statusQuery, [idList: workflowIds, status: RDStore.WF_WORKFLOW_STATUS_DONE])
 
         if (result.tab == 'open') {
-            result.currentWorkflows = workflowService.sortByLastUpdated( WfWorkflow.executeQuery(resultQuery, [idList: result.currentWorkflowIds_open])).drop(result.offset).take(result.max)
+            result.currentWorkflows = workflowOldService.sortByLastUpdated( WfWorkflow.executeQuery(resultQuery, [idList: result.currentWorkflowIds_open])).drop(result.offset).take(result.max)
         }
         else if (result.tab == 'canceled') {
-            result.currentWorkflows = workflowService.sortByLastUpdated( WfWorkflow.executeQuery(resultQuery, [idList: result.currentWorkflowIds_canceled])).drop(result.offset).take(result.max)
+            result.currentWorkflows = workflowOldService.sortByLastUpdated( WfWorkflow.executeQuery(resultQuery, [idList: result.currentWorkflowIds_canceled])).drop(result.offset).take(result.max)
         }
         else if (result.tab == 'done') {
-            result.currentWorkflows = workflowService.sortByLastUpdated( WfWorkflow.executeQuery(resultQuery, [idList: result.currentWorkflowIds_done])).drop(result.offset).take(result.max)
+            result.currentWorkflows = workflowOldService.sortByLastUpdated( WfWorkflow.executeQuery(resultQuery, [idList: result.currentWorkflowIds_done])).drop(result.offset).take(result.max)
         }
         result.total = workflowIds.size()
 
@@ -2751,25 +3126,8 @@ join sub.orgRelations or_sub where
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         params.subStatus = RDStore.SUBSCRIPTION_CURRENT.id.toString()
-        Map queryParams = params.clone()
-        //queryParams.subPerpetual = "on"
-        //result.propList     = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
-        /*
-        if(!params.subStatus) {
-            if(!params.filterSet) {
-                params.subStatus = RDStore.SUBSCRIPTION_CURRENT.id.toString()
-                result.filterSet = true
-            }
-        }
-        else result.filterSet    = params.filterSet ? true : false
-        if(!params.subPerpetual) {
-            if(!params.filterSet) {
-                params.subPerpetual = "on"
-                result.filterSet = true
-            }
-        }
-        else result.filterSet    = params.filterSet ? true : false
-        */
+        GrailsParameterMap queryParams = params.clone() as GrailsParameterMap
+
         result.filterSet    = params.filterSet ? true : false
 
         queryParams.comboType = result.comboType.value
@@ -2784,23 +3142,29 @@ join sub.orgRelations or_sub where
         result.totalConsortia    = totalConsortia
         result.consortiaCount    = totalConsortia.size()
         result.consortia         = totalConsortia.drop((int) result.offset).take((int) result.max)
-        //String header
-        //String exportHeader
-
-        //header = message(code: 'menu.my.insts')
-        //exportHeader = message(code: 'export.my.consortia')
-        //SimpleDateFormat sdf = DateUtils.getSDF_NoTimeNoPoint()
+        String header = message(code: 'menu.my.consortia')
+        String exportHeader = message(code: 'export.my.consortia')
+        SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
         // Write the output to a file
-        //String file = "${sdf.format(new Date())}_"+exportHeader
+        String file = "${sdf.format(new Date())}_"+exportHeader
 
 		List bm = prf.stopBenchmark()
 		result.benchMark = bm
+        Map<String, Object> selectedFields = [:]
+        Set<String> contactSwitch = []
+        if(params.fileformat) {
+            if (params.filename) {
+                file = params.filename
+            }
+            contactSwitch.addAll(params.list("contactSwitch"))
+            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+        }
 
-        result
         /*
         if ( params.exportXLS ) {
 
-            SXSSFWorkbook wb = (SXSSFWorkbook) organisationService.exportOrg(totalMembers, header, true, 'xls')
+            SXSSFWorkbook wb = (SXSSFWorkbook) organisationService.exportOrg(totalConsortia, header, true, 'xls')
             response.setHeader "Content-disposition", "attachment; filename=\"${file}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             wb.write(response.outputStream)
@@ -2809,16 +3173,9 @@ join sub.orgRelations or_sub where
             wb.dispose()
             return
         }
-        else if(params.exportClickMeExcel) {
-            if (params.filename) {
-                file =params.filename
-            }
-
-            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
-            Map<String, Object> selectedFields = [:]
-            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
-
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(totalMembers, selectedFields)
+        else */
+        if(params.fileformat == 'xlsx') {
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(totalConsortia, selectedFields, 'consortium', ExportClickMeService.FORMAT.XLS, contactSwitch)
 
             response.setHeader "Content-disposition", "attachment; filename=\"${file}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -2827,24 +3184,19 @@ join sub.orgRelations or_sub where
             response.outputStream.close()
             wb.dispose()
             return
+        }
+        else if(params.fileformat == 'csv') {
+            response.setHeader("Content-disposition", "attachment; filename=\"${file}.csv\"")
+            response.contentType = "text/csv"
+            ServletOutputStream out = response.outputStream
+            out.withWriter { writer ->
+                writer.write((String) organisationService.exportOrg(totalConsortia,header,true,"csv"))
+            }
+            out.close()
         }
         else {
-            withFormat {
-                html {
-                    result
-                }
-                csv {
-                    response.setHeader("Content-disposition", "attachment; filename=\"${file}.csv\"")
-                    response.contentType = "text/csv"
-                    ServletOutputStream out = response.outputStream
-                    out.withWriter { writer ->
-                        writer.write((String) organisationService.exportOrg(totalMembers,header,true,"csv"))
-                    }
-                    out.close()
-                }
-            }
+            result
         }
-        */
     }
 
     /**
@@ -2852,9 +3204,9 @@ join sub.orgRelations or_sub where
      * The result may be filtered by organisational and subscription parameters
      * @return the list of consortial member institutions
      */
-    @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN", wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(ctxInstUserCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC], wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM","INST_USER","ROLE_ADMIN")
+        ctx.accessService.ctxInstUserCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
     def manageMembers() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -2881,7 +3233,7 @@ join sub.orgRelations or_sub where
         //params.orgSector    = RDStore.O_SECTOR_HIGHER_EDU?.id?.toString()
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        result.propList     = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
+        result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
         if(!params.subStatus) {
             if(!params.filterSet) {
                 params.subStatus = RDStore.SUBSCRIPTION_CURRENT.id.toString()
@@ -2901,7 +3253,6 @@ join sub.orgRelations or_sub where
         Map<String, Object> fsq = filterService.getOrgComboQuery(params, result.institution)
         String tmpQuery = "select o.id " + fsq.query.minus("select o ")
         List memberIds = Org.executeQuery(tmpQuery, fsq.queryParams)
-
 
         Map queryParamsProviders = [
                 subOrg      : result.institution,
@@ -2974,27 +3325,34 @@ join sub.orgRelations or_sub where
 		prf.setBenchmark('query')
 
         if (params.filterPropDef && memberIds) {
-            fsq                      = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids) order by o.sortname asc", 'o', [oids: memberIds])
+            fsq = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids) order by o.sortname asc", 'o', [oids: memberIds])
         }
 
         List totalMembers      = Org.executeQuery(fsq.query, fsq.queryParams)
         result.totalMembers    = totalMembers
         result.membersCount    = totalMembers.size()
         result.members         = totalMembers.drop((int) result.offset).take((int) result.max)
-        String header
-        String exportHeader
+        String header = message(code: 'menu.my.insts')
+        String exportHeader = message(code: 'export.my.insts')
 
-        header = message(code: 'menu.my.insts')
-        exportHeader = message(code: 'export.my.consortia')
         SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
         // Write the output to a file
         String file = "${sdf.format(new Date())}_"+exportHeader
 
 		List bm = prf.stopBenchmark()
 		result.benchMark = bm
+        Map<String, Object> selectedFields = [:]
+        Set<String> contactSwitch = []
+        if(params.fileformat) {
+            if (params.filename) {
+                file = params.filename
+            }
+            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+            contactSwitch.addAll(params.list("contactSwitch"))
+        }
 
-        if ( params.exportXLS ) {
-
+        /*if ( params.exportXLS ) {
             SXSSFWorkbook wb = (SXSSFWorkbook) organisationService.exportOrg(totalMembers, header, true, 'xls')
             response.setHeader "Content-disposition", "attachment; filename=\"${file}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -3004,18 +3362,9 @@ join sub.orgRelations or_sub where
             wb.dispose()
             return //IntelliJ cannot know that the return prevents an obsolete redirect
         }
-        else if(params.exportClickMeExcel) {
-            if (params.filename) {
-                file =params.filename
-            }
-
-            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
-            Map<String, Object> selectedFields = [:]
-            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
-
-            Set<String> contactSwitch = []
-            contactSwitch.addAll(params.list("contactSwitch"))
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(totalMembers, selectedFields, 'member', contactSwitch)
+        else */
+        if(params.fileformat == 'xlsx') {
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(totalMembers, selectedFields, 'member', ExportClickMeService.FORMAT.XLS, contactSwitch)
 
             response.setHeader "Content-disposition", "attachment; filename=\"${file}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -3025,21 +3374,17 @@ join sub.orgRelations or_sub where
             wb.dispose()
             return //IntelliJ cannot know that the return prevents an obsolete redirect
         }
-        else {
-            withFormat {
-                html {
-                    result
-                }
-                csv {
-                    response.setHeader("Content-disposition", "attachment; filename=\"${file}.csv\"")
-                    response.contentType = "text/csv"
-                    ServletOutputStream out = response.outputStream
-                    out.withWriter { writer ->
-                        writer.write((String) organisationService.exportOrg(totalMembers,header,true,"csv"))
-                    }
-                    out.close()
-                }
+        else if(params.fileformat == 'csv') {
+            response.setHeader("Content-disposition", "attachment; filename=\"${file}.csv\"")
+            response.contentType = "text/csv"
+            ServletOutputStream out = response.outputStream
+            out.withWriter { writer ->
+                writer.write((String) exportClickMeService.exportOrgs(totalMembers, selectedFields, 'member', ExportClickMeService.FORMAT.CSV, contactSwitch))
             }
+            out.close()
+        }
+        else {
+            result
         }
     }
 
@@ -3051,8 +3396,10 @@ join sub.orgRelations or_sub where
      * @see Subscription
      * @see Org
      */
-    @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN")
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN") })
+    @DebugInfo(ctxInstUserCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC])
+    @Secured(closure = {
+        ctx.accessService.ctxInstUserCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
+    })
     def manageConsortiaSubscriptions() {
 
         Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -3128,7 +3475,7 @@ join sub.orgRelations or_sub where
             headerRow.setHeightInPoints(16.75f)
             List titles = [message(code:'sidewide.number'),message(code:'myinst.consortiaSubscriptions.member'), message(code:'org.mainContact.label'),message(code:'default.subscription.label'),message(code:'globalUID.label'),
                            message(code:'license.label'), message(code:'myinst.consortiaSubscriptions.packages'),message(code:'myinst.consortiaSubscriptions.provider'),message(code:'myinst.consortiaSubscriptions.runningTimes'),
-                           message(code:'subscription.isPublicForApi.label'),message(code:'subscription.hasPerpetualAccess.label'),
+                           message(code: 'subscription.referenceYear.label'), message(code:'subscription.isPublicForApi.label'),message(code:'subscription.hasPerpetualAccess.label'),
                            message(code:'financials.amountFinal'),"${message(code:'financials.isVisibleForSubscriber')} / ${message(code:'financials.costItemConfiguration')}"]
             titles.eachWithIndex{ titleName, int i ->
                 Cell cell = headerRow.createCell(i)
@@ -3138,34 +3485,34 @@ join sub.orgRelations or_sub where
             Row row
             Cell cell
             int rownum = 1
-            int sumcell = 11
-            int sumTitleCell = 10
+            int sumcell = 12
+            int sumTitleCell = 11
             result.entries.eachWithIndex { entry, int sidewideNumber ->
-                log.debug("processing entry ${sidewideNumber} ...")
+                //log.debug("processing entry ${sidewideNumber} ...")
                 CostItem ci = (CostItem) entry.cost ?: new CostItem()
                 Subscription subCons = (Subscription) entry.sub
                 Org subscr = (Org) entry.org
                 int cellnum = 0
                 row = sheet.createRow(rownum)
                 //sidewide number
-                log.debug("insert sidewide number")
+                //log.debug("insert sidewide number")
                 cell = row.createCell(cellnum++)
                 cell.setCellValue(rownum)
                 //sortname
-                log.debug("insert sortname")
+                //log.debug("insert sortname")
                 cell = row.createCell(cellnum++)
                 String subscrName = ""
                 if(subscr.sortname) subscrName += subscr.sortname
                 subscrName += "(${subscr.name})"
                 cell.setCellValue(subscrName)
-                log.debug("insert general contacts")
+                //log.debug("insert general contacts")
                 //general contacts
                 Set<String> generalContacts = mailAddresses.get(subscr)
                 cell = row.createCell(cellnum++)
                 if(generalContacts)
                     cell.setCellValue(generalContacts.join('; '))
                 //subscription name
-                log.debug("insert subscription name")
+                //log.debug("insert subscription name")
                 cell = row.createCell(cellnum++)
                 String subscriptionString = subCons.name
                 //if(subCons._getCalculatedPrevious()) //avoid! Makes 5846 queries!!!!!
@@ -3173,11 +3520,11 @@ join sub.orgRelations or_sub where
                     subscriptionString += " (${message(code:'subscription.hasPreviousSubscription')})"
                 cell.setCellValue(subscriptionString)
                 //subscription globalUID
-                log.debug("insert subscription global UID")
+                //log.debug("insert subscription global UID")
                 cell = row.createCell(cellnum++)
                 cell.setCellValue(subCons.globalUID)
                 //license name
-                log.debug("insert license name")
+                //log.debug("insert license name")
                 cell = row.createCell(cellnum++)
                 if(result.linkedLicenses.get(subCons)) {
                     List<String> references = result.linkedLicenses.get(subCons).collect { License l -> l.reference }
@@ -3186,7 +3533,7 @@ join sub.orgRelations or_sub where
                     else cell.setCellValue(" ")
                 }
                 //packages
-                log.debug("insert package name")
+                //log.debug("insert package name")
                 cell = row.createCell(cellnum++)
                 cell.setCellStyle(lineBreaks)
                 List<String> packageNames = []
@@ -3197,19 +3544,19 @@ join sub.orgRelations or_sub where
                     cell.setCellValue(packageNames.join("\n"))
                 else cell.setCellValue(" ")
                 //provider
-                log.debug("insert provider name")
+                //log.debug("insert provider name")
                 cell = row.createCell(cellnum++)
                 cell.setCellStyle(lineBreaks)
                 List<String> providerNames = []
                 subCons.orgRelations.findAll{ OrgRole oo -> oo.roleType in [RDStore.OR_PROVIDER,RDStore.OR_AGENCY] }.each { OrgRole p ->
-                    log.debug("Getting provider ${p.org}")
+                    //log.debug("Getting provider ${p.org}")
                     providerNames << p.org.name
                 }
                 if(providerNames)
                     cell.setCellValue(providerNames.join("\n"))
                 else cell.setCellValue(" ")
                 //running time from / to
-                log.debug("insert running times")
+                //log.debug("insert running times")
                 cell = row.createCell(cellnum++)
                 String dateString = ""
                 if(ci.id) {
@@ -3217,16 +3564,24 @@ join sub.orgRelations or_sub where
                     if(ci.getDerivedEndDate()) dateString += " - ${sdf.format(ci.getDerivedEndDate())}"
                 }
                 cell.setCellValue(dateString)
+                //reference year
+                //log.debug("insert reference year")
+                cell = row.createCell(cellnum++)
+                String refYearString = " "
+                if(subCons.referenceYear) {
+                    refYearString = subCons.referenceYear.toString()
+                }
+                cell.setCellValue(refYearString)
                 //is public for api
-                log.debug("insert api flag")
+                //log.debug("insert api flag")
                 cell = row.createCell(cellnum++)
                 cell.setCellValue(ci.sub?.isPublicForApi ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"))
                 //has perpetual access
-                log.debug("insert perpetual access flag")
+                //log.debug("insert perpetual access flag")
                 cell = row.createCell(cellnum++)
                 cell.setCellValue(ci.sub?.hasPerpetualAccess ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"))
                 //final sum
-                log.debug("insert final sum")
+                //log.debug("insert final sum")
                 cell = row.createCell(cellnum++)
                 if(ci.id && ci.costItemElementConfiguration) {
                     switch(ci.costItemElementConfiguration) {
@@ -3240,7 +3595,7 @@ join sub.orgRelations or_sub where
                     cell.setCellValue(formatNumber([number:ci.costInBillingCurrencyAfterTax ?: 0.0,type:'currency',currencySymbol:ci.billingCurrency ?: 'EUR']))
                 }
                 //cost item sign and visibility
-                log.debug("insert cost sign and visiblity")
+                //log.debug("insert cost sign and visiblity")
                 cell = row.createCell(cellnum++)
                 String costSignAndVisibility = ""
                 if(ci.id) {
@@ -3298,36 +3653,36 @@ join sub.orgRelations or_sub where
                 csv {
                     List titles = [message(code: 'sidewide.number'), message(code: 'myinst.consortiaSubscriptions.member'), message(code: 'org.mainContact.label'), message(code: 'default.subscription.label'), message(code: 'globalUID.label'),
                                    message(code: 'license.label'), message(code: 'myinst.consortiaSubscriptions.packages'), message(code: 'myinst.consortiaSubscriptions.provider'), message(code: 'myinst.consortiaSubscriptions.runningTimes'),
-                                   message(code: 'subscription.isPublicForApi.label'), message(code: 'subscription.hasPerpetualAccess.label'),
+                                   message(code: 'subscription.referenceYear.label'), message(code: 'subscription.isPublicForApi.label'), message(code: 'subscription.hasPerpetualAccess.label'),
                                    message(code: 'financials.amountFinal'), "${message(code: 'financials.isVisibleForSubscriber')} / ${message(code: 'financials.costItemConfiguration')}"]
                     List columnData = []
                     List row
                     result.entries.eachWithIndex { entry, int sidewideNumber ->
                         row = []
-                        log.debug("processing entry ${sidewideNumber} ...")
+                        //log.debug("processing entry ${sidewideNumber} ...")
                         CostItem ci = (CostItem) entry[0] ?: new CostItem()
                         Subscription subCons = (Subscription) entry[1]
                         Org subscr = (Org) entry[2]
                         int cellnum = 0
                         //sidewide number
-                        log.debug("insert sidewide number")
+                        //log.debug("insert sidewide number")
                         cellnum++
                         row.add(sidewideNumber)
                         //sortname
-                        log.debug("insert sortname")
+                        //log.debug("insert sortname")
                         cellnum++
                         String subscrName = ""
                         if (subscr.sortname) subscrName += subscr.sortname
                         subscrName += "(${subscr.name})"
                         row.add(subscrName.replaceAll(',', ' '))
-                        log.debug("insert general contacts")
+                        //log.debug("insert general contacts")
                         //general contacts
                         Set<String> generalContacts = mailAddresses.get(subscr)
                         if (generalContacts)
                             row.add(generalContacts.join('; '))
                         else row.add(' ')
                         //subscription name
-                        log.debug("insert subscription name")
+                        //log.debug("insert subscription name")
                         cellnum++
                         String subscriptionString = subCons.name
                         //if(subCons._getCalculatedPrevious()) //avoid! Makes 5846 queries!!!!!
@@ -3335,18 +3690,18 @@ join sub.orgRelations or_sub where
                             subscriptionString += " (${message(code: 'subscription.hasPreviousSubscription')})"
                         row.add(subscriptionString.replaceAll(',', ' '))
                         //subscription global uid
-                        log.debug("insert global uid")
+                        //log.debug("insert global uid")
                         cellnum++
                         row.add(subCons.globalUID)
                         //license name
-                        log.debug("insert license name")
+                        //log.debug("insert license name")
                         cellnum++
                         if (result.linkedLicenses.get(subCons)) {
                             List<String> references = result.linkedLicenses.get(subCons).collect { License l -> l.reference.replace(',', ' ') }
                             row.add(references.join(' '))
                         } else row.add(' ')
                         //packages
-                        log.debug("insert package name")
+                        //log.debug("insert package name")
                         cellnum++
                         String packagesString = " "
                         subCons.packages.each { subPkg ->
@@ -3354,16 +3709,16 @@ join sub.orgRelations or_sub where
                         }
                         row.add(packagesString.replaceAll(',', ' '))
                         //provider
-                        log.debug("insert provider name")
+                        //log.debug("insert provider name")
                         cellnum++
                         List<String> providerNames = []
                         subCons.orgRelations.findAll{ OrgRole oo -> oo.roleType in [RDStore.OR_PROVIDER,RDStore.OR_AGENCY] }.each { OrgRole p ->
-                            log.debug("Getting provider ${p.org}")
+                            //log.debug("Getting provider ${p.org}")
                             providerNames << p.org.name
                         }
                         row.add(providerNames.join( ' '))
                         //running time from / to
-                        log.debug("insert running times")
+                        //log.debug("insert running times")
                         cellnum++
                         String dateString = " "
                         if (ci.id) {
@@ -3371,22 +3726,30 @@ join sub.orgRelations or_sub where
                             if (ci.getDerivedEndDate()) dateString += " - ${sdf.format(ci.getDerivedEndDate())}"
                         }
                         row.add(dateString)
+                        //reference year
+                        //log.debug("insert reference year")
+                        cellnum++
+                        String refYearString = " "
+                        if(subCons.referenceYear) {
+                            refYearString = subCons.referenceYear.toString()
+                        }
+                        row.add(refYearString)
                         //is public for api
-                        log.debug("insert api flag")
+                        //log.debug("insert api flag")
                         cellnum++
                         row.add(ci.sub?.isPublicForApi ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"))
                         //has perpetual access
-                        log.debug("insert perpetual access flag")
+                        //log.debug("insert perpetual access flag")
                         cellnum++
                         row.add(ci.sub?.hasPerpetualAccess ? RDStore.YN_YES.getI10n("value") : RDStore.YN_NO.getI10n("value"))
                         //final sum
-                        log.debug("insert final sum")
+                        //log.debug("insert final sum")
                         cellnum++
                         if (ci.id && ci.costItemElementConfiguration) {
                             row.add("${ci.costInBillingCurrencyAfterTax ?: 0.0} ${ci.billingCurrency ?: 'EUR'}")
                         } else row.add(" ")
                         //cost item sign and visibility
-                        log.debug("insert cost sign and visiblity")
+                        //log.debug("insert cost sign and visiblity")
                         cellnum++
                         String costSignAndVisibility = " "
                         if (ci.id) {
@@ -3404,9 +3767,9 @@ join sub.orgRelations or_sub where
                     columnData.add([])
                     columnData.add([])
                     row = []
-                    //sumcell = 11
-                    //sumTitleCell = 10
-                    for (int h = 0; h < 10; h++) {
+                    //sumcell = 12
+                    //sumTitleCell = 11
+                    for (int h = 0; h < 11; h++) {
                         row.add(" ")
                     }
                     row.add(message(code: 'financials.export.sums'))
@@ -3414,7 +3777,7 @@ join sub.orgRelations or_sub where
                     columnData.add([])
                     result.finances.each { entry ->
                         row = []
-                        for (int h = 0; h < 10; h++) {
+                        for (int h = 0; h < 11; h++) {
                             row.add(" ")
                         }
                         row.add("${message(code: 'financials.sum.billing')} ${entry.key}")
@@ -3439,8 +3802,10 @@ join sub.orgRelations or_sub where
      * The result may be displayed as HTML or exported as Excel worksheet
      * @return a list of surveys the context consortium set up and the given institution is participating at
      */
-    @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN")
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN") })
+    @DebugInfo(ctxInstUserCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO])
+    @Secured(closure = {
+        ctx.accessService.ctxInstUserCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+    })
     def manageParticipantSurveys() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
@@ -3502,9 +3867,9 @@ join sub.orgRelations or_sub where
      * editing may be done on the given property group
      * @return in every case, the list of property groups; the list may be exported as Excel with the usage data as well, then, an Excel worksheet is being returned
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER", wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER'], wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER')
     })
     def managePropertyGroups() {
         Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -3618,9 +3983,9 @@ join sub.orgRelations or_sub where
      * Call to display the current usage for the given property in the system
      * @return a form view of the given property definition with their usage in the context institution's objects
      */
-    @DebugInfo(perm = "ORG_INST,ORG_CONSORTIUM", affil = "INST_EDITOR")
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR'])
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')
     })
     def manageProperties() {
         Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -3712,8 +4077,6 @@ join sub.orgRelations or_sub where
         params.withoutPropOffset = result.withoutPropOffset
         params.withPropOffset = result.withPropOffset
 
-        println(result)
-
         result
     }
 
@@ -3721,9 +4084,9 @@ join sub.orgRelations or_sub where
      * Call to process a bulk assign of a property definition to a given set of objects
      * @return the updated view with the assigned property definitions
      */
-    @DebugInfo(perm = "ORG_INST,ORG_CONSORTIUM", affil = "INST_EDITOR", wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR'], wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')
     })
     def processManageProperties() {
         PropertyDefinition.withTransaction {
@@ -3834,9 +4197,9 @@ join sub.orgRelations or_sub where
      * To add a custom property definition (which is usable for every institution), the route is {@link de.laser.ajax.AjaxController#addCustomPropertyType()}
      * (but consider the annotation there!)
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER", wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER'], wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER')
     })
     def managePrivatePropertyDefinitions() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -3887,7 +4250,7 @@ join sub.orgRelations or_sub where
 
         Map<String, Set<PropertyDefinition>> propDefs = [:]
         Set<String> availablePrivDescs = PropertyDefinition.AVAILABLE_PRIVATE_DESCR
-        if(result.institution.getCustomerType() == "ORG_INST")
+        if (result.institution.isCustomerType_Inst_Pro())
             availablePrivDescs = PropertyDefinition.AVAILABLE_PRIVATE_DESCR-PropertyDefinition.SVY_PROP
         availablePrivDescs.each { String it ->
             Set<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, result.institution, [sort: 'name_'+result.languageSuffix]) // ONLY private properties!
@@ -3922,9 +4285,9 @@ join sub.orgRelations or_sub where
      * @return a read-only list of public / general property definitions with the usages of objects owned by the context institution
      * @see AdminController#managePropertyDefinitions()
      */
-    @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER", wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER'], wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER')
     })
     Object managePropertyDefinitions() {
         Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -4064,8 +4427,10 @@ join sub.orgRelations or_sub where
      * Call to open the license copy view
      * @return the entry point view of the license copy process
      */
-    @DebugInfo(test='hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'])
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+    })
     def copyLicense() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
@@ -4074,7 +4439,7 @@ join sub.orgRelations or_sub where
             License license = License.get(params.id)
             boolean isEditable = license.isEditableBy(result.user)
 
-            if (! (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR'))) {
+            if (! (userService.checkAffiliationAndCtxOrg(result.user, result.institution, 'INST_EDITOR'))) {
                 flash.error = message(code:'license.permissionInfo.noPerms') as String
                 response.sendError(HttpStatus.SC_FORBIDDEN)
                 return;

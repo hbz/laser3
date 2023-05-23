@@ -49,6 +49,14 @@ class XEditableTagLib {
 
                 default_empty = message(code:'default.date.format.notime.normal')
             }
+            else if (attrs.type == 'year') {
+                out << ' data-type="text"' // combodate | date
+
+                String df = "YYYY"
+                out << ' data-format="' + df + '" data-viewformat="' + df + '" data-template="' + df + '"'
+
+                default_empty = message(code:'default.date.format.yyyy').toUpperCase()
+            }
             else if (attrs.type == 'readerNumber') {
                 out << ' data-type="text"'
             }
@@ -67,6 +75,9 @@ class XEditableTagLib {
             switch (attrs.type) {
                 case 'date':
                     data_link = createLink(controller:'ajax', action: 'editableSetValue', params:[type:'date', format:"${message(code:'default.date.format.notime')}"]).encodeAsHTML()
+                break
+                case 'year':
+                    data_link = createLink(controller:'ajax', action: 'editableSetValue', params:[type:'year']).encodeAsHTML()
                 break
                 case 'url':
                     data_link = createLink(controller:'ajax', action: 'editableSetValue', params:[type:'url']).encodeAsHTML()
@@ -164,7 +175,7 @@ class XEditableTagLib {
             if ( editable ) {
                 String oid   = "${owner.class.name}:${owner.id}"
 
-                Map<String, Object> params = [id:attrs.config, format:'json', oid:oid]
+                Map<String, Object> params = [id:attrs.config, oid:oid]
 
                 if (attrs.constraint) {
                     params.put('constraint', attrs.constraint)
@@ -172,13 +183,13 @@ class XEditableTagLib {
 
                 String data_link = createLink(
                         controller: attrs.dataController ?: 'ajax',
-                        action:     attrs.dataAction ?: 'select2RefdataSearch',
+                        action:     attrs.dataAction ?: 'remoteRefdataSearch',
                         params: params
                 ).encodeAsHTML()
 
                 String update_link = createLink(controller:'ajax', action: 'genericSetData').encodeAsHTML()
                 String id = attrs.id ?: "${oid}:${field}"
-                String cssClass = attrs.class
+                String cssClass = attrs.class ?: ''
                 String data_confirm_tokenMsg = attrs.data_confirm_tokenMsg
                 String emptyText = ' data-emptytext="' + ( attrs.emptytext ?: message(code:'default.button.edit.label') ) + '"'
 
@@ -227,7 +238,7 @@ class XEditableTagLib {
 
     /**
      *   Attributes:
-     *   owner - UserOrg
+     *   owner - UserOrgRole
      *   type - Role.roleType
      *   overwriteEditable - if existing, value overwrites global editable
      */
@@ -305,7 +316,7 @@ class XEditableTagLib {
                 String strValue = intValue ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')
 
                 // Output an editable link
-                out << "<a href=\"#\" id=\"${id}\" class=\"xEditableManyToOne\""
+                out << "<a href=\"#\" id=\"${id}\" class=\"xEditableBoolean\""
 
                 out << (owner instanceof SurveyResult ? ' data-onblur="submit"' : ' data-onblur="ignore"')
 
@@ -400,7 +411,7 @@ class XEditableTagLib {
             }
         }
         else if (attrs.type == "refdata") {
-            String data_link = createLink(controller: 'ajax', action: 'select2RefdataSearch', params:[id: attrs.category, format: 'json'])
+            String data_link = createLink(controller: 'ajax', action: 'remoteRefdataSearch', params: [id: attrs.category])
             out << " data-type=\"select\" data-source=\"${data_link}\" "
         }
         else {

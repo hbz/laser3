@@ -6,8 +6,8 @@
 <%@ page import="de.laser.Subscription; de.laser.properties.SubscriptionProperty; de.laser.RefdataValue; de.laser.properties.PropertyDefinition" %>
 <laser:serviceInjection />
 
-<%-- OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')}
-<g:set var="overwriteEditable" value="${editable || accessService.checkPermAffiliationX('ORG_INST','INST_EDITOR','ROLE_ADMIN')}" />--%>
+<%-- OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${userService.checkAffiliationAndCtxOrg(user, contextService.getOrg(), 'INST_EDITOR')}
+<g:set var="overwriteEditable" value="${editable || accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_INST_PRO )}" />--%>
 
 <g:if test="${newProp}">
     <ui:errors bean="${newProp}" />

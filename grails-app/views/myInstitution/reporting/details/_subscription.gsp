@@ -13,10 +13,10 @@
                 <th>${message(code:'subscription.details.consortiaMembers.label')}</th>
             </g:if>
             <g:else>
-                <g:if test="${contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM'}">
+                <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                     <th>${message(code:'subscription.details.consortiaMembers.label')}</th>
                 </g:if>
-                <g:elseif test="${contextService.getOrg().getCustomerType() == 'ORG_INST'}">
+                <g:elseif test="${contextService.getOrg().isCustomerType_Inst_Pro()}">
                 </g:elseif>
             </g:else>
             <g:if test="${query in [ 'subscription-x-property', 'subscription-x-memberSubscriptionProperty' ]}">
@@ -55,7 +55,7 @@
                         </td>
                     </g:if>
                     <g:else>
-                        <g:if test="${contextService.getOrg().getCustomerType() == 'ORG_CONSORTIUM'}">
+                        <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                             <td>
                                 <%
                                     println Subscription.executeQuery('select count(s) from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscriberRoleTypes',
@@ -64,7 +64,7 @@
                                 %>
                             </td>
                         </g:if>
-                        <g:elseif test="${contextService.getOrg().getCustomerType() == 'ORG_INST'}">
+                        <g:elseif test="${contextService.getOrg().isCustomerType_Inst_Pro()}">
                         </g:elseif>
                     </g:else>
 

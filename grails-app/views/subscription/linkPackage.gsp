@@ -65,7 +65,7 @@
                               title="${message(code: 'platform.label')}"
                               params="${params}"/>
             <th>${message(code: 'package.curatoryGroup.label')}</th>
-            <th>${message(code: 'package.source.label')}</th>
+            <th>${message(code: 'package.source.automaticUpdates')}</th>
             <g:sortableColumn property="lastUpdatedDisplay"
                               title="${message(code: 'package.lastUpdated.label')}"
                               params="${params}"/>
@@ -204,7 +204,7 @@
             <input type="text" id="pkgName" name="pkgName" value="" readonly/>
         </div>
         <div class="ui divided grid">
-            <g:set var="colCount" value="${institution.getCustomerType() == 'ORG_CONSORTIUM' ? 'eight' : 'sixteen'}"/>
+            <g:set var="colCount" value="${institution.isCustomerType_Consortium() ? 'eight' : 'sixteen'}"/>
             <div class="${colCount} wide column">
                 <div class="grouped required fields">
                     <label for="With">${message(code: 'subscription.details.linkPackage.label')}</label>
@@ -222,11 +222,17 @@
                             <label for="Without">${message(code: 'subscription.details.link.no_ents')}</label>
                         </div>
                     </div>
+
+                    <div class="field">
+                        <label for="holdingSelection">${message(code: 'subscription.holdingSelection.label')}</label>
+                        <ui:select class="ui dropdown search selection" id="holdingSelection" name="holdingSelection" from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_HOLDING)}" optionKey="id" optionValue="value"/>
+                    </div>
                 </div>
 
                 <br/>
                 <br/>
 
+                <%--
                 <div class="field">
                     <h5 class="ui dividing header">
                         <g:message code="subscription.packages.config.label" args="${[""]}"/>
@@ -278,12 +284,13 @@
                         </g:each>
                     </table>
                 </div>
+                --%>
                 <div class="inline field">
                     <label for="freezeHolding"><g:message code="subscription.packages.freezeHolding"/> <span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.packages.freezeHolding.expl')}"><i class="ui question circle icon"></i></span></label>
                     <g:checkBox class="ui checkbox" name="freezeHolding" checked="${false}"/>
                 </div>
             </div>
-            <g:if test="${institution.getCustomerType() == 'ORG_CONSORTIUM'}">
+            <g:if test="${institution.isCustomerType_Consortium()}">
                 <div class="${colCount} wide column">
                     <div class="grouped fields">
                         <label for="WithForChildren">${message(code: 'subscription.details.linkPackage.children.label')}</label>
@@ -301,11 +308,18 @@
                                 <label>${message(code: 'subscription.details.link.no_ents')}</label>
                             </div>
                         </div>
+
+                        <div class="field">
+                            <div class="ui radio checkbox">
+                                <input type="checkbox" name="inheritHoldingSelection" id="inheritHoldingSelection" value="true" tabindex="0" class="hidden"/>
+                                <label for="inheritHoldingSelection">${message(code: 'subscription.holdingSelection.inherit')}</label>
+                            </div>
+                        </div>
                     </div>
 
                     <br/>
                     <br/>
-
+                    <%--
                     <div class="field">
                         <h5 class="ui dividing header">
                             <g:message code="subscription.packages.config.children.label" args="${[""]}"/>
@@ -323,7 +337,7 @@
                             <g:set var="excludes"
                                    value="${[PendingChangeConfiguration.PACKAGE_PROP,
                                              PendingChangeConfiguration.PACKAGE_DELETED]}"/>
-                            <g:each in="${PendingChangeConfiguration.SETTING_KEYS}" var="settingKey">
+                            <g:each in="${PendingChangeConfiguration.SETTING_KEYS-PendingChangeConfiguration.TITLE_REMOVED}" var="settingKey">
                                 <tr>
                                     <td>
                                         <g:if test="${!(settingKey in excludes)}">
@@ -348,6 +362,7 @@
                         <label for="freezeHoldingAudit"><g:message code="subscription.packages.freezeHolding"/> <span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.packages.freezeHolding.expl')}"><i class="ui question circle icon"></i></span></label>
                         <g:checkBox class="ui checkbox" name="freezeHoldingAudit" checked="${false}"/>
                     </div>
+                    --%>
                 </div>
             </g:if>
         </div>
@@ -355,7 +370,7 @@
     </g:form>
 
     <laser:script file="${this.getGroovyPageFileName()}">
-        JSPC.callbacks.modal.show.linkPackageModal = function(trigger) {
+        JSPC.callbacks.modal.onShow.linkPackageModal = function(trigger) {
             $('#linkPackageModal #pkgName').attr('value', $(trigger).attr('data-packageName'))
             $('#linkPackageModal input[name=addUUID]').attr('value', $(trigger).attr('data-addUUID'))
         }

@@ -4,10 +4,11 @@
 <ui:breadcrumbs>
     <ui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
     <g:if test="${surveyInfo}">
-        <ui:crumb controller="survey" action="show" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]"
-                     text="${surveyConfig.getConfigNameShort()}"/>
+%{--        <ui:crumb controller="survey" action="show" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]"--}%
+%{--                     text="${surveyConfig.getConfigNameShort()}"/>--}%
+        <ui:crumb class="active" text="${surveyConfig.getConfigNameShort()}" />
     </g:if>
-    <ui:crumb message="surveyTransfer.label" class="active"/>
+%{--    <ui:crumb message="surveyTransfer.label" class="active"/>--}%
 </ui:breadcrumbs>
 
 <ui:controlButtons>

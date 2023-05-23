@@ -130,8 +130,8 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
                 id column:'tipp_id'
          globalUID column:'tipp_guid'
            version column:'tipp_version'
-               pkg column:'tipp_pkg_fk',    index: 'tipp_idx, tipp_pkg_idx'
-          platform column:'tipp_plat_fk',   index: 'tipp_idx, tipp_plat_idx'
+               pkg column:'tipp_pkg_fk',    index: 'tipp_idx, tipp_pkg_idx, tipp_status_pkg_idx, tipp_status_plat_pkg_idx'
+          platform column:'tipp_plat_fk',   index: 'tipp_idx, tipp_plat_idx, tipp_status_plat_idx, tipp_status_plat_pkg_idx'
           // title column:'tipp_ti_fk',     index: 'tipp_idx'
          titleType column:'tipp_title_type'
             medium column:'tipp_medium_rv_fk', index: 'tipp_medium_idx'
@@ -143,15 +143,15 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
            imprint column:'tipp_imprint', type: 'text'
   subjectReference column:'tipp_subject_reference', type: 'text'
             gokbId column:'tipp_gokb_id'
-            status column:'tipp_status_rv_fk', index: 'tipp_status_idx'
+            status column:'tipp_status_rv_fk', index: 'tipp_status_idx, tipp_status_pkg_idx, tipp_status_plat_idx, tipp_status_plat_pkg_idx'
          delayedOA column:'tipp_delayedoa_rv_fk'
           hybridOA column:'tipp_hybridoa_rv_fk'
       statusReason column:'tipp_status_reason_rv_fk'
    hostPlatformURL column:'tipp_host_platform_url', type: 'text', index: 'tipp_host_platform_url_idx'
       accessStartDate column:'tipp_access_start_date'
       accessEndDate column:'tipp_access_end_date'
-      accessType column:'tipp_access_type_rv_fk'
-      openAccess column:'tipp_open_access_rv_fk'
+      accessType column:'tipp_access_type_rv_fk', index: 'tipp_access_type_idx'
+      openAccess column:'tipp_open_access_rv_fk', index: 'tipp_open_access_idx'
       dateFirstInPrint column:'tipp_date_first_in_print'
       dateFirstOnline column:'tipp_date_first_online'
       summaryOfContent column:'tipp_summary_of_content'
@@ -174,7 +174,6 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
     static constraints = {
         globalUID(nullable:true, blank:false, unique:true, maxSize:255)
         gokbId (blank:false, unique: true, maxSize:511)
-        status      (nullable:true)
         name        (nullable:true)
         sortname    (nullable:true)
         normName    (nullable:true)
@@ -247,7 +246,7 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
             sortname = sortname.trim()
             sortname = sortname.toLowerCase()
             sortname = alphanum.matcher(sortname).replaceAll("")
-            sortname = sortname.replaceAll("\\s+", " ")
+            sortname = sortname.replaceAll("\\s+", " ").trim()
             sortname = _asciify(sortname)
             sortname = sortname.replaceFirst('^copy of ', '')
             sortname = sortname.replaceFirst('^the ', '')
@@ -337,6 +336,7 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
      * @param s the string to decode
      * @return the ASCII-decoded string
      */
+    @Deprecated
     private static String _asciify(String s) {
         char[] c = s.toCharArray()
         StringBuffer b = new StringBuffer()
@@ -352,6 +352,7 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
      * @param c the character to translate
      * @return the ASCII representation of the char
      */
+    @Deprecated
     static char translateChar(char c) {
         switch(c) {
             case '\u00C0':

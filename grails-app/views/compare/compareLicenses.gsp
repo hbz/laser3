@@ -1,4 +1,4 @@
-<%@ page import="de.laser.License; de.laser.storage.RDConstants; de.laser.storage.RDStore; de.laser.RefdataCategory" %>
+<%@ page import="de.laser.CustomerTypeService; de.laser.License; de.laser.storage.RDConstants; de.laser.storage.RDStore; de.laser.RefdataCategory" %>
 <laser:htmlStart message="menu.my.comp_lic" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -18,7 +18,7 @@
             </g:each>
         </select>
         </div>
-            <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
+            <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
                 <div class="ui field">
                 <div class="ui checkbox">
                     <g:checkBox name="show.subscriber" value="true" checked="false"
@@ -67,8 +67,8 @@
 
     JSPC.app.adjustDropdown = function () {
 
-        var showSubscriber = $("input[name='show.subscriber'").prop('checked');
-        var showConnectedLics = $("input[name='show.connectedLicenses'").prop('checked');
+        var showSubscriber = $("input[name='show.subscriber']").prop('checked');
+        var showConnectedLics = $("input[name='show.connectedLicenses']").prop('checked');
         var url = '<g:createLink controller="ajaxJson" action="adjustCompareLicenseList"/>?showSubscriber=' + showSubscriber + '&showConnectedLics=' + showConnectedLics
 
         var status = $("select#status").serialize()

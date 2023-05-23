@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Org; de.laser.properties.PropertyDefinitionGroupBinding; de.laser.properties.PropertyDefinitionGroup; de.laser.properties.PropertyDefinition; de.laser.RefdataValue; de.laser.RefdataCategory;" %>
+<%@ page import="de.laser.CustomerTypeService; de.laser.Org; de.laser.properties.PropertyDefinitionGroupBinding; de.laser.properties.PropertyDefinitionGroup; de.laser.properties.PropertyDefinition; de.laser.RefdataValue; de.laser.RefdataCategory;" %>
 <laser:serviceInjection />
 <!-- _properties -->
 
@@ -6,7 +6,7 @@
 
 <%-- modal --%>
 <g:if test="${false}"> %{-- erms-4798 --}%
-<ui:modal id="propDefGroupBindings" message="propertyDefinitionGroup.config.label" hideSubmitButton="hideSubmitButton">
+<ui:modal id="propDefGroupBindings" message="propertyDefinitionGroup.config.label" hideSubmitButton="true">
 
     <laser:render template="/templates/properties/groupBindings" model="${[
             propDefGroup: propDefGroup,
@@ -99,7 +99,7 @@
 </g:if> %{-- erms-4798 --}%
 
 <%-- private properties --%>
-<g:if test="${accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')}">
+<g:if test="${accessService.ctxPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
 
 <g:each in="${authorizedOrgs}" var="authOrg">
     <g:if test="${authOrg.name == contextOrg?.name}">

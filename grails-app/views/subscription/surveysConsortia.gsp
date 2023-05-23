@@ -7,10 +7,11 @@
     <laser:render template="actions"/>
 </ui:controlButtons>
 
-<ui:h1HeaderWithIcon>
-<ui:xEditable owner="${subscription}" field="name"/>
-<ui:totalNumber total="${surveys.size()}"/>
+<ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}">
+    <ui:xEditable owner="${subscription}" field="name"/>
 </ui:h1HeaderWithIcon>
+<ui:totalNumber class="la-numberHeader" total="${surveys.size()}"/>
+
 <ui:anualRings object="${subscription}" controller="subscription" action="surveysConsortia"
                   navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 

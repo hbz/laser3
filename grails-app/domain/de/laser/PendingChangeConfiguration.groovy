@@ -23,24 +23,23 @@ import de.laser.storage.RDConstants
 class PendingChangeConfiguration {
 
     static final String NEW_TITLE = "pendingChange.message_TP01"
-    static final String TITLE_UPDATED = "pendingChange.message_TP02"
+    //static final String TITLE_UPDATED = "pendingChange.message_TP02" //kept for reasons of backwards compatibility
     static final String TITLE_DELETED = "pendingChange.message_TP03"
     static final String TITLE_REMOVED = "pendingChange.message_TP04"
-    static final String COVERAGE_UPDATED = "pendingChange.message_TC01"
-    static final String NEW_COVERAGE = "pendingChange.message_TC02"
-    static final String COVERAGE_DELETED = "pendingChange.message_TC03"
-    static final String PRICE_UPDATED = "pendingChange.message_TR01"
-    static final String NEW_PRICE = "pendingChange.message_TR02"
-    static final String PRICE_DELETED = "pendingChange.message_TR03"
+    static final String TITLE_STATUS_CHANGED = "pendingChange.message_TP05"
     static final String PACKAGE_PROP = "pendingChange.message_PK01"
     static final String PACKAGE_DELETED = "pendingChange.message_PK02"
-    static final String PACKAGE_TIPP_COUNT_CHANGED = "pendingChange.message_PK03"
     static final String BILLING_SUM_UPDATED = "pendingChange.message_CI01"
     static final String LOCAL_SUM_UPDATED = "pendingChange.message_CI02"
     static final String COST_ITEM_PACKAGE_UNLINKED = "pendingChange.message_CI03"
+    static final String NEW_SUBSCRIPTION = "pendingChange.message_SU_NEW_01"
     static final String NOTIFICATION_SUFFIX = "_N"
-    static final Set<String> SETTING_KEYS = [NEW_TITLE, TITLE_UPDATED, TITLE_DELETED, NEW_COVERAGE, COVERAGE_UPDATED, COVERAGE_DELETED, PACKAGE_PROP, PACKAGE_DELETED]
-    static final Set<String> GENERIC_EXCLUDES = [PendingChangeConfiguration.PACKAGE_PROP, PendingChangeConfiguration.PACKAGE_DELETED, PendingChangeConfiguration.TITLE_REMOVED]
+    static final Set<String> TITLE_CHANGES = [NEW_TITLE, TITLE_STATUS_CHANGED, TITLE_DELETED, TITLE_REMOVED, PACKAGE_PROP, PACKAGE_DELETED]
+    static final Set<String> COST_ITEM_CHANGES = [BILLING_SUM_UPDATED, LOCAL_SUM_UPDATED, COST_ITEM_PACKAGE_UNLINKED]
+    static final Set<String> SETTING_KEYS = [NEW_TITLE, /*TITLE_UPDATED,*/ TITLE_STATUS_CHANGED, PACKAGE_PROP, PACKAGE_DELETED]
+    static final Set<String> NOTIFICATION_ONLY = [/*TITLE_UPDATED,*/ TITLE_STATUS_CHANGED, TITLE_REMOVED, TITLE_DELETED, PACKAGE_PROP, PACKAGE_DELETED]
+    static final Set<String> NOTIFICATION_KEYS = [NEW_TITLE+NOTIFICATION_SUFFIX, /*TITLE_UPDATED+NOTIFICATION_SUFFIX,*/ TITLE_STATUS_CHANGED+NOTIFICATION_SUFFIX, TITLE_DELETED+NOTIFICATION_SUFFIX, PACKAGE_PROP+NOTIFICATION_SUFFIX, PACKAGE_DELETED+NOTIFICATION_SUFFIX]
+    static final Set<String> GENERIC_EXCLUDES = [PACKAGE_PROP, PACKAGE_DELETED, TITLE_REMOVED]
 
     String settingKey
     @RefdataInfo(cat = RDConstants.PENDING_CHANGE_CONFIG_SETTING)

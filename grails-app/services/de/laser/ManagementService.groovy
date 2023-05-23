@@ -26,6 +26,7 @@ import javax.servlet.http.HttpServletRequest
 import java.nio.file.Files
 import java.nio.file.Path
 import java.text.SimpleDateFormat
+import java.time.Year
 import java.util.concurrent.ExecutorService
 
 /**
@@ -153,7 +154,7 @@ class ManagementService {
                         if(!keyPair) {
                             keyPair = new CustomerIdentifier(platform: platform,
                                     customer: customer,
-                                    type: RefdataValue.getByValueAndCategory('Default', RDConstants.CUSTOMER_IDENTIFIER_TYPE),
+                                    type: RDStore.CUSTOMER_IDENTIFIER_TYPE_DEFAULT,
                                     owner: contextService.getOrg(),
                                     isPublic: true)
                             if(!keyPair.save()) {
@@ -212,11 +213,11 @@ class ManagementService {
                 String base_qry
                 Map qry_params
 
-                if (accessService.checkPerm("ORG_INST")) {
+                if (accessService.ctxPerm(CustomerTypeService.ORG_INST_PRO)) {
                     base_qry = "from License as l where ( exists ( select o from l.orgRelations as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :lic_org ) ) )"
                     qry_params = [roleType1:RDStore.OR_LICENSEE, roleType2:RDStore.OR_LICENSEE_CONS, lic_org:result.institution]
                 }
-                else if (accessService.checkPerm("ORG_CONSORTIUM")) {
+                else if (accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
                     base_qry = "from License as l where exists ( select o from l.orgRelations as o where ( o.roleType = :roleTypeC AND o.org = :lic_org AND l.instanceOf is null AND NOT exists ( select o2 from l.orgRelations as o2 where o2.roleType = :roleTypeL ) ) )"
                     qry_params = [roleTypeC:RDStore.OR_LICENSING_CONSORTIUM, roleTypeL:RDStore.OR_LICENSEE_CONS, lic_org:result.institution]
                 }
@@ -292,7 +293,7 @@ class ManagementService {
                         result.isLinkingRunning = true
                     }
                 }
-                result.validPackages = result.subscription.packages
+                result.validPackages = Package.executeQuery('select sp from SubscriptionPackage sp where sp.subscription = :subscription', [subscription: result.subscription])
                 result.filteredSubscriptions = subscriptionControllerService.getFilteredSubscribers(params,result.subscription)
                 if(result.filteredSubscriptions)
                     result.childWithCostItems = CostItem.executeQuery('select ci.subPkg from CostItem ci where ci.subPkg.subscription in (:filteredSubChildren) and ci.costItemStatus != :deleted and ci.owner = :context',[context:result.institution, deleted:RDStore.COST_ITEM_DELETED, filteredSubChildren:result.filteredSubscriptions.collect { row -> row.sub }])
@@ -331,50 +332,72 @@ class ManagementService {
             FlashScope flash = getCurrentFlashScope()
             Locale locale = LocaleUtils.getCurrentLocale()
             List selectedSubs = params.list("selectedSubs")
+            List selectedPackageKeys = params.list("selectedPackages")
+            Set<Package> pkgsToProcess = []
             result.message = []
             result.error = []
-            if (result.subscription && (params.processOption == 'allWithoutTitle' || params.processOption == 'allWithTitle')) {
-                List<SubscriptionPackage> validSubChildPackages = SubscriptionPackage.executeQuery("select sp from SubscriptionPackage sp join sp.subscription sub where sub.instanceOf = :parent", [parent: result.subscription])
-                validSubChildPackages.each { SubscriptionPackage sp ->
-                    if (!CostItem.executeQuery('select ci from CostItem ci where ci.subPkg = :sp and ci.costItemStatus != :deleted and ci.owner = :context', [sp: sp, deleted: RDStore.COST_ITEM_DELETED, context: result.institution])) {
-                        if (params.processOption == 'allWithTitle') {
-                            if (packageService.unlinkFromSubscription(sp.pkg, sp.subscription, result.institution, true)) {
-                                Object[] args = [sp.pkg.name, sp.subscription.getSubscriber().name]
-                                result.message << messageSource.getMessage('subscriptionsManagement.unlinkInfo.withIE.successful', args, locale)
-                            } else {
-                                Object[] args = [sp.pkg.name, sp.subscription.getSubscriber().name]
-                                result.error << messageSource.getMessage('subscriptionsManagement.unlinkInfo.withIE.fail', args, locale)
-                            }
-                        } else {
-                            if (packageService.unlinkFromSubscription(sp.pkg, sp.subscription, result.institution, false)) {
-                                Object[] args = [sp.pkg.name, sp.subscription.getSubscriber().name]
-                                result.message << messageSource.getMessage('subscriptionsManagement.unlinkInfo.onlyPackage.successful', args, locale)
-                            } else {
-                                Object[] args = [sp.pkg.name, sp.subscription.getSubscriber().name]
-                                result.error << messageSource.getMessage('subscriptionsManagement.unlinkInfo.onlyPackage.fail', args, locale)
+            if(selectedPackageKeys.contains('all') && result.subscription) {
+                pkgsToProcess.addAll(Package.executeQuery('select sp.pkg from SubscriptionPackage sp where sp.subscription = :subscription', [subscription: result.subscription]))
+            }
+            else {
+                selectedPackageKeys.each { String pkgKey ->
+                    pkgsToProcess.add(Package.get(pkgKey))
+                }
+            }
+            pkgsToProcess.each { Package pkg ->
+                selectedSubs.each { String subKey ->
+                    Subscription selectedSub = Subscription.get(subKey)
+                    if(selectedSub.isEditableBy(result.user)) {
+                        SubscriptionPackage sp = SubscriptionPackage.findBySubscriptionAndPkg(selectedSub, pkg)
+                        if(params.processOption =~ /^link/) {
+                            if(!sp) {
+                                if(result.subscription) {
+                                    subscriptionService.addToSubscriptionCurrentStock(selectedSub, result.subscription, pkg, params.processOption == 'linkwithIE')
+                                }
+                                else {
+                                    subscriptionService.addToSubscription(selectedSub, pkg, params.processOption == 'linkwithIE')
+                                }
                             }
                         }
-                    } else {
-                        Object[] args = [sp.pkg.name, sp.subscription.getSubscriber().name]
-                        result.error << messageSource.getMessage('subscriptionsManagement.unlinkInfo.costsExisting', args, locale)
+                        else if(params.processOption =~ /^unlink/) {
+                            if(sp) {
+                                if (!CostItem.executeQuery('select ci from CostItem ci where ci.subPkg = :sp and ci.costItemStatus != :deleted and ci.owner = :context', [sp: sp, deleted: RDStore.COST_ITEM_DELETED, context: result.institution])) {
+                                    packageService.unlinkFromSubscription(pkg, selectedSub, result.institution, params.processOption == 'unlinkwithIE')
+                                }
+                                else {
+                                    Object[] args = [pkg.name, selectedSub.getSubscriber().name]
+                                    result.error << messageSource.getMessage('subscriptionsManagement.unlinkInfo.costsExisting', args, locale)
+                                }
+                            }
+                        }
                     }
                 }
-            } else if (selectedSubs && params.selectedPackage && params.processOption) {
-                Package pkg_to_link
+            }
+            /*
+            dos:
+            1. extend to multi package option
+            else if (selectedSubs && params.selectedPackage && params.processOption) {
+                List<Long> selectedKeys = []
+                if(!params.list("selectedPackage").contains("all")) {
+                    params.list("selectedPackage").each { String pkgId ->
+                        selectedKeys << Long.parseLong(pkgId)
+                    }
+                }
+                Set<Package> pkgs_to_link
                 SubscriptionPackage subscriptionPackage
                 String threadName
                 if(controller instanceof SubscriptionController) {
-                    subscriptionPackage = SubscriptionPackage.get(params.selectedPackage)
-                    pkg_to_link = subscriptionPackage.pkg
+                    subscriptionPackage = SubscriptionPackage.findAllByIdInList(selectedKeys)
+                    pkgs_to_link = subscriptionPackage.pkg
                     threadName = "PackageTransfer_${result.subscription.id}"
                 }
 
                 if(controller instanceof MyInstitutionController) {
-                    pkg_to_link = Package.get(params.selectedPackage)
+                    pkgs_to_link = Package.findAllByIdInList(selectedKeys)
                     threadName = "PackageTransfer_${result.user.id}"
                 }
 
-                if (pkg_to_link) {
+                if (pkgs_to_link) {
                     List<Subscription> editableSubs = []
                     selectedSubs.each { id ->
                         Subscription subscription = Subscription.get(Long.parseLong(id))
@@ -384,36 +407,38 @@ class ManagementService {
                     }
                     executorService.execute({
                         Thread.currentThread().setName(threadName)
-                        List<Subscription> memberSubsToLink = []
-                        editableSubs.each { Subscription subscription ->
-                            if (params.processOption == 'linkwithIE' || params.processOption == 'linkwithoutIE') {
-                                if (!(subscription.packages && (pkg_to_link.id in subscription.packages.pkg.id))) {
-                                    if (params.processOption == 'linkwithIE') {
-                                        if (result.subscription) {
-                                            //subscriptionService.addToSubscriptionCurrentStock(subscription, result.subscription, pkg_to_link)
-                                            memberSubsToLink << subscription
+                        pkgs_to_link.each { Package pkg_to_link ->
+                            List<Subscription> memberSubsToLink = []
+                            editableSubs.each { Subscription subscription ->
+                                if (params.processOption == 'linkwithIE' || params.processOption == 'linkwithoutIE') {
+                                    if (!(subscription.packages && (pkg_to_link.id in subscription.packages.pkg.id))) {
+                                        if (params.processOption == 'linkwithIE') {
+                                            if (result.subscription) {
+                                                //subscriptionService.addToSubscriptionCurrentStock(subscription, result.subscription, pkg_to_link)
+                                                memberSubsToLink << subscription
+                                            } else {
+                                                subscriptionService.addToSubscription(subscription, pkg_to_link, true)
+                                            }
                                         } else {
-                                            subscriptionService.addToSubscription(subscription, pkg_to_link, true)
+                                            subscriptionService.addToSubscription(subscription, pkg_to_link, false)
                                         }
-                                    } else {
-                                        subscriptionService.addToSubscription(subscription, pkg_to_link, false)
+                                    }
+                                }
+                                if (params.processOption == 'unlinkwithIE' || params.processOption == 'unlinkwithoutIE') {
+                                    if (subscription.packages && (pkg_to_link.id in subscription.packages.pkg.id)) {
+                                        SubscriptionPackage subPkg = SubscriptionPackage.findBySubscriptionAndPkg(subscription, pkg_to_link)
+                                        if (!CostItem.executeQuery('select ci from CostItem ci where ci.subPkg = :sp and ci.costItemStatus != :deleted and ci.owner = :context', [sp: subPkg, deleted: RDStore.COST_ITEM_DELETED, context: result.institution])) {
+                                            packageService.unlinkFromSubscription(pkg_to_link, subscription, result.institution, params.processOption == 'unlinkwithIE')
+                                        } else {
+                                            Object[] args = [subPkg.pkg.name, subPkg.subscription.getSubscriber().name]
+                                            result.error << messageSource.getMessage('subscriptionsManagement.unlinkInfo.costsExisting', args, locale)
+                                        }
                                     }
                                 }
                             }
-                            if (params.processOption == 'unlinkwithIE' || params.processOption == 'unlinkwithoutIE') {
-                                if (subscription.packages && (pkg_to_link.id in subscription.packages.pkg.id)) {
-                                    SubscriptionPackage subPkg = SubscriptionPackage.findBySubscriptionAndPkg(subscription, pkg_to_link)
-                                    if (!CostItem.executeQuery('select ci from CostItem ci where ci.subPkg = :sp and ci.costItemStatus != :deleted and ci.owner = :context', [sp: subPkg, deleted: RDStore.COST_ITEM_DELETED, context: result.institution])) {
-                                        packageService.unlinkFromSubscription(pkg_to_link, subscription, result.institution, params.processOption == 'unlinkwithIE')
-                                    } else {
-                                        Object[] args = [subPkg.pkg.name, subPkg.subscription.getSubscriber().name]
-                                        result.error << messageSource.getMessage('subscriptionsManagement.unlinkInfo.costsExisting', args, locale)
-                                    }
-                                }
+                            if(memberSubsToLink && result.subscription) {
+                                subscriptionService.addToMemberSubscription(result.subscription, memberSubsToLink, pkg_to_link, params.processOption == 'linkwithIE')
                             }
-                        }
-                        if(memberSubsToLink && result.subscription) {
-                            subscriptionService.addToMemberSubscription(result.subscription, memberSubsToLink, pkg_to_link, params.processOption == 'linkwithIE')
                         }
                     })
                 }
@@ -432,6 +457,7 @@ class ManagementService {
             if (result.message) {
                 flash.message = result.message.join('<br>')
             }
+                    */
         }
     }
 
@@ -506,7 +532,7 @@ class ManagementService {
                         if(params.filterPropValue) {
                             Set<Subscription> subscriptions = Subscription.findAllByIdInList(selectedSubs)
                             subscriptions.each { Subscription subscription ->
-                                if (subscription.isEditableBy(result.user) || (subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && result.institution.getCustomerType() == 'ORG_INST')) {
+                                if (subscription.isEditableBy(result.user) || (subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && result.institution.isCustomerType_Inst_Pro())) {
                                     List<SubscriptionProperty> existingProps = []
                                     String propDefFlag
                                     if (propertiesFilterPropDef.tenant == result.institution) {
@@ -627,7 +653,7 @@ class ManagementService {
             }
 
             if(params.tab == 'providerAgency') {
-                result.modalPrsLinkRole = RefdataValue.getByValueAndCategory('Specific subscription editor', RDConstants.PERSON_RESPONSIBILITY)
+                result.modalPrsLinkRole = RDStore.PRS_RESP_SPEC_SUB_EDITOR
                 result.modalVisiblePersons = addressbookService.getPrivatePersonsByTenant(result.institution)
                 if(result.subscription) {
                     result.visibleOrgRelations = OrgRole.executeQuery("select oo from OrgRole oo join oo.org org where oo.sub = :parent and oo.roleType in (:roleTypes) order by org.name asc", [parent: result.subscription, roleTypes: [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]])
@@ -653,6 +679,7 @@ class ManagementService {
                 SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
                 Date startDate = params.valid_from ? sdf.parse(params.valid_from) : null
                 Date endDate = params.valid_to ? sdf.parse(params.valid_to) : null
+                Year referenceYear = params.reference_year ? Year.parse(params.reference_year) : null
                 Set<Subscription> subscriptions = Subscription.findAllByIdInList(selectedSubs)
                 if(params.processOption == 'changeProperties') {
                     subscriptions.each { Subscription subscription ->
@@ -670,6 +697,13 @@ class ManagementService {
                             }
                             if (endDate && auditService.getAuditConfig(subscription.instanceOf, 'endDate')) {
                                 noChange << messageSource.getMessage('default.endDate.label', null, locale)
+                            }
+                            if (referenceYear && !auditService.getAuditConfig(subscription.instanceOf, 'referenceYear')) {
+                                subscription.referenceYear = referenceYear
+                                change << messageSource.getMessage('subscription.referenceYear.label', null, locale)
+                            }
+                            if (referenceYear && auditService.getAuditConfig(subscription.instanceOf, 'referenceYear')) {
+                                noChange << messageSource.getMessage('subscription.referenceYear.label', null, locale)
                             }
                             if (params.process_status && !auditService.getAuditConfig(subscription.instanceOf, 'status')) {
                                 subscription.status = RefdataValue.get(params.process_status) ?: subscription.status
@@ -721,6 +755,13 @@ class ManagementService {
                             if (params.process_hasPublishComponent && auditService.getAuditConfig(subscription.instanceOf, 'hasPublishComponent')) {
                                 noChange << messageSource.getMessage('subscription.hasPublishComponent.label', null, locale)
                             }
+                            if (params.process_holdingSelection && !auditService.getAuditConfig(subscription.instanceOf, 'holdingSelection')) {
+                                subscription.holdingSelection = RefdataValue.get(params.process_holdingSelection) ?: subscription.holdingSelection
+                                change << messageSource.getMessage('subscription.holdingSelection.label', null, locale)
+                            }
+                            if (params.process_resource && auditService.getAuditConfig(subscription.instanceOf, 'resource')) {
+                                noChange << messageSource.getMessage('subscription.resource.label', null, locale)
+                            }
                             if (params.process_isMultiYear && !auditService.getAuditConfig(subscription.instanceOf, 'isMultiYear')) {
                                 subscription.isMultiYear = RefdataValue.get(params.process_isMultiYear) == RDStore.YN_YES
                                 change << messageSource.getMessage('subscription.isMultiYear.label', null, locale)
@@ -762,7 +803,7 @@ class ManagementService {
                 if(params.noteTitle && params.noteContent) {
                     if(params.processOption == 'newNote') {
                         subscriptions.each { Subscription subscription ->
-                            if (subscription.isEditableBy(result.user) || (subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && result.institution.getCustomerType() == 'ORG_INST')) {
+                            if (subscription.isEditableBy(result.user) || (subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && result.institution.isCustomerType_Inst_Pro())) {
 
                                 Doc doc_content = new Doc(contentType: Doc.CONTENT_TYPE_STRING,
                                         title: params.noteTitle,
@@ -809,7 +850,7 @@ class ManagementService {
                 Set<Subscription> subscriptions = Subscription.findAllByIdInList(selectedSubs)
                     if(params.processOption == 'newDoc') {
                         subscriptions.eachWithIndex { Subscription subscription, int status ->
-                            if (subscription.isEditableBy(result.user) || (subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && result.institution.getCustomerType() == 'ORG_INST')) {
+                            if (subscription.isEditableBy(result.user) || (subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && result.institution.isCustomerType_Inst_Pro())) {
                                 if (input_stream) {
                                     Doc doc_content = new Doc(
                                             contentType: Doc.CONTENT_TYPE_FILE,

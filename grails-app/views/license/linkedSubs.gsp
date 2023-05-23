@@ -5,16 +5,15 @@
     <laser:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
     <ui:controlButtons>
-        <g:if test="${accessService.checkMinUserOrgRole(user,institution,"INST_EDITOR")}">
+        <g:if test="${userService.checkAffiliationAndCtxOrg(user, institution, 'INST_EDITOR')}">
             <laser:render template="actions" />
         </g:if>
     </ui:controlButtons>
 
     <ui:h1HeaderWithIcon>
         <ui:xEditable owner="${license}" field="reference" id="reference"/>
-        <ui:totalNumber total="${subscriptions.size() ?: 0}"/>
     </ui:h1HeaderWithIcon>
-
+    <ui:totalNumber total="${subscriptions.size() ?: 0}"/>
     <ui:anualRings object="${license}" controller="license" action="linkedSubs" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
 
 <laser:render template="nav" />
@@ -74,6 +73,15 @@
                             </div>
                         </div>
                     </div>
+                </div>
+                <div class="field">
+                    <label>${message(code:'subscription.hasPerpetualAccess.label')}</label>
+                    <ui:select class="ui fluid dropdown" name="hasPerpetualAccess"
+                               from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
+                               optionKey="id"
+                               optionValue="value"
+                               value="${params.hasPerpetualAccess}"
+                               noSelection="${['' : message(code:'default.select.choose.label')]}"/>
                 </div>
                 <div class="field la-field-right-aligned">
                     <a href="${request.forwardURI}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</a>
@@ -145,12 +153,7 @@
                             </span>
                         </g:if>
 
-                        <g:if test="${subscr.getCustomerType() in ['ORG_INST']}">
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                                  data-content="${subscr.getCustomerTypeI10n()}">
-                                <i class="chess rook grey icon"></i>
-                            </span>
-                        </g:if>
+                        <ui:customerTypeIcon org="${subscr}" />
 
                         <div class="ui list">
                             <g:each in="${Person.getPublicByOrgAndFunc(subscr, 'General contact person')}" var="gcp">

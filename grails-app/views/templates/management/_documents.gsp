@@ -132,12 +132,7 @@
                                 </span>
                             </g:if>
 
-                            <g:if test="${subscr.getCustomerType() == 'ORG_INST'}">
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                                      data-content="${subscr.getCustomerTypeI10n()}">
-                                    <i class="chess rook grey icon"></i>
-                                </span>
-                            </g:if>
+                            <ui:customerTypeIcon org="${subscr}" />
                         </td>
                     </g:if>
                     <g:if test="${controllerName == "myInstitution"}">

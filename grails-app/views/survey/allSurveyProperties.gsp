@@ -150,7 +150,7 @@
                           from="${PropertyDefinition.validTypes.entrySet()}"
                           optionKey="key" optionValue="${{ PropertyDefinition.getLocalizedValue(it.key) }}"
                           name="pd_type"
-                          id="cust_prop_modal_select"/>
+                          id="pd_type"/>
             </div>
 
             %{--<div class="field four wide">
@@ -165,9 +165,9 @@
         </div>
 
         <div class="fields">
-            <div class="field hide" id="cust_prop_ref_data_name" style="width: 100%">
+            <div class="field hide" id="remoteRefdataSearchWrapper" style="width: 100%">
                 <label class="property-label"><g:message code="refdataCategory.label"/></label>
-                <input type="hidden" name="refdatacategory" id="cust_prop_refdatacatsearch"/>
+                <select class="ui search selection dropdown remoteRefdataSearch" name="refdatacategory"></select>
 
                 <div class="ui grid" style="margin-top:1em">
                     <div class="ten wide column">
@@ -191,7 +191,7 @@
                     <div class="six wide column">
                         <br />
                         <a href="<g:createLink controller="profile" action="properties"/>" target="_blank">
-                            <i class="icon external alternate"></i>
+                            <i class="icon window maximize outline"></i>
                             Alle Kategorien und Referenzwerte<br />als Übersicht öffnen
                         </a>
                     </div>
@@ -205,55 +205,27 @@
 <laser:script file="${this.getGroovyPageFileName()}">
 
 $('#pd_descr').change(function() {
-    $('#cust_prop_modal_select').trigger('change');
+    $('#pd_type').trigger('change');
 });
 
-$('#cust_prop_modal_select').change(function() {
-var selectedText = $( "#cust_prop_modal_select option:selected" ).val();
-if( selectedText == "${RefdataValue.class.name}") {
-$("#cust_prop_ref_data_name").show();
+$('#pd_type').change(function() {
+    if( selectedText === $( "#pd_type option:selected" ).val()) {
+        $("#remoteRefdataSearchWrapper").show();
 
-var $pMatch = $( "p[data-prop-def-desc='" + $( "#pd_descr option:selected" ).val() + "']" )
-if ($pMatch) {
-$( "p[data-prop-def-desc]" ).addClass('hidden')
-$pMatch.removeClass('hidden')
-}
-}
-else {
-$("#cust_prop_ref_data_name").hide();
-}
+        var $pMatch = $( "p[data-prop-def-desc='" + $( "#pd_descr option:selected" ).val() + "']" )
+        if ($pMatch) {
+            $( "p[data-prop-def-desc]" ).addClass('hidden')
+            $pMatch.removeClass('hidden')
+        }
+    }
+    else {
+        $("#remoteRefdataSearchWrapper").hide();
+    }
 });
 
-$('#cust_prop_modal_select').trigger('change');
+$('#pd_type').trigger('change');
 
-$("#cust_prop_refdatacatsearch").select2({
-placeholder: "Kategorie eintippen...",
-minimumInputLength: 1,
-
-formatInputTooShort: function () {
-return "${message(code:'select2.minChars.note')}";
-},
-formatNoMatches: function() {
-return "${message(code:'select2.noMatchesFound')}";
-},
-formatSearching:  function() {
-return "${message(code:'select2.formatSearching')}";
-},
-ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
-url: '${createLink(controller:'ajaxJson', action:'lookup')}',
-dataType: 'json',
-data: function (term, page) {
-return {
-q: term, // search term
-page_limit: 10,
-baseClass:'${RefdataCategory.class.name}'
-};
-},
-results: function (data, page) {
-return {results: data.values};
-}
-}
-});
+c3po.remoteRefdataSearch('${createLink(controller:'ajaxJson', action:'lookup')}', '#remoteRefdataSearchWrapper');
 
 $(".la-popup").popup({
 });

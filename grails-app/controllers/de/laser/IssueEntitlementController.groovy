@@ -3,6 +3,7 @@ package de.laser
 import de.laser.annotations.Check404
 import de.laser.auth.User
 import de.laser.config.ConfigMapper
+import de.laser.storage.PropertyStore
 import de.laser.utils.SwissKnife
 import de.laser.properties.PlatformProperty
 import de.laser.properties.PropertyDefinition
@@ -32,8 +33,10 @@ class IssueEntitlementController {
      * Shows the given issue entitlement details
      * @return
      */
-    @DebugInfo(test = 'hasAffiliation("INST_USER")', wtc = DebugInfo.NOT_TRANSACTIONAL)
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+    })
     @Check404()
     def show() {
       Map<String, Object> result = [:]
@@ -61,15 +64,14 @@ class IssueEntitlementController {
       if (title_id != null &&
            org != null &&
            supplier_id != null && ConfigMapper.getShowStatsInfo()) {
-          PlatformProperty platform = PlatformProperty.findByOwnerAndType(Platform.get(supplier_id),
-              PropertyDefinition.getByNameAndDescr('NatStat Supplier ID', PropertyDefinition.PLA_PROP))
+          PlatformProperty platform = PlatformProperty.findByOwnerAndType(Platform.get(supplier_id), PropertyStore.PLA_NATSTAT_SID)
           result.natStatSupplierId = platform?.stringValue ?: null
           def fsresult = factService.generateUsageData(org.id, supplier_id, result.issueEntitlementInstance.subscription, title_id)
           def fsLicenseResult = factService.generateUsageDataForSubscriptionPeriod(org.id, supplier_id, result.issueEntitlementInstance.subscription, title_id)
           result.institutional_usage_identifier = OrgSetting.get(org, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
           if (result.institutional_usage_identifier instanceof OrgSetting && fsresult.usage) {
               result.statsWibid = org.getIdentifierByType('wibid')?.value
-              result.usageMode = org.hasPerm("ORG_CONSORTIUM") ? 'package' : 'institution'
+              result.usageMode = org.isCustomerType_Consortium() ? 'package' : 'institution'
               result.usage = fsresult?.usage
               result.x_axis_labels = fsresult?.x_axis_labels
               result.y_axis_labels = fsresult?.y_axis_labels
@@ -119,8 +121,10 @@ class IssueEntitlementController {
       result
     }
 
-    @DebugInfo(test='hasAffiliation("INST_EDITOR")', wtc = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], wtc = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+    })
     def delete() {
         IssueEntitlement.withTransaction { TransactionStatus ts ->
             IssueEntitlement issueEntitlementInstance = IssueEntitlement.get(params.id)

@@ -3,38 +3,13 @@
 
 <laser:htmlStart message="menu.institutions.publicContacts" serviceInjection="true" />
 
-<ui:breadcrumbs>
-    <g:if test="${inContextOrg}">
-        <ui:crumb text="${orgInstance.getDesignation()}" controller="organisation" show="show"
-                     params="[id: orgInstance.id]"/>
-    </g:if>
-    <ui:crumb message="menu.institutions.publicContacts" class="active"/>
-</ui:breadcrumbs>
+<laser:render template="breadcrumb"
+              model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView]}"/>
 
 <ui:h1HeaderWithIcon text="${orgInstance.name}" />
 
 <ui:controlButtons>
-    <ui:actionsDropdown>
-        <g:if test="${editable}">
-            <a href="#createPersonModal" class="item" data-ui="modal"
-               onclick="JSPC.app.personCreate('contactPersonForPublic');"><g:message
-                    code="person.create_new.contactPerson.label"/></a>
-        </g:if>
-        <g:else>
-            <ui:actionsDropdownItemDisabled tooltip="${message(code: 'default.notAutorized.message')}"
-                                               message="person.create_new.contactPerson.label"/>
-        </g:else>
-        <g:if test="${editable}">
-            <a href="#addressFormModal" class="item" data-ui="modal"
-               onclick="JSPC.app.addresscreate_org('${orgInstance.id}');"><g:message code="address.add.label"/></a>
-        </g:if>
-        <g:else>
-            <ui:actionsDropdownItemDisabled tooltip="${message(code: 'default.notAutorized.message')}"
-                                               message="address.add.label"/>
-        </g:else>
-        <ui:actionsDropdownItem notActive="true" data-ui="modal" href="#copyFilteredEmailAddresses_ajaxModal"
-                                   message="menu.institutions.copy_emailaddresses.button"/>
-    </ui:actionsDropdown>
+    <laser:render template="actions" />
 </ui:controlButtons>
 
 <ui:messages data="${flash}"/>
@@ -46,9 +21,9 @@
         ${message(code: 'org.prsLinks.label')}
     </a>
 
-    <a class="${params.tab == 'personAddresses' ? 'active' : ''} item" data-tab="personAddresses">
+    <%--<a class="${params.tab == 'personAddresses' ? 'active' : ''} item" data-tab="personAddresses">
         ${message(code: 'org.prsLinks.adresses.label')}
-    </a>
+    </a>--%>
 
     <a class="${params.tab == 'addresses' ? 'active' : ''} item" data-tab="addresses">
         ${message(code: 'org.addresses.label')}
@@ -118,7 +93,7 @@
 </div>
 
 %{--------------------}%
-<div class="ui bottom attached tab segment ${params.tab == 'personAddresses' ? 'active' : ''}"
+<%--<div class="ui bottom attached tab segment ${params.tab == 'personAddresses' ? 'active' : ''}"
      data-tab="personAddresses">
 
     <ui:filter simple="true">
@@ -178,7 +153,7 @@
                     max="${max}"
                     total="${num_visiblePersons}"/>
 
-</div>
+</div>--%>
 
 %{--------------------}%
 
@@ -202,14 +177,14 @@
 
 <laser:script file="${this.getGroovyPageFileName()}">
     JSPC.app.personCreate = function (contactFor) {
-        var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor=' + contactFor + '&showAddresses=true&showContacts=true';
-        var func = bb8.ajax4SimpleModalFunction("#personModal", url, false);
+        var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor=' + contactFor + '&showAddresses=false&showContacts=true';
+        var func = bb8.ajax4SimpleModalFunction("#personModal", url);
         func();
     }
 
     JSPC.app.addresscreate_org = function (orgId) {
         var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>?orgId=' + orgId;
-        var func = bb8.ajax4SimpleModalFunction("#addressFormModal", url, false);
+        var func = bb8.ajax4SimpleModalFunction("#addressFormModal", url);
         func();
     }
 </laser:script>
