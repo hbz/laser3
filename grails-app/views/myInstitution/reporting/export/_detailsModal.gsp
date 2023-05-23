@@ -63,6 +63,7 @@
 
                 </div><!-- .fields -->
 
+                <div class="fields"></div>
                 <div class="fields">
 
                     <g:each in="${formFields.findAll{ BaseDetailsExport.isFieldMultiple( it.key ) }}" var="field" status="fc"> %{-- TODO --}%
