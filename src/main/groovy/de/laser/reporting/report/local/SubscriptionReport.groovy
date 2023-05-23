@@ -309,6 +309,23 @@ class SubscriptionReport {
 
                     processSimpleTippRefdataQuery(params.query, 'medium', idList, result)
                 }
+                else if (params.query == 'tipp-dateFirstOnline') {
+
+                    String tippYear = 'year(tipp.dateFirstOnline)'
+                    List<String> PROPERTY_QUERY = [
+                            'select ' + tippYear + ', ' + tippYear + ', count(*) ',
+                            'and ' + tippYear + ' is not null group by ' + tippYear + ' order by ' + tippYear
+                    ]
+
+                    BaseQuery.handleGenericQuery(
+                            params.query,
+                            PROPERTY_QUERY[0] + 'from TitleInstancePackagePlatform tipp where tipp.id in (:idList) ' + PROPERTY_QUERY[1],
+                            'select tipp.id from TitleInstancePackagePlatform tipp where tipp.id in (:idList) and ' + tippYear + ' = :d order by tipp.dateFirstOnline',
+                            'select tipp.id from TitleInstancePackagePlatform tipp where tipp.id in (:idList) and tipp.dateFirstOnline is null',
+                            idList,
+                            result
+                    )
+                }
                 else if (params.query == 'tipp-ddcs') {
 
                     TitleInstancePackagePlatform.executeQuery(

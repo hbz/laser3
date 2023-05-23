@@ -29,17 +29,21 @@ class LinkTagLib {
         String href = ''
         String label = ''
 
-        if (attrs.type == 'org') {
+        if (attrs.type == 'curatoryGroup') {
+            href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
+            label = message(code: 'package.curatoryGroup.label') + ' in der we:kb aufrufen'
+        }
+        else if (attrs.type == 'org') {
             href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
             label = message(code: 'default.provider.label') + ' in der we:kb aufrufen'
+        }
+        else if (attrs.type == 'package') {
+            href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
+            label = message(code: 'package.label') + ' in der we:kb aufrufen'
         }
         else if (attrs.type == 'platform') {
             href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
             label = message(code: 'platform.label') + ' in der we:kb aufrufen'
-        }
-        else if (attrs.type == 'curatoryGroup') {
-            href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
-            label = message(code: 'package.curatoryGroup.label') + ' in der we:kb aufrufen'
         }
         else if (attrs.type == 'source') {
             href = '' + apiSource.baseUrl + '/resource/show/' + attrs.gokbId
