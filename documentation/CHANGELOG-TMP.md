@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+#### day of release 3.1
+
 5062    23.05.2023  rc-3.1  3.1         Andreas Bug         Paketzuschnitt wurde nicht verarbeitet
 
 --      23.05.2023  rc-3.1  3.1         Andreas Feature     Bezeichner "Bestand" auf "Paket" umgestellt
