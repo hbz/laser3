@@ -143,10 +143,10 @@ class YodaService {
         int max = 100000
         bulkOperationRunning = true
         executorService.execute({
-            int total = IssueEntitlement.executeQuery('select count(ie) from IssueEntitlement ie where ie.tipp.status != ie.status and ie.status not in (:removed)', [removed: [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED]])[0]
+            int total = IssueEntitlement.executeQuery('select count(ie) from IssueEntitlement ie where ie.tipp.status != ie.status and ie.status != :removed', [removed: RDStore.TIPP_STATUS_REMOVED])[0]
             log.debug("${total} titles concerned")
             for(int offset = 0; offset < total; offset += max) {
-                Set<IssueEntitlement> iesConcerned = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp.status != ie.status and ie.status not in (:removed)', [removed: [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED]], [max: max, offset: offset])
+                Set<IssueEntitlement> iesConcerned = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp.status != ie.status and ie.status != :removed', [removed: RDStore.TIPP_STATUS_REMOVED], [max: max, offset: offset])
                 iesConcerned.eachWithIndex { IssueEntitlement ie, int i ->
                     log.debug("now processing record #${i+offset} from total ${total}")
                     ie.status = ie.tipp.status
