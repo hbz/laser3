@@ -278,12 +278,15 @@ class PackageController {
             Org gascoNegotiator = s.getConsortia()
             if(gascoNegotiator) {
                 Map<String, Object> gascoContactData = gascoContacts.get(gascoNegotiator)
-                if(!gascoContactData) {
-                    gascoContactData = [:]
-                    String gascoDisplay = s.propertySet.find{ it.type == gascoDisplayName}?.stringValue
-                    gascoContactData.orgDisplay = gascoDisplay ?: gascoNegotiator.name
-                    gascoContactData.personRoles = PersonRole.findAllByFunctionTypeAndOrg(RDStore.PRS_FUNC_GASCO_CONTACT, gascoNegotiator)
-                    gascoContacts.put(gascoNegotiator, gascoContactData)
+                Set<PersonRole> personRoles = PersonRole.findAllByFunctionTypeAndOrg(RDStore.PRS_FUNC_GASCO_CONTACT, gascoNegotiator)
+                if(personRoles) {
+                    if(!gascoContactData) {
+                        gascoContactData = [:]
+                        String gascoDisplay = s.propertySet.find{ it.type == gascoDisplayName}?.stringValue
+                        gascoContactData.orgDisplay = gascoDisplay ?: gascoNegotiator.name
+                        gascoContactData.personRoles = personRoles
+                        gascoContacts.put(gascoNegotiator, gascoContactData)
+                    }
                 }
             }
         }
