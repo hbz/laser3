@@ -100,13 +100,13 @@
 </div>
 <%
     Map<String, String>
-    sortFieldMap = ['tipp.sortname': message(code: 'title.label')]
+    sortFieldMap = ['sortname': message(code: 'title.label')]
     if (journalsOnly) {
         sortFieldMap['startDate'] = message(code: 'default.from')
         sortFieldMap['endDate'] = message(code: 'default.to')
     } else {
-        sortFieldMap['tipp.dateFirstInPrint'] = message(code: 'tipp.dateFirstInPrint')
-        sortFieldMap['tipp.dateFirstOnline'] = message(code: 'tipp.dateFirstOnline')
+        sortFieldMap['dateFirstInPrint'] = message(code: 'tipp.dateFirstInPrint')
+        sortFieldMap['dateFirstOnline'] = message(code: 'tipp.dateFirstOnline')
     }
 %>
 <div class="ui form">

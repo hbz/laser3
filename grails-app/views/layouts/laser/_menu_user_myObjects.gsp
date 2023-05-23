@@ -23,6 +23,7 @@
         <ui:securedMainNavItem addItemAttributes="true" controller="myInstitution" action="currentPlatforms" message="menu.my.platforms" />
         <ui:securedMainNavItem addItemAttributes="true" controller="myInstitution" action="currentPackages" message="menu.my.packages" />
         <ui:securedMainNavItem addItemAttributes="true" controller="myInstitution" action="currentTitles" message="menu.my.titles" />
+        <ui:securedMainNavItem addItemAttributes="true" controller="myInstitution" action="currentPermanentTitles" message="menu.my.permanentTitles" />
 
         <div class="divider"></div>
         <ui:securedMainNavItem addItemAttributes="true" orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="tasks" message="menu.my.tasks" />

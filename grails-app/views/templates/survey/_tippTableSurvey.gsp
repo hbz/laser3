@@ -49,7 +49,7 @@
                                 <laser:render
                                         template="/templates/title_short_accordion"
                                         model="${[tipp: tipp,
-                                                  showPackage: true, showPlattform: true, showCompact: true, showEmptyFields: false]}"/>
+                                                  showPackage: true, showPlattform: true, showEmptyFields: false]}"/>
                                 <!-- END TEMPLATE -->
 
                             </div>
@@ -135,7 +135,7 @@
 
                         <laser:render template="/templates/title_long_accordion"
                                       model="${[tipp: tipp,
-                                                showPackage: showPackage, showPlattform: showPlattform, showCompact: showCompact, showEmptyFields: showEmptyFields]}"/>
+                                                showPackage: true, showPlattform: true, showEmptyFields: false]}"/>
 
 
 

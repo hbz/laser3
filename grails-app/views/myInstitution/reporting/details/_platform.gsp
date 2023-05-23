@@ -223,13 +223,12 @@
 
                     <uiReporting:detailsTableTD config="${dtConfig}" field="_+_wekb">
 
-                        <g:if test="${wekb?.baseUrl && plt.gokbId}">
+                        <g:if test="${plt.gokbId}">
                             <g:if test="${esRecordIds.contains(plt.id)}">
-                                <a href="${wekb.baseUrl + '/public/platformContent/' + plt.gokbId}" target="_blank"><i class="icon external alternate"></i></a>
+                                <ui:wekbIconLink type="platform" gokbId="${plt.gokbId}"/>
                             </g:if>
                             <g:else>
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code:'reporting.chart.result.noCounterpart.label')}"
-                                      data-position="top right">
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code:'reporting.chart.result.noCounterpart.label')}" data-position="top right">
                                     <i class="icon times grey"></i>
                                 </span>
                             </g:else>

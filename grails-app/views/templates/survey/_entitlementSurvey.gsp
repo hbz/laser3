@@ -34,9 +34,9 @@
         </span>
     </a>
 
-    <g:if test="${surveyService.showStatisticByParticipant(surveyConfig.subscription, subscriber)}">
+%{--    <g:if test="${surveyService.showStatisticByParticipant(surveyConfig.subscription, subscriber)}">
         <a class="item" data-tab="stats"><g:message code="default.stats.label"/></a>
-    </g:if>
+    </g:if>--}%
 </div>
 
 <div class="ui bottom attached active tab segment" data-tab="currentTitlesSelect">
@@ -89,6 +89,7 @@
 
 </div>
 
+%{--
 <g:if test="${surveyService.showStatisticByParticipant(surveyConfig.subscription, subscriber)}">
     <div class="ui bottom attached tab segment" data-tab="stats">
 
@@ -102,4 +103,4 @@
 
     </div>
 
-</g:if>
+</g:if>--}%

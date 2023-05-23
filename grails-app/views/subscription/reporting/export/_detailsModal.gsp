@@ -32,8 +32,7 @@
         <g:form controller="ajaxHtml" action="chartDetailsExport" method="POST" target="_blank" style="margin:0">
 
             <div class="ui form">
-
-                <div class="ui vertical segment">
+            <div class="ui vertical segment">
 
                 <div class="field">
                     <label>${message(code: 'reporting.modal.export.todoFields')}</label>
@@ -66,6 +65,7 @@
 
                 </div><!-- .fields -->
 
+                <div class="fields"></div>
                 <div class="fields">
 
                     <g:each in="${formFields.findAll{ BaseDetailsExport.isFieldMultiple( it.key ) }}" var="field" status="fc">%{-- TODO --}%
@@ -188,8 +188,8 @@
                     </div>
 
                 </div><!-- .fields -->
-            </div><!-- .segment -->
 
+            </div><!-- .segment -->
             </div><!-- .form -->
 
             <input type="hidden" name="token" value="${token}" />

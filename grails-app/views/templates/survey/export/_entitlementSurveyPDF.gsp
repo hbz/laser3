@@ -36,6 +36,7 @@
     <g:message code="renewEntitlementsWithSurvey.currentTitles.button"/>
 </g:link>
 
+%{--
 <g:if test="${surveyService.showStatisticByParticipant(surveyConfig.subscription, subscriber)}">
     <h2><g:message code="default.stats.label"/></h2>
 
@@ -47,4 +48,4 @@
         <g:message code="renewEntitlementsWithSurvey.stats.button"/>
     </g:link>
 
-</g:if>
+</g:if>--}%
