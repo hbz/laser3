@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5056    23.05.2023  rc-3.1  3.1         David   Feature     Reporting: Bestand sinngemäß in Paket umbenennen
+
+5055    23.05.2023  rc-3.1  3.1         David   Feature     Reporting: Lizenz > Bestand > Erscheinungsjahr
+
 5051    22.05.2023  rc-3.1  3.1         Andreas Feature     Designanpassungen in der Paketdetailsicht
 
 5050    22.05.2023  rc-3.1  3.1         Andreas Bug         Kosten waren nicht sortierbar

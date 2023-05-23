@@ -221,11 +221,10 @@
 
                         <g:if test="${wekb?.baseUrl && pkg.gokbId}">
                             <g:if test="${esRecordIds.contains(pkg.id)}">
-                                <a href="${wekb.baseUrl + '/public/packageContent/' + pkg.gokbId}" target="_blank"><i class="icon external alternate"></i></a>
+                                <ui:wekbIconLink type="package" gokbId="${pkg.gokbId}"/>
                             </g:if>
                             <g:else>
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code:'reporting.chart.result.noCounterpart.label')}"
-                                      data-position="top right">
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code:'reporting.chart.result.noCounterpart.label')}" data-position="top right">
                                     <i class="icon times grey"></i>
                                 </span>
                             </g:else>
