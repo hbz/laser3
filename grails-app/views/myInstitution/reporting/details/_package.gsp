@@ -219,7 +219,7 @@
 
                     <uiReporting:detailsTableTD config="${dtConfig}" field="_+_wekb">
 
-                        <g:if test="${wekb?.baseUrl && pkg.gokbId}">
+                        <g:if test="${pkg.gokbId}">
                             <g:if test="${esRecordIds.contains(pkg.id)}">
                                 <ui:wekbIconLink type="package" gokbId="${pkg.gokbId}"/>
                             </g:if>
