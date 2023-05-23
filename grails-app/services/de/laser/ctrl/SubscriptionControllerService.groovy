@@ -2040,6 +2040,10 @@ class SubscriptionControllerService {
                 String addTypeChildren = params.addTypeChildren
                 ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
                 result.source = apiSource.baseUrl
+                result.subscription.holdingSelection = RefdataValue.get(params.holdingSelection)
+                result.subscription.save()
+                if(Boolean.valueOf(params.inheritHoldingSelection))
+                    AuditConfig.addConfig(result.subscription, 'holdingSelection')
                 GlobalRecordSource source = GlobalRecordSource.findByUriLikeAndRectype(result.source+'%', GlobalSourceSyncService.RECTYPE_TIPP)
                 log.debug("linkPackage. Global Record Source URL: " +source.uri)
                 globalSourceSyncService.source = source
@@ -2072,10 +2076,6 @@ class SubscriptionControllerService {
                                 if(addTypeChildren) {
                                     subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, addTypeChildren == 'WithForChildren')
                                 }
-                                result.subscription.holdingSelection = RefdataValue.get(params.holdingSelection)
-                                result.subscription.save()
-                                if(Boolean.valueOf(params.inheritHoldingSelection))
-                                    AuditConfig.addConfig(result.subscription, 'holdingSelection')
                                 //subscriptionService.addPendingChangeConfiguration(result.subscription, pkgToLink, params.clone())
                             }
                         }
@@ -2091,10 +2091,6 @@ class SubscriptionControllerService {
                         if(addTypeChildren) {
                             subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, addTypeChildren == 'WithForChildren')
                         }
-                        result.subscription.holdingSelection = RefdataValue.get(params.holdingSelection)
-                        result.subscription.save()
-                        if(Boolean.valueOf(params.inheritHoldingSelection))
-                            AuditConfig.addConfig(result.subscription, 'holdingSelection')
                         //subscriptionService.addPendingChangeConfiguration(result.subscription, pkgToLink, params.clone())
                     }
                 })

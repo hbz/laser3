@@ -587,11 +587,15 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                         Package pkg = createOrUpdatePackage(record)
                                         if(pkg.packageStatus == RDStore.PACKAGE_STATUS_REMOVED) {
                                             log.info("${pkg.name} / ${pkg.gokbId} has been removed, mark titles in package as removed ...")
+                                            log.info("${IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.status = :removed, ie.lastUpdated = :now where ie.tipp in (select tipp from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg) and ie.status != :removed', [pkg: pkg, removed: RDStore.TIPP_STATUS_REMOVED, now: new Date()])} issue entitlements marked as removed")
+                                            log.info("${TitleInstancePackagePlatform.executeUpdate('update TitleInstancePackagePlatform tipp set tipp.status = :removed, tipp.lastUpdated = :now where tipp.pkg = :pkg and tipp.status != :removed', [pkg: pkg, removed: RDStore.TIPP_STATUS_REMOVED, now: new Date()])} package titles (tipps) marked as removed")
+                                            /*
                                             TitleInstancePackagePlatform.findAllByPkgAndStatusNotEqual(pkg, RDStore.TIPP_STATUS_REMOVED).each { TitleInstancePackagePlatform tipp ->
                                                 tipp.status = RDStore.TIPP_STATUS_REMOVED
                                                 TitleChange.construct([event: PendingChangeConfiguration.TITLE_REMOVED, tipp: tipp])
                                                 tipp.save()
                                             }
+                                            */
                                         }
                                     }
                                     catch (SyncException e) {
@@ -657,12 +661,16 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             //package may be null in case it has been marked as removed and did not exist in LAS:eR before
                             if(pkg?.packageStatus == RDStore.PACKAGE_STATUS_REMOVED) {
                                 log.info("${pkg.name} / ${pkg.gokbId} has been removed, record status is ${record.status}, mark titles in package as removed ...")
+                                log.info("${IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.status = :removed, ie.lastUpdated = :now where ie.tipp in (select tipp from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg) and ie.status != :removed', [pkg: pkg, removed: RDStore.TIPP_STATUS_REMOVED, now: new Date()])} issue entitlements marked as removed")
+                                log.info("${TitleInstancePackagePlatform.executeUpdate('update TitleInstancePackagePlatform tipp set tipp.status = :removed, tipp.lastUpdated = :now where tipp.pkg = :pkg and tipp.status != :removed', [pkg: pkg, removed: RDStore.TIPP_STATUS_REMOVED, now: new Date()])} package titles (tipps) marked as removed")
+                                /*
                                 TitleInstancePackagePlatform.findAllByPkgAndStatusNotEqual(pkg, RDStore.TIPP_STATUS_REMOVED).each { TitleInstancePackagePlatform tipp ->
                                     tipp.status = RDStore.TIPP_STATUS_REMOVED
                                     IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.status = :removed, ie.lastUpdated = :now where ie.tipp = :tipp and ie.status != :removed', [tipp: tipp, removed: RDStore.TIPP_STATUS_REMOVED, now: new Date()])
                                     //TitleChange.construct([event: PendingChangeConfiguration.TITLE_REMOVED, tipp: tipp])
                                     tipp.save()
                                 }
+                                */
                             }
                             if(i % 500 == 0 && i > 0) {
                                 globalService.cleanUpGorm()
@@ -863,7 +871,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         */
                     }
                 }
-                else if(!(updatedTIPP.status in [RDStore.TIPP_STATUS_DELETED.value, RDStore.TIPP_STATUS_REMOVED.value, PERMANENTLY_DELETED])) {
+                else if(!(updatedTIPP.status in [RDStore.TIPP_STATUS_REMOVED.value, PERMANENTLY_DELETED])) {
                     Package pkg = packagesOnPage.get(updatedTIPP.packageUUID)
                     if(pkg)
                         addNewTIPP(pkg, updatedTIPP, platformsOnPage)
@@ -1006,7 +1014,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             else {
                 Package pkg = newPackages.get(tippB.packageUUID)
                 //Unbelievable! But package may miss at this point!
-                if(pkg && pkg?.packageStatus != RDStore.PACKAGE_STATUS_REMOVED && !(tippB.status in [PERMANENTLY_DELETED, RDStore.TIPP_STATUS_DELETED.value, RDStore.TIPP_STATUS_REMOVED.value])) {
+                if(pkg && pkg?.packageStatus != RDStore.PACKAGE_STATUS_REMOVED && !(tippB.status in [PERMANENTLY_DELETED, RDStore.TIPP_STATUS_REMOVED.value])) {
                     //new TIPP
                     addNewTIPP(pkg, tippB, newPlatforms)
                     //result.event = 'add'
