@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5058    23.05.2023  rc-3.1  3.1         Andreas Bug         Einrichtungen konnten nicht hinzugefügt werden
+
+5056    23.05.2023  rc-3.1  3.1         David   Feature     Reporting: Bestand sinngemäß in Paket umbenennen
+
+5055    23.05.2023  rc-3.1  3.1         David   Feature     Reporting: Lizenz > Bestand > Erscheinungsjahr
+
 --      23.05.2023  rc-3.1  3.1         Andreas Feature     Bezeichner "Bestand" auf "Paket" umgestellt
 
 5051    22.05.2023  rc-3.1  3.1         Andreas Feature     Designanpassungen in der Paketdetailsicht
@@ -20,6 +26,8 @@
 5002    22.05.2023  rc-3.1  3.1         David   Feature     DEV: Kosten-Export im Reporting
 
 5038    19.05.2023  rc-3.1  3.1         Andreas Feature     Hinweis auf Maximaleintrag
+
+5039    17.05.2023  dev     3.1         David   Feature     Umfragen - Navigation & weitere Anpassungen
 
 5047    17.05.2023  dev     3.1         Andreas Bug         Statistik lokaler Lizenzen konnte nicht aufgerufen werden
 
