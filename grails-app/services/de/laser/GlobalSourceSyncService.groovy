@@ -557,7 +557,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 //queryParams.changedBefore = "2022-09-27 00:00:00" //debug only
             }
             if(pkgFilter)
-                queryParams.pkg = pkgFilter
+                queryParams.tippPackageUuid = pkgFilter
             if(!result.containsKey('error')) {
                 while(result.currentPage < result.lastPage) {
                     //actually, scrollId alone should do the trick but tests revealed that other parameters are necessary, too, because of current workaround solution
