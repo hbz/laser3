@@ -15,7 +15,7 @@ class CustomMigrationCallbacks {
 
 	GrailsApplication grailsApplication
 
-	static void _localChangelogMigration() {
+	static void _localChangelogMigration_april22() {
 		groovy.sql.Sql sql = new groovy.sql.Sql(BeanStore.getDataSource())
 
 		int count1 = (sql.rows("select * from databasechangelog where filename like 'done/pre%'")).size()
@@ -55,12 +55,35 @@ class CustomMigrationCallbacks {
 		}
 	}
 
+	static void _localChangelogMigration_may23() {
+		groovy.sql.Sql sql = new groovy.sql.Sql(BeanStore.getDataSource())
+
+		int count1 = (sql.rows("select * from databasechangelog where filename like 'legacy/changelog-%'")).size()
+		int count2 = (sql.rows("select * from databasechangelog where filename like 'changelogs/2022-%'")).size()
+
+		if (count1 || count2) {
+			sql.withTransaction {
+				println '--------------------------------------------------------------------------------'
+				println '-     Cleanup database migration table'
+				println '-        legacy/changelog-% -> ' + count1
+				println '-           updating: ' + sql.executeUpdate("update databasechangelog set filename = replace(filename, 'legacy/changelog-', 'legacy/') where filename like 'legacy/changelog-%'")
+
+				println '-        changelogs/2022-%-> ' + count2
+				println '-           updating: ' + sql.executeUpdate("update databasechangelog set filename = replace(filename, 'changelogs/', 'legacy/') where filename like 'changelogs/2022-%'")
+
+				sql.commit()
+				println '--------------------------------------------------------------------------------'
+			}
+		}
+	}
+
 	void beforeStartMigration(Database database) {
 	}
 
 	void onStartMigration(Database database, Liquibase liquibase, String changelogName) {
 
-		_localChangelogMigration() // TODO : remove after migration
+		// _localChangelogMigration_april22()
+		_localChangelogMigration_may23()
 
 		List allIds = liquibase.getDatabaseChangeLog().getChangeSets().collect { ChangeSet it -> it.filePath + '::' + it.id + '::' + it.author }
 		List ranIds = database.getRanChangeSetList().collect { RanChangeSet it -> it.changeLog + '::' + it.id + '::' + it.author }
