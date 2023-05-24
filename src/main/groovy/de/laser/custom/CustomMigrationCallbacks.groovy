@@ -68,7 +68,7 @@ class CustomMigrationCallbacks {
 				println '-        legacy/changelog-% -> ' + count1
 				println '-           updating: ' + sql.executeUpdate("update databasechangelog set filename = replace(filename, 'legacy/changelog-', 'legacy/') where filename like 'legacy/changelog-%'")
 
-				println '-        changelogs/2022-%-> ' + count3
+				println '-        changelogs/2022-%-> ' + count2
 				println '-           updating: ' + sql.executeUpdate("update databasechangelog set filename = replace(filename, 'changelogs/', 'legacy/') where filename like 'changelogs/2022-%'")
 
 				sql.commit()
@@ -83,7 +83,7 @@ class CustomMigrationCallbacks {
 	void onStartMigration(Database database, Liquibase liquibase, String changelogName) {
 
 		// _localChangelogMigration_april22()
-		//_localChangelogMigration_may23()
+		_localChangelogMigration_may23()
 
 		List allIds = liquibase.getDatabaseChangeLog().getChangeSets().collect { ChangeSet it -> it.filePath + '::' + it.id + '::' + it.author }
 		List ranIds = database.getRanChangeSetList().collect { RanChangeSet it -> it.changeLog + '::' + it.id + '::' + it.author }

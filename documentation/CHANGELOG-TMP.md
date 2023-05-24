@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5071    24.05.2023  rc-3.1  3.1.1       David   Feature     Reporting: Lizenz > Aktuelles Paket > Verlag
+
 5070    23.05.2023  rc-3.1  3.1.1       Andreas Bug         Doppelanzeige der Kontakte behoben
 
 5068    23.05.2023  rc-3.1  3.1.1       Andreas Bug         500er bei Statistikaufruf
