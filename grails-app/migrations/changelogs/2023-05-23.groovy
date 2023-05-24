@@ -1,3 +1,5 @@
+package changelogs
+
 databaseChangeLog = {
 
     changeSet(author: "galffy (hand-coded)", id: "1684824321864-1") {
@@ -8,6 +10,4 @@ databaseChangeLog = {
             rollback {}
         }
     }
-
-
 }
