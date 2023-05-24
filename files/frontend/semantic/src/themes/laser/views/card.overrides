@@ -152,6 +152,7 @@
 #container-documents,
 #container-notes,
 #container-provider,
+#container-contacts,
 #container-billing,
 #container-links,
 #container-workflows {
