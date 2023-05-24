@@ -43,13 +43,11 @@
                 <th>Aufrufe</th>
                 <g:each in="${globalMatrixSteps}" var="step" status="i">
                     <g:if test="${i>0}">
-                        <th>
-                            &lt; ${((int) step / 1000)} s
-                        </th>
+                        <th> &lt; ${((int) step / 1000)} s </th>
                     </g:if>
                 </g:each>
                 <g:if test="${globalMatrixSteps.size()>1}">
-                    <th> &gt; ${((int) globalMatrixSteps.last() / 1000)} s</th>
+                    <th> &gt; ${((int) globalMatrixSteps.last() / 1000)} s </th>
                 </g:if>
                 <th>avg</th>
                 <th><i class="icon fire"></i></th>
@@ -57,7 +55,10 @@
             </thead>
             <tbody>
             <g:each in="${globalHeatMap}" var="uri, stat">
-                <tr data-uri="${uri}">
+                <g:set var="avg" value="${((double) stat[2] / 1000).round(2)}" />
+                <g:set var="heat" value="${((double) stat[0]).round(2)}" />
+
+                <tr data-uri="${uri}" class="${avg >= 8 ? 'error' : avg >= 4 ? 'warning' : ''}">
                     <td data-uri="${uri}">${uri}</td>
                     <td>${stat[3]}</td>
                     <g:each in="${globalMatrix[uri]}" var="border,hits" status="i">
@@ -82,7 +83,6 @@
                         </td>
                     </g:each>
                     <td>
-                        <g:set var="avg" value="${((double) stat[2] / 1000).round(2)}" />
                         <g:if test="${avg >= 8}">
                             <strong class="sc_red"> ${avg} </strong>
                         </g:if>
@@ -94,7 +94,6 @@
                         </g:else>
                     </td>
                     <td>
-                        <g:set var="heat" value="${((double) stat[0]).round(2)}" />
                         <g:if test="${heat >= 3}">
                             <span class="ui circular red label"> ${heat} </span>
                         </g:if>
@@ -124,13 +123,11 @@
                     <th>Aufrufe</th>
                     <g:each in="${globalMatrixSteps}" var="step" status="i">
                         <g:if test="${i>0}">
-                            <th>
-                                &lt; ${((int) step / 1000)} s
-                            </th>
+                            <th> &lt; ${((int) step / 1000)} s </th>
                         </g:if>
                     </g:each>
                     <g:if test="${globalMatrixSteps.size()>1}">
-                        <th> &gt; ${((int) globalMatrixSteps.last() / 1000)} s</th>
+                        <th> &gt; ${((int) globalMatrixSteps.last() / 1000)} s </th>
                     </g:if>
                     <th>avg</th>
                     <th>max</th>
@@ -138,7 +135,9 @@
             </thead>
             <tbody>
                 <g:each in="${globalStats}" var="stat">
-                    <tr data-uri="${stat[0]}">
+                    <g:set var="avg" value="${((double) stat[2] / 1000).round(2)}" />
+
+                    <tr data-uri="${stat[0]}" class="${avg >= 8 ? 'error' : avg >= 4 ? 'warning' : ''}">
                         <td data-uri="${stat[0]}">${stat[0]}</td>
                         <td>${stat[3]}</td>
                         <g:each in="${globalMatrix[stat[0]]}" var="border,hits" status="i">
@@ -163,7 +162,6 @@
                             </td>
                         </g:each>
                         <td>
-                            <g:set var="avg" value="${((double) stat[2] / 1000).round(2)}" />
                             <g:if test="${avg >= 8}">
                                 <strong class="sc_red"> ${avg} </strong>
                             </g:if>
@@ -214,12 +212,13 @@
             </thead>
             <tbody>
             <g:each in="${contextStats}" var="bench">
-                <tr data-uri="${bench[0]}" data-context="${bench[3]}">
+                <g:set var="avg" value="${((double) bench[2] / 1000).round(2)}" />
+
+                <tr data-uri="${bench[0]}" data-context="${bench[3]}" class="${avg >= 8 ? 'error' : avg >= 4 ? 'warning' : ''}">
                     <td data-uri="${bench[0]}">${bench[0]}</td>
                     <td data-context="${bench[3]}">${Org.get(bench[3]).getDesignation()}</td>
                     <td>${bench[4]}</td>
                     <td>
-                        <g:set var="avg" value="${((double) bench[2] / 1000).round(2)}" />
                         <g:if test="${avg >= 8}">
                             <strong class="sc_red"> ${avg} </strong>
                         </g:if>
