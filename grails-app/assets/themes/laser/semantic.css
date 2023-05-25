@@ -65126,10 +65126,11 @@ Floated Menu / Item
   padding: 1.4em 1.4em;
 }
 
-.ui.table thead th.la-smaller-table-head {
+.ui.celled.sortable.table > thead > tr > th.la-smaller-table-head {
   padding-top: 0;
   padding-bottom: 0;
   height: 28px;
+  border-left: 1px solid rgba(34, 36, 38, 0.15);
 }
 
 /* wrap small needed th to avoid table layout break */
