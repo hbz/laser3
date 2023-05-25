@@ -1538,17 +1538,15 @@ class YodaController {
         executorService.execute({
             Thread.currentThread().setName("setPerpetualAccessByIes")
             List<Subscription> subList = Subscription.findAllByHasPerpetualAccess(true)
-            int countProcess = 0
-            int countProcessPT = 0
-            subList.each { Subscription sub ->
-                List<Long> ieIDs = IssueEntitlement.executeQuery('select ie.id from IssueEntitlement ie where ie.subscription = :sub and ie.perpetualAccessBySub is null', [sub: sub])
-                if (ieIDs.size() > 0) {
-                    Org owner = sub.subscriber
+            int countProcess = 0, countProcessPT = 0
+            subList.eachWithIndex { Subscription sub, int i ->
+                List<IssueEntitlement> ies = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.subscription = :sub and ie.perpetualAccessBySub is null', [sub: sub])
+                IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.perpetualAccessBySub = :sub where ie.subscription = :sub and ie.perpetualAccessBySub is null', [sub: sub])
+                if (ies.size() > 0) {
+                    Org owner = sub.getSubscriber()
 
-                    ieIDs.each { Long ieID ->
-                        IssueEntitlement.executeUpdate("update IssueEntitlement ie set ie.perpetualAccessBySub = :sub where ie.id = :ieID ", [sub: sub, ieID: ieID])
-
-                        IssueEntitlement issueEntitlement = IssueEntitlement.get(ieID)
+                    ies.eachWithIndex { IssueEntitlement issueEntitlement, int j ->
+                        log.debug("now processing record ${j} for subscription ${i} out of ${subList.size()}")
                         TitleInstancePackagePlatform titleInstancePackagePlatform = issueEntitlement.tipp
 
                         if (!PermanentTitle.findByOwnerAndTipp(owner, titleInstancePackagePlatform)) {
@@ -1556,7 +1554,7 @@ class YodaController {
                                     issueEntitlement: issueEntitlement,
                                     tipp: titleInstancePackagePlatform,
                                     owner: owner).save()
-                            countProcessPT
+                            countProcessPT++
                         }
                         countProcess++
                     }
@@ -1583,12 +1581,14 @@ class YodaController {
         }
         executorService.execute({
             Thread.currentThread().setName("setPermanentTitle")
-            int countProcess = 0
-                List<Long> ieIDs = IssueEntitlement.executeQuery('select ie.id from IssueEntitlement ie where ie.perpetualAccessBySub is not null')
-                if (ieIDs.size() > 0) {
-                   ieIDs.each { Long ieID ->
-                       IssueEntitlement issueEntitlement = IssueEntitlement.get(ieID)
-                       TitleInstancePackagePlatform titleInstancePackagePlatform = issueEntitlement.tipp
+            int countProcess = 0, max = 100000
+            int ieCount = IssueEntitlement.countByPerpetualAccessBySubIsNotNull()
+            if (ieCount > 0) {
+                for(int offset = 0; offset < ieCount; offset+=max) {
+                    List<IssueEntitlement> ies = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.perpetualAccessBySub is not null', [max: max, offset: offset])
+                    ies.eachWithIndex { IssueEntitlement issueEntitlement, int i ->
+                        //log.debug("now processing record ${offset+i} out of ${ieCount}")
+                        TitleInstancePackagePlatform titleInstancePackagePlatform = issueEntitlement.tipp
                         Org owner = issueEntitlement.subscription.subscriber
 
                         if (!PermanentTitle.findByOwnerAndTipp(owner, titleInstancePackagePlatform)) {
@@ -1597,9 +1597,11 @@ class YodaController {
                                     tipp: titleInstancePackagePlatform,
                                     owner: owner).save()
                             countProcess++
+                            //log.debug("record ${offset+i} out of ${ieCount} had permanent title ${countProcess}")
                         }
                     }
                 }
+            }
             SystemEvent.createEvent('YODA_PROCESS', [yodaProcess: 'setPermanentTitle', countProcess: countProcess])
         })
 

@@ -21,9 +21,9 @@ class PermanentTitle {
         dateCreated column: 'pt_date_created'
         lastUpdated column: 'pt_last_updated'
 
-        owner column: 'pt_owner_fk'
-        subscription column: 'pt_subscription_fk'
-        issueEntitlement column: 'pt_ie_fk'
-        tipp column: 'pt_tipp_fk'
+        owner column: 'pt_owner_fk', index: 'pt_owner_idx'
+        subscription column: 'pt_subscription_fk', index: 'pt_subscription_idx'
+        issueEntitlement column: 'pt_ie_fk', index: 'pt_ie_idx'
+        tipp column: 'pt_tipp_fk', index: 'pt_tipp_idx'
     }
 }
