@@ -69,7 +69,7 @@ class DeletionService {
         List oRoles         = new ArrayList(lic.orgRelations)
         List pRoles         = new ArrayList(lic.prsLinks)
         //List packages       = new ArrayList(lic.pkgs)  // Package
-        List pendingChanges = new ArrayList(lic.pendingChanges)
+        //List pendingChanges = new ArrayList(lic.pendingChanges)
         List privateProps   = new ArrayList(lic.propertySet.findAll { LicenseProperty lp -> lp.type.tenant != null })
         List customProps    = new ArrayList(lic.propertySet.findAll { LicenseProperty lp -> lp.type.tenant == null })
 
@@ -91,7 +91,7 @@ class DeletionService {
         result.info << ['Organisationen', oRoles]
         result.info << ['Personen', pRoles]     // delete ? personRole->person
         //result.info << ['Pakete', packages]
-        result.info << ['Anstehende Änderungen', pendingChanges]
+        //result.info << ['Anstehende Änderungen', pendingChanges]
         result.info << ['Private Merkmale', lic.propertySet.findAll { it.type.tenant != null }]
         result.info << ['Allgemeine Merkmale', lic.propertySet.findAll { it.type.tenant == null }]
 
@@ -191,8 +191,8 @@ class DeletionService {
                     pRoles.each { tmp -> tmp.delete() }
 
                     // pending changes
-                    lic.pendingChanges.clear()
-                    pendingChanges.each { tmp -> tmp.delete() }
+                    //lic.pendingChanges.clear()
+                    //pendingChanges.each { tmp -> tmp.delete() }
 
                     // private properties
                     //lic.privateProperties.clear()
@@ -248,7 +248,7 @@ class DeletionService {
         List oRoles         = new ArrayList(sub.orgRelations)
         List pRoles         = new ArrayList(sub.prsLinks)
         List subPkgs        = new ArrayList(sub.packages)
-        List pendingChanges = new ArrayList(sub.pendingChanges)
+        List pendingChanges = new ArrayList(PendingChange.findAllBySubscription(sub))
 
         List ies            = IssueEntitlement.where { subscription == sub }.findAll()
                             // = new ArrayList(sub.issueEntitlements)
@@ -384,8 +384,7 @@ class DeletionService {
                     }
 
                     // pending changes
-                    sub.pendingChanges.clear()
-                    pendingChanges.each { tmp -> tmp.delete() }
+                    PendingChange.executeUpdate('delete from PendingChange pc where pc.subscription = :sub', [sub: sub])
 
                     // issue entitlements
                     // sub.issueEntitlements.clear()
