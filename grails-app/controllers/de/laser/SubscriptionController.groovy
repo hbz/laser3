@@ -500,7 +500,7 @@ class SubscriptionController {
                     wb = (SXSSFWorkbook) exportService.exportOrg(ctrlResult.result.orgs, filename, true, 'xlsx')
                 }
                 */
-                if(params.fileformat == 'xslx') {
+                if(params.fileformat == 'xlsx') {
                     wb = (SXSSFWorkbook) exportClickMeService.exportSubscriptionMembers(ctrlResult.result.filteredSubChilds, selectedFields, ctrlResult.result.subscription, ctrlResult.result.institution, contactSwitch, ExportClickMeService.FORMAT.XLS)
                 }
                 else if (params.exportIPs) {
