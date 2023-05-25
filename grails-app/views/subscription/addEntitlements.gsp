@@ -213,7 +213,7 @@
         <g:each in="${tipps}" var="tipp">
 
             <g:set var="perpetualAccessToTitle"
-                   value="${surveyService.hasParticipantPerpetualAccessToTitle3(result.subscriber, tipp)}"/>
+                   value="${surveyService.hasParticipantPerpetualAccessToTitle3(institution, tipp)}"/> %{-- Moe: ex result.subscriber; is that same as result.institution? is a fix to prevent 500, please check it over! --}%
 
             <tr data-index="${tipp.gokbId}">
                 <td>

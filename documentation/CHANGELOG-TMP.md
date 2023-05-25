@@ -7,6 +7,14 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5084    25.05.2023  rc-3.1  3.1.1       Andreas Feature     Umfrage-Merkmal "Testzugriff" zum allgemeinen Merkmal aufgestuft
+
+5082    25.05.2023  rc-3.1  3.1.1       Andreas Bug         Lizenzen und Verträge konnten nicht gelöscht werden
+
+5076    25.05.2023  rc-3.1  3.1.1       Andreas Bug         Seite "Titel hinzufügen" war nicht erreichbar
+
+5072    25.05.2023  rc-3.1  3.1.1       Andreas Bug         Teilnehmer exportieren war nicht aufrufbar
+
 5071    24.05.2023  rc-3.1  3.1.1       David   Feature     Reporting: Lizenz > Aktuelles Paket > Verlag
 
 5070    23.05.2023  rc-3.1  3.1.1       Andreas Bug         Doppelanzeige der Kontakte behoben
