@@ -19,6 +19,8 @@ import de.laser.survey.SurveyConfigProperties
 import de.laser.survey.SurveyOrg
 import de.laser.survey.SurveyResult
 import grails.gorm.transactions.Transactional
+import groovy.sql.GroovyRowResult
+import groovy.sql.Sql
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.springframework.context.MessageSource
 import org.hibernate.Session
@@ -942,12 +944,12 @@ class ExportClickMeService {
                     label: 'Title',
                     message: 'default.title.label',
                     fields: [
-                            'tipp.name'            : [field: 'name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
-                            'tipp.status'          : [field: 'status', label: 'Status', message: 'default.status.label', defaultChecked: 'true'],
-                            'tipp.medium'          : [field: 'medium', label: 'Status', message: 'tipp.medium', defaultChecked: 'true'],
-                            'tipp.titleType'       : [field: 'titleType', label: 'Cost After Tax', message: 'tipp.titleType', defaultChecked: 'true'],
-                            'tipp.pkg'             : [field: 'pkg.name', label: 'Package', message: 'package.label', defaultChecked: 'true'],
-                            'tipp.platform.name'   : [field: 'platform.name', label: 'Platform', message: 'tipp.platform', defaultChecked: 'true'],
+                            'tipp.name'            : [field: 'name', label: 'Name', message: 'default.name.label', defaultChecked: 'true', sqlCol: 'tipp_name' ],
+                            'tipp.status'          : [field: 'status', label: 'Status', message: 'default.status.label', defaultChecked: 'true', sqlCol: 'tipp_status_rv_fk'],
+                            'tipp.medium'          : [field: 'medium', label: 'Status', message: 'tipp.medium', defaultChecked: 'true', sqlCol: 'tipp_medium_rv_fk'],
+                            'tipp.titleType'       : [field: 'titleType', label: 'Cost After Tax', message: 'tipp.titleType', defaultChecked: 'true', sqlCol: 'tipp_title_type'],
+                            'tipp.pkg'             : [field: 'pkg.name', label: 'Package', message: 'package.label', defaultChecked: 'true', sqlCol: 'pkg_name'],
+                            'tipp.platform.name'   : [field: 'platform.name', label: 'Platform', message: 'tipp.platform', defaultChecked: 'true', sqlCol: 'plat_name'],
                     ]
             ],
             titleDetails      : [
@@ -2040,7 +2042,7 @@ class ExportClickMeService {
             }
         }
 
-        IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
+        IdentifierNamespace.findAllByNsType(TitleInstancePackagePlatform.class.name, [sort: 'ns']).each {
             exportFields.put("tippIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
         }
 
@@ -2766,40 +2768,164 @@ class ExportClickMeService {
 
         List exportData = []
 
-        int max = result[0] instanceof Long ? 50000 : 500
-        TitleInstancePackagePlatform.withSession { Session sess ->
-            for(int offset = 0; offset < result.size(); offset+=max) {
-                List allRows = []
-                Set<TitleInstancePackagePlatform> tipps = []
-                if(result[0] instanceof TitleInstancePackagePlatform) {
-                    //this double structure is necessary because the KBART standard foresees for each coverageStatement an own row with the full data
-                    tipps = result.drop(offset).take(max)
-                }
-                else if(result[0] instanceof Long) {
-                    tipps = TitleInstancePackagePlatform.findAllByIdInList(result.drop(offset).take(max), [sort: 'sortname'])
-                }
-                tipps.each { TitleInstancePackagePlatform tipp ->
-                    if(!tipp.coverages && !tipp.priceItems) {
-                        allRows << tipp
+        if(result.size() < 10000) {
+            int max = result[0] instanceof Long ? 5000 : 500
+            TitleInstancePackagePlatform.withSession { Session sess ->
+                for(int offset = 0; offset < result.size(); offset+=max) {
+                    List allRows = []
+                    Set<TitleInstancePackagePlatform> tipps = []
+                    if(result[0] instanceof TitleInstancePackagePlatform) {
+                        //this double structure is necessary because the KBART standard foresees for each coverageStatement an own row with the full data
+                        tipps = result.drop(offset).take(max)
                     }
-                    else if(tipp.coverages.size() > 1){
-                        tipp.coverages.each { AbstractCoverage covStmt ->
-                            allRows << covStmt
+                    else if(result[0] instanceof Long) {
+                        tipps = TitleInstancePackagePlatform.findAllByIdInList(result.drop(offset).take(max), [sort: 'sortname'])
+                    }
+                    tipps.each { TitleInstancePackagePlatform tipp ->
+                        if(!tipp.coverages && !tipp.priceItems) {
+                            allRows << tipp
+                        }
+                        else if(tipp.coverages.size() > 1){
+                            tipp.coverages.each { AbstractCoverage covStmt ->
+                                allRows << covStmt
+                            }
+                        }
+                        else {
+                            allRows << tipp
+                        }
+                    }
+
+                    allRows.eachWithIndex { rowData, int i ->
+                        long start = System.currentTimeMillis()
+                        _setTippRow(rowData, selectedExportFields, exportData, format)
+                        log.debug("used time for record ${i}: ${System.currentTimeMillis()-start}")
+                    }
+                    log.debug("flushing after ${offset} ...")
+                    sess.flush()
+                }
+            }
+        }
+        else {
+            Sql sql = GlobalService.obtainSqlConnection()
+            List sqlCols = []
+            selectedExportFields.each { String fieldKey, Map fields ->
+                if(fields.containsKey('sqlCol')) {
+                    if(fields.sqlCol.contains('rv')) {
+                        sqlCols.add("(select ${LocaleUtils.getLocalizedAttributeName('rdv_value')} from refdata_value where rdv_id = ${fields.sqlCol}) as ${fields.sqlCol}")
+                    }
+                    else if(fields.sqlCol.contains('pkg')) {
+                        sqlCols.add("(select ${fields.sqlCol} from package where pkg_id = tipp_pkg_fk) as ${fields.sqlCol}")
+                    }
+                    else if(fields.sqlCol.contains('plat')) {
+                        sqlCols.add("(select ${fields.sqlCol} from platform where plat_id = tipp_plat_fk) as ${fields.sqlCol}")
+                    }
+                    else {
+                        sqlCols.add(fields.sqlCol)
+                    }
+                }
+            }
+            String sqlQuery = "select ${sqlCols.join(',')} from title_instance_package_platform where tipp_id in (:idSet) order by tipp_sort_name"
+            log.debug(sqlQuery) //for database measurement purposes, comment out if not needed!
+            result.collate(50000).each { List<Long> subSet ->
+                sql.rows(sqlQuery, [idSet: subSet.join(',')]).each { GroovyRowResult sqlRow ->
+                    selectedExportFields.each { String fieldKey, Map fields ->
+                        exportData.add(createTableCell(format, sqlRow.get(fields.sqlCol)))
+                    }
+                }
+            }
+
+            /*
+            selectedFields.keySet().each { String fieldKey ->
+                Map mapSelecetedFields = selectedFields.get(fieldKey)
+                String field = mapSelecetedFields.field
+                if(!mapSelecetedFields.separateSheet) {
+                    if (fieldKey.startsWith('tippIdentifiers.')) {
+                        if (result) {
+                            Long id = Long.parseLong(fieldKey.split("\\.")[1])
+                            List<Identifier> identifierList = Identifier.executeQuery("select ident from Identifier ident where ident.tipp = :tipp and ident.ns.id in (:namespaces)", [tipp: result.tipp, namespaces: [id]])
+                            if (identifierList) {
+                                row.add(createTableCell(format, identifierList.value.join(";")))
+                            } else {
+                                row.add(createTableCell(format, ' '))
+                            }
+                        } else {
+                            row.add(createTableCell(format, ' '))
+                        }
+                    }
+                    else if (fieldKey.contains('ddcs')) {
+                        row.add(createTableCell(format, result.ddcs.collect {"${it.ddc.value} - ${it.ddc.getI10n("value")}"}.join(";")))
+                    }
+                    else if (fieldKey.contains('languages')) {
+                        row.add(createTableCell(format, result.languages.collect { "${it.language.getI10n("value")}" }.join(";")))
+                    }
+                    else if (fieldKey.startsWith('coverage.')) {
+                        AbstractCoverage covStmt = exportService.getCoverageStatement(result)
+                        String coverageField = fieldKey.split("\\.")[1]
+
+                        def fieldValue = covStmt ? _getFieldValue(covStmt, coverageField, sdf) : null
+                        row.add(createTableCell(format, fieldValue))
+                    }
+                    else if (fieldKey.contains('listPriceEUR')) {
+                        LinkedHashSet<PriceItem> priceItemsList = result.priceItems.findAll { it.listCurrency == RDStore.CURRENCY_EUR }
+
+                        if (priceItemsList) {
+                            row.add(createTableCell(format, priceItemsList.collect {df.format(it.listPrice)}.join(";")))
+                        } else {
+                            row.add(createTableCell(format, ' '))
+                        }
+                    }
+                    else if (fieldKey.contains('listPriceGBP')) {
+                        LinkedHashSet<PriceItem> priceItemsList = result.priceItems.findAll { it.listCurrency == RDStore.CURRENCY_GBP }
+
+                        if (priceItemsList) {
+                            row.add(createTableCell(format, priceItemsList.collect {df.format(it.listPrice)}.join(";")))
+                        } else {
+                            row.add(createTableCell(format, ' '))
+                        }
+                    }
+                    else if (fieldKey.contains('listPriceUSD')) {
+                        LinkedHashSet<PriceItem> priceItemsList = result.priceItems.findAll { it.listCurrency == RDStore.CURRENCY_USD }
+
+                        if (priceItemsList) {
+                            row.add(createTableCell(format, priceItemsList.collect {df.format(it.listPrice)}.join(";")))
+                        } else {
+                            row.add(createTableCell(format, ' '))
+                        }
+                    }
+                    else if (fieldKey.contains('localPriceEUR')) {
+                        LinkedHashSet<PriceItem> priceItemsList = result.priceItems.findAll { it.localCurrency == RDStore.CURRENCY_EUR }
+
+                        if (priceItemsList) {
+                            row.add(createTableCell(format, priceItemsList.collect {df.format(it.localPrice)}.join(";")))
+                        } else {
+                            row.add(createTableCell(format, ' '))
+                        }
+                    }
+                    else if (fieldKey.contains('localPriceGBP')) {
+                        LinkedHashSet<PriceItem> priceItemsList = result.priceItems.findAll { it.localCurrency == RDStore.CURRENCY_GBP }
+
+                        if (priceItemsList) {
+                            row.add(createTableCell(format, priceItemsList.collect {df.format(it.localPrice)}.join(";")))
+                        } else {
+                            row.add(createTableCell(format, ' '))
+                        }
+                    }
+                    else if (fieldKey.contains('localPriceUSD')) {
+                        LinkedHashSet<PriceItem> priceItemsList = result.priceItems.findAll { it.localCurrency == RDStore.CURRENCY_USD }
+
+                        if (priceItemsList) {
+                            row.add(createTableCell(format, priceItemsList.collect {df.format(it.localPrice)}.join(";")))
+                        } else {
+                            row.add(createTableCell(format, ' '))
                         }
                     }
                     else {
-                        allRows << tipp
+                        def fieldValue = _getFieldValue(result, field, sdf)
+                        row.add(createTableCell(format, fieldValue))
                     }
                 }
-
-                allRows.eachWithIndex { rowData, int i ->
-                    long start = System.currentTimeMillis()
-                    _setTippRow(rowData, selectedExportFields, exportData, format)
-                    log.debug("used time for record ${i}: ${System.currentTimeMillis()-start}")
-                }
-                log.debug("flushing after ${offset} ...")
-                sess.flush()
             }
+            */
         }
 
         Map sheetData = [:]
@@ -4007,8 +4133,7 @@ class ExportClickMeService {
                                             cons: messageSource.getMessage('financials.tab.consCosts', null, locale),
                                             subscr: messageSource.getMessage('financials.tab.subscrCosts', null, locale)]
 
-        selectedExportFields.keySet().each {String fieldKey ->
-            Map fields = selectedExportFields.get(fieldKey)
+        selectedExportFields.each { String fieldKey, Map fields ->
             if(!fields.separateSheet) {
                 if (fieldKey.contains('Contact.')) {
                     RefdataValue contactType = RefdataValue.findByValue(fieldKey.split('\\.')[1])
