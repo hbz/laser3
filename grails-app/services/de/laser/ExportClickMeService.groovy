@@ -1162,6 +1162,9 @@ class ExportClickMeService {
         Map<String, Object> fields = EXPORT_SUBSCRIPTION_MEMBERS_CONFIG as Map
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
 
+        fields.participantIdentifiers.fields.clear()
+        fields.participantCustomerIdentifiers.fields.clear()
+
         IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
             fields.participantIdentifiers.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
         }
