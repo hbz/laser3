@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5074    26.05.2023  rc-3.1  3.1.2       Andreas Bug         Titelexport lief nicht performant genug
+
 5095    26.05.2023  rc-3.1  3.1.2       David   Feature     Alle > Alle Plattformen wirft 500er
 
 5075    26.05.2023  rc-3.1  3.1.1       David   Feature     Wording: Anbieter erstellen vs anlegen
