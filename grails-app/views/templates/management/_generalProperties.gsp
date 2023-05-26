@@ -209,7 +209,7 @@
                             total="${filteredSubscriptions.size()}/${num_sub_rows}"/>
                 </g:else>
             </h3>
-            <table class="ui celled monitor stackable la-js-responsive-table la-table la-compact table">
+            <table class="ui compact  monitor stackable la-js-responsive-table la-table table">
                 <thead>
                 <tr>
                     <g:if test="${editable}">
