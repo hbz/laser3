@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5075    26.05.2023  rc-3.1  3.1.1       David   Feature     Wording: Anbieter erstellen vs anlegen
+
 5091    26.05.2023  rc-3.1  3.1.1       Andreas Bug         Teilnehmer hinzufügen hing wegen veralteten Einstellungen
 
 --      26.05.2023  rc-3.1  3.1.1       Andreas Feature     interne Umstellung der Identifier-Namensräume

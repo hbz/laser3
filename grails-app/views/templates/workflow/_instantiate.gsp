@@ -16,7 +16,7 @@
     }
 %>
 
-<ui:modal id="modalCreateWorkflow" text="Workflow für '${targetText}' erstellen">
+<ui:modal id="modalCreateWorkflow" text="Workflow für '${targetText}' anlegen">
 
     <g:if test="${true}"> %{-- DEV-BLOCKER --}%
 

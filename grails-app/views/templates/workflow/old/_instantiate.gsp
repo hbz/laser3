@@ -32,7 +32,7 @@
 <g:set var="wfPrototypeList" value="${WfWorkflowPrototype.findAllByStateAndTargetType( RDStore.WF_WORKFLOW_STATE_ACTIVE, cmd ).findAll{ !it.hasCircularReferences() }}" />
 
 <g:if test="${wfPrototypeList}">
-    <ui:modal id="modalInstantiateWorkflow" text="Workflow für '${targetText}' erstellen">
+    <ui:modal id="modalInstantiateWorkflow" text="Workflow für '${targetText}' anlegen">
 
         <g:form controller="${targetController}" action="workflows" id="${target.id}" method="POST" class="ui form">
             <div class="fields two" style="margin-bottom:0;">
@@ -72,7 +72,7 @@
     </ui:modal>
 </g:if>
 <g:else>
-    <ui:modal id="modalInstantiateWorkflow" text="Workflow für '${targetText}' erstellen" hideSubmitButton="true">
+    <ui:modal id="modalInstantiateWorkflow" text="Workflow für '${targetText}' anlegen" hideSubmitButton="true">
         <p>
             ${message(code:'workflow.info.noActivePrototypes', args: [targetType_plural])}
         </p>
