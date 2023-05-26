@@ -17,70 +17,24 @@
                     <th>#</th>
                     <th>Anbieter</th>
                     <th>Plattform</th>
-                    <th>Datum letzter Abruf</th>
                     <th>Intervall</th>
+                    <th>SUSHI-Authentifizierungskonfiguration</th>
                     <th>zentraler API-Schlüssel</th>
-                    <th>Aktionen</th>
                 </tr>
             </thead>
             <tbody>
                 <g:each in="${platforms}" var="platform">
-                    <%
-                        String sushiURL = "", counterRevision = ""
-                        if(platformInstanceRecords[platform.gokbId].counterR5SushiApiSupported == 'Yes') {
-                            sushiURL = platformInstanceRecords[platform.gokbId].counterR5SushiServerUrl
-                            counterRevision = "r5"
-                        }
-                        else if(platformInstanceRecords[platform.gokbId].counterR5SushiApiSupported == 'No' && platformInstanceRecords[platform.gokbId].counterR4SushiApiSupported == 'Yes') {
-                            sushiURL = platformInstanceRecords[platform.gokbId].counterR4SushiServerUrl
-                            counterRevision = "r4"
-                        }
-                    %>
                     <tr>
                         <td>Plattform - ${platform.id}</td>
                         <td>${platform.org ? platform.org.name : null}</td>
                         <td>${platform.name}</td>
                         <td>
-                            <g:if test="${platform.counter5LastRun}">
-                                <g:formatDate date="${platform.counter5LastRun}" format="${message(code:'default.date.format.notime')}"/>
-                            </g:if>
-                            <g:elseif test="${platform.counter4LastRun}">
-                                <g:formatDate date="${platform.counter4LastRun}" format="${message(code:'default.date.format.notime')}"/>
-                            </g:elseif>
-                        </td>
-                        <td>
                             <g:if test="${platformInstanceRecords[platform.gokbId].statisticsUpdate}">
                                 ${RefdataValue.getByValueAndCategory(platformInstanceRecords[platform.gokbId].statisticsUpdate, RDConstants.PLATFORM_STATISTICS_FREQUENCY)?.getI10n("value")}
                             </g:if>
                         </td>
-                        <td><ui:xEditable owner="${platform}" field="centralApiKey" overwriteEditable="${true}"/></td>
-                        <td>
-                            <g:if test="${!platformInstanceRecords[platform.gokbId].containsKey("noCursor")}">
-                                <g:link class="ui negative button js-open-confirm-modal"
-                                        data-confirm-tokenMsg="ACHTUNG! Sie sind im Begriff, die Zeiger für ${platform.name} zu entfernen! Damit werden beim nächsten Synclauf die Daten ab Anfang neu geladen! Derzeit vorhandene Daten werden bis dahin aber behalten! Fortfahren?"
-                                        data-confirm-term-how="ok"
-                                        controller="yoda"
-                                        action="resetStatsData"
-                                        role="button"
-                                        params="${[platform: platform.id, fullReset: false]}">Cursor zurücksetzen</g:link>
-                                <g:link class="ui negative button js-open-confirm-modal"
-                                        data-confirm-tokenMsg="ACHTUNG! Sie sind im Begriff, alle Statistikdaten für ${platform.name} zurückzusetzen! Damit werden auch alle derzeit vorhandenen Daten verworfen und direkt neu geladen! Fortfahren?"
-                                        data-confirm-term-how="ok"
-                                        controller="yoda"
-                                        action="resetStatsData"
-                                        role="button"
-                                        params="${[platform: platform.id, fullReset: true, sushiURL: sushiURL, counterRevision: counterRevision]}">Alle Statistik-Daten zu dieser Plattform löschen und neu laden</g:link>
-                            </g:if>
-                            <g:else>
-                                <g:link class="ui positive button js-open-confirm-modal"
-                                        data-confirm-tokenMsg="ACHTUNG! Sie sind im Begriff, einen initialen Ladevorgang für die Statistiken anzustoßen! Dieser kann unter Umständen mehrere Stunden dauern! Fortfahren?"
-                                        data-confirm-term-how="ok"
-                                        controller="yoda"
-                                        action="resetStatsData"
-                                        role="button"
-                                        params="${[platform: platform.id, fullReset: true, sushiURL: sushiURL, counterRevision: counterRevision]}">Statistiken zur Plattform initial laden</g:link>
-                            </g:else>
-                        </td>
+                        <td>${platformInstanceRecords[platform.gokbId].sushiApiAuthenticationMethod}</td>
+                        <td>${platformInstanceRecords[platform.gokbId].centralApiKey}</td>
                     </tr>
                 </g:each>
             </tbody>

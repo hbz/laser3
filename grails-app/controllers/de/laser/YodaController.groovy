@@ -650,28 +650,24 @@ class YodaController {
      */
     @Secured(['ROLE_YODA'])
     Map<String, Object> manageStatsSources() {
-        SortedSet<Platform> platforms = Platform.executeQuery('select p from LaserStatsCursor lsc join lsc.platform p join p.org o where p.org is not null order by o.name, o.sortname, p.name') as TreeSet<Platform>
         Map<String, Object> result = [
-                platforms: platforms,
+                platforms: [],
                 platformInstanceRecords: [:],
                 flagContentGokb : true // gokbService.queryElasticsearch
         ]
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
-        Map allPlatforms = gokbService.queryElasticsearch(apiSource.baseUrl+apiSource.fixToken+"/searchApi", [componentType: "Platform", max: 10000, status: "Current"])
+        Map allPlatforms = gokbService.queryElasticsearch(apiSource.baseUrl+apiSource.fixToken+"/sushiSources", [:])
         if (allPlatforms.error && allPlatforms.error == 404) {
             result.wekbServerUnavailable = message(code: 'wekb.error.404')
         }
         else if (allPlatforms.warning) {
-            List records = allPlatforms.warning.records
-            records.each { Map otherRecord ->
-                if((otherRecord.counterR5SushiApiSupported == 'Yes' && otherRecord.counterR5SushiServerUrl != null) || (otherRecord.counterR4SushiApiSupported == 'Yes' && otherRecord.counterR4SushiServerUrl != null)) {
-                    String gokbId = otherRecord.uuid as String
-                    Platform platformInstance = Platform.findByGokbId(gokbId)
-                    if(platformInstance && result.platforms.add(platformInstance)) {
-                        otherRecord.noCursor = true
-                    }
-                    result.platformInstanceRecords[gokbId] = otherRecord
-                }
+            Map records = allPlatforms.warning
+            List allRecords = []
+            allRecords.addAll(records.counter4ApiSources.values())
+            allRecords.addAll(records.counter5ApiSources.values())
+            allRecords.each { platform ->
+                result.platforms << Platform.findByGokbId(platform.uuid)
+                result.platformInstanceRecords[platform.uuid] = platform
             }
         }
         result
@@ -1539,9 +1535,10 @@ class YodaController {
             Thread.currentThread().setName("setPerpetualAccessByIes")
             List<Subscription> subList = Subscription.findAllByHasPerpetualAccess(true)
             int countProcess = 0, countProcessPT = 0
+            Set<RefdataValue> status = [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_REMOVED, RDStore.TIPP_STATUS_EXPECTED]
             subList.eachWithIndex { Subscription sub, int i ->
-                List<IssueEntitlement> ies = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.subscription = :sub and ie.perpetualAccessBySub is null', [sub: sub])
-                IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.perpetualAccessBySub = :sub where ie.subscription = :sub and ie.perpetualAccessBySub is null', [sub: sub])
+                List<IssueEntitlement> ies = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.subscription = :sub and ie.perpetualAccessBySub is null and ie.status in (:status)', [sub: sub, status: status])
+                IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.perpetualAccessBySub = :sub where ie.subscription = :sub and ie.perpetualAccessBySub is null and ie.status in (:status)', [sub: sub, status: status])
                 if (ies.size() > 0) {
                     Org owner = sub.getSubscriber()
 
