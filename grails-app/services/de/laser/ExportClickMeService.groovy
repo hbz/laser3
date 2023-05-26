@@ -2827,13 +2827,15 @@ class ExportClickMeService {
                     }
                 }
             }
-            String sqlQuery = "select ${sqlCols.join(',')} from title_instance_package_platform where tipp_id in (:idSet) order by tipp_sort_name"
+            String sqlQuery = "select ${sqlCols.join(',')} from title_instance_package_platform where tipp_id = any(:idSet) order by tipp_sort_name"
             log.debug(sqlQuery) //for database measurement purposes, comment out if not needed!
             result.collate(50000).each { List<Long> subSet ->
-                sql.rows(sqlQuery, [idSet: subSet.join(',')]).each { GroovyRowResult sqlRow ->
+                sql.rows(sqlQuery, [idSet: sql.getDataSource().getConnection().createArrayOf('bigint', subSet as Object[])]).each { GroovyRowResult sqlRow ->
+                    List row = []
                     selectedExportFields.each { String fieldKey, Map fields ->
-                        exportData.add(createTableCell(format, sqlRow.get(fields.sqlCol)))
+                        row.add(createTableCell(format, sqlRow.get(fields.sqlCol)))
                     }
+                    exportData.add(row)
                 }
             }
 
