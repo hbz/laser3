@@ -27,7 +27,6 @@ import io.micronaut.http.client.HttpClientConfiguration
 import org.grails.web.json.JSONArray
 
 import java.security.MessageDigest
-import java.sql.Connection
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.time.Duration
@@ -297,7 +296,7 @@ class StatsSyncService {
             if (http) { http.close() }
         }
         Sql sql = GlobalService.obtainSqlConnection()
-        Set<Long> namespaces = [IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISSN, TitleInstancePackagePlatform.class.name).id, IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISSN, TitleInstancePackagePlatform.class.name).id, IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISBN, TitleInstancePackagePlatform.class.name).id, IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.PISBN, TitleInstancePackagePlatform.class.name).id, IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.DOI, TitleInstancePackagePlatform.class.name).id]
+        Set<Long> namespaces = [IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISSN, TitleInstancePackagePlatform.class.name).id, IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISSN, TitleInstancePackagePlatform.class.name).id, IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISBN, TitleInstancePackagePlatform.class.name).id, IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISBN, TitleInstancePackagePlatform.class.name).id, IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.DOI, TitleInstancePackagePlatform.class.name).id]
         boolean oneMonthly = false
         c4SushiSources.each { List c4as ->
             if ((c4as[2] == 'Monthly' && !oneMonthly) || c4as[2] != 'Monthly' || !incremental) {

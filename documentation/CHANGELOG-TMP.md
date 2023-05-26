@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5091    26.05.2023  rc-3.1  3.1.1       Andreas Bug         Teilnehmer hinzufügen hing wegen veralteten Einstellungen
+
+--      26.05.2023  rc-3.1  3.1.1       Andreas Feature     interne Umstellung der Identifier-Namensräume
+
+5088    26.05.2023  rc-3.1  3.1.1       Andreas Feature     Auswahl "Alle" berücksichtigt Gesamtmenge
+
 5087    25.05.2023  rc-3.1  3.1.1       Andreas Feature     Ausblenden der Felder lastRun und centralApiKey aus LAS:eR
 
 5084    25.05.2023  rc-3.1  3.1.1       Andreas Feature     Umfrage-Merkmal "Testzugriff" zum allgemeinen Merkmal aufgestuft

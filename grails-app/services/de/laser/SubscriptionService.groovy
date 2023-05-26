@@ -2308,20 +2308,20 @@ join sub.orgRelations or_sub where
         //now, assemble the identifiers available to highlight
         Map<String, IdentifierNamespace> namespaces = [zdb  : IdentifierNamespace.findByNsAndNsType('zdb', TitleInstancePackagePlatform.class.name),
                                                        eissn: IdentifierNamespace.findByNsAndNsType('eissn', TitleInstancePackagePlatform.class.name), isbn: IdentifierNamespace.findByNsAndNsType('isbn',TitleInstancePackagePlatform.class.name),
-                                                       issn : IdentifierNamespace.findByNsAndNsType('issn', TitleInstancePackagePlatform.class.name), pisbn: IdentifierNamespace.findByNsAndNsType('pisbn', TitleInstancePackagePlatform.class.name),
+                                                       issn : IdentifierNamespace.findByNsAndNsType('issn', TitleInstancePackagePlatform.class.name), eisbn: IdentifierNamespace.findByNsAndNsType('eisbn', TitleInstancePackagePlatform.class.name),
                                                        doi  : IdentifierNamespace.findByNsAndNsType('doi', TitleInstancePackagePlatform.class.name)]
         rows.eachWithIndex { row, int i ->
             log.debug("now processing entitlement ${i}")
             ArrayList<String> cols = row.split('\t')
             Map<String, Object> idCandidate
             if (colMap.onlineIdentifierCol >= 0 && cols[colMap.onlineIdentifierCol]) {
-                idCandidate = [namespaces: [namespaces.eissn, namespaces.isbn], value: cols[colMap.onlineIdentifierCol]]
+                idCandidate = [namespaces: [namespaces.eissn, namespaces.eisbn], value: cols[colMap.onlineIdentifierCol]]
             }
             else if (colMap.doiTitleCol >= 0 && cols[colMap.doiTitleCol]) {
                 idCandidate = [namespaces: [namespaces.doi], value: cols[colMap.doiTitleCol]]
             }
             else if (colMap.printIdentifierCol >= 0 && cols[colMap.printIdentifierCol]) {
-                idCandidate = [namespaces: [namespaces.issn, namespaces.pisbn], value: cols[colMap.printIdentifierCol]]
+                idCandidate = [namespaces: [namespaces.issn, namespaces.isbn], value: cols[colMap.printIdentifierCol]]
             }
             else if (colMap.zdbCol >= 0 && cols[colMap.zdbCol]) {
                 idCandidate = [namespaces: [namespaces.zdb], value: cols[colMap.zdbCol]]
@@ -2471,20 +2471,20 @@ join sub.orgRelations or_sub where
         //now, assemble the identifiers available to highlight
         Map<String, IdentifierNamespace> namespaces = [zdb  : IdentifierNamespace.findByNsAndNsType('zdb', TitleInstancePackagePlatform.class.name),
                                                        eissn: IdentifierNamespace.findByNsAndNsType('eissn', TitleInstancePackagePlatform.class.name), isbn: IdentifierNamespace.findByNsAndNsType('isbn',TitleInstancePackagePlatform.class.name),
-                                                       issn : IdentifierNamespace.findByNsAndNsType('issn', TitleInstancePackagePlatform.class.name), pisbn: IdentifierNamespace.findByNsAndNsType('pisbn', TitleInstancePackagePlatform.class.name),
+                                                       issn : IdentifierNamespace.findByNsAndNsType('issn', TitleInstancePackagePlatform.class.name), eisbn: IdentifierNamespace.findByNsAndNsType('eisbn', TitleInstancePackagePlatform.class.name),
                                                        doi  : IdentifierNamespace.findByNsAndNsType('doi', TitleInstancePackagePlatform.class.name)]
         rows.eachWithIndex { row, int i ->
             log.debug("now processing entitlement ${i}")
             ArrayList<String> cols = row.split('\t')
             Map<String, Object> idCandidate
             if (colMap.onlineIdentifierCol >= 0 && cols[colMap.onlineIdentifierCol]) {
-                idCandidate = [namespaces: [namespaces.eissn, namespaces.isbn], value: cols[colMap.onlineIdentifierCol]]
+                idCandidate = [namespaces: [namespaces.eissn, namespaces.eisbn], value: cols[colMap.onlineIdentifierCol]]
             }
             else if (colMap.doiTitleCol >= 0 && cols[colMap.doiTitleCol]) {
                 idCandidate = [namespaces: [namespaces.doi], value: cols[colMap.doiTitleCol]]
             }
             else if (colMap.printIdentifierCol >= 0 && cols[colMap.printIdentifierCol]) {
-                idCandidate = [namespaces: [namespaces.issn, namespaces.pisbn], value: cols[colMap.printIdentifierCol]]
+                idCandidate = [namespaces: [namespaces.issn, namespaces.isbn], value: cols[colMap.printIdentifierCol]]
             }
             else if (colMap.zdbCol >= 0 && cols[colMap.zdbCol]) {
                 idCandidate = [namespaces: [namespaces.zdb], value: cols[colMap.zdbCol]]
