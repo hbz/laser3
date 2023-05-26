@@ -111,7 +111,6 @@ class ManagementService {
                     processDocuments(controller, parameterMap, input_file)
                     parameterMap.remove('processOption')
                 }
-
                 result << subscriptionProperties(controller, parameterMap)
                 break
             case "customerIdentifiers":
