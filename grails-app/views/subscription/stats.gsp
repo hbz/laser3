@@ -139,26 +139,6 @@
                                     </dd>
                                 </dl>
                             </g:if>
-                        <%-- lastRun and centralApiKey come from LAS:eR, not from we:kb! --%>
-                            <g:if test="${platformInstanceRecord.lastRun}">
-                                <dl>
-                                    <dt><g:message code="platform.stats.counter.lastRun"/></dt>
-                                    <dd>
-                                        <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${platformInstanceRecord.lastRun}"/>
-                                    </dd>
-                                </dl>
-                            </g:if>
-                            <g:if test="${platformInstanceRecord.counterR5SushiApiSupported}">
-                                <sec:ifAnyGranted roles="ROLE_YODA">
-                                    <g:set var="laserPlat" value="${Platform.get(platformInstanceRecord.id)}"/>
-                                    <dl>
-                                        <dt><g:message code="platform.stats.counter.centralApiKey"/></dt>
-                                        <dd>
-                                            <ui:xEditable owner="${laserPlat}" field="centralApiKey" overwriteEditable="${true}"/>
-                                        </dd>
-                                    </dl>
-                                </sec:ifAnyGranted>
-                            </g:if>
                         </div>
                     </div>
                 </div>

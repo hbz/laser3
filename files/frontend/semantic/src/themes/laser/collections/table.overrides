@@ -198,11 +198,13 @@
   color: inherit;
   padding: @cellVerticalPadding @cellHorizontalPadding;
 }
-.ui.table thead th.la-smaller-table-head {
+.ui.celled.sortable.table > thead > tr > th.la-smaller-table-head {
   padding-top: 0;
   padding-bottom: 0;
   height: 28px;
+  border-left: @sortableBorder;
 }
+
 /* wrap small needed th to avoid table layout break */
 .ui.sortable.table thead th.la-th-wrap {
   white-space: normal;

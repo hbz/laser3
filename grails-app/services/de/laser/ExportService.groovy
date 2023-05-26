@@ -2141,14 +2141,14 @@ class ExportService {
 							}
 							break
 						case AbstractReport.API_AUTH_CUSTOMER_REQUESTOR_API:
-							if(customerId.requestorKey && configMap.platform.centralApiKey) {
-								url += "&requestor_id=${customerId.requestorKey}&api_key=${platform.centralApiKey}"
+							if(customerId.requestorKey && platformRecord.centralApiKey) {
+								url += "&requestor_id=${customerId.requestorKey}&api_key=${platformRecord.centralApiKey}"
 							}
 							break
 						case AbstractReport.API_IP_WHITELISTING:
 							break
 						default:
-							String apiKey = configMap.platform.centralApiKey ?: customerId.requestorKey
+							String apiKey = platformRecord.centralApiKey ?: customerId.requestorKey
 							if(customerId.requestorKey || apiKey) {
 								url += "&requestor_id=${customerId.requestorKey}&api_key=${apiKey}"
 							}

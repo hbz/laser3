@@ -209,6 +209,7 @@ class StatsSyncService {
      * Both COUNTER 4 and COUNTER 5 are being processed here
      * @param incremental should only newest data being fetched or a full data reload done?
      */
+    @Deprecated
     void internalDoFetch(boolean incremental, String platformUUID = '', String source = '', String revision = '') {
         ApiSource apiSource = ApiSource.findByActive(true)
         List<List> c4SushiSources = [], c5SushiSources = []

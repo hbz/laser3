@@ -204,25 +204,6 @@
                             </dd>
                         </dl>
                     </g:if>
-                <%-- lastRun and centralApiKey come from LAS:eR, not from we:kb! --%>
-                    <g:if test="${platformInstance.counter4LastRun || platformInstance.counter5LastRun}">
-                        <dl>
-                            <dt><g:message code="platform.stats.counter.lastRun"/></dt>
-                            <dd>
-                                <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${platformInstance.counter5LastRun ?: platformInstance.counter4LastRun}"/>
-                            </dd>
-                        </dl>
-                    </g:if>
-                    <g:if test="${platformInstanceRecord.counterR5SushiApiSupported}">
-                        <sec:ifAnyGranted roles="ROLE_YODA">
-                            <dl>
-                                <dt><g:message code="platform.stats.counter.centralApiKey"/></dt>
-                                <dd>
-                                    <ui:xEditable owner="${platformInstance}" field="centralApiKey" overwriteEditable="${true}"/>
-                                </dd>
-                            </dl>
-                        </sec:ifAnyGranted>
-                    </g:if>
                 </div>
             </div>
             <div id="new-dynamic-properties-block">
