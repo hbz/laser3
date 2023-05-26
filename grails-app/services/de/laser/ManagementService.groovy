@@ -672,14 +672,22 @@ class ManagementService {
         if(result.editable && formService.validateToken(params)) {
             Locale locale = LocaleUtils.getCurrentLocale()
             FlashScope flash = getCurrentFlashScope()
-            List selectedSubs = params.list("selectedSubs")
-            if (selectedSubs) {
+            Set<Subscription> subscriptions
+            if(params.containsKey("membersListToggler")) {
+                if(controller instanceof SubscriptionController) {
+                    subscriptions = subscriptionControllerService.getFilteredSubscribers(params,result.subscription).sub
+                }
+                else if(controller instanceof MyInstitutionController) {
+                    subscriptions = subscriptionService.getMySubscriptions(params,result.user,result.institution).allSubscriptions
+                }
+            }
+            else subscriptions = Subscription.findAllByIdInList(params.list("selectedSubs"))
+            if (subscriptions) {
                 Set change = [], noChange = []
                 SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
                 Date startDate = params.valid_from ? sdf.parse(params.valid_from) : null
                 Date endDate = params.valid_to ? sdf.parse(params.valid_to) : null
                 Year referenceYear = params.reference_year ? Year.parse(params.reference_year) : null
-                Set<Subscription> subscriptions = Subscription.findAllByIdInList(selectedSubs)
                 if(params.processOption == 'changeProperties') {
                     subscriptions.each { Subscription subscription ->
                         if (subscription.isEditableBy(result.user)) {
