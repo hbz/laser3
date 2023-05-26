@@ -311,8 +311,8 @@ class ApiEZB {
         //log.debug("processing ${tipp.name}")
         //publication_title
         outRow.add(row['ie_name'])
-        GroovyRowResult printIdentifier = identifiers.find { GroovyRowResult idRow -> idRow['idns_ns'] in ['pisbn', 'issn'] },
-                        onlineIdentifier = identifiers.find { GroovyRowResult idRow -> idRow['idns_ns'] in ['isbn', 'eissn'] }
+        GroovyRowResult printIdentifier = identifiers.find { GroovyRowResult idRow -> idRow['idns_ns'] in ['isbn', 'issn'] },
+                        onlineIdentifier = identifiers.find { GroovyRowResult idRow -> idRow['idns_ns'] in ['eisbn', 'eissn'] }
         //print_identifier - namespace pISBN is proprietary for LAS:eR because no eISBN is existing and ISBN is used for eBooks as well
         if (printIdentifier)
             outRow.add(printIdentifier['id_value'])
