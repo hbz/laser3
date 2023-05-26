@@ -27,13 +27,7 @@
     <table class="ui celled la-js-responsive-table la-table table documents-table-${randomId}">
         <thead>
             <tr>
-                <g:if test="${!(controllerName == 'myInstitution' && actionName == 'subscriptionsManagement')}">
-                    <th scope="col" class="${colWide[cwCounter++]} center aligned wide" rowspan="2">#</th>
-                </g:if>
-
-%{--                <g:if test="${controllerName == 'myInstitution'}">--}%
-%{--                    <th scope="col" class="${colWide[cwCounter++]} wide" rowspan="2">${message(code:'sidewide.number')}</th>--}%
-%{--                </g:if>--}%
+                <th scope="col" class="${colWide[cwCounter++]} center aligned wide" rowspan="2">#</th>
                 <th scope="col" class="${colWide[cwCounter++]} wide la-smaller-table-head">${message(code:'template.addDocument.name')}</th>
                 <th scope="col" class="${colWide[cwCounter++]} wide" rowspan="2">${message(code:'license.docs.table.type')}</th>
                 <th scope="col" class="${colWide[cwCounter++]} wide" rowspan="2">${message(code:'template.addDocument.confidentiality')}</th>
@@ -106,20 +100,12 @@
                 %>
                 <g:if test="${docctx.isDocAFile() && visible && (docctx.status != RDStore.DOC_CTX_STATUS_DELETED)}">
                     <tr>
-                        <g:if test="${!(controllerName == 'myInstitution' && actionName == 'subscriptionsManagement')}">
-                            <td class="center aligned">
-                                <g:if test="${docctx.owner.owner.id == contextService.getOrg().id && !docctx.sharedFrom}">
-                                    <g:if test="${editable}">
-                                        <g:checkBox id="bulk_doc_${docctx.owner.id}" name="bulk_doc" value="${docctx.owner.id}" checked="false"/>
-                                    </g:if>
+                        <td class="center aligned">
+                            <g:if test="${docctx.owner.owner.id == contextService.getOrg().id && !docctx.sharedFrom}">
+                                <g:if test="${editable}">
+                                    <g:checkBox id="bulk_doc_${docctx.owner.id}" name="bulk_doc" value="${docctx.owner.id}" checked="false"/>
                                 </g:if>
-                            </td>
-                        </g:if>
-%{--                        <g:if test="${controllerName == 'myInstitution'}">--}%
-%{--                            <td class="center aligned">--}%
-%{--                                ${trCounter++}--}%
-%{--                            </td>--}%
-%{--                        </g:if>--}%
+                            </g:if>
                         <td>
                             <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}" />
                             <strong>
@@ -231,30 +217,29 @@
             <tfoot>
                 <tr>
                     <td class="center aligned">
-                        <g:checkBox name="bulk_selectionToggler" id="bulk_selectionToggler" checked="false"/>
+%{--                        <g:if test="${!(controllerName == 'myInstitution' && actionName == 'subscriptionsManagement')}">--}%
+                            <g:checkBox name="bulk_selectionToggler" id="bulk_selectionToggler_${randomId}" checked="false"/>
+%{--                        </g:if>--}%
                     </td>
-%{--                    <g:if test="${controllerName == 'myInstitution'}">--}%
-%{--                        <td></td>--}%
-%{--                    </g:if>--}%
                     <td></td>
                     <td></td>
                     <td>
-                        <form id="bulk_form" class="ui form" method="POST">
+                        <form id="bulk_form_${randomId}" class="ui form" method="POST">
                             <ui:select class="ui dropdown search"
-                                       name="bulk_docConf" id="bulk_docConf"
+                                       name="bulk_docConf" id="bulk_docConf_${randomId}"
                                        from="${RefdataCategory.getAllRefdataValues(RDConstants.DOCUMENT_CONFIDENTIALITY)}"
                                        optionKey="id"
                                        optionValue="value"
                             />
-                            <input name="bulk_docIdList" id="bulk_docIdList" type="hidden" value="" />
+                            <input name="bulk_docIdList" id="bulk_docIdList_${randomId}" type="hidden" value="" />
                             <input name="bulk_op" type="hidden" value="${RDConstants.DOCUMENT_CONFIDENTIALITY}" />
                         </form>
                     </td>
-                    <g:if test="${controllerName == 'myInstitution'}">
+                    <g:if test="${controllerName == 'myInstitution' && actionName != 'subscriptionsManagement'}">
                         <td></td>
                     </g:if>
                     <td>
-                        <button id="bulk_submit" class="ui button primary">Übernehmen</button>
+                        <button id="bulk_submit_${randomId}" class="ui button primary">Übernehmen</button>
                     </td>
                 </tr>
             </tfoot>
@@ -264,24 +249,26 @@
 <laser:script file="${this.getGroovyPageFileName()}">
     docs.init('.documents-table-${randomId}')
 
-    <g:if test="${!(controllerName == 'myInstitution' && actionName == 'subscriptionsManagement')}">
-    $('#bulk_submit').click (function () {
+    $('#bulk_submit_${randomId}').click (function () {
         let ids = []
-        $('input[name=bulk_doc]:checked').each( function (i, e) {
+        $('.documents-table-${randomId} input[name=bulk_doc]:checked').each( function (i, e) {
             ids.push($(e).attr ('value'))
         })
-        $('#bulk_docIdList').attr ('value', ids.join (','))
-        $('#bulk_form').submit()
+        $('#bulk_docIdList_${randomId}').attr ('value', ids.join (','))
+        $('#bulk_form_${randomId}').submit()
     })
 
-    $('#bulk_selectionToggler').click (function () {
+    $('#bulk_selectionToggler_${randomId}').click (function () {
         if ($(this).prop ('checked')) {
-            $('input[name=bulk_doc]').prop ('checked', true)
+            $('.documents-table-${randomId} input[name=bulk_doc]').prop ('checked', true)
         } else {
-            $('input[name=bulk_doc]').prop ('checked', false)
+            $('.documents-table-${randomId} input[name=bulk_doc]').prop ('checked', false)
         }
     })
-    </g:if>
+
+    $('.documents-table-${randomId} input[name=bulk_doc]').click (function () {
+        $('#bulk_selectionToggler_${randomId}').prop ('checked', false)
+    })
 </laser:script>
 
 <%-- a form within a form is not permitted --%>
