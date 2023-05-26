@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5090    26.05.2023  rc-3.1  3.1.1       David   Bug         Lizenzverwaltung > Dokumente
+
 5087    25.05.2023  rc-3.1  3.1.1       Andreas Feature     Ausblenden der Felder lastRun und centralApiKey aus LAS:eR
 
 5084    25.05.2023  rc-3.1  3.1.1       Andreas Feature     Umfrage-Merkmal "Testzugriff" zum allgemeinen Merkmal aufgestuft

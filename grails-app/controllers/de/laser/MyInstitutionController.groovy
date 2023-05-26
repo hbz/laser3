@@ -1303,6 +1303,10 @@ class MyInstitutionController  {
             params.original_filename = input_file.originalFilename
             params.mimeType = input_file.contentType
             result << managementService.subscriptionsManagement(this, params, input_file)
+        }
+        else if (params.tab == 'documents' && params.bulk_op) {
+            docstoreService.bulkDocOperation(params, result, flash)
+            result << managementService.subscriptionsManagement(this, params)
         }else{
             result << managementService.subscriptionsManagement(this, params)
         }
