@@ -365,7 +365,7 @@ class SubscriptionControllerService {
             */
             //at this point, we should be sure that at least the parent subscription has a holding!
             Platform platform = Platform.get(params.platform)
-            Set<IdentifierNamespace> namespaces = [IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISSN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISSN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISBN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.PISBN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.DOI, TitleInstancePackagePlatform.class.name)] as Set<IdentifierNamespace>
+            Set<IdentifierNamespace> namespaces = [IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISSN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISSN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISBN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISBN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.DOI, TitleInstancePackagePlatform.class.name)] as Set<IdentifierNamespace>
             IdentifierNamespace propIdNamespace = IdentifierNamespace.findByNs(platform.titleNamespace)
             namespaces.add(propIdNamespace)
             Set<Subscription> refSubs
@@ -836,26 +836,26 @@ class SubscriptionControllerService {
             if(!tipp)
                 tipp = titles[IdentifierNamespace.EISSN]?.get(report.onlineIdentifier?.replaceAll('-',''))
             if(!tipp)
-                tipp = titles[IdentifierNamespace.ISBN]?.get(report.onlineIdentifier)
+                tipp = titles[IdentifierNamespace.EISBN]?.get(report.onlineIdentifier)
             if(!tipp)
-                tipp = titles[IdentifierNamespace.ISBN]?.get(report.onlineIdentifier?.replaceAll('-',''))
+                tipp = titles[IdentifierNamespace.EISBN]?.get(report.onlineIdentifier?.replaceAll('-',''))
             if(!tipp)
-                tipp = titles[IdentifierNamespace.ISBN]?.get(report.isbn)
+                tipp = titles[IdentifierNamespace.EISBN]?.get(report.isbn)
             if(!tipp)
-                tipp = titles[IdentifierNamespace.ISBN]?.get(report.isbn?.replaceAll('-',''))
+                tipp = titles[IdentifierNamespace.EISBN]?.get(report.isbn?.replaceAll('-',''))
         }
         if(!tipp && (report.printIdentifier || report.isbn)) {
             tipp = titles[IdentifierNamespace.ISSN]?.get(report.printIdentifier)
             if(!tipp)
                 tipp = titles[IdentifierNamespace.ISSN]?.get(report.printIdentifier?.replaceAll('-',''))
             if(!tipp)
-                tipp = titles[IdentifierNamespace.PISBN]?.get(report.printIdentifier)
+                tipp = titles[IdentifierNamespace.ISBN]?.get(report.printIdentifier)
             if(!tipp)
-                tipp = titles[IdentifierNamespace.PISBN]?.get(report.printIdentifier?.replaceAll('-',''))
+                tipp = titles[IdentifierNamespace.ISBN]?.get(report.printIdentifier?.replaceAll('-',''))
             if(!tipp)
-                tipp = titles[IdentifierNamespace.PISBN]?.get(report.isbn)
+                tipp = titles[IdentifierNamespace.ISBN]?.get(report.isbn)
             if(!tipp)
-                tipp = titles[IdentifierNamespace.PISBN]?.get(report.isbn?.replaceAll('-',''))
+                tipp = titles[IdentifierNamespace.ISBN]?.get(report.isbn?.replaceAll('-',''))
         }
         if(!tipp && report.doi) {
             tipp = titles[IdentifierNamespace.DOI]?.get(report.doi)
@@ -887,7 +887,7 @@ class SubscriptionControllerService {
                 configMap.putAll(exportService.prepareSushiCall(platformRecord))
                 if(configMap.revision && configMap.statsUrl && ci.value) {
                     if(configMap.revision == AbstractReport.COUNTER_5) {
-                        String apiKey = platform.centralApiKey ?: ci.requestorKey
+                        String apiKey = platformRecord.centralApiKey ?: ci.requestorKey
                         String queryArguments = "?customer_id=${ci.value}"
                         switch(platformRecord.sushiApIAuthenticationMethod) {
                             case AbstractReport.API_AUTH_CUSTOMER_REQUESTOR:
@@ -902,8 +902,8 @@ class SubscriptionControllerService {
                                 }
                                 break
                             case AbstractReport.API_AUTH_CUSTOMER_REQUESTOR_API:
-                                if(ci.requestorKey && platform.centralApiKey) {
-                                    queryArguments += "&requestor_id=${ci.requestorKey}&api_key=${platform.centralApiKey}"
+                                if(ci.requestorKey && platformRecord.centralApiKey) {
+                                    queryArguments += "&requestor_id=${ci.requestorKey}&api_key=${platformRecord.centralApiKey}"
                                 }
                                 break
                             case AbstractReport.API_IP_WHITELISTING:
@@ -1575,7 +1575,7 @@ class SubscriptionControllerService {
                 subscriptions << baseSub
                 subscriptions << subscriberSub
                 Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription in (:subscriptions)", [subscriptions: refSubs])
-                Set<IdentifierNamespace> namespaces = [IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISSN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISSN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISBN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.PISBN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.DOI, TitleInstancePackagePlatform.class.name)] as Set<IdentifierNamespace>,
+                Set<IdentifierNamespace> namespaces = [IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISSN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISSN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISBN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISBN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.DOI, TitleInstancePackagePlatform.class.name)] as Set<IdentifierNamespace>,
                                          propIdNamespaces = IdentifierNamespace.findAllByNsInList(subscribedPlatforms.titleNamespace)
                 if(!subscribedPlatforms) {
                     subscribedPlatforms = Platform.executeQuery("select tipp.platform from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (:subscriptions)", [subscriptions: refSubs])
@@ -2536,7 +2536,7 @@ class SubscriptionControllerService {
                                                                eissn: IdentifierNamespace.findByNsAndNsType('eissn', TitleInstancePackagePlatform.class.name),
                                                                isbn: IdentifierNamespace.findByNsAndNsType('isbn',TitleInstancePackagePlatform.class.name),
                                                                issn : IdentifierNamespace.findByNsAndNsType('issn', TitleInstancePackagePlatform.class.name),
-                                                               pisbn: IdentifierNamespace.findByNsAndNsType('pisbn', TitleInstancePackagePlatform.class.name),
+                                                               eisbn: IdentifierNamespace.findByNsAndNsType('eisbn', TitleInstancePackagePlatform.class.name),
                                                                doi: IdentifierNamespace.findByNsAndNsType('doi', TitleInstancePackagePlatform.class.name)]
 
                 Set<Long> tippIds = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
@@ -2652,7 +2652,7 @@ class SubscriptionControllerService {
                             identifiers.onlineIds.add(cols[colMap.onlineIdentifierCol])
                             idCandidate = [namespaces: [], value: cols[colMap.onlineIdentifierCol]]
                             idCandidate.namespaces.add(namespaces.eissn)
-                            idCandidate.namespaces.add(namespaces.isbn)
+                            idCandidate.namespaces.add(namespaces.eisbn)
                             if (ieCandIdentifier == null && !issueEntitlementOverwrite[cols[colMap.onlineIdentifierCol]])
                                 ieCandIdentifier = cols[colMap.onlineIdentifierCol]
                             else if (issueEntitlementOverwrite[cols[colMap.onlineIdentifierCol]])
@@ -2662,7 +2662,7 @@ class SubscriptionControllerService {
                             identifiers.printIds.add(cols[colMap.printIdentifierCol])
                             idCandidate = [namespaces: [], value: cols[colMap.printIdentifierCol]]
                             idCandidate.namespaces.add(namespaces.issn)
-                            idCandidate.namespaces.add(namespaces.pisbn)
+                            idCandidate.namespaces.add(namespaces.isbn)
                             if (ieCandIdentifier == null && !issueEntitlementOverwrite[cols[colMap.printIdentifierCol]])
                                 ieCandIdentifier = cols[colMap.printIdentifierCol]
                             else if (issueEntitlementOverwrite[cols[colMap.printIdentifierCol]])

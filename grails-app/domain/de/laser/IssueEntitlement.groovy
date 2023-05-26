@@ -103,7 +103,7 @@ class IssueEntitlement extends AbstractBase implements Comparable {
         openAccess column:'ie_open_access_rv_fk', index: 'ie_open_access_idx'
       subscription column:'ie_subscription_fk', index: 'ie_sub_idx, ie_sub_tipp_idx, ie_sub_tipp_status_idx, ie_status_accept_status_idx, ie_tipp_status_accept_status_idx'
               tipp column:'ie_tipp_fk',         index: 'ie_tipp_idx, ie_sub_tipp_idx, ie_sub_tipp_status_idx, ie_tipp_status_accept_status_idx'
-        perpetualAccessBySub column:'ie_perpetual_access_by_sub_fk'
+        perpetualAccessBySub column:'ie_perpetual_access_by_sub_fk', index: 'ie_perpetual_access_by_sub_idx'
             medium column:'ie_medium_rv_fk', index: 'ie_medium_idx'
     accessStartDate column:'ie_access_start_date'
      accessEndDate column:'ie_access_end_date'

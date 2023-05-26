@@ -1,3 +1,5 @@
+package changelogs
+
 databaseChangeLog = {
 
     changeSet(author: "galffy (hand-coded)", id: "1684824321864-1") {
@@ -9,5 +11,12 @@ databaseChangeLog = {
         }
     }
 
-
+    changeSet(author: "galffy (hand-coded)", id: "1684824321864-2") {
+        grailsChange {
+            change {
+                sql.execute("delete from audit_config where auc_reference_field = 'pendingChange.message_TP02_N'")
+            }
+            rollback {}
+        }
+    }
 }

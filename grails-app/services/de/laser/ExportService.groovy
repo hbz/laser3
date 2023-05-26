@@ -36,7 +36,6 @@ import org.apache.poi.xssf.usermodel.XSSFColor
 import org.apache.poi.xssf.usermodel.XSSFDataFormat
 import org.apache.poi.xssf.usermodel.XSSFFont
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
-import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.hibernate.Session
 import org.springframework.context.MessageSource
 
@@ -749,7 +748,7 @@ class ExportService {
 		Platform platform = Platform.get(params.platform)
 		prf.setBenchmark('get namespaces')
 		IdentifierNamespace propIdNamespace = IdentifierNamespace.findByNs(platform.titleNamespace)
-		Set<IdentifierNamespace> namespaces = [IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISSN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISSN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISBN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.PISBN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.DOI, TitleInstancePackagePlatform.class.name)] as Set<IdentifierNamespace>
+		Set<IdentifierNamespace> namespaces = [IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISSN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISSN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISBN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISBN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.DOI, TitleInstancePackagePlatform.class.name)] as Set<IdentifierNamespace>
 		namespaces.add(propIdNamespace)
 		prf.setBenchmark('get date ranges')
 		Map<String, Object> dateRangeParams = subscriptionControllerService.getDateRange(params, result.subscription)
@@ -2141,14 +2140,14 @@ class ExportService {
 							}
 							break
 						case AbstractReport.API_AUTH_CUSTOMER_REQUESTOR_API:
-							if(customerId.requestorKey && configMap.platform.centralApiKey) {
-								url += "&requestor_id=${customerId.requestorKey}&api_key=${platform.centralApiKey}"
+							if(customerId.requestorKey && platformRecord.centralApiKey) {
+								url += "&requestor_id=${customerId.requestorKey}&api_key=${platformRecord.centralApiKey}"
 							}
 							break
 						case AbstractReport.API_IP_WHITELISTING:
 							break
 						default:
-							String apiKey = configMap.platform.centralApiKey ?: customerId.requestorKey
+							String apiKey = platformRecord.centralApiKey ?: customerId.requestorKey
 							if(customerId.requestorKey || apiKey) {
 								url += "&requestor_id=${customerId.requestorKey}&api_key=${apiKey}"
 							}
@@ -3010,15 +3009,15 @@ class ExportService {
 					//publication_title
 					row.add("${tipp.name}")
 
-					//print_identifier - namespace pISBN is proprietary for LAS:eR because no eISBN is existing and ISBN is used for eBooks as well
-					if(tipp.getIdentifierValue('pISBN'))
-						row.add(tipp.getIdentifierValue('pISBN'))
+					//print_identifier
+					if(tipp.getIdentifierValue('ISBN'))
+						row.add(tipp.getIdentifierValue('ISBN'))
 					else if(tipp.getIdentifierValue('ISSN'))
 						row.add(tipp.getIdentifierValue('ISSN'))
 					else row.add(' ')
 					//online_identifier
-					if(tipp.getIdentifierValue('ISBN'))
-						row.add(tipp.getIdentifierValue('ISBN'))
+					if(tipp.getIdentifierValue('eISBN'))
+						row.add(tipp.getIdentifierValue('eISBN'))
 					else if(tipp.getIdentifierValue('eISSN'))
 						row.add(tipp.getIdentifierValue('eISSN'))
 					else row.add(' ')
@@ -3503,15 +3502,15 @@ class ExportService {
 		List row = []
 		row.add(createCell(format, titleRecord['name'], style))
 		if(titleRecord.identifiers) {
-			//print_identifier - namespace pISBN is proprietary for LAS:eR because no eISBN is existing and ISBN is used for eBooks as well
-			if(titleRecord.identifiers.get('pisbn'))
-				row.add(createCell(format, joinIdentifiersSQL(titleRecord.identifiers.get('pisbn'), ','), style))
+			//print_identifier
+			if(titleRecord.identifiers.get('isbn'))
+				row.add(createCell(format, joinIdentifiersSQL(titleRecord.identifiers.get('isbn'), ','), style))
 			else if(titleRecord.identifiers.get('issn'))
 				row.add(createCell(format, joinIdentifiersSQL(titleRecord.identifiers.get('issn'), ','), style))
 			else row.add(createCell(format, '', style))
 			//online_identifier
-			if(titleRecord.identifiers.get('isbn'))
-				row.add(createCell(format, joinIdentifiersSQL(titleRecord.identifiers.get('isbn'), ','), style))
+			if(titleRecord.identifiers.get('eisbn'))
+				row.add(createCell(format, joinIdentifiersSQL(titleRecord.identifiers.get('eisbn'), ','), style))
 			else if(titleRecord.identifiers.get('eissn'))
 				row.add(createCell(format, joinIdentifiersSQL(titleRecord.identifiers.get('eissn'), ','), style))
 			else row.add(createCell(format, '', style))
@@ -3647,7 +3646,7 @@ class ExportService {
 		Map<Long, Map<String, List<String>>> identifierMap = [:]
 		Map<String, Map<String, Long>> identifierInverseMap = [:]
 		List<String> coreTitleNSrestricted = IdentifierNamespace.CORE_TITLE_NS.collect { String coreTitleNS ->
-			!(coreTitleNS in [IdentifierNamespace.ISBN, IdentifierNamespace.PISBN, IdentifierNamespace.ISSN, IdentifierNamespace.EISSN])
+			!(coreTitleNS in [IdentifierNamespace.ISBN, IdentifierNamespace.EISBN, IdentifierNamespace.ISSN, IdentifierNamespace.EISSN])
 		}
 		if(entitlementInstance == TitleInstancePackagePlatform.class.name) {
 			identifiers = sql.rows("select id_tipp_fk, id_value, idns_ns from identifier join identifier_namespace on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id ${queryData.join} where ${queryData.where}", queryData.params)
@@ -3703,11 +3702,11 @@ class ExportService {
 								switch (identifier.'ns2:Type'.text().toLowerCase()) {
 									case 'isbn': titleMatch = identifierInverseMap[IdentifierNamespace.ISBN]?.get(identifier.'ns2:Value'.text())
 										if(!titleMatch)
-											titleMatch = identifierInverseMap[IdentifierNamespace.PISBN]?.get(identifier.'ns2:Value'.text())
+											titleMatch = identifierInverseMap[IdentifierNamespace.EISBN]?.get(identifier.'ns2:Value'.text())
 										if(!titleMatch)
 											titleMatch = identifierInverseMap[IdentifierNamespace.ISBN]?.get(identifier.'ns2:Value'.text().replaceAll('-',''))
 										if(!titleMatch)
-											titleMatch = identifierInverseMap[IdentifierNamespace.PISBN]?.get(identifier.'ns2:Value'.text().replaceAll('-',''))
+											titleMatch = identifierInverseMap[IdentifierNamespace.EISBN]?.get(identifier.'ns2:Value'.text().replaceAll('-',''))
 										break
 									case 'online_isbn':
 									case 'online_issn': titleMatch = identifierInverseMap[IdentifierNamespace.EISSN]?.get(identifier.'ns2:Value'.text())
@@ -3721,9 +3720,9 @@ class ExportService {
 									case 'print_issn':
 									case 'print_isbn': titleMatch = identifierInverseMap[IdentifierNamespace.ISSN]?.get(identifier.'ns2:Value'.text())
 										if(!titleMatch)
-											titleMatch = identifierInverseMap[IdentifierNamespace.PISBN]?.get(identifier.'ns2:Value'.text())
+											titleMatch = identifierInverseMap[IdentifierNamespace.EISBN]?.get(identifier.'ns2:Value'.text())
 										if(!titleMatch)
-											titleMatch = identifierInverseMap[IdentifierNamespace.PISBN]?.get(identifier.'ns2:Value'.text().replaceAll('-',''))
+											titleMatch = identifierInverseMap[IdentifierNamespace.EISBN]?.get(identifier.'ns2:Value'.text().replaceAll('-',''))
 										break
 									case 'doi': titleMatch = identifierInverseMap[IdentifierNamespace.DOI]?.get(identifier.'ns2:Value'.text())
 										break
@@ -3756,11 +3755,11 @@ class ExportService {
 								switch(idData.Type.toLowerCase()) {
 									case 'isbn': titleMatch = identifierInverseMap[IdentifierNamespace.ISBN]?.get(idData.Value)
 										if(!titleMatch)
-											titleMatch = identifierInverseMap[IdentifierNamespace.PISBN]?.get(idData.Value)
+											titleMatch = identifierInverseMap[IdentifierNamespace.EISBN]?.get(idData.Value)
 										if(!titleMatch)
 											titleMatch = identifierInverseMap[IdentifierNamespace.ISBN]?.get(idData.Value.replaceAll('-',''))
 										if(!titleMatch)
-											titleMatch = identifierInverseMap[IdentifierNamespace.PISBN]?.get(idData.Value.replaceAll('-',''))
+											titleMatch = identifierInverseMap[IdentifierNamespace.EISBN]?.get(idData.Value.replaceAll('-',''))
 										break
 									case 'online_issn':
 									case 'online_isbn': titleMatch = identifierInverseMap[IdentifierNamespace.EISSN]?.get(idData.Value)
@@ -3774,9 +3773,9 @@ class ExportService {
 									case 'print_isbn':
 									case 'print_issn': titleMatch = identifierInverseMap[IdentifierNamespace.ISSN]?.get(idData.Value)
 										if(!titleMatch)
-											titleMatch = identifierInverseMap[IdentifierNamespace.PISBN]?.get(idData.Value)
+											titleMatch = identifierInverseMap[IdentifierNamespace.EISBN]?.get(idData.Value)
 										if(!titleMatch)
-											titleMatch = identifierInverseMap[IdentifierNamespace.PISBN]?.get(idData.Value.replaceAll('-',''))
+											titleMatch = identifierInverseMap[IdentifierNamespace.EISBN]?.get(idData.Value.replaceAll('-',''))
 										break
 									case 'doi': titleMatch = identifierInverseMap[IdentifierNamespace.DOI]?.get(idData.Value)
 										break

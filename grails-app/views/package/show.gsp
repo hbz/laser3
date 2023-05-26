@@ -63,8 +63,8 @@
                                     <div class="ui list">
                                         <g:each in="${packageInstanceRecord.curatoryGroups}" var="curatoryGroup">
                                             <div class="item">
-                                                ${curatoryGroup.name} ${curatoryGroup.type ? "(${curatoryGroup.type})" : ""}
                                                 <ui:wekbIconLink type="curatoryGroup" gokbId="${curatoryGroup.curatoryGroup}"/>
+                                                ${curatoryGroup.name} ${curatoryGroup.type ? "(${curatoryGroup.type})" : ""}
                                             </div>
                                         </g:each>
                                     </div>
@@ -185,7 +185,8 @@
                             <div class="ui accordion la-accordion-showMore">
                                 <div class="ui raised segments la-accordion-segments">
                                     <div class="ui fluid segment title">
-                                        ${packageInstanceRecord.source.name} <ui:wekbIconLink type="source" gokbId="${packageInstanceRecord.source.uuid}"/>
+                                        <ui:wekbIconLink type="source" gokbId="${packageInstanceRecord.source.uuid}"/>
+                                        ${packageInstanceRecord.source.name}
                                         <div class="ui icon blue button la-modern-button ${buttonColor} la-js-dont-hide-button la-popup-tooltip la-delay"
                                              data-content="${message(code: 'platform.details')}">
                                             <i class="ui angle double down icon"></i>
@@ -231,8 +232,9 @@
                             <div class="ui accordion la-accordion-showMore">
                                 <div class="ui raised segments la-accordion-segments">
                                     <div class="ui fluid segment title">
-                                        <g:link controller="platform" action="show" id="${platformInstanceRecord.id}">${platformInstanceRecord.name}</g:link>
                                         <ui:wekbIconLink type="platform" gokbId="${platformInstanceRecord.uuid}"/>
+                                        <g:link controller="platform" action="show" id="${platformInstanceRecord.id}">${platformInstanceRecord.name}</g:link>
+
                                         <g:if test="${platformInstanceRecord.primaryUrl}">
                                             <ui:linkWithIcon href="${platformInstanceRecord.primaryUrl?.startsWith('http') ? platformInstanceRecord.primaryUrl : 'http://' + platformInstanceRecord.primaryUrl}"/>
                                         </g:if>
@@ -389,25 +391,6 @@
                                                     </g:else>
                                                 </dd>
                                             </dl>
-                                        </g:if>
-                                    <%-- lastRun and centralApiKey come from LAS:eR, not from we:kb! --%>
-                                        <g:if test="${platformInstance.counter4LastRun || platformInstance.counter5LastRun}">
-                                            <dl>
-                                                <dt><g:message code="platform.stats.counter.lastRun"/></dt>
-                                                <dd>
-                                                    <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${platformInstance.counter5LastRun ?: platformInstance.counter4LastRun}"/>
-                                                </dd>
-                                            </dl>
-                                        </g:if>
-                                        <g:if test="${platformInstanceRecord.counterR5SushiApiSupported}">
-                                            <sec:ifAnyGranted roles="ROLE_YODA">
-                                                <dl>
-                                                    <dt><g:message code="platform.stats.counter.centralApiKey"/></dt>
-                                                    <dd>
-                                                        <ui:xEditable owner="${platformInstance}" field="centralApiKey" overwriteEditable="${true}"/>
-                                                    </dd>
-                                                </dl>
-                                            </sec:ifAnyGranted>
                                         </g:if>
                                     </div>
                                 </div>

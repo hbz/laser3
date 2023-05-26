@@ -268,7 +268,7 @@
         </tbody>
     </table>
 
-    <g:link class="wfModalLink ui button" controller="ajaxHtml" action="createWfXModal" params="${[key: WfWorkflowPrototype.KEY, tab: 'prototypes']}">${message(code: 'workflow.object.' + WfWorkflowPrototype.KEY)} erstellen</g:link>
+    <g:link class="wfModalLink ui button" controller="ajaxHtml" action="createWfXModal" params="${[key: WfWorkflowPrototype.KEY, tab: 'prototypes']}">${message(code: 'workflow.object.' + WfWorkflowPrototype.KEY)} anlegen</g:link>
 
     <!-- -->
 
@@ -363,7 +363,7 @@
         </tbody>
     </table>
 
-    <g:link class="wfModalLink ui button" controller="ajaxHtml" action="createWfXModal" params="${[key: WfTaskPrototype.KEY, tab: 'prototypes']}">${message(code: 'workflow.object.' + WfTaskPrototype.KEY)} erstellen</g:link>
+    <g:link class="wfModalLink ui button" controller="ajaxHtml" action="createWfXModal" params="${[key: WfTaskPrototype.KEY, tab: 'prototypes']}">${message(code: 'workflow.object.' + WfTaskPrototype.KEY)} anlegen</g:link>
 
     <!-- -->
 
@@ -422,7 +422,7 @@
         </tbody>
     </table>
 
-    <g:link class="wfModalLink ui button" controller="ajaxHtml" action="createWfXModal" params="${[key: WfConditionPrototype.KEY, tab: 'prototypes']}">${message(code: 'workflow.object.' + WfConditionPrototype.KEY)} erstellen</g:link>
+    <g:link class="wfModalLink ui button" controller="ajaxHtml" action="createWfXModal" params="${[key: WfConditionPrototype.KEY, tab: 'prototypes']}">${message(code: 'workflow.object.' + WfConditionPrototype.KEY)} anlegen</g:link>
 
 </div><!-- .prototypes -->
 

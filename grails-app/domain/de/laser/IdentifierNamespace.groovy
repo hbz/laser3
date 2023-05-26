@@ -52,7 +52,7 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
     public static final String DOI        = 'doi'
     public static final String ISSN       = 'issn'
     public static final String EISSN      = 'eissn'
-    public static final String PISBN      = 'pisbn'
+    public static final String EISBN      = 'eisbn'
     public static final String ISBN       = 'isbn'
 
     //package identifier namespaces
@@ -98,7 +98,7 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
      * EBooks do not have ZDB IDs, EZB IDs nor ISSNs
      */
     public static final List<String> CORE_TITLE_NS = [
-            ZDB, ZDB_PPN, DOI, ISSN, EISSN, PISBN, ISBN, ISIL_PAKETSIGEL, ISCI, EZB_ANCHOR, EZB_COLLECTION_ID
+            ZDB, ZDB_PPN, DOI, ISSN, EISSN, EISBN, ISBN, ISIL_PAKETSIGEL, ISCI, EZB_ANCHOR, EZB_COLLECTION_ID
     ]
 
     public static final String[] AVAILABLE_NSTYPES = [
