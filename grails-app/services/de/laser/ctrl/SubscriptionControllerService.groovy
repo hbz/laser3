@@ -887,7 +887,7 @@ class SubscriptionControllerService {
                 configMap.putAll(exportService.prepareSushiCall(platformRecord))
                 if(configMap.revision && configMap.statsUrl && ci.value) {
                     if(configMap.revision == AbstractReport.COUNTER_5) {
-                        String apiKey = platform.centralApiKey ?: ci.requestorKey
+                        String apiKey = platformRecord.centralApiKey ?: ci.requestorKey
                         String queryArguments = "?customer_id=${ci.value}"
                         switch(platformRecord.sushiApIAuthenticationMethod) {
                             case AbstractReport.API_AUTH_CUSTOMER_REQUESTOR:
@@ -902,8 +902,8 @@ class SubscriptionControllerService {
                                 }
                                 break
                             case AbstractReport.API_AUTH_CUSTOMER_REQUESTOR_API:
-                                if(ci.requestorKey && platform.centralApiKey) {
-                                    queryArguments += "&requestor_id=${ci.requestorKey}&api_key=${platform.centralApiKey}"
+                                if(ci.requestorKey && platformRecord.centralApiKey) {
+                                    queryArguments += "&requestor_id=${ci.requestorKey}&api_key=${platformRecord.centralApiKey}"
                                 }
                                 break
                             case AbstractReport.API_IP_WHITELISTING:
