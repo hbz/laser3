@@ -192,6 +192,8 @@ class PlatformController  {
             if (xFilter.contains('wekb_exclusive')) {
                 f2Result.addAll( wekbResultMap.records.findAll {
                     if (it.providerUuid) { return true }
+//                    Platform p = Platform.findByGokbId(it.uuid)
+//                    return (p && p.gokbId != null)
                     Platform p = Platform.findByGokbId(it.uuid)
                     if (p && p.org) { return p.org.gokbId != null } else { return false }
                 }.collect{ it.uuid } )
@@ -199,6 +201,8 @@ class PlatformController  {
             }
             if (xFilter.contains('wekb_not')) {
                 f2Result.addAll( wekbResultMap.records.findAll {
+//                    Platform p = Platform.findByGokbId(it.uuid)
+//                    return (!p || p.gokbId == null)
                     if (it.providerUuid) { return false }
                     return Platform.findByGokbId(it.uuid)?.org?.gokbId == null
                 }.collect{ it.uuid } )
@@ -207,15 +211,6 @@ class PlatformController  {
 
             if (f1Set) { wekbResultMap.records = wekbResultMap.records.findAll { f1Result.contains(it.uuid) } }
             if (f2Set) { wekbResultMap.records = wekbResultMap.records.findAll { f2Result.contains(it.uuid) } }
-
-//            if (xFilter.contains('ismyx_exclusive')) {
-//                wekbResultMap.records      = wekbResultMap.records.findAll { result.myPlatformsUuids.contains( it.uuid ) }
-//                wekbResultMap.recordsCount = wekbResultMap.records.size()
-//            }
-//            else if (xFilter.contains('ismyx_not')) {
-//                wekbResultMap.records      = wekbResultMap.records.findAll { ! result.myPlatformsUuids.contains( it.uuid ) }
-//                wekbResultMap.recordsCount = wekbResultMap.records.size()
-//            }
         }
         wekbResultMap.recordsCount = wekbResultMap.records.size()
         wekbResultMap.records      = wekbResultMap.records.drop((int) result.offset).take((int) result.max) // pagination
