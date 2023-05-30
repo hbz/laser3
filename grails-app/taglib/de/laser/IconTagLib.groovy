@@ -1,8 +1,6 @@
 package de.laser
 
 import de.laser.auth.Role
-import de.laser.auth.UserOrgRole
-import de.laser.remote.ApiSource
 import de.laser.storage.RDStore
 import de.laser.titles.BookInstance
 import de.laser.titles.DatabaseInstance
@@ -30,11 +28,13 @@ class IconTagLib {
                 icon = 'la-object trophy'
                 break
             case 'affiliation':
-                int level = 0
-                UserOrgRole.findAllByUserAndOrg(contextService.getUser(), contextService.getOrg()).each{
-                    if (level < 1 && it.formalRole.authority == Role.INST_USER)   { level = 1; icon = 'user bordered inverted grey la-object-extended' }
-                    if (level < 2 && it.formalRole.authority == Role.INST_EDITOR) { level = 2; icon = 'user edit bordered inverted grey la-object-extended' }
-                    if (level < 3 && it.formalRole.authority == Role.INST_ADM)    { level = 3; icon = 'user shield bordered inverted grey la-object-extended' }
+                Role fr = contextService.getUser().formalRole
+                if (fr) {
+                    if (fr.authority == Role.INST_USER)   { icon = 'user bordered inverted grey la-object-extended' }
+                    if (fr.authority == Role.INST_EDITOR) { icon = 'user edit bordered inverted grey la-object-extended' }
+                    if (fr.authority == Role.INST_ADM)    { icon = 'user shield bordered inverted grey la-object-extended' }
+                } else {
+                    icon = 'fake bordered inverted grey la-object-extended'
                 }
                 break
             case 'database':
