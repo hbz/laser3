@@ -18,7 +18,9 @@ class User {
     String email
     String image
 
-    String shibbScope
+    Org formalOrg
+    Role formalRole
+
     Date dateCreated
     Date lastUpdated
 
@@ -36,7 +38,8 @@ class User {
         display     blank: true, nullable: true
         email       blank: true, nullable: true
         image       blank: true, nullable: true
-        shibbScope  blank: true, nullable: true
+        formalOrg   blank: false, nullable: true
+        formalRole  blank: false, nullable: true
     }
 
     static transients = [
@@ -51,17 +54,18 @@ class User {
         id              column: 'usr_id'
         version         column: 'usr_version'
 
-        accountExpired  column: 'usr_account_expired'
-        accountLocked   column: 'usr_account_locked'
-        display         column: 'usr_display'
-        email           column: 'usr_email'
-        enabled         column: 'usr_enabled'
-        image           column: 'usr_image'
+        username        column: 'usr_username'
         password        column: 'usr_password'
         passwordExpired column: 'usr_password_expired'
-        shibbScope      column: 'usr_shibb_scope'
-        username        column: 'usr_username'
-        
+        accountExpired  column: 'usr_account_expired'
+        accountLocked   column: 'usr_account_locked'
+        enabled         column: 'usr_enabled'
+        display         column: 'usr_display'
+        email           column: 'usr_email'
+        image           column: 'usr_image'
+        formalOrg       column: 'usr_formal_org_fk'
+        formalRole      column: 'usr_formal_role_fk'
+
         lastUpdated     column: 'usr_last_updated'
         dateCreated     column: 'usr_date_created'
         
@@ -71,7 +75,7 @@ class User {
 
     /**
      * Retrieves a {@link Set} of global {@link Role}s assigned to the user.
-     * Note that they are not the affiliations (= {@link UserOrgRole}s) a user may have and which ensure institution-regulated permissions!
+     * Note that they are not the affiliations a user may have and which ensure institution-regulated permissions!
      * @return the user's {@link Role}s
      */
     Set<Role> getAuthorities() {
@@ -151,7 +155,7 @@ class User {
      * @return a {@link List} of authorised {@link Org}s
      */
     List<Org> getAffiliationOrgs() {
-        this.affiliations.collect{ it.org }.unique()
+        this.formalOrg ? [this.formalOrg] : []
     }
 
     /**
@@ -169,10 +173,7 @@ class User {
      */
     boolean isMemberOf(Org org) {
         //used in user/global/edit.gsp
-        ! Org.executeQuery(
-                "select uo from UserOrgRole uo where uo.user = :user and uo.org = :org and uo.formalRole.roleType = 'user'",
-                [user: this, org: org]
-        ).isEmpty()
+        (this.formalOrg?.id == org.id) && (this.formalRole?.roleType == 'user')
     }
 
     /**
@@ -182,13 +183,10 @@ class User {
      */
     boolean isComboInstAdminOf(Org org) {
         //used in _membership_table.gsp
-        List<Org> orgList = Org.executeQuery('select c.toOrg from Combo c where c.fromOrg = :org', [org: org])
-        orgList.add(org)
+        List<Long> orgIdList = Org.executeQuery('select c.toOrg.id from Combo c where c.fromOrg = :org', [org: org])
+        orgIdList.add(org.id)
 
-        ! Org.executeQuery(
-                "select uo from UserOrgRole uo where uo.user = :user and uo.org in (:orgList) and uo.formalRole = :instAdm",
-                [user: this, orgList: orgList, instAdm: Role.findByAuthority('INST_ADM')]
-        ).isEmpty()
+        (this.formalOrg?.id in orgIdList) && (this.formalRole?.id == Role.findByAuthority('INST_ADM').id)
     }
 
     /**
