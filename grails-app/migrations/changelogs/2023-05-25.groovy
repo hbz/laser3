@@ -43,7 +43,7 @@ databaseChangeLog = {
     changeSet(author: "djebeniani (hand-coded)", id: "1684995746509-5") {
         grailsChange {
             change {
-                sql.executeUpdate("delete from refdata_value where rdv_owner = (select rdc_id from refdata_category where rdc_description = 'tipp.status') and rdv_value = 'Unknown'))")
+                sql.executeUpdate("delete from refdata_value where rdv_owner = (select rdc_id from refdata_category where rdc_description = 'tipp.status') and rdv_value = 'Unknown'")
             }
             rollback {}
         }
