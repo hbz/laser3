@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5081    30.05.2023  rc-3.1  3.1.2       Moe     Bug         Meine dauerhaften Titel zeigt keine Titel an
+
 --      30.05.2023  rc-3.1  3.1.2       Andreas Bug         kleinere Ausbesserungen im Statistik-Ladevorgang
 
 5074    26.05.2023  rc-3.1  3.1.2       Andreas Bug         Titelexport lief nicht performant genug

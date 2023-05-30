@@ -14,7 +14,7 @@
                  params="[tab: 'currentIEs']"
                  text="${message(code: "package.show.nav.current")}" tab="currentIEs"
                  counts="${currentTippCounts}"/>
-    <ui:tabsItem controller="${controllerName}" action="${actionName}"
+    <ui:tabsItem class="disabled" controller="${controllerName}" action="${actionName}"
                  params="[tab: 'plannedIEs']"
                  text="${message(code: "package.show.nav.planned")}" tab="plannedIEs"
                  counts="${plannedTippCounts}"/>
