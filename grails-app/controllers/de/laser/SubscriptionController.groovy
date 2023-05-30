@@ -156,7 +156,11 @@ class SubscriptionController {
                 CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(result.subscription.getSubscriber(), platformInstance)
                 if(ci) {
                     SortedSet allAvailableReports = subscriptionControllerService.getAvailableReports([platformInstance].toSet(), result)
-                    result.reportTypes.addAll(allAvailableReports)
+                    if(allAvailableReports)
+                        result.reportTypes.addAll(allAvailableReports)
+                    else {
+                        result.error = 'noReportAvailable'
+                    }
                 }
                 else if(!ci?.value) {
                     result.error = 'noCustomerId'

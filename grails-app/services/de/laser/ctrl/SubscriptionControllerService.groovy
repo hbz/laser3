@@ -889,7 +889,7 @@ class SubscriptionControllerService {
                     if(configMap.revision == AbstractReport.COUNTER_5) {
                         String apiKey = platformRecord.centralApiKey ?: ci.requestorKey
                         String queryArguments = "?customer_id=${ci.value}"
-                        switch(platformRecord.sushiApIAuthenticationMethod) {
+                        switch(platformRecord.sushiApiAuthenticationMethod) {
                             case AbstractReport.API_AUTH_CUSTOMER_REQUESTOR:
                                 if(ci.requestorKey) {
                                     queryArguments += "&requestor_id=${ci.requestorKey}"

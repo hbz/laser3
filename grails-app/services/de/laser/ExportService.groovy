@@ -2127,7 +2127,7 @@ class ExportService {
 				else if(statsSource.revision == 'counter5') {
 					String url = statsSource.statsUrl + "/${configMap.reportType}"
 					url += "?customer_id=${customerId.value}"
-					switch(platformRecord.sushiApIAuthenticationMethod) {
+					switch(platformRecord.sushiApiAuthenticationMethod) {
 						case AbstractReport.API_AUTH_CUSTOMER_REQUESTOR:
 							if(customerId.requestorKey) {
 								url += "&requestor_id=${customerId.requestorKey}"
