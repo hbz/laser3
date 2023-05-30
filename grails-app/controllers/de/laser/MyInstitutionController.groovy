@@ -1582,12 +1582,21 @@ class MyInstitutionController  {
         }
         else if(!params.containsKey('fileformat')) {
 
+            String query = ''
+            Map queryMap = [:]
             //second filter needed because double-join on same table does deliver me empty results
             if (filterPvd) {
-                currentIssueEntitlements.addAll(IssueEntitlement.executeQuery("select ie.id from IssueEntitlement ie join ie.tipp tipp join tipp.pkg pkg join pkg.orgs oo where oo.roleType in (:cpRole) and oo.org.id in ("+filterPvd.join(", ")+") order by tipp.sortname asc",[cpRole:[RDStore.OR_CONTENT_PROVIDER,RDStore.OR_PROVIDER,RDStore.OR_AGENCY,RDStore.OR_PUBLISHER]]))
+                query = " from IssueEntitlement ie join ie.tipp tipp join tipp.pkg pkg join pkg.orgs oo where oo.roleType in (:cpRole) and oo.org.id in ("+filterPvd.join(", ")+") "
+                queryMap = [cpRole:[RDStore.OR_CONTENT_PROVIDER,RDStore.OR_PROVIDER,RDStore.OR_AGENCY,RDStore.OR_PUBLISHER]]
             }
-            else currentIssueEntitlements.addAll(IssueEntitlement.executeQuery('select ie.id '+qryString+' group by tipp, ie.id order by tipp.sortname asc',qryParams))
-            Set<TitleInstancePackagePlatform> allTitles = currentIssueEntitlements ? TitleInstancePackagePlatform.executeQuery('select tipp from IssueEntitlement ie join ie.tipp tipp where ie.id in (:ids) and ie.status != :ieStatus '+orderByClause,[ieStatus: RDStore.TIPP_STATUS_REMOVED, ids: currentIssueEntitlements.drop(result.offset).take(result.max)]) : []
+            else {
+                query = qryString
+                queryMap = qryParams
+
+            }
+
+            currentIssueEntitlements.addAll(IssueEntitlement.executeQuery('select ie.id '+query, queryMap))
+            Set<TitleInstancePackagePlatform> allTitles = TitleInstancePackagePlatform.executeQuery('select tipp from IssueEntitlement ie join ie.tipp tipp where ie.id in (select ie.id ' + query + ') and ie.status != :ieStatus group by tipp, ie.id '+orderByClause,[ieStatus: RDStore.TIPP_STATUS_REMOVED]+queryMap, [max: result.max, offset: result.offset])
             result.subscriptions = Subscription.executeQuery('select distinct(sub) from IssueEntitlement ie join ie.subscription sub join sub.orgRelations oo where oo.roleType in (:orgRoles) and oo.org = :institution and (sub.status = :current or sub.hasPerpetualAccess = true) '+instanceFilter+" order by sub.name asc",[
                     institution: result.institution,
                     current: RDStore.SUBSCRIPTION_CURRENT,
@@ -1597,7 +1606,7 @@ class MyInstitutionController  {
                 result.providers = Org.executeQuery('select org.id,org.name from TitleInstancePackagePlatform tipp join tipp.pkg pkg join pkg.orgs oo join oo.org org where tipp.id in (select tipp.id '+qryString+') group by org.id order by org.name asc',qryParams)
                 result.hostplatforms = Platform.executeQuery('select plat.id,plat.name from TitleInstancePackagePlatform tipp join tipp.platform plat where tipp.id in (select tipp.id '+qryString+') group by plat.id order by plat.name asc',qryParams)
             }
-            result.num_ti_rows = TitleInstancePackagePlatform.executeQuery('select count(tipp) from IssueEntitlement ie join ie.tipp tipp where ie.id in (:ids) and ie.status != :ieStatus group by tipp',[ieStatus: RDStore.TIPP_STATUS_REMOVED, ids: currentIssueEntitlements])[0]
+            result.num_ti_rows = TitleInstancePackagePlatform.executeQuery('select count(tipp) from IssueEntitlement ie join ie.tipp tipp where ie.id in (select ie.id ' + query + ') and ie.status != :ieStatus ',[ieStatus: RDStore.TIPP_STATUS_REMOVED]+queryMap)[0]
             result.titles = allTitles
 
             result.filterSet = params.filterSet || defaultSet
