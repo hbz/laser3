@@ -1,5 +1,6 @@
 package de.laser.base
 
+import de.laser.DeletedObject
 import de.laser.storage.BeanStore
 import de.laser.interfaces.CalculatedLastUpdated
 import groovy.util.logging.Slf4j
@@ -31,6 +32,9 @@ abstract class AbstractBaseWithCalculatedLastUpdated extends AbstractBase
         log.debug("afterDeleteHandler()")
 
         BeanStore.getCascadingUpdateService().update(this, new Date())
+        DeletedObject.withTransaction {
+            DeletedObject.construct(this)
+        }
     }
 
     abstract def afterInsert() /* { afterInsertHandler() } */
