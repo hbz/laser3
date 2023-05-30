@@ -1597,7 +1597,7 @@ class MyInstitutionController  {
                 result.providers = Org.executeQuery('select org.id,org.name from TitleInstancePackagePlatform tipp join tipp.pkg pkg join pkg.orgs oo join oo.org org where tipp.id in (select tipp.id '+qryString+') group by org.id order by org.name asc',qryParams)
                 result.hostplatforms = Platform.executeQuery('select plat.id,plat.name from TitleInstancePackagePlatform tipp join tipp.platform plat where tipp.id in (select tipp.id '+qryString+') group by plat.id order by plat.name asc',qryParams)
             }
-            result.num_ti_rows = result.allIECounts
+            result.num_ti_rows = TitleInstancePackagePlatform.executeQuery('select count(tipp) from IssueEntitlement ie join ie.tipp tipp where ie.id in (:ids) and ie.status != :ieStatus group by tipp',[ieStatus: RDStore.TIPP_STATUS_REMOVED, ids: currentIssueEntitlements])[0]
             result.titles = allTitles
 
             result.filterSet = params.filterSet || defaultSet

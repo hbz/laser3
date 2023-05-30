@@ -5,7 +5,7 @@
     <ui:crumb message="myinst.currentPermanentTitles.label" class="active"/>
 </ui:breadcrumbs>
 
-<ui:h1HeaderWithIcon message="myinst.currentPermanentTitles.label" total="${num_ti_rows}" floated="true"/>
+<ui:h1HeaderWithIcon message="myinst.currentPermanentTitles.label" total="${num_tipp_rows}" floated="true"/>
 
 <ui:messages data="${flash}"/>
 

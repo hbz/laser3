@@ -1535,7 +1535,7 @@ class YodaController {
             Thread.currentThread().setName("setPerpetualAccessByIes")
             List<Subscription> subList = Subscription.findAllByHasPerpetualAccess(true)
             int countProcess = 0, countProcessPT = 0
-            Set<RefdataValue> status = [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_REMOVED, RDStore.TIPP_STATUS_EXPECTED]
+            Set<RefdataValue> status = [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_RETIRED]
             subList.eachWithIndex { Subscription sub, int i ->
                 List<IssueEntitlement> ies = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.subscription = :sub and ie.perpetualAccessBySub is null and ie.status in (:status)', [sub: sub, status: status])
                 IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.perpetualAccessBySub = :sub where ie.subscription = :sub and ie.perpetualAccessBySub is null and ie.status in (:status)', [sub: sub, status: status])
