@@ -3,7 +3,6 @@ package de.laser
 
 import de.laser.auth.Role
 import de.laser.auth.User
-import de.laser.auth.UserOrgRole
 import de.laser.UserSetting.KEYS
 import de.laser.utils.LocaleUtils
 import de.laser.utils.PasswordUtils
@@ -132,11 +131,12 @@ class ProfileController {
     def deleteAffiliation() {
         log.debug("deleteAffiliation() userOrg: ${params.assoc}")
         User user        = contextService.getUser()
-        UserOrgRole userOrg  = UserOrgRole.findByUserAndId(user, params.assoc)
-
-        if (userOrg) {
-            userOrg.delete()
-        }
+//        UserOrgRole userOrg  = UserOrgRole.findByUserAndId(user, params.assoc)
+//
+//        if (userOrg) {
+//            userOrg.delete()
+//        }
+        // todo refactoring
         redirect(action: "index")
     }
 

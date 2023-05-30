@@ -3,7 +3,6 @@ package de.laser
 
 import de.laser.auth.Role
 import de.laser.auth.User
-import de.laser.auth.UserOrgRole
 import de.laser.auth.UserRole
 import de.laser.config.ConfigMapper
 import de.laser.storage.RDStore
@@ -117,23 +116,23 @@ class UserService {
         defaultRole.save()
 
         if (params.org && params.formalRole) {
-            Org org = Org.get(params.org)
+            Org formalOrg   = Org.get(params.org)
             Role formalRole = Role.get(params.formalRole)
 
-            if (org && formalRole) {
-                int existingUserOrgs = UserOrgRole.findAllByOrgAndFormalRole(org, formalRole).size() // TODO refactoring
+            if (formalOrg && formalRole) {
+                int existingUserOrgs = User.findAllByFormalOrgAndFormalRole(formalOrg, formalRole).size()
 
-                instAdmService.createAffiliation(user, org, formalRole, flash)
-//                instAdmService.setAffiliation(user, org, formalRole, flash)
+//                instAdmService.createAffiliation(user, formalOrg, formalRole, flash) // TODO refactoring
+                instAdmService.setAffiliation(user, formalOrg, formalRole, flash)
 
-                if (formalRole.authority == 'INST_ADM' && existingUserOrgs == 0 && ! org.legallyObligedBy) { // only if new instAdm
-                    if (UserOrgRole.findByOrgAndUserAndFormalRole(org, user, formalRole)) { // only on success
-                        org.legallyObligedBy = contextService.getOrg()
-                        org.save()
-                        log.debug("set legallyObligedBy for ${org} -> ${contextService.getOrg()}")
+                if (formalRole.authority == 'INST_ADM' && existingUserOrgs == 0 && ! formalOrg.legallyObligedBy) { // only if new instAdm
+                    if (User.findByIdAndFormalOrgAndFormalRole(user.id, formalOrg, formalRole)) { // only on success
+                        formalOrg.legallyObligedBy = contextService.getOrg()
+                        formalOrg.save()
+                        log.debug("set legallyObligedBy for ${formalOrg} -> ${contextService.getOrg()}")
                     }
                 }
-                user.getSetting(UserSetting.KEYS.DASHBOARD, org)
+                user.getSetting(UserSetting.KEYS.DASHBOARD, formalOrg)
                 user.getSetting(UserSetting.KEYS.DASHBOARD_TAB, RDStore.US_DASHBOARD_TAB_DUE_DATES)
             }
         }
@@ -192,10 +191,12 @@ class UserService {
             rolesToCheck.each { String rot ->
                 Role role = Role.findByAuthority(rot)
                 if (role) {
-                    UserOrgRole uo = UserOrgRole.findByUserAndOrgAndFormalRole(userToCheck, orgToCheck, role)
-                    //for users with multiple affiliations, login fails because of LazyInitializationException of the domain collection
-                    List<UserOrgRole> affiliations = UserOrgRole.findAllByUser(userToCheck)
-                    check = check || (uo && affiliations.contains(uo))
+//                    UserOrgRole uo = UserOrgRole.findByUserAndOrgAndFormalRole(userToCheck, orgToCheck, role)
+//                    //for users with multiple affiliations, login fails because of LazyInitializationException of the domain collection
+//                    List<UserOrgRole> affiliations = UserOrgRole.findAllByUser(userToCheck)
+//                    check = check || (uo && affiliations.contains(uo))
+
+                    check = check || User.findByIdAndFormalOrgAndFormalRole(userToCheck.id, orgToCheck, role) // TODO refactoring
                 }
             }
         }
@@ -234,12 +235,10 @@ class UserService {
             rolesToCheck << Role.INST_ADM
         }
 
-        rolesToCheck.each{ String rot ->
-            Role role = Role.findByAuthority(rot)
-            UserOrgRole userOrg = UserOrgRole.findByUserAndOrgAndFormalRole(userToCheck, orgToCheck, role)
-            if (userOrg) {
-                result = true
-            }
+        rolesToCheck.each { String rot ->
+//            Role role = Role.findByAuthority(rot)
+//            UserOrgRole userOrg = UserOrgRole.findByUserAndOrgAndFormalRole(userToCheck, orgToCheck, role)
+            result = result || (User.findByIdAndFormalOrgAndFormalRole(userToCheck.id, orgToCheck, Role.findByAuthority(rot)))  // TODO refactoring
         }
         result
     }
@@ -269,7 +268,7 @@ class UserService {
                         if (user && orgs[customerKey]) {
                             if (! user.hasOrgAffiliation_or_ROLEADMIN(orgs[customerKey], rightKey)) {
 
-                                instAdmService.setAffiliation(user, orgs[customerKey], userRole, null)
+                                instAdmService.setAffiliation(user, orgs[customerKey], userRole, null) // TODO refactoring
                                 user.getSetting(UserSetting.KEYS.DASHBOARD, orgs[customerKey])
                             }
                         }

@@ -2,7 +2,6 @@ package de.laser
 
 import de.laser.auth.Role
 import de.laser.auth.User
-import de.laser.auth.UserOrgRole
 import de.laser.storage.RDStore
 import de.laser.utils.LocaleUtils
 import grails.gorm.transactions.Transactional
@@ -136,45 +135,45 @@ class InstAdmService {
         }
     }
 
-    /**
-     * Links the given user to the given institution with the given role
-     * @param user the user to link
-     * @param org the institution to which the user should be linked
-     * @param formalRole the role to attribute
-     * @param flash the message container
-     */
-    @Deprecated
-    void createAffiliation(User user, Org org, Role formalRole, def flash) {
-
-        try {
-            Locale loc = LocaleUtils.getCurrentLocale()
-            UserOrgRole check = UserOrgRole.findByOrgAndUserAndFormalRole(org, user, formalRole)
-
-            if (formalRole.roleType == 'user') {
-                check = UserOrgRole.findByOrgAndUserAndFormalRoleInList(org, user, Role.findAllByRoleType('user'))
-            }
-
-            if (check) {
-                if (user == contextService.getUser()) {
-                    flash?.error = messageSource.getMessage('user.affiliation.request.error2', null, loc)
-                } else {
-                    flash?.error = messageSource.getMessage('user.affiliation.request.error1', null, loc)
-                }
-            }
-            else {
-                log.debug("Create new user_org entry....");
-                UserOrgRole uo = new UserOrgRole( org: org, user: user, formalRole: formalRole )
-
-                if (uo.save()) {
-                    flash?.message = messageSource.getMessage('user.affiliation.request.success', null, loc)
-                }
-                else {
-                    flash?.error = messageSource.getMessage('user.affiliation.request.failed', null, loc)
-                }
-            }
-        }
-        catch (Exception e) {
-            flash?.error = messageSource.getMessage('user.affiliation.request.failed', null, loc)
-        }
-    }
+//    /**
+//     * Links the given user to the given institution with the given role
+//     * @param user the user to link
+//     * @param org the institution to which the user should be linked
+//     * @param formalRole the role to attribute
+//     * @param flash the message container
+//     */
+//    @Deprecated
+//    void createAffiliation(User user, Org org, Role formalRole, def flash) {
+//
+//        try {
+//            Locale loc = LocaleUtils.getCurrentLocale()
+//            UserOrgRole check = UserOrgRole.findByOrgAndUserAndFormalRole(org, user, formalRole)
+//
+//            if (formalRole.roleType == 'user') {
+//                check = UserOrgRole.findByOrgAndUserAndFormalRoleInList(org, user, Role.findAllByRoleType('user'))
+//            }
+//
+//            if (check) {
+//                if (user == contextService.getUser()) {
+//                    flash?.error = messageSource.getMessage('user.affiliation.request.error2', null, loc)
+//                } else {
+//                    flash?.error = messageSource.getMessage('user.affiliation.request.error1', null, loc)
+//                }
+//            }
+//            else {
+//                log.debug("Create new user_org entry....");
+//                UserOrgRole uo = new UserOrgRole( org: org, user: user, formalRole: formalRole )
+//
+//                if (uo.save()) {
+//                    flash?.message = messageSource.getMessage('user.affiliation.request.success', null, loc)
+//                }
+//                else {
+//                    flash?.error = messageSource.getMessage('user.affiliation.request.failed', null, loc)
+//                }
+//            }
+//        }
+//        catch (Exception e) {
+//            flash?.error = messageSource.getMessage('user.affiliation.request.failed', null, loc)
+//        }
+//    }
 }
