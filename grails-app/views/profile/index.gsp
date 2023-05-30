@@ -473,11 +473,11 @@
 
                 <div class="ui card la-full-width">
                     <div class="content">
-                        <ui:form controller="profile" action="addAffiliation" class="addAffiliationForm" hideWrapper="true">
+                        <ui:form controller="profile" action="setAffiliation" hideWrapper="true">
                             <div class="two fields">
                                 <div class="field">
-                                    <label for="org">Organisation</label>
-                                    <g:select name="org" id="org"
+                                    <label for="formalOrg">Organisation</label>
+                                    <g:select name="formalOrg" id="formalOrg"
                                               from="${availableOrgs}"
                                               optionKey="id"
                                               optionValue="${{(it.sortname ?: '') + ' (' + it.name + ')'}}"

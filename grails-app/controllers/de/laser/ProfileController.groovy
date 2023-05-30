@@ -111,14 +111,14 @@ class ProfileController {
      * @return the profile page
      */
     @Secured(['ROLE_USER'])
-    def addAffiliation() {
-        log.debug("addAffiliation() org: ${params.org} role: ${params.formalRole}")
+    def setAffiliation() {
+        log.debug("setAffiliation() org: ${params.formalOrg} role: ${params.formalRole}")
         User user       = contextService.getUser()
-        Org org         = Org.get(params.org)
+        Org formalOrg   = Org.get(params.formalOrg)
         Role formalRole = Role.get(params.formalRole)
 
-        if (user && org && formalRole) {
-            instAdmService.createAffiliation(user, org, formalRole, flash)
+        if (user && formalOrg && formalRole) {
+            instAdmService.setAffiliation(user, formalOrg, formalRole, flash)
         }
         redirect(action: "index")
     }

@@ -233,7 +233,7 @@ class OrganisationService {
                 OrgSetting.add(hbz,OrgSetting.KEYS.CUSTOMER_TYPE,customerTypes.konsortium)
                 ConfigMapper.getConfig('systemUsers', List)?.each { su ->
                     User admin = User.findByUsername(su.name)
-                    instAdmService.createAffiliation(admin, hbz, Role.findByAuthority('INST_ADM'), null)
+                    instAdmService.setAffiliation(admin, hbz, Role.findByAuthority('INST_ADM'), null)
                     admin.getSetting(UserSetting.KEYS.DASHBOARD,hbz)
                 }
             }

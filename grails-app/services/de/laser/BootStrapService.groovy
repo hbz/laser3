@@ -211,11 +211,12 @@ class BootStrapService {
                             Role role = Role.findByAuthorityAndRoleType(affil, 'user')
                             if (org && role) {
                                 log.debug("  -> adding affiliation: ${role} for ${org.sortname} ")
-                                new UserOrgRole(
-                                        user: user,
-                                        org: org,
-                                        formalRole: role
-                                ).save(failOnError: true)
+//                                new UserOrgRole(
+//                                        user: user,
+//                                        org: org,
+//                                        formalRole: role
+//                                ).save(failOnError: true)
+                                // TODO: refactoring
                             }
                         }
                     }
@@ -260,7 +261,6 @@ class BootStrapService {
      * @see Role
      * @see Perm
      * @see PermGrant
-     * @see UserOrgRole
      */
     void setupRolesAndPermissions() {
 

@@ -103,9 +103,37 @@ class InstAdmService {
      * @return true if the given user is the last admin of the given institution
      */
     boolean isUserLastInstAdminForOrg(User user, Org org){
-        List<UserOrgRole> userOrgs = UserOrgRole.findAllByOrgAndFormalRole(org, Role.findByAuthority('INST_ADM'))
+        List<User> users = User.findAllByFormalOrgAndFormalRole(org, Role.findByAuthority('INST_ADM'))
 
-        return (userOrgs.size() == 1 && userOrgs[0].user == user)
+        println users        // todo check
+        return (users.size() == 1 && users[0] == user)
+    }
+
+    void setAffiliation(User user, Org formalOrg, Role formalRole, def flash) {
+        Locale loc = LocaleUtils.getCurrentLocale()
+        boolean success = false
+
+        try {
+            // TODO - handle formalOrg change
+            if (user && formalOrg && formalRole ) {
+                if (user.formalOrg?.id != formalOrg.id) {
+                    user.formalOrg = formalOrg
+                    user.formalRole = formalRole
+
+                    if (user.save()) {
+                        success = true
+                    }
+                }
+            }
+        }
+        catch (Exception e) {}
+
+        if (success) {
+            flash?.message = messageSource.getMessage('user.affiliation.request.success', null, loc)
+        }
+        else {
+            flash?.error = messageSource.getMessage('user.affiliation.request.failed', null, loc)
+        }
     }
 
     /**
