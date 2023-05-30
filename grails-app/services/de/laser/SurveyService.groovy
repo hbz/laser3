@@ -1,7 +1,6 @@
 package de.laser
 
-
-import de.laser.auth.UserOrgRole
+import de.laser.auth.User
 import de.laser.finance.CostItem
 import de.laser.config.ConfigDefaults
 import de.laser.properties.PropertyDefinition
@@ -800,21 +799,20 @@ class SurveyService {
         if(orgs)
         {
             //Only User that approved
-            List<UserOrgRole> userOrgs = UserOrgRole.findAllByOrgInList(orgs)
+            List<User> formalUserList = orgs ? User.findAllByFormalOrgInList(orgs) : []
 
             //Only User with Notification by Email and for Surveys Start
-            userOrgs.each { userOrg ->
-                if(userOrg.user.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_FOR_SURVEYS_START) == RDStore.YN_YES &&
-                        userOrg.user.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES)
+            formalUserList.each { fu ->
+                if (fu.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_FOR_SURVEYS_START) == RDStore.YN_YES &&
+                        fu.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES)
                 {
-
                     List<SurveyInfo> orgSurveys = SurveyInfo.executeQuery("SELECT s FROM SurveyInfo s " +
                             "LEFT JOIN s.surveyConfigs surConf " +
                             "LEFT JOIN surConf.orgs surOrg  " +
                             "WHERE surOrg.org IN (:org) " +
-                            "AND s.id IN (:survey)", [org: userOrg.org, survey: surveys?.id])
+                            "AND s.id IN (:survey)", [org: fu.formalOrg, survey: surveys?.id])
 
-                    mailSendService.sendSurveyEmail(userOrg.user, userOrg.org, orgSurveys, false)
+                    mailSendService.sendSurveyEmail(fu, fu.formalOrg, orgSurveys, false)
                 }
             }
         }
@@ -829,19 +827,17 @@ class SurveyService {
     void emailsToSurveyUsersOfOrg(SurveyInfo surveyInfo, Org org, boolean reminderMail){
 
         //Only User that approved
-        List<UserOrgRole> userOrgs = UserOrgRole.findAllByOrg(org)
+        List<User> formalUserList = org ? User.findAllByFormalOrg(org) : []
 
         //Only User with Notification by Email and for Surveys Start
-        userOrgs.each { userOrg ->
-            if(userOrg.user.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_FOR_SURVEYS_START) == RDStore.YN_YES &&
-                    userOrg.user.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES)
+        formalUserList.each { fu ->
+            if (fu.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_FOR_SURVEYS_START) == RDStore.YN_YES &&
+                    fu.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES)
             {
-                mailSendService.sendSurveyEmail(userOrg.user, userOrg.org, [surveyInfo], reminderMail)
+                mailSendService.sendSurveyEmail(fu, fu.formalOrg, [surveyInfo], reminderMail)
             }
         }
     }
-
-
 
     /**
      * Limits the given institution query to the set of institution IDs

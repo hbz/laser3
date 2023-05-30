@@ -2,7 +2,6 @@ package de.laser
 
 import de.laser.annotations.DebugInfo
 import de.laser.auth.User
-import de.laser.auth.UserOrgRole
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyInfo
@@ -75,14 +74,13 @@ class MailController {
                         if(result.reminderMail || result.openAndSendMail) {
                             result << mailSendService.mailSendConfigBySurvey(result.surveyInfo, result.reminderMail)
 
-                            List<UserOrgRole> userOrgs = UserOrgRole.findAllByOrgInList(result.orgList)
-
+                            List<User> formalUserList = result.orgList ? User.findAllByFormalOrgInList(result.orgList) : []
                             List<String> userSurveyNotification = []
 
-                            userOrgs.each { userOrg ->
-                                if (userOrg.user.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_FOR_SURVEYS_START) == RDStore.YN_YES &&
-                                        userOrg.user.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES) {
-                                    userSurveyNotification << userOrg.user.email
+                            formalUserList.each { fu ->
+                                if (fu.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_FOR_SURVEYS_START) == RDStore.YN_YES &&
+                                        fu.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES) {
+                                    userSurveyNotification << fu.email
                                 }
                             }
 
