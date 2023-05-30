@@ -34,7 +34,7 @@ class ApiManager {
     /**
      * The current version of the API. To be updated on every change which affects the output
      */
-    static final VERSION = '1.8'
+    static final VERSION = '1.9'
 
     /**
      * Checks if the request is valid and if, whether the permissions are granted for the context institution making
