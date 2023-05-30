@@ -155,7 +155,7 @@ class User {
      * @return a {@link List} of authorised {@link Org}s
      */
     List<Org> getAffiliationOrgs() {
-        this.formalOrg ? [this.formalOrg] : []
+        formalOrg ? [formalOrg] : []
     }
 
     /**
@@ -173,7 +173,7 @@ class User {
      */
     boolean isMemberOf(Org org) {
         //used in user/global/edit.gsp
-        (this.formalOrg?.id == org.id) && (this.formalRole?.roleType == 'user')
+        (formalOrg?.id == org.id) && (formalRole?.roleType == 'user')
     }
 
     /**
@@ -186,7 +186,7 @@ class User {
         List<Long> orgIdList = Org.executeQuery('select c.toOrg.id from Combo c where c.fromOrg = :org', [org: org])
         orgIdList.add(org.id)
 
-        (this.formalOrg?.id in orgIdList) && (this.formalRole?.id == Role.findByAuthority('INST_ADM').id)
+        (formalOrg?.id in orgIdList) && (formalRole?.id == Role.findByAuthority('INST_ADM').id)
     }
 
     /**
@@ -217,14 +217,7 @@ class User {
      * @return is the user the last institution admin?
      */
     boolean isLastInstAdmin() {
-        boolean lia = false
-
-        affiliations.each { aff ->
-            if (BeanStore.getInstAdmService().isUserLastInstAdminForOrg(this, aff.org)) {
-                lia = true
-            }
-        }
-        lia
+        formalOrg ? BeanStore.getInstAdmService().isUserLastInstAdminForOrg(this, formalOrg) : false
     }
 
     /**

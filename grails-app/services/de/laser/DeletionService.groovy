@@ -509,7 +509,7 @@ class DeletionService {
         List contacts       = new ArrayList(org.contacts)
         List prsLinks       = new ArrayList(org.prsLinks)
         List persons        = Person.findAllByTenant(org)
-        List affiliations   = new ArrayList(org.affiliations)
+        List affils         = User.findAllByFormalOrg(org)
         List docContexts    = new ArrayList(org.documents)
         List platforms      = new ArrayList(org.platforms)
         //List tips           = TitleInstitutionProvider.findAllByInstitution(org)
@@ -562,7 +562,7 @@ class DeletionService {
         result.info << ['Kontaktdaten', contacts]
         result.info << ['Personen', prsLinks, FLAG_BLOCKER]
         result.info << ['Personen (tenant)', persons, FLAG_BLOCKER]
-        result.info << ['Nutzerzugehörigkeiten', affiliations, FLAG_BLOCKER]
+        result.info << ['Nutzerzugehörigkeiten', affils, FLAG_BLOCKER]
         result.info << ['Dokumente', docContexts, FLAG_BLOCKER]   // delete ? docContext->doc
         result.info << ['Platformen', platforms, FLAG_BLOCKER]
         //result.info << ['TitleInstitutionProvider (inst)', tips, FLAG_BLOCKER]
@@ -709,7 +709,7 @@ class DeletionService {
 
         // gathering references
 
-        List userOrgs       = new ArrayList(user.affiliations)
+        List affils         = new ArrayList(); affils.addAll([user.formalOrg, user.formalRole])
         List userRoles      = new ArrayList(user.roles)
         List userSettings   = UserSetting.findAllWhere(user: user)
 
@@ -722,7 +722,7 @@ class DeletionService {
 
         result.info = []
 
-        result.info << ['Zugehörigkeiten', userOrgs]
+        result.info << ['Zugehörigkeit', affils]
         result.info << ['Rollen', userRoles]
         result.info << ['Einstellungen', userSettings]
 
@@ -757,8 +757,8 @@ class DeletionService {
 
                 try {
                     // user orgs
-                    user.affiliations.clear()
-                    userOrgs.each { tmp -> tmp.delete() }
+                    user.formalOrg = null
+                    user.formalRole = null
 
                     // user roles
                     user.roles.clear()
