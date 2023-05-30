@@ -222,7 +222,7 @@ class UserController {
      */
     @Secured(['ROLE_ADMIN'])
     @Transactional
-    def addAffiliation(){
+    def setAffiliation(){
         Map<String, Object> result = userControllerService.getResultGenerics(params)
 
         if (! result.editable) {
@@ -231,11 +231,11 @@ class UserController {
             return
         }
 
-        Org org = Org.get(params.org)
+        Org formalOrg   = Org.get(params.org)
         Role formalRole = Role.get(params.formalRole)
 
-        if (result.user && org && formalRole) {
-            instAdmService.createAffiliation(result.user as User, org, formalRole, flash)
+        if (result.user && formalOrg && formalRole) {
+            instAdmService.setAffiliation(result.user as User, formalOrg, formalRole, flash)
         }
 
         redirect controller: 'user', action: 'edit', id: params.id

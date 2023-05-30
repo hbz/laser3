@@ -143,6 +143,7 @@ class InstAdmService {
      * @param formalRole the role to attribute
      * @param flash the message container
      */
+    @Deprecated
     void createAffiliation(User user, Org org, Role formalRole, def flash) {
 
         try {

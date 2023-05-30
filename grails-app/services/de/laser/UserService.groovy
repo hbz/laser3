@@ -121,9 +121,10 @@ class UserService {
             Role formalRole = Role.get(params.formalRole)
 
             if (org && formalRole) {
-                int existingUserOrgs = UserOrgRole.findAllByOrgAndFormalRole(org, formalRole).size()
+                int existingUserOrgs = UserOrgRole.findAllByOrgAndFormalRole(org, formalRole).size() // TODO refactoring
 
                 instAdmService.createAffiliation(user, org, formalRole, flash)
+//                instAdmService.setAffiliation(user, org, formalRole, flash)
 
                 if (formalRole.authority == 'INST_ADM' && existingUserOrgs == 0 && ! org.legallyObligedBy) { // only if new instAdm
                     if (UserOrgRole.findByOrgAndUserAndFormalRole(org, user, formalRole)) { // only on success
@@ -148,12 +149,12 @@ class UserService {
      * @param formalRoleId the ID of the role to attribute to the given user
      * @param flash the message container
      */
-    def addAffiliation(User user, orgId, formalRoleId, flash) {
-        Org org = Org.get(orgId)
+    def setAffiliation(User user, Serializable formalOrgId, Serializable formalRoleId, flash) {
+        Org formalOrg   = Org.get(formalOrgId)
         Role formalRole = Role.get(formalRoleId)
 
-        if (user && org && formalRole) {
-            instAdmService.createAffiliation(user, org, formalRole, flash)
+        if (user && formalOrg && formalRole) {
+            instAdmService.setAffiliation(user, formalOrg, formalRole, flash)
         }
     }
 
@@ -268,7 +269,7 @@ class UserService {
                         if (user && orgs[customerKey]) {
                             if (! user.hasOrgAffiliation_or_ROLEADMIN(orgs[customerKey], rightKey)) {
 
-                                instAdmService.createAffiliation(user, orgs[customerKey], userRole, null)
+                                instAdmService.setAffiliation(user, orgs[customerKey], userRole, null)
                                 user.getSetting(UserSetting.KEYS.DASHBOARD, orgs[customerKey])
                             }
                         }

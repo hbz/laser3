@@ -160,7 +160,7 @@
             <g:if test="${controllerName == 'user' || (controllerName in ['myInstitution', 'organisation'] && ! user.isMemberOf(orgInstance))}">
                 <div class="ui segment form">
 
-                    <g:form controller="${controllerName}" action="addAffiliation" class="ui form" method="get">
+                    <g:form controller="${controllerName}" action="setAffiliation" class="ui form" method="get">
 
                         <g:if test="${controllerName == 'myInstitution'}">
                             <input type="hidden" name="uoid" value="${genericOIDService.getOID(user)}" />
