@@ -599,13 +599,13 @@ class SurveyConfig {
 
         //private Property
         PropertyDefinition.getAllByDescrAndTenant(PropertyDefinition.SVY_PROP, ownerOrg).each { it ->
-            if((propertiesOfPropDefGroups.size() == 0 || (propertiesOfPropDefGroups && !(it.id in propertiesOfPropDefGroups.id))) && (this.surveyProperties && !(it.id in  this.surveyProperties.surveyProperty.id))) {
+            if((propertiesOfPropDefGroups.size() == 0 || (propertiesOfPropDefGroups && !(it.id in propertiesOfPropDefGroups.id))) && ((this.surveyProperties.size() == 0) || this.surveyProperties && !(it.id in  this.surveyProperties.surveyProperty.id))) {
                 props << it
             }
         }
         //global Property
         PropertyDefinition.getAllByDescr(PropertyDefinition.SVY_PROP).each { it ->
-            if((propertiesOfPropDefGroups.size() == 0 || (propertiesOfPropDefGroups && !(it.id in propertiesOfPropDefGroups.id))) && (this.surveyProperties && !(it.id in  this.surveyProperties.surveyProperty.id))) {
+            if((propertiesOfPropDefGroups.size() == 0 || (propertiesOfPropDefGroups && !(it.id in propertiesOfPropDefGroups.id))) && ((this.surveyProperties.size() == 0) || this.surveyProperties && !(it.id in  this.surveyProperties.surveyProperty.id))) {
                 props << it
             }
         }
