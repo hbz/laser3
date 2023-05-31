@@ -1682,7 +1682,7 @@ class MyInstitutionController  {
             if(params.tab == 'currentIEs'){
                 params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
             }else if(params.tab == 'plannedIEs'){
-                params.status = [RDStore.TIPP_STATUS_EXPECTED.id.toString()]
+                //params.status = [RDStore.TIPP_STATUS_EXPECTED.id.toString()]
             }else if(params.tab == 'expiredIEs'){
                 params.status = [RDStore.TIPP_STATUS_RETIRED.id.toString()]
             }else if(params.tab == 'deletedIEs'){
@@ -1697,7 +1697,7 @@ class MyInstitutionController  {
             }else if(params.list('status')[0] == RDStore.TIPP_STATUS_RETIRED.id.toString()){
                 params.tab = 'expiredIEs'
             }else if(params.list('status')[0] == RDStore.TIPP_STATUS_EXPECTED.id.toString()){
-                params.tab = 'plannedIEs'
+                //params.tab = 'plannedIEs'
             }else if(params.list('status')[0] == RDStore.TIPP_STATUS_DELETED.id.toString()){
                 params.tab = 'deletedIEs'
             }
