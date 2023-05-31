@@ -35,7 +35,7 @@
                 <td>${us.email}</td>
                 <td>
                         <g:if test="${showAllAffiliations}">
-                            ${us.formalOrg?.getDesignation()} <span>(${us.formalRole?.authority})</span> <br />
+                            ${us.formalOrg?.getDesignation()} <g:if test="${us.formalRole}"><span>(${us.formalRole.authority})</span></g:if>
                         </g:if>
                         <g:else>
                             <g:if test="${us.formalOrg?.id == orgInstance.id}">

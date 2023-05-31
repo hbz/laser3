@@ -216,6 +216,7 @@ class OrganisationService {
      * Should be used for an empty QA environment only; currently disused as new users should start completely from scratch.
      * Creates a bunch of (now empty; initially, also a hard-coded test data set was defined as well!) organisations with a set of users assigned to it
      */
+    @Deprecated
     void createOrgsFromScratch() {
         String currentServer = AppUtils.getCurrentServer()
         Map<String,Role> customerTypes = [

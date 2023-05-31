@@ -709,7 +709,6 @@ class DeletionService {
 
         // gathering references
 
-        List affils         = new ArrayList(); affils.addAll([user.formalOrg, user.formalRole])
         List userRoles      = new ArrayList(user.roles)
         List userSettings   = UserSetting.findAllWhere(user: user)
 
@@ -722,7 +721,6 @@ class DeletionService {
 
         result.info = []
 
-        result.info << ['Zugehörigkeit', affils]
         result.info << ['Rollen', userRoles]
         result.info << ['Einstellungen', userSettings]
 
@@ -756,10 +754,6 @@ class DeletionService {
             User.withTransaction { status ->
 
                 try {
-                    // user orgs
-                    user.formalOrg = null
-                    user.formalRole = null
-
                     // user roles
                     user.roles.clear()
                     userRoles.each { tmp -> tmp.delete() }

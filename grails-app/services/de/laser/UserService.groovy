@@ -123,7 +123,7 @@ class UserService {
                 instAdmService.setAffiliation(user, formalOrg, formalRole, flash)
 
                 if (formalRole.authority == 'INST_ADM' && existingUserOrgs == 0 && ! formalOrg.legallyObligedBy) { // only if new instAdm
-                    if (User.findByIdAndFormalOrgAndFormalRole(user.id, formalOrg, formalRole)) { // only on success
+                    if (user.hasRoleForOrg(formalRole, formalOrg)) { // only on success
                         formalOrg.legallyObligedBy = contextService.getOrg()
                         formalOrg.save()
                         log.debug("set legallyObligedBy for ${formalOrg} -> ${contextService.getOrg()}")
@@ -188,7 +188,7 @@ class UserService {
             rolesToCheck.each { String rot ->
                 Role role = Role.findByAuthority(rot)
                 if (role) {
-                    check = check || User.findByIdAndFormalOrgAndFormalRole(userToCheck.id, orgToCheck, role) // TODO refactoring
+                    check = check || userToCheck.hasRoleForOrg(role, orgToCheck)
                 }
             }
         }
@@ -228,7 +228,7 @@ class UserService {
         }
 
         rolesToCheck.each { String rot ->
-            result = result || (User.findByIdAndFormalOrgAndFormalRole(userToCheck.id, orgToCheck, Role.findByAuthority(rot)))  // TODO refactoring
+            result = result || userToCheck.hasRoleForOrg(Role.findByAuthority(rot), orgToCheck)
         }
         result
     }
