@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5098    31.05.2023  rc-3.1  3.1.2       Andreas Bug         zu langsame Performanz bei Titelvorauswahl
+
+5097    31.05.2023  rc-3.1  3.1.2       Andreas Bug         verschobene Spalten korrigiert
+
 5059    30.05.2023  rc-3.1  3.1.2       Moe     Bug         500er in Titelumfrage
 
 5080    30.05.2023  rc-3.1  3.1.2       Moe     Bug         Meine Titel komplett unstimmig
