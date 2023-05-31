@@ -4360,23 +4360,6 @@ join sub.orgRelations or_sub where
     }
 
     /**
-     * If a user is affiliated to several institutions, this call changes the context institution to the given one and redirects
-     * the user to the dashboard page
-     * @return the dashboard view of the picked context institution
-     */
-    @Secured(['ROLE_USER'])
-    def switchContext() {
-        User user = contextService.getUser()
-        Org org = (Org) genericOIDService.resolveOID(params.oid)
-
-        if (user && org && org.id == user.formalOrg.id) { // todo: remove
-            log.debug('switched context to: ' + org)
-            contextService.setOrg(org)
-        }
-        redirect action:'dashboard', params:params.remove('oid')
-    }
-
-    /**
      * Deletes the given private property definition for this institution
      * @param params the parameter map containing the property definition parameters
      * @return success or error messages

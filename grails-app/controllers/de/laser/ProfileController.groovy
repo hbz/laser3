@@ -201,16 +201,6 @@ class ProfileController {
 
         user.save()
 
-        if (params.profile_dashboard) {
-            Org org = (Org) genericOIDService.resolveOID(params.profile_dashboard)
-            UserSetting us = user.getSetting(KEYS.DASHBOARD, null)
-
-            if (org?.id != us.getValue()?.id) {
-                us.setValue(org)
-                flash.message += message(code: 'profile.updateProfile.updated.dash')
-            }
-        }
-
         redirect(action: "index")
     }
 

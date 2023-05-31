@@ -19,31 +19,17 @@ class ContextService {
     SpringSecurityService springSecurityService
 
     /**
-     * Sets the picked institution as current context
-     * @param context the institution used for the current session
-     */
-    void setOrg(Org context) {
-        try {
-            SessionCacheWrapper scw = getSessionCache()
-            scw.put('contextOrg', context)
-        }
-        catch (Exception e) {
-            log.warn('setOrg() - ' + e.getMessage())
-        }
-    }
-
-    /**
      * Retrieves the institution used for the current session
      * @return the institution used for the session (the context org)
      */
     Org getOrg() {
-        Org.withNewSession {
+        //Org.withNewSession {
             try {
                 SessionCacheWrapper scw = getSessionCache()
 
                 def context = scw.get('contextOrg')
                 if (! context) {
-                    context = getUser()?.getSettingsValue(UserSetting.KEYS.DASHBOARD)
+                    context = getUser()?.formalOrg
 
                     if (context) {
                         scw.put('contextOrg', context)
@@ -57,7 +43,7 @@ class ContextService {
                 log.warn('getOrg() - ' + e.getMessage())
             }
             return null
-        }
+        //}
     }
 
     /**

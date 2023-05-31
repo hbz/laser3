@@ -23,7 +23,6 @@ class UserSetting {
      */
     static enum KEYS {
         PAGE_SIZE                                   (Integer),
-        DASHBOARD                                   (Org),
         THEME                                       (RefdataValue, RDConstants.USER_SETTING_THEME),
         DASHBOARD_TAB                               (RefdataValue, RDConstants.USER_SETTING_DASHBOARD_TAB),
         DASHBOARD_ITEMS_TIME_WINDOW                 (Integer),

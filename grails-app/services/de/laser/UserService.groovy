@@ -32,15 +32,7 @@ class UserService {
     void initMandatorySettings(User user) {
         log.debug('initMandatorySettings for user #' + user.id)
 
-        def uss = UserSetting.get(user, UserSetting.KEYS.DASHBOARD)
-
         if (user.formalOrg) {
-            if (uss == UserSetting.SETTING_NOT_FOUND) {
-                user.getSetting(UserSetting.KEYS.DASHBOARD, user.formalOrg)
-            }
-            else if (! uss.getValue()) {
-                uss.setValue(user.formalOrg)
-            }
             if(user.formalOrg.isCustomerType_Inst())
                 user.getSetting(UserSetting.KEYS.IS_NOTIFICATION_FOR_SURVEYS_PARTICIPATION_FINISH, RDStore.YN_YES)
         }
@@ -129,7 +121,6 @@ class UserService {
                         log.debug("set legallyObligedBy for ${formalOrg} -> ${contextService.getOrg()}")
                     }
                 }
-                user.getSetting(UserSetting.KEYS.DASHBOARD, formalOrg)
                 user.getSetting(UserSetting.KEYS.DASHBOARD_TAB, RDStore.US_DASHBOARD_TAB_DUE_DATES)
             }
         }

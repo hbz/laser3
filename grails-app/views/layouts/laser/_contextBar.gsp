@@ -7,10 +7,12 @@
     <div class="ui container">
         <button class="ui button big la-menue-button la-modern-button" style="display:none"><i class="bars icon"></i></button>
         <div class="ui sub header item la-context-org">
-            ${contextOrg.name}
-            <g:if test="${currentServer == AppUtils.LOCAL}">
-                - ${contextOrg.getCustomerTypeI10n()}
-                - ${contextUser.formalRole?.getI10n('authority')}
+            <g:if test="${contextOrg}">
+                ${contextOrg.name}
+                <g:if test="${currentServer == AppUtils.LOCAL}">
+                    - ${contextOrg.getCustomerTypeI10n()}
+                    - ${contextUser.formalRole?.getI10n('authority')}
+                </g:if>
             </g:if>
         </div>
 
