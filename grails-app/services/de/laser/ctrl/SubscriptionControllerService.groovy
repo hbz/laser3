@@ -1542,7 +1542,7 @@ class SubscriptionControllerService {
                 }
 
                 result.tippsListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.tipp tipp ' +
-                        'where p.listPrice is not null and tipp.status.id = :status )', [status: RDStore.TIPP_STATUS_CURRENT.id])[0] ?: 0
+                        'where p.listPrice is not null and tipp.status.id = :status ', [status: RDStore.TIPP_STATUS_CURRENT.id])[0] ?: 0
 
             }else if(params.tab == 'selectedIEs') {
                 IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, subscriberSub)
