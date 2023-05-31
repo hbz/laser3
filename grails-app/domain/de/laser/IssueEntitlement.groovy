@@ -149,7 +149,7 @@ class IssueEntitlement extends AbstractBase implements Comparable {
         if(ie) {
             if (ie.save()) {
 
-                if (subscription.hasPerpetualAccess) {
+                if (subscription.hasPerpetualAccess && ie.status != RDStore.TIPP_STATUS_EXPECTED) {
                     ie.perpetualAccessBySub = subscription
 
                     if (!PermanentTitle.findByOwnerAndTipp(subscription.subscriber, tipp)) {

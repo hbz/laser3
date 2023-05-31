@@ -5,7 +5,7 @@
     <ui:crumb message="myinst.currentPermanentTitles.label" class="active"/>
 </ui:breadcrumbs>
 
-<ui:h1HeaderWithIcon message="myinst.currentPermanentTitles.label" total="${num_ti_rows}" floated="true"/>
+<ui:h1HeaderWithIcon message="myinst.currentPermanentTitles.label" total="${num_tipp_rows}" floated="true"/>
 
 <ui:messages data="${flash}"/>
 
@@ -14,7 +14,7 @@
                  params="[tab: 'currentIEs']"
                  text="${message(code: "package.show.nav.current")}" tab="currentIEs"
                  counts="${currentTippCounts}"/>
-    <ui:tabsItem controller="${controllerName}" action="${actionName}"
+    <ui:tabsItem class="disabled" controller="${controllerName}" action="${actionName}"
                  params="[tab: 'plannedIEs']"
                  text="${message(code: "package.show.nav.planned")}" tab="plannedIEs"
                  counts="${plannedTippCounts}"/>

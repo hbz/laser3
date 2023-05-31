@@ -889,7 +889,7 @@ class SubscriptionControllerService {
                     if(configMap.revision == AbstractReport.COUNTER_5) {
                         String apiKey = platformRecord.centralApiKey ?: ci.requestorKey
                         String queryArguments = "?customer_id=${ci.value}"
-                        switch(platformRecord.sushiApIAuthenticationMethod) {
+                        switch(platformRecord.sushiApiAuthenticationMethod) {
                             case AbstractReport.API_AUTH_CUSTOMER_REQUESTOR:
                                 if(ci.requestorKey) {
                                     queryArguments += "&requestor_id=${ci.requestorKey}"
@@ -1542,7 +1542,7 @@ class SubscriptionControllerService {
                 }
 
                 result.tippsListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.tipp tipp ' +
-                        'where p.listPrice is not null and tipp.id in (:tippIDs)', [tippIDs: titlesList])[0] ?: 0
+                        'where p.listPrice is not null and tipp.status.id = :status ', [status: RDStore.TIPP_STATUS_CURRENT.id])[0] ?: 0
 
             }else if(params.tab == 'selectedIEs') {
                 IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, subscriberSub)

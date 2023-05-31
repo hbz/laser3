@@ -39,14 +39,10 @@
                             </span>
                         </g:if>
                         <div class="one wide column">
-                            <g:if test="${(params.tab == 'currentIEs') && (editable && !ieInNewSub && allowedToSelect)}">
+                            <g:if test="${editable && params.tab == 'selectedIEs' && ieInNewSub && de.laser.IssueEntitlementGroupItem.findByIeAndIeGroup(ieInNewSub, de.laser.IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscriberSub))}">
                                 <input type="checkbox" name="bulkflag"
                                        class="bulkcheck la-vertical-centered" ${checkedCache ? checkedCache[ie.id.toString()] : ''}>
                             </g:if>
-                            <g:elseif test="${editable && params.tab == 'selectedIEs' && ieInNewSub && de.laser.IssueEntitlementGroupItem.findByIeAndIeGroup(ieInNewSub, de.laser.IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscriberSub))}">
-                                <input type="checkbox" name="bulkflag"
-                                       class="bulkcheck la-vertical-centered" ${checkedCache ? checkedCache[ie.id.toString()] : ''}>
-                            </g:elseif>
                         </div>
 
 
