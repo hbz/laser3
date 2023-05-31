@@ -100,8 +100,8 @@ class BootStrapService {
             log.debug("setupRolesAndPermissions ..")
             setupRolesAndPermissions()
 
-            log.debug("setupSystemUsers ..")
-            setupSystemUsers()
+            log.debug("setupSystemUser ..")
+            setupSystemUser()
 
             log.debug("setupSystemSettings ..")
             setupSystemSettings()
@@ -111,16 +111,6 @@ class BootStrapService {
 
             log.debug("setIdentifierNamespace ..")
             setIdentifierNamespace()
-
-            if (AppUtils.getCurrentServer() == AppUtils.QA) {
-                log.debug("setupAdminUsers ..")
-                setupAdminUsers()
-
-                if (!Org.findAll() && !Person.findAll() && !Address.findAll() && !Contact.findAll()) {
-                    log.debug("createOrgsFromScratch ..")
-                    organisationService.createOrgsFromScratch()
-                }
-            }
 
             log.debug("adjustDatabasePermissions ..")
             adjustDatabasePermissions()
@@ -150,7 +140,7 @@ class BootStrapService {
      * Sets - if not exists - one or more system users with global roles and a fallback anonymous user if all users have been deleted. The system users are
      * defined in the server config (see laser2-config example) file which should be stored on each server instance / locale instance separately
      */
-    void setupSystemUsers() {
+    void setupSystemUser() {
 
         // Create anonymousUser that serves as a replacement when users are deleted
         User au = User.findByUsername('anonymous')
@@ -174,83 +164,6 @@ class BootStrapService {
                 log.debug("  -> adding role: ${role}")
                 UserRole.create au, role
             }
-        }
-
-        if (ConfigMapper.getConfig('systemUsers', List)) {
-            log.debug("found systemUsers in local config file ..")
-
-            ConfigMapper.getConfig('systemUsers', List).each { su ->
-                log.debug("checking: [${su.name}, ${su.display}, ${su.roles}, ${su.affils}]")
-
-                User user = User.findByUsername(su.name)
-                if (user) {
-                    log.debug("${su.name} exists .. skipped")
-                }
-                else {
-                    log.debug("creating user ..")
-
-                    user = new User(
-                            username: su.name,
-                            password: su.pass,
-                            display:  su.display,
-                            email:    su.email,
-                            enabled:  true
-                    ).save(failOnError: true)
-
-                    su.roles.each { r ->
-                        Role role = Role.findByAuthority(r)
-                        if (role.roleType != 'user') {
-                            log.debug("  -> adding role: ${role}")
-                            UserRole.create user, role
-                        }
-                    }
-
-                    su.affils.each { key, values ->
-                        Org org = Org.findBySortname(key)
-                        values.each { affil ->
-                            Role role = Role.findByAuthorityAndRoleType(affil, 'user')
-                            if (org && role) {
-                                log.debug("  -> setting affiliation: ${role} for ${org.sortname} ")
-                                user.formalOrg = org
-                                user.formalRole = role
-                                user.save(failOnError: true)
-                                // TODO: refactoring
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * This setup should hold only for the QA environment and is disused as everyone should set up its own environment. Was used to create demo organisations and to assign each
-     * hbz group member to them for demonstration and testing purposes.
-     * @see UserService#setupAdminAccounts()
-     * @see OrganisationService#createOrgsFromScratch()
-     */
-    @Deprecated
-    void setupAdminUsers() {
-
-        if (AppUtils.getCurrentServer() == AppUtils.QA) {
-            Map<String,Org> modelOrgs = [konsorte: Org.findByName('Musterkonsorte'),
-                                         vollnutzer: Org.findByName('Mustereinrichtung'),
-                                         konsortium: Org.findByName('Musterkonsortium')]
-
-            Map<String,Org> testOrgs = [konsorte: Org.findByName('Testkonsorte'),
-                                        vollnutzer: Org.findByName('Testeinrichtung'),
-                                        konsortium: Org.findByName('Testkonsortium')]
-
-            Map<String,Org> QAOrgs = [konsorte: Org.findByName('QA-Konsorte'),
-                                      vollnutzer: Org.findByName('QA-Einrichtung'),
-                                      konsortium: Org.findByName('QA-Konsortium')]
-
-            userService.setupAdminAccounts(modelOrgs)
-            userService.setupAdminAccounts(testOrgs)
-            userService.setupAdminAccounts(QAOrgs)
-        }
-        else {
-            log.debug('.. skipped')
         }
     }
 

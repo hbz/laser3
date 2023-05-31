@@ -232,39 +232,4 @@ class UserService {
         }
         result
     }
-
-    /**
-     * This setup was used only for QA in order to create test accounts for the hbz employees. Is disused as everyone should start from scratch when using the system
-     * @param orgs the configuration {@link Map} containing the affiliation configurations to process
-     */
-    @Deprecated
-    void setupAdminAccounts(Map<String,Org> orgs) {
-        List adminUsers = ConfigMapper.getConfig('adminUsers', List) as List
-        List<String> customerTypes = ['konsorte','vollnutzer','konsortium']
-        Map<String,Role> userRights = ['benutzer':Role.findByAuthority('INST_USER'), //internal 'Anina'
-                                       'redakteur':Role.findByAuthority('INST_EDITOR'), //internal 'Rahel'
-                                       'admin':Role.findByAuthority('INST_ADM')] //internal 'Viola'
-
-        adminUsers.each { adminUser ->
-            customerTypes.each { String customerKey ->
-                userRights.each { String rightKey, Role userRole ->
-                    String username = "${adminUser.name}_${customerKey}_${rightKey}"
-                    User user = User.findByUsername(username)
-
-                    if(! user) {
-                        log.debug("trying to create new user: ${username}")
-                        user = addNewUser([username: username, password: "${adminUser.pass}", display: username, email: "${adminUser.email}", enabled: true, org: orgs[customerKey]],null)
-
-                        if (user && orgs[customerKey]) {
-                            if (! user.hasOrgAffiliation_or_ROLEADMIN(orgs[customerKey], rightKey)) {
-
-                                instAdmService.setAffiliation(user, orgs[customerKey], userRole, null) // TODO refactoring
-                                user.getSetting(UserSetting.KEYS.DASHBOARD, orgs[customerKey])
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
 }
