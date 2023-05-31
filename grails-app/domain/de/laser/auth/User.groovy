@@ -29,8 +29,8 @@ class User {
     boolean accountLocked   = false
     boolean passwordExpired = false
 
-    static hasMany      = [ affiliations: UserOrgRole, roles: UserRole ]
-    static mappedBy     = [ affiliations: 'user',  roles: 'user' ]
+    static hasMany      = [ roles: UserRole ]
+    static mappedBy     = [ roles: 'user' ]
 
     static constraints = {
         username    blank: false, unique: true
@@ -68,8 +68,7 @@ class User {
 
         lastUpdated     column: 'usr_last_updated'
         dateCreated     column: 'usr_date_created'
-        
-        affiliations    batchSize: 10
+
         roles           batchSize: 10
     }
 

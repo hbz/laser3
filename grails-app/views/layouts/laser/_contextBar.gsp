@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.storage.RDStore; de.laser.UserSetting; de.laser.auth.User; de.laser.auth.UserOrgRole; de.laser.Org" %>
+<%@ page import="de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.storage.RDStore; de.laser.UserSetting; de.laser.auth.User; de.laser.Org" %>
 <laser:serviceInjection />
 
 <g:set var="visibilityContextOrgMenu" value="la-show-context-orgMenu" />

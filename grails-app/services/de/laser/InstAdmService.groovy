@@ -26,9 +26,9 @@ class InstAdmService {
      * @return true if there is at least one user affiliated as INST_ADM, false otherwise
      */
     boolean hasInstAdmin(Org org) {
-        List<Long> admins = User.executeQuery("select u.id from User u join u.affiliations uo join uo.formalRole role where " +
-                "uo.org = :org and role.authority = :role and u.enabled = true",
-                [org: org, role: 'INST_ADM'])
+        List<Long> admins = User.executeQuery(
+                'select u.id from User u where u.formalOrg = :fo and u.formalRole = :fr and u.enabled = true',
+                [fo: org, fr: Role.findByAuthority('INST_ADM')])
         admins.size() > 0
     }
 

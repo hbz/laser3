@@ -1357,7 +1357,7 @@ class OrganisationController  {
         result.editable = checkIsEditable(result.user, result.orgInstance)
 
         if (! result.editable) {
-            boolean instAdminExists = result.orgInstance.getAllValidInstAdmins().size() > 0
+            boolean instAdminExists = instAdmService.hasInstAdmin(result.orgInstance)
             boolean comboCheck = instAdmService.hasInstAdmPivileges(result.user, result.orgInstance, [RDStore.COMBO_TYPE_CONSORTIUM])
 
             result.editable = comboCheck && ! instAdminExists
@@ -1440,7 +1440,7 @@ class OrganisationController  {
             }
 
             result.substituteList = User.executeQuery(
-                    'select distinct u from User u join u.affiliations ua where ua.org = :ctxOrg and u != :self',
+                    'select distinct u from User u where u.formalOrg = :ctxOrg and u != :self',
                     [ctxOrg: result.orgInstance, self: result.user]
             )
         }

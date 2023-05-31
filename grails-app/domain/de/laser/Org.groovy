@@ -115,7 +115,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         prsLinks:           'org',
         contacts:           'org',
         addresses:          'org',
-        affiliations:       'org',
         propertySet:        'owner',
         altnames:           'org',
         documents:          'org',
@@ -132,7 +131,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         prsLinks:           PersonRole,
         contacts:           Contact,
         addresses:          Address,
-        affiliations:       UserOrgRole,
         propertySet:        OrgProperty,
         altnames:           AlternativeName,
         orgType:            RefdataValue,
@@ -192,7 +190,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         incomingCombos      batchSize: 10
         links               batchSize: 10
         prsLinks            batchSize: 10
-        affiliations        batchSize: 10
         propertySet    batchSize: 10
         documents           batchSize: 10
         platforms           sort:'name', order:'asc', batchSize: 10
@@ -462,18 +459,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     }
 
     /**
-     * Gets all institution administrators of this institution
-     * @return a {@link List} of {@link User}s who are registered as administrators
-     */
-    List<User> getAllValidInstAdmins() {
-        List<User> admins = User.executeQuery(
-                "select u from User u join u.affiliations uo where uo.org = :org and uo.formalRole = :role and u.enabled = true",
-                [org: this, role: Role.findByAuthority('INST_ADM')]
-        )
-        admins
-    }
-
-    /**
      * Gets all identifiers of this institution belonging to the given namespace
      * @param idtype the namespace string to which the requested identifiers belong
      * @return a {@link List} of {@link Identifier}s belonging to the given namespace
@@ -716,7 +701,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      * @return true if there is at least one user registered as institutional administrator, false otherwise
      */
     boolean hasAccessOrg(){
-//        if (UserOrgRole.findAllByOrgAndFormalRole(this, Role.findByAuthority('INST_ADM'))) {
         if (User.findAllByFormalOrgAndFormalRole(this, Role.findByAuthority('INST_ADM'))) { // todo check
             return true
         }

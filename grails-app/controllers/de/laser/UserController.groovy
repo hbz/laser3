@@ -72,7 +72,7 @@ class UserController {
 
             List<Org> orgList = Org.executeQuery('select distinct uo.org from UserOrgRole uo where uo.user = :self', [self: result.user])
             result.substituteList = orgList ? User.executeQuery(
-                    'select distinct u from User u join u.affiliations ua where ua.org in :orgList and u != :self and ua.formalRole = :instAdm order by u.username',
+                    'select distinct u from User u where u.formalOrg in :orgList and u != :self and u.formalRole = :instAdm order by u.username',
                     [orgList: orgList, self: result.user, instAdm: Role.findByAuthority('INST_ADM')]
             ) : []
 

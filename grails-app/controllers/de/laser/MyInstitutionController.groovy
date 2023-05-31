@@ -2518,7 +2518,7 @@ class MyInstitutionController  {
             }
 
             result.substituteList = User.executeQuery(
-                    'select distinct u from User u join u.affiliations ua where ua.org = :ctxOrg and u != :self and ua.formalRole = :instAdm order by u.username',
+                    'select distinct u from User u where u.formalOrg = :ctxOrg and u != :self and u.formalRole = :instAdm order by u.username',
                     [ctxOrg: result.orgInstance, self: result.user, instAdm: Role.findByAuthority('INST_ADM')]
             )
         }
