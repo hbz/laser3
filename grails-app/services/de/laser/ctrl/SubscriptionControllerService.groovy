@@ -2531,6 +2531,7 @@ class SubscriptionControllerService {
             result.filterSet = query.filterSet
 
             if(result.subscription.packages?.pkg) {
+                Set<Package> subPkgs = result.subscription.packages.collect { SubscriptionPackage sp -> sp.pkg }
                 //now, assemble the identifiers available to highlight
                 Map<String, IdentifierNamespace> namespaces = [zdb  : IdentifierNamespace.findByNsAndNsType('zdb', TitleInstancePackagePlatform.class.name),
                                                                eissn: IdentifierNamespace.findByNsAndNsType('eissn', TitleInstancePackagePlatform.class.name),
@@ -2635,6 +2636,7 @@ class SubscriptionControllerService {
                     Set<String> selectedTippIds = []
                     //after having read off the header row, pop the first row
                     rows.remove(0)
+                    TitleInstancePackagePlatform match
                     rows.eachWithIndex { row, int i ->
                         String titleUrl = null
                         Map<String, Object> ieCandidate = [:]
@@ -2688,33 +2690,39 @@ class SubscriptionControllerService {
                         } else {
                             //make checks ...
                             //is title in LAS:eR?
-                            String ieQuery = "select tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and "
-                            Map ieQueryParams = [subPkgs: result.subscription.packages.collect { SubscriptionPackage sp -> sp.pkg }]
+                            String ieQuery = "select tipp from TitleInstancePackagePlatform tipp where tipp.pkg in (:subPkgs) and "
+                            Map ieQueryParams = [subPkgs: subPkgs]
 
                             if(titleUrl){
                                 ieQuery = ieQuery + " ( tipp.hostPlatformURL = :titleUrl "
                                 ieQueryParams.titleUrl = titleUrl.replace("\r", "")
 
                                 if(idCandidate) {
-                                    ieQuery = ieQuery + " or (id.value = :value and id.ns in (:ns))"
+                                    ieQuery = ieQuery + " or exists (select id.id from Identifier id where id.value = :value and id.ns in (:ns) and id.tipp = tipp)"
                                     ieQueryParams.value = idCandidate.value.replace("\r", "")
                                     ieQueryParams.ns = idCandidate.namespaces
                                 }
                                 ieQuery = ieQuery + " )"
                             }
                             else {
-                                ieQuery = ieQuery + " id.value = :value and id.ns in (:ns)"
+                                ieQuery = ieQuery + " exists (select id.id from Identifier id where id.value = :value and id.ns in (:ns) and id.tipp = tipp)"
                                 ieQueryParams.value = idCandidate.value.replace("\r", "")
                                 ieQueryParams.ns = idCandidate.namespaces
                             }
 
+                            //long start = System.currentTimeMillis()
                             List<TitleInstancePackagePlatform> matchingTipps = TitleInstancePackagePlatform.executeQuery(ieQuery, ieQueryParams) //it is *always* possible to have multiple packages linked to a subscription!
+                            //log.debug("after matchingTipps ${System.currentTimeMillis()-start} msecs")
 
                             if (matchingTipps) {
-                                TitleInstancePackagePlatform tipp = matchingTipps.find { TitleInstancePackagePlatform matchingTipp -> matchingTipp.pkg in result.subscription.packages.pkg } as TitleInstancePackagePlatform
+                                TitleInstancePackagePlatform tipp = matchingTipps[0]
                                 //is title already added?
                                 if (addedTipps.contains(tipp.gokbId)) {
                                     errorList.add("${cols[colMap.publicationTitleCol]}&#9;${cols[colMap.zdbCol] && colMap.zdbCol ? cols[colMap.zdbCol] : " "}&#9;${cols[colMap.onlineIdentifierCol] && colMap.onlineIndentifierCol > -1 ? cols[colMap.onlineIdentifierCol] : " "}&#9;${cols[colMap.printIdentifierCol] && colMap.printIdentifierCol > -1 ? cols[colMap.printIdentifierCol] : " "}&#9;${messageSource.getMessage('subscription.details.addEntitlements.titleAlreadyAdded', null, locale)}")
+                                }
+                                else {
+                                    //TEST!
+                                    match = tipp
                                 }
                             }
                             else {
@@ -2794,35 +2802,15 @@ class SubscriptionControllerService {
                                 }
                             }
                         }
-                        if (ieCandIdentifier || titleUrl) {
-                            String tippQuery = "select tipp.gokbId from TitleInstancePackagePlatform tipp join tipp.ids id where tipp.pkg in (:pkgs) and tipp.status != :deleted and "
-                            Map<String, Object> unfilteredParams = [pkgs:result.subscription.packages.pkg, deleted:RDStore.TIPP_STATUS_REMOVED]
-                            if(titleUrl){
-                                tippQuery = tippQuery + " (tipp.hostPlatformURL = :url "
-                                unfilteredParams.url = titleUrl.replace("\r", "")
-                                if(ieCandIdentifier){
-                                    tippQuery = tippQuery + " or id.value = :value "
-                                    unfilteredParams.value = ieCandIdentifier.replace("\r", "")
-                                }
-                                tippQuery = tippQuery + ")"
-
-                            }else {
-                                tippQuery = tippQuery + " id.value = :value "
-                                unfilteredParams.value = ieCandIdentifier.replace("\r", "")
-                            }
-                            //check where indices are needed!
-                            List<String> matches = TitleInstancePackagePlatform.executeQuery(tippQuery, unfilteredParams)
+                        if(covStmt) {
                             ieCoverages.add(covStmt)
                             ieCandidate.coverages = ieCoverages
-                            matches.each { String match ->
-                                TitleInstancePackagePlatform titleInstancePackagePlatform = TitleInstancePackagePlatform.findByGokbId(match)
-                                if(result.subscription && titleInstancePackagePlatform) {
-                                    boolean participantPerpetualAccessToTitle = surveyService.hasParticipantPerpetualAccessToTitle3(result.subscriber, titleInstancePackagePlatform)
-                                    if(!participantPerpetualAccessToTitle) {
-                                        issueEntitlementOverwrite[match] = ieCandidate
-                                        selectedTippIds << match
-                                    }
-                                }
+                        }
+                        if(result.subscription) {
+                            boolean participantPerpetualAccessToTitle = surveyService.hasParticipantPerpetualAccessToTitle3(result.subscriber, match)
+                            if(!participantPerpetualAccessToTitle) {
+                                issueEntitlementOverwrite[match.gokbId] = ieCandidate
+                                selectedTippIds << match.gokbId
                             }
                         }
                     }

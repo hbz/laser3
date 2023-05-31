@@ -11,7 +11,7 @@ class PermanentTitle {
     Date lastUpdated
 
     static constraints = {
-
+        owner(unique: ['tipp'])
     }
 
     static mapping = {

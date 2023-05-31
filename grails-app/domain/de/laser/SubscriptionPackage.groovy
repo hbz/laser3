@@ -33,8 +33,8 @@ class SubscriptionPackage implements Comparable {
   static mapping = {
                 id column:'sp_id'
            version column:'sp_version'
-      subscription column:'sp_sub_fk',  index: 'sp_sub_pkg_idx'
-               pkg column:'sp_pkg_fk',  index: 'sp_sub_pkg_idx'
+      subscription column:'sp_sub_fk',  index: 'sp_sub_idx, sp_sub_pkg_idx'
+               pkg column:'sp_pkg_fk',  index: 'sp_pkg_idx, sp_sub_pkg_idx'
         finishDate column:'sp_finish_date'
      freezeHolding column:'sp_freeze_holding'
 
