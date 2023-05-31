@@ -1610,10 +1610,22 @@ class GlobalSourceSyncService extends AbstractLockableService {
             tippA.volume = tippB.volume
             if(!tippA.save())
                 throw new SyncException("Error on updating base title data: ${tippA.getErrors().getAllErrors().toListString()}")
-            //this query has to be observed very closely. It may first cause an extreme bottleneck (the underlying query may have many Sequence Scans), then it directs the issue holdings
+            //these queries have to be observed very closely. They may first cause an extreme bottleneck (the underlying query may have many Sequence Scans), then they direct the issue holdings
             if(oldStatus != newStatus) {
                 int updateCount = IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.status = :newStatus where ie.tipp = :tipp and ie.status != :newStatus', [tipp: tippA, newStatus: newStatus])
                 log.debug("status updated for ${tippA.gokbId}: ${oldStatus} to ${newStatus}, concerned are ${updateCount} entitlements")
+                if(newStatus == RDStore.TIPP_STATUS_CURRENT) {
+                    IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.subscription s where ie.tipp = :title and ie.status in (:considered) and s.hasPerpetualAccess = true', [title: tippA, considered: [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_EXPECTED]]).each { IssueEntitlement ie ->
+                        ie.perpetualAccessBySub = ie.subscription
+                        Org owner = ie.subscription.getSubscriber()
+                        PermanentTitle perm = PermanentTitle.findByOwnerAndTipp(owner, ie.tipp)
+                        if(!perm) {
+                            perm = new PermanentTitle(owner: owner, tipp: ie.tipp, subscription: ie.subscription, issueEntitlement: ie)
+                            perm.save()
+                        }
+                        ie.save()
+                    }
+                }
             }
             if(tippB.titlePublishers) {
                 if(tippA.publishers) {
