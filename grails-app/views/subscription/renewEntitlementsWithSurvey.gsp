@@ -326,7 +326,7 @@
             <div class="two fields">
             <g:if test="${params.tab != 'stats'}">
                 <div class="eight wide field" style="text-align: left;">
-                    <g:if test="${editable && params.tab != 'selectedIEs'}">
+                    <g:if test="${editable && params.tab == 'allTipps'}">
                         <button type="submit" name="process" id="processButton" value="preliminary" class="ui green button">
                             ${params.tab == 'topUsed' ? '' :checkedCount} <g:message code="renewEntitlementsWithSurvey.preliminary"/></button>
                     </g:if>

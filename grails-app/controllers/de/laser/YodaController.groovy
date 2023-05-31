@@ -1535,7 +1535,7 @@ class YodaController {
             Thread.currentThread().setName("setPerpetualAccessByIes")
             List<Subscription> subList = Subscription.findAllByHasPerpetualAccess(true)
             int countProcess = 0, countProcessPT = 0
-            Set<RefdataValue> status = [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_REMOVED, RDStore.TIPP_STATUS_EXPECTED]
+            Set<RefdataValue> status = [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_RETIRED, RDStore.TIPP_STATUS_DELETED]
             subList.eachWithIndex { Subscription sub, int i ->
                 List<IssueEntitlement> ies = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.subscription = :sub and ie.perpetualAccessBySub is null and ie.status in (:status)', [sub: sub, status: status])
                 IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.perpetualAccessBySub = :sub where ie.subscription = :sub and ie.perpetualAccessBySub is null and ie.status in (:status)', [sub: sub, status: status])
@@ -1579,10 +1579,11 @@ class YodaController {
         executorService.execute({
             Thread.currentThread().setName("setPermanentTitle")
             int countProcess = 0, max = 100000
-            int ieCount = IssueEntitlement.countByPerpetualAccessBySubIsNotNull()
+            Set<RefdataValue> status = [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_RETIRED, RDStore.TIPP_STATUS_DELETED]
+            int ieCount = IssueEntitlement.executeQuery('select count(ie) from IssueEntitlement ie where ie.perpetualAccessBySub is not null and ie.status in (:status)', [status: status])[0]
             if (ieCount > 0) {
                 for(int offset = 0; offset < ieCount; offset+=max) {
-                    List<IssueEntitlement> ies = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.perpetualAccessBySub is not null', [max: max, offset: offset])
+                    List<IssueEntitlement> ies = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.perpetualAccessBySub is not null and ie.status in (:status)', [status: status], [max: max, offset: offset])
                     ies.eachWithIndex { IssueEntitlement issueEntitlement, int i ->
                         //log.debug("now processing record ${offset+i} out of ${ieCount}")
                         TitleInstancePackagePlatform titleInstancePackagePlatform = issueEntitlement.tipp

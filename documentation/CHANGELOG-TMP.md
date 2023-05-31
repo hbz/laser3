@@ -7,6 +7,14 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5059    30.05.2023  rc-3.1  3.1.2       Moe     Bug         500er in Titelumfrage
+
+5080    30.05.2023  rc-3.1  3.1.2       Moe     Bug         Meine Titel komplett unstimmig
+
+5083    30.05.2023  rc-3.1  3.1.2       Moe     Bug         Bug: eigene Umfragemerkmale
+
+5081    30.05.2023  rc-3.1  3.1.2       Moe     Bug         Meine dauerhaften Titel zeigt keine Titel an
+
 --      30.05.2023  rc-3.1  3.1.2       Andreas Bug         Brücke in ApiPerson gebaut
 
 --      30.05.2023  rc-3.1  3.1.2       Andreas Bug         kleinere Ausbesserungen im Statistik-Ladevorgang
