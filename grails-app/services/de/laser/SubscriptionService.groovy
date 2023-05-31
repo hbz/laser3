@@ -1102,7 +1102,7 @@ join sub.orgRelations or_sub where
             if(parentIE)
                 new_ie.status = parentIE.status
 
-            if(pickAndChoosePerpetualAccess || sub.hasPerpetualAccess){
+            if((pickAndChoosePerpetualAccess || sub.hasPerpetualAccess) && new_ie.status != RDStore.TIPP_STATUS_EXPECTED){
                 new_ie.perpetualAccessBySub = sub
 
                 if(!PermanentTitle.findByOwnerAndTipp(sub.subscriber, tipp)){
