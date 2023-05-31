@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5078    31-05-2023  rc-3.1  3.1.2       Moe     Bug         Titelumfrage: Keine Einzeltitelauswahl möglich - System behauptet dauerhaften Zugriff
+
 5098    31.05.2023  rc-3.1  3.1.2       Andreas Bug         zu langsame Performanz bei Titelvorauswahl
 
 5097    31.05.2023  rc-3.1  3.1.2       Andreas Bug         verschobene Spalten korrigiert
