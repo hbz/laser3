@@ -11,6 +11,10 @@
 
 5097    31.05.2023  rc-3.1  3.1.2       Andreas Bug         verschobene Spalten korrigiert
 
+5100    31.05.2023  rc-3.1  3.1.2       Moe     Bug         Es werden keine Mails beim Öffnen einer Umfrage rausgeschickt
+
+5086    31.05.2023  rc-3.1  3.1.2       Moe     Bug         Titel hinzufügen / Plus-Icon läuft in seltsamen Bug
+
 5059    30.05.2023  rc-3.1  3.1.2       Moe     Bug         500er in Titelumfrage
 
 5080    30.05.2023  rc-3.1  3.1.2       Moe     Bug         Meine Titel komplett unstimmig
