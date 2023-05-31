@@ -53,14 +53,6 @@ class UserController {
     def delete() {
         Map<String, Object> result = userControllerService.getResultGenerics(params)
 
-            List<Org> affils = Org.executeQuery('select distinct uo.org from UserOrgRole uo where uo.user = :user', [user: result.user])
-
-            if (affils.size() > 1) {
-                flash.error = message(code: 'user.delete.error.multiAffils') as String
-                redirect action: 'edit', params: [id: params.id]
-                return
-            }
-
             if (params.process && result.editable) {
                 User userReplacement = (User) genericOIDService.resolveOID(params.userReplacement)
 
@@ -70,10 +62,9 @@ class UserController {
                 result.delResult = deletionService.deleteUser(result.user as User, null, DeletionService.DRY_RUN)
             }
 
-            List<Org> orgList = Org.executeQuery('select distinct uo.org from UserOrgRole uo where uo.user = :self', [self: result.user])
-            result.substituteList = orgList ? User.executeQuery(
-                    'select distinct u from User u where u.formalOrg in :orgList and u != :self and u.formalRole = :instAdm order by u.username',
-                    [orgList: orgList, self: result.user, instAdm: Role.findByAuthority('INST_ADM')]
+            result.substituteList = result.user.formalOrg ? User.executeQuery(
+                    'select u from User u where u.formalOrg = :org and u != :self and u.formalRole = :instAdm order by u.username',
+                    [org: result.user.formalOrg, self: result.user, instAdm: Role.findByAuthority('INST_ADM')]
             ) : []
 
         render view: '/user/global/delete', model: result

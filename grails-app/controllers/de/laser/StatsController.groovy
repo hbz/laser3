@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.auth.User
 import grails.plugin.springsecurity.annotation.Secured
 
 import javax.servlet.ServletOutputStream
@@ -19,13 +20,7 @@ class StatsController  {
 
     result.orginfo = [:]
 
-    result.instStats = Org.executeQuery('''
-select distinct(o), count(u) 
-from Org as o, User as u, UserOrgRole as uo 
-where uo.user = u 
-and uo.org = o
-group by o order by o.sortname
-''');
+      result.instStats = User.executeQuery('select distinct(o), count(u) from User as u, Org as o where u.formalOrg = o group by o order by o.sortname')
 
     result.instStats.each { r ->
       _storeOrgInfo(result.orginfo, r[0], 'userCount', r[1]);

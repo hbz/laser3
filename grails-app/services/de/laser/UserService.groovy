@@ -66,14 +66,13 @@ class UserService {
         Map queryParams = [:]
 
         if (params.org || params.authority) {
-            baseQuery.add( 'UserOrgRole uo' )
-
             if (params.org) {
-                whereQuery.add( 'uo.user = u and uo.org = :org' )
+                whereQuery.add( 'u.formalOrg = :org' )
                 queryParams.put( 'org', genericOIDService.resolveOID(params.org) )
             }
+            // params.authority vs params.role ???
             if (params.role) {
-                whereQuery.add( 'uo.user = u and uo.formalRole = :role' )
+                whereQuery.add( 'u.formalRole = :role' )
                 queryParams.put('role', genericOIDService.resolveOID(params.role) )
             }
         }
@@ -189,11 +188,6 @@ class UserService {
             rolesToCheck.each { String rot ->
                 Role role = Role.findByAuthority(rot)
                 if (role) {
-//                    UserOrgRole uo = UserOrgRole.findByUserAndOrgAndFormalRole(userToCheck, orgToCheck, role)
-//                    //for users with multiple affiliations, login fails because of LazyInitializationException of the domain collection
-//                    List<UserOrgRole> affiliations = UserOrgRole.findAllByUser(userToCheck)
-//                    check = check || (uo && affiliations.contains(uo))
-
                     check = check || User.findByIdAndFormalOrgAndFormalRole(userToCheck.id, orgToCheck, role) // TODO refactoring
                 }
             }
@@ -234,8 +228,6 @@ class UserService {
         }
 
         rolesToCheck.each { String rot ->
-//            Role role = Role.findByAuthority(rot)
-//            UserOrgRole userOrg = UserOrgRole.findByUserAndOrgAndFormalRole(userToCheck, orgToCheck, role)
             result = result || (User.findByIdAndFormalOrgAndFormalRole(userToCheck.id, orgToCheck, Role.findByAuthority(rot)))  // TODO refactoring
         }
         result

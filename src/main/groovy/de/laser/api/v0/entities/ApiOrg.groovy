@@ -142,7 +142,6 @@ class ApiOrg {
 
         // Ignored
 
-        //result.affiliations         = org.affiliations // com.k_int.kblpus.UserOrgRole
         //result.incomingCombos       = org.incomingCombos // de.laser.Combo
         //result.links                = exportHelperService.resolveOrgLinks(org.links) // de.laser.OrgRole
         //result.membership           = org.membership?.value // RefdataValue

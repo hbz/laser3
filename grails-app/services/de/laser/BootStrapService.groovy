@@ -210,12 +210,10 @@ class BootStrapService {
                         values.each { affil ->
                             Role role = Role.findByAuthorityAndRoleType(affil, 'user')
                             if (org && role) {
-                                log.debug("  -> adding affiliation: ${role} for ${org.sortname} ")
-//                                new UserOrgRole(
-//                                        user: user,
-//                                        org: org,
-//                                        formalRole: role
-//                                ).save(failOnError: true)
+                                log.debug("  -> setting affiliation: ${role} for ${org.sortname} ")
+                                user.formalOrg = org
+                                user.formalRole = role
+                                user.save(failOnError: true)
                                 // TODO: refactoring
                             }
                         }

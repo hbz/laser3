@@ -2494,15 +2494,7 @@ class MyInstitutionController  {
         }
 
         if (result.user) {
-            List<Org> affils = Org.executeQuery('select distinct uo.org from UserOrgRole uo where uo.user = :user',
-                    [user: result.user])
-
-            if (affils.size() > 1) {
-                flash.error = message(code: 'user.delete.error.multiAffils') as String
-                redirect action: 'editUser', params: [uoid: params.uoid]
-                return
-            }
-            else if (affils.size() == 1 && (affils.get(0).id != contextService.getOrg().id)) {
+            if (result.user.formalOrg && (result.user.formalOrg.id != contextService.getOrg().id)) {
                 flash.error = message(code: 'user.delete.error.foreignOrg') as String
                 redirect action: 'editUser', params: [uoid: params.uoid]
                 return

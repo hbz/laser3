@@ -165,10 +165,9 @@ class ProfileController {
             result.delResult = deletionService.deleteUser(result.user, null, DeletionService.DRY_RUN)
         }
 
-        List<Org> orgList = Org.executeQuery('select distinct uo.org from UserOrgRole uo where uo.user = :self', [self: result.user])
-        result.substituteList = orgList ? User.executeQuery(
-                'select distinct u from User u where u.formalOrg in :orgList and u != :self and u.formalRole = :instAdm order by u.username',
-                [orgList: orgList, self: result.user, instAdm: Role.findByAuthority('INST_ADM')]
+        result.substituteList = result.user.formalOrg ? User.executeQuery(
+                'select u from User u where u.formalOrg = :org and u != :self and u.formalRole = :instAdm order by u.username',
+                [org: result.user.formalOrg, self: result.user, instAdm: Role.findByAuthority('INST_ADM')]
         ) : []
 
         render view: 'delete', model: result

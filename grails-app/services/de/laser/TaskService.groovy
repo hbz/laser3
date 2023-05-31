@@ -316,11 +316,7 @@ class TaskService {
      * @return a list of users
      */
     List<User> getUserDropdown(Org org) { // modal_create
-        List<User> validResponsibleUsers   = org ? User.executeQuery(
-                "select u from User as u where exists (select uo from UserOrgRole as uo where uo.user = u and uo.org = :org) order by lower(u.display)",
-                [org: org]) : []
-
-        validResponsibleUsers
+        org ? User.executeQuery( 'select u from User as u where u.formalOrg = :org order by lower(u.display)', [org: org]) : []
     }
 
     /**
