@@ -44,7 +44,7 @@
 
 <g:if test="${resultList}">
     <ui:paginate action="${actionName}" controller="${controllerName}" params="${params}"
-                 max="${max}" total="${num_sub_rows}" />
+                 max="${max}" total="${resultCount}" />
 </g:if>
 
 <laser:htmlEnd/>
