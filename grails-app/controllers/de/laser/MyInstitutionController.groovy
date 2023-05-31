@@ -4377,7 +4377,7 @@ join sub.orgRelations or_sub where
         User user = contextService.getUser()
         Org org = (Org) genericOIDService.resolveOID(params.oid)
 
-        if (user && org && org.id in user.getAffiliationOrgsIdList()) {
+        if (user && org && org.id == user.formalOrg.id) { // todo: remove
             log.debug('switched context to: ' + org)
             contextService.setOrg(org)
         }

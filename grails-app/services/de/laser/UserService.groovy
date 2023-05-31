@@ -34,16 +34,14 @@ class UserService {
 
         def uss = UserSetting.get(user, UserSetting.KEYS.DASHBOARD)
 
-        List<Long> userOrgMatches = user.getAffiliationOrgsIdList()
-        if (userOrgMatches.size() > 0) {
-            Org firstOrg = Org.findById(userOrgMatches.first()) //we presume that (except my test ladies) no one can be simultaneously member of a consortia and of a single user
+        if (user.formalOrg) {
             if (uss == UserSetting.SETTING_NOT_FOUND) {
-                user.getSetting(UserSetting.KEYS.DASHBOARD, firstOrg)
+                user.getSetting(UserSetting.KEYS.DASHBOARD, user.formalOrg)
             }
             else if (! uss.getValue()) {
-                uss.setValue(firstOrg)
+                uss.setValue(user.formalOrg)
             }
-            if(firstOrg.isCustomerType_Inst())
+            if(user.formalOrg.isCustomerType_Inst())
                 user.getSetting(UserSetting.KEYS.IS_NOTIFICATION_FOR_SURVEYS_PARTICIPATION_FINISH, RDStore.YN_YES)
         }
 

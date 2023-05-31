@@ -43,7 +43,7 @@ class User {
     }
 
     static transients = [
-            'displayName', 'pageSizeOrDefault', 'affiliationOrgs', 'affiliationOrgsIdList', 'admin', 'yoda', 'lastInstAdmin'
+            'displayName', 'pageSizeOrDefault', 'affiliationOrgs', 'admin', 'yoda', 'lastInstAdmin'
     ] // mark read-only accessor methods
 
     static mapping = {
@@ -158,12 +158,11 @@ class User {
         formalOrg ? [formalOrg] : []
     }
 
-    /**
-     * Same as {@link #getAffiliationOrgs}, but only the IDs of the {@link Org}s are being collected
-     * @return a {@link List} of org IDs
-     */
-    List<Long> getAffiliationOrgsIdList() {
-        getAffiliationOrgs().collect{ it.id }
+    boolean isFormal() {
+        formalOrg?.id == BeanStore.getContextService().getOrg().id
+    }
+    boolean isFormal(Role role) {
+        (formalOrg?.id == BeanStore.getContextService().getOrg().id) && (formalRole?.id == role.id)
     }
 
     /**

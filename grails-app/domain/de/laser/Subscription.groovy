@@ -725,18 +725,12 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
             return true
         }
 
-        Org contextOrg = BeanStore.getContextService().getOrg()
-        if (user.getAffiliationOrgsIdList().contains(contextOrg?.id)) {
+        if (user.isFormal()) {
+            Org contextOrg = BeanStore.getContextService().getOrg()
 
-            OrgRole cons = OrgRole.findBySubAndOrgAndRoleType(
-                    this, contextOrg, RDStore.OR_SUBSCRIPTION_CONSORTIA
-            )
-            OrgRole subscrCons = OrgRole.findBySubAndOrgAndRoleType(
-                    this, contextOrg, RDStore.OR_SUBSCRIBER_CONS
-            )
-            OrgRole subscr = OrgRole.findBySubAndOrgAndRoleType(
-                    this, contextOrg, RDStore.OR_SUBSCRIBER
-            )
+            OrgRole cons       = OrgRole.findBySubAndOrgAndRoleType( this, contextOrg, RDStore.OR_SUBSCRIPTION_CONSORTIA )
+            OrgRole subscrCons = OrgRole.findBySubAndOrgAndRoleType( this, contextOrg, RDStore.OR_SUBSCRIBER_CONS )
+            OrgRole subscr     = OrgRole.findBySubAndOrgAndRoleType( this, contextOrg, RDStore.OR_SUBSCRIBER )
 
             if (perm == 'view') {
                 return cons || subscrCons || subscr
