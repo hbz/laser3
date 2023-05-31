@@ -1103,8 +1103,8 @@ class StatsSyncService {
                 if(reader?.containsKey("Report_Header"))
                     result.header = reader["Report_Header"]
                 else {
-                    log.error("server response: ${resp.status()} - ${reader}")
-                    result.error = resp.status()
+                    log.error("server response: ${resp?.status()} - ${reader}")
+                    result.error = resp?.status()
                 }
             }
             HttpClientConfiguration config = new DefaultHttpClientConfiguration()

@@ -168,34 +168,26 @@
 
         </div>
 
-        <div class="two fields">
-            <div class="field la-field-right-aligned">
-                <a href="${request.forwardURI}"
-                   class="ui reset secondary button">${message(code: 'default.button.reset.label')}</a>
-                <input type="hidden" name="filterSet" value="true"/>
-                <input type="submit" class="ui primary button"
-                       value="${message(code: 'default.button.filter.label')}"/>
-            </div>
+    <%--<div class="two fields">
+      <div class="field">
+           <label for="filterPvd">${message(code: 'default.all_other.platforms.label')}</label>
+           <select name="filterOtherPlat" multiple="" class="ui search selection fluid dropdown">
+               <option <%= (filterOtherPlat.contains("all")) ? 'selected' : '' %>
+                       value="">${message(code: 'myinst.currentTitles.all_other_platforms')}</option>
+               <g:each in="${otherplatforms}" var="op">
 
-            <%--<div class="field">
-                <label for="filterPvd">${message(code: 'default.all_other.platforms.label')}</label>
-                <select name="filterOtherPlat" multiple="" class="ui search selection fluid dropdown">
-                    <option <%= (filterOtherPlat.contains("all")) ? 'selected' : '' %>
-                            value="">${message(code: 'myinst.currentTitles.all_other_platforms')}</option>
-                    <g:each in="${otherplatforms}" var="op">
-
-                        <%
-                            def platId = op[0].id.toString()
-                            def platName = op[0].name
-                        %>
-                        <option <%=(filterOtherPlat.contains(platId)) ? 'selected' : ''%> value="${platId}"
-                                                                                          title="${platName}">
-                            ${platName}
-                        </option>
-                    </g:each>
-                </select>
-            </div>--%>
-        </div>
+                   <%
+                       def platId = op[0].id.toString()
+                       def platName = op[0].name
+                   %>
+                   <option <%=(filterOtherPlat.contains(platId)) ? 'selected' : ''%> value="${platId}"
+                                                                                     title="${platName}">
+                       ${platName}
+                   </option>
+               </g:each>
+           </select>
+       </div>
+        </div>--%>
 
     <%--<div class="two fields">
 
@@ -208,6 +200,14 @@
         </div>
     </div>
     </div>--%>
+
+        <div class="field la-field-right-aligned">
+            <a href="${request.forwardURI}"
+               class="ui reset secondary button">${message(code: 'default.button.reset.label')}</a>
+            <input type="hidden" name="filterSet" value="true"/>
+            <input type="submit" class="ui primary button"
+                   value="${message(code: 'default.button.filter.label')}"/>
+        </div>
 
     </g:form>
 </ui:filter>
