@@ -1462,8 +1462,8 @@ class SurveyService {
     }
 
     boolean hasParticipantPerpetualAccessToTitle3(Org org, TitleInstancePackagePlatform tipp){
-            Integer countPermanentTitles = PermanentTitle.executeQuery('select count(pt.id) from PermanentTitle pt where ' +
-                    '(pt.tipp.hostPlatformURL = :hostPlatformURL OR  pt.tipp = :tipp) AND ' +
+            Integer countPermanentTitles = PermanentTitle.executeQuery('select count(pt.id) from PermanentTitle pt join pt.tipp tipp where ' +
+                    '(tipp = :tipp or tipp.hostPlatformURL = :hostPlatformURL) and ' +
                     'tipp.status != :tippStatus AND ' +
                     'pt.owner = :org',
                     [hostPlatformURL: tipp.hostPlatformURL,

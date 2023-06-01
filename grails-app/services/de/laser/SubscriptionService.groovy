@@ -1074,7 +1074,7 @@ join sub.orgRelations or_sub where
         TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGokbId(gokbId)
         if (tipp == null) {
             throw new EntitlementCreationException("Unable to tipp ${gokbId}")
-        }else if(!PermanentTitle.findByOwnerAndTipp(sub.subscriber, tipp)){
+        }else if(PermanentTitle.findByOwnerAndTipp(sub.subscriber, tipp)){
             throw new EntitlementCreationException("Unable to create IssueEntitlement because IssueEntitlement exist as PermanentTitle")
         }
         else if(IssueEntitlement.findAllBySubscriptionAndTippAndStatusInList(sub, tipp, [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_RETIRED])) {

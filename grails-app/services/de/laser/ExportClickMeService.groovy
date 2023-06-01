@@ -3399,8 +3399,9 @@ class ExportClickMeService {
                 if (fieldKey.startsWith('surveyProperty.')) {
                     Long id = Long.parseLong(fieldKey.split("\\.")[1])
                     SurveyResult participantResultProperty = SurveyResult.findBySurveyConfigAndParticipantAndType(participantResult.surveyConfig, participantResult.participant, PropertyDefinition.get(id))
-                    String result = participantResultProperty.getResult() ?: " ", comment = participantResultProperty.comment ?: " "
+                    String result = participantResultProperty.getResult() ?: " ", note = participantResultProperty.note ?: " ", comment = participantResultProperty.comment ?: " "
                     row.add(createTableCell(format, result))
+                    row.add(createTableCell(format, note))
                     row.add(createTableCell(format, comment))
                 } else if (fieldKey.contains('Contact.')) {
                     if(contactSources) {

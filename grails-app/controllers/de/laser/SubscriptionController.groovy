@@ -154,7 +154,7 @@ class SubscriptionController {
                 Map<String, Object> dateRangeParams = subscriptionControllerService.getDateRange(params, result.subscription)
                 result.reportTypes = []
                 CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(result.subscription.getSubscriber(), platformInstance)
-                if(ci) {
+                if(ci?.value) {
                     SortedSet allAvailableReports = subscriptionControllerService.getAvailableReports([platformInstance].toSet(), result)
                     if(allAvailableReports)
                         result.reportTypes.addAll(allAvailableReports)
@@ -227,7 +227,7 @@ class SubscriptionController {
         }
         else {
             Subscription sub = Subscription.get(params.id)
-            String token = "report_${params.reportType}_${params.platform}_${sub.getSubscriber().id}"
+            String token = "report_${params.reportType}_${params.platform}_${sub.getSubscriber().id}_${sub.id}"
             if(params.metricType) {
                 token += '_'+params.list('metricType').join('_')
             }

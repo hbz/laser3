@@ -1534,15 +1534,16 @@ class SubscriptionControllerService {
                 Map<String, Object> query = filterService.getTippQuery(params, baseSub.packages.pkg)
                 result.filterSet = query.filterSet
                 List<Long> titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
+
+                result.tippsListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.tipp tipp ' +
+                        'where p.listPrice is not null and tipp.status.id = :tiStatus and tipp.id in (' + query.query + ' )', [tiStatus: RDStore.TIPP_STATUS_CURRENT.id]+query.queryParams)[0] ?: 0
+
                 result.titlesList = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList.drop(result.offset).take(result.max), [sort: 'sortname']) : []
                 result.num_rows = titlesList.size()
 
                 if(baseSub.packages){
                     result.packageInstance = baseSub.packages.pkg[0]
                 }
-
-                result.tippsListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.tipp tipp ' +
-                        'where p.listPrice is not null and tipp.status.id = :status ', [status: RDStore.TIPP_STATUS_CURRENT.id])[0] ?: 0
 
             }else if(params.tab == 'selectedIEs') {
                 IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, subscriberSub)
@@ -2531,6 +2532,7 @@ class SubscriptionControllerService {
             result.filterSet = query.filterSet
 
             if(result.subscription.packages?.pkg) {
+                Set<Package> subPkgs = result.subscription.packages.collect { SubscriptionPackage sp -> sp.pkg }
                 //now, assemble the identifiers available to highlight
                 Map<String, IdentifierNamespace> namespaces = [zdb  : IdentifierNamespace.findByNsAndNsType('zdb', TitleInstancePackagePlatform.class.name),
                                                                eissn: IdentifierNamespace.findByNsAndNsType('eissn', TitleInstancePackagePlatform.class.name),
@@ -2553,6 +2555,14 @@ class SubscriptionControllerService {
                     //checkedCache.put('checked', [:])
                 }
                 if (params.kbartPreselect && !params.pagination) {
+                    Sql sql = GlobalService.obtainSqlConnection()
+
+                    String identifierMapQuery = "select id_value, tipp_gokb_id, tipp_host_platform_url from identifier join title_instance_package_platform on tipp_id = id_tipp_fk where tipp_pkg_fk = any(:pkgIds) and id_ns_fk = any(:idns)"
+                    Map<String, String> titleIdentifierMap = [:]
+                    sql.rows(identifierMapQuery, [pkgIds: sql.getDataSource().getConnection().createArrayOf('bigint', subPkgs.id as Object[]), idns: sql.getDataSource().getConnection().createArrayOf('bigint', namespaces.values().id as Object[])]).each { GroovyRowResult row ->
+                        titleIdentifierMap.put(row['id_value'], row['tipp_gokb_id'])
+                        titleIdentifierMap.put(row['tipp_host_platform_url'], row['tipp_gokb_id'])
+                    }
                     MultipartFile kbartFile = params.kbartPreselect
                     identifiers.filename = kbartFile.originalFilename
                     InputStream stream = kbartFile.getInputStream()
@@ -2635,6 +2645,7 @@ class SubscriptionControllerService {
                     Set<String> selectedTippIds = []
                     //after having read off the header row, pop the first row
                     rows.remove(0)
+                    TitleInstancePackagePlatform match
                     rows.eachWithIndex { row, int i ->
                         String titleUrl = null
                         Map<String, Object> ieCandidate = [:]
@@ -2688,33 +2699,43 @@ class SubscriptionControllerService {
                         } else {
                             //make checks ...
                             //is title in LAS:eR?
-                            String ieQuery = "select tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and "
-                            Map ieQueryParams = [subPkgs: result.subscription.packages.collect { SubscriptionPackage sp -> sp.pkg }]
+                            /*
+                            should be changed due to excessive performance loss
+                            String ieQuery = "select tipp from TitleInstancePackagePlatform tipp where tipp.pkg in (:subPkgs) and "
+                            Map ieQueryParams = [subPkgs: subPkgs]
 
                             if(titleUrl){
                                 ieQuery = ieQuery + " ( tipp.hostPlatformURL = :titleUrl "
                                 ieQueryParams.titleUrl = titleUrl.replace("\r", "")
 
                                 if(idCandidate) {
-                                    ieQuery = ieQuery + " or (id.value = :value and id.ns in (:ns))"
+                                    ieQuery = ieQuery + " or exists (select id.id from Identifier id where id.value = :value and id.ns in (:ns) and id.tipp = tipp)"
                                     ieQueryParams.value = idCandidate.value.replace("\r", "")
                                     ieQueryParams.ns = idCandidate.namespaces
                                 }
                                 ieQuery = ieQuery + " )"
                             }
                             else {
-                                ieQuery = ieQuery + " id.value = :value and id.ns in (:ns)"
+                                ieQuery = ieQuery + " exists (select id.id from Identifier id where id.value = :value and id.ns in (:ns) and id.tipp = tipp)"
                                 ieQueryParams.value = idCandidate.value.replace("\r", "")
                                 ieQueryParams.ns = idCandidate.namespaces
                             }
 
+                            long start = System.currentTimeMillis()
                             List<TitleInstancePackagePlatform> matchingTipps = TitleInstancePackagePlatform.executeQuery(ieQuery, ieQueryParams) //it is *always* possible to have multiple packages linked to a subscription!
+                            log.debug("after matchingTipps ${System.currentTimeMillis()-start} msecs")
+                             */
 
-                            if (matchingTipps) {
-                                TitleInstancePackagePlatform tipp = matchingTipps.find { TitleInstancePackagePlatform matchingTipp -> matchingTipp.pkg in result.subscription.packages.pkg } as TitleInstancePackagePlatform
+
+                            if (titleIdentifierMap.containsKey(idCandidate.value.replace("\r", "")) || titleIdentifierMap.containsKey(titleUrl)) {
+                                String tippKey = titleIdentifierMap.containsKey(titleUrl) ? titleIdentifierMap.get(titleUrl) : titleIdentifierMap.get(idCandidate.value.replace("\r", ""))
                                 //is title already added?
-                                if (addedTipps.contains(tipp.gokbId)) {
+                                if (addedTipps.contains(tippKey)) {
                                     errorList.add("${cols[colMap.publicationTitleCol]}&#9;${cols[colMap.zdbCol] && colMap.zdbCol ? cols[colMap.zdbCol] : " "}&#9;${cols[colMap.onlineIdentifierCol] && colMap.onlineIndentifierCol > -1 ? cols[colMap.onlineIdentifierCol] : " "}&#9;${cols[colMap.printIdentifierCol] && colMap.printIdentifierCol > -1 ? cols[colMap.printIdentifierCol] : " "}&#9;${messageSource.getMessage('subscription.details.addEntitlements.titleAlreadyAdded', null, locale)}")
+                                }
+                                else {
+                                    //TEST!
+                                    match = TitleInstancePackagePlatform.findByGokbId(tippKey)
                                 }
                             }
                             else {
@@ -2794,35 +2815,15 @@ class SubscriptionControllerService {
                                 }
                             }
                         }
-                        if (ieCandIdentifier || titleUrl) {
-                            String tippQuery = "select tipp.gokbId from TitleInstancePackagePlatform tipp join tipp.ids id where tipp.pkg in (:pkgs) and tipp.status != :deleted and "
-                            Map<String, Object> unfilteredParams = [pkgs:result.subscription.packages.pkg, deleted:RDStore.TIPP_STATUS_REMOVED]
-                            if(titleUrl){
-                                tippQuery = tippQuery + " (tipp.hostPlatformURL = :url "
-                                unfilteredParams.url = titleUrl.replace("\r", "")
-                                if(ieCandIdentifier){
-                                    tippQuery = tippQuery + " or id.value = :value "
-                                    unfilteredParams.value = ieCandIdentifier.replace("\r", "")
-                                }
-                                tippQuery = tippQuery + ")"
-
-                            }else {
-                                tippQuery = tippQuery + " id.value = :value "
-                                unfilteredParams.value = ieCandIdentifier.replace("\r", "")
-                            }
-                            //check where indices are needed!
-                            List<String> matches = TitleInstancePackagePlatform.executeQuery(tippQuery, unfilteredParams)
+                        if(covStmt) {
                             ieCoverages.add(covStmt)
                             ieCandidate.coverages = ieCoverages
-                            matches.each { String match ->
-                                TitleInstancePackagePlatform titleInstancePackagePlatform = TitleInstancePackagePlatform.findByGokbId(match)
-                                if(result.subscription && titleInstancePackagePlatform) {
-                                    boolean participantPerpetualAccessToTitle = surveyService.hasParticipantPerpetualAccessToTitle3(result.subscriber, titleInstancePackagePlatform)
-                                    if(!participantPerpetualAccessToTitle) {
-                                        issueEntitlementOverwrite[match] = ieCandidate
-                                        selectedTippIds << match
-                                    }
-                                }
+                        }
+                        if(result.subscription) {
+                            boolean participantPerpetualAccessToTitle = surveyService.hasParticipantPerpetualAccessToTitle3(result.subscriber, match)
+                            if(!participantPerpetualAccessToTitle) {
+                                issueEntitlementOverwrite[match.gokbId] = ieCandidate
+                                selectedTippIds << match.gokbId
                             }
                         }
                     }
@@ -3656,12 +3657,11 @@ class SubscriptionControllerService {
                 [result:result,status:STATUS_ERROR]
 
             }else if(params.process == "preliminary" && result.checked.size() > 0) {
-                Integer countIEsToAdd = 0
+                Integer countTippsToAdd = 0
                 result.checked.each {
-                    IssueEntitlement ie = IssueEntitlement.findById(it.key)
-                    if(ie) {
-                        TitleInstancePackagePlatform tipp = ie.tipp
-
+                    println(it)
+                    TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findById(it.key)
+                    if(tipp) {
                         boolean tippExistsInParentSub = false
 
                         if (IssueEntitlement.findByTippAndSubscriptionAndStatus(tipp, result.surveyConfig.subscription, RDStore.TIPP_STATUS_CURRENT)) {
@@ -3687,9 +3687,9 @@ class SubscriptionControllerService {
                                     }
                                 }
 
-                                if (issueEntitlementGroup && subscriptionService.addEntitlement(result.subscription, tipp.gokbId, ie, (ie.priceItems.size() > 0), result.surveyConfig.pickAndChoosePerpetualAccess, issueEntitlementGroup)) {
+                                if (issueEntitlementGroup && subscriptionService.addEntitlement(result.subscription, tipp.gokbId, null, (tipp.priceItems != null), result.surveyConfig.pickAndChoosePerpetualAccess, issueEntitlementGroup)) {
                                     log.debug("Added tipp ${tipp.gokbId} to sub ${result.subscription.id}")
-                                    ++countIEsToAdd
+                                    ++countTippsToAdd
                                     removeFromCache << it.key
                                 }
                             }
@@ -3701,8 +3701,8 @@ class SubscriptionControllerService {
                         }
                     }
                 }
-                if(countIEsToAdd > 0){
-                    Object[] args = [countIEsToAdd]
+                if(countTippsToAdd > 0){
+                    Object[] args = [countTippsToAdd]
                     result.message = messageSource.getMessage('renewEntitlementsWithSurvey.tippsToAdd',args,locale)
                 }
 

@@ -36,7 +36,7 @@ class MailSendService {
     SubscriptionService subscriptionService
     AsynchronousMailService asynchronousMailService
 
-    String from
+    String fromMail
 
     String currentServer = AppUtils.getCurrentServer()
     String subjectSystemPraefix = (currentServer == AppUtils.PROD) ? "" : (ConfigMapper.getLaserSystemId() + " - ")
@@ -46,13 +46,13 @@ class MailSendService {
      */
     @javax.annotation.PostConstruct
     void init() {
-        from = ConfigMapper.getNotificationsEmailFrom()
+        fromMail = ConfigMapper.getNotificationsEmailFrom()
         messageSource = BeanStore.getMessageSource()
     }
 
     Map mailSendConfigBySurvey(SurveyInfo surveyInfo, boolean reminderMail) {
         Map<String, Object> result = [:]
-        result.mailFrom = from
+        result.mailFrom = fromMail
         result.mailSubject = ""
         result.mailText = ""
 
@@ -77,7 +77,7 @@ class MailSendService {
         Map<String, Object> result = [:]
 
         FlashScope flash = getCurrentFlashScope()
-        result.mailFrom = from
+        result.mailFrom = fromMail
         result.mailSubject = parameterMap.mailSubject
 
         result.editable = (surveyInfo && surveyInfo.status in [RDStore.SURVEY_SURVEY_STARTED]) ? surveyInfo.isEditable() : false
@@ -217,7 +217,7 @@ class MailSendService {
             log.error 'SurveyService.sendSurveyEmail() failed due grails.mail.disabled = true'
         }else {
 
-            String replyTo
+            String replyToMail
 
             String emailReceiver = user.getEmail()
 
@@ -242,7 +242,7 @@ class MailSendService {
                             }
                         }
 
-                        replyTo = (generalContactsEMails.size() > 0) ? generalContactsEMails[0].toString() : null
+                        replyToMail = (generalContactsEMails.size() > 0) ? generalContactsEMails[0].toString() : null
                         Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RDStore.LANGUAGE_DE).value.toString())
                         String mailSubject = subjectSystemPraefix
                         if(reminderMail) {
@@ -257,9 +257,9 @@ class MailSendService {
                             AsynchronousMailMessage asynchronousMailMessage = asynchronousMailService.sendMail {
                                 multipart true
                                 to emailReceiver
-                                from from
+                                from fromMail
                                 cc ccAddress
-                                replyTo replyTo
+                                replyTo replyToMail
                                 subject mailSubject
                                 text view: "/mailTemplates/text/notificationSurvey", model: [language: language, survey: survey, reminder: reminderMail]
                                 html view: "/mailTemplates/html/notificationSurvey", model: [language: language, survey: survey, reminder: reminderMail]
@@ -268,8 +268,8 @@ class MailSendService {
                             AsynchronousMailMessage asynchronousMailMessage = asynchronousMailService.sendMail {
                                 multipart true
                                 to emailReceiver
-                                from from
-                                replyTo replyTo
+                                from fromMail
+                                replyTo replyToMail
                                 subject mailSubject
                                 text view: "/mailTemplates/text/notificationSurvey", model: [language: language, survey: survey, reminder: reminderMail]
                                 html view: "/mailTemplates/html/notificationSurvey", model: [language: language, survey: survey, reminder: reminderMail]
@@ -354,7 +354,7 @@ class MailSendService {
                             if (isNotificationCCbyEmail && ccAddress) {
                                 AsynchronousMailMessage asynchronousMailMessage = asynchronousMailService.sendMail {
                                     to emailReceiver
-                                    from from
+                                    from fromMail
                                     cc ccAddress
                                     subject mailSubject
                                     html(view: "/mailTemplates/html/notificationSurveyParticipationFinish", model: [user: user, survey: surveyInfo, surveyResults: surveyResults, generalContactsEMails: generalContactsEMails])
@@ -362,7 +362,7 @@ class MailSendService {
                             } else {
                                 AsynchronousMailMessage asynchronousMailMessage = asynchronousMailService.sendMail {
                                     to emailReceiver
-                                    from from
+                                    from fromMail
                                     subject mailSubject
                                     html(view: "/mailTemplates/html/notificationSurveyParticipationFinish", model: [user: user, survey: surveyInfo, surveyResults: surveyResults, generalContactsEMails: generalContactsEMails])
                                 }
@@ -437,7 +437,7 @@ class MailSendService {
                             if (isNotificationCCbyEmail && ccAddress) {
                                 AsynchronousMailMessage asynchronousMailMessage = asynchronousMailService.sendMail {
                                     to emailReceiver
-                                    from from
+                                    from fromMail
                                     cc ccAddress
                                     subject mailSubject
                                     html(view: "/mailTemplates/html/notificationSurveyParticipationFinishForOwner", model: [user: user, org: participationFinish, survey: surveyInfo, surveyResults: surveyResults])
@@ -445,7 +445,7 @@ class MailSendService {
                             } else {
                                 AsynchronousMailMessage asynchronousMailMessage = asynchronousMailService.sendMail {
                                     to emailReceiver
-                                    from from
+                                    from fromMail
                                     subject mailSubject
                                     html(view: "/mailTemplates/html/notificationSurveyParticipationFinishForOwner", model: [user: user, org: participationFinish, survey: surveyInfo, surveyResults: surveyResults])
                                 }

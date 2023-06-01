@@ -359,7 +359,7 @@
 
 </g:form>
 </div>
-<g:if test="${sourceIEs}">
+<g:if test="${sourceIEs || titlesList}">
     <ui:paginate action="renewEntitlementsWithSurvey" controller="subscription" params="${params}"
                     max="${max}" total="${num_rows}"/>
 </g:if>
@@ -416,7 +416,7 @@
                     newSubID: "${subscriberSub.id}"
                 },
                 success: function (data) {
-                        <g:if test="${editable && params.tab != 'selectedIEs'}">
+                        <g:if test="${editable && params.tab == 'allTipps'}">
                             $("#processButton").html(data.checkedCount + " ${g.message(code: 'renewEntitlementsWithSurvey.preliminary')}");
                         </g:if>
 
@@ -444,7 +444,14 @@
                 $("div[data-index='" + index + "']").removeClass("positive");
             }
 
+    <g:if test="${editable && params.tab == 'allTipps'}">
+        JSPC.app.updateSelectionCache($(this).parents(".la-js-checkItem").attr("data-tippId"), $(this).prop('checked'));
+    </g:if>
+
+    <g:if test="${editable && params.tab == 'selectedIEs'}">
         JSPC.app.updateSelectionCache($(this).parents(".la-js-checkItem").attr("data-ieId"), $(this).prop('checked'));
+    </g:if>
+
     });
 
     $(".statsExport").on('click', function(e) {

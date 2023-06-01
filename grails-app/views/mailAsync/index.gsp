@@ -14,9 +14,9 @@
             <tr>
                 <g:sortableColumn property="id" title="Id"/>
                 <g:sortableColumn property="subject" title="Subject"/>
-                <th>To</th>
+                <g:sortableColumn property="to" title="To"/>
                 <g:sortableColumn property="createDate" title="Create Date"/>
-                <th>Status</th>
+                <g:sortableColumn property="status" title="Status"/>
                 <th>Actions</th>
             </tr>
             </thead>
@@ -41,5 +41,10 @@
             </g:each>
             </tbody>
         </table>
+
+<g:if test="${resultList}">
+    <ui:paginate action="${actionName}" controller="${controllerName}" params="${params}"
+                 max="${max}" total="${resultCount}" />
+</g:if>
 
 <laser:htmlEnd/>
