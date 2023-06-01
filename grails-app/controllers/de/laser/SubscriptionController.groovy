@@ -227,7 +227,7 @@ class SubscriptionController {
         }
         else {
             Subscription sub = Subscription.get(params.id)
-            String token = "report_${params.reportType}_${params.platform}_${sub.getSubscriber().id}"
+            String token = "report_${params.reportType}_${params.platform}_${sub.getSubscriber().id}_${sub.id}"
             if(params.metricType) {
                 token += '_'+params.list('metricType').join('_')
             }

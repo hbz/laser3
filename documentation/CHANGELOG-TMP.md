@@ -7,9 +7,17 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-5098    31.05.2023  rc-3.1  3.1.2       Andreas Bug         zu langsame Performanz bei Titelvorauswahl
+5099    31.05.2023  rc-3.1  3.1.2       Andreas Bug         Falsches Caching der erzeugten Reports
 
-5097    31.05.2023  rc-3.1  3.1.2       Andreas Bug         verschobene Spalten korrigiert
+5078    31.05.2023  rc-3.1  3.1.2       Moe     Bug         Titelumfrage: Keine Einzeltitelauswahl möglich - System behauptet dauerhaften Zugriff
+
+5097    31.05.2023  rc-3.1  3.1.2       Andreas Bug         zu langsame Performanz bei Titelvorauswahl
+
+5098    31.05.2023  rc-3.1  3.1.2       Andreas Bug         verschobene Spalten korrigiert
+
+5100    31.05.2023  rc-3.1  3.1.2       Moe     Bug         Es werden keine Mails beim Öffnen einer Umfrage rausgeschickt
+
+5086    31.05.2023  rc-3.1  3.1.2       Moe     Bug         Titel hinzufügen / Plus-Icon läuft in seltsamen Bug
 
 5059    30.05.2023  rc-3.1  3.1.2       Moe     Bug         500er in Titelumfrage
 
