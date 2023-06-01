@@ -51,6 +51,7 @@
                 </div><!-- .content -->
             </div><!-- .card -->
 
+            <g:if test="${contextService.getOrg()}">
             <div class="ui card">
                 <div class="content">
                     <h2 class="ui dividing header">
@@ -125,7 +126,9 @@
 
                 </div><!-- .content -->
             </div><!-- .card -->
+            </g:if>
 
+            <g:if test="${contextService.getOrg()}">
             <div class="ui card">
                 <div class="ui content">
                     <h2 class="ui dividing header">
@@ -161,7 +164,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <g:if test="${ ! isOrgBasicMember}">
+                            <g:if test="${ ! contextService.getOrg().isCustomerType_Inst_Basic()}">
                                 <tr>
                                     <td>
                                         <div class="ui checkbox">
@@ -316,6 +319,7 @@
                     </ui:form><!-- updateReminderSettings -->
                 </div><!-- .content -->
             </div><!-- .card -->
+            </g:if>
 
         </div><!-- .la-inline-lists -->
     </div><!-- .column -->
@@ -386,6 +390,9 @@
                 </div><!-- .content -->
             </div><!-- .card -->
 
+            <laser:render template="/templates/user/membership_table" model="[userInstance: user]" />
+
+            <g:if test="${contextService.getOrg()}">
             <div class="ui card">
                 <div class="content">
                     <h2 class="ui dividing header">
@@ -444,25 +451,25 @@
                             <ui:xEditableDropDown owner="${user.getSetting(KEYS.PAGE_SIZE, 10)}" field="strValue" dataLink="getProfilPageSizeList"/>
                         </div>
 
-                    </div>
+                    </div><!-- .form -->
                 </div><!-- .content -->
             </div><!-- .card -->
+            </g:if>
 
         </div><!-- .la-inline-lists -->
     </div><!-- .column -->
 
 </div><!-- .grid -->
 
-    <div class="la-inline-lists">
-        <laser:render template="/templates/user/membership_table" model="[userInstance: user]" />
-    </div>
-
     <sec:ifAnyGranted roles="ROLE_ADMIN">
         <div class="column wide sixteen">
             <div class="la-inline-lists">
-
                 <div class="ui card la-full-width">
                     <div class="content">
+                        <ui:msg class="info" icon="exclamation" noClose="true">
+                            Diese Funktion ist nur für Administratoren verfügbar.
+                        </ui:msg>
+
                         <ui:form controller="profile" action="setAffiliation" hideWrapper="true">
                             <div class="two fields">
                                 <div class="field">

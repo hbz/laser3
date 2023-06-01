@@ -19,13 +19,13 @@ class HomeController {
     @Secured(['ROLE_USER'])
     def index() {
         Map<String, Object> result = [:]
-        result.user = contextService.getUser()
+        result.user = contextService.getUser().refresh()
 
         if (result.user) {
             log.debug("HomeController::index - ${result.user.id} - ${result.user.formalOrg}")
             if (! result.user.formalOrg) {
                 flash.error = 'Es existiert noch keine Zugehörigkeit .. (TODO)'
-                redirect(controller: 'profile', action: 'help')
+                redirect(controller: 'profile', action: 'index')
                 return
             }
             redirect(controller: 'myInstitution', action: 'dashboard')
