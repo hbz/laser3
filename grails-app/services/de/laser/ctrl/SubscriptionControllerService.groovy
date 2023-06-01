@@ -2555,6 +2555,14 @@ class SubscriptionControllerService {
                     //checkedCache.put('checked', [:])
                 }
                 if (params.kbartPreselect && !params.pagination) {
+                    Sql sql = GlobalService.obtainSqlConnection()
+
+                    String identifierMapQuery = "select id_value, tipp_gokb_id, tipp_host_platform_url from identifier join title_instance_package_platform on tipp_id = id_tipp_fk where tipp_pkg_fk = any(:pkgIds) and id_ns_fk = any(:idns)"
+                    Map<String, String> titleIdentifierMap = [:]
+                    sql.rows(identifierMapQuery, [pkgIds: sql.getDataSource().getConnection().createArrayOf('bigint', subPkgs.id as Object[]), idns: sql.getDataSource().getConnection().createArrayOf('bigint', namespaces.values().id as Object[])]).each { GroovyRowResult row ->
+                        titleIdentifierMap.put(row['id_value'], row['tipp_gokb_id'])
+                        titleIdentifierMap.put(row['tipp_host_platform_url'], row['tipp_gokb_id'])
+                    }
                     MultipartFile kbartFile = params.kbartPreselect
                     identifiers.filename = kbartFile.originalFilename
                     InputStream stream = kbartFile.getInputStream()
@@ -2691,6 +2699,8 @@ class SubscriptionControllerService {
                         } else {
                             //make checks ...
                             //is title in LAS:eR?
+                            /*
+                            should be changed due to excessive performance loss
                             String ieQuery = "select tipp from TitleInstancePackagePlatform tipp where tipp.pkg in (:subPkgs) and "
                             Map ieQueryParams = [subPkgs: subPkgs]
 
@@ -2711,19 +2721,21 @@ class SubscriptionControllerService {
                                 ieQueryParams.ns = idCandidate.namespaces
                             }
 
-                            //long start = System.currentTimeMillis()
+                            long start = System.currentTimeMillis()
                             List<TitleInstancePackagePlatform> matchingTipps = TitleInstancePackagePlatform.executeQuery(ieQuery, ieQueryParams) //it is *always* possible to have multiple packages linked to a subscription!
-                            //log.debug("after matchingTipps ${System.currentTimeMillis()-start} msecs")
+                            log.debug("after matchingTipps ${System.currentTimeMillis()-start} msecs")
+                             */
 
-                            if (matchingTipps) {
-                                TitleInstancePackagePlatform tipp = matchingTipps[0]
+
+                            if (titleIdentifierMap.containsKey(idCandidate.value.replace("\r", "")) || titleIdentifierMap.containsKey(titleUrl)) {
+                                String tippKey = titleIdentifierMap.containsKey(titleUrl) ? titleIdentifierMap.get(titleUrl) : titleIdentifierMap.get(idCandidate.value.replace("\r", ""))
                                 //is title already added?
-                                if (addedTipps.contains(tipp.gokbId)) {
+                                if (addedTipps.contains(tippKey)) {
                                     errorList.add("${cols[colMap.publicationTitleCol]}&#9;${cols[colMap.zdbCol] && colMap.zdbCol ? cols[colMap.zdbCol] : " "}&#9;${cols[colMap.onlineIdentifierCol] && colMap.onlineIndentifierCol > -1 ? cols[colMap.onlineIdentifierCol] : " "}&#9;${cols[colMap.printIdentifierCol] && colMap.printIdentifierCol > -1 ? cols[colMap.printIdentifierCol] : " "}&#9;${messageSource.getMessage('subscription.details.addEntitlements.titleAlreadyAdded', null, locale)}")
                                 }
                                 else {
                                     //TEST!
-                                    match = tipp
+                                    match = TitleInstancePackagePlatform.findByGokbId(tippKey)
                                 }
                             }
                             else {
