@@ -34,7 +34,7 @@ class IconTagLib {
                     if (fr.authority == Role.INST_EDITOR) { icon = 'user edit bordered inverted grey la-object-extended' }
                     if (fr.authority == Role.INST_ADM)    { icon = 'user shield bordered inverted grey la-object-extended' }
                 } else {
-                    icon = 'fake bordered inverted grey la-object-extended'
+                    icon = 'user slash bordered inverted grey la-object-extended'
                 }
                 break
             case 'database':

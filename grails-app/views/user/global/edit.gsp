@@ -125,23 +125,23 @@
                                                 <input type="hidden" name="id" value="${user.id}" />
                                             </g:if>
 
-                                                <div class="field">
-                                                    <label for="org">${orgLabel ?: message(code:'org.label')}</label>
-                                                    <g:select name="org" id="org"
-                                                              from="${availableOrgs}"
-                                                              optionKey="id"
-                                                              optionValue="${{(it.sortname ?: '') + ' (' + it.name + ')'}}"
-                                                              class="ui fluid search dropdown"/>
-                                                </div>
-                                                <div class="field">
-                                                    <label for="formalRole">${message(code:'default.role.label')}</label>
-                                                    <g:select name="formalRole" id="formalRole"
-                                                              from="${Role.findAllByRoleType('user')}"
-                                                              optionKey="id"
-                                                              optionValue="${ {role->g.message(code:'cv.roles.' + role.authority) } }"
-                                                              value="${Role.findByAuthority('INST_USER').id}"
-                                                              class="ui fluid dropdown"/>
-                                                </div>
+                                            <div class="field">
+                                                <label for="org">${orgLabel ?: message(code:'org.label')}</label>
+                                                <g:select name="org" id="org"
+                                                          from="${availableOrgs}"
+                                                          optionKey="id"
+                                                          optionValue="${{(it.sortname ?: '') + ' (' + it.name + ')'}}"
+                                                          class="ui fluid search dropdown"/>
+                                            </div>
+                                            <div class="field">
+                                                <label for="formalRole">${message(code:'default.role.label')}</label>
+                                                <g:select name="formalRole" id="formalRole"
+                                                          from="${Role.findAllByRoleType('user')}"
+                                                          optionKey="id"
+                                                          optionValue="${ {role->g.message(code:'cv.roles.' + role.authority) } }"
+                                                          value="${Role.findByAuthority('INST_USER').id}"
+                                                          class="ui fluid dropdown"/>
+                                            </div>
 
                                             <div class="field">
                                                 <button type="submit" class="ui button">${message(code: 'profile.membership.add.button')}</button>
@@ -157,7 +157,7 @@
                 <sec:ifAnyGranted roles="ROLE_ADMIN">
                     <div class="ui card">
                         <div class="ui content">
-                            <h2 class="ui dividing header">Systemberechtigungen</h2>
+                            <h2 class="ui dividing header">Systemberechtigung</h2>
                             <div class="ui form">
 
                                 <table class="ui celled la-js-responsive-table la-table compact table">

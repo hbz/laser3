@@ -45,22 +45,21 @@
                     <g:if test="${(SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
                         <td class="x">
                             <g:if test="${! instAdmService.isUserLastInstAdminForOrg(userInstance, userInstance.formalOrg)}">
-%{--                                    <g:link controller="ajax" action="deleteThrough" params='${[contextOid:"${userInstance.class.name}:${userInstance.id}",contextProperty:"affiliations",targetOid:"${aff.class.name}:${aff.id}"]}'--}%
-%{--                                            class="ui icon negative button la-modern-button js-open-confirm-modal"--}%
-%{--                                            data-confirm-tokenMsg="${message(code:'confirm.dialog.unlink.user.affiliation')}"--}%
-%{--                                            data-confirm-term-how="unlink"--}%
-%{--                                            aria-label="${message(code: 'ariaLabel.delete.universal')}">--}%
-%{--                                        <i class="unlink icon"></i>--}%
-%{--                                    </g:link>--}%
-                                TODO
+                                    <g:link controller="ajax" action="unsetAffiliation"
+                                            params='${[key:"${userInstance.id}:${userInstance.formalOrg.id}:${userInstance.formalRole.id}"]}'
+                                            class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                            data-confirm-tokenMsg="${message(code:'confirm.dialog.unlink.user.affiliation')}"
+                                            data-confirm-term-how="unlink"
+                                            aria-label="${message(code: 'ariaLabel.delete.universal')}">
+                                        <i class="unlink icon"></i>
+                                    </g:link>
                             </g:if>
                             <g:else>
-%{--                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'user.affiliation.lastAdminForOrg2', args: [userInstance.getDisplayName()])}">--}%
-%{--                                        <button class="ui icon negative button la-modern-button" disabled="disabled">--}%
-%{--                                            <i class="unlink icon"></i>--}%
-%{--                                        </button>--}%
-%{--                                    </span>--}%
-                                TODO
+                                <span class="la-popup-tooltip la-delay" data-content="${message(code:'user.affiliation.lastAdminForOrg2', args: [userInstance.getDisplayName()])}">
+                                    <button class="ui icon negative button la-modern-button" disabled="disabled">
+                                        <i class="unlink icon"></i>
+                                    </button>
+                                </span>
                             </g:else>
                         </td>
                     </g:if>

@@ -333,7 +333,7 @@
                         ${message(code: 'profile.password.label')}
                     </h2>
 
-                    <g:if test="${user.getAuthorities().id.contains(Role.findByAuthority('ROLE_YODA').id)}">
+                    <g:if test="${user.isYoda()}">
                         <div id="profile-image">
                             <g:if test="${user.image}">
                                 <g:img dir="images" file="profile/${user.image}" />
@@ -390,7 +390,56 @@
                 </div><!-- .content -->
             </div><!-- .card -->
 
-            <laser:render template="/templates/user/membership_table" model="[userInstance: user]" />
+            <g:if test="${user.formalOrg}">
+                <laser:render template="/templates/user/membership_table" model="[userInstance: user]" />
+            </g:if>
+            <g:else>
+                <sec:ifAnyGranted roles="ROLE_ADMIN">
+                    <div class="column wide sixteen">
+                        <div class="la-inline-lists">
+                            <div class="ui card la-full-width">
+                                <div class="content">
+                                    <h2 class="ui dividing header">${message(code: 'profile.membership.existing')}</h2>
+
+                                    <ui:msg class="info" icon="exclamation" noClose="true">
+                                        Diese Funktion ist nur für Administratoren verfügbar.
+                                    </ui:msg>
+
+                                    <ui:msg class="warning" icon="exclamation" noClose="true">
+                                        Dieser Nutzer ist noch keiner Einrichtung zugewiesen.
+                                    </ui:msg>
+
+                                    <ui:form controller="profile" action="setAffiliation" hideWrapper="true">
+
+                                        <div class="field">
+                                            <label for="formalOrg">Organisation</label>
+                                            <g:select name="formalOrg" id="formalOrg"
+                                                      from="${availableOrgs}"
+                                                      optionKey="id"
+                                                      optionValue="${{(it.sortname ?: '') + ' (' + it.name + ')'}}"
+                                                      class="ui fluid search dropdown"/>
+                                        </div>
+                                        <div class="field">
+                                            <label for="formalRole">Role</label>
+                                            <g:select name="formalRole" id="formalRole"
+                                                      from="${Role.findAllByRoleType('user')}"
+                                                      optionKey="id"
+                                                      optionValue="${ {role->g.message(code:'cv.roles.' + role.authority) } }"
+                                                      value="${Role.findByAuthority('INST_USER').id}"
+                                                      class="ui fluid dropdown"/>
+                                        </div>
+
+                                        <div class="field">
+                                            <button id="submitARForm" data-complete-text="Request Membership" type="submit" class="ui button">${message(code: 'profile.membership.add.button')}</button>
+                                        </div>
+                                    </ui:form>
+                                </div><!-- .content -->
+                            </div><!-- .card -->
+
+                        </div><!-- .la-inline-lists -->
+                    </div><!--.column-->
+                </sec:ifAnyGranted>
+            </g:else>
 
             <g:if test="${contextService.getOrg()}">
             <div class="ui card">
@@ -460,48 +509,6 @@
     </div><!-- .column -->
 
 </div><!-- .grid -->
-
-    <sec:ifAnyGranted roles="ROLE_ADMIN">
-        <div class="column wide sixteen">
-            <div class="la-inline-lists">
-                <div class="ui card la-full-width">
-                    <div class="content">
-                        <ui:msg class="info" icon="exclamation" noClose="true">
-                            Diese Funktion ist nur für Administratoren verfügbar.
-                        </ui:msg>
-
-                        <ui:form controller="profile" action="setAffiliation" hideWrapper="true">
-                            <div class="two fields">
-                                <div class="field">
-                                    <label for="formalOrg">Organisation</label>
-                                    <g:select name="formalOrg" id="formalOrg"
-                                              from="${availableOrgs}"
-                                              optionKey="id"
-                                              optionValue="${{(it.sortname ?: '') + ' (' + it.name + ')'}}"
-                                              class="ui fluid search dropdown"/>
-                                </div>
-
-                                <div class="field">
-                                    <label for="formalRole">Role</label>
-                                    <g:select name="formalRole" id="formalRole"
-                                              from="${Role.findAllByRoleType('user')}"
-                                              optionKey="id"
-                                              optionValue="${ {role->g.message(code:'cv.roles.' + role.authority) } }"
-                                              value="${Role.findByAuthority('INST_USER').id}"
-                                              class="ui fluid dropdown"/>
-                                </div>
-                            </div>
-
-                            <div class="field">
-                                <button id="submitARForm" data-complete-text="Request Membership" type="submit" class="ui button">${message(code: 'profile.membership.add.button')}</button>
-                            </div>
-                        </ui:form>
-                    </div><!-- .content -->
-                </div><!-- .card -->
-
-            </div><!-- .la-inline-lists -->
-        </div><!--.column-->
-    </sec:ifAnyGranted>
 
 <laser:script file="${this.getGroovyPageFileName()}">
 

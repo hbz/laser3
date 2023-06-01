@@ -23,26 +23,39 @@ class ContextService {
      * @return the institution used for the session (the context org)
      */
     Org getOrg() {
+        // todo
+        
+        try {
+            def context = getUser()?.formalOrg
+            if (context) {
+                return (Org) GrailsHibernateUtil.unwrapIfProxy(context)
+            }
+        }
+        catch (Exception e) {
+            log.warn('getOrg() - ' + e.getMessage())
+        }
+        return null
+
         //Org.withNewSession {
-            try {
-                SessionCacheWrapper scw = getSessionCache()
-
-                def context = scw.get('contextOrg')
-                if (! context) {
-                    context = getUser()?.formalOrg
-
-                    if (context) {
-                        scw.put('contextOrg', context)
-                    }
-                }
-                if (context) {
-                    return (Org) GrailsHibernateUtil.unwrapIfProxy(context)
-                }
-            }
-            catch (Exception e) {
-                log.warn('getOrg() - ' + e.getMessage())
-            }
-            return null
+//            try {
+//                SessionCacheWrapper scw = getSessionCache()
+//
+//                def context = scw.get('contextOrg')
+//                if (! context) {
+//                    context = getUser()?.formalOrg
+//
+//                    if (context) {
+//                        scw.put('contextOrg', context)
+//                    }
+//                }
+//                if (context) {
+//                    return (Org) GrailsHibernateUtil.unwrapIfProxy(context)
+//                }
+//            }
+//            catch (Exception e) {
+//                log.warn('getOrg() - ' + e.getMessage())
+//            }
+//            return null
         //}
     }
 
