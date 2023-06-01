@@ -1,3 +1,4 @@
+<%@ page import="de.laser.RefdataCategory; de.laser.storage.RDConstants; de.laser.storage.RDStore" %>
 <ui:filter>
     <g:form action="${actionName}" controller="${controllerName}" params="${params}" method="get" class="ui small form clearing">
         <input type="hidden" name="isSiteReloaded" value="yes"/>
@@ -17,7 +18,23 @@
                            value="${params.q}"/>
                 </div>
             </div>
+            <div class="field">
+                <label>${message(code: 'package.status.label')}</label>
+                <select name="status" id="status" multiple=""
+                        class="ui search selection dropdown">
+                    <option value="">${message(code: 'default.select.choose.label')}</option>
+                    <g:set var="excludes" value="${[RDStore.PACKAGE_STATUS_DELETED, RDStore.PACKAGE_STATUS_REMOVED]}"/>
+                    <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.PACKAGE_STATUS)-excludes}" var="status">
+                        <option <%=(params.list('status')?.contains(status.value)) ? 'selected="selected"' : ''%>
+                                value="${status.value}">
+                            ${status.getI10n("value")}
+                        </option>
+                    </g:each>
+                </select>
+            </div>
+        </div>
 
+        <div class="three fields">
             <div class="field">
                 <label for="provider">${message(code: 'default.provider.label')}
                 </label>
@@ -28,9 +45,7 @@
                            value="${params.provider}"/>
                 </div>
             </div>
-        </div>
 
-        <div class="two fields">
             <div class="field">
                 <label for="ddc">${message(code: 'package.ddc.label')}</label>
 

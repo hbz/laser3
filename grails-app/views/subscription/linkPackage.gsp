@@ -1,5 +1,5 @@
 <%@ page import="de.laser.utils.DateUtils; de.laser.Org; de.laser.finance.CostItem; de.laser.Subscription; de.laser.Platform; de.laser.Package; java.text.SimpleDateFormat; de.laser.PendingChangeConfiguration; de.laser.RefdataCategory; de.laser.storage.RDConstants; de.laser.storage.RDStore;" %>
-<laser:htmlStart message="subscription.details.linkPackage.heading" />
+<laser:htmlStart message="subscription.details.linkPackage.heading" serviceInjection="true"/>
 
 <ui:breadcrumbs>
     <ui:crumb controller="myInstitution" action="currentSubscriptions"
@@ -199,10 +199,38 @@
 
     <g:form class="ui form" id="linkPackageForm" url="[controller: 'subscription', action: 'processLinkPackage', id: params.id]">
         <input type="hidden" name="addUUID" value=""/>
-        <div class="field">
-            <label for="pkgName">${message(code: 'package.label')}</label>
-            <input type="text" id="pkgName" name="pkgName" value="" readonly/>
+        <div class="two fields">
+            <div class="field">
+                <label for="pkgName">${message(code: 'package.label')}</label>
+                <input type="text" id="pkgName" name="pkgName" value="" readonly/>
+            </div>
+            <div class="field">
+                <label for="holdingSelection">${message(code: 'subscription.holdingSelection.label')} <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code: "subscription.holdingSelection.explanation")}"><i class="question circle icon la-popup"></i></span></label>
+                <div class="two fields">
+                    <g:if test="${pkgs}">
+                        ${subscription.holdingSelection.getI10n('value')}
+                        <g:if test="${institution.isCustomerType_Consortium() && auditService.getAuditConfig(subscription, 'holdingSelection')}">
+                            <i class="ui thumbtack icon la-popup-tooltip"></i>
+                        </g:if>
+                    </g:if>
+                    <g:else>
+                        <ui:select class="ui dropdown search selection" id="holdingSelection" name="holdingSelection" from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_HOLDING)}" optionKey="id" optionValue="value"/>
+                        <g:if test="${auditService.getAuditConfig(subscription, 'holdingSelection')}">
+                            <button id="inheritHoldingSelection" data-content="${message(code: 'subscription.holdingSelection.inherited')}" class="ui icon green button la-modern-button la-audit-button la-popup-tooltip la-delay" data-inherited="true">
+                                <i aria-hidden="true" class="icon la-js-editmode-icon thumbtack"></i>
+                            </button>
+                        </g:if>
+                        <g:else>
+                            <button id="inheritHoldingSelection" data-content="${message(code: 'subscription.holdingSelection.inherit')}" class="ui icon blue button la-modern-button la-audit-button la-popup-tooltip la-delay" data-inherited="false">
+                                <i aria-hidden="true" class="icon la-js-editmode-icon la-thumbtack slash"></i>
+                            </button>
+                        </g:else>
+                    </g:else>
+                </div>
+
+            </div>
         </div>
+
         <div class="ui divided grid">
             <g:set var="colCount" value="${institution.isCustomerType_Consortium() ? 'eight' : 'sixteen'}"/>
             <div class="${colCount} wide column">
@@ -221,11 +249,6 @@
                             <input type="radio" name="addType" id="Without" value="Without" tabindex="0" class="hidden">
                             <label for="Without">${message(code: 'subscription.details.link.no_ents')}</label>
                         </div>
-                    </div>
-
-                    <div class="field">
-                        <label for="holdingSelection">${message(code: 'subscription.holdingSelection.label')}</label>
-                        <ui:select class="ui dropdown search selection" id="holdingSelection" name="holdingSelection" from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_HOLDING)}" optionKey="id" optionValue="value"/>
                     </div>
                 </div>
 
@@ -284,11 +307,11 @@
                         </g:each>
                     </table>
                 </div>
-                --%>
                 <div class="inline field">
                     <label for="freezeHolding"><g:message code="subscription.packages.freezeHolding"/> <span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.packages.freezeHolding.expl')}"><i class="ui question circle icon"></i></span></label>
                     <g:checkBox class="ui checkbox" name="freezeHolding" checked="${false}"/>
                 </div>
+                --%>
             </div>
             <g:if test="${institution.isCustomerType_Consortium()}">
                 <div class="${colCount} wide column">
@@ -306,13 +329,6 @@
                             <div class="ui radio checkbox">
                                 <input type="radio" name="addTypeChildren" id="WithoutForChildren" value="WithoutForChildren" tabindex="0" class="hidden">
                                 <label>${message(code: 'subscription.details.link.no_ents')}</label>
-                            </div>
-                        </div>
-
-                        <div class="field">
-                            <div class="ui radio checkbox">
-                                <input type="checkbox" name="inheritHoldingSelection" id="inheritHoldingSelection" value="true" tabindex="0" class="hidden"/>
-                                <label for="inheritHoldingSelection">${message(code: 'subscription.holdingSelection.inherit')}</label>
                             </div>
                         </div>
                     </div>
@@ -405,6 +421,27 @@
       $('#durationAlert').toggle();
     }
 
+    $("#inheritHoldingSelection").click(function(e) {
+        e.preventDefault();
+        let isInherited = $(this).attr('data-inherited') === 'true';
+        let button = $(this);
+        let icon = $(this).find('i');
+        $.ajax({
+            url: '<g:createLink controller="ajax" action="toggleAudit" params="[owner: genericOIDService.getOID(subscription), property: 'holdingSelection', returnSuccessAsJSON: true]"/>'
+        }).done(function(response) {
+            button.toggleClass('blue').toggleClass('green');
+            if(isInherited) {
+                icon.addClass('la-thumbtack slash').removeClass('thumbtack');
+                button.attr('data-inherited', 'false');
+            }
+            else {
+                icon.removeClass('la-thumbtack slash').addClass('thumbtack');
+                button.attr('data-inherited', 'true');
+            }
+        }).fail(function () {
+            console.log("AJAX error! Please check logs!");
+        });
+    });
 
       $(".packageLink").click(function(evt) {
           evt.preventDefault();

@@ -1256,7 +1256,7 @@ class SubscriptionControllerService {
                         }
                     }
                     List<String> excludes = PendingChangeConfiguration.SETTING_KEYS.collect { String key -> key }
-                    excludes << 'freezeHolding'
+                    //excludes << 'freezeHolding'
                     excludes.add(PendingChangeConfiguration.TITLE_REMOVED)
                     excludes.add(PendingChangeConfiguration.TITLE_REMOVED+PendingChangeConfiguration.NOTIFICATION_SUFFIX)
                     excludes.add(PendingChangeConfiguration.TITLE_DELETED)
@@ -1956,6 +1956,14 @@ class SubscriptionControllerService {
                 queryParams.ids = ["Anbieter_Produkt_ID,${params.q}", "isil,${params.q}"]
             }
 
+            if(params.status) {
+                result.filterSet = true
+            }
+            else if(!params.status) {
+                params.status = ['Current', 'Expected', 'Retired']
+            }
+            queryParams.status = params.status
+
             if(params.provider) {
                 result.filterSet = true
                 queryParams.provider = params.provider
@@ -2271,10 +2279,12 @@ class SubscriptionControllerService {
                     result.deletedSPs << [name:sp.pkg.name,link:"${source.editUrl}/public/packageContent/?id=${sp.pkg.gokbId}"]
                 }
             }
+            /*
             Date now = new Date()
             if (now > result.subscription.endDate) {
                 result.frozenHoldings = result.subscription.packages.findAll { SubscriptionPackage sp -> sp.freezeHolding }.pkg
             }
+            */
             if (executorWrapperService.hasRunningProcess(result.subscription)) {
                 result.processingpc = true
             }
@@ -3187,14 +3197,16 @@ class SubscriptionControllerService {
                     sql.executeUpdate("update pending_change set pc_status_rdv_fk = :rejected from subscription, subscription_package where split_part(pc_oid, ':', 2)::bigint = sub_id and split_part(pc_oid, ':', 2)::bigint = sp_sub_fk and sp_pkg_fk = :pkgId and (sub_id = :subId or sub_parent_sub_fk = :subId) and pc_date_created > sub_end_date and pc_status_rdv_fk = any(:pendingStatus)", [rejected: RDStore.PENDING_CHANGE_REJECTED.id, pendingStatus: sql.connection.createArrayOf('bigint', pendingStatus.toArray()), subId: sp.subscription.id, pkgId: sp.pkg.id])
                     sql.executeUpdate("update pending_change_configuration set pcc_with_notification = false, pcc_setting_value_rv_fk = :reject where pcc_sp_fk = :spId", [reject: RDStore.PENDING_CHANGE_CONFIG_REJECT.id, spId: sp.id])
                 }
-                sp.freezeHolding = true
+                //sp.freezeHolding = true
                 sp.save()
+                /*
                 PendingChangeConfiguration.SETTING_KEYS.each { String settingKey ->
                     AuditConfig.removeConfig(sp.subscription, settingKey)
                     AuditConfig.removeConfig(sp.subscription, settingKey+PendingChangeConfiguration.NOTIFICATION_SUFFIX)
                     if(!AuditConfig.getConfig(sp.subscription, SubscriptionPackage.FREEZE_HOLDING))
                         AuditConfig.addConfig(sp.subscription, SubscriptionPackage.FREEZE_HOLDING)
                 }
+                */
             })
             [result: result, status: STATUS_OK]
         }
