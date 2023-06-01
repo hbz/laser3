@@ -559,7 +559,7 @@ class ExportClickMeService {
                             'subscription.manualCancellationDate'       : [field: 'sub.manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
                             'subscription.isMultiYear'                  : [field: 'sub.isMultiYear', label: 'Multi Year', message: 'subscription.isMultiYear.label'],
                             'subscription.referenceYear'                : [field: 'sub.referenceYear', label: 'Reference Year', message: 'subscription.referenceYear.label'],
-                            'subscription.isAutomaticRenewAnnually'     : [field: 'sub.isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'],
+                            //'subscription.isAutomaticRenewAnnually'     : [field: 'sub.isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'],
                             'subscription.status'                       : [field: 'sub.status', label: 'Status', message: 'subscription.status.label'],
                             'subscription.kind'                         : [field: 'sub.kind', label: 'Kind', message: 'subscription.kind.label'],
                             'subscription.form'                         : [field: 'sub.form', label: 'Form', message: 'subscription.form.label'],
@@ -926,7 +926,7 @@ class ExportClickMeService {
                             'subscription.manualCancellationDate'       : [field: 'subscription.manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
                             'subscription.isMultiYear'                  : [field: 'subscription.isMultiYear', label: 'Multi Year', message: 'subscription.isMultiYear.label'],
                             'subscription.referenceYear'                : [field: 'subscription.referenceYear', label: 'Reference Year', message: 'subscription.referenceYear.label'],
-                            'subscription.isAutomaticRenewAnnually'     : [field: 'subscription.isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'],
+                            //'subscription.isAutomaticRenewAnnually'     : [field: 'subscription.isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'],
                             'subscription.status'                       : [field: 'subscription.status', label: 'Status', message: 'subscription.status.label'],
                             'subscription.kind'                         : [field: 'subscription.kind', label: 'Kind', message: 'subscription.kind.label'],
                             'subscription.form'                         : [field: 'subscription.form', label: 'Form', message: 'subscription.form.label'],
@@ -1238,8 +1238,12 @@ class ExportClickMeService {
             }
         }
 
-        if(institution.getCustomerType() == CustomerTypeService.ORG_INST_PRO) {
-            exportFields.put('subscription.isAutomaticRenewAnnually', [field: 'isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'])
+        if(institution.getCustomerType() in [CustomerTypeService.ORG_INST_BASIC, CustomerTypeService.ORG_INST_PRO]) {
+            if (institution.getCustomerType() == CustomerTypeService.ORG_INST_PRO) {
+                exportFields.put('subscription.isAutomaticRenewAnnually', [field: 'isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'])
+            }
+            exportFields.put('subscription.consortium', [field: null, label: 'Consortium', message: 'consortium.label'])
+            exportFields.put('license.consortium', [field: null, label: 'Consortium', message: 'consortium.label'])
         }
 
         //determine field configuration based on customer type
@@ -1297,8 +1301,12 @@ class ExportClickMeService {
     Map<String, Object> getExportSubscriptionFieldsForUI(Org institution) {
 
         Map<String, Object> fields = EXPORT_SUBSCRIPTION_CONFIG as Map
+        if(institution.getCustomerType() == CustomerTypeService.ORG_INST_PRO)
+            fields.subscription.fields.put('subscription.isAutomaticRenewAnnually', [field: 'isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'])
         if(!customerTypeService.isConsortium(institution.getCustomerType())) {
             fields.remove('institutions')
+            fields.subscription.fields.put('subscription.consortium', [field: null, label: 'Consortium', message: 'consortium.label', defaultChecked: true])
+            fields.licenses.fields.put('license.consortium', [field: null, label: 'Consortium', message: 'exportClickMe.license.consortium', defaultChecked: true])
         }
         Locale locale = LocaleUtils.getCurrentLocale()
         String localizedName
@@ -1406,8 +1414,8 @@ class ExportClickMeService {
             }
         }
 
-        if(institution.getCustomerType() == CustomerTypeService.ORG_INST_PRO) {
-            exportFields.put('subscription.isAutomaticRenewAnnually', [field: 'isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'])
+        if(institution.getCustomerType() in [CustomerTypeService.ORG_INST_BASIC, CustomerTypeService.ORG_INST_PRO]) {
+            exportFields.put('consortium', [field: null, label: 'Consortium', message: 'consortium.label'])
         }
 
         IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
@@ -1436,6 +1444,7 @@ class ExportClickMeService {
         Map<String, Object> fields = EXPORT_LICENSE_CONFIG as Map
         if(!customerTypeService.isConsortium(institution.getCustomerType())) {
             fields.remove('institutions')
+            fields.licenses.fields.put('consortium', [field: null, label: 'Consortium', message: 'consortium.label', defaultChecked: true])
         }
         Locale locale = LocaleUtils.getCurrentLocale()
         String localizedName
@@ -1475,7 +1484,7 @@ class ExportClickMeService {
      * @return the configuration map for the cost item export
      */
     Map<String, Object> getExportCostItemFields(Subscription sub = null) {
-
+        Org institution = contextService.getOrg()
         Map<String, Object> exportFields = [:]
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
 
@@ -1485,11 +1494,18 @@ class ExportClickMeService {
             }
         }
 
+        if(institution.getCustomerType() in [CustomerTypeService.ORG_INST_BASIC, CustomerTypeService.ORG_INST_PRO]) {
+            if(institution.getCustomerType() == CustomerTypeService.ORG_INST_PRO) {
+                exportFields.put('subscription.isAutomaticRenewAnnually', [field: 'sub.isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'])
+            }
+            exportFields.put('subscription.consortium', [field: null, label: 'Consortium', message: 'consortium.label'])
+        }
+
         IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
             exportFields.put("participantIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
         }
         String subquery
-        Map<String, Object> queryParams = [ctx: contextService.getOrg()]
+        Map<String, Object> queryParams = [ctx: institution]
         if(sub) {
             subquery = '(select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :s)'
             queryParams.s = sub
@@ -1510,9 +1526,17 @@ class ExportClickMeService {
      * @return the configuration map for the cost item export for UI
      */
     Map<String, Object> getExportCostItemFieldsForUI(Subscription sub = null) {
+        Org institution = contextService.getOrg()
 
         Map<String, Object> fields = EXPORT_COST_ITEM_CONFIG as Map
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
+
+        if(institution.getCustomerType() in [CustomerTypeService.ORG_INST_BASIC, CustomerTypeService.ORG_INST_PRO]) {
+            if(institution.getCustomerType() == CustomerTypeService.ORG_INST_PRO) {
+                fields.subscription.fields.put('subscription.isAutomaticRenewAnnually', [field: 'sub.isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'])
+            }
+            fields.subscription.fields.put('subscription.consortium', [field: null, label: 'Consortium', message: 'consortium.label', defaultChecked: true])
+        }
 
         fields.participantIdentifiers.fields.clear()
         fields.participantCustomerIdentifiers.fields.clear()
@@ -1521,7 +1545,7 @@ class ExportClickMeService {
             fields.participantIdentifiers.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
         }
         String subquery
-        Map<String, Object> queryParams = [ctx: contextService.getOrg()]
+        Map<String, Object> queryParams = [ctx: institution]
         if(sub) {
             subquery = '(select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :s)'
             queryParams.s = sub
@@ -1983,6 +2007,13 @@ class ExportClickMeService {
         Map<String, Object> fields = EXPORT_ISSUE_ENTITLEMENT_CONFIG as Map
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
 
+        if(contextService.getOrg().getCustomerType() in [CustomerTypeService.ORG_INST_BASIC, CustomerTypeService.ORG_INST_PRO]) {
+            if(contextService.getOrg().getCustomerType() == CustomerTypeService.ORG_INST_PRO) {
+                fields.subscription.fields.put('subscription.isAutomaticRenewAnnually', [field: 'subscription.isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'])
+            }
+            fields.subscription.fields.put('subscription.consortium', [field: null, label: 'Consortium', message: 'consortium.label', defaultChecked: true])
+        }
+
         IdentifierNamespace.findAllByNsType(TitleInstancePackagePlatform.class.name, [sort: 'ns']).each {
             fields.issueEntitlementIdentifiers.fields << ["issueEntitlementIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
         }
@@ -2003,6 +2034,13 @@ class ExportClickMeService {
             EXPORT_ISSUE_ENTITLEMENT_CONFIG.get(it).fields.each {
                 exportFields.put(it.key, it.value)
             }
+        }
+
+        if(contextService.getOrg().getCustomerType() in [CustomerTypeService.ORG_INST_BASIC, CustomerTypeService.ORG_INST_PRO]) {
+            if(contextService.getOrg().getCustomerType() == CustomerTypeService.ORG_INST_PRO) {
+                exportFields.put('subscription.isAutomaticRenewAnnually', [field: 'subscription.isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'])
+            }
+            exportFields.put('subscription.consortium', [field: null, label: 'Consortium', message: 'consortium.label'])
         }
 
         IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
@@ -3080,6 +3118,12 @@ class ExportClickMeService {
                     _setOrgFurtherInformation(org, row, fieldKey)
                 }
                 */
+                else if (fieldKey == 'subscription.consortium') {
+                    row.add(createTableCell(format, subscription.getConsortia()?.name))
+                }
+                else if (fieldKey == 'license.consortium') {
+                    row.add(createTableCell(format, subscription.getConsortia()?.name))
+                }
                 else if (fieldKey.startsWith('participantCustomerIdentifiers.')) {
                     _setOrgFurtherInformation(org, row, fieldKey, format, subscription)
                 }
@@ -3212,6 +3256,9 @@ class ExportClickMeService {
                     Set<String> linkedSubs = Subscription.executeQuery('select li.destinationSubscription.name from Links li where li.sourceLicense = :lic and li.linkType = :license', [lic: result, license: RDStore.LINKTYPE_LICENSE])
                     row.add(createTableCell(format, linkedSubs.join('; ')))
                 }
+                else if (fieldKey == 'consortium') {
+                    row.add(createTableCell(format, license.getLicensingConsortium()?.name))
+                }
                 else if (fieldKey.startsWith('participantLicProperty.') || fieldKey.startsWith('licProperty.')) {
                     Long id = Long.parseLong(fieldKey.split("\\.")[1])
                     String query = "select prop from LicenseProperty prop where (prop.owner = :lic and prop.type.id in (:propertyDefs) and prop.isPublic = true) or (prop.owner = :lic and prop.type.id in (:propertyDefs) and prop.isPublic = false and prop.tenant = :contextOrg) order by prop.type.${localizedName} asc"
@@ -3279,6 +3326,9 @@ class ExportClickMeService {
                 }
                 else if (fieldKey.startsWith('participantIdentifiers.')) {
                     _setOrgFurtherInformation(org, row, fieldKey, format)
+                }
+                else if (fieldKey == 'subscription.consortium') {
+                    row.add(createTableCell(format, costItem.sub?.getConsortia()?.name))
                 }
                 else {
                     def fieldValue = _getFieldValue(costItem, field, sdf)
@@ -3495,6 +3545,9 @@ class ExportClickMeService {
                         } else {
                             row.add(createTableCell(format, ' '))
                         }
+                }
+                else if (fieldKey.contains('subscription.consortium')) {
+                    row.add(createTableCell(format, result.subscription.getConsortia()?.name))
                 }
                 else if (fieldKey.contains('tipp.ddcs')) {
                     row.add(createTableCell(format, result.tipp.ddcs.collect {"${it.ddc.value} - ${it.ddc.getI10n("value")}"}.join(";")))
@@ -3720,8 +3773,11 @@ class ExportClickMeService {
         if(fieldValue instanceof Collection){
             if(fieldValue[0] instanceof Collection)
                 fieldValue = fieldValue[0].join('; ')
-            else
+            else if(fieldValue[0] instanceof Date)
+                fieldValue = fieldValue.collect { Date fv -> sdf.format(fv) }.join('; ')
+            else if(fieldValue.find { val -> val != null })
                 fieldValue = fieldValue.join('; ')
+            else fieldValue = ' '
         }
 
         return fieldValue
