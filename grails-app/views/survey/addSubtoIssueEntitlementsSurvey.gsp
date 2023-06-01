@@ -38,7 +38,7 @@
         <div class="field">
             <label>${message(code: 'surveyconfig.pickAndChoosePerpetualAccess.label')}</label>
             <div>
-                <input type="checkbox" id="pickAndChoosePerpetualAccess" name="pickAndChoosePerpetualAccess" ${(params.pickAndChoosePerpetualAccess || subscription.hasPerpetualAccess ) ? 'checked':''}>
+                <input type="checkbox" id="pickAndChoosePerpetualAccess" readonly="readonly" name="pickAndChoosePerpetualAccess" ${(subscription.hasPerpetualAccess) ? 'checked':''}>
             </div>
         </div>
 
