@@ -31,7 +31,7 @@
 <g:link absolute="true" controller="subscription" action="renewEntitlementsWithSurvey"
         id="${subscription.id}"
         params="${[surveyConfigID: surveyConfig.id,
-                   tab           : 'currentIEs']}"
+                   tab           : 'currentPerpetualAccessIEs']}"
         class="ui button">
     <g:message code="renewEntitlementsWithSurvey.currentTitles.button"/>
 </g:link>

@@ -11,6 +11,7 @@ import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.cache.EhcacheWrapper
 import de.laser.cache.SessionCacheWrapper
 import de.laser.ctrl.SubscriptionControllerService
+import de.laser.finance.PriceItem
 import de.laser.helper.*
 import de.laser.interfaces.CalculatedType
 import de.laser.interfaces.ShareSupport
@@ -466,6 +467,17 @@ class AjaxController {
               sourceIEs.each { IssueEntitlement ie ->
                   newChecked[ie.id.toString()] = params.checked == 'true' ? 'checked' : null
               }*/
+
+              Subscription baseSub = Subscription.get(params.baseSubID)
+              params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
+              Map<String, Object> query = filterService.getTippQuery(params, baseSub.packages.pkg)
+              List<Long> titleIDList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
+
+
+              List<TitleInstancePackagePlatform> titlesList = titleIDList ? TitleInstancePackagePlatform.findAllByIdInList(titleIDList) : []
+              titlesList.each { TitleInstancePackagePlatform titleInstancePackagePlatform ->
+                  newChecked[titleInstancePackagePlatform.id.toString()] = params.checked == 'true' ? 'checked' : null
+              }
 
           }
           else {

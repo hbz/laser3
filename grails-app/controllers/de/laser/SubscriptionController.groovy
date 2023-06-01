@@ -1473,7 +1473,7 @@ class SubscriptionController {
             }
             queryMap.platform = Platform.get(params.platform)
 
-            if(params.tab == 'currentIEs' && ctrlResult.result.previousSubscription) {
+            if(params.tab == 'currentPerpetualAccessIEs') {
                 Set<Subscription> subscriptions = []
                 Set<Long> packageIds = []
                 if(ctrlResult.result.surveyConfig.pickAndChoosePerpetualAccess) {
@@ -1483,13 +1483,10 @@ class SubscriptionController {
                     }
                     subscriptions << ctrlResult.result.subscriberSub
                     packageIds.addAll(ctrlResult.result.subscriberSub.packages?.pkg?.id)
-                }else {
-                    subscriptions << ctrlResult.result.previousSubscription
-                    packageIds.addAll(ctrlResult.result.previousSubscription.packages?.pkg?.id)
                 }
 
-                queryMap = [subscriptions: subscriptions, ieStatus: RDStore.TIPP_STATUS_CURRENT, pkgIds: packageIds]
-                filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.currentTitles') + '_' + ctrlResult.result.previousSubscription.dropdownNamingConvention())
+                queryMap = [subscriptions: subscriptions, ieStatus: RDStore.TIPP_STATUS_CURRENT, pkgIds: packageIds, hasPerpetualAccess: true]
+                filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.currentTitles') + '_' + ctrlResult.result.subscriberSub.dropdownNamingConvention())
             }
 
             if (params.exportKBart) {

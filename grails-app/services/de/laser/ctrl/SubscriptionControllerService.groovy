@@ -1515,7 +1515,7 @@ class SubscriptionControllerService {
             Set<Subscription> subscriptions = []
             if(result.surveyConfig.pickAndChoosePerpetualAccess) {
                 subscriptions = linksGenerationService.getSuccessionChain(subscriberSub, 'sourceSubscription')
-                //subscriptions << subscriberSub
+                subscriptions << subscriberSub
                 //result.subscriptionIDs = surveyService.subscriptionsOfOrg(result.subscriber)
             }
             else {
@@ -1553,10 +1553,12 @@ class SubscriptionControllerService {
                     Map query = filterService.getIssueEntitlementQuery(params, subscriberSub)
                     sourceIEs = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
                 }
-            } else if (params.tab in ['currentIEs', 'topUsed']) {
+            } else if (params.tab in ['currentPerpetualAccessIEs', 'topUsed']) {
                 GrailsParameterMap parameterMap = params.clone()
                 Map query = [:]
                 if(subscriptions) {
+                    parameterMap.hasPerpetualAccess = true
+                    parameterMap.hasPerpetualAccessBySubs = subscriptions
                     query = filterService.getIssueEntitlementQuery(parameterMap, subscriptions)
                     //List<Long> previousIes = previousSubscription ? IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams) : []
                     sourceIEs = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
@@ -1814,7 +1816,7 @@ class SubscriptionControllerService {
                     result.usages = usages
                 }
                 params.tab = oldTab
-            }else if(params.tab in ['currentIEs', 'selectedIEs']) {
+            }else if(params.tab in ['currentPerpetualAccessIEs', 'selectedIEs']) {
 
                 result.iesListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
                         'where p.listPrice is not null and ie.id in (:ieIDs)', [ieIDs: sourceIEs])[0] ?: 0
@@ -1871,6 +1873,11 @@ class SubscriptionControllerService {
 
                 result.checkedCache = checkedCache.get('checked')
                 result.checkedCount = result.checkedCache.findAll { it.value == 'checked' }.size()
+
+                result.allChecked = ""
+                if (params.tab == 'allTipps' && result.countAllTipps > 0 && result.countAllTipps == result.checkedCount) {
+                    result.allChecked = "checked"
+                }
 
             }
 
