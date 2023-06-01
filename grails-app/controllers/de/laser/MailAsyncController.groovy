@@ -1,11 +1,16 @@
 package de.laser
 
+import de.laser.auth.User
+import de.laser.utils.SwissKnife
 import grails.plugin.asyncmail.AsynchronousMailMessage
 import grails.plugin.asyncmail.enums.MessageStatus
 import grails.plugin.springsecurity.annotation.Secured
 
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class MailAsyncController {
+
+    ContextService contextService
+
     static defaultAction = 'index'
 
     static allowedMethods = [update: 'POST']
@@ -15,10 +20,13 @@ class MailAsyncController {
      */
     @Secured(['ROLE_YODA'])
     def index() {
-        params.max = Math.min(params.max ? params.max.toInteger() : 10, 100)
+        User user = contextService.getUser()
+        params.max    = params.max    ? Integer.parseInt(params.max.toString()) : user.getPageSizeOrDefault()
+        params.offset = params.offset ? Integer.parseInt(params.offset.toString()) : 0
         params.sort = params.sort ?: 'createDate'
         params.order = params.order ?: 'desc'
-        [resultList: AsynchronousMailMessage.list(params)]
+
+        [resultList: AsynchronousMailMessage.list(params), resultCount: AsynchronousMailMessage.count()]
     }
 
     private _withMessage(Closure cl) {

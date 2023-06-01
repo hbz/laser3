@@ -1534,15 +1534,16 @@ class SubscriptionControllerService {
                 Map<String, Object> query = filterService.getTippQuery(params, baseSub.packages.pkg)
                 result.filterSet = query.filterSet
                 List<Long> titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
+
+                result.tippsListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.tipp tipp ' +
+                        'where p.listPrice is not null and tipp.status.id = :tiStatus and tipp.id in (' + query.query + ' )', [tiStatus: RDStore.TIPP_STATUS_CURRENT.id]+query.queryParams)[0] ?: 0
+
                 result.titlesList = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList.drop(result.offset).take(result.max), [sort: 'sortname']) : []
                 result.num_rows = titlesList.size()
 
                 if(baseSub.packages){
                     result.packageInstance = baseSub.packages.pkg[0]
                 }
-
-                result.tippsListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.tipp tipp ' +
-                        'where p.listPrice is not null and tipp.status.id = :status ', [status: RDStore.TIPP_STATUS_CURRENT.id])[0] ?: 0
 
             }else if(params.tab == 'selectedIEs') {
                 IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, subscriberSub)
@@ -3644,12 +3645,11 @@ class SubscriptionControllerService {
                 [result:result,status:STATUS_ERROR]
 
             }else if(params.process == "preliminary" && result.checked.size() > 0) {
-                Integer countIEsToAdd = 0
+                Integer countTippsToAdd = 0
                 result.checked.each {
-                    IssueEntitlement ie = IssueEntitlement.findById(it.key)
-                    if(ie) {
-                        TitleInstancePackagePlatform tipp = ie.tipp
-
+                    println(it)
+                    TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findById(it.key)
+                    if(tipp) {
                         boolean tippExistsInParentSub = false
 
                         if (IssueEntitlement.findByTippAndSubscriptionAndStatus(tipp, result.surveyConfig.subscription, RDStore.TIPP_STATUS_CURRENT)) {
@@ -3675,9 +3675,9 @@ class SubscriptionControllerService {
                                     }
                                 }
 
-                                if (issueEntitlementGroup && subscriptionService.addEntitlement(result.subscription, tipp.gokbId, ie, (ie.priceItems.size() > 0), result.surveyConfig.pickAndChoosePerpetualAccess, issueEntitlementGroup)) {
+                                if (issueEntitlementGroup && subscriptionService.addEntitlement(result.subscription, tipp.gokbId, null, (tipp.priceItems != null), result.surveyConfig.pickAndChoosePerpetualAccess, issueEntitlementGroup)) {
                                     log.debug("Added tipp ${tipp.gokbId} to sub ${result.subscription.id}")
-                                    ++countIEsToAdd
+                                    ++countTippsToAdd
                                     removeFromCache << it.key
                                 }
                             }
@@ -3689,8 +3689,8 @@ class SubscriptionControllerService {
                         }
                     }
                 }
-                if(countIEsToAdd > 0){
-                    Object[] args = [countIEsToAdd]
+                if(countTippsToAdd > 0){
+                    Object[] args = [countTippsToAdd]
                     result.message = messageSource.getMessage('renewEntitlementsWithSurvey.tippsToAdd',args,locale)
                 }
 
