@@ -5,6 +5,7 @@
     <g:set var="sumlocalPrice" value="${0}"/>
 
     <div class="ui accordion la-accordion-showMore" id="surveyEntitlements">
+        <g:if test="${editable}"><input id="select-all" type="checkbox" name="chkall" ${allChecked}/></g:if>
         <g:each in="${titlesList}" var="tipp">
             <g:set var="ieInNewSub"
                    value="${surveyService.titleContainedBySubscription(subscriberSub, tipp)}"/>
@@ -234,24 +235,22 @@
         </div>
         <div class="four wide column ">
             <div class="ui list">
-                <div class="item">
+               %{-- <div class="item">
                     <div class="contet">
-                        <div class="header">
-                            <g:message code="tipp.price.listPrice"/> <br/>
-                        </div>
+                            <g:message code="renewEntitlementsWithSurvey.totalCostSelected"/> <br/>
                     </div>
-                </div>
+                </div>--}%
 
                 <div class="item">
                     <div class="contet">
-                        <strong><g:message code="financials.totalCostOnPage"/>:</strong> <g:formatNumber
+                        <strong><g:message code="renewEntitlementsWithSurvey.totalCostOnPage"/>:</strong> <g:formatNumber
                             number="${sumlistPrice}" type="currency"/><br/>
                     </div>
                 </div>
                 %{--<g:message code="tipp.price.localPrice"/>: <g:formatNumber number="${sumlocalPrice}" type="currency"/>--}%
                 <div class="item">
                     <div class="contet">
-                        <strong><g:message code="financials.totalCost"/>:</strong> <g:formatNumber
+                        <strong><g:message code="renewEntitlementsWithSurvey.totalCost"/>:</strong> <g:formatNumber
                             number="${tippsListPriceSum}" type="currency"/>
                     </div>
                 </div>

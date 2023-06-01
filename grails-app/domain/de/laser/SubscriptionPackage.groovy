@@ -21,7 +21,6 @@ class SubscriptionPackage implements Comparable {
   Subscription subscription
   Package pkg
   Date finishDate
-  boolean freezeHolding = false
 
   Date dateCreated
   Date lastUpdated
@@ -36,7 +35,6 @@ class SubscriptionPackage implements Comparable {
       subscription column:'sp_sub_fk',  index: 'sp_sub_idx, sp_sub_pkg_idx'
                pkg column:'sp_pkg_fk',  index: 'sp_pkg_idx, sp_sub_pkg_idx'
         finishDate column:'sp_finish_date'
-     freezeHolding column:'sp_freeze_holding'
 
     dateCreated column: 'sp_date_created'
     lastUpdated column: 'sp_last_updated'

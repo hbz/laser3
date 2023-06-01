@@ -7,7 +7,15 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-5099    31.05.2023  rc-3.1  3.1.2       Andreas Bug         Falsches Caching der erzeugten Reports
+5105    01.06.2023  rc-3.1  3.1.2       Andreas Feature     Felder in der Exportkonfiguration ergänzt 
+
+5104    01.06.2023  rc-3.1  3.1.2       Moe     Feature         Optimierungen Titelumfrage
+
+5103    01.06.2023  rc-3.1  3.1.2       Moe     Bug         Titelumfrage: dauerhafter Zugriff steuern
+
+5102    01.06.2023  rc-3.1  3.1.2       Andreas Feature     diverse Ausbesserungen bei der Paketverknüpfung
+
+5099    01.06.2023  rc-3.1  3.1.2       Andreas Bug         Falsches Caching der erzeugten Reports
 
 5078    31.05.2023  rc-3.1  3.1.2       Moe     Bug         Titelumfrage: Keine Einzeltitelauswahl möglich - System behauptet dauerhaften Zugriff
 

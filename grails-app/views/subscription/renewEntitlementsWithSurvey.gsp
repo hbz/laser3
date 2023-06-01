@@ -35,7 +35,7 @@
                         id="${subscriberSub.id}"
                         params="${[surveyConfigID: surveyConfig.id,
                                    exportKBart   : true,
-                                   tab           : 'currentIEs']}">${message(code: 'renewEntitlementsWithSurvey.currentTitles')}</g:link>
+                                   tab           : 'currentPerpetualAccessIEs']}">${message(code: 'renewEntitlementsWithSurvey.currentTitles')}</g:link>
             </ui:exportDropdownItem>
         </g:if>
 
@@ -65,7 +65,7 @@
                         id="${subscriberSub.id}"
                         params="${[surveyConfigID : surveyConfig.id,
                                    exportXLS     : true,
-                                   tab           : 'currentIEs']}">
+                                   tab           : 'currentPerpetualAccessIEs']}">
                     ${message(code: 'renewEntitlementsWithSurvey.currentTitles')}
                 </g:link>
             </ui:exportDropdownItem>
@@ -268,10 +268,16 @@
                     params="[id: subscriberSub.id, surveyConfigID: surveyConfig.id, tab: 'selectedIEs']"
                     text="${message(code: "renewEntitlementsWithSurvey.currentTitlesSelect")}" tab="selectedIEs"
                     counts="${countSelectedIEs}"/>
-    <ui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
-                    params="[id: subscriberSub.id, surveyConfigID: surveyConfig.id, tab: 'currentIEs']"
-                    text="${message(code: "renewEntitlementsWithSurvey.currentTitles")}" tab="currentIEs"
-                    counts="${countCurrentIEs}"/>
+    <g:link controller="subscription" action="renewEntitlementsWithSurvey"
+            class="item ${'currentPerpetualAccessIEs' == params.tab ? 'active' : ''}"
+            params="[id: subscriberSub.id, surveyConfigID: surveyConfig.id, tab: 'currentPerpetualAccessIEs']">
+        <g:message code="renewEntitlementsWithSurvey.currentTitles"/>
+            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                  data-content="${message(code: 'renewEntitlementsWithSurvey.currentTitles.mouseover')}">
+                <i class="question circle icon"></i>
+            </span>
+        <div class="ui circular label">${countCurrentIEs}</div>
+    </g:link>
 
 %{--    <g:if test="${showStatisticByParticipant}">
         <ui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"

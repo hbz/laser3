@@ -92,7 +92,7 @@
         </tbody>
         <g:if test="${controllerName == 'survey' && actionName == 'show' && editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING}">
             <g:set var="selectableProperties"
-                   value="${pdg ? surveyConfig.getSelectablePropertiesByPropDefGroup(pdg) : surveyConfig.getOrphanedSelectableProperties()}"/>
+                   value="${pdg ? surveyConfig.getSelectablePropertiesByPropDefGroup(pdg) : (selectablePrivateProperties ? surveyConfig.getPrivateSelectableProperties() : surveyConfig.getOrphanedSelectableProperties())}"/>
             <tfoot>
             <tr>
                 <td colspan="6">

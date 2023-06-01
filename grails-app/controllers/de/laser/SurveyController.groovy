@@ -744,7 +744,7 @@ class SurveyController {
                         surveyInfo: surveyInfo,
                         subSurveyUseForTransfer: false,
                         pickAndChoose: true,
-                        pickAndChoosePerpetualAccess: params.pickAndChoosePerpetualAccess ? true : false,
+                        pickAndChoosePerpetualAccess: params.pickAndChoosePerpetualAccess ? true : (subscription.hasPerpetualAccess == RDStore.YN_YES),
                         issueEntitlementGroupName: params.issueEntitlementGroupNew
                 )
                 surveyConfig.save()
@@ -2041,7 +2041,7 @@ class SurveyController {
 
                    }*/
 
-                    result.iesListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
+                    result.iesTotalListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
                             'where p.listPrice is not null and ie.subscription = :sub and ie.status = :ieStatus',
                             [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0
 
