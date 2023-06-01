@@ -768,12 +768,12 @@ class SubscriptionController {
         }
         else {
             if(params.addUUID) {
-                switch(params.addType) {
-                    case "With": flash.message = message(code:'subscription.details.link.processingWithEntitlements') as String
+                switch(params.holdingSelection) {
+                    case RDStore.SUBSCRIPTION_HOLDING_ENTIRE.id.toString(): flash.message = message(code:'subscription.details.link.processingWithEntitlements') as String
                         redirect action: 'index', params: [id: params.id, gokbId: params.addUUID]
                         return
                         break
-                    case "Without": flash.message = message(code:'subscription.details.link.processingWithoutEntitlements') as String
+                    case RDStore.SUBSCRIPTION_HOLDING_PARTIAL.id.toString(): flash.message = message(code:'subscription.details.link.processingWithoutEntitlements') as String
                         redirect action: 'addEntitlements', params: [id: params.id, packageLinkPreselect: params.addUUID, preselectedName: ctrlResult.result.packageName]
                         return
                         break

@@ -530,7 +530,7 @@ class ExportClickMeService {
 
             org : [
                     label: 'Organisation',
-                    message: 'org.label',
+                    message: 'org.institution.label',
                     fields: [
                             'participant.sortname'          : [field: 'sub.subscriber.sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
                             'participant.name'              : [field: 'sub.subscriber.name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],

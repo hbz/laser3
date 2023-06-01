@@ -83,6 +83,14 @@ class PackageController {
             queryParams.ids = ["Anbieter_Produkt_ID,${params.q}", "isil,${params.q}"]
         }
 
+        if(params.status) {
+            result.filterSet = true
+        }
+        else if(!params.status) {
+            params.status = ['Current', 'Expected', 'Retired']
+        }
+        queryParams.status = params.status
+
         if (params.provider) {
             result.filterSet = true
             queryParams.provider = params.provider
