@@ -98,6 +98,36 @@
     </div>
     <%--</div>--%>
 
+    <%-- private properties --%>
+<div class="content">
+        <g:if test="${controllerName == 'survey' && actionName == 'show'}">
+                <g:set var="surveyProperties" value="${surveyConfig.getPrivateSurveyConfigProperties()}"/>
+                <h2 class="ui header">
+                        ${message(code: 'surveyConfigsInfo.properties.privat')}
+                </h2>
+
+                <div>
+                    <laser:render template="/templates/survey/properties_table" model="${[
+                            surveyProperties: surveyProperties, selectablePrivateProperties: true]}"/>
+                </div>
+        </g:if>
+    <g:else>
+        <g:set var="surveyProperties"
+               value="${surveyConfig.getPrivateSurveyResultsByOrg(institution)}"/>
+        <g:if test="${surveyProperties.size() > 0}">
+            <h2 class="ui header">
+                ${message(code: 'surveyConfigsInfo.properties.privat')}
+            </h2>
+
+            <div>
+                <laser:render template="/templates/survey/properties_table" model="${[
+                        surveyProperties: surveyProperties]}"/>
+            </div>
+        </g:if>
+    </g:else>
+</div>
+
+
 </div><!--.card -->
 
 <!-- _properties -->
