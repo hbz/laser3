@@ -1522,7 +1522,7 @@ class CopyElementsService {
                 SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
                 newSubscriptionPackage.pkg = subscriptionPackage.pkg
                 newSubscriptionPackage.subscription = targetObject
-                newSubscriptionPackage.freezeHolding = subscriptionPackage.freezeHolding //may be subject of setting change
+                //newSubscriptionPackage.freezeHolding = subscriptionPackage.freezeHolding //may be subject of setting change
                 if (_save(newSubscriptionPackage, flash)) {
                     pkgOapls.each { OrgAccessPointLink oapl ->
 

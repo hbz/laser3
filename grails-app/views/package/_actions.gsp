@@ -40,7 +40,28 @@
                               noSelection="${['': message(code: 'default.select.choose.label')]}"
                               onchange="JSPC.app.adjustDropdown()"/>
             </div>
-            <br id="element-vor-target-dropdown"/>
+            <div id="dropdownWrapper"></div>
+            <br/>
+            <br/>
+            <br/>
+            <div class="field holdingSelection">
+                <label for="holdingSelection">${message(code: 'subscription.holdingSelection.label')} <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code: "subscription.holdingSelection.explanation")}"><i class="question circle icon la-popup"></i></span></label>
+            </div>
+            <div class="two fields holdingSelection">
+                <div class="field">
+                    <ui:select class="ui dropdown search selection" id="holdingSelection" name="holdingSelection" from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_HOLDING)}" optionKey="id" optionValue="value"/>
+                </div>
+                <g:if test="${org.isCustomerType_Consortium()}">
+                    <g:hiddenField name="subOID" value="null"/>
+                    <div class="field">
+                        <button id="inheritHoldingSelection" data-content="${message(code: 'subscription.holdingSelection.inherit')}" class="ui icon blue button la-modern-button la-audit-button la-popup-tooltip la-delay" data-inherited="false">
+                            <i aria-hidden="true" class="icon la-js-editmode-icon la-thumbtack slash"></i>
+                        </button>
+                    </div>
+                </g:if>
+            </div>
+        </g:form>
+            <%--
             <br/>
             <br/>
             <br/>
@@ -136,7 +157,7 @@
                     </g:each>
                 </table>
             </div>
-        </g:form>
+        </g:form>--%>
 
         <laser:script file="${this.getGroovyPageFileName()}">
             JSPC.app.adjustDropdown = function () {
@@ -153,6 +174,11 @@
                     url = url + '&' + status
                 }
 
+                var lookup = {
+                    '${RDStore.SUBSCRIPTION_HOLDING_ENTIRE.id}': '${RDStore.SUBSCRIPTION_HOLDING_ENTIRE.getI10n('value')}',
+                    '${RDStore.SUBSCRIPTION_HOLDING_PARTIAL.id}': '${RDStore.SUBSCRIPTION_HOLDING_PARTIAL.getI10n('value')}',
+                };
+
                 $.ajax({
                     url: url,
                     success: function (data) {
@@ -161,10 +187,14 @@
                             var option = data[index];
                             var optionText = option.text;
                             var optionValue = option.value;
+                            var holdingSelection = null;
+                            if(option.holdingSelection !== null)
+                                holdingSelection = lookup[option.holdingSelection];
                             var count = index + 1
                             // console.log(optionValue +'-'+optionText)
-
-                            select += '<div class="item" data-value="' + optionValue + '">'+ count + ': ' + optionText + '</div>';
+                            if(holdingSelection !== null)
+                                optionText += ' (' + holdingSelection + ')'
+                            select += '<div class="item" data-value="' + optionValue + '" data-holdingSelection="' + holdingSelection + '">'+ count + ': ' + optionText + '</div>';
                         }
 
                         select = '<label>${message(code: 'default.select2.label', args: [message(code: "subscription.label")])}:</label> <div class="ui fluid search selection dropdown la-filterProp">' +
@@ -176,7 +206,7 @@
                 '</div>' +
                 '</div>';
 
-                        $('#element-vor-target-dropdown').next().replaceWith(select);
+                        $('#dropdownWrapper').html(select);
 
                         $('.la-filterProp').dropdown({
                             duration: 150,
@@ -186,13 +216,46 @@
                             selectOnKeydown: false,
                             onChange: function (value, text, $selectedItem) {
                                 value !== '' ? $(this).addClass("la-filter-selected") : $(this).removeClass("la-filter-selected");
+                                $("#subOID").val($selectedItem.attr('data-value'));
+                                if($selectedItem.attr('data-holdingSelection') === 'null') {
+                                    $(".holdingSelection").show();
+                                }
+                                else $(".holdingSelection").hide();
                             }
                         });
                     }, async: false
                 });
             }
 
-            JSPC.app.adjustDropdown()
+            JSPC.app.adjustDropdown();
+            $(".holdingSelection").hide();
+
+            $("#inheritHoldingSelection").click(function(e) {
+                e.preventDefault();
+                let isInherited = $(this).attr('data-inherited') === 'true';
+                let button = $(this);
+                let icon = $(this).find('i');
+                $.ajax({
+                    url: '<g:createLink controller="ajax" action="toggleAudit" />',
+                    data: {
+                        owner: $('#subOID').val(),
+                        property: 'holdingSelection',
+                        returnSuccessAsJSON: true,
+                    }
+                }).done(function(response) {
+                    button.toggleClass('blue').toggleClass('green');
+                    if(isInherited) {
+                        icon.addClass('la-thumbtack slash').removeClass('thumbtack');
+                        button.attr('data-inherited', 'false');
+                    }
+                    else {
+                        icon.removeClass('la-thumbtack slash').addClass('thumbtack');
+                        button.attr('data-inherited', 'true');
+                    }
+                }).fail(function () {
+                    console.log("AJAX error! Please check logs!");
+                });
+            });
         </laser:script>
 
     </ui:modal>

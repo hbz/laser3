@@ -467,7 +467,7 @@ join sub.orgRelations or_sub where
         List tmpQ
         String queryStart = "select s "
         if(params.forDropdown) {
-            queryStart = "select s.id, s.name, s.startDate, s.endDate, s.status, so.org, so.roleType, s.instanceOf.id "
+            queryStart = "select s.id, s.name, s.startDate, s.endDate, s.status, so.org, so.roleType, s.instanceOf.id, s.holdingSelection.id "
             params.joinQuery = "join s.orgRelations so"
         }
 
@@ -793,7 +793,7 @@ join sub.orgRelations or_sub where
      */
     void addToSubscription(Subscription subscription, Package pkg, boolean createEntitlements) {
         Sql sql = GlobalService.obtainSqlConnection()
-        sql.executeInsert('insert into subscription_package (sp_version, sp_pkg_fk, sp_sub_fk, sp_freeze_holding, sp_date_created, sp_last_updated) values (0, :pkgId, :subId, false, now(), now()) on conflict on constraint sub_package_unique do nothing', [pkgId: pkg.id, subId: subscription.id])
+        sql.executeInsert('insert into subscription_package (sp_version, sp_pkg_fk, sp_sub_fk, sp_date_created, sp_last_updated) values (0, :pkgId, :subId, now(), now()) on conflict on constraint sub_package_unique do nothing', [pkgId: pkg.id, subId: subscription.id])
         /*
         List<SubscriptionPackage> dupe = SubscriptionPackage.executeQuery(
                 "from SubscriptionPackage where subscription = :sub and pkg = :pkg", [sub: subscription, pkg: pkg])
@@ -816,7 +816,7 @@ join sub.orgRelations or_sub where
      */
     void addToMemberSubscription(Subscription subscription, List<Subscription> memberSubs, Package pkg, boolean createEntitlements) {
         Sql sql = GlobalService.obtainSqlConnection()
-        sql.withBatch('insert into subscription_package (sp_version, sp_pkg_fk, sp_sub_fk, sp_freeze_holding, sp_date_created, sp_last_updated) values (0, :pkgId, :subId, false, now(), now()) on conflict on constraint sub_package_unique do nothing') { BatchingPreparedStatementWrapper stmt ->
+        sql.withBatch('insert into subscription_package (sp_version, sp_pkg_fk, sp_sub_fk, sp_date_created, sp_last_updated) values (0, :pkgId, :subId, now(), now()) on conflict on constraint sub_package_unique do nothing') { BatchingPreparedStatementWrapper stmt ->
             memberSubs.each { Subscription memberSub ->
                 stmt.addBatch([pkgId: pkg.id, subId: memberSub.id])
             }
@@ -857,7 +857,7 @@ join sub.orgRelations or_sub where
      */
     void addToSubscriptionCurrentStock(Subscription target, Subscription consortia, Package pkg, boolean withEntitlements) {
         Sql sql = GlobalService.obtainSqlConnection()
-        sql.executeInsert('insert into subscription_package (sp_version, sp_pkg_fk, sp_sub_fk, sp_freeze_holding, sp_date_created, sp_last_updated) values (0, :pkgId, :subId, false, now(), now()) on conflict on constraint sub_package_unique do nothing', [pkgId: pkg.id, subId: target.id])
+        sql.executeInsert('insert into subscription_package (sp_version, sp_pkg_fk, sp_sub_fk, sp_date_created, sp_last_updated) values (0, :pkgId, :subId, now(), now()) on conflict on constraint sub_package_unique do nothing', [pkgId: pkg.id, subId: target.id])
         //List consortiumHolding = sql.rows("select * from title_instance_package_platform join issue_entitlement on tipp_id = ie_tipp_fk where tipp_pkg_fk = :pkgId and ie_subscription_fk = :consortium and ie_status_rv_fk = :current", [pkgId: pkg.id, consortium: consortia.id, current: RDStore.TIPP_STATUS_CURRENT.id])
         if(withEntitlements)
             packageService.bulkAddHolding(sql, target.id, pkg.id, target.hasPerpetualAccess, consortia.id)
@@ -971,11 +971,13 @@ join sub.orgRelations or_sub where
                     log.error("ProcessLinkPackage -> PendingChangeConfiguration: " + e.message)
                 }
             }
+            /*
             subscriptionPackage.freezeHolding = params.freezeHolding == 'on'
             if(params.freezeHoldingAudit == 'on' && !AuditConfig.getConfig(subscriptionPackage.subscription, SubscriptionPackage.FREEZE_HOLDING))
                 AuditConfig.addConfig(subscriptionPackage.subscription, SubscriptionPackage.FREEZE_HOLDING)
             else if(params.freezeHoldingAudit != 'on' && AuditConfig.getConfig(subscriptionPackage.subscription, SubscriptionPackage.FREEZE_HOLDING))
                 AuditConfig.removeConfig(subscriptionPackage.subscription, SubscriptionPackage.FREEZE_HOLDING)
+            */
         }
     }
 
@@ -1692,7 +1694,7 @@ join sub.orgRelations or_sub where
                                 orgLicRole.lic = newLicense
                             }
                             else {
-                                orgLicRole = new OrgRole(lic: newLicense,org: subscr,roleType: licRole)
+                                orgLicRole = new OrgRole(lic: newLicense,org: subscr, roleType: licRole)
                             }
                             if(!orgLicRole.save())
                                 log.error(orgLicRole.errors.toString())

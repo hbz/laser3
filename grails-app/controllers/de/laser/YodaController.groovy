@@ -1210,6 +1210,7 @@ class YodaController {
     /**
      * Manually triggers the subscription holding freezing
      */
+    /*
     @Secured(['ROLE_YODA'])
     def freezeSubscriptionHoldings(){
         if(subscriptionService.freezeSubscriptionHoldings())
@@ -1218,6 +1219,7 @@ class YodaController {
             flash.message = "Bestände sind bereits festgefroren!"
         redirect(url: request.getHeader('referer'))
     }
+    */
 
     /**
      * Checks the subscription-license linkings on member level and reveals those where the participant is not linked directly to the member license

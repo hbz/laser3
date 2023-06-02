@@ -1200,7 +1200,10 @@ class AjaxController {
 
             }
         }
-        redirect(url: request.getHeader('referer'))
+        if(Boolean.valueOf(params.returnSuccessAsJSON))
+            render([success: true] as JSON)
+        else
+            redirect(url: request.getHeader('referer'))
     }
 
     /**

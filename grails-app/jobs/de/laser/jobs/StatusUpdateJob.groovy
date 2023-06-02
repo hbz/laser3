@@ -31,7 +31,7 @@ class StatusUpdateJob extends AbstractJob {
             return false
         }
         try {
-            if (!statusUpdateService.subscriptionCheck() || !statusUpdateService.licenseCheck() || !subscriptionService.freezeSubscriptionHoldings() ) {
+            if (!statusUpdateService.subscriptionCheck() || !statusUpdateService.licenseCheck() ) {
                 log.warn( 'StatusUpdateJob failed. Maybe ignored due blocked statusUpdateService' )
             }
         }
