@@ -2086,9 +2086,9 @@ class SubscriptionControllerService {
                                 }
                                 Package pkgToLink = Package.findByGokbId(pkgUUID)
                                 result.packageName = pkgToLink.name
-                                subscriptionService.addToSubscription(result.subscription, pkgToLink, holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
+                                subscriptionService.addToSubscription(result.subscription, pkgToLink, result.subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
                                 if(auditService.getAuditConfig(result.subscription, 'holdingSelection')) {
-                                    subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
+                                    subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, result.subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
                                 }
                                 //subscriptionService.addPendingChangeConfiguration(result.subscription, pkgToLink, params.clone())
                             }
@@ -2100,9 +2100,9 @@ class SubscriptionControllerService {
                     }
                     else {
                         Package pkgToLink = globalSourceSyncService.createOrUpdatePackage(pkgUUID)
-                        subscriptionService.addToSubscription(result.subscription, pkgToLink, holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
+                        subscriptionService.addToSubscription(result.subscription, pkgToLink, result.subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
                         if(auditService.getAuditConfig(result.subscription, 'holdingSelection')) {
-                            subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
+                            subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, result.subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
                         }
                         //subscriptionService.addPendingChangeConfiguration(result.subscription, pkgToLink, params.clone())
                     }
