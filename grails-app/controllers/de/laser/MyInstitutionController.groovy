@@ -2233,21 +2233,20 @@ class MyInstitutionController  {
 
                 }*/
 
-                result.iesListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
-                        'where p.listPrice is not null and ie.subscription = :sub and ie.status = :ieStatus',
-                        [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0
+                result.sumListPriceSelectedIEs = surveyService.sumListPriceIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig)
 
 
                /* result.iesFixListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
                         'where p.listPrice is not null and ie.subscription = :sub and ie.status = :ieStatus',
                         [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0 */
                 result.countSelectedIEs = surveyService.countIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig)
+                result.countCurrentPermanentTitles = subscriptionService.countCurrentPermanentTitles(result.subscription, false)
 
-                if (result.surveyConfig.pickAndChoosePerpetualAccess) {
+/*                if (result.surveyConfig.pickAndChoosePerpetualAccess) {
                     result.countCurrentIEs = surveyService.countPerpetualAccessTitlesBySub(result.subscription)
                 } else {
                     result.countCurrentIEs = (result.previousSubscription ? subscriptionService.countCurrentIssueEntitlements(result.previousSubscription) : 0) + subscriptionService.countCurrentIssueEntitlements(result.subscription)
-                }
+                }*/
 
 
                 result.subscriber = result.subscription.getSubscriber()
