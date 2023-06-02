@@ -30,6 +30,7 @@ class PackageController {
 
     AccessService accessService
     AddressbookService addressbookService
+    AuditService auditService
     ContextService contextService
     EscapeService escapeService
     ExecutorService executorService
@@ -87,7 +88,7 @@ class PackageController {
             result.filterSet = true
         }
         else if(!params.status) {
-            params.status = ['Current', 'Expected', 'Retired']
+            params.status = ['Current', 'Expected', 'Retired', 'Deleted']
         }
         queryParams.status = params.status
 
@@ -673,31 +674,30 @@ class PackageController {
                     bulkProcessRunning = true
                 }
             }
+            if(params.holdingSelection) {
+                RefdataValue holdingSelection = RefdataValue.get(params.holdingSelection)
+                result.subscription.holdingSelection = holdingSelection
+                result.subscription.save()
+            }
             //to be deployed in parallel thread
             if (result.pkg) {
                 if(!bulkProcessRunning) {
                     executorService.execute({
                         Thread.currentThread().setName('PackageSync_' + result.subscription.id)
-                        String addType = params.addType
-                        log.debug("Add package ${addType} entitlements to subscription ${result.subscription}")
-                        if (addType == 'With') {
-                            subscriptionService.addToSubscription(result.subscription, result.pkg, true)
-                        } else if (addType == 'Without') {
-                            subscriptionService.addToSubscription(result.subscription, result.pkg, false)
-                        }
-
-                        if (addType != null && addType != '') {
-                            //subscriptionService.addPendingChangeConfiguration(result.subscription, result.pkg, params.clone())
+                        log.debug("Add package entitlements to subscription ${result.subscription}")
+                        subscriptionService.addToSubscription(result.subscription, result.pkg, result.subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
+                        if(auditService.getAuditConfig(result.subscription, 'holdingSelection')) {
+                            subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), result.pkg, result.subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
                         }
                     })
                 }
             }
-            switch (params.addType) {
-                case "With": flash.message = message(code: 'subscription.details.link.processingWithEntitlements') as String
+            switch (result.subscription.holdingSelection) {
+                case RDStore.SUBSCRIPTION_HOLDING_ENTIRE: flash.message = message(code: 'subscription.details.link.processingWithEntitlements') as String
                     redirect controller: 'subscription', action: 'index', params: [id: result.subscription.id, gokbId: result.pkg.gokbId]
                     return
                     break
-                case "Without": flash.message = message(code: 'subscription.details.link.processingWithoutEntitlements') as String
+                case RDStore.SUBSCRIPTION_HOLDING_PARTIAL: flash.message = message(code: 'subscription.details.link.processingWithoutEntitlements') as String
                     redirect controller: 'subscription', action: 'addEntitlements', params: [id: result.subscription.id, packageLinkPreselect: result.pkg.gokbId, preselectedName: result.pkg.name]
                     return
                     break

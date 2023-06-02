@@ -23,7 +23,7 @@
                 <select name="status" id="status" multiple=""
                         class="ui search selection dropdown">
                     <option value="">${message(code: 'default.select.choose.label')}</option>
-                    <g:set var="excludes" value="${[RDStore.PACKAGE_STATUS_DELETED, RDStore.PACKAGE_STATUS_REMOVED]}"/>
+                    <g:set var="excludes" value="${[RDStore.PACKAGE_STATUS_REMOVED]}"/>
                     <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.PACKAGE_STATUS)-excludes}" var="status">
                         <option <%=(params.list('status')?.contains(status.value)) ? 'selected="selected"' : ''%>
                                 value="${status.value}">

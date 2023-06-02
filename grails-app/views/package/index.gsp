@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.DateUtils; de.laser.Org; de.laser.Package; de.laser.Platform; java.text.SimpleDateFormat" %>
+<%@ page import="de.laser.storage.RDConstants; de.laser.utils.DateUtils; de.laser.Org; de.laser.Package; de.laser.Platform; de.laser.RefdataValue; java.text.SimpleDateFormat" %>
 <laser:htmlStart message="package.show.all" />
 
 <ui:breadcrumbs>
@@ -36,6 +36,7 @@
                 <tr>
                     <th>${message(code: 'sidewide.number')}</th>
                     <g:sortableColumn property="name" title="${message(code: 'package.show.pkg_name')}" params="${params}"/>
+                    <th>${message(code: 'package.status.label')}</th>
                     <g:sortableColumn property="titleCount" title="${message(code: 'package.compare.overview.tipps')}" params="${params}"/>
                     <g:sortableColumn property="providerName" title="${message(code: 'package.content_provider')}" params="${params}"/>
                     <g:sortableColumn property="nominalPlatformName" title="${message(code: 'platform.label')}" params="${params}"/>
@@ -81,6 +82,9 @@
                                                   href="${editUrl ? editUrl + '/public/packageContent/?id=' + record.uuid : '#'}"><i
                                         title="we:kb Link" class="external alternate icon"></i></a>
                             </g:else>
+                        </td>
+                        <td>
+                            ${RefdataValue.getByValueAndCategory(record.status, RDConstants.PACKAGE_STATUS)?.getI10n("value")}
                         </td>
                         <td>
                             <g:if test="${record.titleCount}">
