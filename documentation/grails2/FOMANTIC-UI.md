@@ -1,26 +1,3 @@
-# Building CSS with Gulp
-
-## Install Node.js on Windows with NVM (Node version manager for Windows) to manage Node.js versions
-1.) go to https://github.com/coreybutler/nvm-windows/releases and download nvm-setup.exe
-
-2.) install NVM (Node version manager for Windows) on windows via installation file
-
-3.) install the latest Node.js version
-
-    nvm install lts
-
-4.) specify the node version you use
-    
-    nvm use 18.16.0
-
-## NPM (Nodes Package Manager) 
-
-1.) change directory to files/frontend/semantic
-
-    cd files/frontend/semantic
-
-2.) install fomantic
-
 # Read this before you deal with Fomantic UI Build
 
 - do not install Fomantic UI from the scratch because we have some core changes
