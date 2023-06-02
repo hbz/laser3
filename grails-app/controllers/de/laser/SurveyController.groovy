@@ -744,7 +744,7 @@ class SurveyController {
                         surveyInfo: surveyInfo,
                         subSurveyUseForTransfer: false,
                         pickAndChoose: true,
-                        pickAndChoosePerpetualAccess: params.pickAndChoosePerpetualAccess ? true : false,
+                        pickAndChoosePerpetualAccess: params.pickAndChoosePerpetualAccess ? true : (subscription.hasPerpetualAccess == RDStore.YN_YES),
                         issueEntitlementGroupName: params.issueEntitlementGroupNew
                 )
                 surveyConfig.save()
@@ -2040,7 +2040,7 @@ class SurveyController {
 
                    }*/
 
-                    result.iesListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
+                    result.iesTotalListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
                             'where p.listPrice is not null and ie.subscription = :sub and ie.status = :ieStatus',
                             [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0
 
@@ -3227,9 +3227,9 @@ class SurveyController {
                                  sub_resource     : subscription.resource?.id?.toString(),
                                  sub_kind         : subscription.kind?.id?.toString(),
                                  sub_isPublicForApi : subscription.isPublicForApi ? RDStore.YN_YES.id.toString() : RDStore.YN_NO.id.toString(),
-                                 //sub_hasPerpetualAccess : subscription.hasPerpetualAccess,
                                  sub_hasPerpetualAccess : subscription.hasPerpetualAccess ? RDStore.YN_YES.id.toString() : RDStore.YN_NO.id.toString(),
-                                 sub_hasPublishComponent : subscription.hasPublishComponent ? RDStore.YN_YES.id.toString() : RDStore.YN_NO.id.toString()
+                                 sub_hasPublishComponent : subscription.hasPublishComponent ? RDStore.YN_YES.id.toString() : RDStore.YN_NO.id.toString(),
+                                 sub_holdingSelection : subscription.holdingSelection?.id?.toString()
 
         ]
 
@@ -3271,6 +3271,7 @@ class SurveyController {
             //def sub_hasPerpetualAccess = params.subHasPerpetualAccess
             def sub_hasPublishComponent = params.subHasPublishComponent == RDStore.YN_YES.id.toString()
             def sub_isPublicForApi = params.subIsPublicForApi == RDStore.YN_YES.id.toString()
+            def sub_holdingSelection = params.subHoldingSelection
             def old_subOID = params.subscription.old_subid
             def new_subname = params.subscription.name
             def manualCancellationDate = null
@@ -3294,6 +3295,7 @@ class SurveyController {
                         form: sub_form,
                         hasPerpetualAccess: sub_hasPerpetualAccess,
                         hasPublishComponent: sub_hasPublishComponent,
+                        holdingSelection: sub_holdingSelection,
                         isPublicForApi: sub_isPublicForApi
                 )
 
@@ -4450,6 +4452,7 @@ class SurveyController {
                         isPublicForApi: newParentSub.isPublicForApi,
                         hasPerpetualAccess: newParentSub.hasPerpetualAccess,
                         hasPublishComponent: newParentSub.hasPublishComponent,
+                        holdingSelection: newParentSub.holdingSelection ?: null,
                         isMultiYear: multiYear ?: false
                 )
 
@@ -4506,6 +4509,7 @@ class SurveyController {
                             }
                         }
                     }
+                    memberSub.refresh()
 
                     licensesToProcess.each { License lic ->
                         subscriptionService.setOrgLicRole(memberSub,lic,false)
@@ -4519,7 +4523,6 @@ class SurveyController {
                         PendingChange.construct([target: memberSub, oid: "${memberSub.getClass().getName()}:${memberSub.id}", msgToken: "pendingChange.message_SU_NEW_01", status: RDStore.PENDING_CHANGE_PENDING, owner: org])
                     }
 
-                    return memberSub
                 }
             }
         }

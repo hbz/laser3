@@ -1504,6 +1504,9 @@ class ExportService {
 				else if(data.size() > 0) {
 					[result: wb]
 				}
+				else {
+					requestResponse
+				}
 				/*
 				titleRows.each{ TitleInstancePackagePlatform title, Map<String, Map<String, Map>> titleMetric ->
 					titleMetric.each { String metricType, Map titleAccessType ->

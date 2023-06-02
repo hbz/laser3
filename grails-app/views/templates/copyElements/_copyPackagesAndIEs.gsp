@@ -69,9 +69,9 @@
                                     <g:link controller="subscription" action="index" id="${sourceObject.id}"><strong>${message(code: 'issueEntitlement.countSubscription')}</strong> ${sp.getIssueEntitlementCountOfPackage()}</g:link>
                                 </div>
                                 <%--
-                                <g:set var="ies" value="${sp.getIssueEntitlementsofPackage()}"/>
                                 <div class="ui accordion">
                                     <div class="title">
+                                        <g:set var="ies" value="${sp.getIssueEntitlementsofPackage()}"/>
                                         <i class="dropdown icon"></i> ${message(code: 'issueEntitlement.countSubscription')} </strong>${ies.size()}
                                     </div>
 
@@ -98,7 +98,6 @@
                                         </div>
                                     </div>
                                 </div>
-                                --%>
 
                                 <g:set var="packageSettings"
                                        value="${PendingChangeConfiguration.findAllBySubscriptionPackage(sp)}"/>
@@ -184,13 +183,14 @@
                                             </div>
                                         </div>
 
-                                        <%--<div class="ui checkbox la-toggle-radio la-replace">
+                                        <div class="ui checkbox la-toggle-radio la-replace">
                                             <g:checkBox name="subscription.takePackageSettings"
                                                         value="${genericOIDService.getOID(sp)}" data-pkgid="${sp.id}"
                                                         data-action="copy" checked="${true}"/>
-                                        </div>--%>
+                                        </div>
                                     </div>
                                 </g:if>
+                                --%>
                             </div>
                             %{--COPY:--}%
 
@@ -249,7 +249,6 @@
                                         </div>
                                     </div>
                                 </div>
-                                --%>
                                 <g:set var="packageSettings"
                                        value="${PendingChangeConfiguration.findAllBySubscriptionPackage(sp)}"/>
 
@@ -281,7 +280,6 @@
                                                 </ul>
                                             </div>
                                         </div>
-                                        <%--
                                         <g:if test="${sp.pendingChangeConfig}">
                                             <div class="ui checkbox la-toggle-radio la-noChange setDeletionConfirm">
                                                 <g:checkBox name="subscription.deletePackageSettings"
@@ -290,9 +288,9 @@
                                                             data-action="delete" checked="${false}"/>
                                             </div>
                                         </g:if>
-                                        --%>
                                     </div>
                                 </g:if>
+                                --%>
 
                             </div>
 

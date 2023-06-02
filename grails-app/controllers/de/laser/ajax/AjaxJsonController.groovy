@@ -113,7 +113,7 @@ class AjaxJsonController {
                 if(s[0] != params.long("context")) {
                     Map subscriptionRow = subscriptionRows.get(s[0])
                     if(!subscriptionRow)
-                        subscriptionRow = [name: s[1], startDate: s[2], endDate: s[3], status: s[4], instanceOf: s[7], orgRelations: [:]]
+                        subscriptionRow = [name: s[1], startDate: s[2], endDate: s[3], status: s[4], instanceOf: s[7], holdingSelection: s[8], orgRelations: [:]]
                     subscriptionRow.orgRelations.put(s[6].id, s[5])
                     subscriptionRows.put(s[0], subscriptionRow)
                 }
@@ -136,7 +136,7 @@ class AjaxJsonController {
                 }
                 String text = "${entry.name} - ${entry.status.getI10n("value")} (${startDate} - ${endDate})${additionalInfo}"
                 if (params.valueAsOID) {
-                    result.add([value: "${Subscription.class.name}:${subId}", text: text])
+                    result.add([value: "${Subscription.class.name}:${subId}", text: text, holdingSelection: entry.holdingSelection])
                 }
                 else {
                     result.add([value: subId, text: text])
