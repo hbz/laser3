@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.IssueEntitlementGroup;" %>
+<%@ page import="de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.IssueEntitlementGroup;" %>
 
 <laser:htmlStart message="createIssueEntitlementsSurvey.label" serviceInjection="true" />
 
@@ -38,7 +38,7 @@
         <div class="field">
             <label>${message(code: 'surveyconfig.pickAndChoosePerpetualAccess.label')}</label>
             <div>
-                <input type="checkbox" id="pickAndChoosePerpetualAccess" readonly="readonly" name="pickAndChoosePerpetualAccess" ${(subscription.hasPerpetualAccess) ? 'checked':''}>
+               ${subscription.hasPerpetualAccess ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
             </div>
         </div>
 
