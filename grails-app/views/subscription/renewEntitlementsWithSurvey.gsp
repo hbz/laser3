@@ -28,7 +28,7 @@
                                tab           : 'allTipps']}">${message(code: 'renewEntitlementsWithSurvey.selectableTitles')}</g:link>
         </ui:exportDropdownItem>
 
-        <g:if test="${countCurrentIEs > 0}">
+        <g:if test="${countCurrentPermanentTitles > 0}">
 
             <ui:exportDropdownItem>
                 <g:link class="item" action="renewEntitlementsWithSurvey"
@@ -59,7 +59,7 @@
                                tab           : 'allTipps']}">${message(code: 'renewEntitlementsWithSurvey.selectableTitles')}</g:link>
         </ui:exportDropdownItem>
 
-        <g:if test="${countCurrentIEs > 0}">
+        <g:if test="${countCurrentPermanentTitles > 0}">
             <ui:exportDropdownItem>
                 <g:link class="item" action="renewEntitlementsWithSurvey"
                         id="${subscriberSub.id}"
@@ -276,7 +276,7 @@
                   data-content="${message(code: 'renewEntitlementsWithSurvey.currentTitles.mouseover')}">
                 <i class="question circle icon"></i>
             </span>
-        <div class="ui circular label">${countCurrentIEs}</div>
+        <div class="ui circular label">${countCurrentPermanentTitles}</div>
     </g:link>
 
 %{--    <g:if test="${showStatisticByParticipant}">
@@ -419,7 +419,9 @@
                     checked: checked,
                     tab: "${params.tab}",
                     baseSubID: "${subscription.id}",
-                    newSubID: "${subscriberSub.id}"
+                    newSubID: "${subscriberSub.id}",
+                    surveyConfigID: "${surveyConfig.id}"
+
                 },
                 success: function (data) {
                         <g:if test="${editable && params.tab == 'allTipps'}">
