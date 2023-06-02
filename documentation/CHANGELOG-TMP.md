@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5109    02.06.2023  rc-3.1  3.1.2       Andreas Bug         Zugriffsfehler beim Speichern von Adressen
+
 --      02.06.2023  rc-3.1  3.1.2       Andreas Feature     einige kleinere Verbesserungen zur Fehlerverwaltung von Statistik-Abfrageantworten
 
 5105    01.06.2023  rc-3.1  3.1.2       Andreas Feature     Felder in der Exportkonfiguration ergänzt 

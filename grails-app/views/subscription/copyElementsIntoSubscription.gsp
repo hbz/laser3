@@ -71,6 +71,8 @@
                             <br />
                             <i class="comment icon"></i>${message(code:'subscription.hasPublishComponent.label')}
                             <br />
+                            <i class="pizza slice icon"></i>${message(code:'subscription.holdingSelection.label')}
+                            <br />
                             <i class="balance scale icon"></i>${message(code: 'license.label')}
                             <br />
                             <i class="university icon"></i>${message(code: 'subscription.organisations.label')}

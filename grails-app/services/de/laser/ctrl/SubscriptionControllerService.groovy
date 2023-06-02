@@ -1967,7 +1967,7 @@ class SubscriptionControllerService {
                 result.filterSet = true
             }
             else if(!params.status) {
-                params.status = ['Current', 'Expected', 'Retired']
+                params.status = ['Current', 'Expected', 'Retired', 'Deleted']
             }
             queryParams.status = params.status
 
@@ -2052,14 +2052,13 @@ class SubscriptionControllerService {
             boolean bulkProcessRunning = false
             if(params.addUUID && !bulkProcessRunning) {
                 String pkgUUID = params.addUUID
-                String addType = params.addType
-                String addTypeChildren = params.addTypeChildren
                 ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
                 result.source = apiSource.baseUrl
-                result.subscription.holdingSelection = RefdataValue.get(params.holdingSelection)
-                result.subscription.save()
-                if(Boolean.valueOf(params.inheritHoldingSelection))
-                    AuditConfig.addConfig(result.subscription, 'holdingSelection')
+                if(params.holdingSelection) {
+                    RefdataValue holdingSelection = RefdataValue.get(params.holdingSelection)
+                    result.subscription.holdingSelection = holdingSelection
+                    result.subscription.save()
+                }
                 GlobalRecordSource source = GlobalRecordSource.findByUriLikeAndRectype(result.source+'%', GlobalSourceSyncService.RECTYPE_TIPP)
                 log.debug("linkPackage. Global Record Source URL: " +source.uri)
                 globalSourceSyncService.source = source
@@ -2087,10 +2086,9 @@ class SubscriptionControllerService {
                                 }
                                 Package pkgToLink = Package.findByGokbId(pkgUUID)
                                 result.packageName = pkgToLink.name
-                                log.debug("Add package ${addType} entitlements to subscription ${result.subscription}")
-                                subscriptionService.addToSubscription(result.subscription, pkgToLink, addType == 'With')
-                                if(addTypeChildren) {
-                                    subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, addTypeChildren == 'WithForChildren')
+                                subscriptionService.addToSubscription(result.subscription, pkgToLink, holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
+                                if(auditService.getAuditConfig(result.subscription, 'holdingSelection')) {
+                                    subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
                                 }
                                 //subscriptionService.addPendingChangeConfiguration(result.subscription, pkgToLink, params.clone())
                             }
@@ -2102,10 +2100,9 @@ class SubscriptionControllerService {
                     }
                     else {
                         Package pkgToLink = globalSourceSyncService.createOrUpdatePackage(pkgUUID)
-                        log.debug("Add package ${addType} entitlements to subscription ${result.subscription}")
-                        subscriptionService.addToSubscription(result.subscription, pkgToLink, addType == 'With')
-                        if(addTypeChildren) {
-                            subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, addTypeChildren == 'WithForChildren')
+                        subscriptionService.addToSubscription(result.subscription, pkgToLink, holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
+                        if(auditService.getAuditConfig(result.subscription, 'holdingSelection')) {
+                            subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
                         }
                         //subscriptionService.addPendingChangeConfiguration(result.subscription, pkgToLink, params.clone())
                     }
@@ -3819,6 +3816,7 @@ class SubscriptionControllerService {
                         isPublicForApi: result.subscription.isPublicForApi,
                         hasPerpetualAccess: result.subscription.hasPerpetualAccess,
                         hasPublishComponent: result.subscription.hasPublishComponent,
+                        holdingSelection: result.subscription.holdingSelection,
                         status: sub_status,
                         isMultiYear: sub_isMultiYear ?: false,
                         administrative: result.subscription.administrative,
