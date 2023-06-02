@@ -884,11 +884,7 @@
 
             <g:if test="${accessService.ctxPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
                 <div id="new-dynamic-properties-block">
-                    <laser:render template="properties" model="${[
-                            orgInstance   : orgInstance,
-                            authorizedOrgs: authorizedOrgs,
-                            contextOrg: institution
-                    ]}"/>
+                    <laser:render template="properties" model="${[ orgInstance: orgInstance, authOrg: formalOrg, contextOrg: institution ]}"/>
                 </div><!-- #new-dynamic-properties-block -->
             </g:if>
 

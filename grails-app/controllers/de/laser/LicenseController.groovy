@@ -92,10 +92,6 @@ class LicenseController {
 
         prf.setBenchmark('properties')
 
-            // -- private properties
-
-            result.authorizedOrgs = result.user.getAffiliationOrgs()
-
             // create mandatory LicensePrivateProperties if not existing
 
             List<PropertyDefinition> mandatories = PropertyDefinition.getAllByDescrAndMandatoryAndTenant(PropertyDefinition.LIC_PROP, true, result.institution)

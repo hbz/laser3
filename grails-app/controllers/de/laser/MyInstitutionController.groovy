@@ -2184,7 +2184,7 @@ class MyInstitutionController  {
 
         if(result.surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]) {
             result.subscription = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.institution)
-            result.authorizedOrgs = result.user.getAffiliationOrgs()
+            result.formalOrg = result.user.formalOrg as Org
             // restrict visible for templates/links/orgLinksAsList
             result.costItemSums = [:]
             result.visibleOrgRelations = []

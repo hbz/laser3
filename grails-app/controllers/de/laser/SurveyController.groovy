@@ -795,7 +795,6 @@ class SurveyController {
             result.navigation = surveyService.getConfigNavigation(result.surveyInfo,  result.surveyConfig)
 
             if ( result.surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]) {
-                result.authorizedOrgs = result.user.getAffiliationOrgs()
 
                 // restrict visible for templates/links/orgLinksAsList
                 result.visibleOrgRelations = []

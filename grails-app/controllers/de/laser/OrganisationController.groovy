@@ -1020,7 +1020,7 @@ class OrganisationController  {
 
         result.tasks = taskService.getTasksByResponsiblesAndObject(result.user,result.institution,result.orgInstance)
 
-        result.authorizedOrgs = result.user?.getAffiliationOrgs()
+        result.formalOrg = result.user.formalOrg as Org
 
         // create mandatory OrgPrivateProperties if not existing
 
