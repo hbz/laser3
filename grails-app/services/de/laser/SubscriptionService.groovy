@@ -467,7 +467,7 @@ join sub.orgRelations or_sub where
         List tmpQ
         String queryStart = "select s "
         if(params.forDropdown) {
-            queryStart = "select s.id, s.name, s.startDate, s.endDate, s.status, so.org, so.roleType, s.instanceOf.id "
+            queryStart = "select s.id, s.name, s.startDate, s.endDate, s.status, so.org, so.roleType, s.instanceOf.id, s.holdingSelection.id "
             params.joinQuery = "join s.orgRelations so"
         }
 
@@ -1694,7 +1694,7 @@ join sub.orgRelations or_sub where
                                 orgLicRole.lic = newLicense
                             }
                             else {
-                                orgLicRole = new OrgRole(lic: newLicense,org: subscr,roleType: licRole)
+                                orgLicRole = new OrgRole(lic: newLicense,org: subscr, roleType: licRole)
                             }
                             if(!orgLicRole.save())
                                 log.error(orgLicRole.errors.toString())
