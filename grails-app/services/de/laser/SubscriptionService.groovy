@@ -760,6 +760,29 @@ join sub.orgRelations or_sub where
         countIes
     }
 
+
+    /**
+     * Gets the current permanent titles for the given subscription
+     * @param subscription the subscription whose titles should be returned
+     * @return integer of current permanent titles
+     */
+    Integer countCurrentPermanentTitles(Subscription subscription, boolean selfSub) {
+
+        Set<Subscription> subscriptions = []
+        subscriptions = linksGenerationService.getSuccessionChain(subscription, 'sourceSubscription')
+
+        if (selfSub) {
+            subscriptions << subscription
+        }
+
+        Integer countTitles = 0
+        if(subscriptions.size() > 0) {
+            countTitles = PermanentTitle.executeQuery("select count(pi) from PermanentTitle as pi where pi.subscription in (:subs) and pi.issueEntitlement.status = :ieStatus",[subs: subscriptions, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0]
+        }
+
+        return countTitles
+    }
+
     /**
      * Gets the IDs of current issue entitlements for the given subscription
      * @param subscription the subscription whose titles should be returned

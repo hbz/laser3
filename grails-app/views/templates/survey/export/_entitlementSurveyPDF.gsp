@@ -8,7 +8,7 @@
 </dl>
 <dl>
     <dt class="control-label">${message(code: 'tipp.price.listPrice')}</dt>
-    <dd><g:formatNumber number="${iesListPriceSum}" type="currency"/></dd>
+    <dd><g:formatNumber number="${sumListPriceSelectedIEs}" type="currency"/></dd>
 </dl>
 
 
@@ -25,7 +25,7 @@
 </h2>
 <dl>
     <dt class="control-label">${message(code: 'myinst.selectPackages.pkg_titles')}</dt>
-    <dd>${countCurrentIEs}</dd>
+    <dd>${countCurrentPermanentTitles}</dd>
 </dl>
 
 <g:link absolute="true" controller="subscription" action="renewEntitlementsWithSurvey"

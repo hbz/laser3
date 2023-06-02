@@ -21,6 +21,7 @@ import de.laser.properties.PropertyDefinitionGroupBinding
 import de.laser.storage.PropertyStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
+import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyOrg
 import de.laser.survey.SurveyResult
 import de.laser.utils.CodeUtils
@@ -469,14 +470,32 @@ class AjaxController {
               }*/
 
               Subscription baseSub = Subscription.get(params.baseSubID)
-              params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
-              Map<String, Object> query = filterService.getTippQuery(params, baseSub.packages.pkg)
-              List<Long> titleIDList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
 
+              if(params.tab == 'allTipps') {
+                  params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
+                  Map<String, Object> query = filterService.getTippQuery(params, baseSub.packages.pkg)
+                  List<Long> titleIDList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
 
-              List<TitleInstancePackagePlatform> titlesList = titleIDList ? TitleInstancePackagePlatform.findAllByIdInList(titleIDList) : []
-              titlesList.each { TitleInstancePackagePlatform titleInstancePackagePlatform ->
-                  newChecked[titleInstancePackagePlatform.id.toString()] = params.checked == 'true' ? 'checked' : null
+                  titleIDList.each { Long tippID ->
+                      newChecked[tippID.toString()] = params.checked == 'true' ? 'checked' : null
+                  }
+              }
+
+              if(params.tab == 'selectedIEs') {
+                  Subscription subscriberSub = Subscription.get(params.newSubID)
+                  SurveyConfig surveyConfig = SurveyConfig.findById(params.surveyConfigID)
+                  IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscriberSub)
+                  if(issueEntitlementGroup) {
+                      params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
+                      params.titleGroup = issueEntitlementGroup.id.toString()
+                      Map query = filterService.getIssueEntitlementQuery(params, subscriberSub)
+                      List<Long> ieIDList = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
+
+                      ieIDList.each { Long ieID ->
+                          newChecked[ieID.toString()] = params.checked == 'true' ? 'checked' : null
+                      }
+
+                  }
               }
 
           }

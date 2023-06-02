@@ -7,6 +7,7 @@
 
 
     <div class="ui accordion la-accordion-showMore" id="surveyEntitlements">
+        <g:if test="${editable && params.tab == 'selectedIEs'}"><input id="select-all" type="checkbox" name="chkall" ${allChecked}/></g:if>
         <g:each in="${ies.sourceIEs}" var="ie">
 
             <g:set var="tipp" value="${ie.tipp}"/>
@@ -93,6 +94,7 @@
                                             </div>
                                         </g:if>
                                     </div>
+                                    <g:set var="sumlistPrice" value="${sumlistPrice + (priceItem.listPrice ?: 0)}"/>
                                 </g:each>
                             </g:if>
                             <g:else>
