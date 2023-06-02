@@ -63,24 +63,31 @@ class InstAdmService {
      * @return true if access is granted, false otherwise
      */
     boolean isUserEditableForInstAdm(User user, User editor) {
-        List<Org> userOrgs = user.getAffiliationOrgs()
-
-        if (! userOrgs.isEmpty()) {
-            boolean result = true
-
-            userOrgs.each { org ->
-                if (result) {
-                    result = hasInstAdmPivileges(editor, org, [RDStore.COMBO_TYPE_CONSORTIUM])
-                }
-                else {
-                    result = false
-                }
-            }
-            return result
+        if (user.formalOrg) {
+            return hasInstAdmPivileges(editor, user.formalOrg, [RDStore.COMBO_TYPE_CONSORTIUM])
         }
         else {
             return accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_ADM')
         }
+
+//        List<Org> userOrgs = user.getAffiliationOrgs()
+//
+//        if (! userOrgs.isEmpty()) {
+//            boolean result = true
+//
+//            userOrgs.each { org ->
+//                if (result) {
+//                    result = hasInstAdmPivileges(editor, org, [RDStore.COMBO_TYPE_CONSORTIUM])
+//                }
+//                else {
+//                    result = false
+//                }
+//            }
+//            return result
+//        }
+//        else {
+//            return accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_ADM')
+//        }
     }
 
     @Deprecated

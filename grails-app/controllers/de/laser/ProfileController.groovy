@@ -122,24 +122,6 @@ class ProfileController {
     }
 
     /**
-     * Removes the given user from the given institution
-     * @return the profile page
-     */
-    @Secured(['ROLE_USER'])
-    @Transactional
-    def deleteAffiliation() {
-        log.debug("deleteAffiliation() userOrg: ${params.assoc}")
-        User user        = contextService.getUser()
-//        UserOrgRole userOrg  = UserOrgRole.findByUserAndId(user, params.assoc)
-//
-//        if (userOrg) {
-//            userOrg.delete()
-//        }
-        // todo refactoring
-        redirect(action: "index")
-    }
-
-    /**
      * Calls the user deletion page or, if confirmed, deletes the given user and executes the substitutions
      * @return either the logout redirect or the deletion view, if an error occurred
      */

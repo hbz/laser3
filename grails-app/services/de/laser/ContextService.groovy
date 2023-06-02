@@ -24,7 +24,7 @@ class ContextService {
      */
     Org getOrg() {
         // todo
-        
+
         try {
             def context = getUser()?.formalOrg
             if (context) {
@@ -36,7 +36,6 @@ class ContextService {
         }
         return null
 
-        //Org.withNewSession {
 //            try {
 //                SessionCacheWrapper scw = getSessionCache()
 //
@@ -56,7 +55,6 @@ class ContextService {
 //                log.warn('getOrg() - ' + e.getMessage())
 //            }
 //            return null
-        //}
     }
 
     /**
@@ -64,17 +62,15 @@ class ContextService {
      * @return the user object
      */
     User getUser() {
-        //User.withNewSession { ?? LazyInitializationException in /profile/index 
-            try {
-                if (springSecurityService.isLoggedIn()) {
-                    return (User) springSecurityService.getCurrentUser()
-                }
+        try {
+            if (springSecurityService.isLoggedIn()) {
+                return (User) springSecurityService.getCurrentUser()
             }
-            catch (Exception e) {
-                log.warn('getUser() - ' + e.getMessage())
-            }
-            return null
-        //}
+        }
+        catch (Exception e) {
+            log.warn('getUser() - ' + e.getMessage())
+        }
+        return null
     }
 
     // -- Cache --
