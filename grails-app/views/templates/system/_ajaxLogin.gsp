@@ -25,7 +25,7 @@
             </div>
 
             <div class="field">
-                <input type="submit" id="submit" class="ui button" value="${message(code: "menu.user.login")}"/>
+                <input type="submit" class="ui button" value="${message(code: "menu.user.login")}"/>
             </div>
         </form>
     </div>
