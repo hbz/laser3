@@ -105,7 +105,8 @@ class MailController {
                             return
                         }
                     } else {
-                        response.sendError(401)
+                        flash.error = message(code: 'default.no.selected.org')
+                        redirect(url: request.getHeader("referer"))
                         return
                     }
 
