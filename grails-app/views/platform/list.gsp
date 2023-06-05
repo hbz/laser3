@@ -79,7 +79,9 @@
 								</g:if>
 							</td>
 							<td>
-								<ui:wekbButtonLink type="platform" gokbId="${platformInstance.gokbId}" />
+								<g:if test="${platformInstance}">
+									<ui:wekbButtonLink type="platform" gokbId="${platformInstance.gokbId}" />
+								</g:if>
 							</td>
 						</tr>
 					</g:each>

@@ -19,6 +19,8 @@ import de.laser.survey.SurveyConfigProperties
 import de.laser.survey.SurveyOrg
 import de.laser.survey.SurveyResult
 import grails.gorm.transactions.Transactional
+import groovy.sql.GroovyRowResult
+import groovy.sql.Sql
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.springframework.context.MessageSource
 import org.hibernate.Session
@@ -528,7 +530,7 @@ class ExportClickMeService {
 
             org : [
                     label: 'Organisation',
-                    message: 'org.label',
+                    message: 'org.institution.label',
                     fields: [
                             'participant.sortname'          : [field: 'sub.subscriber.sortname', label: 'Sortname', message: 'org.sortname.label', defaultChecked: 'true'],
                             'participant.name'              : [field: 'sub.subscriber.name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
@@ -557,7 +559,7 @@ class ExportClickMeService {
                             'subscription.manualCancellationDate'       : [field: 'sub.manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
                             'subscription.isMultiYear'                  : [field: 'sub.isMultiYear', label: 'Multi Year', message: 'subscription.isMultiYear.label'],
                             'subscription.referenceYear'                : [field: 'sub.referenceYear', label: 'Reference Year', message: 'subscription.referenceYear.label'],
-                            'subscription.isAutomaticRenewAnnually'     : [field: 'sub.isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'],
+                            //'subscription.isAutomaticRenewAnnually'     : [field: 'sub.isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'],
                             'subscription.status'                       : [field: 'sub.status', label: 'Status', message: 'subscription.status.label'],
                             'subscription.kind'                         : [field: 'sub.kind', label: 'Kind', message: 'subscription.kind.label'],
                             'subscription.form'                         : [field: 'sub.form', label: 'Form', message: 'subscription.form.label'],
@@ -924,7 +926,7 @@ class ExportClickMeService {
                             'subscription.manualCancellationDate'       : [field: 'subscription.manualCancellationDate', label: 'Manual Cancellation Date', message: 'subscription.manualCancellationDate.label'],
                             'subscription.isMultiYear'                  : [field: 'subscription.isMultiYear', label: 'Multi Year', message: 'subscription.isMultiYear.label'],
                             'subscription.referenceYear'                : [field: 'subscription.referenceYear', label: 'Reference Year', message: 'subscription.referenceYear.label'],
-                            'subscription.isAutomaticRenewAnnually'     : [field: 'subscription.isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'],
+                            //'subscription.isAutomaticRenewAnnually'     : [field: 'subscription.isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'],
                             'subscription.status'                       : [field: 'subscription.status', label: 'Status', message: 'subscription.status.label'],
                             'subscription.kind'                         : [field: 'subscription.kind', label: 'Kind', message: 'subscription.kind.label'],
                             'subscription.form'                         : [field: 'subscription.form', label: 'Form', message: 'subscription.form.label'],
@@ -942,64 +944,63 @@ class ExportClickMeService {
                     label: 'Title',
                     message: 'default.title.label',
                     fields: [
-                            'tipp.name'            : [field: 'name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
-                            'tipp.status'          : [field: 'status', label: 'Status', message: 'default.status.label', defaultChecked: 'true'],
-                            'tipp.medium'          : [field: 'medium', label: 'Status', message: 'tipp.medium', defaultChecked: 'true'],
-                            'tipp.titleType'       : [field: 'titleType', label: 'Cost After Tax', message: 'tipp.titleType', defaultChecked: 'true'],
-                            'tipp.pkg'             : [field: 'pkg.name', label: 'Package', message: 'package.label', defaultChecked: 'true'],
-                            'tipp.platform.name'   : [field: 'platform.name', label: 'Platform', message: 'tipp.platform', defaultChecked: 'true'],
+                            'tipp.name'            : [field: 'name', label: 'Name', message: 'default.name.label', defaultChecked: 'true', sqlCol: 'tipp_name' ],
+                            'tipp.status'          : [field: 'status', label: 'Status', message: 'default.status.label', defaultChecked: 'true', sqlCol: 'tipp_status_rv_fk'],
+                            'tipp.medium'          : [field: 'medium', label: 'Status', message: 'tipp.medium', defaultChecked: 'true', sqlCol: 'tipp_medium_rv_fk'],
+                            'tipp.titleType'       : [field: 'titleType', label: 'Cost After Tax', message: 'tipp.titleType', defaultChecked: 'true', sqlCol: 'tipp_title_type'],
+                            'tipp.pkg'             : [field: 'pkg.name', label: 'Package', message: 'package.label', defaultChecked: 'true', sqlCol: 'pkg_name'],
+                            'tipp.platform.name'   : [field: 'platform.name', label: 'Platform', message: 'tipp.platform', defaultChecked: 'true', sqlCol: 'plat_name'],
                     ]
             ],
             titleDetails      : [
                     label: 'Title Details',
                     message: 'title.details',
                     fields: [
-                            'tipp.hostPlatformURL' : [field: 'hostPlatformURL', label: 'Url', message: null],
-                            'tipp.dateFirstOnline' : [field: 'dateFirstOnline', label: 'Date first online', message: 'tipp.dateFirstOnline'],
-                            'tipp.dateFirstInPrint' : [field: 'dateFirstInPrint', label: 'Date first in print', message: 'tipp.dateFirstInPrint'],
-                            'tipp.firstAuthor'     : [field: 'firstAuthor', label: 'First Author', message: 'tipp.firstAuthor'],
-                            'tipp.firstEditor'     : [field: 'firstEditor', label: 'First Editor', message: 'tipp.firstEditor'],
-                            'tipp.volume'          : [field: 'volume', label: 'Volume', message: 'tipp.volume'],
-                            'tipp.editionStatement': [field: 'editionStatement', label: 'Edition Statement', message: 'title.editionStatement.label'],
-                            'tipp.editionNumber'   : [field: 'editionNumber', label: 'Edition Number', message: 'tipp.editionNumber'],
-                            'tipp.summaryOfContent': [field: 'summaryOfContent', label: 'Summary of Content', message: 'title.summaryOfContent.label'],
-                            'tipp.seriesName'      : [field: 'seriesName', label: 'Series Name', message: 'tipp.seriesName'],
-                            'tipp.subjectReference': [field: 'subjectReference', label: 'Subject Reference', message: 'tipp.subjectReference'],
-                            'tipp.delayedOA'       : [field: 'delayedOA', label: 'Delayed OA', message: 'tipp.delayedOA'],
-                            'tipp.hybridOA'        : [field: 'hybridOA', label: 'Hybrid OA', message: 'tipp.hybridOA'],
-                            'tipp.publisherName'   : [field: 'publisherName', label: 'Publisher', message: 'tipp.publisher'],
-                            'tipp.accessType'      : [field: 'accessType', label: 'Access Type', message: 'tipp.accessType'],
-                            'tipp.openAccess'      : [field: 'openAccess', label: 'Open Access', message: 'tipp.openAccess'],
-                            'tipp.ddcs'            : [field: 'ddcs', label: 'DDCs', message: 'tipp.ddc'],
-                            'tipp.languages'       : [field: 'languages', label: 'Languages', message: 'tipp.language'],
-                            'tipp.publishers'       : [field: 'publishers', label: 'Publishers', message: 'tipp.provider']
+                            'tipp.hostPlatformURL' : [field: 'hostPlatformURL', label: 'Url', message: null, sqlCol: 'tipp_host_platform_url'],
+                            'tipp.dateFirstOnline' : [field: 'dateFirstOnline', label: 'Date first online', message: 'tipp.dateFirstOnline', sqlCol: 'tipp_date_first_online'],
+                            'tipp.dateFirstInPrint' : [field: 'dateFirstInPrint', label: 'Date first in print', message: 'tipp.dateFirstInPrint', sqlCol: 'tipp_date_first_in_print'],
+                            'tipp.firstAuthor'     : [field: 'firstAuthor', label: 'First Author', message: 'tipp.firstAuthor', sqlCol: 'tipp_first_author'],
+                            'tipp.firstEditor'     : [field: 'firstEditor', label: 'First Editor', message: 'tipp.firstEditor', sqlCol: 'tipp_first_editor'],
+                            'tipp.volume'          : [field: 'volume', label: 'Volume', message: 'tipp.volume', sqlCol: 'tipp_volume'],
+                            'tipp.editionStatement': [field: 'editionStatement', label: 'Edition Statement', message: 'title.editionStatement.label', sqlCol: 'tipp_edition_statement'],
+                            'tipp.editionNumber'   : [field: 'editionNumber', label: 'Edition Number', message: 'tipp.editionNumber', sqlCol: 'tipp_edition_number'],
+                            'tipp.summaryOfContent': [field: 'summaryOfContent', label: 'Summary of Content', message: 'title.summaryOfContent.label', sqlCol: 'tipp_summary_of_content'],
+                            'tipp.seriesName'      : [field: 'seriesName', label: 'Series Name', message: 'tipp.seriesName', sqlCol: 'tipp_series_name'],
+                            'tipp.subjectReference': [field: 'subjectReference', label: 'Subject Reference', message: 'tipp.subjectReference', sqlCol: 'tipp_subject_reference'],
+                            'tipp.delayedOA'       : [field: 'delayedOA', label: 'Delayed OA', message: 'tipp.delayedOA', sqlCol: 'tipp_delayedoa_rv_fk'],
+                            'tipp.hybridOA'        : [field: 'hybridOA', label: 'Hybrid OA', message: 'tipp.hybridOA', sqlCol: 'tipp_hybridoa_rv_fk'],
+                            'tipp.publisherName'   : [field: 'publisherName', label: 'Publisher', message: 'tipp.publisher', sqlCol: 'tipp_publisher_name'],
+                            'tipp.accessType'      : [field: 'accessType', label: 'Access Type', message: 'tipp.accessType', sqlCol: 'tipp_access_type_rv_fk'],
+                            'tipp.openAccess'      : [field: 'openAccess', label: 'Open Access', message: 'tipp.openAccess', sqlCol: 'tipp_open_access_rv_fk'],
+                            'tipp.ddcs'            : [field: 'ddcs', label: 'DDCs', message: 'tipp.ddc', sqlCol: 'ddc'],
+                            'tipp.languages'       : [field: 'languages', label: 'Languages', message: 'tipp.language', sqlCol: 'language']
                     ]
             ],
             coverage: [
                     label: 'Coverage',
                     message: 'tipp.coverage',
                     fields: [
-                            'coverage.startDate'        : [field: 'startDate', label: 'Start Date', message: 'tipp.startDate'],
-                            'coverage.startVolume'      : [field: 'startVolume', label: 'Start Volume', message: 'tipp.startVolume'],
-                            'coverage.startIssue'       : [field: 'startIssue', label: 'Start Issue', message: 'tipp.startIssue'],
-                            'coverage.endDate'          : [field: 'endDate', label: 'End Date', message: 'tipp.endDate'],
-                            'coverage.endVolume'        : [field: 'endVolume', label: 'End Volume', message: 'tipp.endVolume'],
-                            'coverage.endIssue'         : [field: 'endIssue', label: 'End Issue', message: 'tipp.endIssue'],
-                            'coverage.coverageNote'     : [field: 'coverageNote', label: 'Coverage Note', message: 'default.note.label'],
-                            'coverage.coverageDepth'    : [field: 'coverageDepth', label: 'Coverage Depth', message: 'tipp.coverageDepth'],
-                            'coverage.embargo'          : [field: 'embargo', label: 'Embargo', message: 'tipp.embargo']
+                            'coverage.startDate'        : [field: 'startDate', label: 'Start Date', message: 'tipp.startDate', sqlCol: 'tc_start_date'],
+                            'coverage.startVolume'      : [field: 'startVolume', label: 'Start Volume', message: 'tipp.startVolume', sqlCol:'tc_start_volume'],
+                            'coverage.startIssue'       : [field: 'startIssue', label: 'Start Issue', message: 'tipp.startIssue', sqlCol:'tc_start_issue'],
+                            'coverage.endDate'          : [field: 'endDate', label: 'End Date', message: 'tipp.endDate', sqlCol:'tc_end_date'],
+                            'coverage.endVolume'        : [field: 'endVolume', label: 'End Volume', message: 'tipp.endVolume', sqlCol:'tc_end_volume'],
+                            'coverage.endIssue'         : [field: 'endIssue', label: 'End Issue', message: 'tipp.endIssue', sqlCol:'tc_end_issue'],
+                            'coverage.coverageNote'     : [field: 'coverageNote', label: 'Coverage Note', message: 'default.note.label', sqlCol:'tc_coverage_note'],
+                            'coverage.coverageDepth'    : [field: 'coverageDepth', label: 'Coverage Depth', message: 'tipp.coverageDepth', sqlCol:'tc_coverage_depth'],
+                            'coverage.embargo'          : [field: 'embargo', label: 'Embargo', message: 'tipp.embargo', sqlCol:'tc_embargo']
                     ]
             ],
             priceItem: [
                     label: 'Price Item',
                     message: 'costItem.label',
                     fields: [
-                            'listPriceEUR'    : [field: null, label: 'List Price EUR', message: 'tipp.listprice_eur'],
-                            'listPriceGBP'    : [field: null, label: 'List Price GBP', message: 'tipp.listprice_gbp'],
-                            'listPriceUSD'    : [field: null, label: 'List Price USD', message: 'tipp.listprice_usd'],
-                            'localPriceEUR'   : [field: null, label: 'Local Price EUR', message: 'tipp.localprice_eur'],
-                            'localPriceGBP'   : [field: null, label: 'Local Price GBP', message: 'tipp.localprice_gbp'],
-                            'localPriceUSD'   : [field: null, label: 'Local Price USD', message: 'tipp.localprice_usd']
+                            'listPriceEUR'    : [field: null, label: 'List Price EUR', message: 'tipp.listprice_eur', sqlCol: 'list_price_eur'],
+                            'listPriceGBP'    : [field: null, label: 'List Price GBP', message: 'tipp.listprice_gbp', sqlCol: 'list_price_gbp'],
+                            'listPriceUSD'    : [field: null, label: 'List Price USD', message: 'tipp.listprice_usd', sqlCol: 'list_price_usd'],
+                            /*'localPriceEUR'   : [field: null, label: 'Local Price EUR', message: 'tipp.localprice_eur', sqlCol: 'local_price_eur'],
+                            'localPriceGBP'   : [field: null, label: 'Local Price GBP', message: 'tipp.localprice_gbp', sqlCol: 'local_price_gbp'],
+                            'localPriceUSD'   : [field: null, label: 'Local Price USD', message: 'tipp.localprice_usd', sqlCol: 'local_price_usd']*/
                     ]
             ],
             tippIdentifiers : [
@@ -1237,8 +1238,12 @@ class ExportClickMeService {
             }
         }
 
-        if(institution.getCustomerType() == CustomerTypeService.ORG_INST_PRO) {
-            exportFields.put('subscription.isAutomaticRenewAnnually', [field: 'isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'])
+        if(institution.getCustomerType() in [CustomerTypeService.ORG_INST_BASIC, CustomerTypeService.ORG_INST_PRO]) {
+            if (institution.getCustomerType() == CustomerTypeService.ORG_INST_PRO) {
+                exportFields.put('subscription.isAutomaticRenewAnnually', [field: 'isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'])
+            }
+            exportFields.put('subscription.consortium', [field: null, label: 'Consortium', message: 'consortium.label'])
+            exportFields.put('license.consortium', [field: null, label: 'Consortium', message: 'consortium.label'])
         }
 
         //determine field configuration based on customer type
@@ -1296,8 +1301,12 @@ class ExportClickMeService {
     Map<String, Object> getExportSubscriptionFieldsForUI(Org institution) {
 
         Map<String, Object> fields = EXPORT_SUBSCRIPTION_CONFIG as Map
+        if(institution.getCustomerType() == CustomerTypeService.ORG_INST_PRO)
+            fields.subscription.fields.put('subscription.isAutomaticRenewAnnually', [field: 'isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'])
         if(!customerTypeService.isConsortium(institution.getCustomerType())) {
             fields.remove('institutions')
+            fields.subscription.fields.put('subscription.consortium', [field: null, label: 'Consortium', message: 'consortium.label', defaultChecked: true])
+            fields.licenses.fields.put('license.consortium', [field: null, label: 'Consortium', message: 'exportClickMe.license.consortium', defaultChecked: true])
         }
         Locale locale = LocaleUtils.getCurrentLocale()
         String localizedName
@@ -1405,8 +1414,8 @@ class ExportClickMeService {
             }
         }
 
-        if(institution.getCustomerType() == CustomerTypeService.ORG_INST_PRO) {
-            exportFields.put('subscription.isAutomaticRenewAnnually', [field: 'isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'])
+        if(institution.getCustomerType() in [CustomerTypeService.ORG_INST_BASIC, CustomerTypeService.ORG_INST_PRO]) {
+            exportFields.put('consortium', [field: null, label: 'Consortium', message: 'consortium.label'])
         }
 
         IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
@@ -1435,6 +1444,7 @@ class ExportClickMeService {
         Map<String, Object> fields = EXPORT_LICENSE_CONFIG as Map
         if(!customerTypeService.isConsortium(institution.getCustomerType())) {
             fields.remove('institutions')
+            fields.licenses.fields.put('consortium', [field: null, label: 'Consortium', message: 'consortium.label', defaultChecked: true])
         }
         Locale locale = LocaleUtils.getCurrentLocale()
         String localizedName
@@ -1474,7 +1484,7 @@ class ExportClickMeService {
      * @return the configuration map for the cost item export
      */
     Map<String, Object> getExportCostItemFields(Subscription sub = null) {
-
+        Org institution = contextService.getOrg()
         Map<String, Object> exportFields = [:]
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
 
@@ -1484,11 +1494,18 @@ class ExportClickMeService {
             }
         }
 
+        if(institution.getCustomerType() in [CustomerTypeService.ORG_INST_BASIC, CustomerTypeService.ORG_INST_PRO]) {
+            if(institution.getCustomerType() == CustomerTypeService.ORG_INST_PRO) {
+                exportFields.put('subscription.isAutomaticRenewAnnually', [field: 'sub.isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'])
+            }
+            exportFields.put('subscription.consortium', [field: null, label: 'Consortium', message: 'consortium.label'])
+        }
+
         IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
             exportFields.put("participantIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
         }
         String subquery
-        Map<String, Object> queryParams = [ctx: contextService.getOrg()]
+        Map<String, Object> queryParams = [ctx: institution]
         if(sub) {
             subquery = '(select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :s)'
             queryParams.s = sub
@@ -1509,9 +1526,17 @@ class ExportClickMeService {
      * @return the configuration map for the cost item export for UI
      */
     Map<String, Object> getExportCostItemFieldsForUI(Subscription sub = null) {
+        Org institution = contextService.getOrg()
 
         Map<String, Object> fields = EXPORT_COST_ITEM_CONFIG as Map
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
+
+        if(institution.getCustomerType() in [CustomerTypeService.ORG_INST_BASIC, CustomerTypeService.ORG_INST_PRO]) {
+            if(institution.getCustomerType() == CustomerTypeService.ORG_INST_PRO) {
+                fields.subscription.fields.put('subscription.isAutomaticRenewAnnually', [field: 'sub.isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'])
+            }
+            fields.subscription.fields.put('subscription.consortium', [field: null, label: 'Consortium', message: 'consortium.label', defaultChecked: true])
+        }
 
         fields.participantIdentifiers.fields.clear()
         fields.participantCustomerIdentifiers.fields.clear()
@@ -1520,7 +1545,7 @@ class ExportClickMeService {
             fields.participantIdentifiers.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
         }
         String subquery
-        Map<String, Object> queryParams = [ctx: contextService.getOrg()]
+        Map<String, Object> queryParams = [ctx: institution]
         if(sub) {
             subquery = '(select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :s)'
             queryParams.s = sub
@@ -1982,6 +2007,13 @@ class ExportClickMeService {
         Map<String, Object> fields = EXPORT_ISSUE_ENTITLEMENT_CONFIG as Map
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
 
+        if(contextService.getOrg().getCustomerType() in [CustomerTypeService.ORG_INST_BASIC, CustomerTypeService.ORG_INST_PRO]) {
+            if(contextService.getOrg().getCustomerType() == CustomerTypeService.ORG_INST_PRO) {
+                fields.subscription.fields.put('subscription.isAutomaticRenewAnnually', [field: 'subscription.isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'])
+            }
+            fields.subscription.fields.put('subscription.consortium', [field: null, label: 'Consortium', message: 'consortium.label', defaultChecked: true])
+        }
+
         IdentifierNamespace.findAllByNsType(TitleInstancePackagePlatform.class.name, [sort: 'ns']).each {
             fields.issueEntitlementIdentifiers.fields << ["issueEntitlementIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
         }
@@ -2002,6 +2034,13 @@ class ExportClickMeService {
             EXPORT_ISSUE_ENTITLEMENT_CONFIG.get(it).fields.each {
                 exportFields.put(it.key, it.value)
             }
+        }
+
+        if(contextService.getOrg().getCustomerType() in [CustomerTypeService.ORG_INST_BASIC, CustomerTypeService.ORG_INST_PRO]) {
+            if(contextService.getOrg().getCustomerType() == CustomerTypeService.ORG_INST_PRO) {
+                exportFields.put('subscription.isAutomaticRenewAnnually', [field: 'subscription.isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'])
+            }
+            exportFields.put('subscription.consortium', [field: null, label: 'Consortium', message: 'consortium.label'])
         }
 
         IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
@@ -2043,8 +2082,8 @@ class ExportClickMeService {
             }
         }
 
-        IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
-            exportFields.put("tippIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
+        IdentifierNamespace.findAllByNsType(TitleInstancePackagePlatform.class.name, [sort: 'ns']).each {
+            exportFields.put("tippIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns, sqlCol: it.ns])
         }
 
         exportFields
@@ -2769,39 +2808,98 @@ class ExportClickMeService {
 
         List exportData = []
 
-        int max = result[0] instanceof Long ? 50000 : 500
-        TitleInstancePackagePlatform.withSession { Session sess ->
-            for(int offset = 0; offset < result.size(); offset+=max) {
-                List allRows = []
-                Set<TitleInstancePackagePlatform> tipps = []
-                if(result[0] instanceof TitleInstancePackagePlatform) {
-                    //this double structure is necessary because the KBART standard foresees for each coverageStatement an own row with the full data
-                    tipps = result.drop(offset).take(max)
-                }
-                else if(result[0] instanceof Long) {
-                    tipps = TitleInstancePackagePlatform.findAllByIdInList(result.drop(offset).take(max), [sort: 'sortname'])
-                }
-                tipps.each { TitleInstancePackagePlatform tipp ->
-                    if(!tipp.coverages && !tipp.priceItems) {
-                        allRows << tipp
+        if(result.size() < 10000) {
+            int max = result[0] instanceof Long ? 5000 : 500
+            TitleInstancePackagePlatform.withSession { Session sess ->
+                for(int offset = 0; offset < result.size(); offset+=max) {
+                    List allRows = []
+                    Set<TitleInstancePackagePlatform> tipps = []
+                    if(result[0] instanceof TitleInstancePackagePlatform) {
+                        //this double structure is necessary because the KBART standard foresees for each coverageStatement an own row with the full data
+                        tipps = result.drop(offset).take(max)
                     }
-                    else if(tipp.coverages.size() > 1){
-                        tipp.coverages.each { AbstractCoverage covStmt ->
-                            allRows << covStmt
+                    else if(result[0] instanceof Long) {
+                        tipps = TitleInstancePackagePlatform.findAllByIdInList(result.drop(offset).take(max), [sort: 'sortname'])
+                    }
+                    tipps.each { TitleInstancePackagePlatform tipp ->
+                        if(!tipp.coverages && !tipp.priceItems) {
+                            allRows << tipp
+                        }
+                        else if(tipp.coverages.size() > 1){
+                            tipp.coverages.each { AbstractCoverage covStmt ->
+                                allRows << covStmt
+                            }
+                        }
+                        else {
+                            allRows << tipp
                         }
                     }
+
+                    allRows.eachWithIndex { rowData, int i ->
+                        long start = System.currentTimeMillis()
+                        _setTippRow(rowData, selectedExportFields, exportData, format)
+                        log.debug("used time for record ${i}: ${System.currentTimeMillis()-start}")
+                    }
+                    log.debug("flushing after ${offset} ...")
+                    sess.flush()
+                }
+            }
+        }
+        else {
+            Sql sql = GlobalService.obtainSqlConnection()
+            List sqlCols = []
+            Map<String, Object> sqlParams = [:]
+            selectedExportFields.eachWithIndex { String fieldKey, Map fields, int idx ->
+                if(fields.containsKey('sqlCol')) {
+                    if(fields.sqlCol.contains('rv')) {
+                        sqlCols.add("(select ${LocaleUtils.getLocalizedAttributeName('rdv_value')} from refdata_value where rdv_id = ${fields.sqlCol}) as ${fields.sqlCol}")
+                    }
+                    else if(fields.sqlCol.contains('pkg')) {
+                        sqlCols.add("(select ${fields.sqlCol} from package where pkg_id = tipp_pkg_fk) as ${fields.sqlCol}")
+                    }
+                    else if(fields.sqlCol.contains('plat')) {
+                        sqlCols.add("(select ${fields.sqlCol} from platform where plat_id = tipp_plat_fk) as ${fields.sqlCol}")
+                    }
+                    else if(fieldKey.contains('tippIdentifiers.')) {
+                        sqlCols.add("(select array_to_string(array_agg(id_value), ';') from identifier where id_tipp_fk = tipp_id and id_ns_fk = :idns${idx}) as ${fields.sqlCol}")
+                        sqlParams.put('idns'+idx, Long.parseLong(fieldKey.split("\\.")[1]))
+                    }
+                    else if (fieldKey.contains('ddcs')) {
+                        sqlCols.add("(select array_to_string(array_agg(rdv_value || ' - ' || ${LocaleUtils.getLocalizedAttributeName('rdv_value')}), ';') from refdata_value join dewey_decimal_classification on rdv_id = ddc_rv_fk where ddc_tipp_fk = tipp_id) as ${fields.sqlCol}")
+                    }
+                    else if (fieldKey.contains('languages')) {
+                        sqlCols.add("(select array_to_string(array_agg(${LocaleUtils.getLocalizedAttributeName('rdv_value')}), ';') from refdata_value join language on rdv_id = lang_rv_fk where lang_tipp_fk = tipp_id) as ${fields.sqlCol}")
+                    }
+                    else if (fieldKey.startsWith('coverage.')) {
+                        sqlCols.add("(select ${fields.sqlCol} from tippcoverage where tc_tipp_fk = tipp_id) as ${fields.sqlCol}")
+                    }
+                    else if (fieldKey.contains('listPrice')) {
+                        Long currency
+                        if(fieldKey.contains('GBP'))
+                            currency = RDStore.CURRENCY_GBP.id
+                        else if(fieldKey.contains('USD'))
+                            currency = RDStore.CURRENCY_USD.id
+                        else
+                            currency = RDStore.CURRENCY_EUR.id
+                        sqlCols.add("(select pi_list_price from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = :currency) as ${fields.sqlCol}")
+                        sqlParams.put('currency', currency)
+                    }
                     else {
-                        allRows << tipp
+                        sqlCols.add(fields.sqlCol)
                     }
                 }
-
-                allRows.eachWithIndex { rowData, int i ->
-                    long start = System.currentTimeMillis()
-                    _setTippRow(rowData, selectedExportFields, exportData, format)
-                    log.debug("used time for record ${i}: ${System.currentTimeMillis()-start}")
+            }
+            String sqlQuery = "select ${sqlCols.join(',')} from title_instance_package_platform where tipp_id = any(:idSet) order by tipp_sort_name"
+            log.debug(sqlQuery) //for database measurement purposes, comment out if not needed!
+            result.collate(50000).each { List<Long> subSet ->
+                sqlParams.idSet = sql.getDataSource().getConnection().createArrayOf('bigint', subSet as Object[])
+                sql.rows(sqlQuery, sqlParams).each { GroovyRowResult sqlRow ->
+                    List row = []
+                    selectedExportFields.each { String fieldKey, Map fields ->
+                        row.add(createTableCell(format, sqlRow.get(fields.sqlCol)))
+                    }
+                    exportData.add(row)
                 }
-                log.debug("flushing after ${offset} ...")
-                sess.flush()
             }
         }
 
@@ -3020,6 +3118,12 @@ class ExportClickMeService {
                     _setOrgFurtherInformation(org, row, fieldKey)
                 }
                 */
+                else if (fieldKey == 'subscription.consortium') {
+                    row.add(createTableCell(format, subscription.getConsortia()?.name))
+                }
+                else if (fieldKey == 'license.consortium') {
+                    row.add(createTableCell(format, subscription.getConsortia()?.name))
+                }
                 else if (fieldKey.startsWith('participantCustomerIdentifiers.')) {
                     _setOrgFurtherInformation(org, row, fieldKey, format, subscription)
                 }
@@ -3152,6 +3256,9 @@ class ExportClickMeService {
                     Set<String> linkedSubs = Subscription.executeQuery('select li.destinationSubscription.name from Links li where li.sourceLicense = :lic and li.linkType = :license', [lic: result, license: RDStore.LINKTYPE_LICENSE])
                     row.add(createTableCell(format, linkedSubs.join('; ')))
                 }
+                else if (fieldKey == 'consortium') {
+                    row.add(createTableCell(format, license.getLicensingConsortium()?.name))
+                }
                 else if (fieldKey.startsWith('participantLicProperty.') || fieldKey.startsWith('licProperty.')) {
                     Long id = Long.parseLong(fieldKey.split("\\.")[1])
                     String query = "select prop from LicenseProperty prop where (prop.owner = :lic and prop.type.id in (:propertyDefs) and prop.isPublic = true) or (prop.owner = :lic and prop.type.id in (:propertyDefs) and prop.isPublic = false and prop.tenant = :contextOrg) order by prop.type.${localizedName} asc"
@@ -3219,6 +3326,9 @@ class ExportClickMeService {
                 }
                 else if (fieldKey.startsWith('participantIdentifiers.')) {
                     _setOrgFurtherInformation(org, row, fieldKey, format)
+                }
+                else if (fieldKey == 'subscription.consortium') {
+                    row.add(createTableCell(format, costItem.sub?.getConsortia()?.name))
                 }
                 else {
                     def fieldValue = _getFieldValue(costItem, field, sdf)
@@ -3339,8 +3449,9 @@ class ExportClickMeService {
                 if (fieldKey.startsWith('surveyProperty.')) {
                     Long id = Long.parseLong(fieldKey.split("\\.")[1])
                     SurveyResult participantResultProperty = SurveyResult.findBySurveyConfigAndParticipantAndType(participantResult.surveyConfig, participantResult.participant, PropertyDefinition.get(id))
-                    String result = participantResultProperty.getResult() ?: " ", comment = participantResultProperty.comment ?: " "
+                    String result = participantResultProperty.getResult() ?: " ", note = participantResultProperty.note ?: " ", comment = participantResultProperty.comment ?: " "
                     row.add(createTableCell(format, result))
+                    row.add(createTableCell(format, note))
                     row.add(createTableCell(format, comment))
                 } else if (fieldKey.contains('Contact.')) {
                     if(contactSources) {
@@ -3434,6 +3545,9 @@ class ExportClickMeService {
                         } else {
                             row.add(createTableCell(format, ' '))
                         }
+                }
+                else if (fieldKey.contains('subscription.consortium')) {
+                    row.add(createTableCell(format, result.subscription.getConsortia()?.name))
                 }
                 else if (fieldKey.contains('tipp.ddcs')) {
                     row.add(createTableCell(format, result.tipp.ddcs.collect {"${it.ddc.value} - ${it.ddc.getI10n("value")}"}.join(";")))
@@ -3659,8 +3773,11 @@ class ExportClickMeService {
         if(fieldValue instanceof Collection){
             if(fieldValue[0] instanceof Collection)
                 fieldValue = fieldValue[0].join('; ')
-            else
+            else if(fieldValue[0] instanceof Date)
+                fieldValue = fieldValue.collect { Date fv -> sdf.format(fv) }.join('; ')
+            else if(fieldValue.find { val -> val != null })
                 fieldValue = fieldValue.join('; ')
+            else fieldValue = ' '
         }
 
         return fieldValue
@@ -4010,8 +4127,7 @@ class ExportClickMeService {
                                             cons: messageSource.getMessage('financials.tab.consCosts', null, locale),
                                             subscr: messageSource.getMessage('financials.tab.subscrCosts', null, locale)]
 
-        selectedExportFields.keySet().each {String fieldKey ->
-            Map fields = selectedExportFields.get(fieldKey)
+        selectedExportFields.each { String fieldKey, Map fields ->
             if(!fields.separateSheet) {
                 if (fieldKey.contains('Contact.')) {
                     RefdataValue contactType = RefdataValue.findByValue(fieldKey.split('\\.')[1])

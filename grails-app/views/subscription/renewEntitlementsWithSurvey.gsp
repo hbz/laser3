@@ -28,14 +28,14 @@
                                tab           : 'allTipps']}">${message(code: 'renewEntitlementsWithSurvey.selectableTitles')}</g:link>
         </ui:exportDropdownItem>
 
-        <g:if test="${countCurrentIEs > 0}">
+        <g:if test="${countCurrentPermanentTitles > 0}">
 
             <ui:exportDropdownItem>
                 <g:link class="item" action="renewEntitlementsWithSurvey"
                         id="${subscriberSub.id}"
                         params="${[surveyConfigID: surveyConfig.id,
                                    exportKBart   : true,
-                                   tab           : 'currentIEs']}">${message(code: 'renewEntitlementsWithSurvey.currentTitles')}</g:link>
+                                   tab           : 'currentPerpetualAccessIEs']}">${message(code: 'renewEntitlementsWithSurvey.currentTitles')}</g:link>
             </ui:exportDropdownItem>
         </g:if>
 
@@ -59,13 +59,13 @@
                                tab           : 'allTipps']}">${message(code: 'renewEntitlementsWithSurvey.selectableTitles')}</g:link>
         </ui:exportDropdownItem>
 
-        <g:if test="${countCurrentIEs > 0}">
+        <g:if test="${countCurrentPermanentTitles > 0}">
             <ui:exportDropdownItem>
                 <g:link class="item" action="renewEntitlementsWithSurvey"
                         id="${subscriberSub.id}"
                         params="${[surveyConfigID : surveyConfig.id,
                                    exportXLS     : true,
-                                   tab           : 'currentIEs']}">
+                                   tab           : 'currentPerpetualAccessIEs']}">
                     ${message(code: 'renewEntitlementsWithSurvey.currentTitles')}
                 </g:link>
             </ui:exportDropdownItem>
@@ -176,12 +176,12 @@
 <g:if test="${selectProcess}">
     <ui:msg class="positive" header="${message(code:'renewEntitlementsWithSurvey.issueEntitlementSelect.label')}">
             <g:message code="renewEntitlementsWithSurvey.issueEntitlementSelect.selectProcess"
-                       args="[selectProcess.processCount, countAllTipps, selectProcess.countSelectIEs]"/>
+                       args="[selectProcess.processCount, countAllTipps, selectProcess.countSelectTipps]"/>
     </ui:msg>
 </g:if>
 
 
-<g:if test="${(params.tab == 'allTipps' || params.tab == 'topUsed') && editable}">
+<g:if test="${(params.tab == 'allTipps') && editable}">
 
     <ui:greySegment>
         <g:form class="ui form" controller="subscription" action="renewEntitlementsWithSurvey"
@@ -248,16 +248,6 @@
     </div>
 </div><!--.row-->
 
-<g:if test="${num_rows}">
-    <div class="row">
-        <div class="column">
-
-            <div class="ui blue large label"><g:message code="title.plural"/>: <div class="detail">${num_rows}</div>
-            </div>
-        </div>
-    </div>
-</g:if>
-
 <br />
 <ui:tabs actionName="${actionName}">
     <ui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
@@ -268,10 +258,16 @@
                     params="[id: subscriberSub.id, surveyConfigID: surveyConfig.id, tab: 'selectedIEs']"
                     text="${message(code: "renewEntitlementsWithSurvey.currentTitlesSelect")}" tab="selectedIEs"
                     counts="${countSelectedIEs}"/>
-    <ui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
-                    params="[id: subscriberSub.id, surveyConfigID: surveyConfig.id, tab: 'currentIEs']"
-                    text="${message(code: "renewEntitlementsWithSurvey.currentTitles")}" tab="currentIEs"
-                    counts="${countCurrentIEs}"/>
+    <g:link controller="subscription" action="renewEntitlementsWithSurvey"
+            class="item ${'currentPerpetualAccessIEs' == params.tab ? 'active' : ''}"
+            params="[id: subscriberSub.id, surveyConfigID: surveyConfig.id, tab: 'currentPerpetualAccessIEs']">
+        <g:message code="renewEntitlementsWithSurvey.currentTitles"/>
+            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                  data-content="${message(code: 'renewEntitlementsWithSurvey.currentTitles.mouseover')}">
+                <i class="question circle icon"></i>
+            </span>
+        <div class="ui circular label">${countCurrentPermanentTitles}</div>
+    </g:link>
 
 %{--    <g:if test="${showStatisticByParticipant}">
         <ui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
@@ -290,6 +286,38 @@
     <g:hiddenField id="packageId" name="packageId" value="${params.packageId}"/>
     <g:hiddenField name="surveyConfigID" value="${surveyConfig.id}"/>
     <g:hiddenField name="tab" value="${params.tab}"/>
+        <g:if test="${params.tab == 'allTipps' || params.tab == 'selectedIEs' || params.tab == 'currentPerpetualAccessIEs'}">
+            <%
+                Map<String, String>
+                sortFieldMap = ['tipp.sortname': message(code: 'title.label')]
+                if (journalsOnly) {
+                    sortFieldMap['startDate'] = message(code: 'default.from')
+                    sortFieldMap['endDate'] = message(code: 'default.to')
+                } else {
+                    sortFieldMap['tipp.dateFirstInPrint'] = message(code: 'tipp.dateFirstInPrint')
+                    sortFieldMap['tipp.dateFirstOnline'] = message(code: 'tipp.dateFirstOnline')
+                }
+                sortFieldMap['tipp.accessStartDate'] = "${message(code: 'subscription.details.access_dates')} ${message(code: 'default.from')}"
+                sortFieldMap['tipp.accessEndDate'] = "${message(code: 'subscription.details.access_dates')} ${message(code: 'default.to')}"
+            %>
+            <div class="ui grid">
+                <div class="row">
+                    <div class="eight wide column">
+                        <h3 class="ui icon header la-clear-before la-noMargin-top"><span
+                                class="ui circular  label">${num_rows}</span> <g:message code="title.filter.result"/>
+                        </h3>
+                    </div>
+                </div><!--.row-->
+            </div><!--.grid-->
+
+            <div class="ui form">
+                <div class="three wide fields">
+                    <div class="field">
+                        <ui:sortingDropdown noSelection="${message(code:'default.select.choose.label')}" from="${sortFieldMap}" sort="${params.sort}" order="${params.order}"/>
+                    </div>
+                </div>
+            </div>
+        </g:if>
 
 
         <g:if test="${params.tab in ['topUsed']}">
@@ -326,7 +354,7 @@
             <div class="two fields">
             <g:if test="${params.tab != 'stats'}">
                 <div class="eight wide field" style="text-align: left;">
-                    <g:if test="${editable && params.tab != 'selectedIEs'}">
+                    <g:if test="${editable && params.tab == 'allTipps'}">
                         <button type="submit" name="process" id="processButton" value="preliminary" class="ui green button">
                             ${params.tab == 'topUsed' ? '' :checkedCount} <g:message code="renewEntitlementsWithSurvey.preliminary"/></button>
                     </g:if>
@@ -359,7 +387,7 @@
 
 </g:form>
 </div>
-<g:if test="${sourceIEs}">
+<g:if test="${sourceIEs || titlesList}">
     <ui:paginate action="renewEntitlementsWithSurvey" controller="subscription" params="${params}"
                     max="${max}" total="${num_rows}"/>
 </g:if>
@@ -413,10 +441,12 @@
                     checked: checked,
                     tab: "${params.tab}",
                     baseSubID: "${subscription.id}",
-                    newSubID: "${subscriberSub.id}"
+                    newSubID: "${subscriberSub.id}",
+                    surveyConfigID: "${surveyConfig.id}"
+
                 },
                 success: function (data) {
-                        <g:if test="${editable && params.tab != 'selectedIEs'}">
+                        <g:if test="${editable && params.tab == 'allTipps'}">
                             $("#processButton").html(data.checkedCount + " ${g.message(code: 'renewEntitlementsWithSurvey.preliminary')}");
                         </g:if>
 
@@ -444,7 +474,14 @@
                 $("div[data-index='" + index + "']").removeClass("positive");
             }
 
+    <g:if test="${editable && params.tab == 'allTipps'}">
+        JSPC.app.updateSelectionCache($(this).parents(".la-js-checkItem").attr("data-tippId"), $(this).prop('checked'));
+    </g:if>
+
+    <g:if test="${editable && params.tab == 'selectedIEs'}">
         JSPC.app.updateSelectionCache($(this).parents(".la-js-checkItem").attr("data-ieId"), $(this).prop('checked'));
+    </g:if>
+
     });
 
     $(".statsExport").on('click', function(e) {

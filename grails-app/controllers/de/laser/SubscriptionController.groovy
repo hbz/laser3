@@ -154,9 +154,13 @@ class SubscriptionController {
                 Map<String, Object> dateRangeParams = subscriptionControllerService.getDateRange(params, result.subscription)
                 result.reportTypes = []
                 CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(result.subscription.getSubscriber(), platformInstance)
-                if(ci) {
+                if(ci?.value) {
                     SortedSet allAvailableReports = subscriptionControllerService.getAvailableReports([platformInstance].toSet(), result)
-                    result.reportTypes.addAll(allAvailableReports)
+                    if(allAvailableReports)
+                        result.reportTypes.addAll(allAvailableReports)
+                    else {
+                        result.error = 'noReportAvailable'
+                    }
                 }
                 else if(!ci?.value) {
                     result.error = 'noCustomerId'
@@ -223,7 +227,7 @@ class SubscriptionController {
         }
         else {
             Subscription sub = Subscription.get(params.id)
-            String token = "report_${params.reportType}_${params.platform}_${sub.getSubscriber().id}"
+            String token = "report_${params.reportType}_${params.platform}_${sub.getSubscriber().id}_${sub.id}"
             if(params.metricType) {
                 token += '_'+params.list('metricType').join('_')
             }
@@ -764,12 +768,12 @@ class SubscriptionController {
         }
         else {
             if(params.addUUID) {
-                switch(params.addType) {
-                    case "With": flash.message = message(code:'subscription.details.link.processingWithEntitlements') as String
+                switch(params.holdingSelection) {
+                    case RDStore.SUBSCRIPTION_HOLDING_ENTIRE.id.toString(): flash.message = message(code:'subscription.details.link.processingWithEntitlements') as String
                         redirect action: 'index', params: [id: params.id, gokbId: params.addUUID]
                         return
                         break
-                    case "Without": flash.message = message(code:'subscription.details.link.processingWithoutEntitlements') as String
+                    case RDStore.SUBSCRIPTION_HOLDING_PARTIAL.id.toString(): flash.message = message(code:'subscription.details.link.processingWithoutEntitlements') as String
                         redirect action: 'addEntitlements', params: [id: params.id, packageLinkPreselect: params.addUUID, preselectedName: ctrlResult.result.packageName]
                         return
                         break
@@ -1469,7 +1473,7 @@ class SubscriptionController {
             }
             queryMap.platform = Platform.get(params.platform)
 
-            if(params.tab == 'currentIEs' && ctrlResult.result.previousSubscription) {
+            if(params.tab == 'currentPerpetualAccessIEs') {
                 Set<Subscription> subscriptions = []
                 Set<Long> packageIds = []
                 if(ctrlResult.result.surveyConfig.pickAndChoosePerpetualAccess) {
@@ -1479,13 +1483,10 @@ class SubscriptionController {
                     }
                     subscriptions << ctrlResult.result.subscriberSub
                     packageIds.addAll(ctrlResult.result.subscriberSub.packages?.pkg?.id)
-                }else {
-                    subscriptions << ctrlResult.result.previousSubscription
-                    packageIds.addAll(ctrlResult.result.previousSubscription.packages?.pkg?.id)
                 }
 
-                queryMap = [subscriptions: subscriptions, ieStatus: RDStore.TIPP_STATUS_CURRENT, pkgIds: packageIds]
-                filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.currentTitles') + '_' + ctrlResult.result.previousSubscription.dropdownNamingConvention())
+                queryMap = [subscriptions: subscriptions, ieStatus: RDStore.TIPP_STATUS_CURRENT, pkgIds: packageIds, hasPerpetualAccess: true]
+                filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.currentTitles') + '_' + ctrlResult.result.subscriberSub.dropdownNamingConvention())
             }
 
             if (params.exportKBart) {

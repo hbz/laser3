@@ -1072,14 +1072,22 @@ class StatsSyncService {
             Closure success = { resp, json ->
                 if(resp.code() == 200) {
                     if(json instanceof JSONArray) {
-                        result.list = json
+                        if(json[0].containsKey('Code'))
+                            result.error = json[0]["Code"]
+                        else
+                            result.list = json
                     }
                     else if(json.containsKey("Code") && !json.containsKey("Report_Header")) {
                         result.error = json["Code"]
                     }
                     else if(json != null && !requestList) {
-                        result.header = json["Report_Header"]
-                        result.items = json["Report_Items"]
+                        if(json["Report_Items"].size() == 0) {
+                            result.error = json["Report_Header"]["Exceptions"][0]["Code"]
+                        }
+                        else {
+                            result.header = json["Report_Header"]
+                            result.items = json["Report_Items"]
+                        }
                     }
                     else if(json != null) {
                         if(json.containsKey("Exception"))
@@ -1103,8 +1111,8 @@ class StatsSyncService {
                 if(reader?.containsKey("Report_Header"))
                     result.header = reader["Report_Header"]
                 else {
-                    log.error("server response: ${resp.status()} - ${reader}")
-                    result.error = resp.status()
+                    log.error("server response: ${resp?.status()} - ${reader}")
+                    result.error = resp?.status()
                 }
             }
             HttpClientConfiguration config = new DefaultHttpClientConfiguration()

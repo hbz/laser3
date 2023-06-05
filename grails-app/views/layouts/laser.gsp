@@ -258,7 +258,7 @@
 
         %{-- ajax login --}%
 
-        <g:if test="${controllerName != 'login'}">
+        <g:if test="${controllerName != 'home'}">
             <laser:render template="/templates/system/ajaxLogin" />
         </g:if>
 

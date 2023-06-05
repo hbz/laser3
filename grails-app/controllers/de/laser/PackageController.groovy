@@ -30,6 +30,7 @@ class PackageController {
 
     AccessService accessService
     AddressbookService addressbookService
+    AuditService auditService
     ContextService contextService
     EscapeService escapeService
     ExecutorService executorService
@@ -82,6 +83,14 @@ class PackageController {
             queryParams.name = params.q
             queryParams.ids = ["Anbieter_Produkt_ID,${params.q}", "isil,${params.q}"]
         }
+
+        if(params.status) {
+            result.filterSet = true
+        }
+        else if(!params.status) {
+            params.status = ['Current', 'Expected', 'Retired', 'Deleted']
+        }
+        queryParams.status = params.status
 
         if (params.provider) {
             result.filterSet = true
@@ -374,8 +383,6 @@ class PackageController {
 
             Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
-            if(titlesList)
-                tipps.addAll(TitleInstancePackagePlatform.findAllByIdInList(titlesList,[sort:'sortname']))
 
         }
 
@@ -411,7 +418,7 @@ class PackageController {
             return
         }else */
         if(params.fileformat == 'xlsx') {
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportTipps(tipps, selectedFields, ExportClickMeService.FORMAT.XLS)
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportTipps(titlesList, selectedFields, ExportClickMeService.FORMAT.XLS)
             response.setHeader "Content-disposition", "attachment; filename=${filename}.xlsx"
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             wb.write(response.outputStream)
@@ -426,7 +433,7 @@ class PackageController {
 
             ServletOutputStream out = response.outputStream
             out.withWriter { writer ->
-                writer.write((String) exportClickMeService.exportTipps(tipps, selectedFields, ExportClickMeService.FORMAT.CSV))
+                writer.write((String) exportClickMeService.exportTipps(titlesList, selectedFields, ExportClickMeService.FORMAT.CSV))
             }
             out.flush()
             out.close()
@@ -667,31 +674,30 @@ class PackageController {
                     bulkProcessRunning = true
                 }
             }
+            if(params.holdingSelection) {
+                RefdataValue holdingSelection = RefdataValue.get(params.holdingSelection)
+                result.subscription.holdingSelection = holdingSelection
+                result.subscription.save()
+            }
             //to be deployed in parallel thread
             if (result.pkg) {
                 if(!bulkProcessRunning) {
                     executorService.execute({
                         Thread.currentThread().setName('PackageSync_' + result.subscription.id)
-                        String addType = params.addType
-                        log.debug("Add package ${addType} entitlements to subscription ${result.subscription}")
-                        if (addType == 'With') {
-                            subscriptionService.addToSubscription(result.subscription, result.pkg, true)
-                        } else if (addType == 'Without') {
-                            subscriptionService.addToSubscription(result.subscription, result.pkg, false)
-                        }
-
-                        if (addType != null && addType != '') {
-                            //subscriptionService.addPendingChangeConfiguration(result.subscription, result.pkg, params.clone())
+                        log.debug("Add package entitlements to subscription ${result.subscription}")
+                        subscriptionService.addToSubscription(result.subscription, result.pkg, result.subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
+                        if(auditService.getAuditConfig(result.subscription, 'holdingSelection')) {
+                            subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), result.pkg, result.subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
                         }
                     })
                 }
             }
-            switch (params.addType) {
-                case "With": flash.message = message(code: 'subscription.details.link.processingWithEntitlements') as String
+            switch (result.subscription.holdingSelection) {
+                case RDStore.SUBSCRIPTION_HOLDING_ENTIRE: flash.message = message(code: 'subscription.details.link.processingWithEntitlements') as String
                     redirect controller: 'subscription', action: 'index', params: [id: result.subscription.id, gokbId: result.pkg.gokbId]
                     return
                     break
-                case "Without": flash.message = message(code: 'subscription.details.link.processingWithoutEntitlements') as String
+                case RDStore.SUBSCRIPTION_HOLDING_PARTIAL: flash.message = message(code: 'subscription.details.link.processingWithoutEntitlements') as String
                     redirect controller: 'subscription', action: 'addEntitlements', params: [id: result.subscription.id, packageLinkPreselect: result.pkg.gokbId, preselectedName: result.pkg.name]
                     return
                     break

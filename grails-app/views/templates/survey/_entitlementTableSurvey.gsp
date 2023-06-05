@@ -7,6 +7,7 @@
 
 
     <div class="ui accordion la-accordion-showMore" id="surveyEntitlements">
+        <g:if test="${editable && params.tab == 'selectedIEs'}"><input id="select-all" type="checkbox" name="chkall" ${allChecked}/></g:if>
         <g:each in="${ies.sourceIEs}" var="ie">
 
             <g:set var="tipp" value="${ie.tipp}"/>
@@ -39,14 +40,10 @@
                             </span>
                         </g:if>
                         <div class="one wide column">
-                            <g:if test="${(params.tab == 'currentIEs') && (editable && !ieInNewSub && allowedToSelect)}">
+                            <g:if test="${editable && params.tab == 'selectedIEs' && ieInNewSub && de.laser.IssueEntitlementGroupItem.findByIeAndIeGroup(ieInNewSub, de.laser.IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscriberSub))}">
                                 <input type="checkbox" name="bulkflag"
                                        class="bulkcheck la-vertical-centered" ${checkedCache ? checkedCache[ie.id.toString()] : ''}>
                             </g:if>
-                            <g:elseif test="${editable && params.tab == 'selectedIEs' && ieInNewSub && de.laser.IssueEntitlementGroupItem.findByIeAndIeGroup(ieInNewSub, de.laser.IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscriberSub))}">
-                                <input type="checkbox" name="bulkflag"
-                                       class="bulkcheck la-vertical-centered" ${checkedCache ? checkedCache[ie.id.toString()] : ''}>
-                            </g:elseif>
                         </div>
 
 
@@ -97,6 +94,7 @@
                                             </div>
                                         </g:if>
                                     </div>
+                                    <g:set var="sumlistPrice" value="${sumlistPrice + (priceItem.listPrice ?: 0)}"/>
                                 </g:each>
                             </g:if>
                             <g:else>
@@ -366,25 +364,23 @@
         </div>
         <div class="four wide column ">
             <div class="ui list">
-                <div class="item">
+                %{--<div class="item">
                     <div class="contet">
-                        <div class="header">
-                            <g:message code="tipp.price.listPrice"/> <br/>
-                        </div>
+                            <g:message code="renewEntitlementsWithSurvey.totalCostSelected"/> <br/>
                     </div>
-                </div>
+                </div>--}%
 
                 <div class="item">
                     <div class="contet">
-                        <strong><g:message code="financials.totalCostOnPage"/>:</strong> <g:formatNumber
+                        <strong><g:message code="renewEntitlementsWithSurvey.totalCostOnPage"/>:</strong> <g:formatNumber
                             number="${sumlistPrice}" type="currency"/><br/>
                     </div>
                 </div>
                 %{--<g:message code="tipp.price.localPrice"/>: <g:formatNumber number="${sumlocalPrice}" type="currency"/>--}%
                 <div class="item">
                     <div class="contet">
-                        <strong><g:message code="financials.totalCost"/>:</strong> <g:formatNumber
-                            number="${iesListPriceSum}" type="currency"/>
+                        <strong><g:message code="renewEntitlementsWithSurvey.totalCost"/>:</strong> <g:formatNumber
+                            number="${iesTotalListPriceSum}" type="currency"/>
                     </div>
                 </div>
 
