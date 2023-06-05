@@ -1536,6 +1536,8 @@ class SubscriptionControllerService {
             List<Long> sourceIEs = []
             if(params.tab == 'allTipps') {
                 params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
+                params.sort = params.sort ?: 'tipp.sortname'
+                params.order = params.order ?: 'asc'
                 Map<String, Object> query = filterService.getTippQuery(params, baseSub.packages.pkg)
                 result.filterSet = query.filterSet
                 List<Long> titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
@@ -1543,7 +1545,7 @@ class SubscriptionControllerService {
                 result.tippsListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.tipp tipp ' +
                         'where p.listPrice is not null and tipp.status.id = :tiStatus and tipp.id in (' + query.query + ' )', [tiStatus: RDStore.TIPP_STATUS_CURRENT.id]+query.queryParams)[0] ?: 0
 
-                result.titlesList = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList.drop(result.offset).take(result.max), [sort: 'sortname']) : []
+                result.titlesList = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList.drop(result.offset).take(result.max), [sort: params.sort, order: params.order]) : []
                 result.num_rows = titlesList.size()
 
                 if(baseSub.packages){
@@ -1553,14 +1555,14 @@ class SubscriptionControllerService {
             }else if(params.tab == 'selectedIEs') {
                 IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, subscriberSub)
                 if(issueEntitlementGroup) {
+                    params.sort = params.sort ?: 'tipp.sortname'
+                    params.order = params.order ?: 'asc'
                     params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
                     result.titleGroup = issueEntitlementGroup.id.toString()
                     params.titleGroup = result.titleGroup
                     Map query = filterService.getIssueEntitlementQuery(params, subscriberSub)
                     sourceIEs = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
 
-                    params.sort = params.sort ?: 'sortname'
-                    params.order = params.order ?: 'asc'
                     result.sourceIEs = sourceIEs ? IssueEntitlement.findAllByIdInList(sourceIEs, [sort: params.sort, order: params.order, offset: result.offset, max: result.max]) : []
                     result.num_rows = sourceIEs ? IssueEntitlement.countByIdInList(sourceIEs) : 0
 
@@ -1568,6 +1570,8 @@ class SubscriptionControllerService {
 
                 }
             } else if (params.tab == 'currentPerpetualAccessIEs') {
+                params.sort = params.sort ?: 'tipp.sortname'
+                params.order = params.order ?: 'asc'
                 GrailsParameterMap parameterMap = params.clone()
                 Map query = [:]
                 if(subscriptions) {
@@ -1578,8 +1582,6 @@ class SubscriptionControllerService {
                     //List<Long> previousIes = previousSubscription ? IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams) : []
                     sourceIEs = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
                 }
-                params.sort = params.sort ?: 'sortname'
-                params.order = params.order ?: 'asc'
                 result.sourceIEs = sourceIEs ? IssueEntitlement.findAllByIdInList(sourceIEs, [sort: params.sort, order: params.order, offset: result.offset, max: result.max]) : []
                 result.num_rows = sourceIEs ? IssueEntitlement.countByIdInList(sourceIEs) : 0
 
@@ -1873,15 +1875,15 @@ class SubscriptionControllerService {
                     checkedCache = sessionCache.get("/subscription/renewEntitlementsWithSurvey/${subscriberSub.id}?${params.tab}")
                 }
 
-                if (params.kbartPreselect) {
+                if (params.kbartPreselect && params.tab == 'allTipps') {
                     //checkedCache.put('checked', [:])
 
                     MultipartFile kbartFile = params.kbartPreselect
                     InputStream stream = kbartFile.getInputStream()
-                    result.selectProcess = subscriptionService.issueEntitlementSelectForSurvey(stream, result.subscription, result.surveyConfig, subscriberSub)
+                    result.selectProcess = subscriptionService.tippSelectForSurvey(stream, result.subscription, result.surveyConfig, subscriberSub)
 
-                        if (result.selectProcess.selectedIEs) {
-                            checkedCache.put('checked', result.selectProcess.selectedIEs)
+                        if (result.selectProcess.selectedTipps) {
+                            checkedCache.put('checked', result.selectProcess.selectedTipps)
                         }
 
                     params.remove("kbartPreselect")
@@ -1897,7 +1899,7 @@ class SubscriptionControllerService {
                 if (params.tab == 'selectedIEs' && result.countSelectedIEs > 0 && result.countSelectedIEs == result.checkedCount) {
                     result.allChecked = "checked"
                 }
-
+println(result.checkedCache)
             }
 
             [result:result,status:STATUS_OK]
