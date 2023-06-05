@@ -200,7 +200,7 @@ class UserController {
                 return
             }
             if (result.user) {
-                User user = User.findByEmail(params.forgotten_username_mail)
+                User user = params.forgotten_username_mail ? User.findByEmail(params.forgotten_username_mail) : result.user
                 if (user) {
                     flash.message = message(code: 'menu.user.forgottenUsername.success') as String
                     mailSendService.sendMailToUser(user, message(code: 'email.subject.forgottenUsername'), '/mailTemplates/text/forgotUserName', [user: user])
