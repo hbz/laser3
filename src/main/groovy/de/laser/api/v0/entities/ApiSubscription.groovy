@@ -1,6 +1,6 @@
 package de.laser.api.v0.entities
 
-
+import de.laser.traces.DeletedObject
 import de.laser.Identifier
 import de.laser.Links
 import de.laser.Org
@@ -31,10 +31,20 @@ class ApiSubscription {
 
         switch(query) {
             case 'id':
-				result.obj = Subscription.findAllWhere(id: Long.parseLong(value))
+				result.obj = Subscription.findAllById(Long.parseLong(value))
+				if(!result.obj) {
+					DeletedObject.withTransaction {
+						result.obj = DeletedObject.findAllByOldDatabaseIDAndOldObjectType(Long.parseLong(value), Subscription.class.name)
+					}
+				}
                 break
             case 'globalUID':
-				result.obj = Subscription.findAllWhere(globalUID: value)
+				result.obj = Subscription.findAllByGlobalUID(value)
+				if(!result.obj) {
+					DeletedObject.withTransaction {
+						result.obj = DeletedObject.findAllByOldGlobalUID(value)
+					}
+				}
                 break
             case 'ns:identifier':
 				result.obj = Identifier.lookupObjectsByIdentifierString(new Subscription(), value)

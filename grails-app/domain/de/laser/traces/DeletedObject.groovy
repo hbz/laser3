@@ -1,5 +1,7 @@
-package de.laser
+package de.laser.traces
 
+import de.laser.IssueEntitlement
+import de.laser.TitleInstancePackagePlatform
 import de.laser.exceptions.CreationException
 
 class DeletedObject {

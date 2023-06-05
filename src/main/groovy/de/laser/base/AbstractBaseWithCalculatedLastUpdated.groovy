@@ -1,6 +1,6 @@
 package de.laser.base
 
-import de.laser.DeletedObject
+import de.laser.traces.DeletedObject
 import de.laser.storage.BeanStore
 import de.laser.interfaces.CalculatedLastUpdated
 import groovy.util.logging.Slf4j
