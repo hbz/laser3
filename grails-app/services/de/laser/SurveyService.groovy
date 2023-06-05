@@ -1466,8 +1466,8 @@ class SurveyService {
     }
 
     boolean hasParticipantPerpetualAccessToTitle3(Org org, TitleInstancePackagePlatform tipp){
-            Integer countPermanentTitles = PermanentTitle.executeQuery('select count(pt.id) from PermanentTitle pt where ' +
-                    '(pt.tipp.hostPlatformURL = :hostPlatformURL OR  pt.tipp = :tipp) AND ' +
+            Integer countPermanentTitles = PermanentTitle.executeQuery('select count(pt.id) from PermanentTitle pt join pt.tipp tipp where ' +
+                    '(tipp = :tipp or tipp.hostPlatformURL = :hostPlatformURL) and ' +
                     'tipp.status != :tippStatus AND ' +
                     'pt.owner = :org',
                     [hostPlatformURL: tipp.hostPlatformURL,
@@ -1713,7 +1713,7 @@ class SurveyService {
     }
 
     Integer countIssueEntitlementsByIEGroup(Subscription subscription, SurveyConfig surveyConfig) {
-        IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfig(surveyConfig)
+        IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscription)
         Integer countIes = issueEntitlementGroup ?
                 IssueEntitlementGroupItem.executeQuery("select count(igi) from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup",
                         [ieGroup: issueEntitlementGroup])[0]
@@ -1721,8 +1721,26 @@ class SurveyService {
         countIes
     }
 
+    BigDecimal sumListPriceIssueEntitlementsByIEGroup(Subscription subscription, SurveyConfig surveyConfig) {
+        IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscription)
+        BigDecimal sumListPrice = issueEntitlementGroup ?
+                IssueEntitlementGroupItem.executeQuery("select sum(p.listPrice) from PriceItem p where p.issueEntitlement in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup)",
+                        [ieGroup: issueEntitlementGroup])[0]
+                : 0.0
+        sumListPrice
+    }
+
+    BigDecimal sumListPriceCurrentIssueEntitlementsByIEGroup(Subscription subscription, SurveyConfig surveyConfig) {
+        IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscription)
+        BigDecimal sumListPrice = issueEntitlementGroup ?
+                IssueEntitlementGroupItem.executeQuery("select sum(p.listPrice) from PriceItem p where p.issueEntitlement in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup) and p.issueEntitlement.status = :status",
+                        [ieGroup: issueEntitlementGroup, status: RDStore.TIPP_STATUS_CURRENT])[0]
+                : 0.0
+        sumListPrice
+    }
+
     List<IssueEntitlement> issueEntitlementsByIEGroup(Subscription subscription, SurveyConfig surveyConfig) {
-        IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfig(surveyConfig)
+        IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscription)
         List<IssueEntitlement> ies = issueEntitlementGroup ?
                 IssueEntitlementGroupItem.executeQuery("select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup",
                         [ieGroup: issueEntitlementGroup])

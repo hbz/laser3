@@ -7,9 +7,49 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5112    05.06.2023  rc-3.1  3.1.2       Andreas Bug         Überbleibsel entfernt
+
+5110    02.06.2023  rc-3.1  3.1.2       Moe     Bug         Button Benutzername über Nutzerverwaltung geht nicht
+
+5109    02.06.2023  rc-3.1  3.1.2       Andreas Bug         Zugriffsfehler beim Speichern von Adressen
+
+--      02.06.2023  rc-3.1  3.1.2       Andreas Feature     einige kleinere Verbesserungen zur Fehlerverwaltung von Statistik-Abfrageantworten
+
+5105    01.06.2023  rc-3.1  3.1.2       Andreas Feature     Felder in der Exportkonfiguration ergänzt 
+
+5104    01.06.2023  rc-3.1  3.1.2       Moe     Feature     Optimierungen Titelumfrage
+
+5103    01.06.2023  rc-3.1  3.1.2       Moe     Bug         Titelumfrage: dauerhafter Zugriff steuern
+
+5102    01.06.2023  rc-3.1  3.1.2       Andreas Feature     diverse Ausbesserungen bei der Paketverknüpfung
+
+5099    01.06.2023  rc-3.1  3.1.2       Andreas Bug         Falsches Caching der erzeugten Reports
+
+5078    31.05.2023  rc-3.1  3.1.2       Moe     Bug         Titelumfrage: Keine Einzeltitelauswahl möglich - System behauptet dauerhaften Zugriff
+
+5097    31.05.2023  rc-3.1  3.1.2       Andreas Bug         zu langsame Performanz bei Titelvorauswahl
+
+5098    31.05.2023  rc-3.1  3.1.2       Andreas Bug         verschobene Spalten korrigiert
+
+5100    31.05.2023  rc-3.1  3.1.2       Moe     Bug         Es werden keine Mails beim Öffnen einer Umfrage rausgeschickt
+
+5086    31.05.2023  rc-3.1  3.1.2       Moe     Bug         Titel hinzufügen / Plus-Icon läuft in seltsamen Bug
+
+5059    30.05.2023  rc-3.1  3.1.2       Moe     Bug         500er in Titelumfrage
+
+5080    30.05.2023  rc-3.1  3.1.2       Moe     Bug         Meine Titel komplett unstimmig
+
+5083    30.05.2023  rc-3.1  3.1.2       Moe     Bug         Bug: eigene Umfragemerkmale
+
+5081    30.05.2023  rc-3.1  3.1.2       Moe     Bug         Meine dauerhaften Titel zeigt keine Titel an
+
+--      30.05.2023  rc-3.1  3.1.2       Andreas Bug         Brücke in ApiPerson gebaut
+
+--      30.05.2023  rc-3.1  3.1.2       Andreas Bug         kleinere Ausbesserungen im Statistik-Ladevorgang
+
 5074    26.05.2023  rc-3.1  3.1.2       Andreas Bug         Titelexport lief nicht performant genug
 
-5095    26.05.2023  rc-3.1  3.1.2       David   Feature     Alle > Alle Plattformen wirft 500er
+5095    26.05.2023  rc-3.1  3.1.2       David   Bug         Alle > Alle Plattformen wirft 500er
 
 5075    26.05.2023  rc-3.1  3.1.1       David   Feature     Wording: Anbieter erstellen vs anlegen
 

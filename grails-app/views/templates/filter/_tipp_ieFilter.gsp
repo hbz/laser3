@@ -63,6 +63,10 @@
 
 <g:set var="availableStatus" value="${RefdataCategory.getAllRefdataValues(RDConstants.TIPP_STATUS)-RDStore.TIPP_STATUS_REMOVED}"/>
 
+<g:if test="${actionName == 'currentPermanentTitles'}">
+    <g:set var="availableStatus" value="${availableStatus-RDStore.TIPP_STATUS_EXPECTED}"/>
+</g:if>
+
 <ui:filter>
     <g:form controller="${controllerName}" action="${actionName}" id="${params.id}" method="get" class="ui form">
         <g:hiddenField name="sort" value="${params.sort}"/>

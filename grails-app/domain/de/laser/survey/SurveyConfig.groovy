@@ -597,15 +597,9 @@ class SurveyConfig {
 
         Org ownerOrg = this.surveyInfo.owner
 
-        //private Property
-        PropertyDefinition.getAllByDescrAndTenant(PropertyDefinition.SVY_PROP, ownerOrg).each { it ->
-            if((propertiesOfPropDefGroups.size() == 0 || (propertiesOfPropDefGroups && !(it.id in propertiesOfPropDefGroups.id))) && (this.surveyProperties && !(it.id in  this.surveyProperties.surveyProperty.id))) {
-                props << it
-            }
-        }
         //global Property
         PropertyDefinition.getAllByDescr(PropertyDefinition.SVY_PROP).each { it ->
-            if((propertiesOfPropDefGroups.size() == 0 || (propertiesOfPropDefGroups && !(it.id in propertiesOfPropDefGroups.id))) && (this.surveyProperties && !(it.id in  this.surveyProperties.surveyProperty.id))) {
+            if((propertiesOfPropDefGroups.size() == 0 || (propertiesOfPropDefGroups && !(it.id in propertiesOfPropDefGroups.id))) && ((this.surveyProperties.size() == 0) || this.surveyProperties && !(it.id in  this.surveyProperties.surveyProperty.id))) {
                 props << it
             }
         }
@@ -637,10 +631,14 @@ class SurveyConfig {
         LinkedHashSet<SurveyConfigProperties> properties = []
 
         if(containedProperties.isEmpty()){
-            properties = this.surveyProperties
+            this.surveyProperties.each {
+                if ((!it.surveyProperty.tenant)) {
+                    properties << it
+                }
+            }
         }else {
             this.surveyProperties.each {
-                if (!(it.id in containedProperties.id.flatten())) {
+                if (!(it.id in containedProperties.id.flatten()) && (!it.surveyProperty.tenant)) {
                     properties << it
                 }
             }
@@ -652,17 +650,52 @@ class SurveyConfig {
 
     }
 
+    LinkedHashSet<SurveyConfigProperties> getPrivateSurveyConfigProperties() {
+        LinkedHashSet<SurveyConfigProperties> properties = []
+
+        this.surveyProperties.each {
+            if ((it.surveyProperty.tenant)) {
+                properties << it
+            }
+        }
+
+        properties = properties.sort {it.surveyProperty.getI10n('name')}
+
+        return properties
+
+    }
+
+    List<PropertyDefinition> getPrivateSelectableProperties() {
+        List<PropertyDefinition> props = []
+
+        Org ownerOrg = this.surveyInfo.owner
+
+        //private Property
+        PropertyDefinition.getAllByDescrAndTenant(PropertyDefinition.SVY_PROP, ownerOrg).each { it ->
+            if(((this.surveyProperties.size() == 0) || this.surveyProperties && !(it.id in  this.surveyProperties.surveyProperty.id))) {
+                props << it
+            }
+        }
+
+        props = props.sort {it.getI10n('name')}
+
+        return props
+
+    }
+
     LinkedHashSet<SurveyResult> getOrphanedSurveyResultsByOrg(LinkedHashSet containedProperties, Org org) {
 
         LinkedHashSet<SurveyResult> properties = []
 
         if(containedProperties.isEmpty()){
             this.surveyProperties.each {
-                properties << SurveyResult.findByParticipantAndSurveyConfigAndType(org, this, it.surveyProperty)
+                if ((!it.surveyProperty.tenant)) {
+                    properties << SurveyResult.findByParticipantAndSurveyConfigAndType(org, this, it.surveyProperty)
+                }
             }
         }else {
             this.surveyProperties.each {
-                if (!(it.surveyProperty.id in containedProperties.type.id.flatten())) {
+                if (!(it.surveyProperty.id in containedProperties.type.id.flatten()) && (!it.surveyProperty.tenant)){
                     SurveyResult surveyResult = SurveyResult.findByParticipantAndSurveyConfigAndType(org, this, it.surveyProperty)
                     if(surveyResult) {
                         properties << surveyResult
@@ -670,6 +703,22 @@ class SurveyConfig {
                 }
             }
         }
+
+        properties = properties.sort {it.type.getI10n('name')}
+
+        return properties
+
+    }
+
+    LinkedHashSet<SurveyResult> getPrivateSurveyResultsByOrg(Org org) {
+
+        LinkedHashSet<SurveyResult> properties = []
+
+            this.surveyProperties.each {
+                if ((it.surveyProperty.tenant)) {
+                    properties << SurveyResult.findByParticipantAndSurveyConfigAndType(org, this, it.surveyProperty)
+                }
+            }
 
         properties = properties.sort {it.type.getI10n('name')}
 

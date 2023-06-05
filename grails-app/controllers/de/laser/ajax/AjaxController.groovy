@@ -11,6 +11,7 @@ import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.cache.EhcacheWrapper
 import de.laser.cache.SessionCacheWrapper
 import de.laser.ctrl.SubscriptionControllerService
+import de.laser.finance.PriceItem
 import de.laser.helper.*
 import de.laser.interfaces.CalculatedType
 import de.laser.interfaces.ShareSupport
@@ -20,6 +21,7 @@ import de.laser.properties.PropertyDefinitionGroupBinding
 import de.laser.storage.PropertyStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
+import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyOrg
 import de.laser.survey.SurveyResult
 import de.laser.utils.CodeUtils
@@ -466,6 +468,35 @@ class AjaxController {
               sourceIEs.each { IssueEntitlement ie ->
                   newChecked[ie.id.toString()] = params.checked == 'true' ? 'checked' : null
               }*/
+
+              Subscription baseSub = Subscription.get(params.baseSubID)
+
+              if(params.tab == 'allTipps') {
+                  params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
+                  Map<String, Object> query = filterService.getTippQuery(params, baseSub.packages.pkg)
+                  List<Long> titleIDList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
+
+                  titleIDList.each { Long tippID ->
+                      newChecked[tippID.toString()] = params.checked == 'true' ? 'checked' : null
+                  }
+              }
+
+              if(params.tab == 'selectedIEs') {
+                  Subscription subscriberSub = Subscription.get(params.newSubID)
+                  SurveyConfig surveyConfig = SurveyConfig.findById(params.surveyConfigID)
+                  IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscriberSub)
+                  if(issueEntitlementGroup) {
+                      params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
+                      params.titleGroup = issueEntitlementGroup.id.toString()
+                      Map query = filterService.getIssueEntitlementQuery(params, subscriberSub)
+                      List<Long> ieIDList = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
+
+                      ieIDList.each { Long ieID ->
+                          newChecked[ieID.toString()] = params.checked == 'true' ? 'checked' : null
+                      }
+
+                  }
+              }
 
           }
           else {
@@ -1188,7 +1219,10 @@ class AjaxController {
 
             }
         }
-        redirect(url: request.getHeader('referer'))
+        if(Boolean.valueOf(params.returnSuccessAsJSON))
+            render([success: true] as JSON)
+        else
+            redirect(url: request.getHeader('referer'))
     }
 
     /**

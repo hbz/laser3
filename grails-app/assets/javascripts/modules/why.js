@@ -37,6 +37,15 @@ why = {
     info: function (expand = true) {
         console.log('why.info')
         why._executeTap (true, expand)
+
+        if ($.toast) {
+            if (why.el_resultCounter.click > 0) {
+                $.toast({message: 'Warning: Duplicate event listeners found', displayTime: 6000, class: 'orange', showIcon: 'bug'});
+            }
+            if (why.id_result.length > 0) {
+                $.toast({message: 'Warning: Duplicate ID attributes found', displayTime: 6000, class: 'red', showIcon: 'code'});
+            }
+        }
     },
 
     history: function () {

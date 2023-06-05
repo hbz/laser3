@@ -28,14 +28,14 @@
                                tab           : 'allTipps']}">${message(code: 'renewEntitlementsWithSurvey.selectableTitles')}</g:link>
         </ui:exportDropdownItem>
 
-        <g:if test="${countCurrentIEs > 0}">
+        <g:if test="${countCurrentPermanentTitles > 0}">
 
             <ui:exportDropdownItem>
                 <g:link class="item" action="renewEntitlementsWithSurvey"
                         id="${subscriberSub.id}"
                         params="${[surveyConfigID: surveyConfig.id,
                                    exportKBart   : true,
-                                   tab           : 'currentIEs']}">${message(code: 'renewEntitlementsWithSurvey.currentTitles')}</g:link>
+                                   tab           : 'currentPerpetualAccessIEs']}">${message(code: 'renewEntitlementsWithSurvey.currentTitles')}</g:link>
             </ui:exportDropdownItem>
         </g:if>
 
@@ -59,13 +59,13 @@
                                tab           : 'allTipps']}">${message(code: 'renewEntitlementsWithSurvey.selectableTitles')}</g:link>
         </ui:exportDropdownItem>
 
-        <g:if test="${countCurrentIEs > 0}">
+        <g:if test="${countCurrentPermanentTitles > 0}">
             <ui:exportDropdownItem>
                 <g:link class="item" action="renewEntitlementsWithSurvey"
                         id="${subscriberSub.id}"
                         params="${[surveyConfigID : surveyConfig.id,
                                    exportXLS     : true,
-                                   tab           : 'currentIEs']}">
+                                   tab           : 'currentPerpetualAccessIEs']}">
                     ${message(code: 'renewEntitlementsWithSurvey.currentTitles')}
                 </g:link>
             </ui:exportDropdownItem>
@@ -268,10 +268,16 @@
                     params="[id: subscriberSub.id, surveyConfigID: surveyConfig.id, tab: 'selectedIEs']"
                     text="${message(code: "renewEntitlementsWithSurvey.currentTitlesSelect")}" tab="selectedIEs"
                     counts="${countSelectedIEs}"/>
-    <ui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
-                    params="[id: subscriberSub.id, surveyConfigID: surveyConfig.id, tab: 'currentIEs']"
-                    text="${message(code: "renewEntitlementsWithSurvey.currentTitles")}" tab="currentIEs"
-                    counts="${countCurrentIEs}"/>
+    <g:link controller="subscription" action="renewEntitlementsWithSurvey"
+            class="item ${'currentPerpetualAccessIEs' == params.tab ? 'active' : ''}"
+            params="[id: subscriberSub.id, surveyConfigID: surveyConfig.id, tab: 'currentPerpetualAccessIEs']">
+        <g:message code="renewEntitlementsWithSurvey.currentTitles"/>
+            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                  data-content="${message(code: 'renewEntitlementsWithSurvey.currentTitles.mouseover')}">
+                <i class="question circle icon"></i>
+            </span>
+        <div class="ui circular label">${countCurrentPermanentTitles}</div>
+    </g:link>
 
 %{--    <g:if test="${showStatisticByParticipant}">
         <ui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
@@ -326,7 +332,7 @@
             <div class="two fields">
             <g:if test="${params.tab != 'stats'}">
                 <div class="eight wide field" style="text-align: left;">
-                    <g:if test="${editable && params.tab != 'selectedIEs'}">
+                    <g:if test="${editable && params.tab == 'allTipps'}">
                         <button type="submit" name="process" id="processButton" value="preliminary" class="ui green button">
                             ${params.tab == 'topUsed' ? '' :checkedCount} <g:message code="renewEntitlementsWithSurvey.preliminary"/></button>
                     </g:if>
@@ -359,7 +365,7 @@
 
 </g:form>
 </div>
-<g:if test="${sourceIEs}">
+<g:if test="${sourceIEs || titlesList}">
     <ui:paginate action="renewEntitlementsWithSurvey" controller="subscription" params="${params}"
                     max="${max}" total="${num_rows}"/>
 </g:if>
@@ -413,10 +419,12 @@
                     checked: checked,
                     tab: "${params.tab}",
                     baseSubID: "${subscription.id}",
-                    newSubID: "${subscriberSub.id}"
+                    newSubID: "${subscriberSub.id}",
+                    surveyConfigID: "${surveyConfig.id}"
+
                 },
                 success: function (data) {
-                        <g:if test="${editable && params.tab != 'selectedIEs'}">
+                        <g:if test="${editable && params.tab == 'allTipps'}">
                             $("#processButton").html(data.checkedCount + " ${g.message(code: 'renewEntitlementsWithSurvey.preliminary')}");
                         </g:if>
 
@@ -444,7 +452,14 @@
                 $("div[data-index='" + index + "']").removeClass("positive");
             }
 
+    <g:if test="${editable && params.tab == 'allTipps'}">
+        JSPC.app.updateSelectionCache($(this).parents(".la-js-checkItem").attr("data-tippId"), $(this).prop('checked'));
+    </g:if>
+
+    <g:if test="${editable && params.tab == 'selectedIEs'}">
         JSPC.app.updateSelectionCache($(this).parents(".la-js-checkItem").attr("data-ieId"), $(this).prop('checked'));
+    </g:if>
+
     });
 
     $(".statsExport").on('click', function(e) {
