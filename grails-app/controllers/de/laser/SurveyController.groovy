@@ -1715,14 +1715,16 @@ class SurveyController {
 
     }
 
-    /**
+
+/*    *//**
      * Opens the survey for the given participants and sends eventual reminders
      * @return the participation view with the counts of execution done
-     */
+     *//*
     @DebugInfo(ctxInstUserCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
         ctx.accessService.ctxInstUserCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
+    @Deprecated
      Map<String,Object> processOpenParticipantsAgain() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
 
@@ -1789,7 +1791,7 @@ class SurveyController {
 
         redirect(action: 'openParticipantsAgain', id: result.surveyInfo.id, params:[tab: params.tab, surveyConfigID: result.surveyConfig.id])
 
-    }
+    }*/
 
     /**
      * Reopens the given survey for the given participant
