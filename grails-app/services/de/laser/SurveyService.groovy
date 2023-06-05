@@ -1482,6 +1482,19 @@ class SurveyService {
             }
     }
 
+    List<PermanentTitle> listParticipantPerpetualAccessToTitle(Org org, TitleInstancePackagePlatform tipp){
+        List<PermanentTitle> permanentTitles = PermanentTitle.executeQuery('select pt from PermanentTitle pt join pt.tipp tipp where ' +
+                '(tipp = :tipp or tipp.hostPlatformURL = :hostPlatformURL) and ' +
+                'tipp.status != :tippStatus AND ' +
+                'pt.owner = :org',
+                [hostPlatformURL: tipp.hostPlatformURL,
+                 tippStatus: RDStore.TIPP_STATUS_REMOVED,
+                 tipp: tipp,
+                 org: org])
+
+        permanentTitles
+    }
+
     /**
      * Called from views
      * Checks if the org has perpetual access to the given title

@@ -45,6 +45,37 @@
         </div>
     </g:if>
 
+    <g:if test="${participantPerpetualAccessToTitle}">
+        <div class="ui card">
+            <div class="content">
+                <div class="header"><g:message code="myinst.currentPermanentTitles.label"/> in: </div>
+            </div>
+
+            <div class="content">
+                <div class="ui list">
+                    <g:each in="${participantPerpetualAccessToTitle}" var="pt">
+                        <div class="item">
+                            <div class="sixteen wide column">
+                                <i class="icon clipboard outline la-list-icon"></i>
+                                <g:link controller="subscription"
+                                        action="index"
+                                        id="${pt.subscription.id}">${pt.subscription.dropdownNamingConvention(contextOrg)}</g:link>
+                                &nbsp;
+                                <br/>
+                                <br/>
+                                <g:link controller="issueEntitlement"
+                                        action="show"
+                                        id="${pt.id}">${message(code: 'myinst.currentTitles.full_ie')}</g:link>
+                                <br/>
+                            </div>
+                        </div>
+                    </g:each>
+
+                </div>
+            </div>
+        </div>
+    </g:if>
+
     <div class="ui card">
         <div class="content">
             <h3 class="ui header">

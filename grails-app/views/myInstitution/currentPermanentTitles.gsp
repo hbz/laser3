@@ -204,6 +204,7 @@
                                                                                     id="${ie.subscription.id}">${ie.subscription.dropdownNamingConvention(institution)}</g:link>
                                                                             &nbsp;
                                                                             <br/>
+                                                                            <br/>
                                                                             <g:link controller="issueEntitlement"
                                                                                     action="show"
                                                                                     id="${ie.id}">${message(code: 'myinst.currentTitles.full_ie')}</g:link>

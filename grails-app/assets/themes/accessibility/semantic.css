@@ -65113,7 +65113,7 @@ Floated Menu / Item
 }
 
 .ui.la-table.table tr td,
-.ui.la-table.table tr th.la-th-column {
+.ui.la-table.table tr:not(:first-child) th.la-th-column {
   border-top: 7px solid #F4F8F9;
 }
 
