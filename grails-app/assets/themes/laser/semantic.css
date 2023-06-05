@@ -62434,7 +62434,7 @@ Floated Menu / Item
 
 .ui.inverted.striped.table > tr:nth-child(2n),
 .ui.inverted.striped.table > tbody > tr:nth-child(2n) {
-  background-color: blue;
+  background-color: #004678;
 }
 
 /* Allow striped active hover */
@@ -64401,7 +64401,7 @@ Floated Menu / Item
 .ui.sortable.table > thead > tr > th {
   cursor: pointer;
   white-space: nowrap;
-  color: #1B1C1D;
+  color: #515151;
 }
 
 .ui.celled.sortable.table > thead > tr > th:not(:first-child) {
@@ -64954,9 +64954,8 @@ Floated Menu / Item
   color: #1B1C1D;
 }
 
-.ui.sortable.table thead th {
+.ui.sortable.table > thead > tr > th {
   cursor: default;
-  color: #515151;
 }
 
 /* Hover */
