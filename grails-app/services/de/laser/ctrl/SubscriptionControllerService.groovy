@@ -1899,7 +1899,6 @@ class SubscriptionControllerService {
                 if (params.tab == 'selectedIEs' && result.countSelectedIEs > 0 && result.countSelectedIEs == result.checkedCount) {
                     result.allChecked = "checked"
                 }
-println(result.checkedCache)
             }
 
             [result:result,status:STATUS_OK]
