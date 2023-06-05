@@ -176,12 +176,12 @@
 <g:if test="${selectProcess}">
     <ui:msg class="positive" header="${message(code:'renewEntitlementsWithSurvey.issueEntitlementSelect.label')}">
             <g:message code="renewEntitlementsWithSurvey.issueEntitlementSelect.selectProcess"
-                       args="[selectProcess.processCount, countAllTipps, selectProcess.countSelectIEs]"/>
+                       args="[selectProcess.processCount, countAllTipps, selectProcess.countSelectTipps]"/>
     </ui:msg>
 </g:if>
 
 
-<g:if test="${(params.tab == 'allTipps' || params.tab == 'topUsed') && editable}">
+<g:if test="${(params.tab == 'allTipps') && editable}">
 
     <ui:greySegment>
         <g:form class="ui form" controller="subscription" action="renewEntitlementsWithSurvey"
@@ -248,16 +248,6 @@
     </div>
 </div><!--.row-->
 
-<g:if test="${num_rows}">
-    <div class="row">
-        <div class="column">
-
-            <div class="ui blue large label"><g:message code="title.plural"/>: <div class="detail">${num_rows}</div>
-            </div>
-        </div>
-    </div>
-</g:if>
-
 <br />
 <ui:tabs actionName="${actionName}">
     <ui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
@@ -296,6 +286,38 @@
     <g:hiddenField id="packageId" name="packageId" value="${params.packageId}"/>
     <g:hiddenField name="surveyConfigID" value="${surveyConfig.id}"/>
     <g:hiddenField name="tab" value="${params.tab}"/>
+        <g:if test="${params.tab == 'allTipps' || params.tab == 'selectedIEs' || params.tab == 'currentPerpetualAccessIEs'}">
+            <%
+                Map<String, String>
+                sortFieldMap = ['tipp.sortname': message(code: 'title.label')]
+                if (journalsOnly) {
+                    sortFieldMap['startDate'] = message(code: 'default.from')
+                    sortFieldMap['endDate'] = message(code: 'default.to')
+                } else {
+                    sortFieldMap['tipp.dateFirstInPrint'] = message(code: 'tipp.dateFirstInPrint')
+                    sortFieldMap['tipp.dateFirstOnline'] = message(code: 'tipp.dateFirstOnline')
+                }
+                sortFieldMap['tipp.accessStartDate'] = "${message(code: 'subscription.details.access_dates')} ${message(code: 'default.from')}"
+                sortFieldMap['tipp.accessEndDate'] = "${message(code: 'subscription.details.access_dates')} ${message(code: 'default.to')}"
+            %>
+            <div class="ui grid">
+                <div class="row">
+                    <div class="eight wide column">
+                        <h3 class="ui icon header la-clear-before la-noMargin-top"><span
+                                class="ui circular  label">${num_rows}</span> <g:message code="title.filter.result"/>
+                        </h3>
+                    </div>
+                </div><!--.row-->
+            </div><!--.grid-->
+
+            <div class="ui form">
+                <div class="three wide fields">
+                    <div class="field">
+                        <ui:sortingDropdown noSelection="${message(code:'default.select.choose.label')}" from="${sortFieldMap}" sort="${params.sort}" order="${params.order}"/>
+                    </div>
+                </div>
+            </div>
+        </g:if>
 
 
         <g:if test="${params.tab in ['topUsed']}">
