@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5112    05.06.2023  rc-3.1  3.1.2       Andreas Bug         Überbleibsel entfernt
+
 5110    02.06.2023  rc-3.1  3.1.2       Moe     Bug         Button Benutzername über Nutzerverwaltung geht nicht
 
 5109    02.06.2023  rc-3.1  3.1.2       Andreas Bug         Zugriffsfehler beim Speichern von Adressen

@@ -1233,7 +1233,11 @@ class SubscriptionControllerService {
                     List<Subscription> synShareTargetList = []
                     List<License> licensesToProcess = []
                     Set<Package> packagesToProcess = []
-                    //copy package data
+                    result.subscription.packages.each { SubscriptionPackage sp ->
+                        packagesToProcess << sp.pkg
+                    }
+                    /*
+                    copy package data
                     if(params.linkAllPackages) {
                         result.subscription.packages.each { SubscriptionPackage sp ->
                             packagesToProcess << sp.pkg
@@ -1245,6 +1249,7 @@ class SubscriptionControllerService {
                             packagesToProcess << SubscriptionPackage.get(spId).pkg
                         }
                     }
+                    */
                     if(params.generateSlavedLics == "all") {
                         String query = "select l from License l where l.instanceOf in (select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType)"
                         licensesToProcess.addAll(License.executeQuery(query, [subscription:result.subscription, linkType:RDStore.LINKTYPE_LICENSE]))
@@ -1359,13 +1364,13 @@ class SubscriptionControllerService {
                     }
 
                     packagesToProcess.each { Package pkg ->
-                        subscriptionService.addToMemberSubscription(result.subscription, memberSubs, pkg, params.linkWithEntitlements == 'on')
-                        /*
-                        if()
-                            subscriptionService.addToSubscriptionCurrentStock(memberSub, result.subscription, pkg)
-                        else
-                            subscriptionService.addToSubscription(memberSub, pkg, false)
-                        */
+                        subscriptionService.addToMemberSubscription(result.subscription, memberSubs, pkg, result.subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE && auditService.getAuditConfig(result.subscription, 'holdingSelection'))
+                            /*
+                            if()
+                                subscriptionService.addToSubscriptionCurrentStock(memberSub, result.subscription, pkg)
+                            else
+                                subscriptionService.addToSubscription(memberSub, pkg, false)
+                            */
                     }
 
                     result.subscription.syncAllShares(synShareTargetList)
