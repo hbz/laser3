@@ -67,7 +67,7 @@
                 </th>
                 <g:sortableColumn property="ci.billingCurrency" title="${message(code:'default.currency.label')}" params="${sorting}" scope="col" rowspan="2"/>
                 <g:sortableColumn property="ci.costInBillingCurrency" title="${message(code:'financials.invoice_total')}" params="${sorting}" scope="col" rowspan="2"/>
-                <g:sortableColumn property="ci.taxKey" title="${message(code:'financials.taxRate')}" params="${sorting}" scope="col" rowspan="2"/>
+                <th scope="col" rowspan="2">${message(code:'financials.taxRate')}</th>
                 <th scope="col" rowspan="2">${message(code:'financials.amountFinal')}</th>
                 <g:sortableColumn property="ci.costInLocalCurrency" title="${message(code:'financials.newCosts.value')}" params="${sorting}" scope="col" rowspan="2"/>
                 <g:sortableColumn property="ci.startDate" title="${message(code:'financials.dateFrom')}" params="${sorting}" scope="col" class="la-smaller-table-head" />
@@ -88,7 +88,7 @@
                 </th>
                 <g:sortableColumn property="billingCurrency" title="${message(code:'default.currency.label')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance" scope="col" rowspan="2"/>
                 <g:sortableColumn property="costInBillingCurrency" title="${message(code:'financials.invoice_total')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance" scope="col" rowspan="2"/>
-                <g:sortableColumn property="taxKey" title="${message(code:'financials.taxRate')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance" scope="col" rowspan="2"/>
+                <th scope="col" rowspan="2">${message(code:'financials.taxRate')}</th>
                 <th scope="col" rowspan="2">${message(code:'financials.amountFinal')}</th>
                 <g:sortableColumn property="costInLocalCurrency" title="${message(code:'financials.newCosts.value')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance" scope="col" rowspan="2"/>
                 <g:sortableColumn property="startDate" title="${message(code:'financials.dateFrom')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance" scope="col" class="la-smaller-table-head" />

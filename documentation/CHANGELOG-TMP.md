@@ -7,6 +7,14 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5118    06.06.2023  rc-3.1  3.1.3       Andreas Bug         irreführende Sortierung zurückgesetzt
+
+5117    06.06.2023  rc-3.1  3.1.3       Andreas Bug         fehlerhaften Export der Nutzerzahlen korrigiert
+
+5115    06.06.2023  rc-3.1  3.1.3       Andreas Bug         diverse Fehler im Einrichtungsexport behoben
+
+5114    06.06.2023  rc-3.1  3.1.3       Andreas Feature     direkte Vererbbarkeit von der Lizenzverwaltung
+
 5112    05.06.2023  rc-3.1  3.1.2       Andreas Bug         Überbleibsel entfernt
 
 5110    02.06.2023  rc-3.1  3.1.2       Moe     Bug         Button Benutzername über Nutzerverwaltung geht nicht
