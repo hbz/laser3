@@ -209,7 +209,7 @@
                         <div class="one wide column">
                             <g:if test="${editable && !participantPerpetualAccessToTitle}">
                                 <input type="checkbox" name="bulkflag"
-                                       class="bulkcheck" ${checkedCache ? checkedCache[tipp.gokbId] : ''}>
+                                       class="bulkcheck la-js-notOpenAccordion" ${checkedCache ? checkedCache[tipp.gokbId] : ''}>
                             </g:if>
                         </div>
 
