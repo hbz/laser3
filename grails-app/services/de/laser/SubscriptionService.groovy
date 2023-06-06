@@ -1832,7 +1832,7 @@ join sub.orgRelations or_sub where
                 case "publish-komponente": colMap.hasPublishComponent = c
                     break
                 case "data exchange release":
-                case "freigabe datenaustausch": colMap.isPublicForApi = c
+                case "freigabe daten": colMap.isPublicForApi = c
                     break
                 default:
                     //check if property definition
