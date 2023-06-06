@@ -688,9 +688,38 @@ class ManagementService {
                 Date startDate = params.valid_from ? sdf.parse(params.valid_from) : null
                 Date endDate = params.valid_to ? sdf.parse(params.valid_to) : null
                 Year referenceYear = params.reference_year ? Year.parse(params.reference_year) : null
+                Map<String, String> auditable = ['audit_start_date': 'startDate',
+                                                 'audit_end_date': 'endDate',
+                                                 'audit_reference_year': 'referenceYear',
+                                                 'audit_process_status': 'status',
+                                                 'audit_process_kind': 'kind',
+                                                 'audit_process_form': 'form',
+                                                 'audit_process_resource': 'resource',
+                                                 'audit_isPublicForApi': 'isPublicForApi',
+                                                 'audit_hasPerpetualAccess': 'hasPerpetualAccess',
+                                                 'audit_hasPublishComponent': 'hasPublishComponent',
+                                                 'audit_holdingSelection': 'holdingSelection',
+                                                 'audit_isMultiYear': 'isMultiYear']
                 if(params.processOption == 'changeProperties') {
                     subscriptions.each { Subscription subscription ->
                         if (subscription.isEditableBy(result.user)) {
+                            if(!subscription.instanceOf) {
+                                auditable.each { String auditSetting, String auditProp ->
+                                    //implicates customerType check -> customerType != consortia cannot set those keys
+                                    if(params.containsKey(auditSetting)) {
+                                        if(RefdataValue.get(params.get(auditSetting)) == RDStore.YN_YES && !AuditConfig.getConfig(subscription, auditProp)) {
+                                            AuditConfig.addConfig(subscription, auditProp)
+                                            subscription.getDerivedSubscriptions().each { Subscription member ->
+                                                member[auditProp] = subscription[auditProp]
+                                                member.save()
+                                            }
+                                        }
+                                        else if(RefdataValue.get(params.get(auditSetting)) == RDStore.YN_NO && AuditConfig.getConfig(subscription, auditProp)) {
+                                            AuditConfig.removeConfig(subscription, auditProp)
+                                        }
+                                    }
+                                }
+                            }
                             if (startDate && !auditService.getAuditConfig(subscription.instanceOf, 'startDate')) {
                                 subscription.startDate = startDate
                                 change << messageSource.getMessage('default.startDate.label', null, locale)
@@ -766,8 +795,8 @@ class ManagementService {
                                 subscription.holdingSelection = RefdataValue.get(params.process_holdingSelection) ?: subscription.holdingSelection
                                 change << messageSource.getMessage('subscription.holdingSelection.label', null, locale)
                             }
-                            if (params.process_resource && auditService.getAuditConfig(subscription.instanceOf, 'resource')) {
-                                noChange << messageSource.getMessage('subscription.resource.label', null, locale)
+                            if (params.process_holdingSelection && auditService.getAuditConfig(subscription.instanceOf, 'holdingSelection')) {
+                                noChange << messageSource.getMessage('subscription.holdingSelection.label', null, locale)
                             }
                             if (params.process_isMultiYear && !auditService.getAuditConfig(subscription.instanceOf, 'isMultiYear')) {
                                 subscription.isMultiYear = RefdataValue.get(params.process_isMultiYear) == RDStore.YN_YES
