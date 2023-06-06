@@ -15,6 +15,8 @@ h1~h2.ui.header {
 .ui.icon.header .icon {
   display: inline-block;
 }
+.ui.icon.header .icon.la-object-cut,
+.ui.icon.header .icon.la-object,
 .ui.icon.header .icon.la-object,
 .ui.icon.header .icon.la-object-journal,
 .ui.icon.header .icon.la-object-database,
