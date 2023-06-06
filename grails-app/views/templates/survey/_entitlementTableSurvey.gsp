@@ -42,7 +42,7 @@
                         <div class="one wide column">
                             <g:if test="${editable && params.tab == 'selectedIEs' && ieInNewSub && de.laser.IssueEntitlementGroupItem.findByIeAndIeGroup(ieInNewSub, de.laser.IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscriberSub))}">
                                 <input type="checkbox" name="bulkflag"
-                                       class="bulkcheck la-vertical-centered" ${checkedCache ? checkedCache[ie.id.toString()] : ''}>
+                                       class="bulkcheck la-vertical-centered la-js-notOpenAccordion" ${checkedCache ? checkedCache[ie.id.toString()] : ''}>
                             </g:if>
                         </div>
 
