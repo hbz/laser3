@@ -4,7 +4,7 @@ import de.laser.helper.FactoryResult
 import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.storage.BeanStore
 import de.laser.titles.TitleInstance
-import de.laser.traces.DeletedIdentifier
+
 import grails.plugins.orm.auditable.Auditable
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.util.logging.Slf4j
@@ -356,9 +356,6 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
     def afterDelete() {
         log.debug("afterDelete")
         BeanStore.getCascadingUpdateService().update(this, new Date())
-        DeletedIdentifier.withTransaction {
-            DeletedIdentifier.construct(this)
-        }
     }
 
     Date _getCalculatedLastUpdated() {
@@ -450,12 +447,6 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
             switch (idstrParts.size()) {
                 case 1:
                     result = executeQuery('select t from ' + objType + ' as t join t.ids as ident where ident.value = :val', [val: idstrParts[0]])
-                    if(!result) {
-                        DeletedIdentifier.withTransaction {
-                            List<DeletedIdentifier> del = DeletedIdentifier.findAllByOldReferenceObjectTypeAndOldValue(objType, idstrParts[0])
-
-                        }
-                    }
                     break
                 case 2:
                     result = executeQuery('select t from ' + objType + ' as t join t.ids as ident where ident.value = :val and ident.ns.ns = :ns', [val: idstrParts[1], ns: idstrParts[0]])
