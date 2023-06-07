@@ -8,7 +8,7 @@
     <g:if test="${controllerName == "subscription"}">
         <div class="ui segment">
             <h3 class="ui header"><g:message code="consortium.superSubscriptionType"/></h3>
-            <table class="ui celled  monitor stackable la-js-responsive-table la-table table">
+            <table class="ui compact  monitor stackable la-js-responsive-table la-table table">
                 <thead>
                 <tr>
                     <th>${message(code: 'subscription')}</th>
@@ -125,7 +125,7 @@
                             <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && controllerName == 'myInstitution'}">
                                 <div class="field">
                                     <label><span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.auditable')}"><i class="ui icon thumbtack"></i></span></label>
-                                    <ui:select name="audit_valid_to" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
+                                    <ui:select class="ui dropdown"  name="audit_valid_to" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                                optionKey="id" optionValue="value" noSelection="${['': '']}"
                                                value="${['': '']}"/>
                                 </div>
@@ -139,7 +139,7 @@
                             <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && controllerName == 'myInstitution'}">
                                 <div class="field">
                                     <label><span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.auditable')}"><i class="ui icon thumbtack"></i></span></label>
-                                    <ui:select name="audit_reference_year" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
+                                    <ui:select class="ui dropdown" name="audit_reference_year" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                                optionKey="id" optionValue="value" noSelection="${['': '']}"
                                                value="${['': '']}"/>
                                 </div>
@@ -156,14 +156,14 @@
                                     fakeList.addAll(RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS))
                                     fakeList.remove(RefdataValue.getByValueAndCategory('Deleted', RDConstants.SUBSCRIPTION_STATUS))
                                 %>
-                                <ui:select name="process_status" from="${fakeList}" optionKey="id" optionValue="value"
+                                <ui:select class="ui dropdown" name="process_status" from="${fakeList}" optionKey="id" optionValue="value"
                                            noSelection="${['': '']}"
                                            value="${['': '']}"/>
                             </div>
                             <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && controllerName == 'myInstitution'}">
                                 <div class="field">
                                     <label><span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.auditable')}"><i class="ui icon thumbtack"></i></span></label>
-                                    <ui:select name="audit_process_status" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
+                                    <ui:select class="ui dropdown" name="audit_process_status" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                                optionKey="id" optionValue="value" noSelection="${['': '']}"
                                                value="${['': '']}"/>
                                 </div>
@@ -176,7 +176,7 @@
                         <div class="two fields">
                             <div class="field">
                                 <label>${message(code: 'subscription.kind.label')}</label>
-                                <ui:select name="process_kind"
+                                <ui:select class="ui dropdown" name="process_kind"
                                            from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_KIND)}"
                                            optionKey="id" optionValue="value" noSelection="${['': '']}"
                                            value="${['': '']}"/>
@@ -184,7 +184,7 @@
                             <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && controllerName == 'myInstitution'}">
                                 <div class="field">
                                     <label><span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.auditable')}"><i class="ui icon thumbtack"></i></span></label>
-                                    <ui:select name="audit_process_kind" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
+                                    <ui:select class="ui dropdown" name="audit_process_kind" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                                optionKey="id" optionValue="value" noSelection="${['': '']}"
                                                value="${['': '']}"/>
                                 </div>
@@ -196,7 +196,7 @@
                         <div class="two fields">
                             <div class="field">
                                 <label>${message(code: 'subscription.form.label')}</label>
-                                <ui:select name="process_form"
+                                <ui:select class="ui dropdown" name="process_form"
                                            from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_FORM)}"
                                            optionKey="id" optionValue="value" noSelection="${['': '']}"
                                            value="${['': '']}"/>
@@ -204,7 +204,7 @@
                             <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && controllerName == 'myInstitution'}">
                                 <div class="field">
                                     <label><span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.auditable')}"><i class="ui icon thumbtack"></i></span></label>
-                                    <ui:select name="audit_process_form" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
+                                    <ui:select class="ui dropdown" name="audit_process_form" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                                optionKey="id" optionValue="value" noSelection="${['': '']}"
                                                value="${['': '']}"/>
                                 </div>
@@ -216,7 +216,7 @@
                         <div class="two fields">
                             <div class="field">
                                 <label>${message(code: 'subscription.resource.label')}</label>
-                                <ui:select name="process_resource"
+                                <ui:select class="ui dropdown" name="process_resource"
                                            from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE)}"
                                            optionKey="id" optionValue="value" noSelection="${['': '']}"
                                            value="${['': '']}"/>
@@ -224,7 +224,7 @@
                             <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && controllerName == 'myInstitution'}">
                                 <div class="field">
                                     <label><span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.auditable')}"><i class="ui icon thumbtack"></i></span></label>
-                                    <ui:select name="audit_process_resource" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
+                                    <ui:select class="ui dropdown" name="audit_process_resource" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                                optionKey="id" optionValue="value" noSelection="${['': '']}"
                                                value="${['': '']}"/>
                                 </div>
@@ -236,7 +236,7 @@
                         <div class="two fields">
                             <div class="field">
                                 <label>${message(code: 'subscription.isPublicForApi.label')}</label>
-                                <ui:select name="process_isPublicForApi"
+                                <ui:select class="ui dropdown" name="process_isPublicForApi"
                                            from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                            optionKey="id" optionValue="value" noSelection="${['': '']}"
                                            value="${['': '']}"/>
@@ -244,7 +244,7 @@
                             <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && controllerName == 'myInstitution'}">
                                 <div class="field">
                                     <label><span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.auditable')}"><i class="ui icon thumbtack"></i></span></label>
-                                    <ui:select name="audit_isPublicForApi" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
+                                    <ui:select class="ui dropdown" name="audit_isPublicForApi" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                                optionKey="id" optionValue="value" noSelection="${['': '']}"
                                                value="${['': '']}"/>
                                 </div>
@@ -257,7 +257,7 @@
                         <div class="two fields">
                             <div class="field">
                                 <label>${message(code: 'subscription.hasPerpetualAccess.label')}</label>
-                                <ui:select name="process_hasPerpetualAccess"
+                                <ui:select class="ui dropdown" name="process_hasPerpetualAccess"
                                            from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                            optionKey="id" optionValue="value" noSelection="${['': '']}"
                                            value="${['': '']}"/>
@@ -265,7 +265,7 @@
                             <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && controllerName == 'myInstitution'}">
                                 <div class="field">
                                     <label><span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.auditable')}"><i class="ui icon thumbtack"></i></span></label>
-                                    <ui:select name="audit_hasPerpetualAccess" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
+                                    <ui:select class="ui dropdown" name="audit_hasPerpetualAccess" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                                optionKey="id" optionValue="value" noSelection="${['': '']}"
                                                value="${['': '']}"/>
                                 </div>
@@ -276,7 +276,7 @@
                         <div class="two fields">
                             <div class="field">
                                 <label>${message(code: 'subscription.hasPublishComponent.label')}</label>
-                                <ui:select name="process_hasPublishComponent"
+                                <ui:select class="ui dropdown" name="process_hasPublishComponent"
                                            from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                            optionKey="id" optionValue="value" noSelection="${['': '']}"
                                            value="${['': '']}"/>
@@ -284,7 +284,7 @@
                             <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && controllerName == 'myInstitution'}">
                                 <div class="field">
                                     <label><span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.auditable')}"><i class="ui icon thumbtack"></i></span></label>
-                                    <ui:select name="audit_hasPublishComponent" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
+                                    <ui:select class="ui dropdown" name="audit_hasPublishComponent" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                                optionKey="id" optionValue="value" noSelection="${['': '']}"
                                                value="${['': '']}"/>
                                 </div>
@@ -295,7 +295,7 @@
                         <div class="two fields">
                             <div class="field">
                                 <label>${message(code: 'subscription.holdingSelection.label')}</label>
-                                <ui:select name="process_holding"
+                                <ui:select class="ui dropdown" name="process_holding"
                                            from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_HOLDING)}"
                                            optionKey="id" optionValue="value" noSelection="${['': '']}"
                                            value="${['': '']}"/>
@@ -303,7 +303,7 @@
                             <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && controllerName == 'myInstitution'}">
                                 <div class="field">
                                     <label><span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.auditable')}"><i class="ui icon thumbtack"></i></span></label>
-                                    <ui:select name="audit_process_holding" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
+                                    <ui:select class="ui dropdown" name="audit_process_holding" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                                optionKey="id" optionValue="value" noSelection="${['': '']}"
                                                value="${['': '']}"/>
                                 </div>
@@ -314,7 +314,7 @@
                         <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_INST_PRO)}">
                             <div class="field">
                                 <label>${message(code: 'subscription.isAutomaticRenewAnnually.label')}</label>
-                                <ui:select name="process_isAutomaticRenewAnnually"
+                                <ui:select class="ui dropdown" name="process_isAutomaticRenewAnnually"
                                            from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                            optionKey="id" optionValue="value" noSelection="${['': '']}"
                                            value="${['': '']}"/>
@@ -340,7 +340,7 @@
                             total="${filteredSubscriptions.size()}/${num_sub_rows}"/>
                 </g:else>
             </h3>
-            <table class="ui celled monitor stackable la-js-responsive-table la-table la-compact table">
+            <table class="ui compact  monitor stackable la-js-responsive-table la-table table">
                 <thead>
                 <tr>
                     <g:if test="${editable}">
