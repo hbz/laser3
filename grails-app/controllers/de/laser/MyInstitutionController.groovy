@@ -3221,7 +3221,7 @@ class MyInstitutionController  {
         ctx.accessService.ctxInstUserCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
     def manageMembers() {
-        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
+        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params), configMap = params.clone()
 
         Profiler prf = new Profiler()
         prf.setBenchmark('start')
@@ -3293,7 +3293,7 @@ join sub.orgRelations or_sub where
         ( or_pa.roleType in (:paRoleTypes) ) and sub.instanceOf is null'''
 
         if (params.subStatus) {
-            queryProviders +=  " and (sub.status = :subStatus)" // ( closed in line 213; needed to prevent consortia members without any subscriptions because or would lift up the other restrictions)
+            queryProviders +=  " and (sub.status = :subStatus)"
             querySubs +=  " and (sub.status = :subStatus)"
             RefdataValue subStatus = RefdataValue.get(params.subStatus)
             queryParamsProviders << [subStatus: subStatus]
@@ -3376,7 +3376,7 @@ join sub.orgRelations or_sub where
         }
         else */
         if(params.fileformat == 'xlsx') {
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(totalMembers, selectedFields, 'member', ExportClickMeService.FORMAT.XLS, contactSwitch)
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(totalMembers, selectedFields, 'member', ExportClickMeService.FORMAT.XLS, contactSwitch, configMap)
 
             response.setHeader "Content-disposition", "attachment; filename=\"${file}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -3391,7 +3391,7 @@ join sub.orgRelations or_sub where
             response.contentType = "text/csv"
             ServletOutputStream out = response.outputStream
             out.withWriter { writer ->
-                writer.write((String) exportClickMeService.exportOrgs(totalMembers, selectedFields, 'member', ExportClickMeService.FORMAT.CSV, contactSwitch))
+                writer.write((String) exportClickMeService.exportOrgs(totalMembers, selectedFields, 'member', ExportClickMeService.FORMAT.CSV, contactSwitch, configMap))
             }
             out.close()
         }

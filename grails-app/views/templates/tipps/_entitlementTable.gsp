@@ -39,7 +39,7 @@
                         <td>
 
                             <g:if test="${!isContainedByTarget && editable}">
-                                <input type="checkbox" name="bulkflag" data-index="${tipp.gokbId}" class="bulkcheck">
+                                <input type="checkbox" name="bulkflag" data-index="${tipp.gokbId}" class="bulkcheck la-js-notOpenAccordion">
                             </g:if>
 
                         </td>

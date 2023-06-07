@@ -43,8 +43,10 @@ class ExportClickMeService {
     ContextService contextService
     CustomerTypeService customerTypeService
     ExportService exportService
+    FilterService filterService
     FinanceService financeService
     GokbService gokbService
+    SubscriptionsQueryService subscriptionsQueryService
 
     MessageSource messageSource
 
@@ -1596,12 +1598,34 @@ class ExportClickMeService {
                 }
                 break
             case 'institution':
+                EXPORT_ORG_CONFIG.keySet().each {
+                    EXPORT_ORG_CONFIG.get(it).fields.each {
+                        exportFields.put(it.key, it.value)
+                    }
+                }
+
+                IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
+                    exportFields.put("participantIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
+                }
+
+                Platform.executeQuery('select distinct(ci.platform) from CustomerIdentifier ci where ci.value != null and ci.customer in (select c.fromOrg from Combo c where c.toOrg = :ctx)', contextParams).each { Platform plat ->
+                    exportFields.put("participantCustomerIdentifiers."+plat.id, [field: null, label: plat.name])
+                }
+
+                PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg()).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
+                    exportFields.put("participantProperty."+propertyDefinition.id, [field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant?.id == contextOrg.id)])
+                }
+                contactTypes.each { RefdataValue contactType ->
+                    exportFields.put("participantContact."+contactType.value, [field: null, label: contactType.getI10n('value')])
+                }
+                break
             case 'member':
                 EXPORT_ORG_CONFIG.keySet().each {
                     EXPORT_ORG_CONFIG.get(it).fields.each {
                         exportFields.put(it.key, it.value)
                     }
                 }
+                exportFields.put('participant.subscriptions', [field: null, label: 'Subscriptions',  message: 'subscription.plural'])
 
                 IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
                     exportFields.put("participantIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
@@ -1680,6 +1704,7 @@ class ExportClickMeService {
                 }
                 break
             case 'institution': fields = EXPORT_ORG_CONFIG as Map
+                fields.participant.fields << ['participant.subscriptions':[field: null, label: 'Subscriptions',  message: 'subscription.plural']]
                 fields.participantIdentifiers.fields.clear()
                 IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
                     fields.participantIdentifiers.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
@@ -2452,7 +2477,7 @@ class ExportClickMeService {
      * @param config the organisation type to be exported
      * @return an Excel worksheet containing the output
      */
-    def exportOrgs(List<Org> result, Map<String, Object> selectedFields, String config, FORMAT format, Set<String> contactSources = []) {
+    def exportOrgs(List<Org> result, Map<String, Object> selectedFields, String config, FORMAT format, Set<String> contactSources = [], Map<String, Object> configMap = [:]) {
         Locale locale = LocaleUtils.getCurrentLocale()
 
         String sheetTitle
@@ -2493,7 +2518,7 @@ class ExportClickMeService {
 
         List exportData = []
         result.each { Org org ->
-            _setOrgRow(org, selectedExportFields, exportData, wekbRecords, format, contactSources)
+            _setOrgRow(org, selectedExportFields, exportData, wekbRecords, format, contactSources, configMap)
         }
 
         Map sheetData = [:]
@@ -3346,7 +3371,7 @@ class ExportClickMeService {
      * @param selectedFields the fields which should appear
      * @param exportData the list containing the export rows
      */
-    private void _setOrgRow(Org result, Map<String, Object> selectedFields, List exportData, Map wekbRecords, FORMAT format, Set<String> contactSources = []){
+    private void _setOrgRow(Org result, Map<String, Object> selectedFields, List exportData, Map wekbRecords, FORMAT format, Set<String> contactSources = [], Map<String, Object> configMap = [:]){
         List row = []
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         selectedFields.keySet().each { String fieldKey ->
@@ -3389,6 +3414,21 @@ class ExportClickMeService {
                 }*/
                 else if (fieldKey.contains('altnames')) {
                     _setOrgFurtherInformation(result, row, fieldKey, format)
+                }
+                else if (fieldKey == 'participant.subscriptions') {
+                    def subStatus
+                    if(configMap.action == 'currentProviders') {
+                        subStatus = RDStore.SUBSCRIPTION_CURRENT.id.toString()
+                    }
+                    else subStatus = configMap.subStatus
+                    List subscriptionQueryParams
+                    if(configMap.filterPvd && configMap.filterPvd != "" && filterService.listReaderWrapper(configMap, 'filterPvd')){
+                        subscriptionQueryParams = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: result, actionName: configMap.action, status: subStatus ?: null, date_restr: configMap.subValidOn ? DateUtils.parseDateGeneric(configMap.subValidOn) : null, providers: filterService.listReaderWrapper(configMap, 'filterPvd')], contextService.getOrg())
+                    }else {
+                        subscriptionQueryParams = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: result, actionName: configMap.action, status: subStatus ?: null, date_restr: configMap.subValidOn ? DateUtils.parseDateGeneric(configMap.subValidOn) : null], contextService.getOrg())
+                    }
+                    List nameOfSubscriptions = Subscription.executeQuery("select s.name " + subscriptionQueryParams[0], subscriptionQueryParams[1])
+                    row.add(createTableCell(format, nameOfSubscriptions.join('; ')))
                 }
                 else if (fieldKey == 'participant.readerNumbers') {
                     _setOrgFurtherInformation(result, row, fieldKey, format)
@@ -3786,10 +3826,12 @@ class ExportClickMeService {
     def createTableCell(FORMAT format, def value, String style = null) {
         if(format == FORMAT.XLS)
             [field: value, style: style]
-        else if(format == FORMAT.CSV)
-            value.replaceAll('\n', ';')
-        else if(format == FORMAT.TSV)
-            value.replaceAll('\n', ',')
+        else if(value instanceof String) {
+            if (format == FORMAT.CSV)
+                value.replaceAll('\n', ';')
+            else if (format == FORMAT.TSV)
+                value.replaceAll('\n', ',')
+        }
         else value
     }
 
@@ -4016,15 +4058,30 @@ class ExportClickMeService {
                 ReaderNumber readerNumberStudents
                 ReaderNumber readerNumberStaff
                 ReaderNumber readerNumberFTE
+                ReaderNumber readerNumberPeople = ReaderNumber.findByReferenceGroupAndOrg(RDStore.READER_NUMBER_PEOPLE, org, [sort: 'dueDate', order: 'desc'])
+                ReaderNumber readerNumberUser = ReaderNumber.findByReferenceGroupAndOrg(RDStore.READER_NUMBER_USER, org, [sort: 'dueDate', order: 'desc'])
+                ReaderNumber readerNumberStaffwithDueDate = ReaderNumber.findByReferenceGroupInListAndOrgAndDueDateIsNotNull([RDStore.READER_NUMBER_SCIENTIFIC_STAFF, RDStore.READER_NUMBER_FTE], org, [sort: 'dueDate', order: 'desc'])
 
-                //ReaderNumber readerNumberPeoplewithDueDate = ReaderNumber.findByReferenceGroupAndOrgAndDueDateIsNotNull(RDStore.READER_NUMBER_PEOPLE.value_de, org, [sort: 'dueDate', order: 'desc'])
-                ReaderNumber readerNumberStaffwithDueDate = ReaderNumber.findByReferenceGroupAndOrgAndDueDateIsNotNull(RDStore.READER_NUMBER_SCIENTIFIC_STAFF, org, [sort: 'dueDate', order: 'desc'])
                 if(readerNumberStaffwithDueDate){
                     row.add(createTableCell(format, ' '))
+                    row.add(createTableCell(format, DateUtils.getLocalizedSDF_noTime(LocaleUtils.getCurrentLocale()).format(readerNumberStaffwithDueDate.dueDate)))
                     row.add(createTableCell(format, ' '))
                     row.add(createTableCell(format, readerNumberStaffwithDueDate.value))
                     row.add(createTableCell(format, ' '))
-                }else{
+                }
+                else if(readerNumberPeople || readerNumberUser){
+                    String dueDate = ' '
+                    if(readerNumberPeople && readerNumberPeople.dueDate)
+                        dueDate = DateUtils.getLocalizedSDF_noTime(LocaleUtils.getCurrentLocale()).format(readerNumberPeople.dueDate)
+                    else if(readerNumberUser && readerNumberUser.dueDate)
+                        dueDate = DateUtils.getLocalizedSDF_noTime(LocaleUtils.getCurrentLocale()).format(readerNumberUser.dueDate)
+                    row.add(createTableCell(format, ' '))
+                    row.add(createTableCell(format, dueDate))
+                    row.add(createTableCell(format, ' '))
+                    row.add(createTableCell(format, ' '))
+                    row.add(createTableCell(format, ' '))
+                }
+                else {
                     RefdataValue currentSemester = RefdataValue.getCurrentSemester()
 
                     readerNumberStudents = ReaderNumber.findByReferenceGroupAndOrgAndSemester(RDStore.READER_NUMBER_STUDENTS, org, currentSemester)
@@ -4033,6 +4090,7 @@ class ExportClickMeService {
 
                     if(readerNumberStudents || readerNumberStaff || readerNumberFTE){
                         row.add(createTableCell(format, currentSemester.getI10n('value')))
+                        row.add(createTableCell(format, ' '))
                         BigDecimal studentsStr = readerNumberStudents ? readerNumberStudents.value : null,
                         staffStr = readerNumberStaff ? readerNumberStaff.value : null,
                         fteStr = readerNumberFTE ? readerNumberFTE.value : null
@@ -4056,6 +4114,7 @@ class ExportClickMeService {
                                            staffStr = readerNumberStaff ? readerNumberStaff.value : null,
                                            fteStr = readerNumberFTE ? readerNumberFTE.value : null
                                     row.add(createTableCell(format, refdataValueList[count].getI10n('value')))
+                                    row.add(createTableCell(format, ' '))
                                     row.add(createTableCell(format, studentsStr))
                                     row.add(createTableCell(format, staffStr))
                                     row.add(createTableCell(format, fteStr))
@@ -4068,12 +4127,11 @@ class ExportClickMeService {
                             row.add(createTableCell(format, null))
                             row.add(createTableCell(format, null))
                             row.add(createTableCell(format, null))
+                            row.add(createTableCell(format, null))
                         }
                     }
                 }
 
-                ReaderNumber readerNumberPeople = ReaderNumber.findByReferenceGroupAndOrg(RDStore.READER_NUMBER_PEOPLE, org, [sort: 'dueDate', order: 'desc'])
-                ReaderNumber readerNumberUser = ReaderNumber.findByReferenceGroupAndOrg(RDStore.READER_NUMBER_USER, org, [sort: 'dueDate', order: 'desc'])
 
                 BigDecimal peopleStr = readerNumberUser ? readerNumberUser.value : null, userStr = readerNumberPeople ? readerNumberPeople.value : null
 
@@ -4108,6 +4166,7 @@ class ExportClickMeService {
                 row.add(createTableCell(format, note))
 
             } else {
+                row.add(createTableCell(format, ' '))
                 row.add(createTableCell(format, ' '))
                 row.add(createTableCell(format, ' '))
                 row.add(createTableCell(format, ' '))
@@ -4168,11 +4227,12 @@ class ExportClickMeService {
                 }*/
                 else if (fieldKey == 'participant.readerNumbers') {
                     titles << messageSource.getMessage('readerNumber.semester.label', null, locale)
+                    titles << messageSource.getMessage('readerNumber.dueDate.label', null, locale)
                     titles << RDStore.READER_NUMBER_STUDENTS."${localizedValue}"
                     titles << RDStore.READER_NUMBER_SCIENTIFIC_STAFF."${localizedValue}"
                     titles << RDStore.READER_NUMBER_FTE."${localizedValue}"
-                    titles << RDStore.READER_NUMBER_PEOPLE."${localizedValue}"
                     titles << RDStore.READER_NUMBER_USER."${localizedValue}"
+                    titles << RDStore.READER_NUMBER_PEOPLE."${localizedValue}"
                     titles << messageSource.getMessage('readerNumber.sum.label', null, locale)
                     titles << messageSource.getMessage('readerNumber.note.label', null, locale)
                 }
