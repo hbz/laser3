@@ -37,7 +37,7 @@ abstract class AbstractReport implements Comparable<AbstractReport> {
     static Map ERROR_CODES = [:]
     static final String API_AUTH_CUSTOMER_REQUESTOR_API = "Requestor Key+Customer ID+central API Key"
     static final String API_AUTH_REQUESTOR_API = "Requestor Key+API Key"
-    static final String API_AUTH_CUSTOMER_API = "Customer Key+API Key"
+    static final String API_AUTH_CUSTOMER_API = "Customer ID+API Key"
     static final String API_AUTH_CUSTOMER_REQUESTOR = "Requestor Key+Customer ID"
     static final String API_IP_WHITELISTING = "IP whitelisting"
 

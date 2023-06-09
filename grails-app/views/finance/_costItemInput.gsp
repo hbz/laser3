@@ -568,14 +568,18 @@
                 return true;
             }
         },
-        calcTaxResults: function () {
+        calcTaxResults: function (localHandInput) {
             let roundB = JSPC.app.finance${idSuffix}.billingSumRounding.prop('checked');
             let roundF = JSPC.app.finance${idSuffix}.finalCostRounding.prop('checked');
             //console.log(taxRate.val());
             let taxF = 1.0 + (0.01 * JSPC.app.finance${idSuffix}.taxRate.val().split("§")[1]);
             let parsedBillingCurrency = JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costBillingCurrency.val().trim());
             let parsedCurrencyRate = JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costCurrencyRate.val().trim());
-            let parsedLocalCurrency = parsedBillingCurrency * parsedCurrencyRate
+            let parsedLocalCurrency = parsedBillingCurrency * parsedCurrencyRate; //calcualted but NOT set yet!
+            if(localHandInput === true) {
+                parsedLocalCurrency = JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costLocalCurrency.val().trim());
+                parsedBillingCurrency = parsedLocalCurrency / parsedCurrencyRate; //manipulate iff localCurrency has been changed by user
+            }
             let billingCurrencyAfterRounding = roundB ? Math.round(parsedBillingCurrency) : parsedBillingCurrency
             let localCurrencyAfterRounding = roundB ? Math.round(parsedLocalCurrency) : parsedLocalCurrency
             JSPC.app.finance${idSuffix}.costBillingCurrency.val(JSPC.app.finance${idSuffix}.doubleToString(billingCurrencyAfterRounding));
@@ -647,7 +651,7 @@
                 if (! JSPC.app.finance${idSuffix}.isError(JSPC.app.finance${idSuffix}.costLocalCurrency) && ! JSPC.app.finance${idSuffix}.isError(JSPC.app.finance${idSuffix}.costCurrencyRate)) {
                     let parsedLocalCurrency = JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costLocalCurrency.val().trim());
                     let parsedCurrencyRate = JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costCurrencyRate.val().trim());
-                    JSPC.app.finance${idSuffix}.costBillingCurrency.val((parsedLocalCurrency / parsedCurrencyRate));
+                    JSPC.app.finance${idSuffix}.costBillingCurrency.val(JSPC.app.finance${idSuffix}.doubleToString((parsedLocalCurrency / parsedCurrencyRate)));
                     $(".la-account-currency").find(".field").removeClass("error");
                     JSPC.app.finance${idSuffix}.calcTaxResults();
                 }
@@ -689,18 +693,23 @@
                 JSPC.app.finance${idSuffix}.elementChangeable = false;
             });
             this.costElems.blur(function(e) {
-                let allSet = JSPC.app.finance${idSuffix}.costBillingCurrency.val().length > 0 && JSPC.app.finance${idSuffix}.costLocalCurrency.val().length > 0 && JSPC.app.finance${idSuffix}.costCurrencyRate.val().length > 0
+                let allSet = JSPC.app.finance${idSuffix}.costBillingCurrency.val().length > 0 && JSPC.app.finance${idSuffix}.costLocalCurrency.val().length > 0 && JSPC.app.finance${idSuffix}.costCurrencyRate.val().length > 0;
                 if(JSPC.app.finance${idSuffix}.elementChangeable === true){
                     JSPC.app.finance${idSuffix}.costElems.removeClass('focused');
                     if(allSet) {
-                        if($(this).attr("id") === JSPC.app.finance${idSuffix}.costCurrencyRate.attr("id") || $(this).attr("id") === JSPC.app.finance${idSuffix}.costBillingCurrency.attr("id")) {
-                            JSPC.app.finance${idSuffix}.calculateLocalCurrency.click();
+                        JSPC.app.finance${idSuffix}.calcTaxResults($(this).attr("id") === JSPC.app.finance${idSuffix}.costLocalCurrency.attr("id")); //will set boolean localHandInput
+                    }
+                    else {
+                        if(JSPC.app.finance${idSuffix}.costLocalCurrency.val().length > 0 && JSPC.app.finance${idSuffix}.costCurrencyRate.val().length > 0) {
+                            JSPC.app.finance${idSuffix}.calculateBillingCurrency.click();
                         }
-                        if($(this).attr("id") === JSPC.app.finance${idSuffix}.costLocalCurrency.attr("id")) {
+                        if(JSPC.app.finance${idSuffix}.costBillingCurrency.val().length > 0 && JSPC.app.finance${idSuffix}.costLocalCurrency.val().length > 0) {
                             JSPC.app.finance${idSuffix}.calculateCurrencyRate.click();
                         }
+                        if(JSPC.app.finance${idSuffix}.costBillingCurrency.val().length > 0 && JSPC.app.finance${idSuffix}.costCurrencyRate.val().length > 0) {
+                            JSPC.app.finance${idSuffix}.calculateLocalCurrency.click();
+                        }
                     }
-                    JSPC.app.finance${idSuffix}.calcTaxResults();
                 }
             });
             this.costElems.keydown(function(e) {
