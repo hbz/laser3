@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      09.06.2023  rc-3.1  3.1.3       Moe     Bug         ClickMe-Export funktioniert nicht richtig bei Umfrage
+
 --      09.06.2023  rc-3.1  3.1.3       Moe     Feature     IP-Adressen in Zwischenablage kopieren
 
 5118    06.06.2023  rc-3.1  3.1.3       Andreas Bug         irreführende Sortierung zurückgesetzt
