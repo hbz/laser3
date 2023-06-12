@@ -3,7 +3,9 @@ package de.laser
 import de.laser.config.ConfigMapper
 import de.laser.http.BasicHttpClient
 import de.laser.remote.ApiSource
+import de.laser.utils.LocaleUtils
 import grails.gorm.transactions.Transactional
+import org.springframework.context.MessageSource
 
 /**
  * Is actually a we:kb service. It contains methods to communicate with the we:kb ElasticSearch index
@@ -11,6 +13,8 @@ import grails.gorm.transactions.Transactional
  */
 @Transactional
 class GokbService {
+
+    MessageSource messageSource
 
     @Deprecated
     Map<String, Object> getPackagesMap(ApiSource apiSource, def qterm = null, def suggest = true, def max = 2000) {
@@ -224,12 +228,14 @@ class GokbService {
         Set records = []
 
         Map queryResult = queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/searchApi', queryParams)
-        if (queryResult.warning) {
+        if (queryResult.warning && queryResult.warning.result) {
             records.addAll(queryResult.warning.result)
             result.recordsCount = queryResult.warning.result_count_total
             result.records = records
         }
         else {
+            if(queryResult.warning.code == "error")
+                result.error = messageSource.getMessage('wekb.error.500', [queryResult.warning.message] as Object[], LocaleUtils.getCurrentLocale())
             result.recordsCount = 0
             result.records = records
         }
