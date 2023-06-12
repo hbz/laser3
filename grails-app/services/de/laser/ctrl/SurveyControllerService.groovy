@@ -148,12 +148,12 @@ class SurveyControllerService {
             result.multiYearTermTwoSurvey = null
 
             if (PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_5.id in result.properties.id) {
-                result.multiYearTermFiveSurvey = PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_3
+                result.multiYearTermFiveSurvey = PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_5
                 result.properties.remove(result.multiYearTermFiveSurvey)
             }
 
             if (PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_4.id in result.properties.id) {
-                result.multiYearTermFourSurvey = PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_3
+                result.multiYearTermFourSurvey = PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_4
                 result.properties.remove(result.multiYearTermFourSurvey)
             }
 
