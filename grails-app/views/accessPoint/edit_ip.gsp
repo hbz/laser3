@@ -13,6 +13,14 @@
 
 <g:if test="${is_INST_EDITOR_with_PERMS_BASIC}">
     <ui:controlButtons>
+        <ui:actionsDropdown>
+                <button class="item" onclick="JSPC.app.copyToClipboardIpv4Ranges()">
+                    ${message(code:'menu.institutions.copy_emailaddresses_to_clipboard')}
+                </button>
+                <button class="item" onclick="JSPC.app.copyToClipboardIpv4Ranges()">
+                    ${message(code:'menu.institutions.copy_emailaddresses_to_clipboard')}
+                </button>
+        </ui:actionsDropdown>
         <ui:exportDropdown>
             <ui:exportDropdownItem>
                 <g:link class="item" action="edit_ip"
@@ -216,5 +224,20 @@
     </div>
 
 </div>
+
+<laser:script file="${this.getGroovyPageFileName()}">
+    JSPC.app.jsonIpv4Ranges = <%=groovy.json.JsonOutput.toJson((Set) accessPointDataList?.ipv4Ranges?.collect { it.ipRange })%>;
+
+    JSPC.app.jsonIpv6Ranges = <%=groovy.json.JsonOutput.toJson((Set) accessPointDataList?.ipv6Ranges?.collect { it.ipCidr })%>;
+
+    JSPC.app.copyToClipboardIpv4Ranges = function () {
+            navigator.clipboard.writeText(JSPC.app.jsonIpv4Ranges);
+        }
+
+    JSPC.app.copyToClipboardIpv6Ranges = function () {
+            navigator.clipboard.writeText(JSPC.app.jsonIpv6Ranges);
+        }
+
+</laser:script>
 
 <laser:htmlEnd/>
