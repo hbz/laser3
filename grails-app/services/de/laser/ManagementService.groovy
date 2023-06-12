@@ -42,9 +42,9 @@ class ManagementService {
     AccessService accessService
     AddressbookService addressbookService
     ContextService contextService
-    ExecutorService executorService
     FormService formService
     GenericOIDService genericOIDService
+    GlobalService globalService
     MessageSource messageSource
     MyInstitutionControllerService myInstitutionControllerService
     SubscriptionControllerService subscriptionControllerService
@@ -688,8 +688,8 @@ class ManagementService {
                 Date startDate = params.valid_from ? sdf.parse(params.valid_from) : null
                 Date endDate = params.valid_to ? sdf.parse(params.valid_to) : null
                 Year referenceYear = params.reference_year ? Year.parse(params.reference_year) : null
-                Map<String, String> auditable = ['audit_start_date': 'startDate',
-                                                 'audit_end_date': 'endDate',
+                Map<String, String> auditable = ['audit_valid_from': 'startDate',
+                                                 'audit_valid_to': 'endDate',
                                                  'audit_reference_year': 'referenceYear',
                                                  'audit_process_status': 'status',
                                                  'audit_process_kind': 'kind',
@@ -700,23 +700,27 @@ class ManagementService {
                                                  'audit_hasPublishComponent': 'hasPublishComponent',
                                                  'audit_holdingSelection': 'holdingSelection',
                                                  'audit_isMultiYear': 'isMultiYear']
+                //implicates customerType check -> customerType != consortia cannot set those keys
+                Map<String, String> selectedAuditable = auditable.findAll { String auditSetting, String field ->
+                    params.containsKey(auditSetting) && params.get(auditSetting) != ""
+                }
                 if(params.processOption == 'changeProperties') {
                     subscriptions.each { Subscription subscription ->
                         if (subscription.isEditableBy(result.user)) {
                             if(!subscription.instanceOf) {
-                                auditable.each { String auditSetting, String auditProp ->
-                                    //implicates customerType check -> customerType != consortia cannot set those keys
-                                    if(params.containsKey(auditSetting)) {
-                                        if(RefdataValue.get(params.get(auditSetting)) == RDStore.YN_YES && !AuditConfig.getConfig(subscription, auditProp)) {
-                                            AuditConfig.addConfig(subscription, auditProp)
-                                            subscription.getDerivedSubscriptions().each { Subscription member ->
-                                                member[auditProp] = subscription[auditProp]
+                                selectedAuditable.each { String auditSetting, String auditProp ->
+                                    if(RefdataValue.get(params.get(auditSetting)) == RDStore.YN_YES && !AuditConfig.getConfig(subscription, auditProp)) {
+                                        AuditConfig.addConfig(subscription, auditProp)
+                                        //need to reinitialize the collection because of cleanUpGORM()
+                                        Subscription.findAllByInstanceOf(subscription).each { Subscription member ->
+                                            member[auditProp] = subscription[auditProp]
+                                            if(member.isDirty())
                                                 member.save()
-                                            }
                                         }
-                                        else if(RefdataValue.get(params.get(auditSetting)) == RDStore.YN_NO && AuditConfig.getConfig(subscription, auditProp)) {
-                                            AuditConfig.removeConfig(subscription, auditProp)
-                                        }
+                                        globalService.cleanUpGorm() //TEST!!!! It may be cause issues elsewhere; is to prevent timeouts on server
+                                    }
+                                    else if(RefdataValue.get(params.get(auditSetting)) == RDStore.YN_NO && AuditConfig.getConfig(subscription, auditProp)) {
+                                        AuditConfig.removeConfig(subscription, auditProp)
                                     }
                                 }
                             }
@@ -816,7 +820,6 @@ class ManagementService {
                         }
                     }
                 }
-
             } else {
                 flash.error = messageSource.getMessage('subscriptionsManagement.noSelectedSubscriptions', null, locale)
             }
