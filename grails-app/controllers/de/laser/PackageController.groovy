@@ -121,7 +121,7 @@ class PackageController {
         Map queryCuratoryGroups = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/groups', [:])
         if(!params.sort)
             params.sort = 'name'
-        if(queryCuratoryGroups.error == 404) {
+        if(queryCuratoryGroups.code == 404) {
             result.error = message(code:'wekb.error.'+queryCuratoryGroups.error) as String
         }
         else {

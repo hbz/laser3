@@ -14,7 +14,7 @@
 </g:if>
 
 <g:if test="${error}">
-    <div class="ui icon info error message">
+    <div class="ui icon error message">
         <i class="exclamation triangle icon"></i>
         <i class="close icon"></i>
 

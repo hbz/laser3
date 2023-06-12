@@ -2043,12 +2043,18 @@ class SubscriptionControllerService {
 
                 Set records = []
                 Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/searchApi' , queryParams)
-                if (queryResult.warning) {
-                    records.addAll(queryResult.warning.result)
-                    result.recordsCount = queryResult.warning.result_count_total
-                    result.records = records
+                if (queryResult.containsKey("warning")) {
+                    if(queryResult.warning.containsKey("result")) {
+                        records.addAll(queryResult.warning.result)
+                        result.recordsCount = queryResult.warning.result_count_total
+                        result.records = records
+                        [result:result,status:STATUS_OK]
+                    }
+                    else if(queryResult.warning.code == "error") {
+                        result.error = messageSource.getMessage('wekb.error.500', [queryResult.warning.message].toArray(), LocaleUtils.getCurrentLocale())
+                        [result: result, status: STATUS_ERROR]
+                    }
                 }
-                [result:result,status:STATUS_OK]
             }
 
         }
@@ -2074,11 +2080,16 @@ class SubscriptionControllerService {
                 String pkgUUID = params.addUUID
                 ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
                 result.source = apiSource.baseUrl
+                RefdataValue holdingSelection = RefdataValue.get(params.holdingSelection)
                 if(params.holdingSelection) {
-                    RefdataValue holdingSelection = RefdataValue.get(params.holdingSelection)
+                    holdingSelection = RefdataValue.get(params.holdingSelection)
                     result.subscription.holdingSelection = holdingSelection
                     result.subscription.save()
                 }
+                else {
+                    holdingSelection = GrailsHibernateUtil.unwrapIfProxy(result.subscription.holdingSelection)
+                }
+                result.holdingSelection = holdingSelection
                 GlobalRecordSource source = GlobalRecordSource.findByUriLikeAndRectype(result.source+'%', GlobalSourceSyncService.RECTYPE_TIPP)
                 log.debug("linkPackage. Global Record Source URL: " +source.uri)
                 globalSourceSyncService.source = source
@@ -2106,9 +2117,9 @@ class SubscriptionControllerService {
                                 }
                                 Package pkgToLink = Package.findByGokbId(pkgUUID)
                                 result.packageName = pkgToLink.name
-                                subscriptionService.addToSubscription(result.subscription, pkgToLink, result.subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
+                                subscriptionService.addToSubscription(result.subscription, pkgToLink, holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
                                 if(auditService.getAuditConfig(result.subscription, 'holdingSelection')) {
-                                    subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, result.subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
+                                    subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
                                 }
                                 //subscriptionService.addPendingChangeConfiguration(result.subscription, pkgToLink, params.clone())
                             }
@@ -2120,9 +2131,9 @@ class SubscriptionControllerService {
                     }
                     else {
                         Package pkgToLink = globalSourceSyncService.createOrUpdatePackage(pkgUUID)
-                        subscriptionService.addToSubscription(result.subscription, pkgToLink, result.subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
+                        subscriptionService.addToSubscription(result.subscription, pkgToLink, holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
                         if(auditService.getAuditConfig(result.subscription, 'holdingSelection')) {
-                            subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, result.subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
+                            subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
                         }
                         //subscriptionService.addPendingChangeConfiguration(result.subscription, pkgToLink, params.clone())
                     }
