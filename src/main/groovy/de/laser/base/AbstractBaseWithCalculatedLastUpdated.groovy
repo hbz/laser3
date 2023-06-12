@@ -33,7 +33,10 @@ abstract class AbstractBaseWithCalculatedLastUpdated extends AbstractBase
 
         BeanStore.getCascadingUpdateService().update(this, new Date())
         DeletedObject.withTransaction {
-            DeletedObject.construct(this)
+            if(this.hasProperty('isPublicForApi') && this.isPublicForApi)
+                DeletedObject.construct(this)
+            else if(!this.hasProperty('isPublicForApi'))
+                DeletedObject.construct(this)
         }
     }
 

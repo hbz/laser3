@@ -1,6 +1,9 @@
 package de.laser.traces
 
 import de.laser.IssueEntitlement
+import de.laser.License
+import de.laser.OrgRole
+import de.laser.Subscription
 import de.laser.TitleInstancePackagePlatform
 import de.laser.exceptions.CreationException
 
@@ -16,6 +19,7 @@ class DeletedObject {
     Date lastUpdated
     Date oldDateCreated
     Date oldLastUpdated
+    Set combos
 
     static mapping = {
         datasource                          'storage'
@@ -32,6 +36,10 @@ class DeletedObject {
         lastUpdated                         column: 'do_last_updated'
         oldLastUpdated                      column: 'do_old_last_updated'
     }
+
+    static hasMany = [
+        combos: DelCombo
+    ]
 
     static constraints = {
         oldGlobalUID (nullable: true)
@@ -52,8 +60,15 @@ class DeletedObject {
             trace.referenceTitleWekbID = delObj.tipp.gokbId
         }
 
-        if(trace.save())
+        if(trace.save()) {
+            if(delObj instanceof Subscription || delObj instanceof License) {
+                delObj.orgRelations.each { OrgRole oo ->
+                    DelCombo delCombo = new DelCombo(trace: this, accessibleOrg: oo.org.globalUID)
+                    delCombo.save()
+                }
+            }
             trace
+        }
         else throw new CreationException(trace.getErrors().getAllErrors())
     }
 }
