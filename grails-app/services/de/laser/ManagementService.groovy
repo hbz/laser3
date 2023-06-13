@@ -705,7 +705,7 @@ class ManagementService {
                     params.containsKey(auditSetting) && params.get(auditSetting) != ""
                 }
                 if(params.processOption == 'changeProperties') {
-                    if(result.contextOrg.isCustomerType_Consortium()) {
+                    if(result.contextOrg.isCustomerType_Consortium() && controller instanceof MyInstitutionController) {
                         Set<String> updateParts = [], auditTrigger = []
                         Map<String, Object> updateParams = [subscriptions: subscriptions]
                         if (startDate) {
