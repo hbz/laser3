@@ -3,6 +3,7 @@ package de.laser
 
 import de.laser.auth.User
 import de.laser.finance.*
+import de.laser.interfaces.CalculatedType
 import de.laser.stats.Fact
 import de.laser.storage.RDStore
 import de.laser.oap.OrgAccessPoint
@@ -15,6 +16,7 @@ import de.laser.survey.SurveyResult
 import de.laser.system.SystemProfiler
 import de.laser.titles.TitleHistoryEvent
 import de.laser.titles.TitleHistoryEventParticipant
+import de.laser.traces.DeletedObject
 import groovy.util.logging.Slf4j
 import org.elasticsearch.action.delete.DeleteRequest
 import org.elasticsearch.client.RequestOptions
@@ -368,7 +370,12 @@ class DeletionService {
 
                     // org roles
                     sub.orgRelations.clear()
-                    oRoles.each { tmp -> tmp.delete() }
+                    Set delRelations = []
+                    oRoles.each { tmp ->
+                        if(tmp.roleType != RDStore.OR_SUBSCRIBER_CONS_HIDDEN)
+                            delRelations << [org: tmp.org.globalUID]
+                        tmp.delete()
+                    }
 
                     // person roles
                     sub.prsLinks.clear()
@@ -467,6 +474,11 @@ class DeletionService {
                     }
 
                     sub.delete()
+
+                    DeletedObject.withTransaction {
+                        if(sub.isPublicForApi)
+                            DeletedObject.construct(sub, delRelations)
+                    }
                     status.flush()
 
                     result.status = RESULT_SUCCESS

@@ -1,5 +1,6 @@
 package de.laser.api.v0.entities
 
+import de.laser.traces.DelCombo
 import de.laser.traces.DeletedObject
 import de.laser.Identifier
 import de.laser.Links
@@ -116,6 +117,7 @@ class ApiSubscription {
      */
     static JSON getSubscriptionList(Org owner, Org context){
         Collection<Object> result = []
+		List deleted = []
 
         List<Subscription> available = Subscription.executeQuery(
                 'SELECT DISTINCT(sub) FROM Subscription sub JOIN sub.orgRelations oo WHERE oo.org = :owner AND oo.roleType in (:roles )' ,
@@ -125,11 +127,25 @@ class ApiSubscription {
                 ]
         )
 
+		DeletedObject.withTransaction {
+			deleted.addAll(DeletedObject.executeQuery(
+					'SELECT DISTINCT(del) FROM DeletedObject del JOIN del.combos delc WHERE delc.accessibleOrg = :owner AND del.oldObjectType = :objType' ,
+					[
+							owner: owner.globalUID,
+							objType: Subscription.class.name
+					]
+			))
+		}
+
+
 		println "${available.size()} available subscriptions found .."
 
         available.each { sub ->
 			result.add(ApiStubReader.requestSubscriptionStub(sub, context))
         }
+		deleted.each { DeletedObject deletedObject ->
+			result.add(ApiStubReader.requestDeletedObjectStub(deletedObject, context))
+		}
 
 		ApiToolkit.cleanUpDebugInfo(result)
 

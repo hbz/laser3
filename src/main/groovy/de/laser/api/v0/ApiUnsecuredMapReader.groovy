@@ -12,6 +12,7 @@ import de.laser.finance.Invoice
 import de.laser.finance.PriceItem
 import de.laser.oap.OrgAccessPoint
 import de.laser.finance.Order
+import de.laser.traces.DeletedObject
 import groovy.sql.GroovyRowResult
 
 /**
@@ -340,6 +341,21 @@ class ApiUnsecuredMapReader {
         // References
         result.provider = getOrganisationStubMap(pform.org) // de.laser.Org
         result.properties = ApiCollectionReader.getCustomPropertyCollection(pform.propertySet, pform, context)
+
+        ApiToolkit.cleanUp(result, true, true)
+    }
+
+    static Map<String, Object> getDeletedObjectStubMap(DeletedObject delObj) {
+        if (!delObj) {
+            return null
+        }
+        Map<String, Object> result = [:]
+
+        result.globalUID        = delObj.oldGlobalUID
+        result.name             = delObj.oldName
+        result.calculatedType   = delObj.oldCalculatedType
+        result.startDate        = ApiToolkit.formatInternalDate(delObj.oldStartDate)
+        result.endDate          = ApiToolkit.formatInternalDate(delObj.oldEndDate)
 
         ApiToolkit.cleanUp(result, true, true)
     }

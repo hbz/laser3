@@ -32,12 +32,6 @@ abstract class AbstractBaseWithCalculatedLastUpdated extends AbstractBase
         log.debug("afterDeleteHandler()")
 
         BeanStore.getCascadingUpdateService().update(this, new Date())
-        DeletedObject.withTransaction {
-            if(this.hasProperty('isPublicForApi') && this.isPublicForApi)
-                DeletedObject.construct(this)
-            else if(!this.hasProperty('isPublicForApi'))
-                DeletedObject.construct(this)
-        }
     }
 
     abstract def afterInsert() /* { afterInsertHandler() } */

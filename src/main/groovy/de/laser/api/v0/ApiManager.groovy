@@ -16,6 +16,7 @@ import de.laser.api.v0.entities.*
 import de.laser.api.v0.special.ApiOAMonitor
 import de.laser.api.v0.special.ApiStatistic
 import de.laser.storage.Constants
+import de.laser.traces.DeletedObject
 import grails.converters.JSON
 import groovy.sql.Sql
 import groovy.util.logging.Slf4j
@@ -311,9 +312,14 @@ class ApiManager {
             result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
 
             if (tmp.checkFailureCodes_3()) {
-                Sql sql = GlobalService.obtainSqlConnection()
-                result = ApiSubscription.requestSubscription((Subscription) tmp.obj, contextOrg, isInvoiceTool, sql)
-                sql.close()
+                if(tmp.obj instanceof Subscription) {
+                    Sql sql = GlobalService.obtainSqlConnection()
+                    result = ApiSubscription.requestSubscription((Subscription) tmp.obj, contextOrg, isInvoiceTool, sql)
+                    sql.close()
+                }
+                else if(tmp.obj instanceof DeletedObject) {
+                    result = ApiDeletedObject.requestDeletedSubscription((DeletedObject) tmp.obj, contextOrg, isInvoiceTool)
+                }
             }
         }
         else if (checkValidRequest('subscriptionList')) {

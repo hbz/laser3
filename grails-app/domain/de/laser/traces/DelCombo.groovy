@@ -3,7 +3,7 @@ package de.laser.traces
 class DelCombo {
 
     String accessibleOrg
-    Long delObjTrace
+    DeletedObject delObjTrace
 
     static mapping = {
         datasource 'storage'
