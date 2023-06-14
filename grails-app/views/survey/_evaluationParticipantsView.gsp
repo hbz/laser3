@@ -413,7 +413,7 @@
         <thead>
         <tr>
             <g:if test="${showCheckbox}">
-                    <g:if test="${surveyParticipantsHasNotAccess && actionName != 'openParticipantsAgain' && actionName != 'participantsReminder' && params.tab != 'participantsViewAllNotFinish'}">
+                    <g:if test="${surveyParticipantsHasNotAccess && !(actionName in ['openParticipantsAgain', 'participantsReminder']) && params.tab != 'participantsViewAllNotFinish'}">
                         <th>
                         <g:checkBox name="orgListToggler" id="orgListToggler" checked="false"/>
                         </th>
@@ -483,7 +483,7 @@
 
             <tr>
                 <g:if test="${showCheckbox}">
-                    <g:if test="${actionName != 'openParticipantsAgain' && actionName != 'participantsReminder' && params.tab != 'participantsViewAllNotFinish'}">
+                    <g:if test="${!(actionName in ['openParticipantsAgain', 'participantsReminder']) && params.tab != 'participantsViewAllNotFinish'}">
                     <td>
                         <g:checkBox name="selectedOrgs" value="${participant.id}" checked="false"/>
                     </td>
