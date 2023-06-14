@@ -705,14 +705,14 @@
                                                                             </div>
                                                                         </div>
                                                                     </div>
-                                                                    <g:if test="${editable}">
-                                                                        <g:link action="editEntitlementGroupItem"
-                                                                                params="${[cmd: 'edit', ie: ie.id, id: subscription.id]}"
-                                                                                class="ui tiny button">
-                                                                            <i class="object group icon"></i>${message(code: 'subscription.details.ieGroups.edit')}
-                                                                        </g:link>
-                                                                    </g:if>
                                                                 </g:each>
+                                                                <g:if test="${editable}">
+                                                                    <g:link action="editEntitlementGroupItem"
+                                                                            params="${[cmd: 'edit', ie: ie.id, id: subscription.id]}"
+                                                                            class="ui tiny button trigger-modal">
+                                                                        <i class="object group icon"></i>${message(code: 'subscription.details.ieGroups.edit')}
+                                                                    </g:link>
+                                                                </g:if>
                                                             </g:if>
 
 

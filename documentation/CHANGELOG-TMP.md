@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      14.06.2023  rc-3.1  3.1.3       Moe     Feature     Open Participant and Reminder Participant split in two function
+
+5127    14.06.2023  rc-3.1  3.1.3       Andreas Bug         Titel konnten nicht zu Titelgruppen hinzugefügt werden
+
+5128    13.06.2023  rc-3.1  3.1.3       Moe     Bug         Titelgruppe ändern/löschen: fehlender Modal QA/DEV
+
 5123    12.06.2023  rc-3.1  3.1.3       Andreas Bug         Proxyfehler bei Paketverknüpfung behoben
 
 --      09.06.2023  rc-3.1  3.1.3       Moe     Bug         ClickMe-Export funktioniert nicht richtig bei Umfrage
