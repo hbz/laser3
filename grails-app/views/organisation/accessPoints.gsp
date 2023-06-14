@@ -64,11 +64,11 @@
             <thead>
             <tr>
                 <th class="four wide">${message(code: 'default.name.label')}</th>
-                <g:if test="${orgAccessPointList[accessPointType.value] in ['ip', 'proxy']}">
+                <g:if test="${accessPointType.value in ['ip', 'proxy']}">
                     <th class="four wide">IPv4</th>
                     <th class="four wide">IPv6</th>
                 </g:if>
-                <g:elseif test="${orgAccessPointList[accessPointType.value] == 'ezproxy'}">
+                <g:elseif test="${accessPointType.value == 'ezproxy'}">
                     <th class="two wide">IPv4</th>
                     <th class="three wide">IPv6</th>
                     <th class="three wide"><g:message code="accessPoint.url"/></th>
@@ -98,7 +98,7 @@
                             ${accessPoint.name}
                         </g:else>
                     </td>
-                    <g:if test="${orgAccessPointList[accessPointType.value] in ['ip', 'proxy']}">
+                    <g:if test="${accessPointType.value in ['ip', 'proxy']}">
                         <td>
                             <g:each in="${accessPoint.getIpRangeStrings('ipv4', 'ranges')}" var="ipv4Range">
                                 <div>${ipv4Range}</div>
@@ -110,7 +110,7 @@
                             </g:each>
                         </td>
                     </g:if>
-                    <g:elseif test="${orgAccessPointList[accessPointType.value] == 'ezproxy'}">
+                    <g:elseif test="${accessPointType.value == 'ezproxy'}">
                         <td>
                             <g:each in="${accessPoint.getIpRangeStrings('ipv4', 'ranges')}" var="ipv4Range">
                                 <div>${ipv4Range}</div>
@@ -127,7 +127,7 @@
                             </g:if>
                         </td>
                     </g:elseif>
-                    <g:elseif test="${orgAccessPointList[accessPointType.value] == 'mailDomain'}">
+                    <g:elseif test="${accessPointType.value == 'mailDomain'}">
                         <td>
                             <g:each in="${accessPoint.accessPointData}" var="apd">
                                 <div>${apd.data}</div>
