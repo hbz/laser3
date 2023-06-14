@@ -1201,7 +1201,7 @@ class FilterService {
      * @param subscription the subscriptions whose dates should be considered
      * @return the map containing the query and the prepared query parameters
      */
-    Map<String, Object> getIssueEntitlementQuery(GrailsParameterMap params, Subscription subscription) {
+    Map<String, Object> getIssueEntitlementQuery(Map params, Subscription subscription) {
         getIssueEntitlementQuery(params, [subscription])
     }
 
@@ -1211,7 +1211,7 @@ class FilterService {
      * @param subscriptions the subscriptions whose dates should be considered
      * @return the map containing the query and the prepared query parameters
      */
-    Map<String,Object> getIssueEntitlementQuery(GrailsParameterMap params, Collection<Subscription> subscriptions) {
+    Map<String,Object> getIssueEntitlementQuery(Map params, Collection<Subscription> subscriptions) {
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         Map result = [:]
 
@@ -1257,9 +1257,9 @@ class FilterService {
             base_qry += " and ie.tipp.status.id = :status and ie.status.id != :status "
             qry_params.status = params.long('status')
         }
-        else if(params.status != '' && params.status != null && params.list('status')) {
+        else if(params.status != '' && params.status != null && listReaderWrapper(params, 'status')) {
             List<Long> status = []
-            params.list('status').each { String statusId ->
+            listReaderWrapper(params, 'status').each { String statusId ->
                 status << Long.parseLong(statusId)
             }
             base_qry += " and ie.status.id in (:status) "
@@ -1368,7 +1368,7 @@ class FilterService {
         }
 
 
-        if (params.title_types && params.title_types != "" && params.list('title_types')) {
+        if (params.title_types && params.title_types != "" && listReaderWrapper(params, 'title_types')) {
             base_qry += " and lower(tipp.titleType) in (:title_types)"
             qry_params.title_types = params.list('title_types').collect { ""+it.toLowerCase()+"" }
             filterSet = true
