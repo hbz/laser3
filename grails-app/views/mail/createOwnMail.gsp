@@ -15,6 +15,10 @@
             params="[objectType: objectType, objectId: objectId]">
 
         <g:hiddenField name="reminderMail" value="${reminderMail}"/>
+        <g:hiddenField name="fromMail" value="${mailFrom}"/>
+        <g:if test="${userSurveyNotificationMails}">
+        <g:hiddenField name="userSurveyNotificationMails" value="${userSurveyNotificationMails}"/>
+            </g:if>
 
         <h2>${message(code: 'mail.sendMail.toOrgs', args: [orgList?.size() ?: 0])}</h2>
 
@@ -22,7 +26,21 @@
             <g:hiddenField name="selectedOrgs" value="${org.id}"/>
         </g:each>
 
+        <g:if test="${userSurveyNotificationMails}">
+            <div class="ui segment">
+                <h3 class="ui header">${message(code: 'mail.sendMail.standard')}</h3>
+                <div class="field">
+                    <label for="userSurveyNotificationMails">${message(code: 'mail.sendMail.userMailsWithSurveyNotification')}</label>
+                    ${de.laser.storage.RDStore.YN_YES.getI10n('value')}
+                </div>
+            </div>
+        </g:if>
 
+
+        <div class="ui segment">
+        <g:if test="${userSurveyNotificationMails}">
+                <h3 class="ui header">${message(code: 'mail.sendMail.additional')}</h3>
+        </g:if>
         <g:set var="rdvAllPersonFunctions"
                value="${PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION)}"
                scope="request"/>
@@ -40,8 +58,7 @@
                                multiple=""
                                from="${rdvAllPersonFunctions}"
                                optionKey="id"
-                               optionValue="value"
-                               value="${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.id}"/>
+                               optionValue="value"/>
                 </div>
             </div>
 
@@ -63,40 +80,28 @@
 
             <div class="field">
                 <div class="ui checkbox">
-                    <input type="checkbox" id="publicContacts" checked/>
+                    <input type="checkbox" id="publicContacts" />
                     <label for="publicContacts">${message(code: 'email.fromPublicContacts')}</label>
                 </div>
 
                 <div class="ui checkbox">
-                    <input type="checkbox" id="privateContacts" checked/>
+                    <input type="checkbox" id="privateContacts" />
                     <label for="privateContacts">${message(code: 'email.fromPrivateAddressbook')}</label>
                 </div>
             </div>
         </div>
         <br/>
 
+        <div class="field">
+            <label for="emailAddressesTextArea">${message(code: 'mail.sendMail.receiver')}</label>
+            <g:textArea id="emailAddressesTextArea" name="emailAddresses" readonly="true" rows="5" cols="1"
+                        style="width: 100%;"/>
+        </div>
+        </div>
+
         <div class="ui form">
 
-            <div class="field">
-                <label for="fromMail">${message(code: 'mail.sendMail.from')}</label>
 
-                <g:field type="text" name="fromMail" id="fromMail" readonly="true" value="${mailFrom}"/>
-            </div>
-
-            <div class="field">
-                <label for="emailAddressesTextArea">${message(code: 'mail.sendMail.receiver')}</label>
-                <g:textArea id="emailAddressesTextArea" name="emailAddresses" readonly="true" rows="5" cols="1"
-                            style="width: 100%;"/>
-            </div>
-
-            <g:if test="${userSurveyNotificationMails}">
-                <div class="field">
-                    <label for="userSurveyNotificationMails">${message(code: 'mail.sendMail.userMailsWithSurveyNotification')}</label>
-                    <g:textArea id="userSurveyNotificationMails" name="userSurveyNotificationMails" readonly="true"
-                                rows="5"
-                                cols="1" style="width: 100%;">${userSurveyNotificationMails}</g:textArea>
-                </div>
-            </g:if>
 
             <div class="field">
                 <label for="mailSubject">${message(code: 'mail.sendMail.mailSubject')}</label>
