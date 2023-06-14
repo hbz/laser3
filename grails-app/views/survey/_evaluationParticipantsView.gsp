@@ -55,9 +55,9 @@
 
     <div class="la-inline-lists">
 
+        <g:if test="${propertiesChanged}">
         <h3 class="ui header">${message(code:'renewalEvaluation.propertiesChanged')}</h3>
 
-        <g:if test="${propertiesChanged}">
             <g:link class="ui right floated button" controller="survey" action="showPropertiesChanged"
                     id="${surveyConfig.surveyInfo.id}"
                     params="[surveyConfigID: surveyConfig.id, tab: params.tab, exportXLSX: true]">
@@ -65,7 +65,6 @@
             </g:link>
             <br/>
             <br/>
-        </g:if>
 
 
         <table class="ui la-js-responsive-table la-table table">
@@ -102,7 +101,7 @@
                     </table>
 
 
-
+        </g:if>
     </div>
 </g:if>
 
@@ -369,7 +368,7 @@
         <div class="content">
             <div class="ui form twelve wide column">
                 <div class="two fields">
-                    <g:if test="${params.tab == 'participantsViewAllNotFinish'}">
+                    <g:if test="${actionName == 'participantsReminder'}">
                        %{-- <div class="eight wide field" style="text-align: left;">
                             <a data-ui="modal" class="ui button"
                                href="#generateEmailWithAddresses_ajaxModal">
@@ -414,7 +413,7 @@
         <thead>
         <tr>
             <g:if test="${showCheckbox}">
-                    <g:if test="${surveyParticipantsHasNotAccess && actionName != 'openParticipantsAgain' && params.tab != 'participantsViewAllNotFinish'}">
+                    <g:if test="${surveyParticipantsHasNotAccess && !(actionName in ['openParticipantsAgain', 'participantsReminder']) && params.tab != 'participantsViewAllNotFinish'}">
                         <th>
                         <g:checkBox name="orgListToggler" id="orgListToggler" checked="false"/>
                         </th>
@@ -484,7 +483,7 @@
 
             <tr>
                 <g:if test="${showCheckbox}">
-                    <g:if test="${actionName != 'openParticipantsAgain' && params.tab != 'participantsViewAllNotFinish'}">
+                    <g:if test="${!(actionName in ['openParticipantsAgain', 'participantsReminder']) && params.tab != 'participantsViewAllNotFinish'}">
                     <td>
                         <g:checkBox name="selectedOrgs" value="${participant.id}" checked="false"/>
                     </td>
@@ -667,7 +666,7 @@
         <div class="content">
             <div class="ui form twelve wide column">
                 <div class="two fields">
-                    <g:if test="${params.tab == 'participantsViewAllFinish' ? 'active' : ''}">
+                    <g:if test="${actionName == 'openParticipantsAgain'}">
 
                         <div class="eight wide field" style="text-align: left;">
                             <button name="openOption" type="submit" value="OpenWithoutMail" class="ui button">

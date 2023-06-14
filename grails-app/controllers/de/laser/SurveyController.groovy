@@ -1694,16 +1694,34 @@ class SurveyController {
      Map<String,Object> openParticipantsAgain() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
 
-        params.tab = params.tab ?: 'participantsViewAllFinish'
-        if(params.tab == 'participantsViewAllNotFinish'){
-            params.participantsNotFinish = true
-        }
-        if(params.tab == 'participantsViewAllFinish'){
-            params.participantsFinish = true
-        }
+        params.participantsFinish = true
+
+        result.participantsFinishTotal = SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig).size()
+
+        Map<String,Object> fsq = filterService.getSurveyOrgQuery(params, result.surveyConfig)
+
+        result.participants = SurveyOrg.executeQuery(fsq.query, fsq.queryParams, params)
+
+        result.propList    = result.surveyConfig.surveyProperties.surveyProperty
+
+        result
+
+    }
+
+    /**
+     * Call to list the members; either those who completed the survey or those who did not
+     * @return a list of the participants in the called tab view
+     */
+    @DebugInfo(ctxInstUserCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @Secured(closure = {
+        ctx.accessService.ctxInstUserCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+    })
+    Map<String,Object> participantsReminder() {
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
+
+        params.participantsNotFinish = true
 
         result.participantsNotFinishTotal = SurveyOrg.findAllBySurveyConfigAndFinishDateIsNull(result.surveyConfig).size()
-        result.participantsFinishTotal = SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig).size()
 
         Map<String,Object> fsq = filterService.getSurveyOrgQuery(params, result.surveyConfig)
 
