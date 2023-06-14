@@ -1,7 +1,6 @@
 <%@ page import="de.laser.survey.SurveyConfig; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.RefdataCategory; de.laser.Org" %>
 
-
-<laser:htmlStart text="${message(code: 'survey.label')}  ${message(code: 'openParticipantsAgain.label')}" serviceInjection="true" />
+<laser:htmlStart text="${message(code: 'survey.label')}  ${message(code: 'openParticipantsAgain.reminder')}" serviceInjection="true" />
 
 <ui:breadcrumbs>
     <ui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
@@ -10,7 +9,7 @@
                      text="${surveyConfig.getConfigNameShort()}"/>
     </g:if>
 
-    <ui:crumb message="openParticipantsAgain.label" class="active"/>
+    <ui:crumb message="openParticipantsAgain.reminder" class="active"/>
 </ui:breadcrumbs>
 
 <ui:controlButtons>
@@ -41,7 +40,7 @@
         ${surveyConfig.getConfigNameShort()}
     </g:else>:
 
-        ${message(code: "openParticipantsAgain.label")} <div class="ui blue circular label">${participantsFinishTotal}</div>
+        ${message(code: "openParticipantsAgain.reminder")} <div class="ui blue circular label">${participantsNotFinishTotal}</div>
 </h2>
 <br />
 
