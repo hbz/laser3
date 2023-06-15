@@ -167,13 +167,17 @@ class MailController {
 
                     result.editable = (result.surveyInfo && result.surveyInfo.status in [RDStore.SURVEY_SURVEY_STARTED]) ? result.editable : false
 
+                    boolean reminderMail = params.reminderMail == 'false' ? false : true
+
                     if(result.editable) {
-                        boolean reminderMail = params.reminderMail == 'false' ? false : true
                         result << mailSendService.mailSendProcessBySurvey(result.surveyInfo, reminderMail, params)
                     }else {
                         flash.error = message(code: 'default.notAutorized.message')
                     }
-                    redirect(action: 'openParticipantsAgain', controller: 'survey', id: result.surveyInfo.id, params:[tab: params.tab])
+
+                    String surveyView = reminderMail ? 'participantsReminder' : 'openParticipantsAgain'
+
+                    redirect(action: surveyView, controller: 'survey', id: result.surveyInfo.id, params:[tab: params.tab])
                     return
                     break
             }
