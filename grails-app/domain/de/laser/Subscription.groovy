@@ -115,6 +115,16 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     //Only for Consortia: ERMS-2098
     String comment
 
+    //Only for Consortia and instanceOf = true
+    boolean offerRequested
+    Date offerRequestedDate
+    boolean offerAccepted
+    String offerNote
+    String priceIncreaseInfo
+    boolean renewalSent
+    Date renewalSentDate
+    boolean participantTransferWithSurvey
+
     Subscription instanceOf
     // If a subscription is administrative, subscription members will not see it resp. there is a toggle which en-/disables visibility
     boolean administrative = false
@@ -192,6 +202,15 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         lastUpdated          column: 'sub_last_updated'
         lastUpdatedCascading column: 'sub_last_updated_cascading'
 
+        offerRequested column:'sub_offer_requested'
+        offerRequestedDate column:'sub_offer_requested_date'
+        offerAccepted column:'sub_offer_accepted'
+        offerNote column:'sub_offer_note'
+        priceIncreaseInfo column:'sub_price_increase_info'
+        renewalSent column:'sub_renewal_sent'
+        renewalSentDate column:'sub_renewal_sent_date'
+        participantTransferWithSurvey column:'sub_participant_transfer_with_survey'
+
         noticePeriod    column:'sub_notice_period'
         isMultiYear column: 'sub_is_multi_year'
         isAutomaticRenewAnnually column: 'sub_is_automatic_renew_annually'
@@ -234,6 +253,15 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         cancellationAllowances(nullable:true, blank:true)
         lastUpdated(nullable: true)
         lastUpdatedCascading (nullable: true)
+
+        offerRequested (nullable: true)
+        offerRequestedDate (nullable:true, blank:true)
+        offerAccepted (nullable: true)
+        offerNote (nullable:true, blank:true)
+        priceIncreaseInfo (nullable:true, blank:true)
+        renewalSent (nullable: true)
+        renewalSentDate (nullable:true, blank:true)
+        participantTransferWithSurvey (nullable: true)
     }
 
     @Override
