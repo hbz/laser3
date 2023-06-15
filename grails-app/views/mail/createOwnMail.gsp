@@ -10,7 +10,10 @@
     <ui:crumb text="${message(code: 'mail.sendMail.label')}" class="active"/>
 </ui:breadcrumbs>
 
-<ui:h1HeaderWithIcon message="mail.sendMail.label" floated="true"/>
+<ui:h1HeaderWithIcon message="mail.sendMail.label" floated="true">
+    <g:if test="${surveyInfo}">: <g:message code="survey.label"/> (<g:link controller="survey" action="show" id="${surveyInfo.id}">${surveyInfo.name}</g:link>)
+        </g:if>
+    </ui:h1HeaderWithIcon>
 
 
 
