@@ -134,18 +134,18 @@
 
             <g:if test="${surveyInfo}">
                 <g:if test="${reminderMail}">
-                    <g:link controller="survey" action="participantsReminder" id="${surveyInfo.id}">
+                    <g:link class="ui button left floated" controller="survey" action="participantsReminder" id="${surveyInfo.id}">
                         <g:message code="default.button.back"/>
                     </g:link>
                 </g:if>
                 <g:else>
-                    <g:link controller="survey" action="openParticipantsAgain" id="${surveyInfo.id}">
+                    <g:link class="ui button left floated" controller="survey" action="openParticipantsAgain" id="${surveyInfo.id}">
                         <g:message code="default.button.back"/>
                     </g:link>
                 </g:else>
             </g:if>
 
-            <button class="ui icon button left floated" type="submit">
+            <button class="ui icon button right floated" type="submit">
                 ${message(code: 'mail.sendMail.sendButton')}
             </button>
         </div>
