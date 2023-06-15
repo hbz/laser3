@@ -6,6 +6,7 @@ import de.laser.Org
 import de.laser.api.v0.*
 import de.laser.storage.Constants
 import de.laser.storage.RDStore
+import de.laser.traces.DeletedObject
 import grails.converters.JSON
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
@@ -127,10 +128,9 @@ class ApiCostItem {
             Timestamp ts= new Timestamp(Long.parseLong(timestamp))
             Date apiDate= new Date(ts.getTime());
             Date today = new Date()
-            if(isInvoiceTool) {
-                result = CostItem.findAllByOwnerAndLastUpdatedBetween(owner, apiDate, today).globalUID
-            }else{
-                result = CostItem.findAllByOwnerAndLastUpdatedBetweenAndCostItemStatusNotEqual(owner, apiDate, today, RDStore.COST_ITEM_DELETED).globalUID
+            result = CostItem.findAllByOwnerAndLastUpdatedBetween(owner, apiDate, today).globalUID
+            DeletedObject.withTransaction {
+                result.addAll(DeletedObject.executeQuery('select do.oldGlobalUID from DeletedObject do join do.combos dc where dc.accessibleOrg = :owner and do.lastUpdated <= :apiDate and do.lastUpdated >= :today and do.oldObjectType = :costItem', [owner: owner.globalUID, apiDate: apiDate, today: today, costItem: CostItem.class.name]))
             }
             result = ApiToolkit.cleanUp(result, true, true)
         }

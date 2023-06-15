@@ -5,6 +5,7 @@ import de.laser.exceptions.SyncException
 import de.laser.http.BasicHttpClient
 import de.laser.properties.OrgProperty
 import de.laser.remote.GlobalRecordSource
+import de.laser.storage.Constants
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
@@ -193,7 +194,7 @@ class YodaService {
             }
             Map<String, Object> queryParams = [componentType: 'TitleInstancePackagePlatform',
                                                max: 10000,
-                                               status: ['Removed', GlobalSourceSyncService.PERMANENTLY_DELETED]]
+                                               status: ['Removed', Constants.PERMANENTLY_DELETED]]
             http.post(BasicHttpClient.ResponseType.JSON, BasicHttpClient.PostType.URLENC, queryParams, success, failure)
             BasicHttpClient httpScroll = new BasicHttpClient(grs.uri+'/scroll', config)
             //invert: check if non-deleted TIPPs still exist in we:kb instance
@@ -201,7 +202,7 @@ class YodaService {
                 Package.findAllByPackageStatusNotEqual(RDStore.PACKAGE_STATUS_DELETED).eachWithIndexParallel { Package pkg, int i ->
                     Package.withTransaction {
                         Set<TitleInstancePackagePlatform> tipps = TitleInstancePackagePlatform.findAllByPkg(pkg)
-                        queryParams = [pkg: pkg.gokbId, status: ['Current', 'Expected', 'Retired', 'Deleted', 'Removed', GlobalSourceSyncService.PERMANENTLY_DELETED], max: 10000]
+                        queryParams = [pkg: pkg.gokbId, status: ['Current', 'Expected', 'Retired', 'Deleted', 'Removed', Constants.PERMANENTLY_DELETED], max: 10000]
                         Set<String> wekbPkgTipps = []
                         boolean more = true
                         Closure checkSuccess

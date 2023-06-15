@@ -362,48 +362,6 @@ class FinanceService {
     }
 
     /**
-     * Deletes the given cost item and unsets eventual links. If it is the last item in a cost item group,
-     * the group will be deleted as well for that it will not appear in dropdowns any more
-     * @param params the parameter map containing the cost item id to delete and the tab which should be displayed after deletion
-     * @return result status map: OK if succeeded, error otherwise
-     */
-    Map<String,Object> deleteCostItem(GrailsParameterMap params) {
-        Map<String, Object> result = [showView:params.showView]
-        CostItem ci = CostItem.get(params.id)
-        if (ci) {
-            List<CostItemGroup> cigs = CostItemGroup.findAllByCostItem(ci)
-            Order order = ci.order
-            Invoice invoice = ci.invoice
-            log.debug("deleting CostItem: " + ci)
-            ci.costItemStatus = RDStore.COST_ITEM_DELETED
-            ci.invoice = null
-            ci.order = null
-            ci.sub = null
-            ci.subPkg = null
-            ci.issueEntitlement = null
-            ci.issueEntitlementGroup = null
-            if(ci.save()) {
-                if (!CostItem.findByOrderAndIdNotEqualAndCostItemStatusNotEqual(order, ci.id, RDStore.COST_ITEM_DELETED))
-                    order.delete()
-                if (!CostItem.findByInvoiceAndIdNotEqualAndCostItemStatusNotEqual(invoice, ci.id, RDStore.COST_ITEM_DELETED))
-                    invoice.delete()
-                PendingChange.executeUpdate('delete from PendingChange pc where pc.costItem = :ci', [ci: ci])
-                cigs.each { CostItemGroup item ->
-                    item.delete()
-                    log.debug("deleting CostItemGroup: " + item)
-                }
-            }
-            else {
-                log.error(ci.errors.toString())
-                result.error = messageSource.getMessage('default.delete.error.general.message',null, LocaleUtils.getCurrentLocale())
-                [result:result,status:STATUS_ERROR]
-            }
-            [result:result,status:STATUS_OK]
-        }
-        else [result:result,status:STATUS_ERROR]
-    }
-
-    /**
      * Parses the given tax input and returns the matching tax enum key
      * @param newTaxRateString the tax input from any cost input modal
      * @return the tax key if a match was found, null otherwise

@@ -117,7 +117,7 @@ class ApiSubscription {
      */
     static JSON getSubscriptionList(Org owner, Org context){
         Collection<Object> result = []
-		List deleted = []
+		List<DeletedObject> deleted = []
 
         List<Subscription> available = Subscription.executeQuery(
                 'SELECT DISTINCT(sub) FROM Subscription sub JOIN sub.orgRelations oo WHERE oo.org = :owner AND oo.roleType in (:roles )' ,
@@ -138,7 +138,7 @@ class ApiSubscription {
 		}
 
 
-		println "${available.size()} available subscriptions found .."
+		println "${available.size()}+${deleted.size()} available subscriptions found .."
 
         available.each { sub ->
 			result.add(ApiStubReader.requestSubscriptionStub(sub, context))

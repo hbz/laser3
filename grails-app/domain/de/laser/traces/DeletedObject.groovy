@@ -70,10 +70,10 @@ class DeletedObject {
                                                      endDate: 'oldEndDate',
                                                      globalUID: 'oldGlobalUID']
 
-    static DeletedObject construct(delObj, Set delRelations) throws CreationException {
+    static DeletedObject construct(delObj, Set<String> delRelations) throws CreationException {
         DeletedObject trace = construct(delObj)
-        delRelations.each { Map oo ->
-            DelCombo delCombo = new DelCombo(delObjTrace: trace, accessibleOrg: oo.org)
+        delRelations.each { String globalUID ->
+            DelCombo delCombo = new DelCombo(delObjTrace: trace, accessibleOrg: globalUID)
             if(!delCombo.save())
                 throw new CreationException(delCombo.getErrors().getAllErrors())
         }

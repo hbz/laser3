@@ -193,7 +193,12 @@ class ApiManager {
             result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
 
             if (tmp.checkFailureCodes_3()) {
-                result = ApiLicense.requestLicense((License) tmp.obj, contextOrg)
+                if(tmp.obj instanceof License) {
+                    result = ApiLicense.requestLicense((License) tmp.obj, contextOrg)
+                }
+                else if(tmp.obj instanceof DeletedObject) {
+                    result = ApiDeletedObject.requestDeletedObject((DeletedObject) tmp.obj, contextOrg)
+                }
             }
         }
         else if (checkValidRequest('licenseList')) {
@@ -318,7 +323,7 @@ class ApiManager {
                     sql.close()
                 }
                 else if(tmp.obj instanceof DeletedObject) {
-                    result = ApiDeletedObject.requestDeletedSubscription((DeletedObject) tmp.obj, contextOrg, isInvoiceTool)
+                    result = ApiDeletedObject.requestDeletedObject((DeletedObject) tmp.obj, contextOrg, isInvoiceTool)
                 }
             }
         }

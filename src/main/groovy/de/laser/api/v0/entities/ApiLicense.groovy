@@ -5,9 +5,11 @@ import de.laser.License
 import de.laser.Links
 import de.laser.Org
 import de.laser.OrgRole
+import de.laser.Subscription
 import de.laser.api.v0.*
 import de.laser.storage.Constants
 import de.laser.storage.RDStore
+import de.laser.traces.DeletedObject
 import grails.converters.JSON
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
@@ -28,9 +30,19 @@ class ApiLicense {
         switch(query) {
             case 'id':
                 result.obj = License.findAllWhere(id: Long.parseLong(value))
+                if(!result.obj) {
+                    DeletedObject.withTransaction {
+                        result.obj = DeletedObject.findAllByOldDatabaseIDAndOldObjectType(Long.parseLong(value), License.class.name)
+                    }
+                }
                 break
             case 'globalUID':
                 result.obj = License.findAllWhere(globalUID: value)
+                if(!result.obj) {
+                    DeletedObject.withTransaction {
+                        result.obj = DeletedObject.findAllByOldGlobalUID(value)
+                    }
+                }
                 break
             case 'ns:identifier':
                 result.obj = Identifier.lookupObjectsByIdentifierString(new License(), value)
@@ -103,6 +115,7 @@ class ApiLicense {
      */
     static JSON getLicenseList(Org owner, Org context){
         Collection<Object> result = []
+        List<DeletedObject> deleted = []
 
         List<License> available = License.executeQuery(
                 'SELECT DISTINCT(lic) FROM License lic JOIN lic.orgRelations oo WHERE oo.org = :owner AND oo.roleType in (:roles )' ,
@@ -112,10 +125,23 @@ class ApiLicense {
                 ]
         )
 
-        println "${available.size()} available licenses found .."
+        DeletedObject.withTransaction {
+            deleted.addAll(DeletedObject.executeQuery(
+                    'SELECT DISTINCT(del) FROM DeletedObject del JOIN del.combos delc WHERE delc.accessibleOrg = :owner AND del.oldObjectType = :objType' ,
+                    [
+                            owner: owner.globalUID,
+                            objType: License.class.name
+                    ]
+            ))
+        }
+
+        println "${available.size()}+${deleted.size()} available licenses found .."
 
         available.each { lic ->
             result.add(ApiStubReader.requestLicenseStub(lic, context))
+        }
+        deleted.each { DeletedObject deletedObject ->
+            result.add(ApiStubReader.requestDeletedObjectStub(deletedObject, context))
         }
 
         ApiToolkit.cleanUpDebugInfo(result)
