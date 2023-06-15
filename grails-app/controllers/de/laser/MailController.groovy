@@ -70,6 +70,8 @@ class MailController {
                     result.openAndSendMail = (params.openOption == 'OpenWithMail')  ?: false
                     result.openOnly = (params.openOption == 'OpenWithoutMail')  ?: false
 
+                    result.editable = result.reminderMail ? result.surveyInfo.isEditable() : result.editable
+
                     if (result.editable) {
 
                         if(result.reminderMail || result.openAndSendMail) {
@@ -105,7 +107,7 @@ class MailController {
                             return
                         }
                     } else {
-                        flash.error = message(code: 'default.no.selected.org')
+                        flash.error = message(code: 'default.noPermissions')
                         redirect(url: request.getHeader("referer"))
                         return
                     }
@@ -165,13 +167,17 @@ class MailController {
 
                     result.editable = (result.surveyInfo && result.surveyInfo.status in [RDStore.SURVEY_SURVEY_STARTED]) ? result.editable : false
 
+                    boolean reminderMail = params.reminderMail == 'false' ? false : true
+
                     if(result.editable) {
-                        boolean reminderMail = params.reminderMail == 'false' ? false : true
                         result << mailSendService.mailSendProcessBySurvey(result.surveyInfo, reminderMail, params)
                     }else {
                         flash.error = message(code: 'default.notAutorized.message')
                     }
-                    redirect(action: 'openParticipantsAgain', controller: 'survey', id: result.surveyInfo.id, params:[tab: params.tab])
+
+                    String surveyView = reminderMail ? 'participantsReminder' : 'openParticipantsAgain'
+
+                    redirect(action: surveyView, controller: 'survey', id: result.surveyInfo.id, params:[tab: params.tab])
                     return
                     break
             }
