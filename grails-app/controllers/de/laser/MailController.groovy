@@ -70,6 +70,8 @@ class MailController {
                     result.openAndSendMail = (params.openOption == 'OpenWithMail')  ?: false
                     result.openOnly = (params.openOption == 'OpenWithoutMail')  ?: false
 
+                    result.editable = result.reminderMail ? result.surveyInfo.isEditable() : result.editable
+
                     if (result.editable) {
 
                         if(result.reminderMail || result.openAndSendMail) {
@@ -105,7 +107,7 @@ class MailController {
                             return
                         }
                     } else {
-                        flash.error = message(code: 'default.no.selected.org')
+                        flash.error = message(code: 'default.noPermissions')
                         redirect(url: request.getHeader("referer"))
                         return
                     }
