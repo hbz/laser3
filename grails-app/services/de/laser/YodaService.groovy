@@ -164,7 +164,9 @@ class YodaService {
      * Call to load titles marked as deleted; if the confirm is checked, the deletion of titles and issue entitlements marked as deleted as well is executed
      * @param doIt execute the cleanup?
      * @return a result map of titles whose we:kb entry has been marked as deleted
+     * @deprecated does not work as should and it should be more appropriate to reload the packages themselves; use reloadPackage() instead
      */
+    @Deprecated
     void expungeRemovedTIPPs() {
         executorService.execute( {
             GlobalRecordSource grs = GlobalRecordSource.findByActiveAndRectype(true, GlobalSourceSyncService.RECTYPE_TIPP)
