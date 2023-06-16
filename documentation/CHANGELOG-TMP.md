@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5139    16.06.2023  rc-3.1  3.1.3       Moe     Bug         Titel hinzufügen: Nur 1 oder alle Titel möglich
+
 --      14.06.2023  rc-3.1  3.1.3       Moe     Feature     Open Participant and Reminder Participant split in two function
 
 5127    14.06.2023  rc-3.1  3.1.3       Andreas Bug         Titel konnten nicht zu Titelgruppen hinzugefügt werden
