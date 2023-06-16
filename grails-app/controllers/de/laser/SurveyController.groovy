@@ -3229,6 +3229,7 @@ class SurveyController {
         result.errors = []
         Date newStartDate
         Date newEndDate
+        Year newReferenceYear = subscription.referenceYear ? subscription.referenceYear.plusYears(1) : null
         use(TimeCategory) {
             newStartDate = subscription.endDate ? (subscription.endDate + 1.day) : null
             newEndDate = subscription.endDate ? (subscription.endDate + 1.year) : null
@@ -3237,7 +3238,7 @@ class SurveyController {
         result.isRenewSub = true
         result.permissionInfo = [sub_startDate    : newStartDate ? sdf.format(newStartDate) : null,
                                  sub_endDate      : newEndDate ? sdf.format(newEndDate) : null,
-                                 sub_referenceYear: subscription.referenceYear,
+                                 sub_referenceYear: newReferenceYear,
                                  sub_name         : subscription.name,
                                  sub_id           : subscription.id,
                                  sub_status       : RDStore.SUBSCRIPTION_INTENDED.id.toString(),

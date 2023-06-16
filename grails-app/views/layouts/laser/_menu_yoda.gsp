@@ -133,7 +133,7 @@
                 ${message(code:'menu.admin.bulkOps')} <i class="dropdown icon"></i>
             </div>
             <div class="menu" role="menu">
-                <div class="item" role="menuitem">..</div>
+                <ui:link addItemAttributes="true" controller="yoda" action="retriggerInheritance">Paketzuschnittvererbung auslösen</ui:link>
             </div>
         </div>
 

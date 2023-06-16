@@ -609,11 +609,11 @@ class YodaController {
     }
 
     /**
-     * Call to delete titles without we:kb reference and marked as removed
+     * Bulk retriggering of inheritance
      */
     @Secured(['ROLE_YODA'])
-    Map<String, Object> expungeRemovedTIPPs() {
-        yodaService.expungeRemovedTIPPs()
+    Map<String, Object> retriggerInheritance() {
+        yodaService.retriggerInheritance('holdingSelection') //TODO generalise
         redirect controller: 'home'
     }
 

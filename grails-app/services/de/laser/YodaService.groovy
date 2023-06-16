@@ -386,4 +386,9 @@ class YodaService {
         }
     }
 
+    @Transactional
+    void retriggerInheritance(String field) {
+        String query = "update Subscription s set s.${field} = (select parent.${field} from Subscription parent where parent = s.instanceOf) where s.instanceOf != null and exists(select auc.id from AuditConfig auc where auc.referenceId = s.instanceOf.id and auc.referenceClass = '${Subscription.class.name}' and auc.referenceField = '${field}')"
+        log.debug("updated subscriptions: ${Subscription.executeUpdate(query)}")
+    }
 }
