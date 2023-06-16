@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5138    16.06.2023  rc-3.1  3.1.3       Andreas Feature     fehlende Spalten nachgereicht
+
 5134    16.06.2023  rc-3.1  3.1.3       Andreas Bug         falsche Konfiguration bei der Erstellung der Modale
 
 5137    15.06.2023  rc-3.1  3.1.3       Andreas Bug         Bereinigungsmethoden korrigiert
