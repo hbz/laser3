@@ -167,7 +167,7 @@
                         </div>
                         <div class="field">
                             <div class="ui checkbox">
-                                <label for="private"><g:message code="org.privateContacts.exports.label"/></label>
+                                <label for="private"><g:message code="org.privateContacts.label"/></label>
                                 <input type=checkbox name="contactSwitch" id="private" value="private"/>
                             </div>
                         </div>
@@ -252,7 +252,7 @@
                         </div>
                         <div class="field">
                             <div class="ui checkbox">
-                                <label for="private"><g:message code="org.privateContacts.exports.label"/></label>
+                                <label for="private"><g:message code="org.privateContacts.label"/></label>
                                 <input type=checkbox name="contactSwitch" id="private" value="private"/>
                             </div>
                         </div>
@@ -271,7 +271,7 @@
 %{--                        <input type="checkbox" name="contactSwitch" id="public" value="public" checked="checked"/>--}%
 %{--                    </div>--}%
 %{--                    <div class="ui checkbox">--}%
-%{--                        <label for="private"><g:message code="org.privateContacts.exports.label"/></label>--}%
+%{--                        <label for="private"><g:message code="org.privateContacts.label"/></label>--}%
 %{--                        <input type=checkbox name="contactSwitch" id="private" value="private"/>--}%
 %{--                    </div>--}%
 %{--                </div>--}%
