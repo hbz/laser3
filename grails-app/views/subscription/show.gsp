@@ -24,7 +24,21 @@
     <laser:render template="actions"/>
 </ui:controlButtons>
 
+<g:each in="${visibleOrgRelations.sort{it.roleType.id}}" var="role" status="i">
+    <g:if test="${role.org && role.roleType != RDStore.OR_SUBSCRIPTION_CONSORTIA}">
+        <g:set var="test_${i}" value="${role.org.name}" />
+        ${i}
+    </g:if>
+</g:each>
+
+<g:set var="test_zusammen" value="${test_0} & ${test_1}" />
+${test_zusammen}
+
+
+
+
 <ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}">
+
 <laser:render template="iconSubscriptionIsChild"/>
 <ui:xEditable owner="${subscription}" field="name"/>
 </ui:h1HeaderWithIcon>
