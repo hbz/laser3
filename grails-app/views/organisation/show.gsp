@@ -911,7 +911,7 @@
                                         </a>
                                     </g:if>
                                     <g:elseif test="${isProviderOrAgency}">
-                                        <a href="#createPersonModal" class="ui icon button blue la-modern-button createContact" id="contactPersonForProviderAgency" data-ui="modal">
+                                        <a href="#createPersonModal" class="ui icon button blue la-modern-button createContact" id="contactPersonForProviderAgencyPublic" data-ui="modal">
                                             <i aria-hidden="true" class="plus icon"></i>
                                         </a>
                                     </g:elseif>
@@ -1219,7 +1219,7 @@
                     </div>
                 </div>
             </div>
-            <g:if test="${(institution.isCustomerType_Consortium() || institution.isCustomerType_Inst_Pro())}">
+            <g:if test="${(institution.isCustomerType_Consortium() || institution.isCustomerType_Inst_Pro()) && !inContextOrg}">
                 <div id="container-contacts">
                     <div class="ui card">
                         <div class="content">
@@ -1228,11 +1228,18 @@
                                     <div class="twelve wide column">
                                         <g:message code="org.contactpersons.and.addresses.my"/>
                                     </div>
-                                    <div class="right aligned four wide column">
-                                        <a href="#createPersonModal" class="ui icon button blue la-modern-button createContact" id="contactPersonForInstitution" data-ui="modal">
+                                    <g:if test="${isProviderOrAgency}">
+                                        <a href="#createPersonModal" class="ui icon button blue la-modern-button createContact" id="contactPersonForProviderAgencyPublic" data-ui="modal">
                                             <i aria-hidden="true" class="plus icon"></i>
                                         </a>
-                                    </div>
+                                    </g:if>
+                                    <g:else>
+                                        <div class="right aligned four wide column">
+                                            <a href="#createPersonModal" class="ui icon button blue la-modern-button createContact" id="contactPersonForInstitution" data-ui="modal">
+                                                <i aria-hidden="true" class="plus icon"></i>
+                                            </a>
+                                        </div>
+                                    </g:else>
                                 </div>
                             </div>
                             <%
@@ -1263,9 +1270,9 @@
                                                                         <g:each in="${person.contacts.toSorted()}" var="contact">
                                                                             <g:if test="${contact.contentType && contact.contentType.value in ['E-Mail', 'Mail', 'Url', 'Phone', 'Mobil', 'Fax']}">
                                                                                 <laser:render template="/templates/cpa/contact" model="${[
-                                                                                        overwriteEditable   : false,
+                                                                                        overwriteEditable   : editable,
                                                                                         contact             : contact,
-                                                                                        tmplShowDeleteButton: false
+                                                                                        tmplShowDeleteButton: editable
                                                                                 ]}"/>
                                                                             </g:if>
                                                                         </g:each>
@@ -1376,9 +1383,9 @@
                                                                             <g:each in="${person.contacts.toSorted()}" var="contact">
                                                                                 <g:if test="${contact.contentType && contact.contentType.value in ['E-Mail', 'Mail', 'Url', 'Phone', 'Mobil', 'Fax']}">
                                                                                     <laser:render template="/templates/cpa/contact" model="${[
-                                                                                            overwriteEditable   : false,
+                                                                                            overwriteEditable   : editable,
                                                                                             contact             : contact,
-                                                                                            tmplShowDeleteButton: false
+                                                                                            tmplShowDeleteButton: editable
                                                                                     ]}"/>
                                                                                 </g:if>
                                                                             </g:each>
