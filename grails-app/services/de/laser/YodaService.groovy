@@ -18,6 +18,7 @@ import io.micronaut.http.client.DefaultHttpClientConfiguration
 import io.micronaut.http.client.HttpClientConfiguration
 import org.hibernate.Session
 
+import java.time.Duration
 import java.util.concurrent.ExecutorService
 
 /**
@@ -169,57 +170,74 @@ class YodaService {
             GlobalRecordSource grs = GlobalRecordSource.findByActiveAndRectype(true, GlobalSourceSyncService.RECTYPE_TIPP)
             Map<String, Object> result = [:]
             Map<String, String> wekbUuids = [:]
-            Set<Map> titles = []
             HttpClientConfiguration config = new DefaultHttpClientConfiguration()
-            config.maxContentLength = 1024 * 1024 * 20
-            BasicHttpClient http = new BasicHttpClient(grs.uri+'/searchApi', config) //we presume that the count will never get beyond 10000
-            Closure success = { resp, json ->
+            config.maxContentLength = 1024 * 1024 * 100
+            config.readTimeout = Duration.ofMinutes(2)
+            BasicHttpClient http = new BasicHttpClient(grs.uri+'searchApi', config)
+            int offset = 0, max = 20000
+            boolean more = true
+            Map<String, Object> queryParams = [componentType: 'TitleInstancePackagePlatform',
+                                               status: ['Removed', GlobalSourceSyncService.PERMANENTLY_DELETED],
+                                               username: ConfigMapper.getWekbApiUsername(),
+                                               password: ConfigMapper.getWekbApiPassword(),
+                                               max:max, offset:offset]
+            Closure failure = { resp, reader ->
+                if(resp?.code() == 404) {
+                    result.error = resp.code()
+                }
+                else
+                    throw new SyncException("error on request: ${resp?.status()} : ${reader}")
+            }
+            Closure success
+            success = { resp, json ->
                 if(resp.code() == 200) {
-                    json.records.each{ Map record ->
+                    json.result.each{ Map record ->
                         wekbUuids.put(record.uuid, record.status)
+                    }
+                    more = json.page_current < json.page_total
+                    if(more) {
+                        offset += max
+                        queryParams.offset = offset
+                        http.post(BasicHttpClient.ResponseType.JSON, BasicHttpClient.PostType.URLENC, queryParams, success, failure)
                     }
                 }
                 else {
                     throw new SyncException("erroneous response")
                 }
             }
-            Closure failure = { resp, reader ->
-                log.warn ('Response: ' + resp.getStatus().getCode() + ' - ' + resp.getStatus().getReason())
-                if(resp.code() == 404) {
-                    result.error = resp.status
-                }
-                else
-                    throw new SyncException("error on request: ${resp.getStatus().getCode()} : ${reader}")
-            }
-            Map<String, Object> queryParams = [componentType: 'TitleInstancePackagePlatform',
-                                               max: 10000,
-                                               status: ['Removed', GlobalSourceSyncService.PERMANENTLY_DELETED]]
             http.post(BasicHttpClient.ResponseType.JSON, BasicHttpClient.PostType.URLENC, queryParams, success, failure)
-            BasicHttpClient httpScroll = new BasicHttpClient(grs.uri+'/scroll', config)
             //invert: check if non-deleted TIPPs still exist in we:kb instance
-            GParsPool.withPool(3) {
-                Package.findAllByPackageStatusNotEqual(RDStore.PACKAGE_STATUS_DELETED).eachWithIndexParallel { Package pkg, int i ->
+            Set<Package> allPackages = Package.findAllByPackageStatusNotEqual(RDStore.PACKAGE_STATUS_DELETED)
+            GParsPool.withPool(8) {
+                allPackages.eachWithIndexParallel { Package pkg, int i ->
                     Package.withTransaction {
+                        log.debug("Thread ${Thread.currentThread().getName()} processes now package record ${i} out of ${allPackages.size()} records!")
+                        Map<String, String> wekbPkgTipps = [:]
+                        offset = 0
                         Set<TitleInstancePackagePlatform> tipps = TitleInstancePackagePlatform.findAllByPkg(pkg)
-                        queryParams = [pkg: pkg.gokbId, status: ['Current', 'Expected', 'Retired', 'Deleted', 'Removed', GlobalSourceSyncService.PERMANENTLY_DELETED], max: 10000]
-                        Set<String> wekbPkgTipps = []
-                        boolean more = true
+                        queryParams = [componentType: 'TitleInstancePackagePlatform',
+                                       tippPackageUuid: pkg.gokbId,
+                                       username: ConfigMapper.getWekbApiUsername(),
+                                       password: ConfigMapper.getWekbApiPassword(),
+                                       status: ['Current', 'Expected', 'Retired', 'Deleted', 'Removed', GlobalSourceSyncService.PERMANENTLY_DELETED], max: max, offset: offset]
+                        more = true
                         Closure checkSuccess
                         checkSuccess = { resp, json ->
                             if(resp.code() == 200) {
-                                if(json.size == 0) {
+                                if(json.result_count == 0) {
                                     tipps.each { TitleInstancePackagePlatform tipp ->
-                                        wekbUuids.put(tipp.gokbId, 'inexistent')
+                                        wekbUuids.put(tipp.gokbId, GlobalSourceSyncService.PERMANENTLY_DELETED)
                                     }
                                     //because of parallel process; session mismatch when accessing via GORM
                                     Package.executeUpdate('update Package pkg set pkg.packageStatus = :deleted where pkg = :pkg',[deleted: RDStore.PACKAGE_STATUS_DELETED, pkg: pkg])
                                 }
                                 else {
-                                    wekbPkgTipps.addAll(json.records.collect { Map record -> record.uuid }.toSet())
-                                    more = Boolean.valueOf(json.hasMoreRecords)
+                                    wekbPkgTipps.putAll(json.result.collectEntries { Map record -> [record.uuid, record.status] })
+                                    more = json.page_current < json.page_total
                                     if(more) {
-                                        queryParams.scrollId = json.scrollId
-                                        httpScroll.post(BasicHttpClient.ResponseType.JSON, BasicHttpClient.PostType.URLENC, queryParams, checkSuccess, failure)
+                                        offset += max
+                                        queryParams.offset = offset
+                                        http.post(BasicHttpClient.ResponseType.JSON, BasicHttpClient.PostType.URLENC, queryParams, checkSuccess, failure)
                                     }
                                 }
                             }
@@ -227,31 +245,30 @@ class YodaService {
                                 throw new SyncException("erroneous response")
                             }
                         }
-                        if (tipps.size() > 10000) {
-                            queryParams.component_type = 'TitleInstancePackagePlatform'
-                            httpScroll.post(BasicHttpClient.ResponseType.JSON, BasicHttpClient.PostType.URLENC, queryParams, checkSuccess, failure)
-                        } else {
-                            queryParams.componentType = 'TitleInstancePackagePlatform'
-                            http.post(BasicHttpClient.ResponseType.JSON, BasicHttpClient.PostType.URLENC, queryParams, checkSuccess, failure)
-                        }
+                        http.post(BasicHttpClient.ResponseType.JSON, BasicHttpClient.PostType.URLENC, queryParams, checkSuccess, failure)
                         tipps.each { TitleInstancePackagePlatform tipp ->
-                            if (!wekbPkgTipps.contains(tipp.gokbId))
-                                wekbUuids.put(tipp.gokbId, 'inexistent')
+                            if (!wekbPkgTipps.containsKey(tipp.gokbId) || wekbPkgTipps.get(tipp.gokbId) in [GlobalSourceSyncService.PERMANENTLY_DELETED, RDStore.TIPP_STATUS_REMOVED.value] || wekbUuids.get(tipp.gokbId) in [GlobalSourceSyncService.PERMANENTLY_DELETED, RDStore.TIPP_STATUS_REMOVED.value]) {
+                                log.info("mark ${tipp.gokbId} in package ${tipp.pkg.gokbId} as removed:")
+                                log.info("reason: !wekbPkgTipps.contains(tipp.gokbId): ${!wekbPkgTipps.containsKey(tipp.gokbId)} / ")
+                                log.info("wekbPkgTipps.get(tipp.gokbId) in [GlobalSourceSyncService.PERMANENTLY_DELETED, RDStore.TIPP_STATUS_REMOVED.value] / ${wekbPkgTipps.get(tipp.gokbId) in [GlobalSourceSyncService.PERMANENTLY_DELETED, RDStore.TIPP_STATUS_REMOVED.value]}")
+                                log.info("wekbUuids.get(tipp.gokbId) in [GlobalSourceSyncService.PERMANENTLY_DELETED, RDStore.TIPP_STATUS_REMOVED.value]: ${wekbUuids.get(tipp.gokbId) in [GlobalSourceSyncService.PERMANENTLY_DELETED, RDStore.TIPP_STATUS_REMOVED.value]}")
+                                tipp.status = RDStore.TIPP_STATUS_REMOVED
+                                tipp.save()
+                                log.info("marked as deleted ${IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.status = :removed, ie.lastUpdated = :now where ie.tipp = :tipp and ie.status != :removed', [removed: RDStore.TIPP_STATUS_REMOVED, tipp: tipp, now: new Date()])} issue entitlements")
+                            }
                         }
                     }
                 }
             }
             http.close()
-            httpScroll.close()
-
+            /*
             if(wekbUuids) {
                 GParsPool.withPool(8) { pool ->
                     wekbUuids.eachParallel { String key, String status ->
                         TitleInstancePackagePlatform.withTransaction {
-                            TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGokbId(key)
+                            TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGokbIdAndStatusNotEqual(key, RDStore.TIPP_STATUS_REMOVED)
                             if (tipp) {
                                 tipp.status = RDStore.TIPP_STATUS_REMOVED
-                                TitleChange.construct([msgToken: PendingChangeConfiguration.TITLE_REMOVED, target: tipp, status: RDStore.PENDING_CHANGE_HISTORY])
                                 tipp.save()
                             }
                         }
@@ -273,13 +290,14 @@ class YodaService {
                     if(toDelete) {
                         //we should check the underlying queries instead of chunking
                         deletionService.deleteTIPPsCascaded(toDelete)
-                        /*toDelete.collate(50).each { List<TitleInstancePackagePlatform> subList ->
+                        toDelete.collate(50).each { List<TitleInstancePackagePlatform> subList ->
                             deletionService.deleteTIPPsCascaded(subList)
-                        }*/
+                        }
                     }
                     else log.info("no titles to delete")
                 }
             }
+            */
         })
     }
 
