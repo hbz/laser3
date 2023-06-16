@@ -911,7 +911,7 @@
                                         </a>
                                     </g:if>
                                     <g:elseif test="${isProviderOrAgency}">
-                                        <a href="#createPersonModal" class="ui icon button blue la-modern-button createContact" id="contactPersonForProviderAgency" data-ui="modal">
+                                        <a href="#createPersonModal" class="ui icon button blue la-modern-button createContact" id="contactPersonForProviderAgencyPublic" data-ui="modal">
                                             <i aria-hidden="true" class="plus icon"></i>
                                         </a>
                                     </g:elseif>
@@ -1073,9 +1073,7 @@
                                         </tr>
                                     </g:if>
                                 </g:if>
-                                <g:set var="techSupports" value="${orgInstance.getContactPersonsByFunctionType(true, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, orgInstanceRecord != null)}"/>
-                                <g:set var="serviceSupports" value="${orgInstance.getContactPersonsByFunctionType(true, RDStore.PRS_FUNC_SERVICE_SUPPORT, orgInstanceRecord != null)}"/>
-                                <g:set var="metadataContacts" value="${orgInstance.getContactPersonsByFunctionType(true, RDStore.PRS_FUNC_METADATA, orgInstanceRecord != null)}"/>
+                                <g:set var="providerContacts" value="${orgInstance.getContactPersonsByFunctionType(true, null, orgInstanceRecord != null)}"/>
                                     <%--
                                     <g:if test="${isProviderOrAgency && accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC ) && !orgInstanceRecord}">
                                         <tr>
@@ -1094,14 +1092,13 @@
                                         </tr>
                                     </g:if>
                                     --%>
-                                <g:if test="${techSupports || serviceSupports || metadataContacts}">
                                     <tr>
                                         <td>
-                                            <g:if test="${techSupports}">
+                                            <g:if test="${providerContacts}">
                                                 <div class="ui segment la-timeLineSegment-contact">
                                                     <div class="la-timeLineGrid">
                                                         <div class="ui grid">
-                                                            <g:each in="${techSupports}" var="prs">
+                                                            <g:each in="${providerContacts}" var="prs">
                                                                 <div class="row">
                                                                     <div class="two wide column">
                                                                         <g:if test="${orgInstanceRecord}">
@@ -1115,84 +1112,8 @@
                                                                         </g:else>
                                                                     </div>
                                                                     <div class="fourteen wide column">
-                                                                        <div class="ui label">${RDStore.PRS_FUNC_TECHNICAL_SUPPORT.getI10n('value')}</div>
-                                                                        <g:if test="${prs.last_name != RDStore.PRS_FUNC_TECHNICAL_SUPPORT.getI10n('value')}"><div class="ui header">${prs}</div></g:if>
-                                                                        <g:if test="${prs.contacts}">
-                                                                            <g:each in="${prs.contacts.toSorted()}" var="contact">
-                                                                                <g:if test="${contact.contentType && contact.contentType.value in ['E-Mail', 'Mail', 'Url', 'Phone', 'Mobil', 'Fax']}">
-                                                                                    <laser:render template="/templates/cpa/contact" model="${[
-                                                                                            overwriteEditable   : (isProviderOrAgency && orgInstanceRecord == null && accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )),
-                                                                                            contact             : contact,
-                                                                                            tmplShowDeleteButton: (isProviderOrAgency && orgInstanceRecord == null && accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC ))
-                                                                                    ]}"/>
-                                                                                </g:if>
-                                                                            </g:each>
-                                                                        </g:if>
-                                                                    </div>
-                                                                </div>
-                                                            </g:each>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </g:if>
-                                            <g:if test="${serviceSupports}">
-                                                <div class="ui segment la-timeLineSegment-contact">
-                                                    <div class="la-timeLineGrid">
-                                                        <div class="ui grid">
-                                                            <g:each in="${serviceSupports}" var="prs">
-                                                                <div class="row">
-                                                                    <div class="two wide column">
-                                                                        <g:if test="${orgInstanceRecord}">
-                                                                            <a target="_blank" href="${wekbAPI.editUrl ? wekbAPI.editUrl + '/public/orgContent/' + orgInstance.gokbId : '#'}"><i class="circular large la-gokb icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'org.isWekbCurated.header.label')} (we:kb Link)"></i></a>
-                                                                        </g:if>
-                                                                        <g:elseif test="${prs.isPublic}">
-                                                                            <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
-                                                                        </g:elseif>
-                                                                        <g:else>
-                                                                            <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
-                                                                        </g:else>
-                                                                    </div>
-                                                                    <div class="fourteen wide column">
-                                                                        <div class="ui label">${RDStore.PRS_FUNC_SERVICE_SUPPORT.getI10n('value')}</div>
-                                                                        <g:if test="${prs.last_name != RDStore.PRS_FUNC_SERVICE_SUPPORT.getI10n('value')}"><div class="ui header">${prs}</div></g:if>
-                                                                        <g:if test="${prs.contacts}">
-                                                                            <g:each in="${prs.contacts.toSorted()}" var="contact">
-                                                                                <g:if test="${contact.contentType && contact.contentType.value in ['E-Mail', 'Mail', 'Url', 'Phone', 'Mobil', 'Fax']}">
-                                                                                    <laser:render template="/templates/cpa/contact" model="${[
-                                                                                            overwriteEditable   : (isProviderOrAgency && orgInstanceRecord == null && accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )),
-                                                                                            contact             : contact,
-                                                                                            tmplShowDeleteButton: (isProviderOrAgency && orgInstanceRecord == null && accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC ))
-                                                                                    ]}"/>
-                                                                                </g:if>
-                                                                            </g:each>
-                                                                        </g:if>
-                                                                    </div>
-                                                                </div>
-                                                            </g:each>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </g:if>
-                                            <g:if test="${metadataContacts}">
-                                                <div class="ui segment la-timeLineSegment-contact">
-                                                    <div class="la-timeLineGrid">
-                                                        <div class="ui grid">
-                                                            <g:each in="${metadataContacts}" var="prs">
-                                                                <div class="row">
-                                                                    <div class="two wide column">
-                                                                        <g:if test="${orgInstanceRecord}">
-                                                                            <a target="_blank" href="${wekbAPI.editUrl ? wekbAPI.editUrl + '/public/orgContent/' + orgInstance.gokbId : '#'}"><i class="circular large la-gokb icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'org.isWekbCurated.header.label')} (we:kb Link)"></i></a>
-                                                                        </g:if>
-                                                                        <g:elseif test="${prs.isPublic}">
-                                                                            <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
-                                                                        </g:elseif>
-                                                                        <g:else>
-                                                                            <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
-                                                                        </g:else>
-                                                                    </div>
-                                                                    <div class="fourteen wide column">
-                                                                        <div class="ui label">${RDStore.PRS_FUNC_METADATA.getI10n('value')}</div>
-                                                                        <g:if test="${prs.last_name != RDStore.PRS_FUNC_METADATA.getI10n('value')}"><div class="ui header">${prs}</div></g:if>
+                                                                        <div class="ui label">${prs.roleLinks.collect { PersonRole pr -> pr.roleType.getI10n('value')}.join (' / ')}</div>
+                                                                        <g:if test="${!(prs.last_name in [RDStore.PRS_FUNC_TECHNICAL_SUPPORT.getI10n('value'), RDStore.PRS_FUNC_SERVICE_SUPPORT.getI10n('value'), RDStore.PRS_FUNC_METADATA.getI10n('value')])}"><div class="ui header">${prs}</div></g:if>
                                                                         <g:if test="${prs.contacts}">
                                                                             <g:each in="${prs.contacts.toSorted()}" var="contact">
                                                                                 <g:if test="${contact.contentType && contact.contentType.value in ['E-Mail', 'Mail', 'Url', 'Phone', 'Mobil', 'Fax']}">
@@ -1213,13 +1134,12 @@
                                             </g:if>
                                         </td>
                                     </tr>
-                                </g:if>
                             </table>
                         </g:if>
                     </div>
                 </div>
             </div>
-            <g:if test="${(institution.isCustomerType_Consortium() || institution.isCustomerType_Inst_Pro())}">
+            <g:if test="${(institution.isCustomerType_Consortium() || institution.isCustomerType_Inst_Pro()) && !inContextOrg}">
                 <div id="container-contacts">
                     <div class="ui card">
                         <div class="content">
@@ -1229,9 +1149,16 @@
                                         <g:message code="org.contactpersons.and.addresses.my"/>
                                     </div>
                                     <div class="right aligned four wide column">
-                                        <a href="#createPersonModal" class="ui icon button blue la-modern-button createContact" id="contactPersonForInstitution" data-ui="modal">
-                                            <i aria-hidden="true" class="plus icon"></i>
-                                        </a>
+                                        <g:if test="${isProviderOrAgency}">
+                                            <a href="#createPersonModal" class="ui icon button blue la-modern-button createContact" id="contactPersonForProviderAgency" data-ui="modal">
+                                                <i aria-hidden="true" class="plus icon"></i>
+                                            </a>
+                                        </g:if>
+                                        <g:else>
+                                            <a href="#createPersonModal" class="ui icon button blue la-modern-button createContact" id="contactPersonForInstitution" data-ui="modal">
+                                                <i aria-hidden="true" class="plus icon"></i>
+                                            </a>
+                                        </g:else>
                                     </div>
                                 </div>
                             </div>
@@ -1263,9 +1190,9 @@
                                                                         <g:each in="${person.contacts.toSorted()}" var="contact">
                                                                             <g:if test="${contact.contentType && contact.contentType.value in ['E-Mail', 'Mail', 'Url', 'Phone', 'Mobil', 'Fax']}">
                                                                                 <laser:render template="/templates/cpa/contact" model="${[
-                                                                                        overwriteEditable   : false,
+                                                                                        overwriteEditable   : editable,
                                                                                         contact             : contact,
-                                                                                        tmplShowDeleteButton: false
+                                                                                        tmplShowDeleteButton: editable
                                                                                 ]}"/>
                                                                             </g:if>
                                                                         </g:each>

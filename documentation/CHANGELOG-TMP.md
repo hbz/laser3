@@ -9,7 +9,11 @@
 
 5143    16.06.2023  rc-3.1  3.1.3       Andreas Bug         Paketzuschnittvererbung: prüfen und Skript erstellen
 
+5138    16.06.2023  rc-3.1  3.1.3       Andreas Feature     fehlende Spalten nachgereicht
+
 5136    16.06.2023  rc-3.1  3.1.3       Andreas Feature     Zuordnungsjahr um ein Jahr fortschalten
+
+5134    16.06.2023  rc-3.1  3.1.3       Andreas Bug         falsche Konfiguration bei der Erstellung der Modale
 
 5137    15.06.2023  rc-3.1  3.1.3       Andreas Bug         Bereinigungsmethoden korrigiert
 
@@ -120,6 +124,8 @@
 5056    23.05.2023  rc-3.1  3.1         David   Feature     Reporting: Bestand sinngemäß in Paket umbenennen
 
 5055    23.05.2023  rc-3.1  3.1         David   Feature     Reporting: Lizenz > Bestand > Erscheinungsjahr
+
+--      23.05.2023  rc-3.1  3.1         Andreas Feature     Bezeichner "Bestand" auf "Paket" umgestellt
 
 5051    22.05.2023  rc-3.1  3.1         Andreas Feature     Designanpassungen in der Paketdetailsicht
 
