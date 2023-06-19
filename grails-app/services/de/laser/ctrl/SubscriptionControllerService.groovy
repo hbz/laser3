@@ -2157,15 +2157,9 @@ class SubscriptionControllerService {
         result.package = Package.get(params.package)
         Locale locale = LocaleUtils.getCurrentLocale()
         if(params.confirmed) {
-            Set<Subscription> childSubs = Subscription.findAllByInstanceOf(result.subscription)
-            boolean unlinkErrorChild = false
-            childSubs.each { Subscription child ->
-                if(!packageService.unlinkFromSubscription(result.package, child, result.institution, true)) {
-                    unlinkErrorChild = true
-                    return
-                }
-            }
-            if(!unlinkErrorChild && packageService.unlinkFromSubscription(result.package, result.subscription, result.institution, true)){
+            Set<Subscription> subList = [result.subscription]
+            subList.addAll(Subscription.findAllByInstanceOf(result.subscription))
+            if(packageService.unlinkFromSubscription(result.package, subList.id, result.institution, true)){
                 result.message = messageSource.getMessage('subscription.details.unlink.successfully',null,locale)
                 [result:result,status:STATUS_OK]
             }else {
