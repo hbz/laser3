@@ -43,7 +43,7 @@
 
 /* Striped */
 @stripedBackground: #f4f8f9;
-@invertedStripedBackground: blue;
+@invertedStripedBackground: @blue;
 
 
 
@@ -59,3 +59,7 @@
 @sortableActiveColor: #515151;
 
 @sortableActiveHoverBackground: @#D3DAE3;
+
+@sortableColor: #515151;
+
+@compactHorizontalPadding: 0.5em;

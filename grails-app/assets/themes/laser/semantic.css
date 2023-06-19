@@ -54903,7 +54903,6 @@ form {
 
 .ui.form .fields.la-forms-grid,
 .ui.form .fields .field.la-forms-grid {
-  padding: 25px;
   background: #e6dee2;
 }
 
@@ -62434,7 +62433,7 @@ Floated Menu / Item
 
 .ui.inverted.striped.table > tr:nth-child(2n),
 .ui.inverted.striped.table > tbody > tr:nth-child(2n) {
-  background-color: blue;
+  background-color: #004678;
 }
 
 /* Allow striped active hover */
@@ -64401,7 +64400,7 @@ Floated Menu / Item
 .ui.sortable.table > thead > tr > th {
   cursor: pointer;
   white-space: nowrap;
-  color: #1B1C1D;
+  color: #515151;
 }
 
 .ui.celled.sortable.table > thead > tr > th:not(:first-child) {
@@ -64719,14 +64718,14 @@ Floated Menu / Item
 .ui.compact.table > thead > tr > th,
 .ui.compact.table > tbody > tr > th,
 .ui.compact.table > tfoot > tr > th {
-  padding-left: 0.7em;
-  padding-right: 0.7em;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
 }
 
 .ui.compact.table > tr > td,
 .ui.compact.table > tbody > tr > td,
 .ui.compact.table > tfoot > tr > td {
-  padding: 0.5em 0.7em;
+  padding: 0.5em 0.5em;
 }
 
 /* Very */
@@ -64954,9 +64953,8 @@ Floated Menu / Item
   color: #1B1C1D;
 }
 
-.ui.sortable.table thead th {
+.ui.sortable.table > thead > tr > th {
   cursor: default;
-  color: #515151;
 }
 
 /* Hover */
@@ -65008,7 +65006,7 @@ Floated Menu / Item
 }
 
 .ui.la-table.table tr td,
-.ui.la-table.table tr th.la-th-column {
+.ui.la-table.table tr:not(:first-child) th.la-th-column {
   border-top: 7px solid #F4F8F9;
 }
 

@@ -7,6 +7,46 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5139    16.06.2023  rc-3.1  3.1.3       Moe     Bug         Titel hinzufügen: Nur 1 oder alle Titel möglich
+
+5143    16.06.2023  rc-3.1  3.1.3       Andreas Bug         Paketzuschnittvererbung: prüfen und Skript erstellen
+
+5138    16.06.2023  rc-3.1  3.1.3       Andreas Feature     fehlende Spalten nachgereicht
+
+5136    16.06.2023  rc-3.1  3.1.3       Andreas Feature     Zuordnungsjahr um ein Jahr fortschalten
+
+5134    16.06.2023  rc-3.1  3.1.3       Andreas Bug         falsche Konfiguration bei der Erstellung der Modale
+
+5137    15.06.2023  rc-3.1  3.1.3       Andreas Bug         Bereinigungsmethoden korrigiert
+
+5135    15.06.2023  rc-3.1  3.1.3       Andreas Bug         Links mit we:kb-Icon an diversen Stellen angelegt
+
+--      14.06.2023  rc-3.1  3.1.3       Moe     Feature     Open Participant and Reminder Participant split in two function
+
+5127    14.06.2023  rc-3.1  3.1.3       Andreas Bug         Titel konnten nicht zu Titelgruppen hinzugefügt werden
+
+5128    13.06.2023  rc-3.1  3.1.3       Moe     Bug         Titelgruppe ändern/löschen: fehlender Modal QA/DEV
+
+5123    12.06.2023  rc-3.1  3.1.3       Andreas Bug         Proxyfehler bei Paketverknüpfung behoben
+
+--      09.06.2023  rc-3.1  3.1.3       Moe     Bug         ClickMe-Export funktioniert nicht richtig bei Umfrage
+
+--      09.06.2023  rc-3.1  3.1.3       Moe     Feature     IP-Adressen in Zwischenablage kopieren
+
+5121    07.06.2023  rc-3.1  3.1.3       Andreas Bug         Kosteneingabe falsch verarbeitet
+
+5118    06.06.2023  rc-3.1  3.1.3       Andreas Bug         irreführende Sortierung zurückgesetzt
+
+5117    06.06.2023  rc-3.1  3.1.3       Andreas Bug         fehlerhaften Export der Nutzerzahlen korrigiert
+
+5115    06.06.2023  rc-3.1  3.1.3       Andreas Bug         diverse Fehler im Einrichtungsexport behoben
+
+5114    06.06.2023  rc-3.1  3.1.3       Andreas Feature     direkte Vererbbarkeit von der Lizenzverwaltung
+
+5112    05.06.2023  rc-3.1  3.1.2       Andreas Bug         Überbleibsel entfernt
+
+5110    02.06.2023  rc-3.1  3.1.2       Moe     Bug         Button Benutzername über Nutzerverwaltung geht nicht
+
 5109    02.06.2023  rc-3.1  3.1.2       Andreas Bug         Zugriffsfehler beim Speichern von Adressen
 
 --      02.06.2023  rc-3.1  3.1.2       Andreas Feature     einige kleinere Verbesserungen zur Fehlerverwaltung von Statistik-Abfrageantworten

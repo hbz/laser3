@@ -97,8 +97,8 @@
                     ${RefdataValue.getByValueAndCategory(record.status, RDConstants.PACKAGE_STATUS)?.getI10n("value")}
                 </td>
                 <td>
-                    <g:if test="${record.titleCount}">
-                        ${record.titleCount}
+                    <g:if test="${record.currentTippCount}">
+                        ${record.currentTippCount}
                     </g:if>
                     <g:else>
                         0
@@ -198,7 +198,7 @@
 
 <div id="magicArea"></div>
 
-<ui:modal contentClass="scrolling" id="linkPackageModal" message="myinst.currentSubscriptions.link_pkg"
+<ui:modal id="linkPackageModal" message="myinst.currentSubscriptions.link_pkg"
              msgSave="${message(code: 'default.button.link.label')}">
 
     <g:form class="ui form" id="linkPackageForm" url="[controller: 'subscription', action: 'processLinkPackage', id: params.id]">

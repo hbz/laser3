@@ -171,161 +171,285 @@
     <div class="ui blue large label"><g:message code="title.plural"/>: <div class="detail">${num_tipp_rows}</div>
     </div>
 
-    <table class="ui sortable celled la-js-responsive-table la-table table la-ignore-fixed la-bulk-header">
-        <thead>
-        <tr>
-            <th rowspan="3" style="vertical-align:middle;">
-                <%
-                    String allChecked = ""
-                    checkedCache.each { e ->
-                        if(e != "checked")
-                            allChecked = ""
-                    }
-                %>
-                <g:if test="${editable}"><input id="select-all" type="checkbox" name="chkall" ${allChecked}/></g:if>
-            </th>
-            <th rowspan="3"><g:message code="sidewide.number"/></th>
-            <g:sortableColumn class="ten wide" params="${params}" property="tipp.sortname" title="${message(code: 'title.label')}"/>
-            <th><g:message code="tipp.coverage"/></th>
-            <th><g:message code="tipp.access"/></th>
-            <g:if test="${uploadPriceInfo}">
-                <th><g:message code="tipp.price.listPrice"/></th>
-                <th><g:message code="tipp.price.localPrice"/></th>
-                <th><g:message code="tipp.price.startDate"/></th>
-            </g:if>
-            <th><g:message code="default.actions.label"/></th>
-        </tr>
-        <tr>
+    <br>
+    <br>
 
-            <th colspan="1" rowspan="2"></th>
+    <g:set var="counter" value="${offset + 1}"/>
+    <g:set var="sumlistPrice" value="${0}"/>
+    <g:set var="sumlocalPrice" value="${0}"/>
 
-            <th>${message(code: 'default.from')}</th>
-            <th>${message(code: 'default.from')}</th>
-            <th colspan="7" rowspan="2"></th>
-        </tr>
-        <tr>
-            <th>${message(code: 'default.to')}</th>
-            <th>${message(code: 'default.to')}</th>
-        </tr>
-        </thead>
+    <%
+        String allChecked = ""
+        checkedCache.each { e ->
+            if (e != "checked")
+                allChecked = ""
+        }
+    %>
 
-        <tbody>
+    <div class="ui accordion la-accordion-showMore" id="surveyEntitlements">
+        <g:if test="${editable}"><input id="select-all" type="checkbox" name="chkall" ${allChecked}/></g:if>
         <g:each in="${tipps}" var="tipp">
 
-            <g:set var="perpetualAccessToTitle"
-                   value="${surveyService.hasParticipantPerpetualAccessToTitle3(institution, tipp)}"/> %{-- Moe: ex result.subscriber; is that same as result.institution? is a fix to prevent 500, please check it over! --}%
+            <g:set var="participantPerpetualAccessToTitle"
+                   value="${surveyService.hasParticipantPerpetualAccessToTitle3(institution, tipp)}"/>
 
-            <tr data-index="${tipp.gokbId}">
-                <td>
-                    <g:if test="${!perpetualAccessToTitle}">
-                        <input type="checkbox" name="bulkflag" class="bulkcheck" ${checkedCache ? checkedCache[tipp.gokbId] : ''}>
-                    </g:if>
-                </td>
-            <td>${counter++}</td>
+            <div class="ui raised segments la-accordion-segments">
 
-            <td>
-                <!-- START TEMPLATE -->
-                <laser:render template="/templates/title_short"
-                          model="${[ie: null, tipp: tipp,
-                                    showPackage: true, showPlattform: true, showCompact: true, showEmptyFields: false, overwriteEditable: false]}"/>
-                <!-- END TEMPLATE -->
-            </td>
+                <div class="ui fluid segment title">
 
-            <td>
-                <g:if test="${(tipp.titleType == 'Book')}">
-                    <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.dateFirstInPrint')}"></i>
-                   %{-- <ui:datepicker class="ieOverwrite" placeholder="${message(code: 'tipp.dateFirstInPrint')}" name="ieAccessStart" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId]?.dateFirstInPrint : tipp.title?.dateFirstInPrint}"/>
-                    <%--${tipp.title.dateFirstInPrint}--%>--}%
-                    <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                  date="${tipp.dateFirstInPrint}"/>
-                    <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.dateFirstOnline')}"></i>
-                    %{--<ui:datepicker class="ieOverwrite" placeholder="${message(code: 'tipp.dateFirstOnline')}" name="ieAccessEnd" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId]?.dateFirstOnline : tipp.title?.dateFirstOnline}"/>
-                    <%--${tipp.title.dateFirstOnline}--%>--}%
-                    <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                  date="${tipp.dateFirstOnline}"/>
-                </g:if>
-                <g:else>
-                    <%-- The check if preselectCoverageStatements is set is done server-side; this is implicitely done when checking if the issueEntitlementOverwrite map has the coverage statement list.
-                        In order to define and initialise the list, it is mandatory that the foresaid flag is set to true. Compare with SubscriptionController.addEntitlements()
-                     --%>
-                    <g:set var="coverageStatements" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId]?.coverages : tipp.coverages}"/>
-                    <g:each in="${coverageStatements}" var="covStmt" status="key">
-                        <!-- von -->
-                        <ui:datepicker class="ieOverwrite coverage" name="startDate${key}" value="${covStmt.startDate}" placeholder="${message(code:'tipp.startDate')}"/>
-                        <%--<g:formatDate format="${message(code: 'default.date.format.notime')}" date="${tipp.startDate}"/>--%><br />
-                        <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.startVolume')}"></i>
-                        <input data-coverage="true" name="startVolume${key}" type="text" class="ui input ieOverwrite" value="${covStmt.startVolume}" placeholder="${message(code: 'tipp.startVolume')}">
-                        <%--${tipp?.startVolume}--%><br />
-                        <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.startIssue')}"></i>
-                        <input data-coverage="true" name="startIssue${key}" type="text" class="ui input ieOverwrite" value="${covStmt.startIssue}" placeholder="${message(code: 'tipp.startIssue')}">
-                        <%--${tipp?.startIssue}--%>
-                        <ui:dateDevider/>
-                        <!-- bis -->
-                        <ui:datepicker class="ieOverwrite coverage" name="endDate${key}" value="${covStmt.endDate}" placeholder="${message(code:'tipp.endDate')}"/>
-                        <%--<g:formatDate format="${message(code: 'default.date.format.notime')}" date="${tipp.endDate}"/><br />--%>
-                        <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.endVolume')}"></i>
-                        <input data-coverage="true" name="endVolume${key}" type="text" class="ui input ieOverwrite" value="${covStmt.endVolume}" placeholder="${message(code: 'tipp.endVolume')}">
-                        <%--${tipp?.endVolume}--%><br />
-                        <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.endIssue')}"></i>
-                        <input data-coverage="true" name="endIssue${key}" type="text" class="ui input ieOverwrite" value="${covStmt.endIssue}" placeholder="${message(code: 'tipp.endIssue')}">
-                        <%--${tipp?.endIssue}--%><br />
-                        <%--${tipp.coverageDepth}--%>
-                        <input data-coverage="true" class="ieOverwrite" name="coverageDepth${key}" type="text" placeholder="${message(code:'tipp.coverageDepth')}" value="${covStmt.coverageDepth}"><br />
-                        <%--${tipp.embargo}--%>
-                        <input data-coverage="true" class="ieOverwrite" name="embargo${key}" type="text" placeholder="${message(code:'tipp.embargo')}" value="${covStmt.embargo}"><br />
-                        <%--${tipp.coverageNote}--%>
-                        <input data-coverage="true" class="ieOverwrite" name="coverageNote${key}" type="text" placeholder="${message(code:'default.note.label')}" value="${covStmt.coverageNote}"><br />
-                    </g:each>
-                </g:else>
-            </td>
-                <td>
-                    <!-- von -->
-                    <ui:datepicker class="ieOverwrite" name="accessStartDate" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId]?.accessStartDate : tipp.accessStartDate}" placeholder="${message(code:'tipp.accessStartDate')}"/>
-                    <%--<g:formatDate format="${message(code: 'default.date.format.notime')}" date="${tipp.accessStartDate}"/>--%>
-                    <ui:dateDevider/>
-                    <!-- bis -->
-                    <ui:datepicker class="ieOverwrite" name="accessEndDate" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId]?.accessEndDate : tipp.accessEndDate}" placeholder="${message(code:'tipp.accessEndDate')}"/>
-                    <%--<g:formatDate format="${message(code: 'default.date.format.notime')}" date="${tipp.accessEndDate}"/>--%>
-                </td>
-            <g:if test="${uploadPriceInfo}">
-                <td>
-                    <g:formatNumber number="${issueEntitlementOverwrite[tipp.gokbId]?.listPrice}" type="currency" currencySymbol="${issueEntitlementOverwrite[tipp.gokbId]?.listCurrency}" currencyCode="${issueEntitlementOverwrite[tipp.gokbId]?.listCurrency}"/>
-                </td>
-                <td>
-                    <g:formatNumber number="${issueEntitlementOverwrite[tipp.gokbId]?.localPrice}" type="currency" currencySymbol="${issueEntitlementOverwrite[tipp.gokbId]?.localCurrency}" currencyCode="${issueEntitlementOverwrite[tipp.gokbId]?.localCurrency}"/>
-                </td>
-                <td>
-                    <ui:datepicker class="ieOverwrite" name="priceDate" value="${issueEntitlementOverwrite[tipp.gokbId]?.priceDate}" placeholder="${message(code:'tipp.price.startDate')}"/>
-                </td>
-            </g:if>
-            <td>
-                <g:if test="${!perpetualAccessToTitle}">
-                    <g:if test="${!blockSubmit}">
-                        <g:link class="ui icon button blue la-modern-button la-popup-tooltip la-delay" action="processAddEntitlements"
-                                params="${[id: subscription.id, singleTitle: tipp.gokbId, uploadPriceInfo: uploadPriceInfo, preselectCoverageDates: preselectCoverageDates]}"
-                                data-content="${message(code: 'subscription.details.addEntitlements.add_now')}">
-                            <i class="plus icon"></i>
-                        </g:link>
-                    </g:if>
-                    <g:else>
-                        <div class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.details.addEntitlements.thread.running')}">
-                            <g:link class="ui icon disabled button la-popup-tooltip la-delay" action="processAddEntitlements"
-                                    params="${[id: subscription.id, singleTitle: tipp.gokbId, uploadPriceInfo: uploadPriceInfo, preselectCoverageDates: preselectCoverageDates]}">
-                                <i class="plus icon"></i>
-                            </g:link>
+                    <div class="ui stackable equal width grid la-js-checkItem" data-gokbId="${tipp.gokbId}"
+                         data-tippId="${tipp.id}" data-index="${counter}">
+                        <g:if test="${participantPerpetualAccessToTitle}">
+                            <span class="ui mini left corner label la-perpetualAccess la-popup-tooltip la-delay"
+                                  data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')}"
+                                  data-position="left center" data-variation="tiny">
+                                <i class="star icon"></i>
+                            </span>
+                        </g:if>
+                        <div class="one wide column">
+                            <g:if test="${editable && !participantPerpetualAccessToTitle}">
+                                <input type="checkbox" name="bulkflag"
+                                       class="bulkcheck la-js-notOpenAccordion" ${checkedCache ? checkedCache[tipp.gokbId] : ''}>
+                            </g:if>
                         </div>
-                    </g:else>
-                </g:if>
-                <g:else>
-                        <div class="la-inline-flexbox la-popup-tooltip la-delay" data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')}" data-position="left center" data-variation="tiny">
-                            <i class="icon redo alternate red"></i>
+
+
+                        <div class="one wide column">
+                            <span class="la-vertical-centered">${counter++}</span>
                         </div>
-                </g:else>
-            </td>
-            </tr>
+
+                        <div class="column">
+                            <div class="ui list">
+                                <!-- START TEMPLATE -->
+                                <laser:render
+                                        template="/templates/title_short_accordion"
+                                        model="${[tipp       : tipp,
+                                                  showPackage: true, showPlattform: true, showEmptyFields: false]}"/>
+                                <!-- END TEMPLATE -->
+
+                            </div>
+                        </div>
+
+                        <div class="column">
+                            <laser:render template="/templates/tipps/coverages_accordion"
+                                          model="${[tipp: tipp, overwriteEditable: false]}"/>
+                        </div>
+
+                        <div class="four wide column">
+
+                            <!-- START TEMPLATE -->
+                            <laser:render template="/templates/identifier"
+                                          model="${[tipp: tipp]}"/>
+                            <!-- END TEMPLATE -->
+                        </div>
+
+                        <div class="two wide column">
+                            <g:if test="${tipp.priceItems}">
+                                <g:each in="${tipp.priceItems}" var="priceItem" status="i">
+                                    <div class="ui list">
+                                        <g:if test="${priceItem.listPrice}">
+                                            <div class="item">
+                                                <div class="contet">
+                                                    <div class="header">
+                                                        <g:message code="tipp.price.listPrice"/>
+                                                    </div>
+
+                                                    <div class="content">
+                                                        <g:formatNumber number="${priceItem.listPrice}" type="currency"
+                                                                        currencyCode="${priceItem.listCurrency?.value}"
+                                                                        currencySymbol="${priceItem.listCurrency?.value}"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </g:if>
+                                    </div>
+                                    <g:if test="${priceItem.listPrice && (i < tipp.priceItems.size() - 1)}">
+                                        <hr>
+                                    </g:if>
+                                    <g:set var="sumlistPrice" value="${sumlistPrice + (priceItem.listPrice ?: 0)}"/>
+                                    <g:set var="sumlocalPrice"
+                                           value="${sumlocalPrice + (priceItem.localPrice ?: 0)}"/>
+                                </g:each>
+                            </g:if>
+                        </div>
+
+                        <div class="one wide column">
+                            <div class="ui right floated buttons">
+                                <div class="right aligned wide column">
+
+                                </div>
+
+                                <div class="ui icon blue button la-modern-button "><i
+                                        class="ui angle double down icon"></i>
+                                </div>
+                                <g:if test="${editable && !participantPerpetualAccessToTitle}">
+                                    <g:if test="${!blockSubmit}">
+                                        <g:link class="ui icon button blue la-modern-button la-popup-tooltip la-delay"
+                                                action="processAddEntitlements"
+                                                params="${[id: subscription.id, singleTitle: tipp.gokbId, uploadPriceInfo: uploadPriceInfo, preselectCoverageDates: preselectCoverageDates]}"
+                                                data-content="${message(code: 'subscription.details.addEntitlements.add_now')}">
+                                            <i class="plus icon"></i>
+                                        </g:link>
+                                    </g:if>
+                                    <g:else>
+                                        <div class="la-popup-tooltip la-delay"
+                                             data-content="${message(code: 'subscription.details.addEntitlements.thread.running')}">
+                                            <g:link class="ui icon disabled button la-popup-tooltip la-delay"
+                                                    action="processAddEntitlements"
+                                                    params="${[id: subscription.id, singleTitle: tipp.gokbId, uploadPriceInfo: uploadPriceInfo, preselectCoverageDates: preselectCoverageDates]}">
+                                                <i class="plus icon"></i>
+                                            </g:link>
+                                        </div>
+                                    </g:else>
+                                </g:if>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="ui fluid segment content" data-ajaxTargetWrap="true">
+                    <div class="ui stackable grid" data-ajaxTarget="true">
+
+                        <laser:render template="/templates/title_long_accordion"
+                                      model="${[tipp       : tipp,
+                                                showPackage: true, showPlattform: true, showEmptyFields: false]}"/>
+
+                        <div class="three wide column">
+                            <div class="ui list la-label-list">
+                                <g:if test="${tipp.accessStartDate}">
+                                    <div class="ui label la-label-accordion">${message(code: 'tipp.access')}</div>
+
+                                    <div class="item">
+                                        <div class="content">
+                                            <g:formatDate
+                                                    format="${message(code: 'default.date.format.notime')}"
+                                                    date="${tipp.accessStartDate}"/>
+                                        </div>
+                                    </div>
+
+                                </g:if>
+                                <g:if test="${tipp.accessEndDate}">
+                                    <!-- bis -->
+                                    <!-- DEVIDER  -->
+                                    <ui:dateDevider/>
+                                    <div class="item">
+                                        <div class="content">
+                                            <g:formatDate
+                                                    format="${message(code: 'default.date.format.notime')}"
+                                                    date="${tipp.accessEndDate}"/>
+                                        </div>
+                                    </div>
+                                </g:if>
+
+                            <%-- Coverage Details START --%>
+                                <g:each in="${tipp.coverages}" var="covStmt" status="counterCoverage">
+                                    <g:if test="${covStmt.coverageNote || covStmt.coverageDepth || covStmt.embargo}">
+                                        <div class="ui label la-label-accordion">${message(code: 'tipp.coverageDetails')} ${counterCoverage > 0 ? counterCoverage++ + 1 : ''}</div>
+                                    </g:if>
+                                    <g:if test="${covStmt.coverageNote}">
+                                        <div class="item">
+                                            <i class="grey icon quote right la-popup-tooltip la-delay"
+                                               data-content="${message(code: 'default.note.label')}"></i>
+
+                                            <div class="content">
+                                                <div class="header">
+                                                    ${message(code: 'default.note.label')}
+                                                </div>
+
+                                                <div class="description">
+                                                    ${covStmt.coverageNote}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </g:if>
+                                    <g:if test="${covStmt.coverageDepth}">
+                                        <div class="item">
+                                            <i class="grey icon file alternate right la-popup-tooltip la-delay"
+                                               data-content="${message(code: 'tipp.coverageDepth')}"></i>
+
+                                            <div class="content">
+                                                <div class="header">
+                                                    ${message(code: 'tipp.coverageDepth')}
+                                                </div>
+
+                                                <div class="description">
+                                                    ${covStmt.coverageDepth}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </g:if>
+                                    <g:if test="${covStmt.embargo}">
+                                        <div class="item">
+                                            <i class="grey icon hand paper right la-popup-tooltip la-delay"
+                                               data-content="${message(code: 'tipp.embargo')}"></i>
+
+                                            <div class="content">
+                                                <div class="header">
+                                                    ${message(code: 'tipp.embargo')}
+                                                </div>
+
+                                                <div class="description">
+                                                    ${covStmt.embargo}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </g:if>
+                                </g:each>
+                            <%-- Coverage Details END --%>
+                            </div>
+                        </div>
+
+                        <g:if test="${uploadPriceInfo || preselectCoverageDates}">
+                            <div class="seven wide column">
+                                <i class="grey icon circular inverted fingerprint la-icon-absolute la-popup-tooltip la-delay"
+                                   data-content="${message(code: 'tipp.tooltip.myArea')}"></i>
+
+                                <div class="ui la-segment-with-icon">
+                                    <g:if test="${(tipp.titleType == 'Journal')}">
+                                        <g:set var="coverageStatements"
+                                               value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId]?.coverages : [:]}"/>
+                                        <div class="ui stackable grid"></div>
+                                        <g:each in="${coverageStatements}" var="covStmt" status="counterCoverage">
+
+                                            <laser:render template="/templates/tipps/coverageStatement_accordion"
+                                                          model="${[covStmt: covStmt, showEmbargo: false, objectTypeIsIE: false, counterCoverage: counterCoverage, overwriteEditable: false]}"/>
+
+                                        </g:each>
+                                    </g:if>
+
+                                    <div class="ui list">
+                                        <g:if test="${uploadPriceInfo}">
+                                            <div class="ui list">
+                                                <div class="item">
+                                                    <div class="contet">
+                                                        <div class="header">
+                                                            <g:message code="tipp.price.localPrice"/>
+                                                        </div>
+
+                                                        <div class="content">
+                                                            <g:formatNumber
+                                                                    number="${issueEntitlementOverwrite[tipp.gokbId]?.localPrice}"
+                                                                    type="currency"
+                                                                    currencySymbol="${issueEntitlementOverwrite[tipp.gokbId]?.localCurrency}"
+                                                                    currencyCode="${issueEntitlementOverwrite[tipp.gokbId]?.localCurrency}"/>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </g:if>
+                                    </div>
+                                </div>
+                            </div>
+                        </g:if>
+                    </div><%-- .grid --%>
+                </div><%-- .segment --%>
+            </div><%--.segments --%>
         </g:each>
-        </tbody>
-    </table>
+    </div><%-- .accordions --%>
+
+
+    <br>
+    <br>
 
     <div class="paginateButtons" style="text-align:center">
         <div class="field">
@@ -412,7 +536,7 @@
     });
 
     $(".bulkcheck").change(function() {
-        JSPC.app.updateSelectionCache($(this).parents("tr").attr("data-index"),$(this).prop('checked'));
+        JSPC.app.updateSelectionCache($(this).parents(".la-js-checkItem").attr("data-gokbId"), $(this).prop('checked'));
     });
 
     $(".ieOverwrite td").click(function() {
@@ -424,7 +548,7 @@
             url: "<g:createLink controller="ajax" action="updateIssueEntitlementOverwrite" />",
             data: {
                 sub: ${subscription.id},
-                key: $(this).parents("tr").attr("data-index"),
+                key: $(this).parents("tr").attr("data-gokbId"),
                 referer: "${actionName}",
                 coverage: $(this).attr("data-coverage") === "true" || $(this).hasClass("coverage"),
                 prop: $(this).attr("name") ? $(this).attr("name") : $(this).find("input").attr("name"),

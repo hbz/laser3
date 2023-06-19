@@ -1201,7 +1201,7 @@ class FilterService {
      * @param subscription the subscriptions whose dates should be considered
      * @return the map containing the query and the prepared query parameters
      */
-    Map<String, Object> getIssueEntitlementQuery(GrailsParameterMap params, Subscription subscription) {
+    Map<String, Object> getIssueEntitlementQuery(Map params, Subscription subscription) {
         getIssueEntitlementQuery(params, [subscription])
     }
 
@@ -1211,7 +1211,7 @@ class FilterService {
      * @param subscriptions the subscriptions whose dates should be considered
      * @return the map containing the query and the prepared query parameters
      */
-    Map<String,Object> getIssueEntitlementQuery(GrailsParameterMap params, Collection<Subscription> subscriptions) {
+    Map<String,Object> getIssueEntitlementQuery(Map params, Collection<Subscription> subscriptions) {
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         Map result = [:]
 
@@ -1257,9 +1257,9 @@ class FilterService {
             base_qry += " and ie.tipp.status.id = :status and ie.status.id != :status "
             qry_params.status = params.long('status')
         }
-        else if(params.status != '' && params.status != null && params.list('status')) {
+        else if(params.status != '' && params.status != null && listReaderWrapper(params, 'status')) {
             List<Long> status = []
-            params.list('status').each { String statusId ->
+            listReaderWrapper(params, 'status').each { String statusId ->
                 status << Long.parseLong(statusId)
             }
             base_qry += " and ie.status.id in (:status) "
@@ -1368,7 +1368,7 @@ class FilterService {
         }
 
 
-        if (params.title_types && params.title_types != "" && params.list('title_types')) {
+        if (params.title_types && params.title_types != "" && listReaderWrapper(params, 'title_types')) {
             base_qry += " and lower(tipp.titleType) in (:title_types)"
             qry_params.title_types = params.list('title_types').collect { ""+it.toLowerCase()+"" }
             filterSet = true
@@ -1936,7 +1936,7 @@ class FilterService {
                     default: columns = ['ie_id', 'tipp_id', '(select pkg_name from package where pkg_id = tipp_pkg_fk) as tipp_pkg_name', '(select plat_name from platform where plat_id = tipp_plat_fk) as tipp_plat_name',
                                    '(select plat_title_namespace from platform where plat_id = tipp_plat_fk) as tipp_plat_namespace',
                                    "case tipp_title_type when 'Journal' then 'serial' when 'Book' then 'monograph' when 'Database' then 'database' else 'other' end as title_type",
-                                   'ie_name as name', 'coalesce(ie_access_start_date, tipp_access_start_date) as accessStartDate', 'coalesce(ie_access_end_date, tipp_access_end_date) as accessEndDate',
+                                   'tipp_name as name', 'coalesce(ie_access_start_date, tipp_access_start_date) as accessStartDate', 'coalesce(ie_access_end_date, tipp_access_end_date) as accessEndDate',
                                    'tipp_publisher_name', "(select ${refdata_value_col} from refdata_value where rdv_id = ie_medium_rv_fk) as tipp_medium", 'tipp_host_platform_url', 'tipp_date_first_in_print',
                                    'tipp_date_first_online', 'tipp_gokb_id', '(select pkg_gokb_id from package where pkg_id = tipp_pkg_fk) as tipp_pkg_uuid', 'tipp_date_created', 'tipp_last_updated', 'tipp_first_author', 'tipp_first_editor', 'tipp_volume', 'tipp_edition_number', 'tipp_series_name', 'tipp_subject_reference',
                                    "(select ${refdata_value_col} from refdata_value where rdv_id = ie_status_rv_fk) as status",

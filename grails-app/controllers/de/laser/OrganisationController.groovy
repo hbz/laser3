@@ -1977,7 +1977,7 @@ class OrganisationController  {
                                 case CustomerTypeService.ORG_INST_PRO:          isEditable = userIsYoda; break
                                 case CustomerTypeService.ORG_CONSORTIUM_BASIC:  isEditable = userIsYoda; break
                                 case CustomerTypeService.ORG_CONSORTIUM_PRO:    isEditable = userIsYoda; break
-                                default:                                        isEditable = userIsYoda; break
+                                default:                                        isEditable = userHasEditableRights; break //means providers and agencies
                             }
                             break
                         case [ CustomerTypeService.ORG_CONSORTIUM_BASIC, CustomerTypeService.ORG_CONSORTIUM_PRO ] :

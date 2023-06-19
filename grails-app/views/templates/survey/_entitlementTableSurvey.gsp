@@ -7,6 +7,7 @@
 
 
     <div class="ui accordion la-accordion-showMore" id="surveyEntitlements">
+        <g:if test="${editable && params.tab == 'selectedIEs'}"><input id="select-all" type="checkbox" name="chkall" ${allChecked}/></g:if>
         <g:each in="${ies.sourceIEs}" var="ie">
 
             <g:set var="tipp" value="${ie.tipp}"/>
@@ -41,7 +42,7 @@
                         <div class="one wide column">
                             <g:if test="${editable && params.tab == 'selectedIEs' && ieInNewSub && de.laser.IssueEntitlementGroupItem.findByIeAndIeGroup(ieInNewSub, de.laser.IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscriberSub))}">
                                 <input type="checkbox" name="bulkflag"
-                                       class="bulkcheck la-vertical-centered" ${checkedCache ? checkedCache[ie.id.toString()] : ''}>
+                                       class="bulkcheck la-vertical-centered la-js-notOpenAccordion" ${checkedCache ? checkedCache[ie.id.toString()] : ''}>
                             </g:if>
                         </div>
 
@@ -93,6 +94,7 @@
                                             </div>
                                         </g:if>
                                     </div>
+                                    <g:set var="sumlistPrice" value="${sumlistPrice + (priceItem.listPrice ?: 0)}"/>
                                 </g:each>
                             </g:if>
                             <g:else>

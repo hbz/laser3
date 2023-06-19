@@ -744,7 +744,7 @@ class SurveyController {
                         surveyInfo: surveyInfo,
                         subSurveyUseForTransfer: false,
                         pickAndChoose: true,
-                        pickAndChoosePerpetualAccess: params.pickAndChoosePerpetualAccess ? true : (subscription.hasPerpetualAccess == RDStore.YN_YES),
+                        pickAndChoosePerpetualAccess: (subscription.hasPerpetualAccess == RDStore.YN_YES),
                         issueEntitlementGroupName: params.issueEntitlementGroupNew
                 )
                 surveyConfig.save()
@@ -1693,15 +1693,8 @@ class SurveyController {
      Map<String,Object> openParticipantsAgain() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
 
-        params.tab = params.tab ?: 'participantsViewAllFinish'
-        if(params.tab == 'participantsViewAllNotFinish'){
-            params.participantsNotFinish = true
-        }
-        if(params.tab == 'participantsViewAllFinish'){
-            params.participantsFinish = true
-        }
+        params.participantsFinish = true
 
-        result.participantsNotFinishTotal = SurveyOrg.findAllBySurveyConfigAndFinishDateIsNull(result.surveyConfig).size()
         result.participantsFinishTotal = SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig).size()
 
         Map<String,Object> fsq = filterService.getSurveyOrgQuery(params, result.surveyConfig)
@@ -1715,13 +1708,40 @@ class SurveyController {
     }
 
     /**
+     * Call to list the members; either those who completed the survey or those who did not
+     * @return a list of the participants in the called tab view
+     */
+    @DebugInfo(ctxInstUserCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @Secured(closure = {
+        ctx.accessService.ctxInstUserCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+    })
+    Map<String,Object> participantsReminder() {
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
+
+        params.participantsNotFinish = true
+
+        result.participantsNotFinishTotal = SurveyOrg.findAllBySurveyConfigAndFinishDateIsNull(result.surveyConfig).size()
+
+        Map<String,Object> fsq = filterService.getSurveyOrgQuery(params, result.surveyConfig)
+
+        result.participants = SurveyOrg.executeQuery(fsq.query, fsq.queryParams, params)
+
+        result.propList    = result.surveyConfig.surveyProperties.surveyProperty
+
+        result
+
+    }
+
+
+/*    *//**
      * Opens the survey for the given participants and sends eventual reminders
      * @return the participation view with the counts of execution done
-     */
+     *//*
     @DebugInfo(ctxInstUserCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
         ctx.accessService.ctxInstUserCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
+    @Deprecated
      Map<String,Object> processOpenParticipantsAgain() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
 
@@ -1788,7 +1808,7 @@ class SurveyController {
 
         redirect(action: 'openParticipantsAgain', id: result.surveyInfo.id, params:[tab: params.tab, surveyConfigID: result.surveyConfig.id])
 
-    }
+    }*/
 
     /**
      * Reopens the given survey for the given participant
@@ -1937,9 +1957,7 @@ class SurveyController {
 
                    }*/
 
-                    result.iesListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
-                            'where p.listPrice is not null and ie.subscription = :sub and ie.status = :ieStatus',
-                            [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0
+                    result.sumListPriceSelectedIEs = surveyService.sumListPriceIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig)
 
 
                     /* result.iesFixListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
@@ -1947,12 +1965,12 @@ class SurveyController {
                              [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0 */
 
                     result.countSelectedIEs = surveyService.countIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig)
-
-                    if (result.surveyConfig.pickAndChoosePerpetualAccess) {
-                        result.countCurrentIEs = surveyService.countPerpetualAccessTitlesBySub(result.subscription)
-                    } else {
-                        result.countCurrentIEs = (result.previousSubscription ? subscriptionService.countCurrentIssueEntitlements(result.previousSubscription) : 0) + subscriptionService.countCurrentIssueEntitlements(result.subscription)
-                    }
+                    result.countCurrentPermanentTitles = subscriptionService.countCurrentPermanentTitles(result.subscription, false)
+//                    if (result.surveyConfig.pickAndChoosePerpetualAccess) {
+//                        result.countCurrentIEs = surveyService.countPerpetualAccessTitlesBySub(result.subscription)
+//                    } else {
+//                        result.countCurrentIEs = (result.previousSubscription ? subscriptionService.countCurrentIssueEntitlements(result.previousSubscription) : 0) + subscriptionService.countCurrentIssueEntitlements(result.subscription)
+//                    }
 
                     result.subscriber = result.participant
 
@@ -2040,9 +2058,7 @@ class SurveyController {
 
                    }*/
 
-                    result.iesTotalListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
-                            'where p.listPrice is not null and ie.subscription = :sub and ie.status = :ieStatus',
-                            [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0
+                    result.sumListPriceSelectedIEs = surveyService.sumListPriceIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig)
 
 
                     /* result.iesFixListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
@@ -2050,11 +2066,13 @@ class SurveyController {
                              [sub: result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0 */
 
                     result.countSelectedIEs = surveyService.countIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig)
-                    if (result.surveyConfig.pickAndChoosePerpetualAccess) {
+                    result.countCurrentPermanentTitles = subscriptionService.countCurrentPermanentTitles(result.subscription, false)
+
+/*                    if (result.surveyConfig.pickAndChoosePerpetualAccess) {
                         result.countCurrentIEs = surveyService.countPerpetualAccessTitlesBySub(result.subscription)
                     } else {
                         result.countCurrentIEs = (result.previousSubscription ? subscriptionService.countCurrentIssueEntitlements(result.previousSubscription) : 0) + subscriptionService.countCurrentIssueEntitlements(result.subscription)
-                    }
+                    }*/
                     result.subscriber = result.participant
 
                 }
@@ -3210,6 +3228,7 @@ class SurveyController {
         result.errors = []
         Date newStartDate
         Date newEndDate
+        Year newReferenceYear = subscription.referenceYear ? subscription.referenceYear.plusYears(1) : null
         use(TimeCategory) {
             newStartDate = subscription.endDate ? (subscription.endDate + 1.day) : null
             newEndDate = subscription.endDate ? (subscription.endDate + 1.year) : null
@@ -3218,7 +3237,7 @@ class SurveyController {
         result.isRenewSub = true
         result.permissionInfo = [sub_startDate    : newStartDate ? sdf.format(newStartDate) : null,
                                  sub_endDate      : newEndDate ? sdf.format(newEndDate) : null,
-                                 sub_referenceYear: subscription.referenceYear,
+                                 sub_referenceYear: newReferenceYear,
                                  sub_name         : subscription.name,
                                  sub_id           : subscription.id,
                                  sub_status       : RDStore.SUBSCRIPTION_INTENDED.id.toString(),

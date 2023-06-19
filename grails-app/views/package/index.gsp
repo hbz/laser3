@@ -14,7 +14,7 @@
 </g:if>
 
 <g:if test="${error}">
-    <div class="ui icon info error message">
+    <div class="ui icon error message">
         <i class="exclamation triangle icon"></i>
         <i class="close icon"></i>
 
@@ -87,8 +87,8 @@
                             ${RefdataValue.getByValueAndCategory(record.status, RDConstants.PACKAGE_STATUS)?.getI10n("value")}
                         </td>
                         <td>
-                            <g:if test="${record.titleCount}">
-                                ${record.titleCount}
+                            <g:if test="${record.currentTippCount}">
+                                ${record.currentTippCount}
                             </g:if>
                             <g:else>
                                 0

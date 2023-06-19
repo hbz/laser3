@@ -760,6 +760,29 @@ join sub.orgRelations or_sub where
         countIes
     }
 
+
+    /**
+     * Gets the current permanent titles for the given subscription
+     * @param subscription the subscription whose titles should be returned
+     * @return integer of current permanent titles
+     */
+    Integer countCurrentPermanentTitles(Subscription subscription, boolean selfSub) {
+
+        Set<Subscription> subscriptions = []
+        subscriptions = linksGenerationService.getSuccessionChain(subscription, 'sourceSubscription')
+
+        if (selfSub) {
+            subscriptions << subscription
+        }
+
+        Integer countTitles = 0
+        if(subscriptions.size() > 0) {
+            countTitles = PermanentTitle.executeQuery("select count(pi) from PermanentTitle as pi where pi.subscription in (:subs) and pi.issueEntitlement.status = :ieStatus",[subs: subscriptions, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0]
+        }
+
+        return countTitles
+    }
+
     /**
      * Gets the IDs of current issue entitlements for the given subscription
      * @param subscription the subscription whose titles should be returned
@@ -1809,7 +1832,7 @@ join sub.orgRelations or_sub where
                 case "publish-komponente": colMap.hasPublishComponent = c
                     break
                 case "data exchange release":
-                case "freigabe datenaustausch": colMap.isPublicForApi = c
+                case "freigabe daten": colMap.isPublicForApi = c
                     break
                 default:
                     //check if property definition
@@ -2433,83 +2456,78 @@ join sub.orgRelations or_sub where
 
 
     /**
-     * Selects the given issue entitlements based on the given input stream
+     * Selects the given tipps based on the given input stream
      * @param stream the file stream which contains the data to be selected
      * @param subscription the subscription whose holding should be accessed
      * @return a map containing the process result
      */
-    Map issueEntitlementSelectForSurvey(InputStream stream, Subscription subscription, SurveyConfig surveyConfig, Subscription newSub) {
+    Map tippSelectForSurvey(InputStream stream, Subscription subscription, SurveyConfig surveyConfig, Subscription newSub) {
 
         Integer count = 0
-        Integer countSelectIEs = 0
-        Map<String, Object> selectedIEs = [:]
+        Integer countSelectTipps = 0
+        Map<String, Object> selectedTipps = [:]
         Org contextOrg = contextService.getOrg()
 
         //List<Long> subscriptionIDs = surveyService.subscriptionsOfOrg(newSub.getSubscriber())
+        if(subscription.packages.pkg) {
 
-        ArrayList<String> rows = stream.text.split('\n')
-        Map<String, Integer> colMap = [zdbCol: -1, onlineIdentifierCol: -1, printIdentifierCol: -1, pick: -1]
-        //read off first line of KBART file
-        rows[0].split('\t').eachWithIndex { headerCol, int c ->
-            switch (headerCol.toLowerCase().trim()) {
-                case "zdb_id": colMap.zdbCol = c
-                    break
-                case "print_identifier": colMap.printIdentifierCol = c
-                    break
-                case "online_identifier": colMap.onlineIdentifierCol = c
-                    break
-                case "print identifier": colMap.printIdentifierCol = c
-                    break
-                case "online identifier": colMap.onlineIdentifierCol = c
-                    break
-                case "doi": colMap.doiTitleCol = c
-                    break
-                case "pick": colMap.pick = c
-                    break
+            ArrayList<String> rows = stream.text.split('\n')
+            Map<String, Integer> colMap = [zdbCol: -1, onlineIdentifierCol: -1, printIdentifierCol: -1, pick: -1]
+            //read off first line of KBART file
+            rows[0].split('\t').eachWithIndex { headerCol, int c ->
+                switch (headerCol.toLowerCase().trim()) {
+                    case "zdb_id": colMap.zdbCol = c
+                        break
+                    case "print_identifier": colMap.printIdentifierCol = c
+                        break
+                    case "online_identifier": colMap.onlineIdentifierCol = c
+                        break
+                    case "print identifier": colMap.printIdentifierCol = c
+                        break
+                    case "online identifier": colMap.onlineIdentifierCol = c
+                        break
+                    case "doi": colMap.doiTitleCol = c
+                        break
+                    case "pick": colMap.pick = c
+                        break
+                }
             }
-        }
-        //after having read off the header row, pop the first row
-        rows.remove(0)
-        //now, assemble the identifiers available to highlight
-        Map<String, IdentifierNamespace> namespaces = [zdb  : IdentifierNamespace.findByNsAndNsType('zdb', TitleInstancePackagePlatform.class.name),
-                                                       eissn: IdentifierNamespace.findByNsAndNsType('eissn', TitleInstancePackagePlatform.class.name), isbn: IdentifierNamespace.findByNsAndNsType('isbn',TitleInstancePackagePlatform.class.name),
-                                                       issn : IdentifierNamespace.findByNsAndNsType('issn', TitleInstancePackagePlatform.class.name), eisbn: IdentifierNamespace.findByNsAndNsType('eisbn', TitleInstancePackagePlatform.class.name),
-                                                       doi  : IdentifierNamespace.findByNsAndNsType('doi', TitleInstancePackagePlatform.class.name)]
-        rows.eachWithIndex { row, int i ->
-            log.debug("now processing entitlement ${i}")
-            ArrayList<String> cols = row.split('\t')
-            Map<String, Object> idCandidate
-            if (colMap.onlineIdentifierCol >= 0 && cols[colMap.onlineIdentifierCol]) {
-                idCandidate = [namespaces: [namespaces.eissn, namespaces.eisbn], value: cols[colMap.onlineIdentifierCol]]
-            }
-            else if (colMap.doiTitleCol >= 0 && cols[colMap.doiTitleCol]) {
-                idCandidate = [namespaces: [namespaces.doi], value: cols[colMap.doiTitleCol]]
-            }
-            else if (colMap.printIdentifierCol >= 0 && cols[colMap.printIdentifierCol]) {
-                idCandidate = [namespaces: [namespaces.issn, namespaces.isbn], value: cols[colMap.printIdentifierCol]]
-            }
-            else if (colMap.zdbCol >= 0 && cols[colMap.zdbCol]) {
-                idCandidate = [namespaces: [namespaces.zdb], value: cols[colMap.zdbCol]]
-            }
-            if (((colMap.zdbCol >= 0 && cols[colMap.zdbCol].trim().isEmpty()) || colMap.zdbCol < 0) &&
-                    ((colMap.onlineIdentifierCol >= 0 && cols[colMap.onlineIdentifierCol].trim().isEmpty()) || colMap.onlineIdentifierCol < 0) &&
-                    ((colMap.printIdentifierCol >= 0 && cols[colMap.printIdentifierCol].trim().isEmpty()) || colMap.printIdentifierCol < 0)) {
-            } else {
+            //after having read off the header row, pop the first row
+            rows.remove(0)
+            //now, assemble the identifiers available to highlight
+            Map<String, IdentifierNamespace> namespaces = [zdb  : IdentifierNamespace.findByNsAndNsType('zdb', TitleInstancePackagePlatform.class.name),
+                                                           eissn: IdentifierNamespace.findByNsAndNsType('eissn', TitleInstancePackagePlatform.class.name), isbn: IdentifierNamespace.findByNsAndNsType('isbn', TitleInstancePackagePlatform.class.name),
+                                                           issn : IdentifierNamespace.findByNsAndNsType('issn', TitleInstancePackagePlatform.class.name), eisbn: IdentifierNamespace.findByNsAndNsType('eisbn', TitleInstancePackagePlatform.class.name),
+                                                           doi  : IdentifierNamespace.findByNsAndNsType('doi', TitleInstancePackagePlatform.class.name)]
+            rows.eachWithIndex { row, int i ->
+                log.debug("now processing entitlement ${i}")
+                ArrayList<String> cols = row.split('\t')
+                Map<String, Object> idCandidate
+                if (colMap.onlineIdentifierCol >= 0 && cols[colMap.onlineIdentifierCol]) {
+                    idCandidate = [namespaces: [namespaces.eissn, namespaces.eisbn], value: cols[colMap.onlineIdentifierCol]]
+                } else if (colMap.doiTitleCol >= 0 && cols[colMap.doiTitleCol]) {
+                    idCandidate = [namespaces: [namespaces.doi], value: cols[colMap.doiTitleCol]]
+                } else if (colMap.printIdentifierCol >= 0 && cols[colMap.printIdentifierCol]) {
+                    idCandidate = [namespaces: [namespaces.issn, namespaces.isbn], value: cols[colMap.printIdentifierCol]]
+                } else if (colMap.zdbCol >= 0 && cols[colMap.zdbCol]) {
+                    idCandidate = [namespaces: [namespaces.zdb], value: cols[colMap.zdbCol]]
+                }
+                if (((colMap.zdbCol >= 0 && cols[colMap.zdbCol].trim().isEmpty()) || colMap.zdbCol < 0) &&
+                        ((colMap.onlineIdentifierCol >= 0 && cols[colMap.onlineIdentifierCol].trim().isEmpty()) || colMap.onlineIdentifierCol < 0) &&
+                        ((colMap.printIdentifierCol >= 0 && cols[colMap.printIdentifierCol].trim().isEmpty()) || colMap.printIdentifierCol < 0)) {
+                } else {
 
-                List<Long> titleIds = TitleInstancePackagePlatform.executeQuery('select tipp.id from TitleInstancePackagePlatform tipp join tipp.ids ident where ident.ns in :namespaces and ident.value = :value', [namespaces:idCandidate.namespaces, value:idCandidate.value])
-                if (titleIds.size() > 0) {
-                    List<IssueEntitlement> issueEntitlements = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp.id in (:titleIds) and ie.subscription.id = :subId and ie.status != :ieStatus', [titleIds: titleIds, subId: subscription.id, ieStatus: RDStore.TIPP_STATUS_REMOVED])
-                    if (issueEntitlements.size() > 0) {
-                        IssueEntitlement issueEntitlement = issueEntitlements[0]
-                        count++
+                    List<TitleInstancePackagePlatform> titles = TitleInstancePackagePlatform.executeQuery('select tipp from TitleInstancePackagePlatform tipp join tipp.ids ident where ident.ns in :namespaces and ident.value = :value and tipp.pkg in (:pkgs) and tipp.status = :tippStatus', [tippStatus: RDStore.TIPP_STATUS_CURRENT, namespaces: idCandidate.namespaces, value: idCandidate.value, pkgs: subscription.packages.pkg])
+                    if (titles.size() > 0) {
+                            TitleInstancePackagePlatform tipp = titles[0]
+                            count++
 
-                        colMap.each { String colName, int colNo ->
-                            if (colNo > -1 && cols[colNo]) {
-                                String cellEntry = cols[colNo].trim()
+                            colMap.each { String colName, int colNo ->
+                                if (colNo > -1 && cols[colNo]) {
+                                    String cellEntry = cols[colNo].trim()
                                     switch (colName) {
                                         case "pick":
-                                            if(cellEntry.toLowerCase() == RDStore.YN_YES.value_de.toLowerCase() || cellEntry.toLowerCase() == RDStore.YN_YES.value_en.toLowerCase()) {
-                                                TitleInstancePackagePlatform tipp = issueEntitlement.tipp
+                                            if (cellEntry.toLowerCase() == RDStore.YN_YES.value_de.toLowerCase() || cellEntry.toLowerCase() == RDStore.YN_YES.value_en.toLowerCase()) {
                                                 IssueEntitlement ieInNewSub = surveyService.titleContainedBySubscription(newSub, tipp)
                                                 boolean allowedToSelect = false
                                                 if (surveyConfig.pickAndChoosePerpetualAccess) {
@@ -2519,21 +2537,21 @@ join sub.orgRelations or_sub where
                                                     allowedToSelect = !ieInNewSub || (ieInNewSub && (contextOrg.id == surveyConfig.surveyInfo.owner.id))
                                                 }
 
-                                                if(!ieInNewSub && allowedToSelect) {
-                                                    selectedIEs[issueEntitlement.id.toString()] = 'checked'
-                                                    countSelectIEs++
+                                                if (!ieInNewSub && allowedToSelect) {
+                                                    selectedTipps[tipp.id.toString()] = 'checked'
+                                                    countSelectTipps++
                                                 }
                                             }
                                             break
                                     }
+                                }
                             }
-                        }
                     }
                 }
             }
         }
 
-        return [processCount: count, selectedIEs: selectedIEs, countSelectIEs: countSelectIEs]
+        return [processCount: count, selectedTipps: selectedTipps, countSelectTipps: countSelectTipps]
     }
 
     @Deprecated
