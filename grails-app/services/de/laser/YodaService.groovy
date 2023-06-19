@@ -135,11 +135,6 @@ class YodaService {
         [tipps: tippsWithAlternate, issueEntitlements: ieTippMap, toDelete: toDelete, toUUIDfy: toUUIDfy]
     }
 
-    /**
-     * Deletes the given titles and merges duplicates with the given instance
-     * @param toDelete titles to be deleted
-     * @param toUUIDfy titles which should persist but marked with null entry for that the gokbId property may be set not null
-     */
     void matchTitleStatus() {
         int max = 100000
         bulkOperationRunning = true
@@ -309,28 +304,22 @@ class YodaService {
      * failed to do so because of bugs
      */
     @Transactional
-    void matchPackageHoldings() {
+    void matchPackageHoldings(Long pkgId) {
         Sql sql = GlobalService.obtainSqlConnection()
         sql.withTransaction {
-            List subscriptionPackagesConcerned = sql.rows("select sp_sub_fk, sp_pkg_fk, sub_has_perpetual_access, " +
-                    "(select count(tipp_id) from title_instance_package_platform where tipp_pkg_fk = sp_pkg_fk and tipp_status_rv_fk = :current) as pkg_cnt, " +
-                    "(select count(ie_id) from issue_entitlement join title_instance_package_platform as t_ie on ie_tipp_fk = t_ie.tipp_id where ie_subscription_fk = sp_sub_fk and sp_pkg_fk = t_ie.tipp_pkg_fk and ie_status_rv_fk = :current) as holding_cnt " +
-                    "from subscription_package join pending_change_configuration on pcc_sp_fk = sp_id join subscription on sp_sub_fk = sub_id " +
-                    "where pcc_setting_key_enum = :newTitle and pcc_setting_value_rv_fk = :accept "+
-                    "and ((select count(tipp_id) from title_instance_package_platform where tipp_pkg_fk = sp_pkg_fk and tipp_status_rv_fk = :current) != " +
-                    " (select count(ie_id) from issue_entitlement join title_instance_package_platform as t_ie on ie_tipp_fk = t_ie.tipp_id where ie_subscription_fk = sp_sub_fk and sp_pkg_fk = t_ie.tipp_pkg_fk and ie_status_rv_fk = :current))",
-            [newTitle: PendingChangeConfiguration.NEW_TITLE, current: RDStore.TIPP_STATUS_CURRENT.id, accept: RDStore.PENDING_CHANGE_CONFIG_ACCEPT.id])
+            List subscriptionPackagesConcerned = sql.rows("select sp_sub_fk, sp_pkg_fk, sub_has_perpetual_access " +
+                    "from subscription_package join subscription on sp_sub_fk = sub_id " +
+                    "where sub_holding_selection_rv_fk = :entire and sp_pkg_fk = :pkgId",
+            [pkgId: pkgId, entire: RDStore.SUBSCRIPTION_HOLDING_ENTIRE.id])
             subscriptionPackagesConcerned.eachWithIndex { GroovyRowResult row, int ax ->
                 Set<Long> subIds = [row['sp_sub_fk']]
-                List inheritingSubs = sql.rows("select sub_id from subscription join audit_config on auc_reference_id = sub_parent_sub_fk where auc_reference_field = :newTitle and sub_parent_sub_fk = :parent", [newTitle: PendingChangeConfiguration.NEW_TITLE, parent: row['sp_sub_fk']])
+                List inheritingSubs = sql.rows("select sub_id from subscription join audit_config on auc_reference_id = sub_parent_sub_fk where auc_reference_field = 'holdingSelection' and sub_parent_sub_fk = :parent", [parent: row['sp_sub_fk']])
                 subIds.addAll(inheritingSubs.collect { GroovyRowResult inherit -> inherit['sub_id'] })
-                int pkgId = row['sp_pkg_fk'], subCount = row['holding_cnt'], pkgCount = row['pkg_cnt']
                 boolean perpetualAccess = row['sub_has_perpetual_access']
-                if(pkgCount > 0 && pkgCount > subCount) {
-                    subIds.each { Long subId ->
-                        log.debug("now processing package ${subId}:${pkgId}, counts: ${subCount} vs. ${pkgCount}")
-                        packageService.bulkAddHolding(sql, subId, pkgId, perpetualAccess)
-                    }
+                subIds.each { Long subId ->
+                    log.debug("now processing package ${subId}:${pkgId}")
+                    packageService.bulkAddHolding(sql, subId, pkgId, perpetualAccess)
+                    sql.executeUpdate('update issue_entitlement set ie_status_rv_fk = tipp_status_rv_fk from title_instance_package_platform where ie_tipp_fk = tipp_id and ie_subscription_fk = :subId and ie_status_rv_fk != tipp_status_rv_fk', [subId: subId])
                 }
             }
         }
