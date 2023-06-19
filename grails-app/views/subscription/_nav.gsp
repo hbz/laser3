@@ -8,10 +8,10 @@
     <g:if test="${! params.orgBasicMemberView}">
 
     <g:if test="${controllerName != 'finance'}">%{-- template is used by subscriptionDetails/* and finance/index --}%
-        <ui:subNavItem controller="subscription" counts="${currentTitlesCounts}" action="index" params="${[id:params.id]}" message="subscription.details.current_ent" />
+        <ui:subNavItem controller="subscription" counts="${subscription.packages.size()}" action="index" params="${[id:params.id]}" message="subscription.details.current_ent" />
     </g:if>
     <g:else>%{-- prevent two active items with action 'index' due url mapping 'subfinance' --}%
-        <g:link controller="subscription" action="index" params="${[id:params.id]}" class="item">${message('code': 'subscription.details.current_ent')}<div class="ui floating blue circular label">${currentTitlesCounts}</div></g:link>
+        <g:link controller="subscription" action="index" params="${[id:params.id]}" class="item">${message('code': 'subscription.details.current_ent')}<div class="ui floating blue circular label">${subscription.packages.size()}</div></g:link>
     </g:else>
 
     <ui:subNavItem controller="subscription" action="entitlementChanges" params="${[id:params.id]}" message="myinst.menu.changes.label" />
