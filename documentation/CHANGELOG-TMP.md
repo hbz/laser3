@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5139    16.06.2023  rc-3.1  3.1.3       Moe     Bug         Titel hinzufügen: Nur 1 oder alle Titel möglich
+
 5143    16.06.2023  rc-3.1  3.1.3       Andreas Bug         Paketzuschnittvererbung: prüfen und Skript erstellen
 
 5138    16.06.2023  rc-3.1  3.1.3       Andreas Feature     fehlende Spalten nachgereicht
