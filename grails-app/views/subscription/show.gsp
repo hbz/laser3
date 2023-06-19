@@ -31,9 +31,9 @@
     </g:if>
 </g:each>
 
-<g:set var="test_zusammen" value="${test_0} & ${test_1}" />
-${test_zusammen}
+<g:set var="test_zusammen" value="${visibleOrgRelations.findAll{it.roleType != RDStore.OR_SUBSCRIPTION_CONSORTIA}.sort{it.org.sortname}.collect{it.org}.join(',')}"/>
 
+${test_zusammen}
 
 
 
