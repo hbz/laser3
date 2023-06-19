@@ -138,11 +138,8 @@ class LicenseController {
                     if (pl.prs.isPublic) {
                         result.visiblePrsLinks << pl
                     } else {
-                        // nasty lazy loading fix
-                        result.user.getAffiliationOrgs().each { ao ->
-                            if (ao.getId() == pl.prs.tenant.getId()) {
-                                result.visiblePrsLinks << pl
-                            }
+                        if (result.user.formalOrg?.getId() == pl.prs.tenant.getId()) {
+                            result.visiblePrsLinks << pl
                         }
                     }
                 }

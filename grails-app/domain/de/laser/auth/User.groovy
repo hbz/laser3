@@ -43,7 +43,7 @@ class User {
     }
 
     static transients = [
-            'displayName', 'pageSizeOrDefault', 'affiliationOrgs', 'admin', 'yoda', 'lastInstAdmin'
+            'displayName', 'pageSizeOrDefault', 'admin', 'yoda', 'lastInstAdmin'
     ] // mark read-only accessor methods
 
     static mapping = {
@@ -147,14 +147,6 @@ class User {
     @Transient
     String getDisplayName() {
         display ? display : username
-    }
-
-    /**
-     * Gets a list of all {@link Org}s for which this user has affiliations
-     * @return a {@link List} of authorised {@link Org}s
-     */
-    List<Org> getAffiliationOrgs() {
-        formalOrg ? [formalOrg] : []
     }
 
     boolean isFormal() {

@@ -46,7 +46,7 @@ class PersonController  {
     def create() {
         Person.withTransaction {
             Org contextOrg = contextService.getOrg()
-            List userMemberships = contextService.getUser().getAffiliationOrgs()
+            List userMemberships = contextService.getUser().formalOrg ? [contextService.getUser().formalOrg] : []
 
             switch (request.method) {
                 case 'GET':

@@ -334,7 +334,7 @@ class PlatformController  {
 
         result.accessPointLinks = results
         result.platformInstance = platformInstance
-        result.institution = contextService.getUser().getAffiliationOrgs() // ?
+        result.institution = contextService.getUser().formalOrg ? [contextService.getUser().formalOrg] : []
         result.accessPointList = accessPointList
         result.selectedInstitution = selectedInstitution.id
         result
@@ -374,7 +374,7 @@ class PlatformController  {
 
         result.accessPointLinks = results
         result.platformInstance = platformInstance
-        result.institution = contextService.getUser().getAffiliationOrgs() // ?
+        result.institution = contextService.getUser().formalOrg ? [contextService.getUser().formalOrg] : []
         result.accessPointList = accessPointList
         result.selectedInstitution = selectedInstitution.id
         render(view: "_apLinkContent", model: result)
