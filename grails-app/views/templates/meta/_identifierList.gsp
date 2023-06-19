@@ -1,6 +1,5 @@
 <%@ page import="de.laser.remote.ApiSource; de.laser.Identifier; de.laser.Subscription; de.laser.License; de.laser.Org; de.laser.storage.RDStore; de.laser.IdentifierNamespace; de.laser.Package; de.laser.TitleInstancePackagePlatform; de.laser.IssueEntitlement; de.laser.I10nTranslation; de.laser.Platform; de.laser.AuditConfig; de.laser.FormService" %>
 <laser:serviceInjection />
-<g:set var="wekbAPI" value="${ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"/>
 
 <div class="ui four column grid">
     <div class="ui header row">
@@ -47,19 +46,13 @@
                         </span>
                         <g:if test="${!objIsOrgAndInst && object.hasProperty("gokbId") && ident == object.gokbId}">
                             <g:if test="${object instanceof Package}">
-                                <a target="_blank"
-                                   href="${wekbAPI.editUrl ? wekbAPI.editUrl + '/public/packageContent/' + ident : '#'}"><i
-                                        title="${wekbAPI.name} Link" class="external alternate icon"></i></a>
+                                <ui:wekbIconLink type="package" gokbId="${object.gokbId}"/>
                             </g:if>
                             <g:elseif test="${object instanceof TitleInstancePackagePlatform}">
-                                <a target="_blank"
-                                   href="${wekbAPI.editUrl ? wekbAPI.editUrl + '/public/tippContent/' + ident : '#'}"><i
-                                        title="${wekbAPI.name} Link" class="external alternate icon"></i></a>
+                                <ui:wekbIconLink type="tipp" gokbId="${object.gokbId}"/>
                             </g:elseif>
                             <g:elseif test="${object instanceof Platform}">
-                                <a target="_blank"
-                                   href="${wekbAPI.editUrl ? wekbAPI.editUrl + '/public/platformContent/' + ident : '#'}"><i
-                                        title="${wekbAPI.name} Link" class="external alternate icon"></i></a>
+                                <ui:wekbIconLink type="platform" gokbId="${object.gokbId}"/>
                             </g:elseif>
                         </g:if>
                     </g:else>

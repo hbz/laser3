@@ -14,6 +14,7 @@
                 <div class="ui fluid segment  title">
                     <div class="ui stackable equal width grid">
                         <div class="twelve wide column">
+                            <ui:wekbIconLink type="package" gokbId="${sp.pkg.gokbId}"/>
                             <g:link controller="package" action="show" id="${sp.pkg.id}">${sp.pkg.name}</g:link>
 
                             <g:if test="${sp.pkg.contentProvider}">
@@ -36,6 +37,7 @@
                                         </g:if>
                                         --%>
                                         <g:if test="${sp.pkg.nominalPlatform}">
+                                            <ui:wekbIconLink type="platform" gokbId="${sp.pkg.nominalPlatform.gokbId}"/>
                                             <g:link controller="platform" action="show" id="${sp.pkg.nominalPlatform.id}">${sp.pkg.nominalPlatform.name}</g:link>
                                             <ui:linkWithIcon href="${sp.pkg.nominalPlatform.primaryUrl?.startsWith('http') ? sp.pkg.nominalPlatform.primaryUrl : 'http://' + sp.pkg.nominalPlatform.primaryUrl}"/>
                                         </g:if>
@@ -126,7 +128,7 @@
                                     <div class="ui list">
                                         <g:each in="${packageInstanceRecord.curatoryGroups}" var="curatoryGroup">
                                             <div class="item">
-                                                <ui:wekbIconLink gokbId="${curatoryGroup.curatoryGroup}"/>
+                                                <ui:wekbIconLink type="curatoryGroup" gokbId="${curatoryGroup.curatoryGroup}"/>
                                                 ${curatoryGroup.name} ${curatoryGroup.type ? "(${curatoryGroup.type})" : ""}
                                             </div>
                                         </g:each>
