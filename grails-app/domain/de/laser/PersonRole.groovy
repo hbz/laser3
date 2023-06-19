@@ -122,6 +122,16 @@ class PersonRole implements Comparable<PersonRole>{
         if (tipp)       return 'title:' + tipp.id
     }
 
+    RefdataValue getRoleType() {
+        if(functionType)
+            functionType
+        else if(positionType)
+            positionType
+        else if(responsibilityType)
+            responsibilityType
+        else null
+    }
+
     /**
      * A mirror of {@link RefdataCategory#getAllRefdataValues(java.lang.String)}; gets all reference values of the given reference category string
      * @param category the reference value category to retrieve

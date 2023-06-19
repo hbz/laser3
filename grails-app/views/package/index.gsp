@@ -87,8 +87,8 @@
                             ${RefdataValue.getByValueAndCategory(record.status, RDConstants.PACKAGE_STATUS)?.getI10n("value")}
                         </td>
                         <td>
-                            <g:if test="${record.titleCount}">
-                                ${record.titleCount}
+                            <g:if test="${record.currentTippCount}">
+                                ${record.currentTippCount}
                             </g:if>
                             <g:else>
                                 0
