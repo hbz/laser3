@@ -229,12 +229,7 @@ class PackageController {
         Map<String, Object> result = [:]
 
         result.user = contextService.getUser()
-        Package packageInstance
-        if(params.id instanceof Long || params.id.isLong())
-            packageInstance = Package.get(params.id)
-        else if(params.id ==~ /[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}/)
-            packageInstance = Package.findByGokbId(params.id)
-        else packageInstance = Package.findByGlobalUID(params.id)
+        Package packageInstance = Package.get(params.id)
 
         result.currentTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_CURRENT])[0]
         result.plannedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_EXPECTED])[0]
