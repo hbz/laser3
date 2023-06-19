@@ -587,8 +587,8 @@ class YodaController {
     def matchPackageHoldings() {
         log.debug("match package holdings to issue entitlement holdings ...")
         flash.message = "Bestände werden korrigiert ..."
-        yodaService.matchPackageHoldings()
-        redirect controller: 'home', action: 'index'
+        yodaService.matchPackageHoldings(params.long('pkgId'))
+        redirect controller: 'package', action: 'index'
     }
 
     @Deprecated
@@ -609,11 +609,11 @@ class YodaController {
     }
 
     /**
-     * Call to delete titles without we:kb reference and marked as removed
+     * Bulk retriggering of inheritance
      */
     @Secured(['ROLE_YODA'])
-    Map<String, Object> expungeRemovedTIPPs() {
-        yodaService.expungeRemovedTIPPs()
+    Map<String, Object> retriggerInheritance() {
+        yodaService.retriggerInheritance('holdingSelection') //TODO generalise
         redirect controller: 'home'
     }
 

@@ -536,7 +536,7 @@
     });
 
     $(".bulkcheck").change(function() {
-        JSPC.app.updateSelectionCache($(this).parents("tr").attr("data-index"),$(this).prop('checked'));
+        JSPC.app.updateSelectionCache($(this).parents(".la-js-checkItem").attr("data-gokbId"), $(this).prop('checked'));
     });
 
     $(".ieOverwrite td").click(function() {
@@ -548,7 +548,7 @@
             url: "<g:createLink controller="ajax" action="updateIssueEntitlementOverwrite" />",
             data: {
                 sub: ${subscription.id},
-                key: $(this).parents("tr").attr("data-index"),
+                key: $(this).parents("tr").attr("data-gokbId"),
                 referer: "${actionName}",
                 coverage: $(this).attr("data-coverage") === "true" || $(this).hasClass("coverage"),
                 prop: $(this).attr("name") ? $(this).attr("name") : $(this).find("input").attr("name"),
