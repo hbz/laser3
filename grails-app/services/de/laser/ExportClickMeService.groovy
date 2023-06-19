@@ -2135,7 +2135,7 @@ class ExportClickMeService {
             exportFields.put('subscription.consortium', [field: null, label: 'Consortium', message: 'consortium.label'])
         }
 
-        IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
+        IdentifierNamespace.findAllByNsType(TitleInstancePackagePlatform.class.name, [sort: 'ns']).each {
             exportFields.put("issueEntitlementIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
         }
 
