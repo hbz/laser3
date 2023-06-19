@@ -149,7 +149,7 @@
                                     </g:link>
                                 </span>
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top center" data-content="${message(code: 'menu.yoda.retriggerPendingChanges')}">
-                                    <g:link controller="yoda" action="retriggerPendingChanges" params="${[packageUUID: record.uuid]}" class="ui icon button">
+                                    <g:link controller="yoda" action="matchPackageHoldings" params="${[pkgId: pkg.id]}" class="ui icon button">
                                         <i class="icon wrench"></i>
                                     </g:link>
                                 </span>
