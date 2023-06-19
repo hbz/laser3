@@ -2733,7 +2733,7 @@ class SubscriptionControllerService {
                         }
 
                         if (colMap.titleUrlCol >= 0 && !cols[colMap.titleUrlCol]?.trim()?.isEmpty()) {
-                            titleUrl = cols[colMap.titleUrlCol]
+                            titleUrl = cols[colMap.titleUrlCol].replace("\r", "")
                         }
 
                         if (!titleUrl && ((colMap.zdbCol >= 0 && cols[colMap.zdbCol].trim().isEmpty()) || colMap.zdbCol < 0) &&
@@ -2772,7 +2772,7 @@ class SubscriptionControllerService {
                              */
 
 
-                            if (titleIdentifierMap.containsKey(idCandidate.value.replace("\r", "")) || titleIdentifierMap.containsKey(titleUrl)) {
+                            if ((idCandidate.value && titleIdentifierMap.containsKey(idCandidate.value.replace("\r", ""))) || titleIdentifierMap.containsKey(titleUrl)) {
                                 String tippKey = titleIdentifierMap.containsKey(titleUrl) ? titleIdentifierMap.get(titleUrl) : titleIdentifierMap.get(idCandidate.value.replace("\r", ""))
                                 //is title already added?
                                 if (addedTipps.contains(tippKey)) {
@@ -2864,7 +2864,7 @@ class SubscriptionControllerService {
                             ieCoverages.add(covStmt)
                             ieCandidate.coverages = ieCoverages
                         }
-                        if(result.subscription) {
+                        if(result.subscription && match) {
                             boolean participantPerpetualAccessToTitle = surveyService.hasParticipantPerpetualAccessToTitle3(result.subscriber, match)
                             if(!participantPerpetualAccessToTitle) {
                                 issueEntitlementOverwrite[match.gokbId] = ieCandidate
