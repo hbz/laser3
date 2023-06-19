@@ -2168,7 +2168,8 @@ class FilterService {
     List listReaderWrapper(Map params, String key) {
         if(params instanceof GrailsParameterMap)
             return params.list(key)
-        else if(params[key] instanceof List) {
+        //.respondsTo('size') is a substitute for instanceof Ljava.lang.String;
+        else if(params[key] instanceof List || params[key].respondsTo('size')) {
             return params[key]
         }
         else return [params[key]]
