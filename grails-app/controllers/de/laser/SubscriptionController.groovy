@@ -557,7 +557,7 @@ class SubscriptionController {
     @Secured(closure = {
         ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
     })
-    @Check404
+    @Check404()
     def addMembers() {
         log.debug("addMembers ..")
         Map<String,Object> ctrlResult = subscriptionControllerService.addMembers(this,params)

@@ -228,12 +228,7 @@ class PlatformController  {
     @Check404()
     def show() {
         Map<String, Object> result = platformControllerService.getResultGenerics(params)
-        Platform platformInstance
-        if(params.id instanceof Long || params.id.isLong())
-            platformInstance = Platform.get(params.id)
-        else if(params.id ==~ /[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}/)
-            platformInstance = Platform.findByGokbId(params.id)
-        else platformInstance = Platform.findByGlobalUID(params.id)
+        Platform platformInstance = Platform.get(params.id)
 
         result.platformInstance = platformInstance
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)

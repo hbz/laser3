@@ -4427,6 +4427,7 @@ class SurveyController {
     private def _processAddMember(Subscription oldSub, Subscription newParentSub, Org org, Date newStartDate, Date newEndDate, boolean multiYear, params) {
 
         Org institution = contextService.getOrg()
+        Subscription memberSub
 
         if (accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)) {
 
@@ -4453,7 +4454,7 @@ class SurveyController {
                 Date startDate = newStartDate ?: null
                 Date endDate = newEndDate ?: null
 
-                Subscription memberSub = new Subscription(
+                memberSub = new Subscription(
                         type: newParentSub.type ?: null,
                         kind: newParentSub.kind ?: null,
                         status: RDStore.SUBSCRIPTION_INTENDED,
@@ -4545,6 +4546,7 @@ class SurveyController {
                 }
             }
         }
+        return memberSub
     }
 
     /*
