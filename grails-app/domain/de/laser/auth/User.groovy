@@ -42,10 +42,6 @@ class User {
         formalRole  blank: false, nullable: true
     }
 
-    static transients = [
-            'displayName', 'pageSizeOrDefault', 'admin', 'yoda', 'lastInstAdmin'
-    ] // mark read-only accessor methods
-
     static mapping = {
         cache           true
 	    table           name: '`user`'

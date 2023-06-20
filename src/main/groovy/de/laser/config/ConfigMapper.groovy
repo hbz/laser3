@@ -81,11 +81,14 @@ class ConfigMapper {
     static File getCurrentConfigFile(Environment environment) {
         Map<String, Object> sysProps = environment.properties.get('systemProperties') as Map
 
-        String appName = sysProps.get('info.app.name') ?: environment.getProperty('info.app.name') // TODO : fallback - database migration plugin
-//        String lcf = sysProps.get('local.config.flag') ?: environment.getProperty('local.config.flag') ?: ''
-//        if (lcf) { lcf = '-' + lcf }
-//        new File("${System.getProperty('user.home')}/.grails/${ian}-config${lcf}.groovy")
-        new File("${System.getProperty('user.home')}/.grails/${appName}-config.groovy")
+        String cfgFile = (sysProps.get('info.app.name') ?: environment.getProperty('info.app.name')) + '-config.groovy' // TODO : fallback - database migration plugin
+
+//        if (grails.util.Environment.isDevelopmentMode()) {
+//            String override = environment.getProperty('LASER_CONFIG_FILE')
+//            if (override) { cfgFile = override }
+//        }
+
+        new File("${System.getProperty('user.home')}/.grails/${cfgFile}")
     }
 
     static void checkCurrentConfig() {

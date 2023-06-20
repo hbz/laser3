@@ -34,10 +34,8 @@ class BootStrapService {
     CacheService cacheService
     DataSource dataSource
     GrailsApplication grailsApplication
-    OrganisationService organisationService
     RefdataReorderService refdataReorderService
     SessionFactory sessionFactory
-    UserService userService
 
     static final BOOTSTRAP = true   // indicates this object is created via bootstrap (= is hard-coded in system, persists database resets and instances)
 
