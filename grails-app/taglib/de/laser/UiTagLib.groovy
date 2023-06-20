@@ -41,7 +41,7 @@ class UiTagLib {
         } else {
             out << '<h1 class="ui icon header la-clear-before la-noMargin-top">'
         }
-        if (attrs.referenceYear){
+        if ( (attrs.referenceYear) || (attrs.visibleOrgRelationsJoin) ){
             out << '<div class="la-subPlusYear">'
         }
         if (attrs.type) {
@@ -49,7 +49,7 @@ class UiTagLib {
         } else {
             out << ui.headerIcon()
         }
-        if (attrs.referenceYear){
+        if ( (attrs.referenceYear)|| (attrs.visibleOrgRelationsJoin) ) {
             out << '<div class="la-subPlusYear-texts">'
         }
         if (attrs.text) {
@@ -67,9 +67,15 @@ class UiTagLib {
         if ( body ) {
             out << body()
         }
-        if (attrs.referenceYear) {
-            out << '<span class="la-subPlusYear-year" >'
+        if ( (attrs.referenceYear)|| (attrs.visibleOrgRelationsJoin) ) {
+            out << '<span class="la-subPlusYear-year">'
             out << attrs.referenceYear
+            if (attrs.referenceYear) {
+                out << ' – '
+            }
+            out << '<span class="la-orgRelations">'
+            out << attrs.visibleOrgRelationsJoin
+            out << '</span>'
             out << '</span>'
             out << '</div>'
             out << '</div>'

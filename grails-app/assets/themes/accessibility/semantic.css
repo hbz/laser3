@@ -27688,7 +27688,8 @@ body[class*="platform"] .ui.icon.header .icon.la-object:before {
 }
 
 .ui.header.la-noMargin-top {
-  margin-top: 1rem;
+  margin-top: 0;
+  margin-bottom: 1.3rem;
   text-align: left;
   position: relative;
 }
@@ -27717,6 +27718,10 @@ body[class*="platform"] .ui.icon.header .icon.la-object:before {
 
 .la-subPlusYear-year {
   font-size: 1rem;
+}
+
+.la-orgRelations {
+  font-weight: normal;
 }
 /*!
  * # Fomantic-UI ^2.9.2 - Icon

@@ -24,20 +24,9 @@
     <laser:render template="actions"/>
 </ui:controlButtons>
 
-<g:each in="${visibleOrgRelations.sort{it.roleType.id}}" var="role" status="i">
-    <g:if test="${role.org && role.roleType != RDStore.OR_SUBSCRIPTION_CONSORTIA}">
-        <g:set var="test_${i}" value="${role.org.name}" />
-        ${i}
-    </g:if>
-</g:each>
+<g:set var="visibleOrgRelationsJoin" value="${visibleOrgRelations.findAll{it.roleType != RDStore.OR_SUBSCRIPTION_CONSORTIA}.sort{it.org.sortname}.collect{it.org}.join(' – ')}"/>
 
-<g:set var="test_zusammen" value="${visibleOrgRelations.findAll{it.roleType != RDStore.OR_SUBSCRIPTION_CONSORTIA}.sort{it.org.sortname}.collect{it.org}.join(',')}"/>
-
-${test_zusammen}
-
-
-
-<ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}">
+<ui:h1HeaderWithIcon  referenceYear="${subscription?.referenceYear}" visibleOrgRelationsJoin="${visibleOrgRelationsJoin}">
 
 <laser:render template="iconSubscriptionIsChild"/>
 <ui:xEditable owner="${subscription}" field="name"/>
