@@ -116,14 +116,14 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     String comment
 
     //Only for Consortia and instanceOf = true
-    boolean offerRequested
+    boolean offerRequested = false
     Date offerRequestedDate
-    boolean offerAccepted
+    boolean offerAccepted = false
     String offerNote
     String priceIncreaseInfo
-    boolean renewalSent
+    boolean renewalSent = false
     Date renewalSentDate
-    boolean participantTransferWithSurvey
+    boolean participantTransferWithSurvey = false
 
     Subscription instanceOf
     // If a subscription is administrative, subscription members will not see it resp. there is a toggle which en-/disables visibility
