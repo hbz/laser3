@@ -608,32 +608,38 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     }
 
     /**
-     * Gets the contact persons of the given function type; the request may be limited to public contacts of the given function type only
+     * Gets the contact persons; optionally, a function type may be given as filter. Moreover, the request may be limited to public contacts only
      * @param onlyPublic retrieve only public contacts?
      * @param functionType the function type of the contacts to be requested
      * @return a {@link List} of {@link Person}s matching to the function type
      */
-    List<Person> getContactPersonsByFunctionType(boolean onlyPublic, RefdataValue functionType, boolean exWekb = false) {
+    List<Person> getContactPersonsByFunctionType(boolean onlyPublic, RefdataValue functionType = null, boolean exWekb = false) {
+        Map<String, Object> queryParams = [org: this]
+        String functionTypeFilter = ''
+        if(functionType) {
+            functionTypeFilter = 'and pr.functionType = :functionType'
+            queryParams.functionType = functionType
+        }
         if (onlyPublic) {
             if(exWekb) {
                 Person.executeQuery(
-                        "select distinct p from Person as p inner join p.roleLinks pr where pr.org = :org and pr.functionType = :functionType and p.tenant = :org",
-                        [org: this, functionType: functionType]
+                        'select distinct p from Person as p inner join p.roleLinks pr where pr.org = :org '+functionTypeFilter+' and p.tenant = :org',
+                        queryParams
                 )
             }
             else {
                 Person.executeQuery(
-                        "select distinct p from Person as p inner join p.roleLinks pr where p.isPublic = true and pr.org = :org and pr.functionType = :functionType",
-                        [org: this, functionType: functionType]
+                        'select distinct p from Person as p inner join p.roleLinks pr where p.isPublic = true and pr.org = :org '+functionTypeFilter,
+                        queryParams
                 )
             }
         }
         else {
-            Org ctxOrg = BeanStore.getContextService().getOrg()
+            queryParams.ctx = BeanStore.getContextService().getOrg()
             Person.executeQuery(
-                    "select distinct p from Person as p inner join p.roleLinks pr where pr.org = :org and pr.functionType = :functionType " +
-                            " and ( (p.isPublic = false and p.tenant = :ctx) or (p.isPublic = true) )",
-                    [org: this, functionType: functionType, ctx: ctxOrg]
+                    'select distinct p from Person as p inner join p.roleLinks pr where pr.org = :org ' + functionTypeFilter +
+                            ' and ( (p.isPublic = false and p.tenant = :ctx) or (p.isPublic = true) )',
+                    queryParams
             )
         }
     }

@@ -191,7 +191,7 @@
         <g:each in="${tipps}" var="tipp">
 
             <g:set var="participantPerpetualAccessToTitle"
-                   value="${surveyService.hasParticipantPerpetualAccessToTitle3(institution, tipp)}"/> %{-- Moe: ex result.subscriber; is that same as result.institution? is a fix to prevent 500, please check it over! --}%
+                   value="${surveyService.hasParticipantPerpetualAccessToTitle3(institution, tipp)}"/>
 
             <div class="ui raised segments la-accordion-segments">
 
@@ -209,7 +209,7 @@
                         <div class="one wide column">
                             <g:if test="${editable && !participantPerpetualAccessToTitle}">
                                 <input type="checkbox" name="bulkflag"
-                                       class="bulkcheck" ${checkedCache ? checkedCache[tipp.gokbId] : ''}>
+                                       class="bulkcheck la-js-notOpenAccordion" ${checkedCache ? checkedCache[tipp.gokbId] : ''}>
                             </g:if>
                         </div>
 
@@ -536,7 +536,7 @@
     });
 
     $(".bulkcheck").change(function() {
-        JSPC.app.updateSelectionCache($(this).parents("tr").attr("data-index"),$(this).prop('checked'));
+        JSPC.app.updateSelectionCache($(this).parents(".la-js-checkItem").attr("data-gokbId"), $(this).prop('checked'));
     });
 
     $(".ieOverwrite td").click(function() {
@@ -548,7 +548,7 @@
             url: "<g:createLink controller="ajax" action="updateIssueEntitlementOverwrite" />",
             data: {
                 sub: ${subscription.id},
-                key: $(this).parents("tr").attr("data-index"),
+                key: $(this).parents("tr").attr("data-gokbId"),
                 referer: "${actionName}",
                 coverage: $(this).attr("data-coverage") === "true" || $(this).hasClass("coverage"),
                 prop: $(this).attr("name") ? $(this).attr("name") : $(this).find("input").attr("name"),

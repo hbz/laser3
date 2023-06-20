@@ -14,7 +14,7 @@
 </g:if>
 
 <g:if test="${error}">
-    <div class="ui icon info error message">
+    <div class="ui icon error message">
         <i class="exclamation triangle icon"></i>
         <i class="close icon"></i>
 
@@ -87,8 +87,8 @@
                             ${RefdataValue.getByValueAndCategory(record.status, RDConstants.PACKAGE_STATUS)?.getI10n("value")}
                         </td>
                         <td>
-                            <g:if test="${record.titleCount}">
-                                ${record.titleCount}
+                            <g:if test="${record.currentTippCount}">
+                                ${record.currentTippCount}
                             </g:if>
                             <g:else>
                                 0
@@ -149,7 +149,7 @@
                                     </g:link>
                                 </span>
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top center" data-content="${message(code: 'menu.yoda.retriggerPendingChanges')}">
-                                    <g:link controller="yoda" action="retriggerPendingChanges" params="${[packageUUID: record.uuid]}" class="ui icon button">
+                                    <g:link controller="yoda" action="matchPackageHoldings" params="${[pkgId: pkg.id]}" class="ui icon button">
                                         <i class="icon wrench"></i>
                                     </g:link>
                                 </span>

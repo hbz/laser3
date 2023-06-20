@@ -243,6 +243,17 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     else {
                         log.info("no records updated - leaving everything as is ...")
                     }
+                    Package pkg = Package.findByGokbId(packageUUID)
+                    if(pkg) {
+                        permanentlyDeletedTitles.each { String delUUID ->
+                            TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGokbIdAndPkgAndStatusNotEqual(delUUID, pkg, RDStore.TIPP_STATUS_REMOVED)
+                            if(tipp) {
+                                tipp.status = RDStore.TIPP_STATUS_REMOVED
+                                tipp.save()
+                                IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.status = :removed, ie.lastUpdated = :now where ie.tipp = :tipp and ie.status != :removed', [removed: RDStore.TIPP_STATUS_REMOVED, tipp: tipp, now: new Date()])
+                            }
+                        }
+                    }
                     /*
                     if(packagesToNotify.keySet().size() > 0) {
                         log.info("notifying subscriptions ...")
@@ -861,6 +872,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         log.info("TIPP with UUID ${tippA.gokbId} has been permanently deleted")
                         tippA.status = RDStore.TIPP_STATUS_REMOVED
                         tippA.save()
+                        IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.status = :removed, ie.lastUpdated = :now where ie.tipp = :tipp and ie.status != :removed', [removed: RDStore.TIPP_STATUS_REMOVED, tipp: tippA, now: new Date()])
                         /*
                         Set<Map<String,Object>> diffsOfPackage = packagesToNotify.get(tippA.pkg.gokbId)
                         if(!diffsOfPackage) {
@@ -874,7 +886,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 else if(!(updatedTIPP.status in [RDStore.TIPP_STATUS_REMOVED.value, PERMANENTLY_DELETED])) {
                     Package pkg = packagesOnPage.get(updatedTIPP.packageUUID)
                     if(pkg)
-                        addNewTIPP(pkg, updatedTIPP, platformsOnPage)
+                        newTitles << addNewTIPP(pkg, updatedTIPP, platformsOnPage)
                 }
                 if(source.rectype == RECTYPE_TIPP) {
                     Date lastUpdatedTime = DateUtils.parseDateGeneric(tipp.lastUpdatedDisplay)
@@ -894,6 +906,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 log.info("TIPP with UUID ${tippA.gokbId} has been permanently deleted")
                 tippA.status = RDStore.TIPP_STATUS_REMOVED
                 tippA.save()
+                IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.status = :removed, ie.lastUpdated = :now where ie.tipp = :tipp and ie.status != :removed', [removed: RDStore.TIPP_STATUS_REMOVED, tipp: tippA, now: new Date()])
                 /*
                 Set<Map<String,Object>> diffsOfPackage = packagesToNotify.get(tippA.pkg.gokbId)
                 if(!diffsOfPackage) {
@@ -2261,10 +2274,15 @@ class GlobalSourceSyncService extends AbstractLockableService {
         if(changedFrom)
             queryParams.changedSince = changedFrom
         Map<String, Object> recordBatch = fetchRecordJSON(false, queryParams)
-        for(int i = 0;i < recordBatch.count; i+=MAX_TIPP_COUNT_PER_PAGE) {
+        boolean more = true
+        int offset = 0
+        while(more) {
             result.addAll(recordBatch.records.findAll { record -> record.componentType == 'TitleInstancePackagePlatform' }.collect { record -> record.uuid })
-            if(recordBatch.currentPage < recordBatch.lastPage)
-                recordBatch = fetchRecordJSON(false, queryParams+[offset: i])
+            more = recordBatch.currentPage < recordBatch.lastPage
+            if(more) {
+                offset += MAX_TIPP_COUNT_PER_PAGE
+                recordBatch = fetchRecordJSON(false, queryParams + [offset: offset])
+            }
         }
         result
     }

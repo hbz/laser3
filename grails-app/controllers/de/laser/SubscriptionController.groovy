@@ -19,6 +19,7 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook
 
 import javax.servlet.ServletOutputStream
 import java.text.SimpleDateFormat
+import java.time.Year
 
 /**
  * This controller is responsible for the subscription handling. Many of the controller calls do
@@ -556,7 +557,7 @@ class SubscriptionController {
     @Secured(closure = {
         ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
     })
-    @Check404
+    @Check404()
     def addMembers() {
         log.debug("addMembers ..")
         Map<String,Object> ctrlResult = subscriptionControllerService.addMembers(this,params)
@@ -768,12 +769,12 @@ class SubscriptionController {
         }
         else {
             if(params.addUUID) {
-                switch(params.holdingSelection) {
-                    case RDStore.SUBSCRIPTION_HOLDING_ENTIRE.id.toString(): flash.message = message(code:'subscription.details.link.processingWithEntitlements') as String
+                switch(ctrlResult.result.holdingSelection) {
+                    case RDStore.SUBSCRIPTION_HOLDING_ENTIRE: flash.message = message(code:'subscription.details.link.processingWithEntitlements') as String
                         redirect action: 'index', params: [id: params.id, gokbId: params.addUUID]
                         return
                         break
-                    case RDStore.SUBSCRIPTION_HOLDING_PARTIAL.id.toString(): flash.message = message(code:'subscription.details.link.processingWithoutEntitlements') as String
+                    case RDStore.SUBSCRIPTION_HOLDING_PARTIAL: flash.message = message(code:'subscription.details.link.processingWithoutEntitlements') as String
                         redirect action: 'addEntitlements', params: [id: params.id, packageLinkPreselect: params.addUUID, preselectedName: ctrlResult.result.packageName]
                         return
                         break
@@ -1702,6 +1703,7 @@ class SubscriptionController {
         SimpleDateFormat sdf = DateUtils.getSDF_ddMMyyyy()
         Date newStartDate
         Date newEndDate
+        Year newReferenceYear = subscription.referenceYear ? subscription.referenceYear.plusYears(1) : null
         use(TimeCategory) {
             newStartDate = subscription.endDate ? (subscription.endDate + 1.day) : null
             newEndDate = subscription.endDate ? (subscription.endDate + 1.year) : null
@@ -1709,7 +1711,7 @@ class SubscriptionController {
         result.isRenewSub = true
         result.permissionInfo = [sub_startDate    : newStartDate ? sdf.format(newStartDate) : null,
                                  sub_endDate      : newEndDate ? sdf.format(newEndDate) : null,
-                                 sub_referenceYear: subscription.referenceYear,
+                                 sub_referenceYear: newReferenceYear ?: null,
                                  sub_name         : subscription.name,
                                  sub_id           : subscription.id,
                                  sub_status       : RDStore.SUBSCRIPTION_INTENDED.id.toString()]

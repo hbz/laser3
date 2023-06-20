@@ -218,11 +218,7 @@ class OrganisationControllerService {
         }
 
         if (params.id) {
-            if(params.id instanceof Long || params.id.isLong())
-                result.orgInstance = Org.get(params.id)
-            else if(params.id ==~ /[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}/)
-                result.orgInstance = Org.findByGokbId(params.id)
-            else result.orgInstance = Org.findByGlobalUID(params.id)
+            result.orgInstance = Org.get(params.id)
             if(result.orgInstance.gokbId) {
                 ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
                 result.editUrl = apiSource.editUrl.endsWith('/') ? apiSource.editUrl : apiSource.editUrl+'/'

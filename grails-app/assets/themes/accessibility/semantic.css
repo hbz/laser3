@@ -55080,7 +55080,6 @@ form {
 
 .ui.form .fields.la-forms-grid,
 .ui.form .fields .field.la-forms-grid {
-  padding: 25px;
   background: #e6dee2;
 }
 
@@ -64825,14 +64824,14 @@ Floated Menu / Item
 .ui.compact.table > thead > tr > th,
 .ui.compact.table > tbody > tr > th,
 .ui.compact.table > tfoot > tr > th {
-  padding-left: 0.7em;
-  padding-right: 0.7em;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
 }
 
 .ui.compact.table > tr > td,
 .ui.compact.table > tbody > tr > td,
 .ui.compact.table > tfoot > tr > td {
-  padding: 0.5em 0.7em;
+  padding: 0.5em 0.5em;
 }
 
 /* Very */

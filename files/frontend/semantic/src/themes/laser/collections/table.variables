@@ -61,3 +61,5 @@
 @sortableActiveHoverBackground: @#D3DAE3;
 
 @sortableColor: #515151;
+
+@compactHorizontalPadding: 0.5em;

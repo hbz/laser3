@@ -2,10 +2,19 @@
 <laser:htmlStart message="mail.sendMail.label" serviceInjection="true"/>
 
 <ui:breadcrumbs>
+    <g:if test="${surveyInfo}">
+        <ui:crumb controller="survey" action="show" id="${surveyInfo.id}"
+                  text="${surveyInfo.name}"/>
+    </g:if>
+
     <ui:crumb text="${message(code: 'mail.sendMail.label')}" class="active"/>
 </ui:breadcrumbs>
 
-<ui:h1HeaderWithIcon message="mail.sendMail.label" floated="true"/>
+<ui:h1HeaderWithIcon message="mail.sendMail.label" floated="true">
+    <g:if test="${surveyInfo}">: <g:message code="survey.label"/> (<g:link controller="survey" action="show"
+                                                                           id="${surveyInfo.id}">${surveyInfo.name}</g:link>)
+    </g:if>
+</ui:h1HeaderWithIcon>
 
 
 
@@ -15,6 +24,10 @@
             params="[objectType: objectType, objectId: objectId]">
 
         <g:hiddenField name="reminderMail" value="${reminderMail}"/>
+        <g:hiddenField name="fromMail" value="${mailFrom}"/>
+        <g:if test="${userSurveyNotificationMails}">
+            <g:hiddenField name="userSurveyNotificationMails" value="${userSurveyNotificationMails}"/>
+        </g:if>
 
         <h2>${message(code: 'mail.sendMail.toOrgs', args: [orgList?.size() ?: 0])}</h2>
 
@@ -22,81 +35,101 @@
             <g:hiddenField name="selectedOrgs" value="${org.id}"/>
         </g:each>
 
+        <g:if test="${userSurveyNotificationMails}">
+            <div class="ui segment">
+                <h3 class="ui header">${message(code: 'mail.sendMail.standard')}</h3>
 
-        <g:set var="rdvAllPersonFunctions"
-               value="${PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION)}"
-               scope="request"/>
-        <g:set var="rdvAllPersonPositions" value="${PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION)}"
-               scope="request"/>
-        <div class="ui la-filter segment la-clear-before">
-            <div class="field">
-                <div>
-                    <label><g:message code="person.function.label"/></label>
-                </div>
-
-                <div>
-                    <ui:select class="ui dropdown search"
-                               name="prsFunctionMultiSelect"
-                               multiple=""
-                               from="${rdvAllPersonFunctions}"
-                               optionKey="id"
-                               optionValue="value"
-                               value="${RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.id}"/>
-                </div>
-            </div>
-
-            <div class="field">
-                <div>
-                    <label><g:message code="person.position.label"/></label>
-                </div>
-
-                <div>
-                    <ui:select class="ui dropdown search"
-                               name="prsPositionMultiSelect"
-                               multiple=""
-                               from="${rdvAllPersonPositions}"
-                               optionKey="id"
-                               optionValue="value"/>
-                </div>
-            </div>
-            <br/>
-
-            <div class="field">
-                <div class="ui checkbox">
-                    <input type="checkbox" id="publicContacts" checked/>
-                    <label for="publicContacts">${message(code: 'email.fromPublicContacts')}</label>
-                </div>
-
-                <div class="ui checkbox">
-                    <input type="checkbox" id="privateContacts" checked/>
-                    <label for="privateContacts">${message(code: 'email.fromPrivateAddressbook')}</label>
-                </div>
-            </div>
-        </div>
-        <br/>
-
-        <div class="ui form">
-
-            <div class="field">
-                <label for="fromMail">${message(code: 'mail.sendMail.from')}</label>
-
-                <g:field type="text" name="fromMail" id="fromMail" readonly="true" value="${mailFrom}"/>
-            </div>
-
-            <div class="field">
-                <label for="emailAddressesTextArea">${message(code: 'mail.sendMail.receiver')}</label>
-                <g:textArea id="emailAddressesTextArea" name="emailAddresses" readonly="true" rows="5" cols="1"
-                            style="width: 100%;"/>
-            </div>
-
-            <g:if test="${userSurveyNotificationMails}">
                 <div class="field">
                     <label for="userSurveyNotificationMails">${message(code: 'mail.sendMail.userMailsWithSurveyNotification')}</label>
-                    <g:textArea id="userSurveyNotificationMails" name="userSurveyNotificationMails" readonly="true"
-                                rows="5"
-                                cols="1" style="width: 100%;">${userSurveyNotificationMails}</g:textArea>
+                    ${de.laser.storage.RDStore.YN_YES.getI10n('value')}
+                </div>
+            </div>
+        </g:if>
+
+
+        <g:if test="${userSurveyNotificationMails}">
+
+
+                <div class="ui accordion la-accordion-showMore">
+                    <div class="ui raised segments la-accordion-segments">
+                        <div class="ui fluid segment  title">
+                            <div class="ui stackable equal width grid">
+                                <div class="sixteen wide right aligned  column">
+                                    <div class="ui icon blue button la-modern-button la-js-dont-hide-button la-popup-tooltip la-delay"
+                                         data-content="${message(code: 'mail.sendMail.additional')}">
+                                        <i class="ui angle double down icon"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="ui fluid segment content">
+                            <h3 class="ui header">${message(code: 'mail.sendMail.additional')}</h3>
+
+                            <g:set var="rdvAllPersonFunctions"
+                                   value="${PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION)}"
+                                   scope="request"/>
+                            <g:set var="rdvAllPersonPositions"
+                                   value="${PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION)}"
+                                   scope="request"/>
+                            <div class="ui la-filter segment la-clear-before">
+                                <div class="field">
+                                    <div>
+                                        <label><g:message code="person.function.label"/></label>
+                                    </div>
+
+                                    <div>
+                                        <ui:select class="ui dropdown search"
+                                                   name="prsFunctionMultiSelect"
+                                                   multiple=""
+                                                   from="${rdvAllPersonFunctions}"
+                                                   optionKey="id"
+                                                   optionValue="value"/>
+                                    </div>
+                                </div>
+
+                                <div class="field">
+                                    <div>
+                                        <label><g:message code="person.position.label"/></label>
+                                    </div>
+
+                                    <div>
+                                        <ui:select class="ui dropdown search"
+                                                   name="prsPositionMultiSelect"
+                                                   multiple=""
+                                                   from="${rdvAllPersonPositions}"
+                                                   optionKey="id"
+                                                   optionValue="value"/>
+                                    </div>
+                                </div>
+                                <br/>
+
+                                <div class="field">
+                                    <div class="ui checkbox">
+                                        <input type="checkbox" id="publicContacts"/>
+                                        <label for="publicContacts">${message(code: 'email.fromPublicContacts')}</label>
+                                    </div>
+
+                                    <div class="ui checkbox">
+                                        <input type="checkbox" id="privateContacts"/>
+                                        <label for="privateContacts">${message(code: 'email.fromPrivateAddressbook')}</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <br/>
+
+                            <div class="field">
+                                <label for="emailAddressesTextArea">${message(code: 'mail.sendMail.receiver')}</label>
+                                <g:textArea id="emailAddressesTextArea" name="emailAddresses" readonly="true" rows="5"
+                                            cols="1"
+                                            style="width: 100%;"/>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </g:if>
+
+        <div class="ui form">
 
             <div class="field">
                 <label for="mailSubject">${message(code: 'mail.sendMail.mailSubject')}</label>
@@ -122,16 +155,30 @@
                             style="width: 100%;">${mailText}</g:textArea>
             </div>
 
+            <g:if test="${surveyInfo}">
+                <g:if test="${reminderMail}">
+                    <g:link class="ui button left floated" controller="survey" action="participantsReminder"
+                            id="${surveyInfo.id}">
+                        <g:message code="default.button.back"/>
+                    </g:link>
+                </g:if>
+                <g:else>
+                    <g:link class="ui button left floated" controller="survey" action="openParticipantsAgain"
+                            id="${surveyInfo.id}">
+                        <g:message code="default.button.back"/>
+                    </g:link>
+                </g:else>
+            </g:if>
 
-            <button class="ui icon button left floated" type="submit">
+            <button class="ui icon button right floated" type="submit">
                 ${message(code: 'mail.sendMail.sendButton')}
             </button>
         </div>
     </g:form>
 
-   %{-- <button class="ui icon button right floated" onclick="JSPC.app.copyToEmailProgram()">
-        ${message(code: 'menu.institutions.copy_emailaddresses_to_emailclient')}
-    </button>--}%
+%{-- <button class="ui icon button right floated" onclick="JSPC.app.copyToEmailProgram()">
+     ${message(code: 'menu.institutions.copy_emailaddresses_to_emailclient')}
+ </button>--}%
     <br/>
     <br/>
 

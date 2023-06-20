@@ -2043,12 +2043,18 @@ class SubscriptionControllerService {
 
                 Set records = []
                 Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/searchApi' , queryParams)
-                if (queryResult.warning) {
-                    records.addAll(queryResult.warning.result)
-                    result.recordsCount = queryResult.warning.result_count_total
-                    result.records = records
+                if (queryResult.containsKey("warning")) {
+                    if(queryResult.warning.containsKey("result")) {
+                        records.addAll(queryResult.warning.result)
+                        result.recordsCount = queryResult.warning.result_count_total
+                        result.records = records
+                        [result:result,status:STATUS_OK]
+                    }
+                    else if(queryResult.warning.code == "error") {
+                        result.error = messageSource.getMessage('wekb.error.500', [queryResult.warning.message].toArray(), LocaleUtils.getCurrentLocale())
+                        [result: result, status: STATUS_ERROR]
+                    }
                 }
-                [result:result,status:STATUS_OK]
             }
 
         }
@@ -2074,11 +2080,16 @@ class SubscriptionControllerService {
                 String pkgUUID = params.addUUID
                 ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
                 result.source = apiSource.baseUrl
+                RefdataValue holdingSelection = RefdataValue.get(params.holdingSelection)
                 if(params.holdingSelection) {
-                    RefdataValue holdingSelection = RefdataValue.get(params.holdingSelection)
+                    holdingSelection = RefdataValue.get(params.holdingSelection)
                     result.subscription.holdingSelection = holdingSelection
                     result.subscription.save()
                 }
+                else {
+                    holdingSelection = GrailsHibernateUtil.unwrapIfProxy(result.subscription.holdingSelection)
+                }
+                result.holdingSelection = holdingSelection
                 GlobalRecordSource source = GlobalRecordSource.findByUriLikeAndRectype(result.source+'%', GlobalSourceSyncService.RECTYPE_TIPP)
                 log.debug("linkPackage. Global Record Source URL: " +source.uri)
                 globalSourceSyncService.source = source
@@ -2106,9 +2117,9 @@ class SubscriptionControllerService {
                                 }
                                 Package pkgToLink = Package.findByGokbId(pkgUUID)
                                 result.packageName = pkgToLink.name
-                                subscriptionService.addToSubscription(result.subscription, pkgToLink, result.subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
+                                subscriptionService.addToSubscription(result.subscription, pkgToLink, holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
                                 if(auditService.getAuditConfig(result.subscription, 'holdingSelection')) {
-                                    subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, result.subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
+                                    subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
                                 }
                                 //subscriptionService.addPendingChangeConfiguration(result.subscription, pkgToLink, params.clone())
                             }
@@ -2120,9 +2131,9 @@ class SubscriptionControllerService {
                     }
                     else {
                         Package pkgToLink = globalSourceSyncService.createOrUpdatePackage(pkgUUID)
-                        subscriptionService.addToSubscription(result.subscription, pkgToLink, result.subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
+                        subscriptionService.addToSubscription(result.subscription, pkgToLink, holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
                         if(auditService.getAuditConfig(result.subscription, 'holdingSelection')) {
-                            subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, result.subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
+                            subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
                         }
                         //subscriptionService.addPendingChangeConfiguration(result.subscription, pkgToLink, params.clone())
                     }
@@ -2146,15 +2157,9 @@ class SubscriptionControllerService {
         result.package = Package.get(params.package)
         Locale locale = LocaleUtils.getCurrentLocale()
         if(params.confirmed) {
-            Set<Subscription> childSubs = Subscription.findAllByInstanceOf(result.subscription)
-            boolean unlinkErrorChild = false
-            childSubs.each { Subscription child ->
-                if(!packageService.unlinkFromSubscription(result.package, child, result.institution, true)) {
-                    unlinkErrorChild = true
-                    return
-                }
-            }
-            if(!unlinkErrorChild && packageService.unlinkFromSubscription(result.package, result.subscription, result.institution, true)){
+            Set<Subscription> subList = [result.subscription]
+            subList.addAll(Subscription.findAllByInstanceOf(result.subscription))
+            if(packageService.unlinkFromSubscription(result.package, subList.id, result.institution, true)){
                 result.message = messageSource.getMessage('subscription.details.unlink.successfully',null,locale)
                 [result:result,status:STATUS_OK]
             }else {
@@ -2722,7 +2727,7 @@ class SubscriptionControllerService {
                         }
 
                         if (colMap.titleUrlCol >= 0 && !cols[colMap.titleUrlCol]?.trim()?.isEmpty()) {
-                            titleUrl = cols[colMap.titleUrlCol]
+                            titleUrl = cols[colMap.titleUrlCol].replace("\r", "")
                         }
 
                         if (!titleUrl && ((colMap.zdbCol >= 0 && cols[colMap.zdbCol].trim().isEmpty()) || colMap.zdbCol < 0) &&
@@ -2761,7 +2766,7 @@ class SubscriptionControllerService {
                              */
 
 
-                            if (titleIdentifierMap.containsKey(idCandidate.value.replace("\r", "")) || titleIdentifierMap.containsKey(titleUrl)) {
+                            if ((idCandidate.value && titleIdentifierMap.containsKey(idCandidate.value.replace("\r", ""))) || titleIdentifierMap.containsKey(titleUrl)) {
                                 String tippKey = titleIdentifierMap.containsKey(titleUrl) ? titleIdentifierMap.get(titleUrl) : titleIdentifierMap.get(idCandidate.value.replace("\r", ""))
                                 //is title already added?
                                 if (addedTipps.contains(tippKey)) {
@@ -2853,7 +2858,7 @@ class SubscriptionControllerService {
                             ieCoverages.add(covStmt)
                             ieCandidate.coverages = ieCoverages
                         }
-                        if(result.subscription) {
+                        if(result.subscription && match) {
                             boolean participantPerpetualAccessToTitle = surveyService.hasParticipantPerpetualAccessToTitle3(result.subscriber, match)
                             if(!participantPerpetualAccessToTitle) {
                                 issueEntitlementOverwrite[match.gokbId] = ieCandidate
@@ -3251,7 +3256,9 @@ class SubscriptionControllerService {
             SimpleDateFormat formatter = DateUtils.getLocalizedSDF_noTime()
             boolean error = false
             if(params.chkall == 'on') {
-                Map<String, Object> query = filterService.getIssueEntitlementQuery(params, result.subscription)
+                Map<String, Object> cfgMap = [:]
+                cfgMap.putAll(params)
+                Map<String, Object> query = filterService.getIssueEntitlementQuery(cfgMap, result.subscription)
                 //if(params.bulkOperation == "edit") {
                     if(GlobalService.isset(params, 'bulk_local_price') && GlobalService.isset(params, 'bulk_local_currency')) {
                         NumberFormat format = NumberFormat.getInstance( LocaleUtils.getCurrentLocale() )
@@ -3285,13 +3292,13 @@ class SubscriptionControllerService {
                                     break
                                 case 'titleGroupInsert':
                                     Sql sql = GlobalService.obtainSqlConnection()
-                                    params.select = 'bulkInsertTitleGroup'
+                                    cfgMap.select = 'bulkInsertTitleGroup'
                                     if(!params.pkgIds && !params.pkgfilter)
-                                        params.pkgIds = result.subscription.packages.pkg.id
-                                    Map<String, Object> sqlQuery = filterService.prepareTitleSQLQuery(params, IssueEntitlement.class.name, sql)
+                                        cfgMap.pkgIds = result.subscription.packages.pkg.id
+                                    Map<String, Object> sqlQuery = filterService.prepareTitleSQLQuery(cfgMap, IssueEntitlement.class.name, sql)
                                     //log.debug("insert into issue_entitlement_group_item (igi_version, igi_date_created, igi_ie_fk, igi_ie_group_fk, igi_last_updated) "+sqlQuery.query+" where "+sqlQuery.where+" and not exists(select igi_id from issue_entitlement_group_item where igi_ie_fk = ie_id)")
                                     //log.debug(sqlQuery.params.toMapString())
-                                    sql.execute("insert into issue_entitlement_group_item (igi_version, igi_date_created, igi_ie_fk, igi_ie_group_fk, igi_last_updated, igi_date_created) "+sqlQuery.query+" where "+sqlQuery.where+" and not exists(select igi_id from issue_entitlement_group_item where igi_ie_fk = ie_id)", sqlQuery.params)
+                                    sql.execute("insert into issue_entitlement_group_item (igi_version, igi_date_created, igi_ie_fk, igi_ie_group_fk, igi_last_updated) "+sqlQuery.query+" where "+sqlQuery.where+" and not exists(select igi_id from issue_entitlement_group_item where igi_ie_fk = ie_id)", sqlQuery.params)
                                     /*if(entitlementGroup && !IssueEntitlementGroupItem.findByIeGroupAndIe(entitlementGroup, ie) && !IssueEntitlementGroupItem.findByIe(ie)){
                                         IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
                                                 ie: ie,
@@ -3357,16 +3364,16 @@ class SubscriptionControllerService {
                         String ie_to_edit = p.key.substring(10)
                         IssueEntitlement ie = IssueEntitlement.get(ie_to_edit)
                         //if (params.bulkOperation == "edit") {
-                            if (params.bulk_access_start_date.length() > 0) {
+                            if (GlobalService.isset(params, 'bulk_access_start_date')) {
                                 ie.accessStartDate = formatter.parse(params.bulk_access_start_date)
                             }
-                            if (params.bulk_access_end_date.length() > 0) {
+                            if (GlobalService.isset(params, 'bulk_access_end_date')) {
                                 ie.accessEndDate = formatter.parse(params.bulk_access_end_date)
                             }
-                            if (params.bulk_notes.length() > 0) {
+                            if (GlobalService.isset(params, 'bulk_notes')) {
                                 ie.notes = params.bulk_notes
                             }
-                            if (params.bulk_local_price.length() > 0 && params.bulk_local_currency.length() > 0) {
+                            if (GlobalService.isset(params, 'bulk_local_price') && GlobalService.isset(params, 'bulk_local_currency')) {
                                 NumberFormat format = NumberFormat.getInstance( LocaleUtils.getCurrentLocale() )
                                 BigDecimal localPrice = format.parse(params.bulk_local_price).doubleValue()
                                 RefdataValue localCurrency = RefdataValue.get(params.bulk_local_currency)
@@ -3394,25 +3401,25 @@ class SubscriptionControllerService {
                                     }
                                 }
                             }
-                            if (params.bulk_start_date.length() > 0) {
+                            if (GlobalService.isset(params, 'bulk_start_date')) {
                                 IssueEntitlementCoverage.executeUpdate('update IssueEntitlementCoverage ic set ic.startDate = :startDate where ic.issueEntitlement = :ie', [ie: ie, startDate: formatter.parse(params.bulk_start_date)])
                             }
-                            if (params.bulk_start_volume.length() > 0) {
+                            if (GlobalService.isset(params, 'bulk_start_volume')) {
                                 IssueEntitlementCoverage.executeUpdate('update IssueEntitlementCoverage ic set ic.startVolume = :startVolume where ic.issueEntitlement = :ie', [ie: ie, startVolume: params.bulk_start_volume])
                             }
-                            if (params.bulk_start_issue.length() > 0) {
+                            if (GlobalService.isset(params, 'bulk_start_issue')) {
                                 IssueEntitlementCoverage.executeUpdate('update IssueEntitlementCoverage ic set ic.startIssue = :startIssue where ic.issueEntitlement = :ie', [ie: ie, startIssue: params.bulk_start_issue])
                             }
-                            if (params.bulk_end_date.length() > 0) {
+                            if (GlobalService.isset(params, 'bulk_end_date')) {
                                 IssueEntitlementCoverage.executeUpdate('update IssueEntitlementCoverage ic set ic.endDate = :endDate where ic.issueEntitlement = :ie', [ie: ie, endDate: formatter.parse(params.bulk_end_date)])
                             }
-                            if (params.bulk_end_volume.length() > 0) {
+                            if (GlobalService.isset(params, 'bulk_end_volume')) {
                                 IssueEntitlementCoverage.executeUpdate('update IssueEntitlementCoverage ic set ic.endVolume = :endVolume where ic.issueEntitlement = :ie', [ie: ie, endVolume: params.bulk_end_volume])
                             }
-                            if (params.bulk_end_issue.length() > 0) {
+                            if (GlobalService.isset(params, 'bulk_end_issue')) {
                                 IssueEntitlementCoverage.executeUpdate('update IssueEntitlementCoverage ic set ic.endIssue = :endIssue where ic.issueEntitlement = :ie', [ie: ie, endIssue: params.bulk_end_issue])
                             }
-                            if (params.bulk_embargo.length() > 0) {
+                            if (GlobalService.isset(params, 'bulk_embargo')) {
                                 IssueEntitlementCoverage.executeUpdate('update IssueEntitlementCoverage ic set ic.embargo = :embargo where ic.issueEntitlement = :ie', [ie: ie, embargo: params.bulk_embargo])
                             }
                             if (!ie.save()) {

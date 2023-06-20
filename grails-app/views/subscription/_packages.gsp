@@ -13,18 +13,21 @@
             <div class="ui raised segments la-accordion-segments">
                 <div class="ui fluid segment  title">
                     <div class="ui stackable equal width grid">
-                        <div class="twelve wide column">
+                        <div class="six wide column">
+                            <ui:wekbIconLink type="package" gokbId="${sp.pkg.gokbId}"/>
                             <g:link controller="package" action="show" id="${sp.pkg.id}">${sp.pkg.name}</g:link>
 
                             <g:if test="${sp.pkg.contentProvider}">
                                 (${sp.pkg.contentProvider.name})
                             </g:if>
-                            <div class="ui list">
-                                <div class="item">
-                                    <i aria-hidden="true" class="grey cloud icon"></i>
-                                    <div class="content">
-                                        <div class="header">${message(code: 'platform.label')}: </div>
-                                        <div class="description">
+                        </div>
+                        <div class="six wide column">
+                            <g:if test="${sp.pkg.nominalPlatform}">
+                                <i aria-hidden="true" class="grey cloud icon la-popup-tooltip la-delay" data-content="${message(code: 'platform.label')}"></i>
+                                <ui:wekbIconLink type="platform" gokbId="${sp.pkg.nominalPlatform.gokbId}"/>
+                                <g:link controller="platform" action="show" id="${sp.pkg.nominalPlatform.id}">${sp.pkg.nominalPlatform.name}</g:link>
+                                <ui:linkWithIcon href="${sp.pkg.nominalPlatform.primaryUrl?.startsWith('http') ? sp.pkg.nominalPlatform.primaryUrl : 'http://' + sp.pkg.nominalPlatform.primaryUrl}"/>
+                            </g:if>
                                         <%--
                                         <g:if test="${packageService.getCountOfNonDeletedTitles(sp.pkg) > 0}">
                                             <g:each in="${Platform.executeQuery('select distinct tipp.platform from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg',[pkg:sp.pkg])}" var="platform">
@@ -35,14 +38,6 @@
                                             </g:each>
                                         </g:if>
                                         --%>
-                                        <g:if test="${sp.pkg.nominalPlatform}">
-                                            <g:link controller="platform" action="show" id="${sp.pkg.nominalPlatform.id}">${sp.pkg.nominalPlatform.name}</g:link>
-                                            <ui:linkWithIcon href="${sp.pkg.nominalPlatform.primaryUrl?.startsWith('http') ? sp.pkg.nominalPlatform.primaryUrl : 'http://' + sp.pkg.nominalPlatform.primaryUrl}"/>
-                                        </g:if>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                         <div class="four wide right aligned  column">
                             <g:if test="${editmode}">
@@ -126,7 +121,7 @@
                                     <div class="ui list">
                                         <g:each in="${packageInstanceRecord.curatoryGroups}" var="curatoryGroup">
                                             <div class="item">
-                                                <ui:wekbIconLink gokbId="${curatoryGroup.curatoryGroup}"/>
+                                                <ui:wekbIconLink type="curatoryGroup" gokbId="${curatoryGroup.curatoryGroup}"/>
                                                 ${curatoryGroup.name} ${curatoryGroup.type ? "(${curatoryGroup.type})" : ""}
                                             </div>
                                         </g:each>

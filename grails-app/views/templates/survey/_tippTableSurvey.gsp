@@ -35,7 +35,7 @@
                         <div class="one wide column">
                             <g:if test="${(params.tab == 'allTipps') && (editable && !ieInNewSub && allowedToSelect)}">
                                 <input type="checkbox" name="bulkflag"
-                                       class="bulkcheck la-vertical-centered" ${checkedCache ? checkedCache[tipp.id.toString()] : ''}>
+                                       class="bulkcheck la-js-notOpenAccordion la-vertical-centered" ${checkedCache ? checkedCache[tipp.id.toString()] : ''}>
                             </g:if>
                         </div>
 
