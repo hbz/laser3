@@ -36,18 +36,14 @@ class EscapeService {
      */
     String replaceUmlaute(String input) {
 
-        String result = ''
-
-        if(input) {
-            result = input.replaceAll("ä", "ae")
+        String result = input.replaceAll("ä", "ae")
                     .replaceAll("ö", "oe")
                     .replaceAll("ü", "ue")
                     .replaceAll("ß", "ss")
 
-            result = result.replaceAll("Ä", "Ae")
+        result = result.replaceAll("Ä", "Ae")
                     .replaceAll("Ö", "Oe")
                     .replaceAll("Ü", "Ue")
-        }
 
         result
     }
