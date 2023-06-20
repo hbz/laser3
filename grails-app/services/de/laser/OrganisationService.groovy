@@ -1,12 +1,8 @@
 package de.laser
 
-import de.laser.auth.Role
-import de.laser.auth.User
-import de.laser.config.ConfigMapper
 import de.laser.properties.PropertyDefinition
 import de.laser.remote.ApiSource
 import de.laser.storage.RDStore
-import de.laser.utils.AppUtils
 import de.laser.utils.LocaleUtils
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -21,8 +17,6 @@ class OrganisationService {
     ContextService contextService
     MessageSource messageSource
     ExportService exportService
-    InstAdmService instAdmService
-    UserService userService
     GokbService gokbService
 
     List<String> errors = []

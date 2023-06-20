@@ -741,7 +741,7 @@ class DeletionService {
                 result.deletable = false
             }
 
-            if (user.isLastInstAdmin()) {
+            if (user.isLastInstAdminOf(user.formalOrg)) {
                 result.status = RESULT_CUSTOM
                 result.deletable = false
             }

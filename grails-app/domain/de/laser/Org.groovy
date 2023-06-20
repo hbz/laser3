@@ -702,6 +702,13 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         }
     }
 
+    boolean hasInstAdminEnabled() {
+        List<Long> admins = User.executeQuery(
+                'select u.id from User u where u.formalOrg = :fo and u.formalRole = :fr and u.enabled = true',
+                [fo: this, fr: Role.findByAuthority('INST_ADM')])
+        admins.size() > 0
+    }
+
     /**
      * Checks if there is an institutional administrator registered to this institution
      * @return true if there is at least one user registered as institutional administrator, false otherwise

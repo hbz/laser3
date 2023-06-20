@@ -34,7 +34,6 @@ class LoginController {
   def authenticationTrustResolver
 
     GrailsApplication grailsApplication
-    InstAdmService instAdmService
     SpringSecurityService springSecurityService
     MailSendService mailSendService
 

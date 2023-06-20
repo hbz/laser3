@@ -48,7 +48,6 @@ class OrganisationController  {
     GenericOIDService genericOIDService
     GokbService gokbService
     IdentifierService identifierService
-    InstAdmService instAdmService
     OrganisationControllerService organisationControllerService
     OrganisationService organisationService
     OrgTypeService orgTypeService
@@ -1357,8 +1356,8 @@ class OrganisationController  {
         result.editable = checkIsEditable(result.user, result.orgInstance)
 
         if (! result.editable) {
-            boolean instAdminExists = instAdmService.hasInstAdmin(result.orgInstance)
-            boolean comboCheck = instAdmService.hasInstAdmPivileges(result.user, result.orgInstance, [RDStore.COMBO_TYPE_CONSORTIUM])
+            boolean instAdminExists = (result.orgInstance as Org).hasInstAdminEnabled()
+            boolean comboCheck = userService.hasComboInstAdmPivileges(result.user as User, result.orgInstance as Org, [RDStore.COMBO_TYPE_CONSORTIUM])
 
             result.editable = comboCheck && ! instAdminExists
         }

@@ -117,7 +117,7 @@
     contextUser.isMemberOf(contextOrg)  : ${contextUser.isMemberOf(contextOrg)}
     contextUser.isComboInstAdminOf(contextOrg)  : ${contextUser.isComboInstAdminOf(contextOrg)}
 
-    instAdmService.isUserLastInstAdminForOrg(contextUser, contextOrg) : ${instAdmService.isUserLastInstAdminForOrg(contextUser, contextOrg)}
+    contextUser.isLastInstAdminOf(contextUser.formalOrg) : ${contextUser.isLastInstAdminOf(contextUser.formalOrg)}
 
     SpringSecurityUtils.ifAnyGranted('ROLE_YODA')  : ${SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}
     SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') : ${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}

@@ -206,8 +206,15 @@ class User {
      * Checks if the user is the last INST_ADM of the ${@link Org}s affiliated to
      * @return is the user the last institution admin?
      */
-    boolean isLastInstAdmin() {
-        formalOrg ? BeanStore.getInstAdmService().isUserLastInstAdminForOrg(this, formalOrg) : false
+    boolean isLastInstAdminOf(Org org) {
+        boolean lastInstAdmin = false
+
+        if (org) {
+            List<User> users = executeQuery('select u from User u where u.formalOrg = :fo and u.formalRole = :fr', [fo: org, fr: Role.findByAuthority('INST_ADM')])
+            println users        // todo check
+            lastInstAdmin = (users.size() == 1 && users[0] == this)
+        }
+        lastInstAdmin
     }
 
     /**

@@ -59,7 +59,7 @@
                     <%
                         boolean check = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN');
                         if (! check) {
-                            check = editable && instAdmService.isUserEditableForInstAdm(us, editor);
+                            check = editable && userService.isUserEditableForInstAdm(us, editor);
                         }
                     %>
 
@@ -90,11 +90,10 @@
                         <%
                             boolean check2 = false
                             if (controllerName == 'user') {
-                                // check2 = ! instAdmService.isUserLastInstAdminForAnyOrgInList(us, us.getAffiliationOrgs()); // correct, but expensive
                                 check2 = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN');
                             }
                             else {
-                                check2 = ! instAdmService.isUserLastInstAdminForOrg(us, orgInstance);
+                                check2 = ! us.isLastInstAdminOf(orgInstance);
                             }
                         %>
                         <g:if test="${check2}">

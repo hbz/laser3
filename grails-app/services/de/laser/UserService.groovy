@@ -19,6 +19,7 @@ import org.springframework.validation.FieldError
 @Transactional
 class UserService {
 
+    AccessService accessService
     ContextService contextService
     GenericOIDService genericOIDService
     MessageSource messageSource
@@ -128,10 +129,8 @@ class UserService {
     }
 
     /**
-     * Checks whether the arguments are set to link the given user to the given institution, gets the institution
-     * and formal role objects and hands the call to the {@link InstAdmService} to perform linking
      * @param user the user to link
-     * @param orgId the institution ID to which the user should be linked
+     * @param formalOrgId the institution ID to which the user should be linked
      * @param formalRoleId the ID of the role to attribute to the given user
      * @param flash the message container
      */
@@ -245,5 +244,32 @@ class UserService {
             result = result || userToCheck.hasRoleForOrg(Role.findByAuthority(rot), orgToCheck)
         }
         result
+    }
+
+    // -- todo: check logic
+
+    boolean hasComboInstAdmPivileges(User user, Org org, List<RefdataValue> types) {
+        boolean result = checkAffiliationAndCtxOrg(user, org, 'INST_ADM')
+
+        List<Org> topOrgs = Org.executeQuery(
+                'select c.toOrg from Combo c where c.fromOrg = :org and c.type in (:types)', [org: org, types: types]
+        )
+        topOrgs.each{ top ->
+            if (checkAffiliationAndCtxOrg(user, top as Org, 'INST_ADM')) {
+                result = true
+            }
+        }
+        result
+    }
+
+    // -- todo: check logic
+
+    boolean isUserEditableForInstAdm(User user, User editor) {
+        if (user.formalOrg) {
+            return hasComboInstAdmPivileges(editor, user.formalOrg, [RDStore.COMBO_TYPE_CONSORTIUM])
+        }
+        else {
+            return accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_ADM')
+        }
     }
 }

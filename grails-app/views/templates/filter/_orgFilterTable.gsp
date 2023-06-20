@@ -352,7 +352,7 @@
                 <td class="center aligned">
                     <%
                         String instAdminIcon = '<i class="large red times icon"></i>'
-                        if (instAdmService.hasInstAdmin(org))
+                        if (org.hasInstAdminEnabled())
                             instAdminIcon = '<i class="large green check icon"></i>'
                     %>
                     <g:if test="${contextService.getUser().hasCtxAffiliation_or_ROLEADMIN('INST_ADM')}">

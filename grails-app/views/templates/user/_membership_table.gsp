@@ -28,7 +28,7 @@
                     </td>
                     <td>
                         <%
-                            boolean check = ! instAdmService.isUserLastInstAdminForOrg(userInstance, userInstance.formalOrg) && (
+                            boolean check = ! userInstance.isLastInstAdminOf(userInstance.formalOrg) && (
                                     SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || (
                                         ( userInstance.formalOrg.id == contextService.getOrg().id || userInstance.formalOrg.id in comboOrgIds ) &&
                                                 contextService.getUser().isComboInstAdminOf(userInstance.formalOrg)
@@ -44,7 +44,7 @@
                     </td>
                     <g:if test="${(SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
                         <td class="x">
-                            <g:if test="${! instAdmService.isUserLastInstAdminForOrg(userInstance, userInstance.formalOrg)}">
+                            <g:if test="${! userInstance.isLastInstAdminOf(userInstance.formalOrg)}">
                                     <g:link controller="ajax" action="unsetAffiliation"
                                             params='${[key:"${userInstance.id}:${userInstance.formalOrg.id}:${userInstance.formalRole.id}"]}'
                                             class="ui icon negative button la-modern-button js-open-confirm-modal"
