@@ -20,7 +20,6 @@ class UserController {
     ContextService contextService
     DeletionService deletionService
     GenericOIDService genericOIDService
-    InstAdmService instAdmService
     UserControllerService userControllerService
     UserService userService
     MailSendService mailSendService
@@ -222,12 +221,7 @@ class UserController {
             return
         }
 
-        Org formalOrg   = Org.get(params.org)
-        Role formalRole = Role.get(params.formalRole)
-
-        if (result.user && formalOrg && formalRole) {
-            instAdmService.setAffiliation(result.user as User, formalOrg, formalRole, flash)
-        }
+        userService.setAffiliation(result.user as User, params.org, params.formalRole, flash)
 
         redirect controller: 'user', action: 'edit', id: params.id
     }

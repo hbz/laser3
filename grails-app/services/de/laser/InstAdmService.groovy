@@ -115,33 +115,6 @@ class InstAdmService {
         return (users.size() == 1 && users[0] == user)
     }
 
-    void setAffiliation(User user, Org formalOrg, Role formalRole, def flash) {
-        Locale loc = LocaleUtils.getCurrentLocale()
-        boolean success = false
-
-        try {
-            // TODO - handle formalOrg change
-            if (user && formalOrg && formalRole ) {
-                if (user.formalOrg?.id != formalOrg.id) {
-                    user.formalOrg = formalOrg
-                    user.formalRole = formalRole
-
-                    if (user.save()) {
-                        success = true
-                    }
-                }
-            }
-        }
-        catch (Exception e) {}
-
-        if (success) {
-            flash?.message = messageSource.getMessage('user.affiliation.request.success', null, loc)
-        }
-        else {
-            flash?.error = messageSource.getMessage('user.affiliation.request.failed', null, loc)
-        }
-    }
-
 //    /**
 //     * Links the given user to the given institution with the given role
 //     * @param user the user to link

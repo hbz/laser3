@@ -24,11 +24,11 @@ class ProfileController {
     DeletionService deletionService
     FormService formService
     GenericOIDService genericOIDService
-    InstAdmService instAdmService
     MessageSource messageSource
     def passwordEncoder
     PropertyService propertyService
     RefdataService refdataService
+    UserService userService
 
     /**
      * Call to the current session user's profile
@@ -111,13 +111,9 @@ class ProfileController {
     @Secured(['ROLE_USER'])
     def setAffiliation() {
         log.debug("setAffiliation() org: ${params.formalOrg} role: ${params.formalRole}")
-        User user       = contextService.getUser()
-        Org formalOrg   = Org.get(params.formalOrg)
-        Role formalRole = Role.get(params.formalRole)
 
-        if (user && formalOrg && formalRole) {
-            instAdmService.setAffiliation(user, formalOrg, formalRole, flash)
-        }
+        userService.setAffiliation(contextService.getUser(), params.formalOrg, params.formalRole, flash)
+
         redirect(action: "index")
     }
 

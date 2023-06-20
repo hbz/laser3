@@ -1520,6 +1520,7 @@ class OrganisationController  {
             redirect action: 'editUser', params: [id: params.id, uoid: params.uoid]
             return
         }
+
         userService.setAffiliation(result.user as User, params.org, params.formalRole, flash)
         redirect action: 'editUser', params: [id: params.id, uoid: params.uoid]
     }

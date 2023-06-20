@@ -21,7 +21,6 @@ class UserService {
 
     ContextService contextService
     GenericOIDService genericOIDService
-    InstAdmService instAdmService
     MessageSource messageSource
 
     /**
@@ -112,7 +111,7 @@ class UserService {
                 int existingUserOrgs = User.findAllByFormalOrgAndFormalRole(formalOrg, formalRole).size()
 
 //                instAdmService.createAffiliation(user, formalOrg, formalRole, flash) // TODO refactoring
-                instAdmService.setAffiliation(user, formalOrg, formalRole, flash)
+                setAffiliation(user, formalOrg.id, formalRole.id, flash)
 
                 if (formalRole.authority == 'INST_ADM' && existingUserOrgs == 0 && ! formalOrg.legallyObligedBy) { // only if new instAdm
                     if (user.hasRoleForOrg(formalRole, formalOrg)) { // only on success
@@ -136,12 +135,36 @@ class UserService {
      * @param formalRoleId the ID of the role to attribute to the given user
      * @param flash the message container
      */
-    def setAffiliation(User user, Serializable formalOrgId, Serializable formalRoleId, flash) {
-        Org formalOrg   = Org.get(formalOrgId)
-        Role formalRole = Role.get(formalRoleId)
+    void setAffiliation(User user, Serializable formalOrgId, Serializable formalRoleId, FlashScope flash) {
+        boolean success = false // instAdmService.setAffiliation(user, formalOrg, formalRole, flash)
 
-        if (user && formalOrg && formalRole) {
-            instAdmService.setAffiliation(user, formalOrg, formalRole, flash)
+        try {
+            Org formalOrg   = Org.get(formalOrgId)
+            Role formalRole = Role.get(formalRoleId)
+
+            // TODO - handle formalOrg change
+            if (user && formalOrg && formalRole ) {
+                if (user.formalOrg?.id != formalOrg.id) {
+                    user.formalOrg = formalOrg
+                    user.formalRole = formalRole
+
+                    if (user.save()) {
+                        success = true
+                    }
+                }
+            }
+        }
+        catch (Exception e) {}
+
+        if (flash) {
+            Locale loc = LocaleUtils.getCurrentLocale()
+
+            if (success) {
+                flash.message = messageSource.getMessage('user.affiliation.request.success', null, loc)
+            }
+            else {
+                flash.error = messageSource.getMessage('user.affiliation.request.failed', null, loc)
+            }
         }
     }
 
