@@ -44,7 +44,7 @@
             --%>
         </ui:exportDropdown>
 
-            <g:if test="${accessService.ctxPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC ) || accessService.is_ORG_COM_EDITOR()}">
+            <g:if test="${accessService.is_ORG_COM_EDITOR()}">
                 <ui:actionsDropdown>
                     <ui:actionsDropdownItem controller="organisation" action="findProviderMatches" message="org.create_new_provider.label"/>
                 </ui:actionsDropdown>

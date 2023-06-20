@@ -154,6 +154,7 @@
                 </g:if>
                 <g:else>
                     <g:render template="/templates/export/individuallyExportFormGrid" model="[fields: fields]"/>
+                    <br/>
                 </g:else>
 
                 <g:if test="${fields.key.contains('Contacts') && contactSwitch == true}">
