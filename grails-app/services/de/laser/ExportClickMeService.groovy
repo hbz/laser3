@@ -3486,13 +3486,7 @@ class ExportClickMeService {
                     else _setOrgFurtherInformation(result, row, fieldKey, format, null, 'public')
                 }
                 else if (fieldKey.contains('Address.')) {
-                    if(contactSources) {
-                        contactSources.each { String contactSwitch ->
-                            _setOrgFurtherInformation(result, row, fieldKey, format)
-                        }
-                    }
-                    else
-                        _setOrgFurtherInformation(result, row, fieldKey, format)
+                    _setOrgFurtherInformation(result, row, fieldKey, format)
                 }
                 /*else if (fieldKey.contains('billingContact')) {
                     if(contactSources) {
