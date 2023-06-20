@@ -713,8 +713,8 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      * Checks if there is an institutional administrator registered to this institution
      * @return true if there is at least one user registered as institutional administrator, false otherwise
      */
-    boolean hasAccessOrg(){
-        if (User.findAllByFormalOrgAndFormalRole(this, Role.findByAuthority('INST_ADM'))) { // todo check
+    boolean hasInstAdmin(){
+        if (User.findAllByFormalOrgAndFormalRole(this, Role.findByAuthority('INST_ADM'))) {
             return true
         }
         else {
@@ -726,7 +726,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      * Lists all users affiliated to this institution
      * @return a {@link List} of {@link User}s associated to this institution; grouped by administrators, editors and users (with reading permissions only)
      */
-    Map<String, Object> hasAccessOrgListUser(){
+    Map<String, Object> getUserMap(){
         Map<String, Object> result = [
                 instAdms:       User.findAllByFormalOrgAndFormalRole(this, Role.findByAuthority('INST_ADM')),
                 instEditors:    User.findAllByFormalOrgAndFormalRole(this, Role.findByAuthority('INST_EDITOR')),

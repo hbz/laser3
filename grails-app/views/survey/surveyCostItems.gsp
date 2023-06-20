@@ -200,7 +200,7 @@
                     <h3 class="ui header"><g:message code="surveyParticipants.hasAccess"/></h3>
 
                     <g:set var="surveyParticipantsHasAccess"
-                           value="${selectedSubParticipants?.findAll { it.hasAccessOrg() }}"/>
+                           value="${selectedSubParticipants?.findAll { it.hasInstAdmin() }}"/>
 
                     <div class="four wide column">
                     <g:if test="${surveyParticipantsHasAccess}">
@@ -224,7 +224,7 @@
                     <h3 class="ui header"><g:message code="surveyParticipants.hasNotAccess"/></h3>
 
                     <g:set var="surveyParticipantsHasNotAccess"
-                           value="${selectedSubParticipants?.findAll { !it.hasAccessOrg() }}"/>
+                           value="${selectedSubParticipants?.findAll { !it.hasInstAdmin() }}"/>
 
                     <div class="four wide column">
                     <g:if test="${surveyParticipantsHasNotAccess}">
@@ -254,7 +254,7 @@
 
 
                     <g:set var="surveyParticipantsHasAccess"
-                           value="${selectedParticipants?.findAll { it.hasAccessOrg() }}"/>
+                           value="${selectedParticipants?.findAll { it.hasInstAdmin() }}"/>
 
                     <div class="four wide column">
                     <g:if test="${surveyParticipantsHasAccess}">
@@ -279,7 +279,7 @@
                     <h3 class="ui header"><g:message code="surveyParticipants.hasNotAccess"/></h3>
 
                     <g:set var="surveyParticipantsHasNotAccess"
-                           value="${selectedParticipants?.findAll { !it.hasAccessOrg() }}"/>
+                           value="${selectedParticipants?.findAll { !it.hasInstAdmin() }}"/>
 
                     <div class="four wide column">
                     <g:if test="${surveyParticipantsHasNotAccess}">

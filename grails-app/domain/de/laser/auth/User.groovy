@@ -180,6 +180,25 @@ class User {
     }
 
     /**
+     * Checks if the user is the last INST_ADM of the ${@link Org}s affiliated to
+     * @return is the user the last institution admin?
+     */
+    boolean isLastInstAdminOf(Org org) {
+        boolean lastInstAdmin = false
+
+        if (org) {
+            List<User> users = executeQuery('select u from User u where u.formalOrg = :fo and u.formalRole = :fr', [fo: org, fr: Role.findByAuthority('INST_ADM')])
+            println users        // todo check
+            lastInstAdmin = (users.size() == 1 && users[0] == this)
+        }
+        lastInstAdmin
+    }
+
+    boolean isYoda() {
+        getAuthorities().authority.contains('ROLE_YODA')
+    }
+
+    /**
      * Checks if the user has the given affiliation granted. To be used with one of the INST_ role constants
      * @param instUserRole the INST_-role to check for
      * @return does the user have the given INST_-role granted?
@@ -196,25 +215,6 @@ class User {
      */
     boolean hasOrgAffiliation_or_ROLEADMIN(Org orgToCheck, String instUserRole) {
         BeanStore.getUserService().checkAffiliation_or_ROLEADMIN(this, orgToCheck, instUserRole)
-    }
-
-    boolean isYoda() {
-        getAuthorities().authority.contains('ROLE_YODA')
-    }
-
-    /**
-     * Checks if the user is the last INST_ADM of the ${@link Org}s affiliated to
-     * @return is the user the last institution admin?
-     */
-    boolean isLastInstAdminOf(Org org) {
-        boolean lastInstAdmin = false
-
-        if (org) {
-            List<User> users = executeQuery('select u from User u where u.formalOrg = :fo and u.formalRole = :fr', [fo: org, fr: Role.findByAuthority('INST_ADM')])
-            println users        // todo check
-            lastInstAdmin = (users.size() == 1 && users[0] == this)
-        }
-        lastInstAdmin
     }
 
     /**
