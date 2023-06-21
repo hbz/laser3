@@ -776,7 +776,7 @@ class ExportService {
         }
 		//reportTypes.each { String reportType ->
 		Set<String> columnHeaders = []
-		SortedSet<String> monthHeaders = new TreeSet<String>()
+		Set<String> monthHeaders = []
 		Map<Long, Map> titleRows = [:]
 		Map<String, Object> sumsPerYOP
 		int rowno = 0
