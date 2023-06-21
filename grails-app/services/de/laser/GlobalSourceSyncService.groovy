@@ -886,7 +886,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 else if(!(updatedTIPP.status in [RDStore.TIPP_STATUS_REMOVED.value, PERMANENTLY_DELETED])) {
                     Package pkg = packagesOnPage.get(updatedTIPP.packageUUID)
                     if(pkg)
-                        addNewTIPP(pkg, updatedTIPP, platformsOnPage)
+                        newTitles << addNewTIPP(pkg, updatedTIPP, platformsOnPage)
                 }
                 if(source.rectype == RECTYPE_TIPP) {
                     Date lastUpdatedTime = DateUtils.parseDateGeneric(tipp.lastUpdatedDisplay)

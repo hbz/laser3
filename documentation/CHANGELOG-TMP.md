@@ -7,11 +7,13 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-5142    19.06.2023  rc-3.1  3.1.3       Moe     Bug         Übertrag Teilnehmer
+5146    19.06.2023  rc-3.1  3.1.3       David   Feature     URL-Auflösung für we:kb-IDs ermöglichen
 
 5145    19.06.2023  rc-3.1  3.1.3       Andreas Bug         Export der Identifier bei Titelexport griff nicht
 
-5146    19.06.2023  rc-3.1  3.1.3       David   Feature     URL-Auflösung für we:kb-IDs ermöglichen
+5144    19.06.2023  rc-3.1  3.1.3       Andreas Bug         Überprüfung und Korrektur von Synchronisationsabläufen und Bereinigungsmethoden
+
+5142    19.06.2023  rc-3.1  3.1.3       Moe     Bug         Übertrag Teilnehmer
 
 5139    16.06.2023  rc-3.1  3.1.3       Moe     Bug         Titel hinzufügen: Nur 1 oder alle Titel möglich
 

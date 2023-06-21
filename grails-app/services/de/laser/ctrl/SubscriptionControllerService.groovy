@@ -2157,15 +2157,9 @@ class SubscriptionControllerService {
         result.package = Package.get(params.package)
         Locale locale = LocaleUtils.getCurrentLocale()
         if(params.confirmed) {
-            Set<Subscription> childSubs = Subscription.findAllByInstanceOf(result.subscription)
-            boolean unlinkErrorChild = false
-            childSubs.each { Subscription child ->
-                if(!packageService.unlinkFromSubscription(result.package, child, result.institution, true)) {
-                    unlinkErrorChild = true
-                    return
-                }
-            }
-            if(!unlinkErrorChild && packageService.unlinkFromSubscription(result.package, result.subscription, result.institution, true)){
+            Set<Subscription> subList = [result.subscription]
+            subList.addAll(Subscription.findAllByInstanceOf(result.subscription))
+            if(packageService.unlinkFromSubscription(result.package, subList.id, result.institution, true)){
                 result.message = messageSource.getMessage('subscription.details.unlink.successfully',null,locale)
                 [result:result,status:STATUS_OK]
             }else {
@@ -2733,7 +2727,7 @@ class SubscriptionControllerService {
                         }
 
                         if (colMap.titleUrlCol >= 0 && !cols[colMap.titleUrlCol]?.trim()?.isEmpty()) {
-                            titleUrl = cols[colMap.titleUrlCol]
+                            titleUrl = cols[colMap.titleUrlCol].replace("\r", "")
                         }
 
                         if (!titleUrl && ((colMap.zdbCol >= 0 && cols[colMap.zdbCol].trim().isEmpty()) || colMap.zdbCol < 0) &&
@@ -2772,7 +2766,7 @@ class SubscriptionControllerService {
                              */
 
 
-                            if (titleIdentifierMap.containsKey(idCandidate.value.replace("\r", "")) || titleIdentifierMap.containsKey(titleUrl)) {
+                            if ((idCandidate.value && titleIdentifierMap.containsKey(idCandidate.value.replace("\r", ""))) || titleIdentifierMap.containsKey(titleUrl)) {
                                 String tippKey = titleIdentifierMap.containsKey(titleUrl) ? titleIdentifierMap.get(titleUrl) : titleIdentifierMap.get(idCandidate.value.replace("\r", ""))
                                 //is title already added?
                                 if (addedTipps.contains(tippKey)) {
@@ -2864,7 +2858,7 @@ class SubscriptionControllerService {
                             ieCoverages.add(covStmt)
                             ieCandidate.coverages = ieCoverages
                         }
-                        if(result.subscription) {
+                        if(result.subscription && match) {
                             boolean participantPerpetualAccessToTitle = surveyService.hasParticipantPerpetualAccessToTitle3(result.subscriber, match)
                             if(!participantPerpetualAccessToTitle) {
                                 issueEntitlementOverwrite[match.gokbId] = ieCandidate

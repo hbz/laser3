@@ -131,6 +131,10 @@ class PackageService {
 
     }
 
+    boolean unlinkFromSubscription(de.laser.Package pkg, Subscription subscription, Org contextOrg, deletePackage) {
+        unlinkFromSubscription(pkg, [subscription.id], contextOrg, deletePackage)
+    }
+
     /**
      * Unlinks a subscription from the given package and removes resp. marks as delete every dependent object from that link such as cost items, pending change configurations etc.
      * The unlinking can be done iff no cost items are linked to the (subscription) package
@@ -139,13 +143,11 @@ class PackageService {
      * @param deletePackage should the package be unlinked, too?
      * @return true if the unlink was successful, false otherwise
      */
-    boolean unlinkFromSubscription(de.laser.Package pkg, Subscription subscription, Org contextOrg, deletePackage) {
-        SubscriptionPackage subPkg = SubscriptionPackage.findByPkgAndSubscription(pkg, subscription)
+    boolean unlinkFromSubscription(de.laser.Package pkg, List<Long> subList, Org contextOrg, deletePackage) {
 
         //Not Exist CostItem with Package
-        if(!CostItem.executeQuery('select ci from CostItem ci where ci.subPkg.subscription = :sub and ci.subPkg.pkg = :pkg and ci.owner = :context and ci.costItemStatus != :deleted',[pkg:pkg, deleted: RDStore.COST_ITEM_DELETED, sub:subscription, context: contextOrg])) {
+        if(!CostItem.executeQuery('select ci from CostItem ci where ci.subPkg.subscription.id in (:subIds) and ci.subPkg.pkg = :pkg and ci.owner = :context and ci.costItemStatus != :deleted',[pkg:pkg, deleted: RDStore.COST_ITEM_DELETED, subIds: subList, context: contextOrg])) {
 
-            List<Long> subList = [subscription.id]
             Map<String,Object> queryParams = [sub: subList, pkg_id: pkg.id]
             //delete matches
             //IssueEntitlement.withSession { Session session ->
