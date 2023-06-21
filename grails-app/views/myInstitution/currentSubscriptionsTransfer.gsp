@@ -49,6 +49,10 @@
                                   title="${message(code: 'subscription.offerAccepted.label')}" rowspan="2" scope="col"/>
 
                 <th scope="col" rowspan="2" class="center aligned">
+                    ${message(code: 'subscription.priceIncreaseInfo.label')}
+                </th>
+
+                <th scope="col" rowspan="2" class="center aligned">
                     ${message(code: 'survey.label')}
                 </th>
 
@@ -230,6 +234,10 @@
                     <td>
                         <ui:xEditableBoolean owner="${s}" field="offerAccepted"/>
                     </td>
+                    <td>
+                        <ui:xEditable owner="${s}" field="priceIncreaseInfo" type="textarea"/>
+                    </td>
+
                     <g:set var="surveyConfig"
                            value="${SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(s, true)}"/>
                     <g:set var="surveyClass" value=""/>
@@ -381,14 +389,14 @@
         </table>
     </g:if>
     <g:else>
-        <g:if test="${filterSet}">
+       %{-- <g:if test="${filterSet}">
             <br/><strong><g:message code="filter.result.empty.object"
                                     args="${[message(code: "subscription.plural")]}"/></strong>
         </g:if>
-        <g:else>
+        <g:else>--}%
             <br/><strong><g:message code="result.empty.object"
                                     args="${[message(code: "subscription.plural")]}"/></strong>
-        </g:else>
+        %{--</g:else>--}%
     </g:else>
 
 </div>

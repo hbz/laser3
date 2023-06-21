@@ -4482,7 +4482,7 @@ join sub.orgRelations or_sub where
 
         params.referenceYears = params.referenceYears ?: currentYear
 
-        result.putAll(subscriptionService.getMySubscriptions(params,result.user,result.institution))
+        result.putAll(subscriptionService.getMySubscriptionTransfer(params,result.user,result.institution))
 
         result
     }
