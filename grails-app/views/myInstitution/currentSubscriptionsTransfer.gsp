@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.interfaces.CalculatedType;de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.Subscription; de.laser.Subscription; de.laser.survey.SurveyConfig;" %>
 
 <laser:htmlStart message="menu.my.currentSubscriptionsTransfer" serviceInjection="true" />
 
@@ -66,7 +66,7 @@
 
                     <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}" property="s.offerRequestedDate" title="${message(code: 'subscription.offerRequestedDate.label')}"/>
 
-                    <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}" property="s.offerRequestedDate" title="${message(code: 'subscription.renewalSentDate.label')}"/>
+                    <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}" property="s.renewalSentDate" title="${message(code: 'subscription.renewalSentDate.label')}"/>
                 </tr>
                 </thead>
                 <tbody>
@@ -113,7 +113,44 @@
                             <g:formatDate formatName="default.date.format.notime" date="${s.manualCancellationDate}"/>
                         </td>
                         <td>
+                            <ui:xEditableBoolean owner="${s}" field="offerRequested"/>
+                            <br/>
+                            <ui:xEditable owner="${s}" field="offerRequestedDate" type="date"
+                                          validation="datesCheck"/>
+                        </td>
+                        <td>
+                            <ui:xEditable owner="${s}" field="offerNote"/>
+                        </td>
+                        <td>
+                            <ui:xEditableBoolean owner="${s}" field="offerAccepted"/>
+                        </td>
+                        <td>
+                            <g:set var="surveyConfig" value="${SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(s, true)}"/>
+                            <g:if test="${surveyConfig}">
+                                <span>
+                                    <g:formatDate formatName="default.date.format.notime" date="${surveyConfig.surveyInfo.startDate}"/><br/>
+                                    <span class="la-secondHeaderRow" data-label="${message(code: 'default.endDate.label')}:"><g:formatDate formatName="default.date.format.notime" date="${surveyConfig.surveyInfo.endDate}"/></span>
+                                </span>
 
+                            </g:if>
+                        </td>
+                        <td>
+
+                        </td>
+
+                        <td>
+
+                        </td>
+
+                        <td>
+                            <ui:xEditableBoolean owner="${s}" field="renewalSent"/>
+                            <br/>
+                            <ui:xEditable owner="${s}" field="renewalSentDate" type="date"
+                                          validation="datesCheck"/>
+                        </td>
+
+                        <td>
+                            <ui:xEditableBoolean owner="${s}" field="participantTransferWithSurvey"/>
                         </td>
                     </tr>
                 </g:each>

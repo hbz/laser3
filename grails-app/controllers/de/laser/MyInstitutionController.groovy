@@ -4478,7 +4478,7 @@ join sub.orgRelations or_sub where
         SimpleDateFormat sdfyear = DateUtils.getSDF_yyyy()
         String currentYear = sdfyear.format(new Date())
 
-        params.sort = params.sort ?: 'providerAgency'
+        //params.sort = params.sort ?: 'providerAgency'
 
         params.referenceYears = params.referenceYears ?: currentYear
 
