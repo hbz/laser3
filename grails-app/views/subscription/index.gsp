@@ -1,4 +1,5 @@
 <%@ page import="de.laser.IssueEntitlementCoverage; de.laser.titles.JournalInstance; de.laser.titles.BookInstance; de.laser.remote.ApiSource; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Package; de.laser.RefdataCategory; de.laser.storage.RDConstants" %>
+
 <laser:htmlStart message="subscription.details.current_ent" serviceInjection="true"/>
 
 <laser:render template="breadcrumb" model="${[params: params]}"/>
@@ -16,7 +17,8 @@
     </h1>
 </g:if>
 
-<ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}">
+<g:set var="visibleOrgRelationsJoin" value="${visibleOrgRelations.findAll{it.roleType != RDStore.OR_SUBSCRIPTION_CONSORTIA}.sort{it.org.sortname}.collect{it.org}.join(' – ')}"/>
+<ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}" visibleOrgRelationsJoin="${visibleOrgRelationsJoin}">
     <g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
         <laser:render template="iconSubscriptionIsChild"/>
     </g:if>
