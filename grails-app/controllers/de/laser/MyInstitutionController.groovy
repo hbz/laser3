@@ -4468,5 +4468,24 @@ join sub.orgRelations or_sub where
         }
     }
 
+    @DebugInfo(ctxInstUserCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @Secured(closure = {
+        ctx.accessService.ctxInstUserCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+    })
+    def currentSubscriptionsTransfer() {
+        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
+
+        SimpleDateFormat sdfyear = DateUtils.getSDF_yyyy()
+        String currentYear = sdfyear.format(new Date())
+
+        //params.sort = params.sort ?: 'providerAgency'
+
+        params.referenceYears = params.referenceYears ?: currentYear
+
+        result.putAll(subscriptionService.getMySubscriptions(params,result.user,result.institution))
+
+        result
+    }
+
 
 }

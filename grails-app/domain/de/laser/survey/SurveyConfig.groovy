@@ -726,5 +726,27 @@ class SurveyConfig {
 
     }
 
+    Integer countOrgsWithTermination(){
+        Integer countOrgsWithTermination = 0
+        List<Org> orgNotInsertedItselfList = SurveyOrg.executeQuery("select surOrg.org from SurveyOrg as surOrg where surOrg.surveyConfig = :surveyConfig and surOrg.orgInsertedItself = false", [surveyConfig: this])
+
+        String queryOrgsWithTermination = 'select count(id) from SurveyResult where owner.id = :owner and surveyConfig.id = :surConfig and type.id = :surProperty and refValue = :refValue  '
+        Map queryMapOrgsWithTermination = [
+                owner      : this.surveyInfo.owner.id,
+                surProperty: PropertyStore.SURVEY_PROPERTY_PARTICIPATION.id,
+                surConfig  : this.id,
+                refValue   : RDStore.YN_NO]
+
+        if(orgNotInsertedItselfList.size() > 0){
+            queryOrgsWithTermination += ' and participant in (:orgNotInsertedItselfList) '
+            queryMapOrgsWithTermination.orgNotInsertedItselfList = orgNotInsertedItselfList
+        }
+
+        //Orgs with termination there sub
+        countOrgsWithTermination = SurveyResult.executeQuery(queryOrgsWithTermination, queryMapOrgsWithTermination)[0]
+
+        return countOrgsWithTermination
+    }
+
 
 }
