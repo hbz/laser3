@@ -39,7 +39,7 @@
                                       noSelection="${['': message(code: 'default.select.choose.label')]}"
                                       onchange="JSPC.app.adjustDropdown()"/>
                     </div><br/>
-                    <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
+                    <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
                         <div class="ui checkbox">
                             <g:checkBox name="show.subscriber" value="true" checked="false"
                                         onchange="JSPC.app.adjustDropdown()"/>
@@ -67,7 +67,7 @@
                                       noSelection="${['': message(code: 'default.select.choose.label')]}"
                                       onchange="JSPC.app.adjustDropdown()"/>
                     </div><br/>
-                    <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
+                    <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
                         <div class="ui checkbox">
                             <g:checkBox name="show.subscriber" value="true" checked="false"
                                         onchange="JSPC.app.adjustDropdown()"/>

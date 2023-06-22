@@ -34,7 +34,7 @@
                             ${message(code: 'myinst.currentSubscriptions.subscription_type', default: RDConstants.SUBSCRIPTION_TYPE)}
                         </th>
                         */ %>
-                        <g:if test="${params.orgRole in ['Subscriber'] && accessService.ctxPerm(CustomerTypeService.ORG_INST_BASIC)}">
+                        <g:if test="${params.orgRole in ['Subscriber'] && contextService.hasPerm(CustomerTypeService.ORG_INST_BASIC)}">
                             <th scope="col" rowspan="2" >${message(code: 'consortium')}</th>
                         </g:if>
                         <g:elseif test="${params.orgRole == 'Subscriber'}">
@@ -165,7 +165,7 @@
                         </td>--%>
                         <g:if test="${params.orgRole == 'Subscriber'}">
                             <td>
-                                <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_INST_BASIC)}">
+                                <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_INST_BASIC)}">
                                     ${s.getConsortia()?.name}
                                 </g:if>
                             </td>

@@ -3217,7 +3217,7 @@ class SurveyController {
 
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         result.institution = contextService.getOrg()
-        if (!(result || accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_PRO))) {
+        if (!(result || contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_PRO))) {
             response.sendError(401); return
         }
 
@@ -3268,7 +3268,7 @@ class SurveyController {
      def processRenewalWithSurvey() {
 
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
-        if (!(result || accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_PRO))) {
+        if (!(result || contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_PRO))) {
             response.sendError(401); return
         }
 
@@ -3669,7 +3669,7 @@ class SurveyController {
         result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
 
         result.superOrgType = []
-        if(accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)) {
+        if(contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)) {
             result.superOrgType << message(code:'consortium.superOrgType')
         }
 
@@ -4429,7 +4429,7 @@ class SurveyController {
         Org institution = contextService.getOrg()
         Subscription memberSub
 
-        if (accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)) {
+        if (contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)) {
 
                 License licenseCopy
 
@@ -4483,7 +4483,7 @@ class SurveyController {
                 }
 
                 if (memberSub) {
-                    if(accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)) {
+                    if(contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)) {
 
                         new OrgRole(org: org, sub: memberSub, roleType: RDStore.OR_SUBSCRIBER_CONS).save()
                         new OrgRole(org: institution, sub: memberSub, roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA).save()

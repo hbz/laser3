@@ -23,7 +23,7 @@ class LicenseService {
         List<License> result = []
         List tmpQ // [String, Map<String, Object>]
 
-        if(accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+        if(contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
             tmpQ = getLicensesConsortiaQuery(params)
             result.addAll(License.executeQuery("select l " + tmpQ[0], tmpQ[1]))
 
@@ -49,7 +49,7 @@ class LicenseService {
         List<License> result = []
         List tmpQ // [String, Map<String, Object>]
 
-        if(accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+        if(contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
             tmpQ = getLicensesConsortiaQuery(params)
             result.addAll(License.executeQuery("select l " + tmpQ[0], tmpQ[1]))
 

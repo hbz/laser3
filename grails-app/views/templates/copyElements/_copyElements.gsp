@@ -133,7 +133,7 @@
                 </tr>
             </g:each>
 
-            <g:if test="${copyObject && accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && sourceObject.hasProperty("instanceOf") && sourceObject instanceof Subscription}">
+            <g:if test="${copyObject && contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && sourceObject.hasProperty("instanceOf") && sourceObject instanceof Subscription}">
                 <tr>
                     <td>
                         <div>
@@ -161,7 +161,7 @@
                 </tr>
             </g:if>
 
-            <g:if test="${copyObject && accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && sourceObject.hasProperty("instanceOf") && sourceObject instanceof License}">
+            <g:if test="${copyObject && contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && sourceObject.hasProperty("instanceOf") && sourceObject instanceof License}">
                 <tr>
                     <td>
                         <div>
