@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5153    22.06.2023  rc-3.1  3.1.4       Moe     Bug         Export einer Einrichtungsliste mit Zugangskonfigurationen
+
 5150    21.06.2023  rc-3.1  3.1.4       Andreas Bug         falsche Sortierung der Tabellenüberschriften
 
 5146    19.06.2023  rc-3.1  3.1.3       David   Feature     URL-Auflösung für we:kb-IDs ermöglichen
