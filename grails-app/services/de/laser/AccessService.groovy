@@ -40,7 +40,8 @@ class AccessService {
      */
     @Deprecated
     boolean ctxPermAffiliation(String orgPerms, String instUserRole) {
-        _hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(orgPerms.split(','), instUserRole)
+        contextService.hasAffiliationX(orgPerms, instUserRole)
+        // _hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(orgPerms.split(','), instUserRole)
     }
 
     /**
