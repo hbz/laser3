@@ -273,13 +273,7 @@ class SurveyController {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = contextService.getUser()
-
-        result.editable = contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
-
-        if (!result.editable) {
-            flash.error = g.message(code: "default.notAutorized.message")
-            redirect(url: request.getHeader('referer'))
-        }
+        result.editable = true
 
         result
     }
@@ -296,13 +290,7 @@ class SurveyController {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = contextService.getUser()
-
-        result.editable = contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
-
-        if (!result.editable) {
-            flash.error = g.message(code: "default.notAutorized.message")
-            redirect(url: request.getHeader('referer'))
-        }
+        result.editable = true
 
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         Date startDate = params.startDate ? sdf.parse(params.startDate) : null
@@ -377,12 +365,7 @@ class SurveyController {
             date_restriction = sdf.parse(params.validOn)
         }
 
-        result.editable = contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
-
-        if (!result.editable) {
-            flash.error = g.message(code: "default.notAutorized.message")
-            redirect(url: request.getHeader('referer'))
-        }
+        result.editable = true
 
         if (!params.status) {
             if (params.isSiteReloaded != "yes") {
@@ -462,12 +445,7 @@ class SurveyController {
             date_restriction = sdf.parse(params.validOn)
         }
 
-        result.editable = contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
-
-        if (!result.editable) {
-            flash.error = g.message(code: "default.notAutorized.message")
-            redirect(url: request.getHeader('referer'))
-        }
+        result.editable = true
 
         if (!params.status) {
             if (params.isSiteReloaded != "yes") {
@@ -536,13 +514,7 @@ class SurveyController {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = contextService.getUser()
-
-        result.editable = contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
-
-        if (!result.editable) {
-            flash.error = g.message(code: "default.notAutorized.message")
-            redirect(url: request.getHeader('referer'))
-        }
+        result.editable = true
 
         result.subscription = Subscription.get(Long.parseLong(params.sub))
         if (!result.subscription) {
@@ -567,13 +539,7 @@ class SurveyController {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = contextService.getUser()
-
-        result.editable = contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
-
-        if (!result.editable) {
-            flash.error = g.message(code: "default.notAutorized.message")
-            redirect(url: request.getHeader('referer'))
-        }
+        result.editable = true
 
         result.subscription = Subscription.get(Long.parseLong(params.sub))
         result.pickAndChoose = true
@@ -598,13 +564,8 @@ class SurveyController {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = contextService.getUser()
+        result.editable = true
 
-        result.editable = contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
-
-        if (!result.editable) {
-            flash.error = g.message(code: "default.notAutorized.message")
-            redirect(url: request.getHeader('referer'))
-        }
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         Date startDate = params.startDate ? sdf.parse(params.startDate) : null
         Date endDate = params.endDate ? sdf.parse(params.endDate) : null
@@ -692,13 +653,8 @@ class SurveyController {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = contextService.getUser()
+        result.editable = true
 
-        result.editable = contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
-
-        if (!result.editable) {
-            flash.error = g.message(code: "default.notAutorized.message")
-            redirect(url: request.getHeader('referer'))
-        }
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         Date startDate = params.startDate ? sdf.parse(params.startDate) : null
         Date endDate = params.endDate ? sdf.parse(params.endDate) : null
@@ -2196,16 +2152,9 @@ class SurveyController {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = contextService.getUser()
-
-        result.editable = contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
-
-        if (!result.editable) {
-            flash.error = g.message(code: "default.notAutorized.message")
-            redirect(url: request.getHeader('referer'))
-        }
+        result.editable = true
 
         SurveyConfigProperties surveyConfigProp = SurveyConfigProperties.get(params.id)
-
         SurveyInfo surveyInfo = surveyConfigProp.surveyConfig.surveyInfo
 
         result.editable = (surveyInfo && surveyInfo.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
@@ -2239,13 +2188,7 @@ class SurveyController {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = contextService.getUser()
-
-        result.editable = contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
-
-        if (!result.editable) {
-            flash.error = g.message(code: "default.notAutorized.message")
-            redirect(url: request.getHeader('referer'))
-        }
+        result.editable = true
 
         PropertyDefinition surveyProperty = PropertyDefinition.findWhere(
                 name: params.pd_name,
@@ -2301,13 +2244,7 @@ class SurveyController {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = contextService.getUser()
-
-        result.editable = contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
-
-        if (!result.editable) {
-            flash.error = g.message(code: "default.notAutorized.message")
-            redirect(url: request.getHeader('referer'))
-        }
+        result.editable = true
 
         PropertyDefinition surveyProperty = PropertyDefinition.findByIdAndTenant(params.deleteId, result.institution)
 
@@ -2334,13 +2271,7 @@ class SurveyController {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
         result.user = contextService.getUser()
-
-        result.editable = contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
-
-        if (!result.editable) {
-            flash.error = g.message(code: "default.notAutorized.message")
-            redirect(url: request.getHeader('referer'))
-        }
+        result.editable = true
 
         SurveyConfig surveyConfig = SurveyConfig.get(params.surveyConfigID)
         SurveyInfo surveyInfo = surveyConfig.surveyInfo
@@ -3045,12 +2976,7 @@ class SurveyController {
                 date_restriction = sdf.parse(params.validOn)
             }
 
-            result.editable = contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
-
-            if (!result.editable) {
-                flash.error = g.message(code: "default.notAutorized.message")
-                redirect(url: request.getHeader('referer'))
-            }
+            result.editable = true
 
             if (!params.status) {
                 if (params.isSiteReloaded != "yes") {
