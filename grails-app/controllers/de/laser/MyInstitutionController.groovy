@@ -2502,7 +2502,7 @@ class MyInstitutionController  {
         }
 
         if (result.user) {
-            if (result.user.formalOrg && (! result.user.isFormal())) {
+            if (result.user.formalOrg && (! (result.user as User).isFormal(contextService.getOrg()))) {
                 flash.error = message(code: 'user.delete.error.foreignOrg') as String
                 redirect action: 'editUser', params: [uoid: params.uoid]
                 return
@@ -2511,10 +2511,10 @@ class MyInstitutionController  {
             if (params.process && result.editable) {
                 User userReplacement = (User) genericOIDService.resolveOID(params.userReplacement)
 
-                result.delResult = deletionService.deleteUser(result.user, userReplacement, false)
+                result.delResult = deletionService.deleteUser(result.user as User, userReplacement, false)
             }
             else {
-                result.delResult = deletionService.deleteUser(result.user, null, DeletionService.DRY_RUN)
+                result.delResult = deletionService.deleteUser(result.user as User, null, DeletionService.DRY_RUN)
             }
 
             result.substituteList = User.executeQuery(

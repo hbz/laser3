@@ -21,7 +21,7 @@
         %>
 
         <g:if test="${userInstance.formalOrg}">
-            <g:if test="${controllerName == 'profile' || (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || (userInstance.isFormal()) || (userInstance.formalOrg.id in comboOrgIds))}">
+            <g:if test="${controllerName == 'profile' || (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || (userInstance.isFormal(contextService.getOrg())) || (userInstance.formalOrg.id in comboOrgIds))}">
                 <tr>
                     <td>
                         <g:link controller="organisation" action="show" id="${userInstance.formalOrg.id}">${userInstance.formalOrg.name}</g:link>
@@ -30,7 +30,7 @@
                         <%
                             boolean check = ! userInstance.isLastInstAdminOf(userInstance.formalOrg) && (
                                     SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || (
-                                        ( userInstance.isFormal() || userInstance.formalOrg.id in comboOrgIds ) &&
+                                        ( userInstance.isFormal(contextService.getOrg()) || userInstance.formalOrg.id in comboOrgIds ) &&
                                                 contextService.getUser().isComboInstAdminOf(userInstance.formalOrg)
                                     )
                             )

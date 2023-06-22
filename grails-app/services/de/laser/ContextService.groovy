@@ -27,7 +27,7 @@ class ContextService {
         // todo
 
         try {
-            def context = getUser()?.formalOrg
+            Org context = getUser()?.formalOrg
             if (context) {
                 return (Org) GrailsHibernateUtil.unwrapIfProxy(context)
             }
@@ -77,6 +77,9 @@ class ContextService {
     // -- Context checks -- user.formalOrg based perm/role checks - all withFakeRole --
     // TODO - refactoring
 
+    /**
+     * Permission check (granted by customer type) for the current context org.
+     */
     boolean hasPerm(String orgPerms) {
         accessService.ctxPerm(orgPerms)
     }

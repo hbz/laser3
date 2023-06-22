@@ -146,9 +146,6 @@ class User {
         display ? display : username
     }
 
-    boolean isFormal() {
-        formalOrg?.id == BeanStore.getContextService().getOrg().id
-    }
     boolean isFormal(Role role) {
         isFormal(role, BeanStore.getContextService().getOrg())
     }
@@ -189,6 +186,9 @@ class User {
         lastInstAdmin
     }
 
+    boolean isAdmin() {
+        getAuthorities().authority.contains('ROLE_ADMIN')
+    }
     boolean isYoda() {
         getAuthorities().authority.contains('ROLE_YODA')
     }
