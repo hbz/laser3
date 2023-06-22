@@ -47,7 +47,7 @@ class MailController {
             switch (result.objectType) {
                 case SurveyInfo.class.name:
 
-                    result.editable = accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+                    result.editable = contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
 
                     if (!result.editable) {
                         flash.error = g.message(code: "default.notAutorized.message")
@@ -154,7 +154,7 @@ class MailController {
 
             switch (params.objectType) {
                 case SurveyInfo.class.name:
-                    result.editable = accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+                    result.editable = contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
 
                     if (!result.editable) {
                         flash.error = g.message(code: "default.notAutorized.message")

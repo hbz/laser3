@@ -82,38 +82,34 @@ class ContextService {
      * Permission check (granted by customer type) for the current context org.
      */
     boolean hasPerm(String orgPerms) {
-        accessService._hasPerm_forOrg_withFakeRole(orgPerms.split(','), contextService.getOrg())
-//        accessService.ctxPerm(orgPerms)
+        accessService._hasPerm_forOrg_withFakeRole(orgPerms.split(','), getOrg())
     }
     boolean hasPerm_or_ROLEADMIN(String orgPerms) {
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
             return true
         }
         hasPerm(orgPerms)
-//        accessService.ctxPerm_or_ROLEADMIN(orgPerms)
     }
     boolean hasPermAsInstUser_or_ROLEADMIN(String orgPerms) {
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
             return true
         }
         accessService._hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(orgPerms.split(','), 'INST_USER')
-//        accessService.ctxInstUserCheckPerm_or_ROLEADMIN(orgPerms)
     }
     boolean hasPermAsInstEditor_or_ROLEADMIN(String orgPerms) {
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
             return true
         }
         accessService._hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(orgPerms.split(','), 'INST_EDITOR')
-//        accessService.ctxInstEditorCheckPerm_or_ROLEADMIN(orgPerms)
     }
     boolean hasPermAsInstAdm_or_ROLEADMIN(String orgPerms) {
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
             return true
         }
         accessService._hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(orgPerms.split(','), 'INST_ADM')
-//        accessService.ctxInstAdmCheckPerm_or_ROLEADMIN(orgPerms)
     }
 
+    // TODO
     boolean hasAffiliationX(String orgPerms, String instUserRole) {
         accessService.ctxPermAffiliation(orgPerms, instUserRole)
         // -> accessService._hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser

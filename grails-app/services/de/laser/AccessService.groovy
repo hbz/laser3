@@ -66,10 +66,7 @@ class AccessService {
      */
     @Deprecated
     boolean ctxInstUserCheckPerm_or_ROLEADMIN(String orgPerms) {
-        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
-            return true
-        }
-        _hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(orgPerms.split(','), 'INST_USER')
+        contextService.hasPermAsInstUser_or_ROLEADMIN(orgPerms)
     }
 
     /**
@@ -77,10 +74,7 @@ class AccessService {
      */
     @Deprecated
     boolean ctxInstEditorCheckPerm_or_ROLEADMIN(String orgPerms) {
-        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
-            return true
-        }
-        _hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(orgPerms.split(','), 'INST_EDITOR')
+        contextService.hasPermAsInstEditor_or_ROLEADMIN(orgPerms)
     }
 
     /**
@@ -88,10 +82,7 @@ class AccessService {
      */
     @Deprecated
     boolean ctxInstAdmCheckPerm_or_ROLEADMIN(String orgPerms) {
-        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
-            return true
-        }
-        _hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(orgPerms.split(','), 'INST_ADM')
+        contextService.hasPermAsInstAdm_or_ROLEADMIN(orgPerms)
     }
 
     // --- checks for other orgs ---
