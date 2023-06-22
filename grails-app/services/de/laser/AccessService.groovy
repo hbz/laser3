@@ -148,7 +148,8 @@ class AccessService {
      * @param orgPerms customer type depending permissions to check against
      * @return true if access is granted, false otherwise
      */
-    private boolean _hasPerm_forOrg_withFakeRole(String[] orgPerms, Org orgToCheck) {
+//    private boolean _hasPerm_forOrg_withFakeRole(String[] orgPerms, Org orgToCheck) {
+    boolean _hasPerm_forOrg_withFakeRole(String[] orgPerms, Org orgToCheck) {
         boolean check = false
 
         if (orgPerms) {
@@ -183,7 +184,8 @@ class AccessService {
      * @param instUserRole the given institutional permissions to check
      * @return true if the institution has the given customer type and the user the given institutional permissions, false otherwise
      */
-    private boolean _hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(String[] orgPerms, String instUserRole) {
+//    private boolean _hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(String[] orgPerms, String instUserRole) {
+    boolean _hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(String[] orgPerms, String instUserRole) {
 
         if (contextService.getUser() && instUserRole) {
             if (contextService.getUser().hasCtxAffiliation_or_ROLEADMIN(instUserRole.toUpperCase())) {
