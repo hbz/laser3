@@ -1,3 +1,5 @@
+package changelogs
+
 databaseChangeLog = {
 
     changeSet(author: "galffy (generated)", id: "1685433290580-1") {
@@ -45,7 +47,7 @@ databaseChangeLog = {
     }
 
     changeSet(author: "galffy (generated)", id: "1685433290580-2") {
-        createIndex(indexName: "do_old_database_id", tableName: "deleted_object") {
+        createIndex(indexName: "do_old_database_idx", tableName: "deleted_object") {
             column(name: "do_old_database_id")
         }
     }

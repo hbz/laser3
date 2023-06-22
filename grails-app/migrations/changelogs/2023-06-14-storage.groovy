@@ -1,6 +1,5 @@
 package changelogs
 
-import de.laser.Org
 import de.laser.finance.CostItem
 import de.laser.storage.BeanStore
 import de.laser.storage.RDStore
@@ -31,7 +30,19 @@ databaseChangeLog = {
         }
     }
 
-    changeSet(author: "galffy (hand-coded)", id: "1686720364944-5") {
+    changeSet(author: "klober (modified)", id: "1686720364944-5") {
+        addColumn(tableName: "deleted_object") {
+            column(name: "do_old_gokb_id", type: "varchar(255)")
+        }
+    }
+
+    changeSet(author: "klober (modified)", id: "1686720364944-6") {
+        createIndex(indexName: "do_old_gokb_idx", tableName: "deleted_object") {
+            column(name: "do_old_gokb_id")
+        }
+    }
+
+    changeSet(author: "galffy (hand-coded)", id: "1686720364944-7") {
         grailsChange {
             change {
                 int migrated = 0
