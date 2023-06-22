@@ -352,8 +352,7 @@
                 <td class="center aligned">
                     <%
                         String instAdminIcon = '<i class="large red times icon"></i>'
-                        List<User> users = User.executeQuery('select uo.user from UserOrgRole uo where uo.org = :org and uo.formalRole = :instAdmin', [org: org, instAdmin: Role.findByAuthority('INST_ADM')])
-                        if (users)
+                        if (org.hasInstAdminEnabled())
                             instAdminIcon = '<i class="large green check icon"></i>'
                     %>
                     <g:if test="${contextService.getUser().hasCtxAffiliation_or_ROLEADMIN('INST_ADM')}">

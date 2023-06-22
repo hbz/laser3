@@ -435,7 +435,6 @@ class License extends AbstractBaseWithCalculatedLastUpdated
      * @return true if the grant for the user is given, false otherwise
      */
     boolean hasPerm(String perm, User user) {
-        ContextService contextService = BeanStore.getContextService()
         Role adm = Role.findByAuthority('ROLE_ADMIN')
         Role yda = Role.findByAuthority('ROLE_YODA')
 
@@ -443,17 +442,12 @@ class License extends AbstractBaseWithCalculatedLastUpdated
             return true
         }
 
-        if (user.getAffiliationOrgsIdList().contains(contextService.getOrg().id)) {
+        if (user.isFormal()) {
+            Org contextOrg = BeanStore.getContextService().getOrg()
 
-            OrgRole cons = OrgRole.findByLicAndOrgAndRoleType(
-                    this, contextService.getOrg(), RDStore.OR_LICENSING_CONSORTIUM
-            )
-            OrgRole licseeCons = OrgRole.findByLicAndOrgAndRoleType(
-                    this, contextService.getOrg(), RDStore.OR_LICENSEE_CONS
-            )
-            OrgRole licsee = OrgRole.findByLicAndOrgAndRoleType(
-                    this, contextService.getOrg(), RDStore.OR_LICENSEE
-            )
+            OrgRole cons       = OrgRole.findByLicAndOrgAndRoleType( this, contextOrg, RDStore.OR_LICENSING_CONSORTIUM )
+            OrgRole licseeCons = OrgRole.findByLicAndOrgAndRoleType( this, contextOrg, RDStore.OR_LICENSEE_CONS )
+            OrgRole licsee     = OrgRole.findByLicAndOrgAndRoleType( this, contextOrg, RDStore.OR_LICENSEE )
 
             if (perm == 'view') {
                 return cons || licseeCons || licsee

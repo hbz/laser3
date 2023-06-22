@@ -102,23 +102,28 @@
         <i class="icon large user lock"></i> user roles
     </p>
     <p>
-    <pre>
-        Roles                 : ${Role.executeQuery("select r from Role r where r.roleType not in ('org', 'fake') order by r.id").collect{ it.id + ':' + it.authority }}
+        <g:set var="contextUser" value="${contextService.getUser()}" />
+        <g:set var="contextOrg" value="${contextService.getOrg()}" />
+<pre>
+    contextUser: ${contextUser}
+    contextOrg: ${contextOrg}
 
-        UserRoles             : ${UserRole.findAllByUser(contextService.getUser())}
+    Roles                 : ${Role.executeQuery("select r from Role r where r.roleType not in ('org', 'fake') order by r.id").collect{ it.id + ':' + it.authority }}
 
-        UserOrgRoles          : ${UserOrgRole.findAllByUser(contextService.getUser()).collect{ '(' + it.user.id + ',' + it.org.id + ',' + it.formalRole.id + ')'}}
+    UserRoles             : ${UserRole.findAllByUser(contextUser)}
 
-        contextService.getUser().isYoda()  : ${contextService.getUser().isYoda()}
+    contextUser.isYoda()  : ${contextUser.isYoda()}
 
-        User.get(77).isYoda()  : ${User.get(77).isYoda()}
-        User.get(88).isYoda()  : ${User.get(88).isYoda()}
-        User.get(99).isYoda()  : ${User.get(99).isYoda()}
+    contextUser.isFormal(contextOrg)  : ${contextUser.isFormal(contextOrg)}
+    contextUser.isComboInstAdminOf(contextOrg)  : ${contextUser.isComboInstAdminOf(contextOrg)}
 
-        SpringSecurityUtils.ifAnyGranted('ROLE_YODA')  : ${SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}
-        SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') : ${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}
-        SpringSecurityUtils.ifAnyGranted('ROLE_USER')  : ${SpringSecurityUtils.ifAnyGranted('ROLE_USER')}
-    </pre>
+    contextUser.isLastInstAdminOf(contextUser.formalOrg) : ${contextUser.isLastInstAdminOf(contextUser.formalOrg)}
+
+    SpringSecurityUtils.ifAnyGranted('ROLE_YODA')  : ${SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}
+    SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') : ${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}
+    SpringSecurityUtils.ifAnyGranted('ROLE_USER')  : ${SpringSecurityUtils.ifAnyGranted('ROLE_USER')}
+</pre>
+
 </div>
 
 <div class="ui segment">

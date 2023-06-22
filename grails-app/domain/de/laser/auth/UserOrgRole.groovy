@@ -8,6 +8,7 @@ import javax.persistence.Transient
 /**
  * The affiliation link between a {@link User} and an {@link Org}, rights marked by a {@link Role}
  */
+@Deprecated
 class UserOrgRole implements Comparable {
 
     Date dateCreated

@@ -118,21 +118,6 @@
                                 </a>
 
                                 <div class="menu" role="menu">
-                                    <g:set var="usaf" value="${contextUser.getAffiliationOrgs()}" />
-                                    <g:if test="${usaf && usaf.size() > 0}">
-                                        <g:each in="${usaf}" var="orgRaw">
-                                            <g:set var="org" value="${(Org) GrailsHibernateUtil.unwrapIfProxy(orgRaw)}" />
-                                            <g:if test="${org.id == contextOrg?.id}">
-                                                <ui:link addItemAttributes="true" class="item active" controller="myInstitution" action="switchContext" params="${[oid:"${org.class.name}:${org.id}"]}">${org.name}</ui:link>
-                                            </g:if>
-                                            <g:else>
-                                                <ui:link addItemAttributes="true" controller="myInstitution" action="switchContext" params="${[oid:"${org.class.name}:${org.id}"]}">${org.name}</ui:link>
-                                            </g:else>
-                                        </g:each>
-                                    </g:if>
-
-                                    <div class="divider"></div>
-
                                     <ui:link addItemAttributes="true" controller="profile" action="index">${message(code:'profile.user')}</ui:link>
                                     <ui:link addItemAttributes="true" controller="profile" action="help">${message(code:'menu.user.help')}</ui:link>
                                     <ui:link addItemAttributes="true" controller="profile" action="dsgvo">${message(code:'privacyNotice')}</ui:link>

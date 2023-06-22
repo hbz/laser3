@@ -1,4 +1,4 @@
-<%@ page import="de.laser.UserSetting; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.auth.Role; de.laser.auth.UserOrgRole; de.laser.UserSetting.KEYS; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
+<%@ page import="de.laser.UserSetting; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.auth.Role; de.laser.UserSetting.KEYS; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
 
 <laser:htmlStart message="profile.user" serviceInjection="true" />
 
@@ -44,16 +44,6 @@
                         </div>
 
                         <div class="field">
-                            <label for="profile_dashboard">${message(code: 'profile.dash')}</label>
-                            <select name="profile_dashboard" id="profile_dashboard" class="ui fluid dropdown">
-                                <option value=""></option>
-                                <g:each in="${user.getAffiliationOrgs()}" var="o">
-                                    <option value="${o.class.name}:${o.id}" ${user.getSettingsValue(KEYS.DASHBOARD)?.id == o.id ? 'selected' : ''}>${o.name}</option>
-                                </g:each>
-                            </select>
-                        </div>
-
-                        <div class="field">
                             <button type="submit" class="ui button">${message(code: 'profile.update.button')}</button>
                         </div>
                     </ui:form><!-- updateProfile -->
@@ -61,6 +51,7 @@
                 </div><!-- .content -->
             </div><!-- .card -->
 
+            <g:if test="${contextService.getOrg()}">
             <div class="ui card">
                 <div class="content">
                     <h2 class="ui dividing header">
@@ -135,7 +126,9 @@
 
                 </div><!-- .content -->
             </div><!-- .card -->
+            </g:if>
 
+            <g:if test="${contextService.getOrg()}">
             <div class="ui card">
                 <div class="ui content">
                     <h2 class="ui dividing header">
@@ -171,7 +164,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <g:if test="${ ! isOrgBasicMember}">
+                            <g:if test="${ ! contextService.getOrg().isCustomerType_Inst_Basic()}">
                                 <tr>
                                     <td>
                                         <div class="ui checkbox">
@@ -326,6 +319,7 @@
                     </ui:form><!-- updateReminderSettings -->
                 </div><!-- .content -->
             </div><!-- .card -->
+            </g:if>
 
         </div><!-- .la-inline-lists -->
     </div><!-- .column -->
@@ -339,7 +333,7 @@
                         ${message(code: 'profile.password.label')}
                     </h2>
 
-                    <g:if test="${user.getAuthorities().id.contains(Role.findByAuthority('ROLE_YODA').id)}">
+                    <g:if test="${user.isYoda()}">
                         <div id="profile-image">
                             <g:if test="${user.image}">
                                 <g:img dir="images" file="profile/${user.image}" />
@@ -396,6 +390,58 @@
                 </div><!-- .content -->
             </div><!-- .card -->
 
+            <g:if test="${user.formalOrg}">
+                <laser:render template="/templates/user/membership_table" model="[userInstance: user]" />
+            </g:if>
+            <g:else>
+                <sec:ifAnyGranted roles="ROLE_ADMIN">
+                    <div class="column wide sixteen">
+                        <div class="la-inline-lists">
+                            <div class="ui card la-full-width">
+                                <div class="content">
+                                    <h2 class="ui dividing header">${message(code: 'profile.membership.existing')}</h2>
+
+                                    <ui:msg class="info" icon="exclamation" noClose="true">
+                                        Diese Funktion ist nur für Administratoren verfügbar.
+                                    </ui:msg>
+
+                                    <ui:msg class="warning" icon="exclamation" noClose="true">
+                                        Dieser Nutzer ist noch keiner Einrichtung zugewiesen.
+                                    </ui:msg>
+
+                                    <ui:form controller="profile" action="setAffiliation" hideWrapper="true">
+
+                                        <div class="field">
+                                            <label for="formalOrg">Organisation</label>
+                                            <g:select name="formalOrg" id="formalOrg"
+                                                      from="${availableOrgs}"
+                                                      optionKey="id"
+                                                      optionValue="${{(it.sortname ?: '') + ' (' + it.name + ')'}}"
+                                                      class="ui fluid search dropdown"/>
+                                        </div>
+                                        <div class="field">
+                                            <label for="formalRole">Role</label>
+                                            <g:select name="formalRole" id="formalRole"
+                                                      from="${Role.findAllByRoleType('user')}"
+                                                      optionKey="id"
+                                                      optionValue="${ {role->g.message(code:'cv.roles.' + role.authority) } }"
+                                                      value="${Role.findByAuthority('INST_USER').id}"
+                                                      class="ui fluid dropdown"/>
+                                        </div>
+
+                                        <div class="field">
+                                            <button id="submitARForm" data-complete-text="Request Membership" type="submit" class="ui button">${message(code: 'profile.membership.add.button')}</button>
+                                        </div>
+                                    </ui:form>
+                                </div><!-- .content -->
+                            </div><!-- .card -->
+
+                        </div><!-- .la-inline-lists -->
+                    </div><!--.column-->
+                </sec:ifAnyGranted>
+            </g:else>
+
+            <g:if test="${contextService.getOrg()}">
             <div class="ui card">
                 <div class="content">
                     <h2 class="ui dividing header">
@@ -454,57 +500,15 @@
                             <ui:xEditableDropDown owner="${user.getSetting(KEYS.PAGE_SIZE, 10)}" field="strValue" dataLink="getProfilPageSizeList"/>
                         </div>
 
-                    </div>
+                    </div><!-- .form -->
                 </div><!-- .content -->
             </div><!-- .card -->
+            </g:if>
 
         </div><!-- .la-inline-lists -->
     </div><!-- .column -->
 
 </div><!-- .grid -->
-
-    <div class="la-inline-lists">
-        <laser:render template="/templates/user/membership_table" model="[userInstance: user]" />
-    </div>
-
-    <sec:ifAnyGranted roles="ROLE_ADMIN">
-        <div class="column wide sixteen">
-            <div class="la-inline-lists">
-
-                <div class="ui card la-full-width">
-                    <div class="content">
-                        <ui:form controller="profile" action="addAffiliation" class="addAffiliationForm" hideWrapper="true">
-                            <div class="two fields">
-                                <div class="field">
-                                    <label for="org">Organisation</label>
-                                    <g:select name="org" id="org"
-                                              from="${availableOrgs}"
-                                              optionKey="id"
-                                              optionValue="${{(it.sortname ?: '') + ' (' + it.name + ')'}}"
-                                              class="ui fluid search dropdown"/>
-                                </div>
-
-                                <div class="field">
-                                    <label for="formalRole">Role</label>
-                                    <g:select name="formalRole" id="formalRole"
-                                              from="${Role.findAllByRoleType('user')}"
-                                              optionKey="id"
-                                              optionValue="${ {role->g.message(code:'cv.roles.' + role.authority) } }"
-                                              value="${Role.findByAuthority('INST_USER').id}"
-                                              class="ui fluid dropdown"/>
-                                </div>
-                            </div>
-
-                            <div class="field">
-                                <button id="submitARForm" data-complete-text="Request Membership" type="submit" class="ui button">${message(code: 'profile.membership.add.button')}</button>
-                            </div>
-                        </ui:form>
-                    </div><!-- .content -->
-                </div><!-- .card -->
-
-            </div><!-- .la-inline-lists -->
-        </div><!--.column-->
-    </sec:ifAnyGranted>
 
 <laser:script file="${this.getGroovyPageFileName()}">
 

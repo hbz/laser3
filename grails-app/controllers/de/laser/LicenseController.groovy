@@ -86,10 +86,6 @@ class LicenseController {
 
         prf.setBenchmark('properties')
 
-            // -- private properties
-
-            result.authorizedOrgs = result.user.getAffiliationOrgs()
-
             // create mandatory LicensePrivateProperties if not existing
 
             List<PropertyDefinition> mandatories = PropertyDefinition.getAllByDescrAndMandatoryAndTenant(PropertyDefinition.LIC_PROP, true, result.institution)
@@ -136,11 +132,8 @@ class LicenseController {
                     if (pl.prs.isPublic) {
                         result.visiblePrsLinks << pl
                     } else {
-                        // nasty lazy loading fix
-                        result.user.getAffiliationOrgs().each { ao ->
-                            if (ao.getId() == pl.prs.tenant.getId()) {
-                                result.visiblePrsLinks << pl
-                            }
+                        if (result.user.formalOrg?.getId() == pl.prs.tenant.getId()) {
+                            result.visiblePrsLinks << pl
                         }
                     }
                 }
