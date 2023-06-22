@@ -47341,6 +47341,8 @@ a.ui.ui.ui.inverted.basic.black.label:hover {
   position: relative;
   padding-left: 0.2em;
   padding-right: 0.2em;
+  padding-top: 0.9em;
+  padding-bottom: 0.9em;
   margin-bottom: 1.2em;
   background-color: #fffaf5;
   border: 1px solid #d3dae3;
