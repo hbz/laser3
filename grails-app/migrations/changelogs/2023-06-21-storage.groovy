@@ -45,7 +45,6 @@ databaseChangeLog = {
                     Contact.executeUpdate('delete from Contact c where c.org in (:toDelete)', [toDelete: orgsMarkedAsDeleted])
                     DocContext.executeUpdate('delete from DocContext dc where dc.org in (:toDelete) or dc.targetOrg in (:toDelete)', [toDelete: orgsMarkedAsDeleted])
                     Doc.executeUpdate('delete from Doc d where d.owner in (:toDelete)', [toDelete: orgsMarkedAsDeleted])
-                    Doc.executeUpdate('delete from Doc d where not exists (select dc from DocContext dc where dc.owner = d)')
                     Identifier.executeUpdate('delete from Identifier id where id.org in (:toDelete)', [toDelete: orgsMarkedAsDeleted])
                     OrgProperty.executeUpdate('delete from OrgProperty op where op.owner in (:toDelete)', [toDelete: orgsMarkedAsDeleted])
                     OrgSetting.executeUpdate('delete from OrgSetting os where os.org in (:toDelete)', [toDelete: orgsMarkedAsDeleted])
