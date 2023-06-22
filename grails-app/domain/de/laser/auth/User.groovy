@@ -60,8 +60,8 @@ class User {
         display         column: 'usr_display'
         email           column: 'usr_email'
         image           column: 'usr_image'
-        formalOrg       column: 'usr_formal_org_fk'
-        formalRole      column: 'usr_formal_role_fk'
+        formalOrg       column: 'usr_formal_org_fk', lazy: false
+        formalRole      column: 'usr_formal_role_fk', lazy: false
 
         lastUpdated     column: 'usr_last_updated'
         dateCreated     column: 'usr_date_created'
