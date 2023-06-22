@@ -25,17 +25,14 @@ class AccessService {
      */
     @Deprecated
     boolean ctxPerm(String orgPerms) {
-        _hasPerm_forOrg_withFakeRole(orgPerms.split(','), contextService.getOrg())
+        contextService.hasPerm(orgPerms)
     }
     /**
      * Use {@link ContextService#hasPerm_or_ROLEADMIN(java.lang.String)} instead.
      */
     @Deprecated
     boolean ctxPerm_or_ROLEADMIN(String orgPerms) {
-        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
-            return true
-        }
-        _hasPerm_forOrg_withFakeRole(orgPerms.split(','), contextService.getOrg())
+        contextService.hasPerm_or_ROLEADMIN(orgPerms)
     }
 
     /**
