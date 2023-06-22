@@ -10,6 +10,10 @@ class CreationException extends Exception {
         super(errors.toString())
     }
 
+    CreationException(List errors) {
+        super(errors.toListString())
+    }
+
     CreationException(String defMessage) {
         super(defMessage)
     }

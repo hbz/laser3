@@ -170,6 +170,37 @@ class SubscriptionService {
     }
 
     /**
+     * ex MyInstitutionController.currentSubscriptions()
+     * Gets the current subscriptions for the given institution
+     * @param params the request parameter map
+     * @param contextUser the user whose settings should be considered
+     * @param contextOrg the institution whose subscriptions should be accessed
+     * @return a result map containing a list of subscriptions and other site parameters
+     */
+    Map<String,Object> getMySubscriptionTransfer(GrailsParameterMap params, User contextUser, Org contextOrg) {
+        Map<String,Object> result = [:]
+        SwissKnife.setPaginationParams(result, params, contextUser)
+
+        result.editable = userService.checkAffiliationAndCtxOrg(contextUser, contextOrg, 'INST_EDITOR')
+
+        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextOrg)
+        result.filterSet = tmpQ[2]
+        List<Subscription> subscriptions
+        subscriptions = Subscription.executeQuery( "select s " + tmpQ[0], tmpQ[1] ) //,[max: result.max, offset: result.offset]
+        //candidate for ugliest bugfix ever ...
+        if(params.sort == "providerAgency") {
+            subscriptions = Subscription.executeQuery("select oo.sub from OrgRole oo join oo.org providerAgency where oo.sub.id in (:subscriptions) and oo.roleType in (:providerAgency) order by providerAgency.name "+params.order, [subscriptions: subscriptions.id, providerAgency: [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]])
+        }
+        result.allSubscriptions = subscriptions
+        if(!params.exportXLS)
+            result.num_sub_rows = subscriptions.size()
+
+        result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
+        result
+    }
+
+
+    /**
      * ex MyInstitutionController.manageConsortiaSubscriptions()
      * Gets the current subscriptions with their cost items for the given consortium
      * @param params the request parameter map

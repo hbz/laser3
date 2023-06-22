@@ -69,5 +69,9 @@
             <ui:subNavItem controller="subscription" action="workflows" counts="${checklistCount}" params="${[id:params.id]}" message="workflow.plural" disabled="disabled"/>
         </g:elseif>
 
+        <g:if test="${showConsortiaFunctions && !subscription.instanceOf}">
+            <ui:securedSubNavItem orgPerm="${CustomerTypeService.ORG_CONSORTIUM_PRO}" controller="subscription" action="subTransfer" params="${[id:params.id]}" message="subscription.details.subTransfer.label" />
+        </g:if>
+
     </g:if>%{-- if test="${! params.orgBasicMemberView}" --}%
 </ui:subNav>

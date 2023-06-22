@@ -769,6 +769,7 @@ class AdminController  {
     @Transactional
     def manageOrganisations() {
         Map<String, Object> result = [:]
+        SwissKnife.setPaginationParams(result, params, contextService.getUser())
 
         if (params.cmd == 'changeApiLevel') {
             Org target = (Org) genericOIDService.resolveOID(params.target)
@@ -848,8 +849,9 @@ class AdminController  {
         }
 
         Map<String, Object> fsq = filterService.getOrgQuery(params)
-        result.orgList = Org.executeQuery(fsq.query, fsq.queryParams, params)
-        result.orgListTotal = result.orgList.size()
+        List<Org> orgList = Org.executeQuery(fsq.query, fsq.queryParams)
+        result.orgList = orgList.drop(result.offset).take(result.max)
+        result.orgListTotal = orgList.size()
 
         result.allConsortia = Org.executeQuery(
                 "select o from OrgSetting os join os.org o where os.key = 'CUSTOMER_TYPE' and (os.roleValue.authority  = 'ORG_CONSORTIUM_BASIC' or os.roleValue.authority  = 'ORG_CONSORTIUM_PRO') order by o.sortname, o.name"

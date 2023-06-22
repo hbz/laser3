@@ -309,6 +309,21 @@ class SubscriptionControllerService {
     }
 
     /**
+     * Loads the given subscription details and returns them to the details view. If mandatory properties are missing,
+     * they will be created; that is why this method needs to be transactional
+     * @param params the request parameter map
+     * @return the given subscription's details
+     */
+    Map<String,Object> subTransfer(GrailsParameterMap params) {
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
+        if(!result)
+            [result:null,status:STATUS_ERROR]
+        else {
+            [result:result,status:STATUS_OK]
+        }
+    }
+
+    /**
      * Loads the tasks attached to the given subscription
      * @param controller unused
      * @param params the request parameter map

@@ -135,6 +135,10 @@ class ApiToolkit {
         return false
     }
 
+    static List<Org> getOrgsWithSpecialAPIAccess(String specGrant) {
+        Org.executeQuery('select o.globalUID from OrgSetting os join os.org o where os.key = :customerType and os.strValue = :specGrant', [customerType: OrgSetting.KEYS.API_LEVEL, specGrant: specGrant])
+    }
+
     /**
      * Checks if the debugMode flag is set among the request parameters
      * @return the flag value if it is set, null otherwise

@@ -5,6 +5,7 @@ import de.laser.exceptions.SyncException
 import de.laser.http.BasicHttpClient
 import de.laser.properties.OrgProperty
 import de.laser.remote.GlobalRecordSource
+import de.laser.storage.Constants
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
@@ -174,7 +175,7 @@ class YodaService {
             int offset = 0, max = 20000
             boolean more = true
             Map<String, Object> queryParams = [componentType: 'TitleInstancePackagePlatform',
-                                               status: ['Removed', GlobalSourceSyncService.PERMANENTLY_DELETED],
+                                               status: ['Removed', Constants.PERMANENTLY_DELETED],
                                                username: ConfigMapper.getWekbApiUsername(),
                                                password: ConfigMapper.getWekbApiPassword(),
                                                max:max, offset:offset]
@@ -216,14 +217,14 @@ class YodaService {
                                        tippPackageUuid: pkg.gokbId,
                                        username: ConfigMapper.getWekbApiUsername(),
                                        password: ConfigMapper.getWekbApiPassword(),
-                                       status: ['Current', 'Expected', 'Retired', 'Deleted', 'Removed', GlobalSourceSyncService.PERMANENTLY_DELETED], max: max, offset: offset]
+                                       status: ['Current', 'Expected', 'Retired', 'Deleted', 'Removed', Constants.PERMANENTLY_DELETED], max: max, offset: offset]
                         more = true
                         Closure checkSuccess
                         checkSuccess = { resp, json ->
                             if(resp.code() == 200) {
                                 if(json.result_count == 0) {
                                     tipps.each { TitleInstancePackagePlatform tipp ->
-                                        wekbUuids.put(tipp.gokbId, GlobalSourceSyncService.PERMANENTLY_DELETED)
+                                        wekbUuids.put(tipp.gokbId, Constants.PERMANENTLY_DELETED)
                                     }
                                     //because of parallel process; session mismatch when accessing via GORM
                                     Package.executeUpdate('update Package pkg set pkg.packageStatus = :deleted where pkg = :pkg',[deleted: RDStore.PACKAGE_STATUS_DELETED, pkg: pkg])
@@ -244,11 +245,11 @@ class YodaService {
                         }
                         http.post(BasicHttpClient.ResponseType.JSON, BasicHttpClient.PostType.URLENC, queryParams, checkSuccess, failure)
                         tipps.each { TitleInstancePackagePlatform tipp ->
-                            if (!wekbPkgTipps.containsKey(tipp.gokbId) || wekbPkgTipps.get(tipp.gokbId) in [GlobalSourceSyncService.PERMANENTLY_DELETED, RDStore.TIPP_STATUS_REMOVED.value] || wekbUuids.get(tipp.gokbId) in [GlobalSourceSyncService.PERMANENTLY_DELETED, RDStore.TIPP_STATUS_REMOVED.value]) {
+                            if (!wekbPkgTipps.containsKey(tipp.gokbId) || wekbPkgTipps.get(tipp.gokbId) in [Constants.PERMANENTLY_DELETED, RDStore.TIPP_STATUS_REMOVED.value] || wekbUuids.get(tipp.gokbId) in [Constants.PERMANENTLY_DELETED, RDStore.TIPP_STATUS_REMOVED.value]) {
                                 log.info("mark ${tipp.gokbId} in package ${tipp.pkg.gokbId} as removed:")
                                 log.info("reason: !wekbPkgTipps.contains(tipp.gokbId): ${!wekbPkgTipps.containsKey(tipp.gokbId)} / ")
-                                log.info("wekbPkgTipps.get(tipp.gokbId) in [GlobalSourceSyncService.PERMANENTLY_DELETED, RDStore.TIPP_STATUS_REMOVED.value] / ${wekbPkgTipps.get(tipp.gokbId) in [GlobalSourceSyncService.PERMANENTLY_DELETED, RDStore.TIPP_STATUS_REMOVED.value]}")
-                                log.info("wekbUuids.get(tipp.gokbId) in [GlobalSourceSyncService.PERMANENTLY_DELETED, RDStore.TIPP_STATUS_REMOVED.value]: ${wekbUuids.get(tipp.gokbId) in [GlobalSourceSyncService.PERMANENTLY_DELETED, RDStore.TIPP_STATUS_REMOVED.value]}")
+                                log.info("wekbPkgTipps.get(tipp.gokbId) in [Constants.PERMANENTLY_DELETED, RDStore.TIPP_STATUS_REMOVED.value] / ${wekbPkgTipps.get(tipp.gokbId) in [Constants.PERMANENTLY_DELETED, RDStore.TIPP_STATUS_REMOVED.value]}")
+                                log.info("wekbUuids.get(tipp.gokbId) in [Constants.PERMANENTLY_DELETED, RDStore.TIPP_STATUS_REMOVED.value]: ${wekbUuids.get(tipp.gokbId) in [Constants.PERMANENTLY_DELETED, RDStore.TIPP_STATUS_REMOVED.value]}")
                                 tipp.status = RDStore.TIPP_STATUS_REMOVED
                                 tipp.save()
                                 log.info("marked as deleted ${IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.status = :removed, ie.lastUpdated = :now where ie.tipp = :tipp and ie.status != :removed', [removed: RDStore.TIPP_STATUS_REMOVED, tipp: tipp, now: new Date()])} issue entitlements")

@@ -73,6 +73,22 @@ class SubscriptionController {
         else ctrlResult.result
     }
 
+    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.ORG_CONSORTIUM_PRO, 'INST_USER'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_PRO, 'INST_USER')
+    })
+    @Check404()
+    def subTransfer() {
+        Map<String,Object> ctrlResult = subscriptionControllerService.subTransfer(params)
+        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+                return
+            }
+        }
+        else ctrlResult.result
+    }
+
     /**
      * Call to list the tasks related to this subscription
      * @return the task listing for this subscription

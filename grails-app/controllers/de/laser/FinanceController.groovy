@@ -11,6 +11,7 @@ import de.laser.utils.DateUtils
 import de.laser.annotations.DebugInfo
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
+import de.laser.utils.LocaleUtils
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.http.HttpStatus
@@ -33,6 +34,7 @@ import java.text.SimpleDateFormat
 class FinanceController  {
 
     AccessService accessService
+    DeletionService deletionService
     EscapeService escapeService
     ExportClickMeService exportClickMeService
     ExportService exportService
@@ -526,10 +528,10 @@ class FinanceController  {
         ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
     })
     def deleteCostItem() {
-        Map<String,Object> ctrlResult = financeService.deleteCostItem(params)
-        if(ctrlResult.error == FinanceService.STATUS_ERROR)
-            flash.error = ctrlResult.result.error
-        redirect(uri: request.getHeader('referer').replaceAll('(#|\\?).*', ''), params: [showView: ctrlResult.result.showView, offset: params.offset])
+        CostItem ci = CostItem.get(params.id)
+        if(!deletionService.deleteCostItem(ci))
+            flash.error = message(code: 'default.delete.error.general.message')
+        redirect(uri: request.getHeader('referer').replaceAll('(#|\\?).*', ''), params: [showView: params.showView, offset: params.offset])
     }
 
     /**
