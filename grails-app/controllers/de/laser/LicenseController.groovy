@@ -83,18 +83,8 @@ class LicenseController {
             // tasks
             result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.institution, result.license)
 
-            String i10value = LocaleUtils.getLocalizedAttributeName('value')
-            // restrict visible for templates/links/orgLinksAsList
-            result.visibleOrgRelations = OrgRole.executeQuery(
-                    "select oo from OrgRole oo where oo.lic = :license and oo.org != :context and oo.roleType not in (:roleTypes) order by oo.roleType." + i10value + " asc, oo.org.sortname asc, oo.org.name asc",
-                    [license:result.license,context:result.institution,roleTypes:[RDStore.OR_LICENSEE, RDStore.OR_LICENSEE_CONS]]
-            )
 
         prf.setBenchmark('properties')
-
-            // -- private properties
-
-            result.authorizedOrgs = result.user.getAffiliationOrgs()
 
             // create mandatory LicensePrivateProperties if not existing
 
@@ -142,11 +132,8 @@ class LicenseController {
                     if (pl.prs.isPublic) {
                         result.visiblePrsLinks << pl
                     } else {
-                        // nasty lazy loading fix
-                        result.user.getAffiliationOrgs().each { ao ->
-                            if (ao.getId() == pl.prs.tenant.getId()) {
-                                result.visiblePrsLinks << pl
-                            }
+                        if (result.user.formalOrg?.getId() == pl.prs.tenant.getId()) {
+                            result.visiblePrsLinks << pl
                         }
                     }
                 }

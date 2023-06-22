@@ -75,7 +75,10 @@ class SubscriptionService {
         Profiler prf = new Profiler()
         prf.setBenchmark('init data fetch')
         prf.setBenchmark('consortia')
-        result.availableConsortia = Combo.executeQuery("select c.toOrg from Combo as c where c.fromOrg = :fromOrg", [fromOrg: contextOrg])
+        result.availableConsortia = Combo.executeQuery(
+                'select c.toOrg from Combo as c where c.fromOrg = :fromOrg and c.type = :type',
+                [fromOrg: contextOrg, type: RDStore.COMBO_TYPE_CONSORTIUM]
+        )
 
         List<Role> consRoles = Role.findAll { authority in ['ORG_CONSORTIUM_BASIC', 'ORG_CONSORTIUM_PRO'] }
         prf.setBenchmark('all consortia')

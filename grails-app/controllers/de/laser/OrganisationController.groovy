@@ -7,7 +7,6 @@ import de.laser.ctrl.UserControllerService
 import de.laser.properties.OrgProperty
 import de.laser.auth.Role
 import de.laser.auth.User
-import de.laser.auth.UserOrgRole
 import de.laser.properties.PropertyDefinition
 import de.laser.remote.ApiSource
 import de.laser.storage.RDConstants
@@ -49,7 +48,6 @@ class OrganisationController  {
     GenericOIDService genericOIDService
     GokbService gokbService
     IdentifierService identifierService
-    InstAdmService instAdmService
     OrganisationControllerService organisationControllerService
     OrganisationService organisationService
     OrgTypeService orgTypeService
@@ -1021,7 +1019,7 @@ class OrganisationController  {
 
         result.tasks = taskService.getTasksByResponsiblesAndObject(result.user,result.institution,result.orgInstance)
 
-        result.authorizedOrgs = result.user?.getAffiliationOrgs()
+        result.formalOrg = result.user.formalOrg as Org
 
         // create mandatory OrgPrivateProperties if not existing
 
@@ -1345,7 +1343,6 @@ class OrganisationController  {
     /**
      * Shows all user accounts affiliated to (at least) the given institution
      * @return renders the user list template with the users affiliated to this institution
-     * @see UserOrgRole
      * @see User
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_ADM'])
@@ -1359,8 +1356,8 @@ class OrganisationController  {
         result.editable = checkIsEditable(result.user, result.orgInstance)
 
         if (! result.editable) {
-            boolean instAdminExists = result.orgInstance.getAllValidInstAdmins().size() > 0
-            boolean comboCheck = instAdmService.hasInstAdmPivileges(result.user, result.orgInstance, [RDStore.COMBO_TYPE_CONSORTIUM])
+            boolean instAdminExists = (result.orgInstance as Org).hasInstAdminEnabled()
+            boolean comboCheck = userService.hasComboInstAdmPivileges(result.user as User, result.orgInstance as Org)
 
             result.editable = comboCheck && ! instAdminExists
         }
@@ -1377,7 +1374,10 @@ class OrganisationController  {
         result.titleMessage = "${result.orgInstance.name} - ${message(code:'org.nav.users')}"
         result.inContextOrg = false
         result.multipleAffiliationsWarning = true
-        Set<Org> availableComboOrgs = Org.executeQuery('select c.fromOrg from Combo c where c.toOrg = :ctxOrg order by c.fromOrg.name asc', [ctxOrg:result.orgInstance])
+        Set<Org> availableComboOrgs = Org.executeQuery(
+                'select c.fromOrg from Combo c where c.toOrg = :ctxOrg and c.type = :type order by c.fromOrg.name asc',
+                [ctxOrg: result.orgInstance, type: RDStore.COMBO_TYPE_CONSORTIUM]
+        )
         availableComboOrgs.add(result.orgInstance)
 
         result.navConfig = [
@@ -1419,14 +1419,7 @@ class OrganisationController  {
         }
 
         if (result.user) {
-            List<Org> affils = Org.executeQuery('select distinct uo.org from UserOrgRole uo where uo.user = :user', [user: result.user])
-
-            if (affils.size() > 1) {
-                flash.error = message(code: 'user.delete.error.multiAffils') as String
-                redirect action: 'editUser', params: [uoid: params.uoid, id: params.id]
-                return
-            }
-            else if (affils.size() == 1 && ! result.editable) {
+            if (result.user.formalOrg && ! result.editable) {
                 flash.error = message(code: 'user.delete.error.foreignOrg') as String
                 redirect action: 'editUser', params: [uoid: params.uoid, id: params.id]
                 return
@@ -1442,7 +1435,7 @@ class OrganisationController  {
             }
 
             result.substituteList = User.executeQuery(
-                    'select distinct u from User u join u.affiliations ua where ua.org = :ctxOrg and u != :self',
+                    'select distinct u from User u where u.formalOrg = :ctxOrg and u != :self',
                     [ctxOrg: result.orgInstance, self: result.user]
             )
         }
@@ -1520,7 +1513,7 @@ class OrganisationController  {
     @Secured(closure = {
         ctx.accessService.ctxInstAdmCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
-    def addAffiliation() {
+    def setAffiliation() {
         Map<String, Object> result = userControllerService.getResultGenericsERMS3067(params)
         result.orgInstance = Org.get(params.id) // overwrite
 
@@ -1529,7 +1522,8 @@ class OrganisationController  {
             redirect action: 'editUser', params: [id: params.id, uoid: params.uoid]
             return
         }
-        userService.addAffiliation(result.user,params.org,params.formalRole,flash)
+
+        userService.setAffiliation(result.user as User, params.org, params.formalRole, flash)
         redirect action: 'editUser', params: [id: params.id, uoid: params.uoid]
     }
 

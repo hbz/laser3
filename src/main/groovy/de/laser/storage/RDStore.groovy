@@ -63,6 +63,8 @@ class RDStore {
     public final static RefdataValue DOC_CTX_STATUS_DELETED     = getRefdataValue('Deleted', RDConstants.DOCUMENT_CONTEXT_STATUS)
     public final static RefdataValue DOC_TYPE_ANNOUNCEMENT      = getRefdataValue('Announcement', RDConstants.DOCUMENT_TYPE)
     public final static RefdataValue DOC_TYPE_NOTE              = getRefdataValue('Note', RDConstants.DOCUMENT_TYPE)
+    public final static RefdataValue DOC_TYPE_RENEWAL           = getRefdataValue('Renewal', RDConstants.DOCUMENT_TYPE)
+    public final static RefdataValue DOC_TYPE_OFFER           = getRefdataValue('Offer', RDConstants.DOCUMENT_TYPE)
     public final static RefdataValue DOC_TYPE_ONIXPL            = getRefdataValue('ONIX-PL License', RDConstants.DOCUMENT_TYPE)
 
     public final static RefdataValue IE_ACCESS_CURRENT                      = getRefdataValue('Current', RDConstants.IE_ACCESS_STATUS)

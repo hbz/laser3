@@ -3,6 +3,7 @@ package de.laser.auth
 import de.laser.Org
 import de.laser.UserSetting
 import de.laser.storage.BeanStore
+import de.laser.storage.RDStore
 
 import javax.persistence.Transient
 
@@ -18,7 +19,9 @@ class User {
     String email
     String image
 
-    String shibbScope
+    Org formalOrg
+    Role formalRole
+
     Date dateCreated
     Date lastUpdated
 
@@ -27,8 +30,8 @@ class User {
     boolean accountLocked   = false
     boolean passwordExpired = false
 
-    static hasMany      = [ affiliations: UserOrgRole, roles: UserRole ]
-    static mappedBy     = [ affiliations: 'user',  roles: 'user' ]
+    static hasMany      = [ roles: UserRole ]
+    static mappedBy     = [ roles: 'user' ]
 
     static constraints = {
         username    blank: false, unique: true
@@ -36,12 +39,9 @@ class User {
         display     blank: true, nullable: true
         email       blank: true, nullable: true
         image       blank: true, nullable: true
-        shibbScope  blank: true, nullable: true
+        formalOrg   blank: false, nullable: true
+        formalRole  blank: false, nullable: true
     }
-
-    static transients = [
-            'displayName', 'pageSizeOrDefault', 'affiliationOrgs', 'affiliationOrgsIdList', 'admin', 'yoda', 'lastInstAdmin'
-    ] // mark read-only accessor methods
 
     static mapping = {
         cache           true
@@ -51,27 +51,27 @@ class User {
         id              column: 'usr_id'
         version         column: 'usr_version'
 
-        accountExpired  column: 'usr_account_expired'
-        accountLocked   column: 'usr_account_locked'
-        display         column: 'usr_display'
-        email           column: 'usr_email'
-        enabled         column: 'usr_enabled'
-        image           column: 'usr_image'
+        username        column: 'usr_username'
         password        column: 'usr_password'
         passwordExpired column: 'usr_password_expired'
-        shibbScope      column: 'usr_shibb_scope'
-        username        column: 'usr_username'
-        
+        accountExpired  column: 'usr_account_expired'
+        accountLocked   column: 'usr_account_locked'
+        enabled         column: 'usr_enabled'
+        display         column: 'usr_display'
+        email           column: 'usr_email'
+        image           column: 'usr_image'
+        formalOrg       column: 'usr_formal_org_fk'
+        formalRole      column: 'usr_formal_role_fk'
+
         lastUpdated     column: 'usr_last_updated'
         dateCreated     column: 'usr_date_created'
-        
-        affiliations    batchSize: 10
+
         roles           batchSize: 10
     }
 
     /**
      * Retrieves a {@link Set} of global {@link Role}s assigned to the user.
-     * Note that they are not the affiliations (= {@link UserOrgRole}s) a user may have and which ensure institution-regulated permissions!
+     * Note that they are not the affiliations a user may have and which ensure institution-regulated permissions!
      * @return the user's {@link Role}s
      */
     Set<Role> getAuthorities() {
@@ -146,33 +146,15 @@ class User {
         display ? display : username
     }
 
-    /**
-     * Gets a list of all {@link Org}s for which this user has affiliations
-     * @return a {@link List} of authorised {@link Org}s
-     */
-    List<Org> getAffiliationOrgs() {
-        this.affiliations.collect{ it.org }.unique()
+    boolean isFormal(Role role) {
+        isFormal(role, BeanStore.getContextService().getOrg())
     }
-
-    /**
-     * Same as {@link #getAffiliationOrgs}, but only the IDs of the {@link Org}s are being collected
-     * @return a {@link List} of org IDs
-     */
-    List<Long> getAffiliationOrgsIdList() {
-        getAffiliationOrgs().collect{ it.id }
-    }
-
-    /**
-     * Checks whether the user is authorised for the given {@link Org}
-     * @param org the {@link Org} to check the authority
-     * @return is the user member of the given org?
-     */
-    boolean isMemberOf(Org org) {
+    boolean isFormal(Org org) {
         //used in user/global/edit.gsp
-        ! Org.executeQuery(
-                "select uo from UserOrgRole uo where uo.user = :user and uo.org = :org and uo.formalRole.roleType = 'user'",
-                [user: this, org: org]
-        ).isEmpty()
+        (formalOrg?.id == org.id) && (formalRole?.roleType == 'user')
+    }
+    boolean isFormal(Role role, Org org) {
+        (formalRole?.id == role.id) && (formalOrg?.id == org.id)
     }
 
     /**
@@ -182,13 +164,33 @@ class User {
      */
     boolean isComboInstAdminOf(Org org) {
         //used in _membership_table.gsp
-        List<Org> orgList = Org.executeQuery('select c.toOrg from Combo c where c.fromOrg = :org', [org: org])
-        orgList.add(org)
+        List<Long> orgIdList = Org.executeQuery(
+                'select c.toOrg.id from Combo c where c.fromOrg = :org and c.type = :type', [org: org, type: RDStore.COMBO_TYPE_CONSORTIUM]
+        )
+        orgIdList.add(org.id)
 
-        ! Org.executeQuery(
-                "select uo from UserOrgRole uo where uo.user = :user and uo.org in (:orgList) and uo.formalRole = :instAdm",
-                [user: this, orgList: orgList, instAdm: Role.findByAuthority('INST_ADM')]
-        ).isEmpty()
+        (formalOrg?.id in orgIdList) && (formalRole?.id == Role.findByAuthority('INST_ADM').id)
+    }
+
+    /**
+     * Checks if the user is the last INST_ADM of the ${@link Org}s affiliated to
+     * @return is the user the last institution admin?
+     */
+    boolean isLastInstAdminOf(Org org) {
+        boolean lastInstAdmin = false
+
+        if (org) {
+            List<User> users = executeQuery('select u from User u where u.formalOrg = :fo and u.formalRole = :fr', [fo: org, fr: Role.findByAuthority('INST_ADM')])
+            lastInstAdmin = (users.size() == 1 && users[0] == this)
+        }
+        lastInstAdmin
+    }
+
+    boolean isAdmin() {
+        getAuthorities().authority.contains('ROLE_ADMIN')
+    }
+    boolean isYoda() {
+        getAuthorities().authority.contains('ROLE_YODA')
     }
 
     /**
@@ -208,25 +210,6 @@ class User {
      */
     boolean hasOrgAffiliation_or_ROLEADMIN(Org orgToCheck, String instUserRole) {
         BeanStore.getUserService().checkAffiliation_or_ROLEADMIN(this, orgToCheck, instUserRole)
-    }
-
-    boolean isYoda() {
-        getAuthorities().authority.contains('ROLE_YODA')
-    }
-
-    /**
-     * Checks if the user is the last INST_ADM of the ${@link Org}s affiliated to
-     * @return is the user the last institution admin?
-     */
-    boolean isLastInstAdmin() {
-        boolean lia = false
-
-        affiliations.each { aff ->
-            if (BeanStore.getInstAdmService().isUserLastInstAdminForOrg(this, aff.org)) {
-                lia = true
-            }
-        }
-        lia
     }
 
     /**

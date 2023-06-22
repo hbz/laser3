@@ -315,7 +315,6 @@ class PlatformController  {
         Platform platformInstance = Platform.get(params.id)
 
         Org selectedInstitution = contextService.getOrg()
-        List<Org> authorizedOrgs = contextService.getUser().getAffiliationOrgs()
 
         String hql = "select oapl from OrgAccessPointLink oapl join oapl.oap as ap "
             hql += "where ap.org =:institution and oapl.active=true and oapl.platform.id=${platformInstance.id}"
@@ -330,7 +329,7 @@ class PlatformController  {
 
         result.accessPointLinks = results
         result.platformInstance = platformInstance
-        result.institution = authorizedOrgs
+        result.institution = contextService.getUser().formalOrg ? [contextService.getUser().formalOrg] : []
         result.accessPointList = accessPointList
         result.selectedInstitution = selectedInstitution.id
         result
@@ -353,7 +352,6 @@ class PlatformController  {
             redirect action: 'list'
             return
         }
-        List<Org> authorizedOrgs = contextService.getUser().getAffiliationOrgs()
         Org selectedInstitution =  contextService.getOrg()
         if (params.institution_id){
             selectedInstitution = Org.get(params.institution_id)
@@ -371,7 +369,7 @@ class PlatformController  {
 
         result.accessPointLinks = results
         result.platformInstance = platformInstance
-        result.institution = authorizedOrgs
+        result.institution = contextService.getUser().formalOrg ? [contextService.getUser().formalOrg] : []
         result.accessPointList = accessPointList
         result.selectedInstitution = selectedInstitution.id
         render(view: "_apLinkContent", model: result)

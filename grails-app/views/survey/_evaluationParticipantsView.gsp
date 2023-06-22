@@ -136,7 +136,7 @@
     <h4 class="ui header"><g:message code="surveyParticipants.hasAccess"/></h4>
 
     <g:set var="surveyParticipantsHasAccess"
-           value="${participants.findAll { it.org.hasAccessOrg() }}"/>
+           value="${participants.findAll { it.org.hasInstAdmin() }}"/>
 
 
         <g:if test="${surveyParticipantsHasAccess}">
@@ -397,7 +397,7 @@
     <h4 class="ui header"><g:message code="surveyParticipants.hasNotAccess"/></h4>
 
     <g:set var="surveyParticipantsHasNotAccess"
-           value="${participants.findAll { !it.org.hasAccessOrg() }}"/>
+           value="${participants.findAll { !it.org.hasInstAdmin() }}"/>
 
 
     <g:if test="${surveyParticipantsHasNotAccess}">

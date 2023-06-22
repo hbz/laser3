@@ -33,7 +33,6 @@ import org.apache.commons.lang3.StringUtils
  *     <li>institution metadata is maintained in LAS:eR directly whereas providers should curate themselves in we:kb; organisations thus have a we:kb-ID (stored as {@link #gokbId}, naming is legacy) which serves as synchronisation
  *     key between the data in the two webapps</li>
  * </ul>
- * @see UserOrgRole
  * @see OrgRole
  * @see OrgSetting
  */
@@ -116,7 +115,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         prsLinks:           'org',
         contacts:           'org',
         addresses:          'org',
-        affiliations:       'org',
         propertySet:        'owner',
         altnames:           'org',
         documents:          'org',
@@ -133,7 +131,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         prsLinks:           PersonRole,
         contacts:           Contact,
         addresses:          Address,
-        affiliations:       UserOrgRole,
         propertySet:        OrgProperty,
         altnames:           AlternativeName,
         orgType:            RefdataValue,
@@ -193,7 +190,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         incomingCombos      batchSize: 10
         links               batchSize: 10
         prsLinks            batchSize: 10
-        affiliations        batchSize: 10
         propertySet    batchSize: 10
         documents           batchSize: 10
         platforms           sort:'name', order:'asc', batchSize: 10
@@ -463,18 +459,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     }
 
     /**
-     * Gets all institution administrators of this institution
-     * @return a {@link List} of {@link User}s who are registered as administrators
-     */
-    List<User> getAllValidInstAdmins() {
-        List<User> admins = User.executeQuery(
-                "select u from User u join u.affiliations uo where uo.org = :org and uo.formalRole = :role and u.enabled = true",
-                [org: this, role: Role.findByAuthority('INST_ADM')]
-        )
-        admins
-    }
-
-    /**
      * Gets all identifiers of this institution belonging to the given namespace
      * @param idtype the namespace string to which the requested identifiers belong
      * @return a {@link List} of {@link Identifier}s belonging to the given namespace
@@ -537,8 +521,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         if(currentSubscriptions)
             return false
         //verification c: check if org has active users
-        UserOrgRole activeUsers = UserOrgRole.findByOrg(this)
-        if(activeUsers)
+        if (User.findAllByFormalOrg(this))
             return false
         return true
     }
@@ -719,12 +702,19 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         }
     }
 
+    boolean hasInstAdminEnabled() {
+        List<Long> admins = User.executeQuery(
+                'select u.id from User u where u.formalOrg = :fo and u.formalRole = :fr and u.enabled = true',
+                [fo: this, fr: Role.findByAuthority('INST_ADM')])
+        admins.size() > 0
+    }
+
     /**
      * Checks if there is an institutional administrator registered to this institution
      * @return true if there is at least one user registered as institutional administrator, false otherwise
      */
-    boolean hasAccessOrg(){
-        if (UserOrgRole.findAllByOrgAndFormalRole(this, Role.findByAuthority('INST_ADM'))) {
+    boolean hasInstAdmin(){
+        if (User.findAllByFormalOrgAndFormalRole(this, Role.findByAuthority('INST_ADM'))) {
             return true
         }
         else {
@@ -736,12 +726,12 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      * Lists all users affiliated to this institution
      * @return a {@link List} of {@link User}s associated to this institution; grouped by administrators, editors and users (with reading permissions only)
      */
-    Map<String, Object> hasAccessOrgListUser(){
-        Map<String, Object> result = [:]
-
-        result.instAdms    = UserOrgRole.findAllByOrgAndFormalRole(this, Role.findByAuthority('INST_ADM'))
-        result.instEditors = UserOrgRole.findAllByOrgAndFormalRole(this, Role.findByAuthority('INST_EDITOR'))
-        result.instUsers   = UserOrgRole.findAllByOrgAndFormalRole(this, Role.findByAuthority('INST_USER'))
+    Map<String, Object> getUserMap(){
+        Map<String, Object> result = [
+                instAdms:       User.findAllByFormalOrgAndFormalRole(this, Role.findByAuthority('INST_ADM')),
+                instEditors:    User.findAllByFormalOrgAndFormalRole(this, Role.findByAuthority('INST_EDITOR')),
+                instUsers:      User.findAllByFormalOrgAndFormalRole(this, Role.findByAuthority('INST_USER'))
+        ]
 
         return result
     }

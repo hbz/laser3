@@ -15,49 +15,47 @@ import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 @Transactional
 class ContextService {
 
+    AccessService accessService
     CacheService cacheService
     SpringSecurityService springSecurityService
-
-    /**
-     * Sets the picked institution as current context
-     * @param context the institution used for the current session
-     */
-    void setOrg(Org context) {
-        try {
-            SessionCacheWrapper scw = getSessionCache()
-            scw.put('contextOrg', context)
-        }
-        catch (Exception e) {
-            log.warn('setOrg() - ' + e.getMessage())
-        }
-    }
 
     /**
      * Retrieves the institution used for the current session
      * @return the institution used for the session (the context org)
      */
     Org getOrg() {
-        Org.withNewSession {
-            try {
-                SessionCacheWrapper scw = getSessionCache()
+        // todo
 
-                def context = scw.get('contextOrg')
-                if (! context) {
-                    context = getUser()?.getSettingsValue(UserSetting.KEYS.DASHBOARD)
-
-                    if (context) {
-                        scw.put('contextOrg', context)
-                    }
-                }
-                if (context) {
-                    return (Org) GrailsHibernateUtil.unwrapIfProxy(context)
-                }
+        try {
+            Org context = getUser()?.formalOrg
+            if (context) {
+                return (Org) GrailsHibernateUtil.unwrapIfProxy(context)
             }
-            catch (Exception e) {
-                log.warn('getOrg() - ' + e.getMessage())
-            }
-            return null
         }
+        catch (Exception e) {
+            log.warn('getOrg() - ' + e.getMessage())
+        }
+        return null
+
+//            try {
+//                SessionCacheWrapper scw = getSessionCache()
+//
+//                def context = scw.get('contextOrg')
+//                if (! context) {
+//                    context = getUser()?.formalOrg
+//
+//                    if (context) {
+//                        scw.put('contextOrg', context)
+//                    }
+//                }
+//                if (context) {
+//                    return (Org) GrailsHibernateUtil.unwrapIfProxy(context)
+//                }
+//            }
+//            catch (Exception e) {
+//                log.warn('getOrg() - ' + e.getMessage())
+//            }
+//            return null
     }
 
     /**
@@ -65,17 +63,45 @@ class ContextService {
      * @return the user object
      */
     User getUser() {
-        //User.withNewSession { ?? LazyInitializationException in /profile/index 
-            try {
-                if (springSecurityService.isLoggedIn()) {
-                    return (User) springSecurityService.getCurrentUser()
-                }
+        try {
+            if (springSecurityService.isLoggedIn()) {
+                return (User) springSecurityService.getCurrentUser()
             }
-            catch (Exception e) {
-                log.warn('getUser() - ' + e.getMessage())
-            }
-            return null
-        //}
+        }
+        catch (Exception e) {
+            log.warn('getUser() - ' + e.getMessage())
+        }
+        return null
+    }
+
+    // -- Context checks -- user.formalOrg based perm/role checks - all withFakeRole --
+    // TODO - refactoring
+
+    /**
+     * Permission check (granted by customer type) for the current context org.
+     */
+    boolean hasPerm(String orgPerms) {
+        accessService.ctxPerm(orgPerms)
+    }
+    boolean hasPerm_or_ROLEADMIN(String orgPerms) {
+        accessService.ctxPerm_or_ROLEADMIN(orgPerms)
+    }
+    boolean hasPermAsInstUser_or_ROLEADMIN(String orgPerms) {
+        accessService.ctxInstUserCheckPerm_or_ROLEADMIN(orgPerms)
+    }
+    boolean hasPermAsInstEditor_or_ROLEADMIN(String orgPerms) {
+        accessService.ctxInstEditorCheckPerm_or_ROLEADMIN(orgPerms)
+    }
+    boolean hasPermAsInstAdm_or_ROLEADMIN(String orgPerms) {
+        accessService.ctxInstAdmCheckPerm_or_ROLEADMIN(orgPerms)
+    }
+
+    boolean hasAffiliationX(String orgPerms, String instUserRole) {
+        accessService.ctxPermAffiliation(orgPerms, instUserRole)
+        // -> accessService._hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser
+        // + - -> user.hasCtxAffiliation_or_ROLEADMIN
+        //     + -> userService.checkAffiliation_or_ROLEADMIN
+        // + - -> accessService._hasPerm_forOrg_withFakeRole
     }
 
     // -- Cache --

@@ -46,7 +46,7 @@ class PersonController  {
     def create() {
         Person.withTransaction {
             Org contextOrg = contextService.getOrg()
-            List userMemberships = contextService.getUser().getAffiliationOrgs()
+            List userMemberships = contextService.getUser().formalOrg ? [contextService.getUser().formalOrg] : []
 
             switch (request.method) {
                 case 'GET':
@@ -64,7 +64,6 @@ class PersonController  {
                                 flash.error = message(code: 'default.not.created.message', args: [message(code: 'person.label')]) as String
                                 log.debug("Person could not be created: " + personInstance.errors)
                                 redirect(url: request.getHeader('referer'))
-                                //render view: 'create', model: [personInstance: personInstance, userMemberships: userMemberships]
                                 return
                             }
                             // processing dynamic form data

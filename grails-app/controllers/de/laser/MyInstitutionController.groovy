@@ -730,7 +730,7 @@ class MyInstitutionController  {
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        if (! (result.user as User).isMemberOf(result.institution as Org)) {
+        if (! (result.user as User).isFormal(result.institution as Org)) {
             flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]) as String
             response.sendError(HttpStatus.SC_FORBIDDEN)
             return;
@@ -1885,7 +1885,7 @@ class MyInstitutionController  {
     def modal_create() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
-        if (! (result.user as User).isMemberOf(result.institution as Org)) {
+        if (! (result.user as User).isFormal(result.institution as Org)) {
             flash.error = "You do not have permission to access ${result.institution.name} pages. Please request access on the profile page";
             response.sendError(HttpStatus.SC_FORBIDDEN)
             return;
@@ -2184,7 +2184,7 @@ class MyInstitutionController  {
 
         if(result.surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]) {
             result.subscription = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.institution)
-            result.authorizedOrgs = result.user.getAffiliationOrgs()
+            result.formalOrg = result.user.formalOrg as Org
             // restrict visible for templates/links/orgLinksAsList
             result.costItemSums = [:]
             result.visibleOrgRelations = []
@@ -2448,7 +2448,6 @@ class MyInstitutionController  {
      * Lists the users of the context institution
      * @return a list of users affiliated to the context institution
      * @see User
-     * @see de.laser.auth.UserOrgRole
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_ADM'])
     @Secured(closure = {
@@ -2503,15 +2502,7 @@ class MyInstitutionController  {
         }
 
         if (result.user) {
-            List<Org> affils = Org.executeQuery('select distinct uo.org from UserOrgRole uo where uo.user = :user',
-                    [user: result.user])
-
-            if (affils.size() > 1) {
-                flash.error = message(code: 'user.delete.error.multiAffils') as String
-                redirect action: 'editUser', params: [uoid: params.uoid]
-                return
-            }
-            else if (affils.size() == 1 && (affils.get(0).id != contextService.getOrg().id)) {
+            if (result.user.formalOrg && (! (result.user as User).isFormal(contextService.getOrg()))) {
                 flash.error = message(code: 'user.delete.error.foreignOrg') as String
                 redirect action: 'editUser', params: [uoid: params.uoid]
                 return
@@ -2520,14 +2511,14 @@ class MyInstitutionController  {
             if (params.process && result.editable) {
                 User userReplacement = (User) genericOIDService.resolveOID(params.userReplacement)
 
-                result.delResult = deletionService.deleteUser(result.user, userReplacement, false)
+                result.delResult = deletionService.deleteUser(result.user as User, userReplacement, false)
             }
             else {
-                result.delResult = deletionService.deleteUser(result.user, null, DeletionService.DRY_RUN)
+                result.delResult = deletionService.deleteUser(result.user as User, null, DeletionService.DRY_RUN)
             }
 
             result.substituteList = User.executeQuery(
-                    'select distinct u from User u join u.affiliations ua where ua.org = :ctxOrg and u != :self and ua.formalRole = :instAdm order by u.username',
+                    'select distinct u from User u where u.formalOrg = :ctxOrg and u != :self and u.formalRole = :instAdm order by u.username',
                     [ctxOrg: result.orgInstance, self: result.user, instAdm: Role.findByAuthority('INST_ADM')]
             )
         }
@@ -2603,20 +2594,20 @@ class MyInstitutionController  {
     /**
      * Attaches a given user to the given institution
      * @return the user editing view
-     * @see de.laser.auth.UserOrgRole
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_ADM'])
     @Secured(closure = {
         ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
     })
-    def addAffiliation() {
+    def setAffiliation() {
         Map<String, Object> result = userControllerService.getResultGenericsERMS3067(params)
         if (! result.editable) {
             flash.error = message(code: 'default.noPermissions') as String
             redirect action: 'editUser', params: [uoid: params.uoid]
             return
         }
-        userService.addAffiliation(result.user,params.org,params.formalRole,flash)
+
+        userService.setAffiliation(result.user as User, params.org, params.formalRole, flash)
         redirect action: 'editUser', params: [uoid: params.uoid]
     }
 
@@ -4378,23 +4369,6 @@ join sub.orgRelations or_sub where
     }
 
     /**
-     * If a user is affiliated to several institutions, this call changes the context institution to the given one and redirects
-     * the user to the dashboard page
-     * @return the dashboard view of the picked context institution
-     */
-    @Secured(['ROLE_USER'])
-    def switchContext() {
-        User user = contextService.getUser()
-        Org org = (Org) genericOIDService.resolveOID(params.oid)
-
-        if (user && org && org.id in user.getAffiliationOrgsIdList()) {
-            log.debug('switched context to: ' + org)
-            contextService.setOrg(org)
-        }
-        redirect action:'dashboard', params:params.remove('oid')
-    }
-
-    /**
      * Deletes the given private property definition for this institution
      * @param params the parameter map containing the property definition parameters
      * @return success or error messages
@@ -4466,6 +4440,25 @@ join sub.orgRelations or_sub where
                 return;
             }
         }
+    }
+
+    @DebugInfo(ctxInstUserCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @Secured(closure = {
+        ctx.accessService.ctxInstUserCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+    })
+    def currentSubscriptionsTransfer() {
+        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
+
+        SimpleDateFormat sdfyear = DateUtils.getSDF_yyyy()
+        String currentYear = sdfyear.format(new Date())
+
+        //params.sort = params.sort ?: 'providerAgency'
+
+        params.referenceYears = params.referenceYears ?: currentYear
+
+        result.putAll(subscriptionService.getMySubscriptions(params,result.user,result.institution))
+
+        result
     }
 
 

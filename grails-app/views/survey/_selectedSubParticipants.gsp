@@ -41,7 +41,7 @@
     <h3 class="ui header"><g:message code="surveyParticipants.hasAccess"/></h3>
 
     <g:set var="surveyParticipantsHasAccess"
-           value="${selectedSubParticipants?.findAll{ it?.hasAccessOrg() }?.sort{ it?.sortname }}"/>
+           value="${selectedSubParticipants?.findAll{ it?.hasInstAdmin() }?.sort{ it?.sortname }}"/>
 
     <div class="four wide column">
     <g:if test="${surveyParticipantsHasAccess}">
@@ -67,7 +67,7 @@
 
 
     <g:set var="surveyParticipantsHasNotAccess"
-           value="${selectedSubParticipants.findAll{ !it?.hasAccessOrg() }.sort{ it?.sortname }}"/>
+           value="${selectedSubParticipants.findAll{ !it?.hasInstAdmin() }.sort{ it?.sortname }}"/>
 
     <div class="four wide column">
     <g:if test="${surveyParticipantsHasNotAccess}">

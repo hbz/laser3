@@ -23,7 +23,7 @@
         modalText = message(code:'template.documents.add')
         submitButtonLabel = message(code:'default.button.create_new.label')
         formUrl = createLink(controller: 'docstore', action:'uploadDocument')
-        modalId = "modalCreateDocument"
+        modalId = newModalId ?: "modalCreateDocument"
     }
 %>
 <ui:modal id="${modalId}" text="${modalText}" msgSave="${submitButtonLabel}">
@@ -69,7 +69,7 @@
                         $('#${modalId} input[name=upload_file_placeholder]').val('');
                     };
 
-                    $('#modalCreateDocument .action .icon.button').click( function() {
+                    $('#${modalId} .action .icon.button').click( function() {
                         $(this).parent('.action').find('input:file').click();
                     });
 
