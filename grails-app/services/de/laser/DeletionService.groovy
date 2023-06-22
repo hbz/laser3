@@ -1,6 +1,6 @@
 package de.laser
 
-
+import de.laser.api.v0.ApiToolkit
 import de.laser.auth.User
 import de.laser.finance.*
 import de.laser.stats.Fact
@@ -15,6 +15,7 @@ import de.laser.survey.SurveyResult
 import de.laser.system.SystemProfiler
 import de.laser.titles.TitleHistoryEvent
 import de.laser.titles.TitleHistoryEventParticipant
+import de.laser.traces.DeletedObject
 import groovy.util.logging.Slf4j
 import org.elasticsearch.action.delete.DeleteRequest
 import org.elasticsearch.client.RequestOptions
@@ -184,7 +185,11 @@ class DeletionService {
 
                     // org roles
                     lic.orgRelations.clear()
-                    oRoles.each { tmp -> tmp.delete() }
+                    Set<String> delRelations = []
+                    oRoles.each { tmp ->
+                        delRelations << tmp.org.globalUID
+                        tmp.delete()
+                    }
 
                     // person roles
                     lic.prsLinks.clear()
@@ -207,7 +212,10 @@ class DeletionService {
                     privateProps.each { tmp -> tmp.delete() }
 
                     lic.delete()
-
+                    DeletedObject.withTransaction {
+                        if(lic.isPublicForApi)
+                            DeletedObject.construct(lic, delRelations)
+                    }
                     result.status = RESULT_SUCCESS
                 }
                 catch (Exception e) {
@@ -368,7 +376,12 @@ class DeletionService {
 
                     // org roles
                     sub.orgRelations.clear()
-                    oRoles.each { tmp -> tmp.delete() }
+                    Set<String> delRelations = []
+                    oRoles.each { tmp ->
+                        if(tmp.roleType != RDStore.OR_SUBSCRIBER_CONS_HIDDEN)
+                            delRelations << tmp.org.globalUID
+                        tmp.delete()
+                    }
 
                     // person roles
                     sub.prsLinks.clear()
@@ -467,6 +480,11 @@ class DeletionService {
                     }
 
                     sub.delete()
+
+                    DeletedObject.withTransaction {
+                        if(sub.isPublicForApi)
+                            DeletedObject.construct(sub, delRelations)
+                    }
                     status.flush()
 
                     result.status = RESULT_SUCCESS
@@ -645,6 +663,13 @@ class DeletionService {
                     //orgTypes.each{ tmp -> tmp.delete() }
 
                     // orgSettings
+                    Set<String> specialAccess = []
+                    Set<OrgSetting.KEYS> specGrants = [OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS, OrgSetting.KEYS.EZB_SERVER_ACCESS]
+                    specGrants.each { OrgSetting.KEYS specGrant ->
+                        if(OrgSetting.get(org, specGrant) == RDStore.YN_YES) {
+                            specialAccess.addAll(ApiToolkit.getOrgsWithSpecialAPIAccess(specGrant))
+                        }
+                    }
                     orgSettings.each { tmp -> tmp.delete() }
 
                     // addresses
@@ -680,6 +705,10 @@ class DeletionService {
                     // TODO delete routine
 
                     org.delete()
+
+                    DeletedObject.withTransaction {
+                        DeletedObject.construct(org, specialAccess)
+                    }
                     status.flush()
 
                     result.status = RESULT_SUCCESS
@@ -941,6 +970,47 @@ class DeletionService {
                 return false
             }
         }
+    }
+
+    /**
+     * Deletes the given cost item and unsets eventual links. If it is the last item in a cost item group,
+     * the group will be deleted as well for that it will not appear in dropdowns any more
+     * @param params the parameter map containing the cost item id to delete and the tab which should be displayed after deletion
+     * @return result status map: OK if succeeded, error otherwise
+     */
+    boolean deleteCostItem(CostItem ci) {
+        if (ci) {
+            Set<String> accessibleOrgs = [ci.owner.globalUID]
+            CostItem.withTransaction { ts ->
+                Order order = ci.order
+                Invoice invoice = ci.invoice
+                if(ci.sub && ci.isVisibleForSubscriber) {
+                    accessibleOrgs << ci.sub.getSubscriber().globalUID
+                }
+                ci.order = null
+                ci.invoice = null
+                CostItem.findAllByCopyBase(ci).each { CostItem tmp ->
+                    tmp.copyBase = null
+                    tmp.save()
+                }
+                if (!CostItem.findByOrderAndIdNotEqual(order, ci.id))
+                    order.delete()
+                if (!CostItem.findByInvoiceAndIdNotEqual(invoice, ci.id))
+                    invoice.delete()
+                PendingChange.executeUpdate('delete from PendingChange pc where pc.costItem = :ci', [ci: ci])
+                List<CostItemGroup> cigs = CostItemGroup.findAllByCostItem(ci)
+                cigs.each { CostItemGroup tmp ->
+                    tmp.delete()
+                }
+                ts.flush()
+                ci.delete()
+            }
+            DeletedObject.withTransaction {
+                DeletedObject.construct(ci, accessibleOrgs)
+            }
+            true
+        }
+        else false
     }
 
     /**

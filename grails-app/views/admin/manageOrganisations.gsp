@@ -215,6 +215,8 @@
         </tbody>
     </table>
 
+    <ui:paginate action="manageOrganisations" controller="admin" params="${params}" max="${max}" total="${orgListTotal}" />
+
     <%-- changing gasco entry --%>
 
     <ui:modal id="gascoEntryModal" message="org.gascoEntry.label" isEditModal="isEditModal">

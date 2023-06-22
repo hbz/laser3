@@ -52,7 +52,7 @@
               <td>${source.editUri}</td>
               <td>
                   <%--
-                      Set<String> requestedStatus = ["Current","Expected","Retired","Deleted",GlobalSourceSyncService.PERMANENTLY_DELETED,"Removed"]
+                      Set<String> requestedStatus = ["Current","Expected","Retired","Deleted",Constants.PERMANENTLY_DELETED,"Removed"]
                       String statusString = ""
                       requestedStatus.each { String status ->
                           statusString += "&status=${status}"
