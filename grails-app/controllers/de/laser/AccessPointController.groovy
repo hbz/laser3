@@ -142,7 +142,7 @@ class AccessPointController  {
      * @return the access point creation view which in turn outputs the fragment with the fields which need to be filled out
      * @see OrgAccessPoint
      */
-    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.PERMS_BASIC])
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_BASIC])
     @Secured(closure = {
         ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_BASIC )
     })
@@ -169,7 +169,7 @@ class AccessPointController  {
      * Takes the given input parameters and builds a new access point for the institution
      * @return the edit view in case of success, the creation form page otherwise
      */
-    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.PERMS_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
         ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_BASIC )
     })
@@ -191,7 +191,7 @@ class AccessPointController  {
      * Handles the deletion call of the given access point to the service
      * @return the list of institution's access points in case of success
      */
-    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.PERMS_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
         ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_BASIC )
     })

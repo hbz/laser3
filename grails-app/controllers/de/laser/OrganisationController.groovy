@@ -87,7 +87,7 @@ class OrganisationController  {
      *     <li>oamonitor: permissions to the Open Access harvest access</li>
      * </ul>
      */
-    @DebugInfo(ctxInstAdmCheckPerm_or_ROLEADMIN = ['FAKE,ORG_INST_BASIC,ORG_CONSORTIUM_BASIC'])
+    @DebugInfo(hasPermAsInstAdm_or_ROLEADMIN = ['FAKE,ORG_INST_BASIC,ORG_CONSORTIUM_BASIC'])
     @Secured(closure = {
         ctx.contextService.hasPermAsInstAdm_or_ROLEADMIN( 'FAKE,ORG_INST_BASIC,ORG_CONSORTIUM_BASIC' )
     })
@@ -888,7 +888,7 @@ class OrganisationController  {
      * Creates a new provider organisation with the given parameters
      * @return the details view of the provider or the creation view in case of an error
      */
-    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
         ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
@@ -918,7 +918,7 @@ class OrganisationController  {
      * Call to create a new provider; offers first a query for the new name to insert in order to exclude duplicates
      * @return the empty form (with a submit to proceed with the new organisation) or a list of eventual name matches
      */
-    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
     @Secured(closure = {
         ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
@@ -937,7 +937,7 @@ class OrganisationController  {
      * Call to create a new member with the given parameter map
      * @return the details view of the new member in case of success, the creation page otherwise
      */
-    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
         ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
@@ -957,7 +957,7 @@ class OrganisationController  {
      * Call to create a new consortium member; opens a form to check the new name against existing ones in order to exclude duplicates
      * @return the form with eventual name matches
      */
-    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC])
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC])
     @Secured(closure = {
         ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
@@ -1318,7 +1318,7 @@ class OrganisationController  {
      * Call to delete the given customer identifier
      * @return the customer identifier table view
      */
-    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = ['FAKE,ORG_INST_BASIC,ORG_CONSORTIUM_BASIC'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = ['FAKE,ORG_INST_BASIC,ORG_CONSORTIUM_BASIC'], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
         ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( 'FAKE,ORG_INST_BASIC,ORG_CONSORTIUM_BASIC' )
     })
@@ -1405,7 +1405,7 @@ class OrganisationController  {
      * Data the given user may have authored will be reassigned to another user
      * @return the user deletion view where eventual conflicts are being listed
      */
-    @DebugInfo(ctxInstAdmCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC])
+    @DebugInfo(hasPermAsInstAdm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC])
     @Secured(closure = {
         ctx.contextService.hasPermAsInstAdm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
@@ -1447,7 +1447,7 @@ class OrganisationController  {
      * Call to edit the given user profile
      * @return the profile editing template
      */
-    @DebugInfo(ctxInstAdmCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC])
+    @DebugInfo(hasPermAsInstAdm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC])
     @Secured(closure = {
         ctx.contextService.hasPermAsInstAdm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
@@ -1470,7 +1470,7 @@ class OrganisationController  {
      * Call to create a new user profile
      * @return the profile creation template
      */
-    @DebugInfo(ctxInstAdmCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC])
+    @DebugInfo(hasPermAsInstAdm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC])
     @Secured(closure = {
         ctx.contextService.hasPermAsInstAdm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
@@ -1486,7 +1486,7 @@ class OrganisationController  {
      * Takes the submitted parameters and creates a new user record with the given parameters
      * @return the user editing template in case of success, redirects back to the creation page otherwise
      */
-    @DebugInfo(ctxInstAdmCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC])
+    @DebugInfo(hasPermAsInstAdm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC])
     @Secured(closure = {
         ctx.contextService.hasPermAsInstAdm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
@@ -1509,7 +1509,7 @@ class OrganisationController  {
      * Attaches the given user to the given institution
      * @return the user editing profile with the updated data
      */
-    @DebugInfo(ctxInstAdmCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC])
+    @DebugInfo(hasPermAsInstAdm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC])
     @Secured(closure = {
         ctx.contextService.hasPermAsInstAdm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })

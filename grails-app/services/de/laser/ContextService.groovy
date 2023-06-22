@@ -20,6 +20,8 @@ class ContextService {
     CacheService cacheService
     SpringSecurityService springSecurityService
 
+    // -- Formal --
+
     /**
      * Retrieves the institution used for the current session
      * @return the institution used for the session (the context org)
@@ -75,8 +77,25 @@ class ContextService {
         return null
     }
 
-    // -- Context checks -- user.formalOrg based perm/role checks - all withFakeRole --
-    // TODO - refactoring
+    // -- Cache --
+
+    EhcacheWrapper getUserCache(String cacheKeyPrefix) {
+        cacheService.getSharedUserCache(getUser(), cacheKeyPrefix)
+    }
+
+    EhcacheWrapper getSharedOrgCache(String cacheKeyPrefix) {
+        cacheService.getSharedOrgCache(getOrg(), cacheKeyPrefix)
+    }
+
+    /**
+     * Initialises the session cache
+     * @return a new session cache wrapper instance
+     */
+    SessionCacheWrapper getSessionCache() {
+        return new SessionCacheWrapper()
+    }
+
+    // -- CONTEXT CHECKS -- user.formalOrg based perm/role checks - all withFakeRole --
 
     /**
      * Permission check (granted by customer type) for the current context org.
@@ -118,21 +137,5 @@ class ContextService {
         // + - -> accessService._hasPerm_forOrg_withFakeRole
     }
 
-    // -- Cache --
 
-    EhcacheWrapper getUserCache(String cacheKeyPrefix) {
-        cacheService.getSharedUserCache(getUser(), cacheKeyPrefix)
-    }
-
-    EhcacheWrapper getSharedOrgCache(String cacheKeyPrefix) {
-        cacheService.getSharedOrgCache(getOrg(), cacheKeyPrefix)
-    }
-
-    /**
-     * Initialises the session cache
-     * @return a new session cache wrapper instance
-     */
-    SessionCacheWrapper getSessionCache() {
-        return new SessionCacheWrapper()
-    }
 }
