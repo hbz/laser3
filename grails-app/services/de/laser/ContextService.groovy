@@ -15,6 +15,7 @@ import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 @Transactional
 class ContextService {
 
+    AccessService accessService
     CacheService cacheService
     SpringSecurityService springSecurityService
 
@@ -71,6 +72,33 @@ class ContextService {
             log.warn('getUser() - ' + e.getMessage())
         }
         return null
+    }
+
+    // -- Context checks -- user.formalOrg based perm/role checks - all withFakeRole --
+    // TODO - refactoring
+
+    boolean hasPerm(String orgPerms) {
+        accessService.ctxPerm(orgPerms)
+    }
+    boolean hasPerm_or_ROLEADMIN(String orgPerms) {
+        accessService.ctxPerm_or_ROLEADMIN(orgPerms)
+    }
+    boolean hasPermAsInstUser_or_ROLEADMIN(String orgPerms) {
+        accessService.ctxInstUserCheckPerm_or_ROLEADMIN(orgPerms)
+    }
+    boolean hasPermAsInstEditor_or_ROLEADMIN(String orgPerms) {
+        accessService.ctxInstEditorCheckPerm_or_ROLEADMIN(orgPerms)
+    }
+    boolean hasPermAsInstAdm_or_ROLEADMIN(String orgPerms) {
+        accessService.ctxInstAdmCheckPerm_or_ROLEADMIN(orgPerms)
+    }
+
+    boolean hasAffiliationX(String orgPerms, String instUserRole) {
+        accessService.ctxPermAffiliation(orgPerms, instUserRole)
+        // -> accessService._hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser
+        // + - -> user.hasCtxAffiliation_or_ROLEADMIN
+        //     + -> userService.checkAffiliation_or_ROLEADMIN
+        // + - -> accessService._hasPerm_forOrg_withFakeRole
     }
 
     // -- Cache --

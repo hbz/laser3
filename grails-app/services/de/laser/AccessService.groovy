@@ -18,22 +18,19 @@ class AccessService {
 
     ContextService contextService
 
-    /**
-     * Test method
-     */
-    boolean test(boolean value) {
-        value
-    }
-
     // --- checks for contextService.getOrg() ---
 
     /**
-     * @param orgPerms customer type depending permissions to check against
-     * @return true if access is granted, false otherwise
+     * Use {@link ContextService#hasPerm(java.lang.String)} instead.
      */
+    @Deprecated
     boolean ctxPerm(String orgPerms) {
         _hasPerm_forOrg_withFakeRole(orgPerms.split(','), contextService.getOrg())
     }
+    /**
+     * Use {@link ContextService#hasPerm_or_ROLEADMIN(java.lang.String)} instead.
+     */
+    @Deprecated
     boolean ctxPerm_or_ROLEADMIN(String orgPerms) {
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
             return true
@@ -42,45 +39,35 @@ class AccessService {
     }
 
     /**
-     * Substitution call for {@link #_hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(java.lang.String[], java.lang.String)}
-     * @param orgPerms customer type depending permissions to check against
-     * @param instUserRole the user permissions to check
-     * @return true if the user has the permissions granted and his context institution is one of the given customer types, false otherwise
+     * Use {@link ContextService#hasAffiliationX(java.lang.String, java.lang.String)} instead.
      */
+    @Deprecated
     boolean ctxPermAffiliation(String orgPerms, String instUserRole) {
         _hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(orgPerms.split(','), instUserRole)
     }
 
     /**
-     * Checks
-     * <ul>
-     *     <li>if the context institution is one of the given customer and organisation types and the user has the given rights granted</li>
-     *     <li>or if the user has the given global rights granted</li>
-     * </ul>
-     * @param orgPerms customer type depending permissions to check against
-     * @param instUserRole the user's affiliation to the context institution
-     * @return true if the user has one of the global permissions
-     * or if the context institution is one of the given customer and organisation types
-     * and if the user has the given permissions within the institution, false otherwise
+     * Use {@link ContextService#hasPerm(java.lang.String)} instead.
      */
     boolean ctxConsortiumCheckPermAffiliation_or_ROLEADMIN(String orgPerms, String instUserRole) {
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
             return true
         }
-//        boolean check1 = _hasPerm_forOrg_withFakeRole(orgPerms.split(','), contextService.getOrg())
-//        boolean check2 = contextService.getOrg().getAllOrgTypeIds().contains( RDStore.OT_CONSORTIUM.id )
-//        boolean check3 = instUserRole ? contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN(instUserRole.toUpperCase()) : false
-//
-//        check1 && check2 && check3
 
-        if (contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN( instUserRole?.toUpperCase() )) {
-            if (contextService.getOrg().getAllOrgTypeIds().contains( RDStore.OT_CONSORTIUM.id )) {
-                return _hasPerm_forOrg_withFakeRole(orgPerms.split(','), contextService.getOrg())
+        if (contextService.getUser() && contextService.getOrg() && instUserRole) {
+            if (contextService.getUser().hasCtxAffiliation_or_ROLEADMIN( instUserRole.toUpperCase() )) {
+                if (contextService.getOrg().getAllOrgTypeIds().contains( RDStore.OT_CONSORTIUM.id )) {
+                    return _hasPerm_forOrg_withFakeRole(orgPerms.split(','), contextService.getOrg())
+                }
             }
         }
         return false
     }
 
+    /**
+     * Use {@link ContextService#hasPermAsInstUser_or_ROLEADMIN(java.lang.String)} instead.
+     */
+    @Deprecated
     boolean ctxInstUserCheckPerm_or_ROLEADMIN(String orgPerms) {
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
             return true
@@ -88,6 +75,10 @@ class AccessService {
         _hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(orgPerms.split(','), 'INST_USER')
     }
 
+    /**
+     * Use {@link ContextService#hasPermAsInstEditor_or_ROLEADMIN(java.lang.String)} instead.
+     */
+    @Deprecated
     boolean ctxInstEditorCheckPerm_or_ROLEADMIN(String orgPerms) {
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
             return true
@@ -95,6 +86,10 @@ class AccessService {
         _hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(orgPerms.split(','), 'INST_EDITOR')
     }
 
+    /**
+     * Use {@link ContextService#hasPermAsInstAdm_or_ROLEADMIN(java.lang.String)} instead.
+     */
+    @Deprecated
     boolean ctxInstAdmCheckPerm_or_ROLEADMIN(String orgPerms) {
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
             return true
@@ -189,13 +184,11 @@ class AccessService {
      * @return true if the institution has the given customer type and the user the given institutional permissions, false otherwise
      */
     private boolean _hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(String[] orgPerms, String instUserRole) {
-//        boolean check1 = _hasPerm_forOrg_withFakeRole(orgPerms, contextService.getOrg())
-//        boolean check2 = instUserRole ? contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN(instUserRole.toUpperCase()) : false
-//
-//        check1 && check2
 
-        if (contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN( instUserRole?.toUpperCase() )) {
-            return _hasPerm_forOrg_withFakeRole(orgPerms, contextService.getOrg())
+        if (contextService.getUser() && instUserRole) {
+            if (contextService.getUser().hasCtxAffiliation_or_ROLEADMIN(instUserRole.toUpperCase())) {
+                return _hasPerm_forOrg_withFakeRole(orgPerms, contextService.getOrg())
+            }
         }
         return false
     }

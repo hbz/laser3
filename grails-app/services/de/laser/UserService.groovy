@@ -115,7 +115,7 @@ class UserService {
                 setAffiliation(user, formalOrg.id, formalRole.id, flash)
 
                 if (formalRole.authority == 'INST_ADM' && existingUserOrgs == 0 && ! formalOrg.legallyObligedBy) { // only if new instAdm
-                    if (user.hasRoleForOrg(formalRole, formalOrg)) { // only on success
+                    if (user.isFormal(formalRole, formalOrg)) { // only on success
                         formalOrg.legallyObligedBy = contextService.getOrg()
                         formalOrg.save()
                         log.debug("set legallyObligedBy for ${formalOrg} -> ${contextService.getOrg()}")
@@ -175,39 +175,25 @@ class UserService {
      * @return true if the given permission is granted to the user in the given institution (or a missing one overridden by global roles), false otherwise
      */
     boolean checkAffiliation_or_ROLEADMIN(User userToCheck, Org orgToCheck, String instUserRole) {
-        boolean check = false
-
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
-            check = true // may the force be with you
+            return true // may the force be with you
         }
         if (! SpringSecurityUtils.ifAnyGranted('ROLE_USER')) {
-            check = false // min restriction fail
+            return false // min restriction fail
         }
 
-        // TODO:
+        return _checkUserOrgRole(userToCheck, orgToCheck, instUserRole)
+    }
 
-        if (! check) {
-            List<String> rolesToCheck = [instUserRole]
-
-            // handling inst role hierarchy
-            if (instUserRole == Role.INST_USER) {
-                rolesToCheck << Role.INST_EDITOR
-                rolesToCheck << Role.INST_ADM
-            }
-            else if (instUserRole == Role.INST_EDITOR) {
-                rolesToCheck << Role.INST_ADM
-            }
-
-            rolesToCheck.each { String rot ->
-                Role role = Role.findByAuthority(rot)
-                if (role) {
-                    check = check || userToCheck.hasRoleForOrg(role, orgToCheck)
-                }
-            }
+    boolean checkAffiliationAndCtxOrg(User userToCheck, Org orgToCheck, String instUserRole) {
+        if (! userToCheck || ! orgToCheck) {
+            return false
+        }
+        if (orgToCheck.id != contextService.getOrg().id) { // NEW CONSTRAINT
+            return false
         }
 
-        //TODO: log.debug("checkAffiliation_or_ROLEADMIN(): ${user} ${orgToCheck} ${instUserRole} -> ${check}")
-        check
+        return _checkUserOrgRole(userToCheck, orgToCheck, instUserRole)
     }
 
     boolean checkAffiliationAndCtxOrg_or_ROLEADMIN(User userToCheck, Org orgToCheck, String instUserRole) {
@@ -218,16 +204,8 @@ class UserService {
         checkAffiliationAndCtxOrg(userToCheck, orgToCheck, instUserRole)
     }
 
-    boolean checkAffiliationAndCtxOrg(User userToCheck, Org orgToCheck, String instUserRole) {
-        boolean result = false
-
-        if (! userToCheck || ! orgToCheck) {
-            return result
-        }
-        // NEW CONSTRAINT:
-        if (orgToCheck.id != contextService.getOrg().id) {
-            return result
-        }
+    private boolean _checkUserOrgRole(User userToCheck, Org orgToCheck, String instUserRole) {
+        boolean check = false
 
         List<String> rolesToCheck = [instUserRole]
 
@@ -240,21 +218,25 @@ class UserService {
             rolesToCheck << Role.INST_ADM
         }
 
-        rolesToCheck.each { String rot ->
-            result = result || userToCheck.hasRoleForOrg(Role.findByAuthority(rot), orgToCheck)
+        rolesToCheck.each { String rtc ->
+            Role role = Role.findByAuthority(rtc)
+            if (role) {
+                check = check || userToCheck.isFormal(role, orgToCheck)
+            }
         }
-        result
+        //TODO: log.debug("_checkUserOrgRole(): ${userToCheck} ${orgToCheck} ${instUserRole} -> ${check}")
+        check
     }
 
     // -- todo: check logic
 
-    boolean hasComboInstAdmPivileges(User user, Org org, List<RefdataValue> types) {
+    boolean hasComboInstAdmPivileges(User user, Org org) {
         boolean result = checkAffiliationAndCtxOrg(user, org, 'INST_ADM')
 
         List<Org> topOrgs = Org.executeQuery(
-                'select c.toOrg from Combo c where c.fromOrg = :org and c.type in (:types)', [org: org, types: types]
+                'select c.toOrg from Combo c where c.fromOrg = :org and c.type in (:types)', [org: org, types: [RDStore.COMBO_TYPE_CONSORTIUM]]
         )
-        topOrgs.each{ top ->
+        topOrgs.each { top ->
             if (checkAffiliationAndCtxOrg(user, top as Org, 'INST_ADM')) {
                 result = true
             }
@@ -266,7 +248,7 @@ class UserService {
 
     boolean isUserEditableForInstAdm(User user, User editor) {
         if (user.formalOrg) {
-            return hasComboInstAdmPivileges(editor, user.formalOrg, [RDStore.COMBO_TYPE_CONSORTIUM])
+            return hasComboInstAdmPivileges(editor, user.formalOrg)
         }
         else {
             return accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_ADM')

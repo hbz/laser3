@@ -149,10 +149,10 @@ class User {
         formalOrg?.id == BeanStore.getContextService().getOrg().id
     }
     boolean isFormal(Role role) {
-        hasRoleForOrg(role, BeanStore.getContextService().getOrg())
+        isFormal(role, BeanStore.getContextService().getOrg())
     }
 
-    boolean hasRoleForOrg(Role role, Org org) {
+    boolean isFormal(Role role, Org org) {
         (formalRole?.id == role.id) && (formalOrg?.id == org.id)
     }
 

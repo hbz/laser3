@@ -1357,7 +1357,7 @@ class OrganisationController  {
 
         if (! result.editable) {
             boolean instAdminExists = (result.orgInstance as Org).hasInstAdminEnabled()
-            boolean comboCheck = userService.hasComboInstAdmPivileges(result.user as User, result.orgInstance as Org, [RDStore.COMBO_TYPE_CONSORTIUM])
+            boolean comboCheck = userService.hasComboInstAdmPivileges(result.user as User, result.orgInstance as Org)
 
             result.editable = comboCheck && ! instAdminExists
         }
