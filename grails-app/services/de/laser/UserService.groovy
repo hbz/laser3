@@ -234,7 +234,7 @@ class UserService {
         boolean result = checkAffiliationAndCtxOrg(user, org, 'INST_ADM')
 
         List<Org> topOrgs = Org.executeQuery(
-                'select c.toOrg from Combo c where c.fromOrg = :org and c.type in (:types)', [org: org, types: [RDStore.COMBO_TYPE_CONSORTIUM]]
+                'select c.toOrg from Combo c where c.fromOrg = :org and c.type = :type', [org: org, type: RDStore.COMBO_TYPE_CONSORTIUM]
         )
         topOrgs.each { top ->
             if (checkAffiliationAndCtxOrg(user, top as Org, 'INST_ADM')) {

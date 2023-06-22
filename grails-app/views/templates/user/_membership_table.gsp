@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Org; grails.plugin.springsecurity.SpringSecurityUtils;" %>
+<%@ page import="de.laser.storage.RDStore; de.laser.Org; grails.plugin.springsecurity.SpringSecurityUtils;" %>
 <laser:serviceInjection />
 
 <div class="ui card">
@@ -17,11 +17,11 @@
         </thead>
         <tbody>
         <%
-            List comboOrgIds = Org.executeQuery('select c.fromOrg.id from Combo c where c.toOrg = :org', [org: contextService.getOrg()])
+            List comboOrgIds = Org.executeQuery('select c.fromOrg.id from Combo c where c.toOrg = :org and c.type = :type', [org: contextService.getOrg(), type: RDStore.COMBO_TYPE_CONSORTIUM])
         %>
 
         <g:if test="${userInstance.formalOrg}">
-            <g:if test="${controllerName == 'profile' || (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || (userInstance.formalOrg.id == contextService.getOrg().id) || (userInstance.formalOrg.id in comboOrgIds))}">
+            <g:if test="${controllerName == 'profile' || (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || (userInstance.isFormal()) || (userInstance.formalOrg.id in comboOrgIds))}">
                 <tr>
                     <td>
                         <g:link controller="organisation" action="show" id="${userInstance.formalOrg.id}">${userInstance.formalOrg.name}</g:link>
@@ -30,7 +30,7 @@
                         <%
                             boolean check = ! userInstance.isLastInstAdminOf(userInstance.formalOrg) && (
                                     SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || (
-                                        ( userInstance.formalOrg.id == contextService.getOrg().id || userInstance.formalOrg.id in comboOrgIds ) &&
+                                        ( userInstance.isFormal() || userInstance.formalOrg.id in comboOrgIds ) &&
                                                 contextService.getUser().isComboInstAdminOf(userInstance.formalOrg)
                                     )
                             )

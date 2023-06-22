@@ -114,7 +114,7 @@
 
     contextUser.isYoda()  : ${contextUser.isYoda()}
 
-    contextUser.isMemberOf(contextOrg)  : ${contextUser.isMemberOf(contextOrg)}
+    contextUser.isFormal(contextOrg)  : ${contextUser.isFormal(contextOrg)}
     contextUser.isComboInstAdminOf(contextOrg)  : ${contextUser.isComboInstAdminOf(contextOrg)}
 
     contextUser.isLastInstAdminOf(contextUser.formalOrg) : ${contextUser.isLastInstAdminOf(contextUser.formalOrg)}

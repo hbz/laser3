@@ -1374,7 +1374,10 @@ class OrganisationController  {
         result.titleMessage = "${result.orgInstance.name} - ${message(code:'org.nav.users')}"
         result.inContextOrg = false
         result.multipleAffiliationsWarning = true
-        Set<Org> availableComboOrgs = Org.executeQuery('select c.fromOrg from Combo c where c.toOrg = :ctxOrg order by c.fromOrg.name asc', [ctxOrg:result.orgInstance])
+        Set<Org> availableComboOrgs = Org.executeQuery(
+                'select c.fromOrg from Combo c where c.toOrg = :ctxOrg and c.type = :type order by c.fromOrg.name asc',
+                [ctxOrg: result.orgInstance, type: RDStore.COMBO_TYPE_CONSORTIUM]
+        )
         availableComboOrgs.add(result.orgInstance)
 
         result.navConfig = [

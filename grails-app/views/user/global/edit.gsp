@@ -102,7 +102,7 @@
                     </g:if>
 
                     <g:if test="${ availableOrgs && ! user.formalOrg}">
-                        <g:if test="${controllerName == 'user' || (controllerName in ['myInstitution', 'organisation'] && ! user.isMemberOf(orgInstance))}">
+                        <g:if test="${controllerName == 'user' || (controllerName in ['myInstitution', 'organisation'] && ! user.isFormal(orgInstance))}">
                             <div class="ui card">
                                 <div class="ui content">
                                     <h2 class="ui dividing header">${message(code: 'profile.membership.existing')}</h2>

@@ -3,6 +3,7 @@ package de.laser.auth
 import de.laser.Org
 import de.laser.UserSetting
 import de.laser.storage.BeanStore
+import de.laser.storage.RDStore
 
 import javax.persistence.Transient
 
@@ -151,19 +152,12 @@ class User {
     boolean isFormal(Role role) {
         isFormal(role, BeanStore.getContextService().getOrg())
     }
-
-    boolean isFormal(Role role, Org org) {
-        (formalRole?.id == role.id) && (formalOrg?.id == org.id)
-    }
-
-    /**
-     * Checks whether the user is authorised for the given {@link Org}
-     * @param org the {@link Org} to check the authority
-     * @return is the user member of the given org?
-     */
-    boolean isMemberOf(Org org) {
+    boolean isFormal(Org org) {
         //used in user/global/edit.gsp
         (formalOrg?.id == org.id) && (formalRole?.roleType == 'user')
+    }
+    boolean isFormal(Role role, Org org) {
+        (formalRole?.id == role.id) && (formalOrg?.id == org.id)
     }
 
     /**
@@ -173,7 +167,9 @@ class User {
      */
     boolean isComboInstAdminOf(Org org) {
         //used in _membership_table.gsp
-        List<Long> orgIdList = Org.executeQuery('select c.toOrg.id from Combo c where c.fromOrg = :org', [org: org])
+        List<Long> orgIdList = Org.executeQuery(
+                'select c.toOrg.id from Combo c where c.fromOrg = :org and c.type = :type', [org: org, type: RDStore.COMBO_TYPE_CONSORTIUM]
+        )
         orgIdList.add(org.id)
 
         (formalOrg?.id in orgIdList) && (formalRole?.id == Role.findByAuthority('INST_ADM').id)
@@ -188,7 +184,6 @@ class User {
 
         if (org) {
             List<User> users = executeQuery('select u from User u where u.formalOrg = :fo and u.formalRole = :fr', [fo: org, fr: Role.findByAuthority('INST_ADM')])
-            println users        // todo check
             lastInstAdmin = (users.size() == 1 && users[0] == this)
         }
         lastInstAdmin

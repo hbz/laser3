@@ -81,7 +81,10 @@ class UserController {
         result.total = result.users.size()
 
         result.titleMessage = message(code:'user.show_all.label') as String
-        Set<Org> availableComboOrgs = Org.executeQuery('select c.fromOrg from Combo c where c.toOrg = :ctxOrg order by c.fromOrg.name asc', [ctxOrg:contextService.getOrg()])
+        Set<Org> availableComboOrgs = Org.executeQuery(
+                'select c.fromOrg from Combo c where c.toOrg = :ctxOrg and c.type = :type order by c.fromOrg.name asc',
+                [ctxOrg: contextService.getOrg(), type: RDStore.COMBO_TYPE_CONSORTIUM]
+        )
         availableComboOrgs.add(contextService.getOrg())
         result.filterConfig = [filterableRoles:Role.findAllByRoleTypeInList(['user']), orgField: true, availableComboOrgs: availableComboOrgs]
 
