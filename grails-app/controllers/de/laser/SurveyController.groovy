@@ -1233,7 +1233,13 @@ class SurveyController {
         }
 
         result.surveyInfo.isRenewalSent = params.renewalSent ?: false
+        result.surveyConfig.subscription.renewalSent = result.surveyInfo.isRenewalSent
+        result.surveyConfig.subscription.renewalSentDate = new Date()
+        
         SurveyInfo.withTransaction { TransactionStatus ts ->
+
+            result.surveyConfig.subscription.save()
+
             if (result.surveyInfo.save()) {
                 //flash.message = g.message(code: 'survey.change.successfull')
             } else {
@@ -1344,6 +1350,13 @@ class SurveyController {
         if(params.transferMembers != null)
         {
             transferWorkflow.transferMembers = params.transferMembers
+            if(result.surveyConfig.subSurveyUseForTransfer){
+                result.surveyConfig.subscription.participantTransferWithSurvey = transferWorkflow.transferMembers
+
+                Subscription.withTransaction { TransactionStatus ts ->
+                    result.surveyConfig.subscription.save()
+                }
+            }
         }
 
         if(params.transferSurveyCostItems != null)
