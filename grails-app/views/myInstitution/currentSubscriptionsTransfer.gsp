@@ -9,7 +9,15 @@
 <ui:h1HeaderWithIcon message="menu.my.currentSubscriptionsTransfer" total="${num_sub_rows}" floated="true"/>
 
 <g:if test="${params.referenceYears}">
-<div class="ui large label la-annual-rings"><g:link action="currentSubscriptionsTransfer" params="${[referenceYears: (Integer.parseInt(params.referenceYears).value-1).toString()]}" class="item"><i class="arrow left icon" aria-hidden="true"></i></g:link><span class="la-annual-rings-text">${params.referenceYears}</span><g:link action="currentSubscriptionsTransfer" params="${[referenceYears: (Integer.parseInt(params.referenceYears).value+1).toString()]}" class="item"><i class="arrow right icon" aria-hidden="true"></i></g:link></div>
+    <div class="ui large label la-annual-rings"><g:link action="currentSubscriptionsTransfer"
+                                                        params="${[referenceYears: (Integer.parseInt(params.referenceYears).value - 1).toString()]}"
+                                                        class="item"><i class="arrow left icon"
+                                                                        aria-hidden="true"></i></g:link><span
+            class="la-annual-rings-text">${params.referenceYears}</span><g:link action="currentSubscriptionsTransfer"
+                                                                                params="${[referenceYears: (Integer.parseInt(params.referenceYears).value + 1).toString()]}"
+                                                                                class="item"><i class="arrow right icon"
+                                                                                                aria-hidden="true"></i></g:link>
+    </div>
 </g:if>
 
 <ui:messages data="${flash}"/>
@@ -148,9 +156,11 @@
                     <td>
                         <div class="right aligned">
                             <button type="button" class="ui icon button blue la-modern-button" data-ui="modal"
-                                    data-href="${"#modalCreateDocumentOffer"+s.id}"><i aria-hidden="true" class="plus icon"></i></button>
+                                    data-href="${"#modalCreateDocumentOffer" + s.id}"><i aria-hidden="true"
+                                                                                         class="plus icon"></i></button>
                         </div>
-                        <laser:render template="/templates/documents/modal" model="${[newModalId: "modalCreateDocumentOffer"+s.id, ownobj: s, owntp: 'subscription']}"/>
+                        <laser:render template="/templates/documents/modal"
+                                      model="${[newModalId: "modalCreateDocumentOffer" + s.id, ownobj: s, owntp: 'subscription']}"/>
 
                         <%
                             Set<DocContext> documentSet = DocContext.executeQuery('from DocContext where subscription = :subscription and owner.type = :docType', [subscription: s, docType: RDStore.DOC_TYPE_OFFER])
@@ -195,7 +205,7 @@
 
                                                 <%-- 2 --%>
                                                     <laser:render template="/templates/documents/modal"
-                                                                  model="[s: s, owntp: owntp, docctx: docctx, doc: docctx.owner]"/>
+                                                                  model="[s: s, owntp: 'subscription', docctx: docctx, doc: docctx.owner]"/>
                                                     <button type="button" class="ui icon blue button la-modern-button"
                                                             data-ui="modal"
                                                             data-href="#modalEditDocument_${docctx.id}"
@@ -247,12 +257,14 @@
                     </g:if>
                     <td class="${surveyClass}">
                         <g:if test="${surveyConfig}">
-                            <g:formatDate formatName="default.date.format.notime"
-                                          date="${surveyConfig.surveyInfo.startDate}"/><br/>
-                            <span class="la-secondHeaderRow"
-                                  data-label="${message(code: 'default.endDate.label')}:"><g:formatDate
-                                    formatName="default.date.format.notime"
-                                    date="${surveyConfig.surveyInfo.endDate}"/></span>
+                            <g:link controller="survey" action="show" id="${surveyConfig.surveyInfo.id}">
+                                <g:formatDate formatName="default.date.format.notime"
+                                              date="${surveyConfig.surveyInfo.startDate}"/><br/>
+                                <span class="la-secondHeaderRow"
+                                      data-label="${message(code: 'default.endDate.label')}:"><g:formatDate
+                                        formatName="default.date.format.notime"
+                                        date="${surveyConfig.surveyInfo.endDate}"/></span>
+                            </g:link>
                         </g:if>
                     </td>
                     <td>
@@ -265,10 +277,13 @@
                             <g:set var="finishProcess"
                                    value="${(finish != 0 && total != 0) ? (finish / total) * 100 : 0}"/>
                             <g:if test="${finishProcess > 0}">
-                                <g:formatNumber number="${finishProcess}"
-                                                type="number"
-                                                maxFractionDigits="2"
-                                                minFractionDigits="2"/>%
+                                <g:link controller="survey" action="surveyEvaluation"
+                                        id="${surveyConfig.surveyInfo.id}">
+                                    <g:formatNumber number="${finishProcess}"
+                                                    type="number"
+                                                    maxFractionDigits="2"
+                                                    minFractionDigits="2"/>%
+                                </g:link>
                             </g:if>
                         </g:if>
                     </td>
@@ -279,8 +294,10 @@
                     </g:if>
 
                     <td class="${countOrgsWithTermination > 0 && countOrgsWithTermination <= 10 ? 'warning' : (countOrgsWithTermination > 10 ? 'negative' : '')}">
-                        <g:if test="${countOrgsWithTermination > 0}">
-                            ${countOrgsWithTermination}
+                        <g:if test="${countOrgsWithTermination >= 0}">
+                            <g:link controller="survey" action="renewalEvaluation" id="${surveyConfig.surveyInfo.id}">
+                                ${countOrgsWithTermination}
+                            </g:link>
                         </g:if>
                     </td>
                     <td>
@@ -291,9 +308,12 @@
 
                         <div class="right aligned">
                             <button type="button" class="ui icon button blue la-modern-button" data-ui="modal"
-                                    data-href="${"#modalCreateDocumentRenewal"+s.id}"><i aria-hidden="true" class="plus icon"></i></button>
+                                    data-href="${"#modalCreateDocumentRenewal" + s.id}"><i aria-hidden="true"
+                                                                                           class="plus icon"></i>
+                            </button>
                         </div>
-                        <laser:render template="/templates/documents/modal" model="${[newModalId: "modalCreateDocumentRenewal"+s.id, ownobj: s, owntp: 'subscription']}"/>
+                        <laser:render template="/templates/documents/modal"
+                                      model="${[newModalId: "modalCreateDocumentRenewal" + s.id, ownobj: s, owntp: 'subscription']}"/>
 
                         <%
                             Set<DocContext> documentSet2 = DocContext.executeQuery('from DocContext where subscription = :subscription and owner.type = :docType', [subscription: s, docType: RDStore.DOC_TYPE_RENEWAL])
@@ -338,7 +358,7 @@
 
                                                 <%-- 2 --%>
                                                     <laser:render template="/templates/documents/modal"
-                                                                  model="[s: s, owntp: owntp, docctx: docctx, doc: docctx.owner]"/>
+                                                                  model="[s: s, owntp: 'subscription', docctx: docctx, doc: docctx.owner]"/>
                                                     <button type="button" class="ui icon blue button la-modern-button"
                                                             data-ui="modal"
                                                             data-href="#modalEditDocument_${docctx.id}"
@@ -389,14 +409,14 @@
         </table>
     </g:if>
     <g:else>
-       %{-- <g:if test="${filterSet}">
-            <br/><strong><g:message code="filter.result.empty.object"
-                                    args="${[message(code: "subscription.plural")]}"/></strong>
-        </g:if>
-        <g:else>--}%
-            <br/><strong><g:message code="result.empty.object"
-                                    args="${[message(code: "subscription.plural")]}"/></strong>
-        %{--</g:else>--}%
+    %{-- <g:if test="${filterSet}">
+         <br/><strong><g:message code="filter.result.empty.object"
+                                 args="${[message(code: "subscription.plural")]}"/></strong>
+     </g:if>
+     <g:else>--}%
+        <br/><strong><g:message code="result.empty.object"
+                                args="${[message(code: "subscription.plural")]}"/></strong>
+    %{--</g:else>--}%
     </g:else>
 
 </div>
