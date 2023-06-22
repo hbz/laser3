@@ -1,35 +1,19 @@
 package changelogs
 
 import de.laser.Address
-import de.laser.Combo
 import de.laser.Contact
 import de.laser.Doc
 import de.laser.DocContext
 import de.laser.Identifier
 import de.laser.Org
-import de.laser.OrgRole
 import de.laser.OrgSetting
 import de.laser.properties.OrgProperty
 import de.laser.storage.RDStore
-import de.laser.survey.SurveyResult
-import de.laser.system.SystemProfiler
 import de.laser.traces.DeletedObject
 
 databaseChangeLog = {
 
-    changeSet(author: "galffy (generated)", id: "1687332381405-1") {
-        addColumn(tableName: "deleted_object") {
-            column(name: "do_old_gokb_id", type: "varchar(255)")
-        }
-    }
-
-    changeSet(author: "galffy (generated)", id: "1687332381405-2") {
-        createIndex(indexName: "do_old_gokb_id", tableName: "deleted_object") {
-            column(name: "do_old_gokb_id")
-        }
-    }
-
-    changeSet(author: "galffy (hand-coded)", id: "1686720364944-3") {
+    changeSet(author: "galffy (hand-coded)", id: "1686720364944-1") {
         grailsChange {
             change {
                 int migrated = 0
