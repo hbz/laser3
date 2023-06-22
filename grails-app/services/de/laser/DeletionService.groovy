@@ -1,9 +1,8 @@
 package de.laser
 
-
+import de.laser.api.v0.ApiToolkit
 import de.laser.auth.User
 import de.laser.finance.*
-import de.laser.interfaces.CalculatedType
 import de.laser.stats.Fact
 import de.laser.storage.RDStore
 import de.laser.oap.OrgAccessPoint
@@ -17,8 +16,6 @@ import de.laser.system.SystemProfiler
 import de.laser.titles.TitleHistoryEvent
 import de.laser.titles.TitleHistoryEventParticipant
 import de.laser.traces.DeletedObject
-import de.laser.utils.LocaleUtils
-import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.util.logging.Slf4j
 import org.elasticsearch.action.delete.DeleteRequest
 import org.elasticsearch.client.RequestOptions
@@ -666,6 +663,13 @@ class DeletionService {
                     //orgTypes.each{ tmp -> tmp.delete() }
 
                     // orgSettings
+                    Set<String> specialAccess = []
+                    Set<OrgSetting.KEYS> specGrants = [OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS, OrgSetting.KEYS.EZB_SERVER_ACCESS]
+                    specGrants.each { OrgSetting.KEYS specGrant ->
+                        if(OrgSetting.get(org, specGrant) == RDStore.YN_YES) {
+                            specialAccess.addAll(ApiToolkit.getOrgsWithSpecialAPIAccess(specGrant))
+                        }
+                    }
                     orgSettings.each { tmp -> tmp.delete() }
 
                     // addresses
@@ -701,6 +705,10 @@ class DeletionService {
                     // TODO delete routine
 
                     org.delete()
+
+                    DeletedObject.withTransaction {
+                        DeletedObject.construct(org, specialAccess)
+                    }
                     status.flush()
 
                     result.status = RESULT_SUCCESS
@@ -972,28 +980,31 @@ class DeletionService {
      */
     boolean deleteCostItem(CostItem ci) {
         if (ci) {
-            Order order = ci.order
-            Invoice invoice = ci.invoice
             Set<String> accessibleOrgs = [ci.owner.globalUID]
-            if(ci.sub && ci.isVisibleForSubscriber) {
-                accessibleOrgs << ci.sub.getSubscriber().globalUID
+            CostItem.withTransaction { ts ->
+                Order order = ci.order
+                Invoice invoice = ci.invoice
+                if(ci.sub && ci.isVisibleForSubscriber) {
+                    accessibleOrgs << ci.sub.getSubscriber().globalUID
+                }
+                ci.order = null
+                ci.invoice = null
+                CostItem.findAllByCopyBase(ci).each { CostItem tmp ->
+                    tmp.copyBase = null
+                    tmp.save()
+                }
+                if (!CostItem.findByOrderAndIdNotEqual(order, ci.id))
+                    order.delete()
+                if (!CostItem.findByInvoiceAndIdNotEqual(invoice, ci.id))
+                    invoice.delete()
+                PendingChange.executeUpdate('delete from PendingChange pc where pc.costItem = :ci', [ci: ci])
+                List<CostItemGroup> cigs = CostItemGroup.findAllByCostItem(ci)
+                cigs.each { CostItemGroup tmp ->
+                    tmp.delete()
+                }
+                ts.flush()
+                ci.delete()
             }
-            ci.order = null
-            ci.invoice = null
-            CostItem.findAllByCopyBase(ci).each { CostItem tmp ->
-                tmp.copyBase = null
-                tmp.save()
-            }
-            if (!CostItem.findByOrderAndIdNotEqual(order, ci.id))
-                order.delete()
-            if (!CostItem.findByInvoiceAndIdNotEqual(invoice, ci.id))
-                invoice.delete()
-            PendingChange.executeUpdate('delete from PendingChange pc where pc.costItem = :ci', [ci: ci])
-            List<CostItemGroup> cigs = CostItemGroup.findAllByCostItem(ci)
-            cigs.each { CostItemGroup tmp ->
-                tmp.delete()
-            }
-            ci.delete()
             DeletedObject.withTransaction {
                 DeletedObject.construct(ci, accessibleOrgs)
             }

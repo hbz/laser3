@@ -35,7 +35,7 @@ class ApiManager {
     /**
      * The current version of the API. To be updated on every change which affects the output
      */
-    static final VERSION = '1.9'
+    static final VERSION = '2.0'
 
     /**
      * Checks if the request is valid and if, whether the permissions are granted for the context institution making
@@ -100,7 +100,12 @@ class ApiManager {
             result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
 
             if (tmp.checkFailureCodes_3()) {
-                result = ApiCostItem.requestCostItem((CostItem) tmp.obj, contextOrg, isInvoiceTool)
+                if(tmp.obj instanceof CostItem) {
+                    result = ApiCostItem.requestCostItem((CostItem) tmp.obj, contextOrg, isInvoiceTool)
+                }
+                else if(tmp.obj instanceof DeletedObject) {
+                    result = ApiDeletedObject.requestDeletedObject((DeletedObject) tmp.obj, contextOrg, isInvoiceTool)
+                }
             }
         }
         else if (checkValidRequest('costItemList')) {
@@ -227,7 +232,10 @@ class ApiManager {
             result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
 
             if (tmp.checkFailureCodes_3()) {
-                result = ApiOAMonitor.requestOrganisation((Org) tmp.obj, contextOrg)
+                if(tmp.obj instanceof Org)
+                    result = ApiOAMonitor.requestOrganisation((Org) tmp.obj, contextOrg)
+                else if(tmp.obj instanceof DeletedObject)
+                    result = ApiDeletedObject.requestDeletedObject((DeletedObject) tmp.obj, contextOrg, isInvoiceTool)
             }
         }
         else if (checkValidRequest('oamonitor/subscriptions')) {
@@ -240,7 +248,8 @@ class ApiManager {
             result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
 
             if (tmp.checkFailureCodes_3()) {
-                result = ApiOAMonitor.requestSubscription((Subscription) tmp.obj, contextOrg)
+                if(tmp.obj instanceof Subscription)
+                    result = ApiOAMonitor.requestSubscription((Subscription) tmp.obj, contextOrg)
             }
         }
         else if (checkValidRequest('organisation')) {
@@ -249,7 +258,10 @@ class ApiManager {
             result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
 
             if (tmp.checkFailureCodes_3()) {
-                result = ApiOrg.requestOrganisation((Org) tmp.obj, contextOrg, isInvoiceTool)
+                if(tmp.obj instanceof Org)
+                    result = ApiOrg.requestOrganisation((Org) tmp.obj, contextOrg, isInvoiceTool)
+                else if(tmp.obj instanceof DeletedObject)
+                    result = ApiDeletedObject.requestDeletedObject((DeletedObject) tmp.obj, contextOrg, isInvoiceTool)
             }
         }else if (checkValidRequest('orgAccessPoint')) {
 

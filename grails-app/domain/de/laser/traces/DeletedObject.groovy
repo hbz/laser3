@@ -14,6 +14,7 @@ class DeletedObject {
     String oldCalculatedType
     String oldObjectType
     String oldGlobalUID
+    String oldGokbID
     Date oldStartDate
     Date oldEndDate
     String referenceSubscriptionUID
@@ -34,6 +35,7 @@ class DeletedObject {
         oldCalculatedType                   column: 'do_old_calculated_type'
         oldObjectType                       column: 'do_old_object_type', index: 'do_old_object_type_idx, do_old_db_id_obj_idx'
         oldGlobalUID                        column: 'do_old_global_uid', index: 'do_old_global_idx'
+        oldGokbID                           column: 'do_old_gokb_id', index: 'do_old_gokb_id'
         oldStartDate                        column: 'do_old_start_date'
         oldEndDate                          column: 'do_old_end_date'
         referenceSubscriptionUID            column: 'do_ref_subscription_uid', index: 'do_ref_subscription_idx'
@@ -59,6 +61,7 @@ class DeletedObject {
         oldCalculatedType (nullable: true, blank: false)
         oldStartDate (nullable: true)
         oldEndDate (nullable: true)
+        oldGokbID (nullable: true)
         referenceSubscriptionUID (nullable: true)
         referencePackageWekbID (nullable: true)
         referenceTitleWekbID (nullable: true)
@@ -68,7 +71,8 @@ class DeletedObject {
                                                      reference: 'oldName',
                                                      startDate: 'oldStartDate',
                                                      endDate: 'oldEndDate',
-                                                     globalUID: 'oldGlobalUID']
+                                                     globalUID: 'oldGlobalUID',
+                                                     gokbId: 'oldGokbID']
 
     static DeletedObject construct(delObj, Set<String> delRelations) throws CreationException {
         DeletedObject trace = construct(delObj)

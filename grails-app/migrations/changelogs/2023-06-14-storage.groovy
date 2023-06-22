@@ -1,5 +1,6 @@
 package changelogs
 
+import de.laser.Org
 import de.laser.finance.CostItem
 import de.laser.storage.BeanStore
 import de.laser.storage.RDStore
@@ -30,7 +31,7 @@ databaseChangeLog = {
         }
     }
 
-    /*changeSet(author: "galffy (hand-coded)", id: "1686720364944-5") {
+    changeSet(author: "galffy (hand-coded)", id: "1686720364944-5") {
         grailsChange {
             change {
                 int migrated = 0
@@ -45,5 +46,6 @@ databaseChangeLog = {
             }
             rollback {}
         }
-    }*/
+    }
+
 }

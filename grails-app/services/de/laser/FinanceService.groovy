@@ -32,12 +32,13 @@ import java.util.regex.Pattern
 @Transactional
 class FinanceService {
 
-    ContextService contextService
-    GenericOIDService genericOIDService
-    MessageSource messageSource
     AccessService accessService
+    ContextService contextService
+    DeletionService deletionService
     EscapeService escapeService
     FinanceControllerService financeControllerService
+    GenericOIDService genericOIDService
+    MessageSource messageSource
 
     String genericExcludes = ' and ci.surveyOrg = null and ci.costItemStatus != :deleted '
 
@@ -241,7 +242,9 @@ class FinanceService {
         }
         if(selectedCostItems) {
             if(Boolean.valueOf(params.delete)) {
-                CostItem.executeUpdate('update CostItem ci set ci.costItemStatus = :deleted where ci.id in (:ids)',[deleted:RDStore.COST_ITEM_DELETED,ids:selectedCostItems])
+                CostItem.findAllByIdInList(selectedCostItems).each { CostItem ci ->
+                    deletionService.deleteCostItem(ci)
+                }
             }
             else if(params.percentOnOldPrice) {
                 Double percentage = 1 + params.double('percentOnOldPrice') / 100

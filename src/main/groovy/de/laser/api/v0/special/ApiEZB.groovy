@@ -3,6 +3,7 @@ package de.laser.api.v0.special
 import de.laser.*
 import de.laser.api.v0.*
 import de.laser.storage.Constants
+import de.laser.traces.DeletedObject
 import de.laser.utils.DateUtils
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
@@ -131,9 +132,14 @@ class ApiEZB {
     static JSON getAllOrgs() {
         Collection<Object> result = []
 
-        List<Org> orgs = getAccessibleOrgs()
+        List<Org> orgs = getAccessibleOrgs(), orgsWithEZBPerm = ApiToolkit.getOrgsWithSpecialAPIAccess(ApiToolkit.API_LEVEL_EZB)
         orgs.each { o ->
             result << ApiUnsecuredMapReader.getOrganisationStubMap(o)
+        }
+        DeletedObject.withTransaction {
+            DeletedObject.executeQuery('select do from DeletedObject do join do.combos delc where do.oldObjectType = :org and delc.accessibleOrg in (:orgsWithOAPerm)', [org: Org.class.name, orgsWithEZBPerm: orgsWithEZBPerm]).each { DeletedObject delObj ->
+                result.addAll(ApiUnsecuredMapReader.getDeletedObjectStubMap(delObj))
+            }
         }
 
         return result ? new JSON(result) : null
