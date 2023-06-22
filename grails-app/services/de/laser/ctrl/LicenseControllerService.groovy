@@ -2,6 +2,8 @@ package de.laser.ctrl
 
 import de.laser.*
 import de.laser.auth.User
+import de.laser.storage.RDStore
+import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
 import de.laser.interfaces.CalculatedType
 import grails.gorm.transactions.Transactional
@@ -82,6 +84,12 @@ class LicenseControllerService {
         LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(result.license)
         result.navPrevLicense = links.prevLink
         result.navNextLicense = links.nextLink
+        // restrict visible for templates/links/orgLinksAsList - done by Andreas Gálffy
+        String i10value = LocaleUtils.getLocalizedAttributeName('value')
+        result.visibleOrgRelations = OrgRole.executeQuery(
+                "select oo from OrgRole oo where oo.lic = :license and oo.org != :context and oo.roleType not in (:roleTypes) order by oo.roleType." + i10value + " asc, oo.org.sortname asc, oo.org.name asc",
+                [license:result.license,context:result.institution,roleTypes:[RDStore.OR_LICENSEE, RDStore.OR_LICENSEE_CONS]]
+        )
 
         result.showConsortiaFunctions = showConsortiaFunctions(result.license)
 

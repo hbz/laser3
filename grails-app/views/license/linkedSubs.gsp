@@ -10,7 +10,8 @@
         </g:if>
     </ui:controlButtons>
 
-    <ui:h1HeaderWithIcon>
+    <g:set var="visibleOrgRelationsJoin" value="${visibleOrgRelations.findAll{it.roleType != RDStore.OR_SUBSCRIPTION_CONSORTIA}.sort{it.org.sortname}.collect{it.org}.join(' – ')}"/>
+    <ui:h1HeaderWithIcon visibleOrgRelationsJoin="${visibleOrgRelationsJoin}">
         <ui:xEditable owner="${license}" field="reference" id="reference"/>
     </ui:h1HeaderWithIcon>
     <ui:totalNumber total="${subscriptions.size() ?: 0}"/>
