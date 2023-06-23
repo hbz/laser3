@@ -3,6 +3,7 @@ package de.laser
 import de.laser.auth.User
 import de.laser.cache.EhcacheWrapper
 import de.laser.cache.SessionCacheWrapper
+import de.laser.storage.RDStore
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -131,7 +132,27 @@ class ContextService {
     // TODO
     boolean hasAffiliationX(String orgPerms, String instUserRole) {
         accessService._hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(orgPerms.split(','), instUserRole)
-
         // accessService.ctxPermAffiliation(orgPerms, instUserRole)
+    }
+    // TODO
+    boolean hasAffiliationForConsortium_or_ROLEADMIN(String orgPerms, String instUserRole) {
+        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
+            return true
+        }
+        if (getUser() && getOrg() && instUserRole) {
+            if (getOrg().getAllOrgTypeIds().contains( RDStore.OT_CONSORTIUM.id )) {
+                return hasAffiliationX(orgPerms, instUserRole)
+            }
+        }
+        // accessService.ctxConsortiumCheckPermAffiliation_or_ROLEADMIN(orgPerms, instUserRole)
+
+//        if (contextService.getUser() && contextService.getOrg() && instUserRole) {
+//            if (contextService.getUser().hasCtxAffiliation_or_ROLEADMIN( instUserRole )) {
+//                if (contextService.getOrg().getAllOrgTypeIds().contains( RDStore.OT_CONSORTIUM.id )) {
+//                    return _hasPerm_forOrg_withFakeRole(orgPerms.split(','), contextService.getOrg())
+//                }
+//            }
+//        }
+        return false
     }
 }

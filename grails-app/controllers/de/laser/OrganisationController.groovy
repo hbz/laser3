@@ -248,9 +248,9 @@ class OrganisationController  {
      * Call to list the academic institutions without consortia
      * @return a list of institutions; basic consortia members or single users
      */
-    @DebugInfo(ctxConsortiumCheckPermAffiliation_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_USER'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasAffiliationForConsortium_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_USER'], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = { 
-        ctx.accessService.ctxConsortiumCheckPermAffiliation_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_USER')
+        ctx.contextService.hasAffiliationForConsortium_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_USER')
     })
     def listInstitution() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
@@ -1859,9 +1859,9 @@ class OrganisationController  {
      * (adds or removes a combo link between the institution and the consortium)
      * @see Combo
      */
-    @DebugInfo(ctxConsortiumCheckPermAffiliation_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasAffiliationForConsortium_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.ctxConsortiumCheckPermAffiliation_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR')
+        ctx.contextService.hasAffiliationForConsortium_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR')
     })
     def toggleCombo() {
         Map<String,Object> ctrlResult = organisationControllerService.toggleCombo(this,params)

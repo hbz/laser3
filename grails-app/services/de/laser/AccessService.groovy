@@ -21,69 +21,31 @@ class AccessService {
     // --- checks for contextService.getOrg() ---
 
     /**
-     * Use {@link ContextService#hasPerm(java.lang.String)} instead.
-     */
-    @Deprecated
-    boolean ctxPerm(String orgPerms) {
-        contextService.hasPerm(orgPerms)
-    }
-    /**
-     * Use {@link ContextService#hasPerm_or_ROLEADMIN(java.lang.String)} instead.
-     */
-    @Deprecated
-    boolean ctxPerm_or_ROLEADMIN(String orgPerms) {
-        contextService.hasPerm_or_ROLEADMIN(orgPerms)
-    }
-
-    /**
      * Use {@link ContextService#hasAffiliationX(java.lang.String, java.lang.String)} instead.
      */
     @Deprecated
     boolean ctxPermAffiliation(String orgPerms, String instUserRole) {
         contextService.hasAffiliationX(orgPerms, instUserRole)
-        // _hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(orgPerms.split(','), instUserRole)
     }
 
     /**
-     * Use {@link ContextService#hasPerm(java.lang.String)} instead.
+     * Use {@link ContextService#hasAffiliationForConsortium_or_ROLEADMIN(java.lang.String, java.lang.String)} instead.
      */
+    @Deprecated
     boolean ctxConsortiumCheckPermAffiliation_or_ROLEADMIN(String orgPerms, String instUserRole) {
-        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
-            return true
-        }
+        contextService.hasAffiliationForConsortium_or_ROLEADMIN(orgPerms, instUserRole)
 
-        if (contextService.getUser() && contextService.getOrg() && instUserRole) {
-            if (contextService.getUser().hasCtxAffiliation_or_ROLEADMIN( instUserRole.toUpperCase() )) {
-                if (contextService.getOrg().getAllOrgTypeIds().contains( RDStore.OT_CONSORTIUM.id )) {
-                    return _hasPerm_forOrg_withFakeRole(orgPerms.split(','), contextService.getOrg())
-                }
-            }
-        }
-        return false
-    }
-
-    /**
-     * Use {@link ContextService#hasPermAsInstUser_or_ROLEADMIN(java.lang.String)} instead.
-     */
-    @Deprecated
-    boolean ctxInstUserCheckPerm_or_ROLEADMIN(String orgPerms) {
-        contextService.hasPermAsInstUser_or_ROLEADMIN(orgPerms)
-    }
-
-    /**
-     * Use {@link ContextService#hasPermAsInstEditor_or_ROLEADMIN(java.lang.String)} instead.
-     */
-    @Deprecated
-    boolean ctxInstEditorCheckPerm_or_ROLEADMIN(String orgPerms) {
-        contextService.hasPermAsInstEditor_or_ROLEADMIN(orgPerms)
-    }
-
-    /**
-     * Use {@link ContextService#hasPermAsInstAdm_or_ROLEADMIN(java.lang.String)} instead.
-     */
-    @Deprecated
-    boolean ctxInstAdmCheckPerm_or_ROLEADMIN(String orgPerms) {
-        contextService.hasPermAsInstAdm_or_ROLEADMIN(orgPerms)
+//        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
+//            return true
+//        }
+//        if (contextService.getUser() && contextService.getOrg() && instUserRole) {
+//            if (contextService.getUser().hasCtxAffiliation_or_ROLEADMIN( instUserRole )) {
+//                if (contextService.getOrg().getAllOrgTypeIds().contains( RDStore.OT_CONSORTIUM.id )) {
+//                    return _hasPerm_forOrg_withFakeRole(orgPerms.split(','), contextService.getOrg())
+//                }
+//            }
+//        }
+//        return false
     }
 
     // --- checks for other orgs ---
@@ -177,7 +139,7 @@ class AccessService {
     boolean _hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(String[] orgPerms, String instUserRole) {
 
         if (contextService.getUser() && instUserRole) {
-            if (contextService.getUser().hasCtxAffiliation_or_ROLEADMIN(instUserRole.toUpperCase())) {
+            if (contextService.getUser().hasCtxAffiliation_or_ROLEADMIN( instUserRole )) {
                 return _hasPerm_forOrg_withFakeRole(orgPerms, contextService.getOrg())
             }
         }

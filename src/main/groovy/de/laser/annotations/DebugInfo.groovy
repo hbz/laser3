@@ -20,10 +20,11 @@ import java.lang.annotation.Target
     String[] hasPermAsInstEditor_or_ROLEADMIN() default []                   // [orgPerms]
     String[] hasPermAsInstAdm_or_ROLEADMIN() default []                      // [orgPerms]
 
+    String[] hasAffiliationForConsortium_or_ROLEADMIN() default []          // [orgPerms, instUserRole]
+
     // accessService
 
-    String[] ctxPermAffiliation() default []                                    // [orgPerms, instUserRole]
-    String[] ctxConsortiumCheckPermAffiliation_or_ROLEADMIN() default []        // [orgPerms, instUserRole]
+    String[] ctxPermAffiliation() default []                                // [orgPerms, instUserRole]
 
     // user
 
