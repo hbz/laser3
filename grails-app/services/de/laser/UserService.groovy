@@ -251,7 +251,7 @@ class UserService {
             return hasComboInstAdmPivileges(editor, user.formalOrg)
         }
         else {
-            return accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_ADM')
+            return contextService.hasAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_ADM')
         }
     }
 }

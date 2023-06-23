@@ -3,7 +3,7 @@
 
 <laser:serviceInjection />
 <ui:actionsDropdown>
-    <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')}">
+    <g:if test="${contextService.hasAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')}">
         <g:if test="${actionName == 'edit_ip'}">
             <g:if test="${contextService.getUser().hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')}">
                 <g:link class="item" action="delete" id="${params.id}"><i class="trash alternate outline icon"></i> Zugangskonfiguration löschen</g:link>

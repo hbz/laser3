@@ -219,7 +219,7 @@
 
                 <div id="container-notes">
                     <laser:render template="/templates/notes/card"
-                              model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '', editable: accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_PRO, 'INST_EDITOR')]}"/>
+                              model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '', editable: contextService.hasAffiliation(CustomerTypeService.ORG_CONSORTIUM_PRO, 'INST_EDITOR')]}"/>
                 </div>
             </g:if>
 

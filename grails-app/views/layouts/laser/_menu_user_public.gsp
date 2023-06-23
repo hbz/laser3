@@ -12,10 +12,10 @@
             <ui:link addItemAttributes="true" controller="organisation" action="index">${message(code:'menu.public.all_orgs')}</ui:link>
         </sec:ifAnyGranted>
 
-        <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_USER')}">
+        <g:if test="${contextService.hasAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_USER')}">
             <ui:link addItemAttributes="true" controller="organisation" action="listInstitution">${message(code:'menu.public.all_insts')}</ui:link>
         </g:if>
-        <g:elseif test="${accessService.ctxPermAffiliation(CustomerTypeService.ORG_INST_BASIC, 'INST_USER')}">
+        <g:elseif test="${contextService.hasAffiliation(CustomerTypeService.ORG_INST_BASIC, 'INST_USER')}">
             <ui:link addItemAttributes="true" controller="organisation" action="listConsortia">${message(code:'menu.public.all_cons')}</ui:link>
         </g:elseif>
 

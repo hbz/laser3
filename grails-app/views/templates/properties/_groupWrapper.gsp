@@ -26,7 +26,7 @@
                     propDefGroupBinding: propDefGroupBinding,
                     prop_desc: prop_desc,
                     ownobj: ownobj,
-                    editable: (!(controllerName in ['survey', 'myInstitution'] ) && accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')),
+                    editable: (!(controllerName in ['survey', 'myInstitution'] ) && contextService.hasAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')),
                     custom_props_div: custom_props_div
             ]}"/>
         </div>

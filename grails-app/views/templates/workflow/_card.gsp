@@ -1,7 +1,7 @@
 <%@ page import="de.laser.CustomerTypeService; de.laser.workflow.WfChecklist; de.laser.storage.RDStore" %>
 <laser:serviceInjection />
 <%
-    boolean editable2 = accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_EDITOR')
+    boolean editable2 = contextService.hasAffiliation(CustomerTypeService.PERMS_PRO, 'INST_EDITOR')
 %>
 
     <ui:card message="workflow.open.plural" class="workflows la-js-hideable" href="#modalCreateWorkflow" editable="${editable || editable2}">

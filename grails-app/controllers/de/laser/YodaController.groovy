@@ -457,10 +457,10 @@ class YodaController {
                                     test     : ''
                             ]
 
-                            if (da.ctxPermAffiliation()) {
-                                mInfo.debug.test        = 'ctxPermAffiliation()' //  + da.ctxPermAffiliation().toList()
-                                mInfo.debug.perm        = da.ctxPermAffiliation().toList()[0]
-                                mInfo.debug.affil       = da.ctxPermAffiliation().toList()[1]
+                            if (da.hasAffiliation()) {
+                                mInfo.debug.test        = 'hasAffiliation()' //  + da.hasAffiliation().toList()
+                                mInfo.debug.perm        = da.hasAffiliation().toList()[0]
+                                mInfo.debug.affil       = da.hasAffiliation().toList()[1]
                             }
                             if (da.hasPermAsInstUser_or_ROLEADMIN()) {
                                 mInfo.debug.test        = 'hasPermAsInstUser_or_ROLEADMIN()' //  + da.hasPermAsInstUser_or_ROLEADMIN().toList()

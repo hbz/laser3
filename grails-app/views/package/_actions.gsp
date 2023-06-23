@@ -5,18 +5,18 @@
 <g:set var="org" value="${contextService.getOrg()}"/>
 
 <ui:actionsDropdown>
-%{--    <g:if test="${(editable || accessService.ctxPermAffiliation(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')) && ! ['list'].contains(actionName)}">
+%{--    <g:if test="${(editable || contextService.hasAffiliation(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')) && ! ['list'].contains(actionName)}">
         <ui:actionsDropdownItem message="task.create.new" data-ui="modal" href="#modalCreateTask" />
         <ui:actionsDropdownItem message="template.documents.add" data-ui="modal" href="#modalCreateDocument" />
     </g:if>
     <g:if test="${userService.checkAffiliationAndCtxOrg(user,org,'INST_EDITOR') && ! ['list'].contains(actionName)}">
         <ui:actionsDropdownItem message="template.addNote" data-ui="modal" href="#modalCreateNote" />
     </g:if>
-    <g:if test="${(editable || accessService.ctxPermAffiliation(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')) && ! ['list'].contains(actionName)}">
+    <g:if test="${(editable || contextService.hasAffiliation(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')) && ! ['list'].contains(actionName)}">
         <div class="divider"></div>
     </g:if>--}%
 
-    <g:if test="${(editable || accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')) && !['list'].contains(actionName) && packageInstance}">
+    <g:if test="${(editable || contextService.hasAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')) && !['list'].contains(actionName) && packageInstance}">
         <ui:actionsDropdownItem message="package.show.linkToSub" data-ui="modal" href="#linkToSubModal"/>
     </g:if>
 
@@ -24,7 +24,7 @@
 
 </ui:actionsDropdown>
 
-<g:if test="${(editable || accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')) && !['list'].contains(actionName) && packageInstance}">
+<g:if test="${(editable || contextService.hasAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')) && !['list'].contains(actionName) && packageInstance}">
     <ui:modal id="linkToSubModal" contentClass="scrolling" message="package.show.linkToSub" msgSave="${message(code: 'default.button.link.label')}">
 
         <g:form class="ui form" url="[controller: 'package', action: 'processLinkToSub', id: params.id]">
@@ -262,7 +262,7 @@
 </g:if>
 
 %{--
-<g:if test="${(editable && accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_EDITOR')) && ! ['list'].contains(actionName)}">
+<g:if test="${(editable && contextService.hasAffiliation(CustomerTypeService.PERMS_PRO, 'INST_EDITOR')) && ! ['list'].contains(actionName)}">
     <laser:render template="/templates/documents/modal" model="${[ownobj: packageInstance, institution: contextService.getOrg(), owntp: 'pkg']}"/>
     <laser:render template="/templates/tasks/modal_create" model="${[ownobj:packageInstance, owntp:'pkg']}"/>
 </g:if>

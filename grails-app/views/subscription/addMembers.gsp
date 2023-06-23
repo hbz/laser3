@@ -210,7 +210,7 @@
         </g:if>
     </g:form>
 
-    <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR')}">
+    <g:if test="${contextService.hasAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR')}">
         <hr />
 
             <ui:msg class="info" header="${message(code: 'myinst.noMembers.cons.header')}" noClose="true">
