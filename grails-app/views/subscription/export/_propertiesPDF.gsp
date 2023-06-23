@@ -99,7 +99,7 @@
                     prop_desc: PropertyDefinition.SUB_PROP,
                     ownobj: subscription,
                     orphanedProperties: allPropDefGroups.orphanedProperties,
-                    editable: (!calledFromSurvey && contextService.hasAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')),
+                    editable: (!calledFromSurvey && contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)),
                     custom_props_div: "custom_props_div_props" ]}"/>
         </div>
     </div>

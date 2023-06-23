@@ -129,7 +129,7 @@ class ContextService {
         hasAffiliation(orgPerms, 'INST_ADM')
     }
 
-    // TODO
+    // TODO - refactoring
     boolean hasAffiliation(String orgPerms, String instUserRole) {
         accessService._hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(orgPerms.split(','), instUserRole)
         // accessService.ctxPermAffiliation(orgPerms, instUserRole)

@@ -41,7 +41,7 @@
         </g:if>
         <g:if test="${actionName == 'show'}">
             <%-- the second clause is to prevent the menu display for consortia at member subscriptions --%>
-            <g:if test="${contextService.hasAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR') && !(institution.id == license.getLicensingConsortium()?.id && license.instanceOf)}">
+            <g:if test="${contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC) && !(institution.id == license.getLicensingConsortium()?.id && license.instanceOf)}">
                 <div class="divider"></div>
                 <ui:actionsDropdownItem data-ui="modal" href="#propDefGroupBindings" message="menu.institutions.configure_prop_groups" />
             </g:if>
@@ -67,11 +67,11 @@
     </ui:actionsDropdown>
 </g:if>
 
-<g:if test="${contextService.hasAffiliation(CustomerTypeService.PERMS_BASIC, 'INST_EDITOR')}">
+<g:if test="${contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_BASIC)}">
     <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionModals: true, ownobj: license, owntp: 'license']]}" />
 </g:if>
 
-%{--<g:if test="${editable || contextService.hasAffiliation(CustomerTypeService.PERMS_PRO, 'INST_EDITOR')}">--}%
+%{--<g:if test="${editable || contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)}">--}%
 %{--    <laser:render template="/templates/tasks/modal_create" model="${[ownobj:license, owntp:'license']}"/>--}%
 %{--    <laser:render template="/templates/documents/modal" model="${[ownobj:license, owntp:'license']}"/>--}%
 %{--    <laser:render template="/templates/notes/modal_create" model="${[ownobj: license, owntp: 'license']}"/>--}%

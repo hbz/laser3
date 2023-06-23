@@ -17,24 +17,6 @@ class AccessService {
 
     ContextService contextService
 
-    // --- checks for contextService.getOrg() ---
-
-    /**
-     * Use {@link ContextService#hasAffiliation(java.lang.String, java.lang.String)} instead.
-     */
-    @Deprecated
-    boolean ctxPermAffiliation(String orgPerms, String instUserRole) {
-        contextService.hasAffiliation(orgPerms, instUserRole)
-    }
-
-    /**
-     * Use {@link ContextService#hasAffiliationForConsortium_or_ROLEADMIN(java.lang.String, java.lang.String)} instead.
-     */
-    @Deprecated
-    boolean ctxConsortiumCheckPermAffiliation_or_ROLEADMIN(String orgPerms, String instUserRole) {
-        contextService.hasAffiliationForConsortium_or_ROLEADMIN(orgPerms, instUserRole)
-    }
-
     // --- checks for other orgs ---
 
     /**
@@ -139,7 +121,6 @@ class AccessService {
 
     /**
      * Replacement call for the abandoned ROLE_ORG_COM_EDITOR
-     * @return the result of {@link #ctxPermAffiliation(java.lang.String, java.lang.String)} for [ORG_INST_PRO, ORG_CONSORTIUM_BASIC] and INST_EDTOR as arguments
      */
     // TODO
     boolean is_ORG_COM_EDITOR() {

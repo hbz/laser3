@@ -120,7 +120,7 @@
                                                                     <i class="ui large icon bullhorn"></i>
                                                                 </span>
                                                             </th>
-                                                            <g:if test="${contextService.hasAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR')}">
+                                                            <g:if test="${contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
                                                                 <th>
                                                                     <span class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.packages.auditable')}">
                                                                         <i class="ui large icon thumbtack"></i>
@@ -154,7 +154,7 @@
                                                                                         data-action="copy" checked="${true}"/>
                                                                         </div>
                                                                     </td>
-                                                                    <g:if test="${contextService.hasAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR')}">
+                                                                    <g:if test="${contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
                                                                         <g:if test="${!(pcc.settingKey in excludes)}">
                                                                             <td>
                                                                                 <div class="ui checkbox la-toggle-radio la-inherit">
@@ -267,7 +267,7 @@
                                                                 <g:message
                                                                         code="subscription.packages.${pcc.settingKey}"/>: ${pcc.settingValue ? pcc.settingValue.getI10n('value') : RDStore.PENDING_CHANGE_CONFIG_PROMPT.getI10n('value')} (<g:message
                                                                     code="subscription.packages.notification.label"/>: ${pcc.withNotification ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')})
-                                                                <g:if test="${contextService.hasAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR')}">
+                                                                <g:if test="${contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
                                                                     <g:if test="${!(pcc.settingKey in excludes)}">
                                                                         <g:if test="${auditService.getAuditConfig(targetObject, pcc.settingKey)}">
                                                                             <span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.packages.auditable')}"><i
