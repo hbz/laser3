@@ -143,6 +143,14 @@ class ApiOrgAccessPoint {
             }
         }
 
+        if(orgAccessPoint.accessMethod.value == 'mailDomain'){
+            result."${orgAccessPoint.accessMethod.value}".mailDomains = []
+            result."${orgAccessPoint.accessMethod.value}".name = orgAccessPoint.name
+            orgAccessPoint.getAccessPointMailDomains().each {
+                result."${orgAccessPoint.accessMethod.value}".mailDomains << it
+            }
+        }
+
         if(orgAccessPoint.accessMethod.value == 'openathens'){
            result."${orgAccessPoint.accessMethod.value}".name   = orgAccessPoint.name
            result."${orgAccessPoint.accessMethod.value}".entityid   = orgAccessPoint.hasProperty('entityId') ? orgAccessPoint.entityId : ''
