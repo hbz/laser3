@@ -16,7 +16,7 @@ class MailController {
     MailSendService mailSendService
     AccessService accessService
 
-    @DebugInfo(hasAffiliation = [CustomerTypeService.ORG_CONSORTIUM_PRO, 'INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
         ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)
     })
@@ -123,7 +123,7 @@ class MailController {
         result
     }
 
-    @DebugInfo(hasAffiliation = [CustomerTypeService.ORG_CONSORTIUM_PRO, 'INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
         ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)
     })

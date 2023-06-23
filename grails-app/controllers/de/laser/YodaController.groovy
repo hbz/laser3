@@ -457,11 +457,6 @@ class YodaController {
                                     test     : ''
                             ]
 
-                            if (da.hasAffiliation()) {
-                                mInfo.debug.test        = 'hasAffiliation()' //  + da.hasAffiliation().toList()
-                                mInfo.debug.perm        = da.hasAffiliation().toList()[0]
-                                mInfo.debug.affil       = da.hasAffiliation().toList()[1]
-                            }
                             if (da.hasPermAsInstUser_or_ROLEADMIN()) {
                                 mInfo.debug.test        = 'hasPermAsInstUser_or_ROLEADMIN()' //  + da.hasPermAsInstUser_or_ROLEADMIN().toList()
                                 mInfo.debug.perm        = da.hasPermAsInstUser_or_ROLEADMIN().toList()[0]
