@@ -148,7 +148,7 @@ class SwissKnife {
             if (!check) {
 
                 boolean affiliationCheck = attrs.affiliation ? user.hasCtxAffiliation_or_ROLEADMIN(attrs.affiliation) : true
-                boolean orgPermCheck     = attrs.orgPerm ? accessService.ctxPerm(attrs.orgPerm) : true
+                boolean orgPermCheck     = attrs.orgPerm ? contextService.hasPerm(attrs.orgPerm) : true
 
                 check = affiliationCheck && orgPermCheck
 

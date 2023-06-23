@@ -5,6 +5,7 @@ import de.laser.cache.EhcacheWrapper
 import de.laser.cache.SessionCacheWrapper
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityService
+import grails.plugin.springsecurity.SpringSecurityUtils
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 /**
@@ -18,6 +19,8 @@ class ContextService {
     AccessService accessService
     CacheService cacheService
     SpringSecurityService springSecurityService
+
+    // -- Formal --
 
     /**
      * Retrieves the institution used for the current session
@@ -74,36 +77,6 @@ class ContextService {
         return null
     }
 
-    // -- Context checks -- user.formalOrg based perm/role checks - all withFakeRole --
-    // TODO - refactoring
-
-    /**
-     * Permission check (granted by customer type) for the current context org.
-     */
-    boolean hasPerm(String orgPerms) {
-        accessService.ctxPerm(orgPerms)
-    }
-    boolean hasPerm_or_ROLEADMIN(String orgPerms) {
-        accessService.ctxPerm_or_ROLEADMIN(orgPerms)
-    }
-    boolean hasPermAsInstUser_or_ROLEADMIN(String orgPerms) {
-        accessService.ctxInstUserCheckPerm_or_ROLEADMIN(orgPerms)
-    }
-    boolean hasPermAsInstEditor_or_ROLEADMIN(String orgPerms) {
-        accessService.ctxInstEditorCheckPerm_or_ROLEADMIN(orgPerms)
-    }
-    boolean hasPermAsInstAdm_or_ROLEADMIN(String orgPerms) {
-        accessService.ctxInstAdmCheckPerm_or_ROLEADMIN(orgPerms)
-    }
-
-    boolean hasAffiliationX(String orgPerms, String instUserRole) {
-        accessService.ctxPermAffiliation(orgPerms, instUserRole)
-        // -> accessService._hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser
-        // + - -> user.hasCtxAffiliation_or_ROLEADMIN
-        //     + -> userService.checkAffiliation_or_ROLEADMIN
-        // + - -> accessService._hasPerm_forOrg_withFakeRole
-    }
-
     // -- Cache --
 
     EhcacheWrapper getUserCache(String cacheKeyPrefix) {
@@ -120,5 +93,45 @@ class ContextService {
      */
     SessionCacheWrapper getSessionCache() {
         return new SessionCacheWrapper()
+    }
+
+    // -- CONTEXT CHECKS -- user.formalOrg based perm/role checks - all withFakeRole --
+
+    /**
+     * Permission check (granted by customer type) for the current context org.
+     */
+    boolean hasPerm(String orgPerms) {
+        accessService._hasPerm_forOrg_withFakeRole(orgPerms.split(','), getOrg())
+    }
+    boolean hasPerm_or_ROLEADMIN(String orgPerms) {
+        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
+            return true
+        }
+        hasPerm(orgPerms)
+    }
+    boolean hasPermAsInstUser_or_ROLEADMIN(String orgPerms) {
+        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
+            return true
+        }
+        hasAffiliationX(orgPerms, 'INST_USER')
+    }
+    boolean hasPermAsInstEditor_or_ROLEADMIN(String orgPerms) {
+        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
+            return true
+        }
+        hasAffiliationX(orgPerms, 'INST_EDITOR')
+    }
+    boolean hasPermAsInstAdm_or_ROLEADMIN(String orgPerms) {
+        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
+            return true
+        }
+        hasAffiliationX(orgPerms, 'INST_ADM')
+    }
+
+    // TODO
+    boolean hasAffiliationX(String orgPerms, String instUserRole) {
+        accessService._hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(orgPerms.split(','), instUserRole)
+
+        // accessService.ctxPermAffiliation(orgPerms, instUserRole)
     }
 }

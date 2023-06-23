@@ -216,7 +216,7 @@
 
         <g:if test="${(controllerName=='dev' && actionName=='frontend' ) || (controllerName=='subscription'|| controllerName=='license') && actionName=='show'}">
             <laser:script file="${this.getGroovyPageFileName()}">
-                <g:if test="${editable} || ${accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )}">
+                <g:if test="${editable} || ${contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )}">
                     <g:if test="${user?.getSettingsValue(UserSetting.KEYS.SHOW_EDIT_MODE, RDStore.YN_YES)?.value == 'Yes'}">
                         deckSaver.configs.editMode  = true;
                     </g:if>

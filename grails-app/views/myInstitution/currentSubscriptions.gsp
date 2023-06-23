@@ -41,7 +41,7 @@
                 --%>
             </ui:exportDropdown>
 
-            <g:if test="${accessService.ctxPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )}">
+            <g:if test="${contextService.hasPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )}">
                 <laser:render template="actions" />
             </g:if>
         </ui:controlButtons>

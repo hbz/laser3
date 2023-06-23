@@ -34,7 +34,7 @@
                             ${message(code: 'myinst.currentSubscriptions.subscription_type', default: RDConstants.SUBSCRIPTION_TYPE)}
                         </th>
                         */ %>
-                        <g:if test="${params.orgRole in ['Subscriber'] && accessService.ctxPerm(CustomerTypeService.ORG_INST_BASIC)}">
+                        <g:if test="${params.orgRole in ['Subscriber'] && contextService.hasPerm(CustomerTypeService.ORG_INST_BASIC)}">
                             <th scope="col" rowspan="2" >${message(code: 'consortium')}</th>
                         </g:if>
                         <g:elseif test="${params.orgRole == 'Subscriber'}">
@@ -148,7 +148,7 @@
                             </g:if>
                             <g:if test="${s.isEditableBy(user) && (s.packages == null || s.packages.size() == 0)}">
                                 <i>
-                                    <g:if test="${accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )}">
+                                    <g:if test="${contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )}">
                                         <g:message code="myinst.currentSubscriptions.no_links" />
                                         <g:link controller="subscription" action="linkPackage"
                                                 id="${s.id}">${message(code: 'subscription.details.linkPackage.label')}</g:link>
@@ -165,7 +165,7 @@
                         </td>--%>
                         <g:if test="${params.orgRole == 'Subscriber'}">
                             <td>
-                                <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_INST_BASIC)}">
+                                <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_INST_BASIC)}">
                                     ${s.getConsortia()?.name}
                                 </g:if>
                             </td>

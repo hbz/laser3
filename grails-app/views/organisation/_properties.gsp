@@ -99,7 +99,7 @@
 </g:if> %{-- erms-4798 --}%
 
 <%-- private properties --%>
-<g:if test="${authOrg && accessService.ctxPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
+<g:if test="${authOrg && contextService.hasPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
 
     <g:if test="${authOrg.name == contextOrg?.name}">
         <div class="ui card la-dl-no-table">

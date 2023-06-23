@@ -251,7 +251,7 @@ class LicenseController {
         result.institution = contextService.getOrg()
 
         License licenseCopy
-            if (accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+            if (contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
 
                 if (params.cmd == 'generate') {
                     licenseCopy = institutionsService.copyLicense(
@@ -542,7 +542,7 @@ class LicenseController {
         GrailsParameterMap tmpParams = (GrailsParameterMap) params.clone()
         tmpParams.remove("max")
         tmpParams.remove("offset")
-        if (accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC))
+        if (contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC))
             tmpParams.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
         Map<String,Object> fsq = filterService.getOrgComboQuery(tmpParams, result.institution)
 
@@ -624,9 +624,9 @@ class LicenseController {
     /**
      * Entry point for copying a license
      */
-    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
     @Secured(closure = {
-        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def copyLicense() {
         Map<String,Object> result = [:]

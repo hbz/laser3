@@ -462,21 +462,21 @@ class YodaController {
                                 mInfo.debug.perm        = da.ctxPermAffiliation().toList()[0]
                                 mInfo.debug.affil       = da.ctxPermAffiliation().toList()[1]
                             }
-                            if (da.ctxInstUserCheckPerm_or_ROLEADMIN()) {
-                                mInfo.debug.test        = 'ctxInstUserCheckPerm_or_ROLEADMIN()' //  + da.ctxInstUserCheckPerm_or_ROLEADMIN().toList()
-                                mInfo.debug.perm        = da.ctxInstUserCheckPerm_or_ROLEADMIN().toList()[0]
+                            if (da.hasPermAsInstUser_or_ROLEADMIN()) {
+                                mInfo.debug.test        = 'hasPermAsInstUser_or_ROLEADMIN()' //  + da.hasPermAsInstUser_or_ROLEADMIN().toList()
+                                mInfo.debug.perm        = da.hasPermAsInstUser_or_ROLEADMIN().toList()[0]
                                 mInfo.debug.affil       = 'INST_USER'
                                 mInfo.debug.specRole    = 'ROLE_ADMIN'
                             }
-                            if (da.ctxInstEditorCheckPerm_or_ROLEADMIN()) {
-                                mInfo.debug.test        = 'ctxInstEditorCheckPerm_or_ROLEADMIN()' //  + da.ctxInstEditorCheckPerm_or_ROLEADMIN().toList()
-                                mInfo.debug.perm        = da.ctxInstEditorCheckPerm_or_ROLEADMIN().toList()[0]
+                            if (da.hasPermAsInstEditor_or_ROLEADMIN()) {
+                                mInfo.debug.test        = 'hasPermAsInstEditor_or_ROLEADMIN()' //  + da.hasPermAsInstEditor_or_ROLEADMIN().toList()
+                                mInfo.debug.perm        = da.hasPermAsInstEditor_or_ROLEADMIN().toList()[0]
                                 mInfo.debug.affil       = 'INST_EDITOR'
                                 mInfo.debug.specRole    = 'ROLE_ADMIN'
                             }
-                            if (da.ctxInstAdmCheckPerm_or_ROLEADMIN()) {
-                                mInfo.debug.test        = 'ctxInstAdmCheckPerm_or_ROLEADMIN()' //  + da.ctxInstAdmCheckPerm_or_ROLEADMIN().toList()
-                                mInfo.debug.perm        = da.ctxInstAdmCheckPerm_or_ROLEADMIN().toList()[0]
+                            if (da.hasPermAsInstAdm_or_ROLEADMIN()) {
+                                mInfo.debug.test        = 'hasPermAsInstAdm_or_ROLEADMIN()' //  + da.hasPermAsInstAdm_or_ROLEADMIN().toList()
+                                mInfo.debug.perm        = da.hasPermAsInstAdm_or_ROLEADMIN().toList()[0]
                                 mInfo.debug.affil       = 'INST_ADM'
                                 mInfo.debug.specRole    = 'ROLE_ADMIN'
                             }
