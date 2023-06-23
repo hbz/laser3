@@ -1198,7 +1198,7 @@ class OrganisationController  {
      */
     @DebugInfo(hasAffiliation = [CustomerTypeService.PERMS_PRO, 'INST_USER'])
     @Secured(closure = {
-        ctx.contextService.hasAffiliation(CustomerTypeService.PERMS_PRO, 'INST_USER')
+        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
     })
     @Check404(domain=Org)
     def tasks() {
@@ -1215,7 +1215,7 @@ class OrganisationController  {
 
     @DebugInfo(hasAffiliation = [CustomerTypeService.PERMS_PRO, 'INST_USER'])
     @Secured(closure = {
-        ctx.contextService.hasAffiliation(CustomerTypeService.PERMS_PRO, 'INST_USER')
+        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
     })
     @Check404()
     def workflows() {
@@ -1234,7 +1234,7 @@ class OrganisationController  {
      */
     @DebugInfo(hasAffiliation = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER'])
     @Secured(closure = {
-        ctx.contextService.hasAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER')
+        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     })
     @Check404(domain=Org)
     def documents() {
@@ -1565,7 +1565,7 @@ class OrganisationController  {
      */
     @DebugInfo(hasAffiliation = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER'])
     @Secured(closure = {
-        ctx.contextService.hasAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER')
+        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     })
     @Check404(domain=Org)
     def addressbook() {
@@ -1606,7 +1606,7 @@ class OrganisationController  {
      */
     @DebugInfo(hasAffiliation = [CustomerTypeService.PERMS_BASIC, 'INST_USER'])
     @Secured(closure = {
-        ctx.contextService.hasAffiliation(CustomerTypeService.PERMS_BASIC, 'INST_USER')
+        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_BASIC)
     })
     @Check404(domain=Org)
     def readerNumber() {
@@ -1690,7 +1690,7 @@ class OrganisationController  {
      */
     @DebugInfo(hasAffiliation = [CustomerTypeService.PERMS_BASIC, 'INST_USER'])
     @Secured(closure = {
-        ctx.contextService.hasAffiliation(CustomerTypeService.PERMS_BASIC, 'INST_USER')
+        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_BASIC)
     })
     @Check404(domain=Org)
     def accessPoints() {

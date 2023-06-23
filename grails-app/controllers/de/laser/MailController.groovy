@@ -18,7 +18,7 @@ class MailController {
 
     @DebugInfo(hasAffiliation = [CustomerTypeService.ORG_CONSORTIUM_PRO, 'INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.hasAffiliation(CustomerTypeService.ORG_CONSORTIUM_PRO, "INST_EDITOR")
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)
     })
     def createOwnMail() {
         log.debug("createOwnMail: " + params)
@@ -125,7 +125,7 @@ class MailController {
 
     @DebugInfo(hasAffiliation = [CustomerTypeService.ORG_CONSORTIUM_PRO, 'INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.hasAffiliation(CustomerTypeService.ORG_CONSORTIUM_PRO, "INST_EDITOR")
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)
     })
     def processSendMail() {
         log.debug("processSendMail: " + params)
