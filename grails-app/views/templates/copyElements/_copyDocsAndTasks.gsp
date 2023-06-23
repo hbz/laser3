@@ -46,10 +46,10 @@
             <tbody class="top aligned">
                 <tr>
                     <td  name="copyObject.takeDocs.source">
-                        <strong><i class="file outline icon"></i>&nbsp${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.takeDocs")}:</strong><br />
+                        <div class="la-min-height"><strong><i class="file outline icon"></i>&nbsp${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.takeDocs")}:</strong></div>
                         <g:each in="${sourceDocuments}" var="docctx">
                             <g:if test="${(docctx.isDocAFile() && (docctx.status?.value != 'Deleted') && (docctx.owner?.owner?.id == contextService.getOrg().id))}">
-                                <div data-id="${docctx.id}" class="la-element">
+                                <div data-id="${docctx.id}" class="la-element la-min-height">
                                     <label>
                                         <g:link controller="docstore" id="${docctx.owner.uuid}" target="_blank">
                                             <g:if test="${docctx.owner?.title}">
@@ -72,9 +72,10 @@
                     </td>
                     <g:if test="${isConsortialObjects}">
                         <td class="center aligned">
+                            <div class="la-min-height"></div>
                             <g:each in="${sourceDocuments}" var="docctx">
                                 <g:if test="${(docctx.isDocAFile() && (docctx.status?.value != 'Deleted') && (docctx.owner?.owner?.id == contextService.getOrg().id))}">
-                                    <div class="ui checkbox la-toggle-radio la-inherit">
+                                    <div class="ui checkbox la-toggle-radio la-inherit la-min-height">
                                         <g:checkBox name="copyObject.toggleShare" value="${docctx.id}"
                                                     checked="${docctx.isShared ? 'true' : 'false'}"/>
                                     </div>
@@ -84,26 +85,24 @@
                     </g:if>
                     %{--COPY:--}%
                     <td class="center aligned">
-                        <br />
+                        <div class="la-min-height"></div>
                         <g:each in="${sourceDocuments}" var="docctx">
                             <g:if test="${(docctx.isDocAFile() && (docctx.status?.value != 'Deleted') && (docctx.owner?.owner?.id == contextService.getOrg().id))}">
                                 %{--<div class="ui checkbox">--}%
-                                <div class="ui checkbox la-toggle-radio la-replace">
+                                <div class="ui checkbox la-toggle-radio la-replace la-min-height">
                                     <g:checkBox name="copyObject.takeDocIds" value="${docctx.id}" data-action="copy" checked="${true}" />
                                 </div>
                                 %{--</div>--}%
-                                <br />
                             </g:if>
                         </g:each>
                     </td>
                     <g:if test="${!copyObject && targetObject}">
                         <td  name="copyObject.takeDocs.target">
-                            <strong><i class="file outline icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeDocs")}:</strong><br />
-                            <div>
-                                <g:if test="${targetObject}">
+                            <div class="la-min-height"><strong><i class="file outline icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeDocs")}:</strong><br /></div>
+                            <g:if test="${targetObject}">
                                     <g:each in="${targetDocuments}" var="docctx">
                                         <g:if test="${(docctx.isDocAFile() && (docctx.status?.value != 'Deleted') && (docctx.owner?.owner?.id == contextService.getOrg().id))}">
-                                            <div data-id="${docctx.id}" class="la-element">
+                                            <div data-id="${docctx.id}" class="la-element la-min-height">
                                                 <g:link controller="docstore" id="${docctx.owner.uuid}" target="_blank">
                                                     <g:if test="${docctx.owner?.title}">
                                                         ${docctx.owner.title}
@@ -118,35 +117,30 @@
                                                     </g:else>
                                                 </g:link>
                                                 <g:if test="${docctx.getDocType()}">(${docctx.getDocType().getI10n("value")})</g:if>
-                                            </div>
-                                            <g:if test="${isConsortialObjects}">
-                                                <div class="right aligned wide column">
+                                                <g:if test="${isConsortialObjects}">
                                                     <g:if test="${docctx.isShared}">
-                                                        <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.on')}">
+                                                        <span data-position="top left" class="la-popup-tooltip la-delay la-float-right" data-content="${message(code:'property.share.tooltip.on')}">
                                                             <i class="la-share icon la-js-editmode-icon"></i>
                                                         </span>
                                                     </g:if>
                                                     <g:else>
-                                                        <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.off')}">
+                                                        <span data-position="top left" class="la-popup-tooltip la-delay la-float-right" data-content="${message(code:'property.share.tooltip.off')}">
                                                             <i class="la-share slash icon la-js-editmode-icon"></i>
                                                         </span>
                                                     </g:else>
-
-                                                </div>
-                                            </g:if>
-                                            <br />
+                                                </g:if>
+                                            </div>
                                         </g:if>
                                     </g:each>
                                 </g:if>
-                            </div>
                         </td>
                         %{--DELETE:--}%
                         <td>
-                            <br />
+                            <div class="la-min-height"></div>
                             <g:each in="${targetDocuments}" var="docctx">
                                 <g:if test="${(docctx.isDocAFile() && (docctx.status?.value != 'Deleted') && (docctx.owner?.owner?.id == contextService.getOrg().id))}">
                                     %{--<div class="ui checkbox">--}%
-                                    <div class="ui checkbox la-toggle-radio la-noChange setDeletionConfirm">
+                                    <div class="ui checkbox la-toggle-radio la-noChange setDeletionConfirm la-min-height">
                                         <g:checkBox name="copyObject.deleteDocIds" value="${docctx?.id}" data-action="delete" checked="${false}"/>
                                     </div>
                                     %{--</div>--}%
@@ -159,10 +153,10 @@
                 %{--ANNOUNCEMENTS:--}%
                 <tr>
                     <td name="copyObject.takeAnnouncements.source">
-                        <strong><i class="sticky note outline icon"></i>&nbsp${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.takeAnnouncements")}:</strong><br />
+                        <div class="la-min-height"><strong><i class="sticky note outline icon"></i>&nbsp${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.takeAnnouncements")}:</strong></div>
                         <g:each in="${sourceDocuments}" var="docctx">
                             <g:if test="${docctx.isDocANote() && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.getOrg().id}">
-                                <div data-id="${docctx.id}" class="la-element">
+                                <div data-id="${docctx.id}" class="la-element la-min-height ">
                                     <label>
                                         <g:if test="${docctx.owner.title}">
                                             <strong>${docctx.owner.title}</strong>
@@ -181,9 +175,10 @@
                     </td>
                     <g:if test="${isConsortialObjects}">
                         <td class="center aligned">
+                            <div class="la-min-height"></div>
                             <g:each in="${sourceDocuments}" var="docctx">
                                 <g:if test="${docctx.isDocANote() && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.getOrg().id}">
-                                    <div class="ui checkbox la-toggle-radio la-inherit">
+                                    <div class="ui checkbox la-toggle-radio la-inherit la-min-height">
                                         <g:checkBox name="copyObject.toggleShare" value="${docctx.id}"
                                                     checked="${docctx.isShared ? 'true' : 'false'}"/>
                                     </div>
@@ -193,12 +188,12 @@
                     </g:if>
                     %{--COPY:--}%
                     <td class="center aligned">
-                    <br />
+                        <div class="la-min-height"></div>
                         <g:each in="${sourceDocuments}" var="docctx">
                             <g:if test="${docctx.isDocANote() && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.getOrg().id}">
                                 %{--<div data-id="${docctx.id} " class="la-element">--}%
                                     %{--<div class="ui checkbox">--}%
-                                <div class="ui checkbox la-toggle-radio la-replace">
+                                <div class="ui checkbox la-toggle-radio la-replace la-min-height">
                                         <g:checkBox name="copyObject.takeAnnouncementIds" value="${docctx.id}" data-action="copy" checked="${true}" />
                                 </div>
                                     %{--</div>--}%
@@ -208,12 +203,11 @@
                     </td>
                         <g:if test="${!copyObject && targetObject}">
                                     <td  name="copyObject.takeAnnouncements.target">
-                                        <strong><i class="sticky note outline icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeAnnouncements")}:</strong><br />
-                                        <div>
-                                            <g:if test="${targetObject}">
+                                        <div class="la-min-height"><strong><i class="sticky note outline icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeAnnouncements")}:</strong></div>
+                                        <g:if test="${targetObject}">
                                                 <g:each in="${targetDocuments}" var="docctx">
                                                     <g:if test="${docctx.isDocANote() && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.getOrg().id}">
-                                                        <div data-id="${docctx.id}" class="la-element">
+                                                        <div data-id="${docctx.id}" class="la-element la-min-height">
                                                             <g:if test="${docctx.owner.title}">
                                                                 <strong>${docctx.owner.title}</strong>
                                                             </g:if>
@@ -224,8 +218,20 @@
                                                             <g:formatDate
                                                                     format="${message(code: 'default.date.format.notime')}"
                                                                     date="${docctx.owner.dateCreated}"/>)
+                                                            <g:if test="${isConsortialObjects}">
+                                                                <g:if test="${docctx.isShared}">
+                                                                    <span data-position="top left" class="la-popup-tooltip la-delay la-float-right" data-content="${message(code:'property.share.tooltip.on')}">
+                                                                        <i class="la-share icon la-js-editmode-icon"></i>
+                                                                    </span>
+                                                                </g:if>
+                                                                <g:else>
+                                                                    <span data-position="top left" class="la-popup-tooltip la-delay la-float-right" data-content="${message(code:'property.share.tooltip.off')}">
+                                                                        <i class="la-share slash icon la-js-editmode-icon"></i>
+                                                                    </span>
+                                                                </g:else>
+                                                            </g:if>
                                                         </div>
-                                                        <g:if test="${isConsortialObjects}">
+%{--                                                        <g:if test="${isConsortialObjects}">
                                                             <div class="right aligned wide column">
                                                                 <g:if test="${docctx.isShared}">
                                                                     <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.on')}">
@@ -239,28 +245,25 @@
                                                                 </g:else>
 
                                                             </div>
-                                                        </g:if>
+                                                        </g:if>--}%
                                                     </g:if>
                                                 </g:each>
                                             </g:if>
-                                        </div>
                                     </td>
                                     %{--DELETE:--}%
                                     <td>
-                                    <br />
-                                        <div>
+                                        <div class="la-min-height"></div>
                                             <g:if test="${targetObject}">
                                                 <g:each in="${targetDocuments}" var="docctx">
                                                     <g:if test="${docctx.isDocANote() && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.getOrg().id}">
                                                         %{--<div class="ui checkbox">--}%
-                                                        <div class="ui checkbox la-toggle-radio la-noChange setDeletionConfirm">
+                                                        <div class="ui checkbox la-toggle-radio la-noChange setDeletionConfirm la-min-height">
                                                             <g:checkBox name="copyObject.deleteAnnouncementIds" value="${docctx?.id}" data-action="delete"  checked="${false}"/>
                                                         </div>
                                                         %{--</div>--}%
                                                     </g:if>
                                                 </g:each>
                                             </g:if>
-                                        </div>
                                     </td>
                         </g:if>
                 </tr>
@@ -268,9 +271,9 @@
                 %{--TASKS:--}%
                 <tr>
                     <td name="copyObject.takeTasks.source">
-                        <strong><i class="calendar check outline icon"></i>&nbsp${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.takeTasks")}:</strong><br />
+                        <div class="la-min-height"><strong><i class="calendar check outline icon"></i>&nbsp${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.takeTasks")}:</strong></div>
                         <g:each in="${sourceTasks}" var="tsk">
-                            <div data-id="${tsk?.id}" class="la-element">
+                            <div data-id="${tsk?.id}" class="la-element la-min-height">
                                 <label>
                                     <strong>${tsk?.title}</strong> (${message(code: 'task.endDate.label')}
                                     <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${tsk.endDate}"/>)
@@ -280,11 +283,11 @@
                     </td>
                     %{--COPY:--}%
                     <td class="center aligned">
-                        <br />
+                        <div class="la-min-height"></div>
                         <g:each in="${sourceTasks}" var="tsk">
                             <div data-id="${tsk?.id}" class="la-element">
                                 %{--<div class="ui checkbox">--}%
-                                <div class="ui checkbox la-toggle-radio la-replace">
+                                <div class="ui checkbox la-toggle-radio la-replace la-min-height">
                                         <g:checkBox name="copyObject.takeTaskIds" value="${tsk?.id}" data-action="copy"  />
                                 </div>
                                 %{--</div>--}%
@@ -294,9 +297,9 @@
                     <td></td>
                     <g:if test="${!copyObject && targetObject}">
                                 <td  name="copyObject.takeTasks.target">
-                                    <strong><i class="calendar check outline icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeTasks")}:</strong><br />
+                                    <div class="la-min-height"><strong><i class="calendar check outline icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeTasks")}:</strong></div>
                                     <g:each in="${targetTasks}" var="tsk">
-                                        <div data-id="${tsk?.id}" class="la-element">
+                                        <div data-id="${tsk?.id}" class="la-element la-min-height">
                                         <strong>${tsk?.title}</strong> (${message(code: 'task.endDate.label')}
                                         <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${tsk?.endDate}"/>)
                                         </div>
@@ -304,11 +307,11 @@
                                 </td>
                                 %{--DELETE:--}%
                                 <td>
-                                    <br />
+                                    <div class="la-min-height"></div>
                                     <g:each in="${targetTasks}" var="tsk">
                                         <g:if test="${tsk.creator.id == userId || isInstAdm}">
                                             %{--<div class="ui checkbox">--}%
-                                            <div class="ui checkbox la-toggle-radio la-noChange setDeletionConfirm">
+                                            <div class="ui checkbox la-toggle-radio la-noChange setDeletionConfirm la-min-height">
                                                 <g:checkBox name="copyObject.deleteTaskIds" value="${tsk?.id}" data-action="delete"  checked="${false}" />
                                             </div>
                                             %{--</div>--}%
