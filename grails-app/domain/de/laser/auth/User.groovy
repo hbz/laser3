@@ -171,7 +171,7 @@ class User {
 
         (formalOrg?.id in orgIdList) && (formalRole?.id == Role.findByAuthority('INST_ADM').id)
     }
-
+    
     /**
      * Checks if the user is the last INST_ADM of the ${@link Org}s affiliated to
      * @return is the user the last institution admin?

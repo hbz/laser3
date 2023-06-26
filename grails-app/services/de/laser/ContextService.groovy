@@ -96,7 +96,7 @@ class ContextService {
         return new SessionCacheWrapper()
     }
 
-    // -- CONTEXT CHECKS -- user.formalOrg based perm/role checks - all withFakeRole --
+    // -- Formal checks @ user.formalOrg - all withFakeRole --
 
     /**
      * Permission check (granted by customer type) for the current context org.
@@ -110,6 +110,8 @@ class ContextService {
         }
         hasPerm(orgPerms)
     }
+
+    // -- Formal checks @ user.formalOrg, user.formalRole + user.isFormal(role, formalOrg) - all withFakeRole --
 
     boolean hasPermAsInstUser_or_ROLEADMIN(String orgPerms) {
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
@@ -130,13 +132,7 @@ class ContextService {
         _hasAffiliation(orgPerms, 'INST_ADM')
     }
 
-    private boolean _hasAffiliation(String orgPerms, String instUserRole) {
-        accessService._hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(orgPerms.split(','), instUserRole)
-        // accessService.ctxPermAffiliation(orgPerms, instUserRole)
-    }
-
-    // TODO
-    boolean hasAffiliationForConsortium_or_ROLEADMIN(String orgPerms, String instUserRole) {
+    boolean hasPermAsInstRoleAsConsortium_or_ROLEADMIN(String orgPerms, String instUserRole) {
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
             return true
         }
@@ -145,15 +141,12 @@ class ContextService {
                 return _hasAffiliation(orgPerms, instUserRole)
             }
         }
-        // accessService.ctxConsortiumCheckPermAffiliation_or_ROLEADMIN(orgPerms, instUserRole)
-
-//        if (contextService.getUser() && contextService.getOrg() && instUserRole) {
-//            if (contextService.getUser().hasCtxAffiliation_or_ROLEADMIN( instUserRole )) {
-//                if (contextService.getOrg().getAllOrgTypeIds().contains( RDStore.OT_CONSORTIUM.id )) {
-//                    return _hasPerm_forOrg_withFakeRole(orgPerms.split(','), contextService.getOrg())
-//                }
-//            }
-//        }
         return false
+    }
+
+    // -- private
+
+    private boolean _hasAffiliation(String orgPerms, String instUserRole) {
+        accessService._hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(orgPerms.split(','), instUserRole)
     }
 }
