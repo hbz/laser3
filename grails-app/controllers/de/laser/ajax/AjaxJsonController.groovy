@@ -878,9 +878,9 @@ class AjaxJsonController {
      * Validation query; checks if the user with the given username exists
      * @return true if there is a {@link User} matching the given input query, false otherwise
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_ADM'])
+    @DebugInfo(isInstAdm_or_ROLEADMIN = true)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
+        ctx.contextService.isInstAdm_or_ROLEADMIN()
     })
     def checkExistingUser() {
         Map<String, Object> result = [result: false]

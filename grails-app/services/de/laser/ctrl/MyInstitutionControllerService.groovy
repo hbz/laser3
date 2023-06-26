@@ -160,16 +160,6 @@ class MyInstitutionControllerService {
         User user = contextService.getUser()
         Org org = contextService.getOrg()
 
-//        switch (params.action){
-//            case 'currentSurveys':
-//            case 'surveyInfos':
-//            case 'surveyInfoFinish':
-//                result.user = user
-//                break
-//            default:
-//                result.user = user
-//        }
-
         result.user = user
         result.institution = org
         result.contextOrg = org
@@ -186,11 +176,11 @@ class MyInstitutionControllerService {
                 result.editable = surveyService.isEditableSurvey(org, SurveyInfo.get(params.id) ?: null)
                 break
             case 'users':
-                result.editable = user.hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
+                result.editable = contextService.isInstAdm_or_ROLEADMIN()
                 break
             case 'managePropertyDefinitions':
                 result.editable = false
-                result.changeProperties = user.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+                result.changeProperties = contextService.isInstEditor_or_ROLEADMIN()
                 break
             default:
                 result.editable = userService.checkAffiliationAndCtxOrg_or_ROLEADMIN(user, org, 'INST_EDITOR')

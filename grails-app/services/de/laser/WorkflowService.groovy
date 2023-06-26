@@ -398,7 +398,7 @@ class WorkflowService {
 
     boolean hasUserPerm_read() {
         Org ctxOrg = contextService.getOrg()
-        if (ctxOrg && ctxOrg.isCustomerType_Pro() && contextService.getUser().hasCtxAffiliation_or_ROLEADMIN('INST_USER')) {
+        if (ctxOrg && ctxOrg.isCustomerType_Pro() && contextService.isInstUser_or_ROLEADMIN()) {
             return true
         }
         false
@@ -406,7 +406,7 @@ class WorkflowService {
 
     boolean hasUserPerm_edit() {
         Org ctxOrg = contextService.getOrg()
-        if (ctxOrg && ctxOrg.isCustomerType_Pro() && contextService.getUser().hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')) {
+        if (ctxOrg && ctxOrg.isCustomerType_Pro() && contextService.isInstEditor_or_ROLEADMIN()) {
             return true
         }
         false

@@ -32,9 +32,9 @@ class AddressController  {
     /**
      * Creates a new address with the given parameters
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = true, wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     def create() {
         Address.withTransaction {
@@ -120,9 +120,9 @@ class AddressController  {
     /**
      * Updates the given address with the given updated data
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = true, wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     def edit() {
         Address.withTransaction {
@@ -179,9 +179,9 @@ class AddressController  {
     /**
      * Deletes the given address
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = true, wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     def delete() {
         Address.withTransaction {

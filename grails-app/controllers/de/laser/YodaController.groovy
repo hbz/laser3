@@ -457,6 +457,22 @@ class YodaController {
                                     test     : ''
                             ]
 
+                            if (da.isInstUser_or_ROLEADMIN()) {
+                                mInfo.debug.test        = 'isInstUser_or_ROLEADMIN()'
+                                mInfo.debug.affil       = 'INST_USER'
+                                mInfo.debug.specRole    = 'ROLE_ADMIN'
+                            }
+                            if (da.isInstEditor_or_ROLEADMIN()) {
+                                mInfo.debug.test        = 'isInstEditor_or_ROLEADMIN()'
+                                mInfo.debug.affil       = 'INST_EDITOR'
+                                mInfo.debug.specRole    = 'ROLE_ADMIN'
+                            }
+                            if (da.isInstAdm_or_ROLEADMIN()) {
+                                mInfo.debug.test        = 'isInstAdm_or_ROLEADMIN()'
+                                mInfo.debug.affil       = 'INST_ADM'
+                                mInfo.debug.specRole    = 'ROLE_ADMIN'
+                            }
+
                             if (da.hasPermAsInstUser_or_ROLEADMIN()) {
                                 mInfo.debug.test        = 'hasPermAsInstUser_or_ROLEADMIN()' //  + da.hasPermAsInstUser_or_ROLEADMIN().toList()
                                 mInfo.debug.perm        = da.hasPermAsInstUser_or_ROLEADMIN().toList()[0]

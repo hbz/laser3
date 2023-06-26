@@ -649,9 +649,9 @@ class PackageController {
      * the we:kb data will be fetched and data mirrored prior to linking the package
      * to the subscription
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'])
+    @DebugInfo(isInstEditor_or_ROLEADMIN = true)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     def processLinkToSub() {
         Map<String, Object> result = [:]
