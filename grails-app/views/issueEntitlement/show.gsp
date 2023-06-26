@@ -12,10 +12,10 @@
     <ui:crumb controller="subscription" action="index" id="${issueEntitlementInstance.subscription.id}"
                  text="${issueEntitlementInstance.subscription.name}"/>
     <ui:crumb class="active" id="${issueEntitlementInstance.id}"
-                 text="${issueEntitlementInstance.name}"/>
+                 text="${issueEntitlementInstance.tipp.name}"/>
 </ui:breadcrumbs>
 
-<ui:h1HeaderWithIcon message="issueEntitlement.for_title.label" args="[issueEntitlementInstance.name, issueEntitlementInstance.subscription.name]"
+<ui:h1HeaderWithIcon message="issueEntitlement.for_title.label" args="[issueEntitlementInstance.tipp.name, issueEntitlementInstance.subscription.name]"
                         type="${issueEntitlementInstance.tipp.titleType}" />
 
 <ui:messages data="${flash}"/>

@@ -27538,6 +27538,7 @@ h1 ~ h2.ui.header {
 .ui.icon.header .icon.la-object-journal,
 .ui.icon.header .icon.la-object-database,
 .ui.icon.header .icon.la-object-ebook {
+  margin-right: 0.5em;
   font-size: 0.88em !important;
   line-height: 1 !important;
   padding: 0.5em 0 !important;
@@ -47499,6 +47500,8 @@ a.ui.ui.ui.inverted.basic.black.label:hover {
   position: relative;
   padding-left: 0.2em;
   padding-right: 0.2em;
+  padding-top: 0.9em;
+  padding-bottom: 0.9em;
   margin-bottom: 1.2em;
   background-color: #fffaf5;
   border: 1px solid #004678;
@@ -71727,6 +71730,11 @@ table tr td div.willBeReplacedStrong {
   padding: 5px;
   background-color: #EDC0BA;
   text-decoration: line-through;
+}
+
+.la-min-height {
+  min-height: 3.5em !important;
+  display: block!important;
 }
 
 .la-multi-sources:nth-child(n+2) {

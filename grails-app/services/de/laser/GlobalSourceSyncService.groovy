@@ -2225,7 +2225,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         BasicHttpClient http
         String uri = source.uri.endsWith('/') ? source.uri : source.uri+'/'
         HttpClientConfiguration config = new DefaultHttpClientConfiguration()
-        config.readTimeout = Duration.ofMinutes(1)
+        config.readTimeout = Duration.ofMinutes(5)
         config.maxContentLength = MAX_CONTENT_LENGTH
         queryParams.username = ConfigMapper.getWekbApiUsername()
         queryParams.password = ConfigMapper.getWekbApiPassword()

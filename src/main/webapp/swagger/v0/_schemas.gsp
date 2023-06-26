@@ -1,4 +1,4 @@
-<%@ page import="de.laser.interfaces.CalculatedType; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.api.v0.ApiToolkit; de.laser.storage.RDConstants; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore" %>
+<%@ page import="de.laser.storage.Constants; de.laser.interfaces.CalculatedType; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.api.v0.ApiToolkit; de.laser.storage.RDConstants; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore" %>
 <%
     def printRefdataEnum = { rdc, pos ->
         String spacer = ''
@@ -383,25 +383,23 @@
           description: Global unique identifier for system-wide identification in LAS:eR.
           example: "orgaccesspoint:ab1360cc-147b-d632-2dc8-1a6c56d84b00"
         ezproxy:
-          type: array
-          items:
-            $ref: "#/components/schemas/EZProxy_in_OrgAccessPoint"
+          type: object
+          $ref: "#/components/schemas/EZProxy_in_OrgAccessPoint"
         ip:
-          type: array
-          items:
-            $ref: "#/components/schemas/IP_in_OrgAccessPoint"
+          type: object
+          $ref: "#/components/schemas/IP_in_OrgAccessPoint"
+        mailDomain:
+          type: object
+          $ref: "#/components/schemas/MailDomain_in_OrgAccessPoint"
         openathens:
-          type: array
-          items:
-            $ref: "#/components/schemas/OpenAthens_in_OrgAccessPoint"
+          type: object
+          $ref: "#/components/schemas/OpenAthens_in_OrgAccessPoint"
         proxy:
-          type: array
-          items:
-            $ref: "#/components/schemas/Proxy_in_OrgAccessPoint"
+          type: object
+          $ref: "#/components/schemas/Proxy_in_OrgAccessPoint"
         shibboleth:
-          type: array
-          items:
-            $ref: "#/components/schemas/Shibboleth_in_OrgAccessPoint"
+          type: object
+          $ref: "#/components/schemas/Shibboleth_in_OrgAccessPoint"
 
     Organisation:
       description: |
@@ -492,14 +490,6 @@
           description: Sector of the organisation. Maps to the RefdataCategory "${RDConstants.ORG_SECTOR}".
           enum: <% printRefdataEnum(RDConstants.ORG_SECTOR, 12) %>
           example: Higher Education
-        shortname:
-          type: string
-          description: Short name or abbreviation of the organisation.
-          example: hbz
-        sortname:
-          type: string
-          description: Sort name of the organisation for easier retrieval in lists. Convetion is city, abbreviation.
-          example: Köln, hbz
         subjectGroup:
           type: array
           description: A set of subject groups which are aimed by the given organisation. The values map to the RefdataCategory ${RDConstants.SUBJECT_GROUP}.
@@ -574,11 +564,6 @@
           type: string
           description: global unique identifier for system-wide identification in LAS:eR.
           example: "person:a45a3cf0-f3ad-f231-d5ab-fc1d217f583c"
-        addresses:
-          type: array
-          description: Physical address locations of the given contact.
-          items:
-            $ref: "#/components/schemas/Address"
         contacts:
           type: array
           description: Virtual contact possibilities (telephone, e-mail address) of the given contact.
@@ -733,6 +718,11 @@
           description: Has the subscription a publish component? Maps to the RefdataCategory "${RDConstants.Y_N}".
           enum: <% printRefdataEnum(RDConstants.Y_N, 12) %>
           example: "${RDStore.YN_YES.value}"
+        holdingSelection:
+          type: string
+          description: To which extent are entitlements of the package(s) being subscribed? Maps to the RefdataCategory "${RDConstants.SUBSCRIPTION_HOLDING}".
+          enum: <% printRefdataEnum(RDConstants.SUBSCRIPTION_HOLDING, 12) %>
+          example: "${RDStore.SUBSCRIPTION_HOLDING_ENTIRE.value}"
         instanceOf:
           description: The subscription instance of the consortium from which this member subscription is derived.
           $ref: "#/components/schemas/SubscriptionStub"
@@ -799,6 +789,11 @@
           description: Set of public and private properties of this subscription.
           items:
             $ref: "#/components/schemas/Property"
+        referenceYear:
+          type: string
+          description: The reference year of the considered subscription.
+          format: YYYY
+          example: 2023
         resource:
           type: string
           description: The resource type of the titles covered by this subscription. Maps to the RefdataCategory "${RDConstants.SUBSCRIPTION_RESOURCE}".
@@ -807,7 +802,7 @@
         status:
           type: string
           description: The subscription status. Maps to the RefdataCategory "${RDConstants.SUBSCRIPTION_STATUS}".
-          enum: <% printRefdataEnum(RDConstants.SUBSCRIPTION_STATUS, 12) %>
+          enum: <% printRefdataEnum(RDConstants.SUBSCRIPTION_STATUS+Constants.PERMANENTLY_DELETED, 12) %>
           example: ${RDStore.SUBSCRIPTION_CURRENT.value}
         successors:
           type: array
@@ -1148,20 +1143,11 @@
           description: The medium type of the issue entitlement; maps to RefdataCategory "${RDConstants.TITLE_MEDIUM}".
           enum: <% printRefdataEnum(RDConstants.TITLE_MEDIUM, 12) %>
           example: ${RDStore.TITLE_TYPE_EBOOK.value}
-        name:
-          type: string
-          description: Name of the title.
-          example: Accounting reseach journal
         perpetualAccessBySub:
           description: Subscription granting perpetual access for the given issue entitlement.
           $ref: "#/components/schemas/SubscriptionStub"
         priceItems:
           $ref: "#/components/schemas/PriceItemCollection"
-        status:
-          type: string
-          description: The status of the issue entitlement; maps to RefdataCategory "${RDConstants.TIPP_STATUS}".
-          enum: <% printRefdataEnum(RDConstants.TIPP_STATUS, 12) %>
-          example: ${RDStore.TIPP_STATUS_CURRENT}
 
 
     IssueEntitlement_in_Subscription:
@@ -1200,6 +1186,21 @@
           example: references
         subscription:
           $ref: "#/components/schemas/SubscriptionStub"
+
+    MailDomain_in_OrgAccessPoint:
+      type: object
+      description: The mail domain access point parameters.
+      properties:
+        name:
+          type: string
+          description: Name of the access point.
+          example: "Hauptstelle Zeidel"
+        mailDomains:
+          type: array
+          description: The granted email addresses.
+          items:
+            type: string
+            example: "@zeidel.asbv.zd"
 
     OrgAccessPointCollection:
       type: array
@@ -1482,7 +1483,7 @@
         name:
           type: string
           description: Name of the title.
-          example: Accounting reseach journal
+          example: Accounting research journal
         priceItems:
           $ref: "#/components/schemas/PriceItemCollection"
         status:
@@ -1527,6 +1528,10 @@
           type: string
           description: Name of the organisation.
           example: Hochschulbibliothekszentrum des Landes Nordrhein-Westfalen
+        sortname:
+          type: string
+          description: Sort name of the organisation for easier retrieval in lists. Convetion is city, abbreviation.
+          example: Köln, hbz
         identifiers: # mapping attr ids
           type: array
           description: Further set of identifiers of the organisation.
@@ -1535,7 +1540,7 @@
         status:
           type: string
           description: Status of the organisation. Maps to the RefdataCategory "${RDConstants.ORG_STATUS}".
-          enum: <% printRefdataEnum(RDConstants.ORG_STATUS, 12) %>
+          enum: <% printRefdataEnum(RDConstants.ORG_STATUS+Constants.PERMANENTLY_DELETED, 12) %>
           example: ${RDStore.ORG_STATUS_CURRENT.value}
         type:
           type: array
@@ -1575,7 +1580,7 @@
         status:
           type: string
           description: Status of the license. Maps to the RefdataCategory "${RDConstants.LICENSE_STATUS}".
-          enum: <% printRefdataEnum(RDConstants.LICENSE_STATUS, 12) %>
+          enum: <% printRefdataEnum(RDConstants.LICENSE_STATUS+Constants.PERMANENTLY_DELETED, 12) %>
           example: Current
         calculatedType:
           type: string
@@ -1746,8 +1751,6 @@
           description: Statement to indicate the type of Open Access.
           enum: <% printRefdataEnum(RDConstants.LICENSE_OA_TYPE, 12) %>
           example: Gold OA
-        platform:
-          $ref: "#/components/schemas/PlatformStub"
         publisherName:
           type: string
           description: Publisher name. Not to be confused with third-party platform hosting name.

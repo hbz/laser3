@@ -144,10 +144,10 @@ class ApiOrgAccessPoint {
         }
 
         if(orgAccessPoint.accessMethod.value == 'mailDomain'){
-            result."${orgAccessPoint.accessMethod.value}".mailDomains = []
             result."${orgAccessPoint.accessMethod.value}".name = orgAccessPoint.name
-            orgAccessPoint.getAccessPointMailDomains().each {
-                result."${orgAccessPoint.accessMethod.value}".mailDomains << it
+            result."${orgAccessPoint.accessMethod.value}".mailDomains = []
+            orgAccessPoint.getAccessPointMailDomains().accessPointMailDomains.each { Map apd ->
+                result."${orgAccessPoint.accessMethod.value}".mailDomains << apd.mailDomain
             }
         }
 
