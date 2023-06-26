@@ -2019,9 +2019,13 @@ class MyInstitutionController  {
     })
     def subscriptionImport() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
-        result.mappingCols = ["name", "owner", "status", "type", "form", "resource", "provider", "agency", "startDate", "endDate",
-                              "manualCancellationDate", "hasPerpetualAccess", "hasPublishComponent", "isPublicForApi",
+        List<String> mappingCols = ["name", "owner", "status", "type", "form", "resource", "provider", "agency", "startDate", "endDate",
+                              "manualCancellationDate", "hasPerpetualAccess", "hasPublishComponent", "holdingSelection", "isPublicForApi",
                               "customProperties", "privateProperties", "notes"]
+        if(result.institution.isCustomerType_Inst_Pro()) {
+            mappingCols.add(mappingCols.indexOf("manualCancellationDate"), "isAutomaticRenewAnnually")
+        }
+        result.mappingCols = mappingCols
         result
     }
 
