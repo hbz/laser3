@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      26.06.2023  rc-3.1  3.1.4       Moe     Bug         Username vergessen Mail geht nicht raus 
+
 5159    26.06.2023  rc-3.1  3.1.4       Moe     Bug         Lizenzumfrage: Informations-URL wird mit Codefetzen angezeigt
 
 5153    22.06.2023  rc-3.1  3.1.4       Moe     Bug         Export einer Einrichtungsliste mit Zugangskonfigurationen
