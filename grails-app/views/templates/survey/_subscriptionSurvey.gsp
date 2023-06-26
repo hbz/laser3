@@ -57,7 +57,7 @@
                                 </div>
                             </dt>
                             <dd><ui:xEditable owner="${surveyConfig}" field="scheduledStartDate" type="date"
-                                                 overwriteEditable="${contextOrg?.id == surveyConfig.surveyInfo.owner.id && controllerName == 'survey' && actionName == 'show'}"/>
+                                                 overwriteEditable="${editable && contextOrg?.id == surveyConfig.surveyInfo.owner.id && controllerName == 'survey' && actionName == 'show'}"/>
                             </dd>
                         </dl>
                         <dl>
@@ -69,7 +69,7 @@
                                 </div>
                             </dt>
                             <dd><ui:xEditable owner="${surveyConfig}" field="scheduledEndDate" type="date"
-                                                 overwriteEditable="${contextOrg?.id == surveyConfig.surveyInfo.owner.id && controllerName == 'survey' && actionName == 'show'}"/></dd>
+                                                 overwriteEditable="${editable && contextOrg?.id == surveyConfig.surveyInfo.owner.id && controllerName == 'survey' && actionName == 'show'}"/></dd>
 
                         </dl>
                     </g:if>

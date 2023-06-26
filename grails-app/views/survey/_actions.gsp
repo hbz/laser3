@@ -1,12 +1,10 @@
 <%@ page import="de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.Org" %>
 <laser:serviceInjection/>
 
+<g:if test="${contextService.getUser().hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')}">
 <ui:actionsDropdown>
-    <g:if test="${contextService.getUser().hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')}">
         <g:if test="${actionName == 'currentSurveysConsortia' || actionName == 'workflowsSurveysConsortia'}">
-
             <laser:render template="actionsCreate"/>
-
         </g:if>
         <g:else>
 
@@ -148,8 +146,8 @@
 
             </g:if>
         </g:else>
-    </g:if>
 </ui:actionsDropdown>
+</g:if>
 
 <g:if test="${surveyInfo && surveyInfo.status.id in [RDStore.SURVEY_IN_EVALUATION.id, RDStore.SURVEY_SURVEY_COMPLETED.id, RDStore.SURVEY_COMPLETED.id]}">
     <ui:modal id="openSurveyAgain" text="${message(code:'openSurveyAgain.button')}" msgSave="${message(code:'openSurveyAgain.button')}">
