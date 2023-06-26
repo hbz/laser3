@@ -112,9 +112,11 @@
             </td>
 
             <td>
-                <button class="ui icon blue button la-modern-button la-modal" >
-                    <i class="film icon"></i>
-                </button>
+            <g:if test="${mpg === 'licence'}">
+                    <button class="ui icon blue button la-modern-button la-modal" >
+                        <i class="film icon"></i>
+                    </button>
+            </g:if>
             </td>
             <td class="four wide center aligned">
                 <i class="large green checkmark icon"></i>
@@ -132,14 +134,16 @@
                     ${message(code:"marketing.featureList.${mpg}")}
                 </div>
             </td>
-         <td>
-             %{--   <button class="ui icon blue button la-modern-button la-modal" >
-                 <i class="film icon"></i>
-             </button>--}%
-            </td>
-            <td class="four wide center aligned">
+             <td>
+                 <g:if test="${mpg === 'propertiesUse'}">
+                     <button class="ui icon blue button la-modern-button la-modal" >
+                         <i class="film icon"></i>
+                     </button>
+                 </g:if>
+             </td>
+             <td class="four wide center aligned">
 
-            </td>
+             </td>
             <td class="four wide center aligned ">
                 <i class="large green checkmark icon"></i>
             </td>
@@ -170,8 +174,7 @@
     <thead>
     <tr>
         <th class="two wide" rowspan="2">Der LAS:eR-Service</th>
-        <th></th>
-        %{--        <th class="center aligned"  rowspan="2"></th>--}%
+        <th class="center aligned"  rowspan="2"></th>
         <th class="center aligned" colspan="2">Las:eR</th>
     </tr>
     <tr>
@@ -189,11 +192,11 @@
                     ${message(code:"marketing.featureList.${mpg}")}
                 </div>
             </td>
-                       <td>
-                           %{--     <button class="ui icon blue button la-modern-button la-modal" >
-                               <i class="film icon"></i>
-                           </button>--}%
-                       </td>
+            <td>
+               %{--     <button class="ui icon blue button la-modern-button la-modal" >
+                   <i class="film icon"></i>
+               </button>--}%
+            </td>
             <td class="four wide center aligned">
                 <i class="large green checkmark icon"></i>
             </td>
@@ -210,11 +213,11 @@
                     ${message(code:"marketing.featureList.${mpg}")}
                 </div>
             </td>
-                            <td>%{--
-                                <button class="ui icon blue button la-modern-button la-modal" >
-                                    <i class="film icon"></i>
-                                </button>--}%
-                            </td>
+            <td>%{--
+                <button class="ui icon blue button la-modern-button la-modal" >
+                    <i class="film icon"></i>
+                </button>--}%
+            </td>
             <td class="four wide center aligned">
 
             </td>
@@ -242,21 +245,19 @@
 
     </tfooter>
 </table>
-<g:each in="${mappingColsBasic}" var="mpg">
-
-    <g:if test="${mpg === 'licence'}">
+<g:if test="(${mpg === 'licence'} || ${mpg === 'propertiesUse'})">
+    <g:each in="${mappingColsBasic}" var="mpg">
         <div class="ui large modal">
-
             <div class="content">${mpg}
-            <button class="ui right floated button la-animatedGif-redo ">Animation wiederholen</button>
-                <img width="100%" alt="" class="la-animatedGif-img la-padding-top-1em" src="${resource(dir: 'images', file: '${mpg}.gif')}"/>
+                <button class="ui right floated button la-animatedGif-redo ">Animation wiederholen</button>
+                <img width="100%" alt="" class="la-animatedGif-img la-padding-top-1em" src="${resource(dir: 'images', file: "${mpg}.gif")}"/>
             </div>
             <div class="actions">
                 <a href="#" class="ui positive button" >Schließen</a>
             </div>
         </div>
-    </g:if>
-</g:each>
+    </g:each>
+</g:if>
 <laser:script file="${this.getGroovyPageFileName()}">
     $('.la-modal').click(function(){
         $('.large.modal')
