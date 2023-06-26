@@ -193,15 +193,12 @@ class User {
         getAuthorities().authority.contains('ROLE_YODA')
     }
 
-    /**
-     * Checks if the user has the given affiliation granted. To be used with one of the INST_ role constants
-     * @param instUserRole the INST_-role to check for
-     * @return does the user have the given INST_-role granted?
-     */
-    @Deprecated
-    boolean hasCtxAffiliation_or_ROLEADMIN(String instUserRole) {
-        BeanStore.getUserService().checkAffiliation_or_ROLEADMIN(this, BeanStore.getContextService().getOrg(), instUserRole)
-    }
+//    @Deprecated
+//    boolean hasCtxAffiliation_or_ROLEADMIN(String instUserRole) {
+//        BeanStore.getUserService().checkAffiliation_or_ROLEADMIN(this, BeanStore.getContextService().getOrg(), instUserRole)
+//        // TODO - replace with ..
+//        // userService.checkAffiliation_or_ROLEADMIN(user, contextService.getOrg(), instUserRole)
+//    }
 
     /**
      * short-hand for getDisplayName() but with the difference that for YODAs, the ID is displayed for debugging purposes
