@@ -341,7 +341,7 @@ class ReportingGlobalService {
                         result.list = CostItem.executeQuery('select ci from CostItem ci where ci.id in (:idList) order by ci.costTitle', [idList: idList])
                     }
                     else if (tmpl == BaseConfig.KEY_ISSUEENTITLEMENT) {
-                        result.list = License.executeQuery('select ie from IssueEntitlement ie where ie.id in (:idList) order by ie.name', [idList: idList])
+                        result.list = License.executeQuery('select ie from IssueEntitlement ie where ie.id in (:idList) order by ie.tipp.sortname', [idList: idList])
                     }
                     else if (tmpl == BaseConfig.KEY_LICENSE) {
                         result.list = License.executeQuery('select l from License l where l.id in (:idList) order by l.sortableReference, l.reference', [idList: idList])
@@ -366,7 +366,7 @@ class ReportingGlobalService {
                         result.list = idList ? CostItem.executeQuery('select ci from CostItem ci where ci.id in (:idList) order by ci.costTitle', [idList: idList]) : []
                     }
                     else if (prefix == BaseConfig.KEY_ISSUEENTITLEMENT) {
-                        result.list = License.executeQuery('select ie from IssueEntitlement ie where ie.id in (:idList) order by ie.name', [idList: idList])
+                        result.list = License.executeQuery('select ie from IssueEntitlement ie where ie.id in (:idList) order by ie.tipp.sortname', [idList: idList])
                     }
                     else if (prefix in [ BaseConfig.KEY_LICENSE ]) {
                         result.list = idList ? License.executeQuery('select l from License l where l.id in (:idList) order by l.sortableReference, l.reference', [idList: idList]) : []

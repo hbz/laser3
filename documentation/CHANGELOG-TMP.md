@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4973    26.06.2023  dev     3.2         Andreas Feature     Abbau obsoleter Felder aus issueEntitlement
+
 4974    22.06.2023  dev     3.2         Andreas Feature     Verwaltung gelöschter Elemente umgestellt
 
 5153    22.06.2023  rc-3.1  3.1.4       Moe     Bug         Export einer Einrichtungsliste mit Zugangskonfigurationen
