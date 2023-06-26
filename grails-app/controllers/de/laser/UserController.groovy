@@ -196,7 +196,7 @@ class UserController {
                 User user = params.forgotten_username_mail ? User.findByEmail(params.forgotten_username_mail) : result.user
                 if (user) {
                     flash.message = message(code: 'menu.user.forgottenUsername.success') as String
-                    mailSendService.sendMailToUser(user, message(code: 'email.subject.forgottenUsername'), '/mailTemplates/text/forgotUserName', [user: user])
+                    mailSendService.sendMailToUser(user, message(code: 'email.subject.forgottenUsername'), '/mailTemplates/text/forgtUsName', [user: user])
 
                     redirect url: request.getHeader('referer'), id: params.id
                     return

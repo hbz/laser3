@@ -533,7 +533,7 @@ class MailSendService {
                 from ConfigMapper.getNotificationsEmailFrom()
                 replyTo ConfigMapper.getNotificationsEmailReplyTo()
                 subject ConfigMapper.getLaserSystemId() + ' - ' + subj
-                body(view: "/mailTemplates/text/forgtUsName", model: model)
+                body(view: view, model: model)
             }
         }
         catch (Exception e) {
