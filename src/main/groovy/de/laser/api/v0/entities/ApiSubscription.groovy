@@ -178,6 +178,7 @@ class ApiSubscription {
 
 		result.form         			= sub.form?.value
         result.isMultiYear  			= sub.isMultiYear ? 'Yes' : 'No'
+		result.referenceYear			= sub.referenceYear
 		result.isAutomaticRenewAnnually = sub.isAutomaticRenewAnnually ? 'Yes' : 'No'
 		result.resource     			= sub.resource?.value
 		result.status       			= sub.status?.value
@@ -185,6 +186,7 @@ class ApiSubscription {
 		result.isPublicForApi 			= sub.isPublicForApi ? 'Yes' : 'No'
 		result.hasPerpetualAccess 		= sub.hasPerpetualAccess ? 'Yes' : 'No'
 		result.hasPublishComponent 		= sub.hasPublishComponent ? 'Yes' : 'No'
+		result.holdingSelection			= sub.holdingSelection?.value
 
 		// References
 

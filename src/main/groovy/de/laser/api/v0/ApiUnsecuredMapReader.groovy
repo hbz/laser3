@@ -80,6 +80,7 @@ class ApiUnsecuredMapReader {
         result.globalUID    = org.globalUID
         result.gokbId       = org.gokbId
         result.name         = org.name
+        result.sortname     = org.sortname
         result.status       = org.status?.value
 
         // References

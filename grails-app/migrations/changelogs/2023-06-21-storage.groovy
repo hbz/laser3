@@ -6,6 +6,7 @@ import de.laser.Doc
 import de.laser.DocContext
 import de.laser.Identifier
 import de.laser.Org
+import de.laser.OrgRole
 import de.laser.OrgSetting
 import de.laser.properties.OrgProperty
 import de.laser.storage.RDStore
@@ -30,6 +31,7 @@ databaseChangeLog = {
                     DocContext.executeUpdate('delete from DocContext dc where dc.org in (:toDelete) or dc.targetOrg in (:toDelete)', [toDelete: orgsMarkedAsDeleted])
                     Doc.executeUpdate('delete from Doc d where d.owner in (:toDelete)', [toDelete: orgsMarkedAsDeleted])
                     Identifier.executeUpdate('delete from Identifier id where id.org in (:toDelete)', [toDelete: orgsMarkedAsDeleted])
+                    OrgRole.executeUpdate('delete from OrgRole oo where oo.org in (:toDelete) and oo.roleType not in (:subscriber)', [toDelete: orgsMarkedAsDeleted, subscriber: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIBER]])
                     OrgProperty.executeUpdate('delete from OrgProperty op where op.owner in (:toDelete)', [toDelete: orgsMarkedAsDeleted])
                     OrgSetting.executeUpdate('delete from OrgSetting os where os.org in (:toDelete)', [toDelete: orgsMarkedAsDeleted])
                     migrated = Org.executeUpdate('delete from Org o where o in (:toDelete)', [toDelete: orgsMarkedAsDeleted])
