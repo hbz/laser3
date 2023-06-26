@@ -265,8 +265,8 @@ class NavigationTagLib {
         def (lbText, lbMessage) = SwissKnife.getTextAndMessage(attrs)
         String linkBody  = (lbText && lbMessage) ? lbText + " - " + lbMessage : lbText + lbMessage
 
-        if (!attrs.affiliation) {
-            attrs.affiliation = Role.INST_USER // new default
+        if (!attrs.instRole) {
+            attrs.instRole = Role.INST_USER // new default
         }
 
         boolean check = SwissKnife.checkAndCacheNavPermsForCurrentRequest(attrs, request)
@@ -287,7 +287,7 @@ class NavigationTagLib {
             )
         }
         else {
-            if (contextService.getUser().hasCtxAffiliation_or_ROLEADMIN(attrs.affiliation)) {
+            if (contextService.getUser().hasCtxAffiliation_or_ROLEADMIN(attrs.instRole)) {
                 out << '<div class="item disabled la-popup-tooltip la-delay" data-position="left center" data-content="' + message(code:'tooltip.onlyFullMembership') + '" role="menuitem">' + linkBody + '</div>'
             }
 //            else out << '<div class="item disabled la-popup-tooltip la-delay" data-position="left center" role="menuitem">' + linkBody + '</div>'

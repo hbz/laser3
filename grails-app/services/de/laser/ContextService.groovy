@@ -110,6 +110,7 @@ class ContextService {
         }
         hasPerm(orgPerms)
     }
+
     boolean hasPermAsInstUser_or_ROLEADMIN(String orgPerms) {
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
             return true
