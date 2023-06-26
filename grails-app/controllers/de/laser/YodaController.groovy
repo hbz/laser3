@@ -457,11 +457,6 @@ class YodaController {
                                     test     : ''
                             ]
 
-                            if (da.ctxPermAffiliation()) {
-                                mInfo.debug.test        = 'ctxPermAffiliation()' //  + da.ctxPermAffiliation().toList()
-                                mInfo.debug.perm        = da.ctxPermAffiliation().toList()[0]
-                                mInfo.debug.affil       = da.ctxPermAffiliation().toList()[1]
-                            }
                             if (da.hasPermAsInstUser_or_ROLEADMIN()) {
                                 mInfo.debug.test        = 'hasPermAsInstUser_or_ROLEADMIN()' //  + da.hasPermAsInstUser_or_ROLEADMIN().toList()
                                 mInfo.debug.perm        = da.hasPermAsInstUser_or_ROLEADMIN().toList()[0]
@@ -480,10 +475,10 @@ class YodaController {
                                 mInfo.debug.affil       = 'INST_ADM'
                                 mInfo.debug.specRole    = 'ROLE_ADMIN'
                             }
-                            if (da.ctxConsortiumCheckPermAffiliation_or_ROLEADMIN()) {
-                                mInfo.debug.test        = 'ctxConsortiumCheckPermAffiliation_or_ROLEADMIN()' //  + da.ctxConsortiumCheckPermAffiliation_or_ROLEADMIN().toList()
-                                mInfo.debug.perm        = da.ctxConsortiumCheckPermAffiliation_or_ROLEADMIN().toList()[0]
-                                mInfo.debug.affil       = da.ctxConsortiumCheckPermAffiliation_or_ROLEADMIN().toList()[1]
+                            if (da.hasAffiliationForConsortium_or_ROLEADMIN()) {
+                                mInfo.debug.test        = 'hasAffiliationForConsortium_or_ROLEADMIN()' //  + da.hasAffiliationForConsortium_or_ROLEADMIN().toList()
+                                mInfo.debug.perm        = da.hasAffiliationForConsortium_or_ROLEADMIN().toList()[0]
+                                mInfo.debug.affil       = da.hasAffiliationForConsortium_or_ROLEADMIN().toList()[1]
                                 mInfo.debug.type        = 'Consortium'
                                 mInfo.debug.specRole    = 'ROLE_ADMIN'
                             }

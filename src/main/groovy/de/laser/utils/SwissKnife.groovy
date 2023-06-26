@@ -137,7 +137,7 @@ class SwissKnife {
         User user = (User) checkMap.get('laser_secured_nav_user')
         Org org = (Org) checkMap.get('laser_secured_nav_org')
 
-        String lsmnic = org?.id + ':' + attrs.specRole + ':' + attrs.affiliation + ':' + attrs.orgPerm + ':' + attrs.affiliationOrg
+        String lsmnic = org?.id + ':' + attrs.specRole + ':' + attrs.instRole + ':' + attrs.orgPerm + ':' + attrs.affiliationOrg
 
         if (checkMap.containsKey(lsmnic)) {
             check = (boolean) checkMap.get(lsmnic)
@@ -147,13 +147,13 @@ class SwissKnife {
 
             if (!check) {
 
-                boolean affiliationCheck = attrs.affiliation ? user.hasCtxAffiliation_or_ROLEADMIN(attrs.affiliation) : true
-                boolean orgPermCheck     = attrs.orgPerm ? contextService.hasPerm(attrs.orgPerm) : true
+                boolean instRoleCheck   = attrs.instRole ? user.hasCtxAffiliation_or_ROLEADMIN(attrs.instRole) : true
+                boolean orgPermCheck    = attrs.orgPerm ? contextService.hasPerm(attrs.orgPerm) : true
 
-                check = affiliationCheck && orgPermCheck
+                check = instRoleCheck && orgPermCheck
 
-                if (attrs.affiliation && attrs.affiliationOrg && check) {
-                    check = user.hasOrgAffiliation_or_ROLEADMIN(attrs.affiliationOrg, attrs.affiliation)
+                if (attrs.instRole && attrs.affiliationOrg && check) { // ???
+                    check = user.hasOrgAffiliation_or_ROLEADMIN(attrs.affiliationOrg, attrs.instRole)
                 }
             }
             checkMap.put(lsmnic, check)

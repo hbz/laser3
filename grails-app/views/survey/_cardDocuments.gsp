@@ -13,7 +13,7 @@
             baseItems << it
         }
     }
-    boolean editable2 = accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_PRO, 'INST_EDITOR')
+    boolean editable2 = contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)
 
 %>
 
