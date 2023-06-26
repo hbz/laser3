@@ -83,18 +83,8 @@ class LicenseController {
             // tasks
             result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.institution, result.license)
 
-            String i10value = LocaleUtils.getLocalizedAttributeName('value')
-            // restrict visible for templates/links/orgLinksAsList
-            result.visibleOrgRelations = OrgRole.executeQuery(
-                    "select oo from OrgRole oo where oo.lic = :license and oo.org != :context and oo.roleType not in (:roleTypes) order by oo.roleType." + i10value + " asc, oo.org.sortname asc, oo.org.name asc",
-                    [license:result.license,context:result.institution,roleTypes:[RDStore.OR_LICENSEE, RDStore.OR_LICENSEE_CONS]]
-            )
 
         prf.setBenchmark('properties')
-
-            // -- private properties
-
-            result.authorizedOrgs = result.user.getAffiliationOrgs()
 
             // create mandatory LicensePrivateProperties if not existing
 
@@ -142,11 +132,8 @@ class LicenseController {
                     if (pl.prs.isPublic) {
                         result.visiblePrsLinks << pl
                     } else {
-                        // nasty lazy loading fix
-                        result.user.getAffiliationOrgs().each { ao ->
-                            if (ao.getId() == pl.prs.tenant.getId()) {
-                                result.visiblePrsLinks << pl
-                            }
+                        if (result.user.formalOrg?.getId() == pl.prs.tenant.getId()) {
+                            result.visiblePrsLinks << pl
                         }
                     }
                 }
@@ -204,9 +191,9 @@ class LicenseController {
     /**
      * Gets the tasks connected to this license
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
     })
     @Check404()
     def tasks() {
@@ -264,7 +251,7 @@ class LicenseController {
         result.institution = contextService.getOrg()
 
         License licenseCopy
-            if (accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+            if (contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
 
                 if (params.cmd == 'generate') {
                     licenseCopy = institutionsService.copyLicense(
@@ -537,7 +524,6 @@ class LicenseController {
         if (! params.status) {
             if (!params.filterSet) {
                 params.status = RDStore.SUBSCRIPTION_CURRENT.id
-                params.hasPerpetualAccess = RDStore.YN_YES.id.toString() //because of frontend compatibility
                 result.defaultSet = true
             }
             else {
@@ -556,7 +542,7 @@ class LicenseController {
         GrailsParameterMap tmpParams = (GrailsParameterMap) params.clone()
         tmpParams.remove("max")
         tmpParams.remove("offset")
-        if (accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC))
+        if (contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC))
             tmpParams.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
         Map<String,Object> fsq = filterService.getOrgComboQuery(tmpParams, result.institution)
 
@@ -592,9 +578,9 @@ class LicenseController {
      * @see Doc
      * @see DocContext
      */
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER'])
+    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER')
+        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     })
     @Check404()
     def documents() {
@@ -624,9 +610,9 @@ class LicenseController {
         redirect controller: 'license', action:params.redirectAction, id:params.instanceId /*, fragment:'docstab' */
     }
 
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_PRO, 'INST_USER'])
+    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_USER')
+        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
     })
     @Check404()
     def workflows() {
@@ -638,9 +624,9 @@ class LicenseController {
     /**
      * Entry point for copying a license
      */
-    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
     @Secured(closure = {
-        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def copyLicense() {
         Map<String,Object> result = [:]

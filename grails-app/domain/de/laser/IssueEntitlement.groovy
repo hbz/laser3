@@ -48,7 +48,6 @@ class IssueEntitlement extends AbstractBase implements Comparable {
     Subscription perpetualAccessBySub
 
     //merged as the difference between an IssueEntitlement and a TIPP is mainly former's attachment to a subscription, otherwise, they are functionally identical, even dependent upon each other. So why keep different refdata categories?
-    @Deprecated
     @RefdataInfo(cat = RDConstants.TIPP_STATUS)
     RefdataValue status
 
@@ -63,9 +62,6 @@ class IssueEntitlement extends AbstractBase implements Comparable {
     @Deprecated
     @RefdataInfo(cat = RDConstants.TITLE_MEDIUM)
     RefdataValue medium // legacy; was distinguished back then; I see no reason why I should still do so. Is legacy.
-
-    @RefdataInfo(cat = RDConstants.IE_ACCEPT_STATUS)
-    RefdataValue acceptStatus
 
     Date dateCreated
     Date lastUpdated
@@ -107,12 +103,11 @@ class IssueEntitlement extends AbstractBase implements Comparable {
         openAccess column:'ie_open_access_rv_fk', index: 'ie_open_access_idx'
       subscription column:'ie_subscription_fk', index: 'ie_sub_idx, ie_sub_tipp_idx, ie_sub_tipp_status_idx, ie_status_accept_status_idx, ie_tipp_status_accept_status_idx'
               tipp column:'ie_tipp_fk',         index: 'ie_tipp_idx, ie_sub_tipp_idx, ie_sub_tipp_status_idx, ie_tipp_status_accept_status_idx'
-        perpetualAccessBySub column:'ie_perpetual_access_by_sub_fk'
+        perpetualAccessBySub column:'ie_perpetual_access_by_sub_fk', index: 'ie_perpetual_access_by_sub_idx'
             medium column:'ie_medium_rv_fk', index: 'ie_medium_idx'
     accessStartDate column:'ie_access_start_date'
      accessEndDate column:'ie_access_end_date'
          coverages sort: 'startDate', order: 'asc'
-      acceptStatus column:'ie_accept_status_rv_fk', index: 'ie_accept_status_idx, ie_status_accept_status_idx, ie_tipp_status_accept_status_idx'
 
     dateCreated column: 'ie_date_created'
     lastUpdated column: 'ie_last_updated'
@@ -130,7 +125,6 @@ class IssueEntitlement extends AbstractBase implements Comparable {
         medium         (nullable:true)
         accessStartDate(nullable:true)
         accessEndDate  (nullable:true)
-        acceptStatus   (nullable:true)
 
         lastUpdated (nullable: true)
         perpetualAccessBySub (nullable: true)
@@ -148,50 +142,58 @@ class IssueEntitlement extends AbstractBase implements Comparable {
       Subscription subscription = (Subscription) configMap.subscription
       TitleInstancePackagePlatform tipp = (TitleInstancePackagePlatform) configMap.tipp
       IssueEntitlement ie = findBySubscriptionAndTippAndStatusNotEqual(subscription,tipp, RDStore.TIPP_STATUS_REMOVED)
-      if(!ie) {
-          ie = new IssueEntitlement(subscription: subscription, tipp: tipp, medium: tipp.medium, status:tipp.status, accessType: tipp.accessType, openAccess: tipp.openAccess, acceptStatus: configMap.acceptStatus, name: tipp.name)
+      if(!ie && !PermanentTitle.findByOwnerAndTipp(subscription.subscriber, tipp)) {
+          ie = new IssueEntitlement(subscription: subscription, tipp: tipp, medium: tipp.medium, status:tipp.status, accessType: tipp.accessType, openAccess: tipp.openAccess, name: tipp.name)
           //ie.generateSortTitle()
       }
-      if(ie.save()) {
+        if(ie) {
+            if (ie.save()) {
 
-          if(subscription.hasPerpetualAccess){
-              ie.perpetualAccessBySub = subscription
-          }
+                if (subscription.hasPerpetualAccess && ie.status != RDStore.TIPP_STATUS_EXPECTED) {
+                    ie.perpetualAccessBySub = subscription
 
-          Set<TIPPCoverage> tippCoverages = TIPPCoverage.findAllByTipp(tipp)
-        if(tippCoverages) {
-          tippCoverages.each { TIPPCoverage tc ->
-            IssueEntitlementCoverage ic = new IssueEntitlementCoverage(issueEntitlement: ie)
-            ic.startDate = tc.startDate
-            ic.startVolume = tc.startVolume
-            ic.startIssue = tc.startIssue
-            ic.endDate = tc.endDate
-            ic.endVolume = tc.endVolume
-            ic.endIssue = tc.endIssue
-            ic.coverageDepth = tc.coverageDepth
-            ic.coverageNote = tc.coverageNote
-            ic.embargo = tc.embargo
-            if(!ic.save())
-              throw new EntitlementCreationException(ic.errors)
-          }
+                    if (!PermanentTitle.findByOwnerAndTipp(subscription.subscriber, tipp)) {
+                        PermanentTitle permanentTitle = new PermanentTitle(subscription: subscription,
+                                issueEntitlement: ie,
+                                tipp: tipp,
+                                owner: subscription.subscriber).save()
+                    }
+                }
+
+                Set<TIPPCoverage> tippCoverages = TIPPCoverage.findAllByTipp(tipp)
+                if (tippCoverages) {
+                    tippCoverages.each { TIPPCoverage tc ->
+                        IssueEntitlementCoverage ic = new IssueEntitlementCoverage(issueEntitlement: ie)
+                        ic.startDate = tc.startDate
+                        ic.startVolume = tc.startVolume
+                        ic.startIssue = tc.startIssue
+                        ic.endDate = tc.endDate
+                        ic.endVolume = tc.endVolume
+                        ic.endIssue = tc.endIssue
+                        ic.coverageDepth = tc.coverageDepth
+                        ic.coverageNote = tc.coverageNote
+                        ic.embargo = tc.embargo
+                        if (!ic.save())
+                            throw new EntitlementCreationException(ic.errors)
+                    }
+                }
+                log.debug("creating price items for ${tipp}")
+                Set<PriceItem> tippPriceItems = PriceItem.findAllByTipp(tipp)
+                if (tippPriceItems) {
+                    tippPriceItems.each { PriceItem tp ->
+                        PriceItem ip = new PriceItem(issueEntitlement: ie)
+                        ip.startDate = tp.startDate
+                        ip.endDate = tp.endDate
+                        ip.listPrice = tp.listPrice
+                        ip.listCurrency = tp.listCurrency
+                        ip.setGlobalUID()
+                        if (!ip.save())
+                            throw new EntitlementCreationException(ip.errors)
+                    }
+                }
+            } else
+                throw new EntitlementCreationException(ie.errors)
         }
-          log.debug("creating price items for ${tipp}")
-          Set<PriceItem> tippPriceItems = PriceItem.findAllByTipp(tipp)
-        if(tippPriceItems) {
-            tippPriceItems.each { PriceItem tp ->
-                PriceItem ip = new PriceItem(issueEntitlement: ie)
-                ip.startDate = tp.startDate
-                ip.endDate = tp.endDate
-                ip.listPrice = tp.listPrice
-                ip.listCurrency = tp.listCurrency
-                ip.setGlobalUID()
-                if(!ip.save())
-                    throw new EntitlementCreationException(ip.errors)
-            }
-        }
-      }
-      else
-        throw new EntitlementCreationException(ie.errors)
       ie
     }
     else throw new EntitlementCreationException("Issue entitlement creation attempt without valid subscription and TIPP references! This is not allowed!")

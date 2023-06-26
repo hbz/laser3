@@ -31,6 +31,20 @@ class PendingChangeController  {
     }
 
     /**
+     * Call to accept the given title change and to trigger processing of the changes stored in the record
+     */
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'])
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+    })
+    def acceptTitleChange() {
+        log.debug("Accept")
+        TitleChange tic = TitleChange.get(params.id)
+        pendingChangeService.applyPendingChange(tic, SubscriptionPackage.executeQuery('select sp from SubscriptionPackage sp where sp.pkg = :pkg and sp.subscription.id = :subId', [pkg: tic.tipp.pkg, subId: params.long('subId')])[0], contextService.getOrg())
+        redirect(url: request.getHeader('referer'))
+    }
+
+    /**
      * Call to reject the given change
      */
     @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'])
@@ -41,6 +55,20 @@ class PendingChangeController  {
         log.debug("Reject")
         PendingChange pc = PendingChange.get(params.long('id'))
         pendingChangeService.reject(pc, params.subId)
+        redirect(url: request.getHeader('referer'))
+    }
+
+    /**
+     * Call to reject the given change
+     */
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'])
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+    })
+    def rejectTitleChange() {
+        log.debug("Reject")
+        TitleChange tic = TitleChange.get(params.id)
+        IssueEntitlementChange.construct([titleChange: tic, subscription: Subscription.get(params.subId), status: RDStore.PENDING_CHANGE_REJECTED, owner: contextService.getOrg()])
         redirect(url: request.getHeader('referer'))
     }
 
@@ -69,12 +97,9 @@ class PendingChangeController  {
                     SubscriptionPackage sp = SubscriptionPackage.get(Long.parseLong(spID))
                     String query = ''
                     Map<String, Object> queryParams = [:]
-                    //refactor!
                     if(params.eventType in [PendingChangeConfiguration.NEW_TITLE, PendingChangeConfiguration.TITLE_DELETED]) {
-                        /*
-                        query = 'select pc from PendingChange pc join pc.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken = :eventType and not exists (select pca.id from PendingChange pca join pca.tipp tippA where tippA = pc.tipp and pca.oid = :subOid and pca.status in (:pendingStatus)) and pc.status = :packageHistory'
-                        queryParams = [package: sp.pkg, entryDate: sp.dateCreated, eventType: params.eventType, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(sp.subscription), packageHistory: RDStore.PENDING_CHANGE_HISTORY]
-                        */
+                        query = 'select tic from TitleChange tic join tic.tipp tipp join tipp.pkg pkg where pkg = :package and tic.dateCreated >= :entryDate and tic.event = :eventType and not exists (select iec from IssueEntitlementChange iec where iec.titleChange = tic and iec.subscription = :sub and iec.status in (:pendingStatus))'
+                        queryParams = [package: sp.pkg, entryDate: sp.dateCreated, eventType: params.eventType, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED], sub: sp.subscription]
                     }
                     /*
                     else if(params.eventType == PendingChangeConfiguration.TITLE_UPDATED) {
@@ -83,10 +108,8 @@ class PendingChangeController  {
                     }
                     */
                     else if(params.eventType == PendingChangeConfiguration.TITLE_REMOVED) {
-                        /*
-                        query = 'select pc from PendingChange pc join pc.tipp.pkg pkg where pkg = :package and pc.msgToken = :eventType and exists(select ie from IssueEntitlement ie where ie.tipp = pc.tipp and ie.subscription = :subscription and ie.status != :removed)'
+                        query = 'select tic from TitleChange tic join tic.tipp tipp join tipp.pkg pkg where pkg = :package and tic.event = :eventType and exists(select ie from IssueEntitlement ie where ie.tipp = tipp and ie.subscription = :subscription and ie.status != :removed)'
                         queryParams = [package: sp.pkg, eventType: params.eventType, subscription: sp.subscription, removed: RDStore.TIPP_STATUS_REMOVED]
-                        */
                     }
                     Set<TitleChange> titleChanges = TitleChange.executeQuery(query, queryParams)
 
@@ -99,7 +122,7 @@ class PendingChangeController  {
                         else if(rejectAll) {
                             //log.info("is acceptAll simultaneously set? ${params.acceptAll}")
                             //PendingChange toReject = PendingChange.construct([target: target, oid: genericOIDService.getOID(sp.subscription), newValue: pc.newValue, oldValue: pc.oldValue, prop: pc.targetProperty, msgToken: pc.msgToken, status: RDStore.PENDING_CHANGE_PENDING, owner: contextService.getOrg()])
-                            pendingChangeService.reject(tic, sp.subscription.id)
+                            IssueEntitlementChange.construct([titleChange: tic, subscription: sp.subscription, status: RDStore.PENDING_CHANGE_REJECTED, owner: contextService.getOrg()])
                         }
                     }
                 }

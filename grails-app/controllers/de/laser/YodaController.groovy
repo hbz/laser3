@@ -6,7 +6,7 @@ import de.laser.auth.Role
 import de.laser.auth.UserRole
 import de.laser.base.AbstractJob
 import de.laser.config.ConfigDefaults
-import de.laser.finance.CostItem
+import de.laser.config.ConfigMapper
 import de.laser.properties.LicenseProperty
 import de.laser.properties.OrgProperty
 import de.laser.properties.PersonProperty
@@ -23,6 +23,7 @@ import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyResult
 import de.laser.system.SystemActivityProfiler
+import de.laser.system.SystemEvent
 import de.laser.system.SystemProfiler
 import de.laser.system.SystemSetting
 import de.laser.utils.AppUtils
@@ -41,7 +42,10 @@ import org.elasticsearch.client.indices.GetIndexRequest
 import org.hibernate.SessionFactory
 import org.quartz.JobKey
 import org.quartz.impl.matchers.GroupMatcher
+import org.springframework.security.web.FilterChainProxy
+import org.springframework.security.web.SecurityFilterChain
 
+import javax.servlet.Filter
 import javax.servlet.ServletOutputStream
 import java.lang.annotation.Annotation
 import java.lang.reflect.Method
@@ -59,6 +63,7 @@ import java.util.concurrent.ExecutorService
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class YodaController {
 
+    Filter springSecurityFilterChain
     SessionFactory sessionFactory
 
     CacheService cacheService
@@ -101,7 +106,10 @@ class YodaController {
         Map result = [:]
 
         result.blacklist = [
-                'jira', 'dataSource', ConfigDefaults.DATASOURCE_DEFAULT + '.password', ConfigDefaults.DATASOURCE_STORAGE + '.password'
+                'dataSource',
+                ConfigDefaults.DATASOURCE_DEFAULT + '.password',
+                ConfigDefaults.DATASOURCE_STORAGE + '.password',
+                ConfigMapper.WEKB_API_PASSWORD[0]
         ]
         result.editable = true
         result.currentConfig = grails.util.Holders.config.findAll { ! it.key.matches("[A-Z|_]*") }
@@ -163,6 +171,17 @@ class YodaController {
             groups.putAt( groupName, group.sort{ a, b -> (a.name < b.name ? -1 : 1)} )
         }
         result.quartz = groups
+        result
+    }
+
+    @Secured(['ROLE_YODA'])
+    def systemOddments() {
+        Map<String, Object> result = [:]
+
+        FilterChainProxy filterChainProxy = (FilterChainProxy) springSecurityFilterChain
+        List<SecurityFilterChain> list = filterChainProxy.getFilterChains()
+
+        result.filters = list.stream().flatMap(chain -> chain.getFilters().stream()).toArray().toList()
         result
     }
 
@@ -438,33 +457,28 @@ class YodaController {
                                     test     : ''
                             ]
 
-                            if (da.ctxPermAffiliation()) {
-                                mInfo.debug.test        = 'ctxPermAffiliation()' //  + da.ctxPermAffiliation().toList()
-                                mInfo.debug.perm        = da.ctxPermAffiliation().toList()[0]
-                                mInfo.debug.affil       = da.ctxPermAffiliation().toList()[1]
-                            }
-                            if (da.ctxInstUserCheckPerm_or_ROLEADMIN()) {
-                                mInfo.debug.test        = 'ctxInstUserCheckPerm_or_ROLEADMIN()' //  + da.ctxInstUserCheckPerm_or_ROLEADMIN().toList()
-                                mInfo.debug.perm        = da.ctxInstUserCheckPerm_or_ROLEADMIN().toList()[0]
+                            if (da.hasPermAsInstUser_or_ROLEADMIN()) {
+                                mInfo.debug.test        = 'hasPermAsInstUser_or_ROLEADMIN()' //  + da.hasPermAsInstUser_or_ROLEADMIN().toList()
+                                mInfo.debug.perm        = da.hasPermAsInstUser_or_ROLEADMIN().toList()[0]
                                 mInfo.debug.affil       = 'INST_USER'
                                 mInfo.debug.specRole    = 'ROLE_ADMIN'
                             }
-                            if (da.ctxInstEditorCheckPerm_or_ROLEADMIN()) {
-                                mInfo.debug.test        = 'ctxInstEditorCheckPerm_or_ROLEADMIN()' //  + da.ctxInstEditorCheckPerm_or_ROLEADMIN().toList()
-                                mInfo.debug.perm        = da.ctxInstEditorCheckPerm_or_ROLEADMIN().toList()[0]
+                            if (da.hasPermAsInstEditor_or_ROLEADMIN()) {
+                                mInfo.debug.test        = 'hasPermAsInstEditor_or_ROLEADMIN()' //  + da.hasPermAsInstEditor_or_ROLEADMIN().toList()
+                                mInfo.debug.perm        = da.hasPermAsInstEditor_or_ROLEADMIN().toList()[0]
                                 mInfo.debug.affil       = 'INST_EDITOR'
                                 mInfo.debug.specRole    = 'ROLE_ADMIN'
                             }
-                            if (da.ctxInstAdmCheckPerm_or_ROLEADMIN()) {
-                                mInfo.debug.test        = 'ctxInstAdmCheckPerm_or_ROLEADMIN()' //  + da.ctxInstAdmCheckPerm_or_ROLEADMIN().toList()
-                                mInfo.debug.perm        = da.ctxInstAdmCheckPerm_or_ROLEADMIN().toList()[0]
+                            if (da.hasPermAsInstAdm_or_ROLEADMIN()) {
+                                mInfo.debug.test        = 'hasPermAsInstAdm_or_ROLEADMIN()' //  + da.hasPermAsInstAdm_or_ROLEADMIN().toList()
+                                mInfo.debug.perm        = da.hasPermAsInstAdm_or_ROLEADMIN().toList()[0]
                                 mInfo.debug.affil       = 'INST_ADM'
                                 mInfo.debug.specRole    = 'ROLE_ADMIN'
                             }
-                            if (da.ctxConsortiumCheckPermAffiliation_or_ROLEADMIN()) {
-                                mInfo.debug.test        = 'ctxConsortiumCheckPermAffiliation_or_ROLEADMIN()' //  + da.ctxConsortiumCheckPermAffiliation_or_ROLEADMIN().toList()
-                                mInfo.debug.perm        = da.ctxConsortiumCheckPermAffiliation_or_ROLEADMIN().toList()[0]
-                                mInfo.debug.affil       = da.ctxConsortiumCheckPermAffiliation_or_ROLEADMIN().toList()[1]
+                            if (da.hasAffiliationForConsortium_or_ROLEADMIN()) {
+                                mInfo.debug.test        = 'hasAffiliationForConsortium_or_ROLEADMIN()' //  + da.hasAffiliationForConsortium_or_ROLEADMIN().toList()
+                                mInfo.debug.perm        = da.hasAffiliationForConsortium_or_ROLEADMIN().toList()[0]
+                                mInfo.debug.affil       = da.hasAffiliationForConsortium_or_ROLEADMIN().toList()[1]
                                 mInfo.debug.type        = 'Consortium'
                                 mInfo.debug.specRole    = 'ROLE_ADMIN'
                             }
@@ -568,8 +582,8 @@ class YodaController {
     def matchPackageHoldings() {
         log.debug("match package holdings to issue entitlement holdings ...")
         flash.message = "Bestände werden korrigiert ..."
-        yodaService.matchPackageHoldings()
-        redirect controller: 'home', action: 'index'
+        yodaService.matchPackageHoldings(params.long('pkgId'))
+        redirect controller: 'package', action: 'index'
     }
 
     @Deprecated
@@ -579,29 +593,22 @@ class YodaController {
         yodaService.getTIPPsWithoutGOKBId()
     }
 
-    @Deprecated
     @Secured(['ROLE_YODA'])
-    def purgeTIPPsWithoutGOKBId() {
-        def toDelete = JSON.parse(params.toDelete)
-        def toUUIDfy = JSON.parse(params.toUUIDfy)
-        if(params.doIt == "true") {
-            yodaService.purgeTIPPsWihtoutGOKBId(toDelete,toUUIDfy)
-            redirect(url: request.getHeader('referer'))
-            return
+    def matchTitleStatus() {
+        if(!yodaService.bulkOperationRunning) {
+            yodaService.matchTitleStatus()
+            log.debug("Titel-Status-Matching läuft ...")
         }
-        else {
-            flash.message = "Betroffene TIPP-IDs wären vereinigt worden: ${toDelete} und folgende hätten einen fehlenden Wert erhalten: ${toUUIDfy}"
-            redirect action: 'getTIPPsWithoutGOKBId'
-            return
-        }
+        else log.error("Prozess läuft schon, kein Neustart")
+        redirect controller: 'home'
     }
 
     /**
-     * Call to delete titles without we:kb reference and marked as removed
+     * Bulk retriggering of inheritance
      */
     @Secured(['ROLE_YODA'])
-    Map<String, Object> expungeRemovedTIPPs() {
-        yodaService.expungeRemovedTIPPs()
+    Map<String, Object> retriggerInheritance() {
+        yodaService.retriggerInheritance('holdingSelection') //TODO generalise
         redirect controller: 'home'
     }
 
@@ -638,28 +645,24 @@ class YodaController {
      */
     @Secured(['ROLE_YODA'])
     Map<String, Object> manageStatsSources() {
-        SortedSet<Platform> platforms = Platform.executeQuery('select p from LaserStatsCursor lsc join lsc.platform p join p.org o where p.org is not null order by o.name, o.sortname, p.name') as TreeSet<Platform>
         Map<String, Object> result = [
-                platforms: platforms,
+                platforms: [],
                 platformInstanceRecords: [:],
                 flagContentGokb : true // gokbService.queryElasticsearch
         ]
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
-        Map allPlatforms = gokbService.queryElasticsearch(apiSource.baseUrl+apiSource.fixToken+"/find?componentType=Platform&max=10000&status=Current")
+        Map allPlatforms = gokbService.queryElasticsearch(apiSource.baseUrl+apiSource.fixToken+"/sushiSources", [:])
         if (allPlatforms.error && allPlatforms.error == 404) {
             result.wekbServerUnavailable = message(code: 'wekb.error.404')
         }
         else if (allPlatforms.warning) {
-            List records = allPlatforms.warning.records
-            records.each { Map otherRecord ->
-                if((otherRecord.counterR5SushiApiSupported == 'Yes' && otherRecord.counterR5SushiServerUrl != null) || (otherRecord.counterR4SushiApiSupported == 'Yes' && otherRecord.counterR4SushiServerUrl != null)) {
-                    String gokbId = otherRecord.uuid as String
-                    Platform platformInstance = Platform.findByGokbId(gokbId)
-                    if(platformInstance && result.platforms.add(platformInstance)) {
-                        otherRecord.noCursor = true
-                    }
-                    result.platformInstanceRecords[gokbId] = otherRecord
-                }
+            Map records = allPlatforms.warning
+            List allRecords = []
+            allRecords.addAll(records.counter4ApiSources.values())
+            allRecords.addAll(records.counter5ApiSources.values())
+            allRecords.each { platform ->
+                result.platforms << Platform.findByGokbId(platform.uuid)
+                result.platformInstanceRecords[platform.uuid] = platform
             }
         }
         result
@@ -1202,6 +1205,7 @@ class YodaController {
     /**
      * Manually triggers the subscription holding freezing
      */
+    /*
     @Secured(['ROLE_YODA'])
     def freezeSubscriptionHoldings(){
         if(subscriptionService.freezeSubscriptionHoldings())
@@ -1210,6 +1214,7 @@ class YodaController {
             flash.message = "Bestände sind bereits festgefroren!"
         redirect(url: request.getHeader('referer'))
     }
+    */
 
     /**
      * Checks the subscription-license linkings on member level and reveals those where the participant is not linked directly to the member license
@@ -1510,5 +1515,92 @@ class YodaController {
         result
 
         redirect action: 'dashboard'
+    }
+
+    @Secured(['ROLE_YODA'])
+    def setPerpetualAccessByIes() {
+        Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
+        Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
+        threadArray.each { Thread thread ->
+            if (thread.name == 'setPerpetualAccessByIes') {
+                flash.error = 'setPerpetualAccessByIes process still running!'
+                redirect controller: 'yoda', action: 'index'
+                return
+            }
+        }
+        executorService.execute({
+            Thread.currentThread().setName("setPerpetualAccessByIes")
+            List<Subscription> subList = Subscription.findAllByHasPerpetualAccess(true)
+            int countProcess = 0, countProcessPT = 0
+            Set<RefdataValue> status = [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_RETIRED, RDStore.TIPP_STATUS_DELETED]
+            subList.eachWithIndex { Subscription sub, int i ->
+                List<IssueEntitlement> ies = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.subscription = :sub and ie.perpetualAccessBySub is null and ie.status in (:status)', [sub: sub, status: status])
+                IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.perpetualAccessBySub = :sub where ie.subscription = :sub and ie.perpetualAccessBySub is null and ie.status in (:status)', [sub: sub, status: status])
+                if (ies.size() > 0) {
+                    Org owner = sub.getSubscriber()
+
+                    ies.eachWithIndex { IssueEntitlement issueEntitlement, int j ->
+                        log.debug("now processing record ${j} for subscription ${i} out of ${subList.size()}")
+                        TitleInstancePackagePlatform titleInstancePackagePlatform = issueEntitlement.tipp
+
+                        if (!PermanentTitle.findByOwnerAndTipp(owner, titleInstancePackagePlatform)) {
+                            PermanentTitle permanentTitle = new PermanentTitle(subscription: sub,
+                                    issueEntitlement: issueEntitlement,
+                                    tipp: titleInstancePackagePlatform,
+                                    owner: owner).save()
+                            countProcessPT++
+                        }
+                        countProcess++
+                    }
+                }
+            }
+
+            SystemEvent.createEvent('YODA_PROCESS', [yodaProcess: 'setPerpetualAccessByIes', countProcessIes: countProcess, countProcessPermanentTitles: countProcessPT])
+        })
+
+        flash.message = 'setPerpetualAccessByIes process is now running. In SystemEvents you see when setPerpetualAccessByIes is finish!'
+        redirect controller: 'yoda', action: 'index'
+    }
+
+    @Secured(['ROLE_YODA'])
+    def setPermanentTitle() {
+        Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
+        Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
+        threadArray.each { Thread thread ->
+            if (thread.name == 'setPermanentTitle') {
+                flash.error = 'setPermanentTitle process still running!'
+                redirect controller: 'yoda', action: 'index'
+                return
+            }
+        }
+        executorService.execute({
+            Thread.currentThread().setName("setPermanentTitle")
+            int countProcess = 0, max = 100000
+            Set<RefdataValue> status = [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_RETIRED, RDStore.TIPP_STATUS_DELETED]
+            int ieCount = IssueEntitlement.executeQuery('select count(ie) from IssueEntitlement ie where ie.perpetualAccessBySub is not null and ie.status in (:status)', [status: status])[0]
+            if (ieCount > 0) {
+                for(int offset = 0; offset < ieCount; offset+=max) {
+                    List<IssueEntitlement> ies = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.perpetualAccessBySub is not null and ie.status in (:status)', [status: status], [max: max, offset: offset])
+                    ies.eachWithIndex { IssueEntitlement issueEntitlement, int i ->
+                        //log.debug("now processing record ${offset+i} out of ${ieCount}")
+                        TitleInstancePackagePlatform titleInstancePackagePlatform = issueEntitlement.tipp
+                        Org owner = issueEntitlement.subscription.subscriber
+
+                        if (!PermanentTitle.findByOwnerAndTipp(owner, titleInstancePackagePlatform)) {
+                            PermanentTitle permanentTitle = new PermanentTitle(subscription: issueEntitlement.subscription,
+                                    issueEntitlement: issueEntitlement,
+                                    tipp: titleInstancePackagePlatform,
+                                    owner: owner).save()
+                            countProcess++
+                            //log.debug("record ${offset+i} out of ${ieCount} had permanent title ${countProcess}")
+                        }
+                    }
+                }
+            }
+            SystemEvent.createEvent('YODA_PROCESS', [yodaProcess: 'setPermanentTitle', countProcess: countProcess])
+        })
+
+        flash.message = 'setPermanentTitle process is now running. In SystemEvents you see when setPermanentTitle is finish!'
+        redirect controller: 'yoda', action: 'index'
     }
 }

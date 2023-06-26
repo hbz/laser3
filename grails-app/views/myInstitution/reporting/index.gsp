@@ -8,7 +8,7 @@
             <ui:crumb text="${message(code:'myinst.reporting')}" class="active" />
         </ui:breadcrumbs>
 
-        <ui:h1HeaderWithIcon message="myinst.reporting" />
+        <ui:h1HeaderWithIcon message="myinst.reporting" type="reporting" />
 
         <laser:render template="/templates/reporting/helper" />%{--js--}%
 
@@ -258,6 +258,7 @@
                             }
                             else if (JSPC.app.reporting.current.request.chart == 'pie') {
                                 chartHeight = Math.min(1800, 380 + (12 * JSPC.app.reporting.current.chart.option.dataset.source.length));
+                                JSPC.app.reporting.current.myCountsToggle = false;
                             }
                             else if (JSPC.app.reporting.current.request.chart == 'radar') {
                                 chartHeight = 400 + (8 * JSPC.app.reporting.current.chart.option.dataset.source.length);

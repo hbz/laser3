@@ -21,17 +21,19 @@
         </g:elseif>
 
             <div class="item">
-                <div class="right floated content">
-                    <g:link action="deleteTask" controller="ajax"
-                            class="ui icon negative button la-modern-button la-modern-button js-open-confirm-modal"
-                            data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.task")}"
-                            data-confirm-term-how="delete"
-                            params='[deleteId:tsk.id, id: params.id, returnToShow: controllerName]'
-                            role="button"
-                            aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                        <i class="trash alternate outline icon"></i>
-                    </g:link>
-                </div>
+                <g:if test="${overwriteEditable}">
+                    <div class="right floated content">
+                        <g:link action="deleteTask" controller="ajax"
+                                class="ui icon negative button la-modern-button la-modern-button js-open-confirm-modal"
+                                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.task")}"
+                                data-confirm-term-how="delete"
+                                params='[deleteId:tsk.id, id: params.id, returnToShow: controllerName]'
+                                role="button"
+                                aria-label="${message(code: 'ariaLabel.delete.universal')}">
+                            <i class="trash alternate outline icon"></i>
+                        </g:link>
+                    </div>
+                </g:if>
                 <i class="large la-list-icon la-popup-tooltip la-delay icon ${icon}" data-content="${tooltip}"></i>
                 <div class="content">
                     <a class="header la-js-toggle-showThis" onclick="JSPC.app.editTask(${tsk.id});">${tsk.title}</a>
@@ -86,7 +88,7 @@
         func();
     }
     JSPC.app.readTask = function (id) {
-        var func = bb8.ajax4SimpleModalFunction("#modalReadTask", "<g:createLink controller="ajaxHtml" action="readTask"/>?id=" + id, false);
+        var func = bb8.ajax4SimpleModalFunction("#modalReadTask", "<g:createLink controller="ajaxHtml" action="readTask"/>?id=" + id);
         func();
     }
 </laser:script>

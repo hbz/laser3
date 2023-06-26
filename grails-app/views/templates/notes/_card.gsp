@@ -89,11 +89,11 @@
 %{--                            <g:else>--}%
 %{--                                    <!-- Hidden Fake Button To hold the other Botton in Place -->--}%
 %{--                                    <div class="ui icon mini button la-hidden">--}%
-%{--                                        <i class="coffe icon"></i>--}%
+%{--                                        <i class="fake icon"></i>--}%
 %{--                                    </div>--}%
 %{--                            </g:else>--}%
                             <%-- 2 --%>
-                            <g:if test="${!docctx.isShared}">
+                            <g:if test="${!docctx.isShared && (editable || editable2)}">
                                 <g:link controller="${ajaxCallController ?: controllerName}" action="deleteDocuments" class="ui icon negative button la-modern-button js-open-confirm-modal"
                                         data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.notes", args: [docctx.owner.title])}"
                                         data-confirm-term-how="delete"
@@ -105,7 +105,7 @@
                             </g:if>
                             <g:else>
                                 <div class="ui icon button la-hidden">
-                                    <i class="coffe icon"></i><%-- Hidden Fake Button --%>
+                                    <i class="fake icon"></i><%-- Hidden Fake Button --%>
                                 </div>
                             </g:else>
                         </div>
@@ -167,7 +167,7 @@
                     $('#dynamicModalContainer .ui.modal').modal({
                         autofocus: false,
                         onVisible: function() {
-                            $('#modalEditNote #title').focus();
+                            r2d2.helper.focusFirstFormElement(this);
                         }
                     }).modal('show');
                 }

@@ -1,4 +1,5 @@
 <%@ page import="de.laser.IssueEntitlementCoverage; de.laser.titles.JournalInstance; de.laser.titles.BookInstance; de.laser.remote.ApiSource; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Package; de.laser.RefdataCategory; de.laser.storage.RDConstants" %>
+
 <laser:htmlStart message="subscription.details.current_ent" serviceInjection="true"/>
 
 <laser:render template="breadcrumb" model="${[params: params]}"/>
@@ -10,10 +11,14 @@
 
 <ui:messages data="${flash}"/>
 
-<g:if test="${params.asAt}"><h1
-        class="ui left floated aligned icon header la-clear-before"><ui:headerIcon/>${message(code: 'subscription.details.snapshot', args: [params.asAt])}</h1></g:if>
+<g:if test="${params.asAt}">
+    <h1 class="ui header" style="display: inline">
+        ${message(code: 'subscription.details.snapshot', args: [params.asAt])}
+    </h1>
+</g:if>
 
-<ui:h1HeaderWithIcon>
+<g:set var="visibleOrgRelationsJoin" value="${visibleOrgRelations.findAll{it.roleType != RDStore.OR_SUBSCRIPTION_CONSORTIA}.sort{it.org.sortname}.collect{it.org}.join(' – ')}"/>
+<ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}" visibleOrgRelationsJoin="${visibleOrgRelationsJoin}">
     <g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
         <laser:render template="iconSubscriptionIsChild"/>
     </g:if>
@@ -147,7 +152,7 @@
         </div><!--.grid-->
     </g:if>
 
-    <g:if test="${subscription.ieGroups.size() > 0}">
+%{--    <g:if test="${subscription.ieGroups.size() > 0}">
         <div class="ui top attached stackable tabular la-tab-with-js menu">
             <g:link controller="subscription" action="index" id="${subscription.id}"
                     class="item ${params.titleGroup ? '' : 'active'}">
@@ -169,10 +174,38 @@
             </g:each>
         </div>
         <div class="ui bottom attached tab active segment">
-    </g:if>
-    <div class="ui grid">
-        <div class="row">
-            <div class="column">
+    </g:if>--}%
+
+<ui:tabs actionName="${actionName}">
+    <ui:tabsItem controller="subscription" action="${actionName}"
+                 params="[id: subscription.id, tab: 'currentIEs']"
+                 text="${message(code: "package.show.nav.current")}" tab="currentIEs"
+                 counts="${currentIECounts}"/>
+    <ui:tabsItem controller="subscription" action="${actionName}"
+                 params="[id: subscription.id, tab: 'plannedIEs']"
+                 text="${message(code: "package.show.nav.planned")}" tab="plannedIEs"
+                 counts="${plannedIECounts}"/>
+    <ui:tabsItem controller="subscription" action="${actionName}"
+                 params="[id: subscription.id, tab: 'expiredIEs']"
+                 text="${message(code: "package.show.nav.expired")}" tab="expiredIEs"
+                 counts="${expiredIECounts}"/>
+    <ui:tabsItem controller="subscription" action="${actionName}"
+                 params="[id: subscription.id, tab: 'deletedIEs']"
+                 text="${message(code: "package.show.nav.deleted")}" tab="deletedIEs"
+                 counts="${deletedIECounts}"/>
+    <ui:tabsItem controller="subscription" action="${actionName}"
+                 params="[id: subscription.id, tab: 'allIEs']"
+                 text="${message(code: "menu.public.all_titles")}" tab="allIEs"
+                 counts="${allIECounts}"/>
+</ui:tabs>
+
+<% params.remove('tab')%>
+
+
+<div class="ui bottom attached tab active segment">
+   <div class="ui grid">
+       <div class="row">
+           <div class="column">
                 <laser:render template="/templates/filter/tipp_ieFilter"/>
             </div>
         </div><!--.row-->
@@ -296,7 +329,7 @@
                         </div>
                     </g:if>
                     <div class="row">
-                        <div class="three wide column">
+                        <div class="four wide column">
                             <div class="field">
                                 <label><g:message code="subscription.details.access_dates"/></label>
                                 <ui:datepicker hideLabel="true"
@@ -305,7 +338,7 @@
                                                name="bulk_access_start_date"/>
                             </div>
                         </div>
-                        <div class="three wide column">
+                        <div class="four wide column">
                             <div class="field la-field-noLabel">
                                 <ui:datepicker hideLabel="true"
                                                placeholder="${message(code: 'default.to')}"
@@ -314,26 +347,28 @@
 
                             </div>
                         </div>
-                        <div class="three wide column">
+                        <div class="four wide column">
                             <div class="field">
                                 <label><g:message code="tipp.price.localPrice"/></label>
                                 <input class="ui input" type="text" name="bulk_local_price"/>
                             </div>
                         </div>
-                        <div class="three wide column">
+                        <div class="four wide column">
                             <div class="field la-field-noLabel">
                                 <ui:select class="ui dropdown" name="bulk_local_currency" title="${message(code: 'financials.addNew.currencyType')}"
                                     optionKey="id" optionValue="value" from="${RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.CURRENCY)}"/>
                             </div>
                         </div>
-                        <div class="two wide column">
+                    </div>
+                    <div class="row">
+                        <div class="four wide column">
                             <div class="field">
                                 <label><g:message code="issueEntitlement.myNotes"/></label>
                                 <input class="ui input" type="text" name="bulk_notes"/>
                             </div>
                         </div>
-                        <g:if test="${subscription.ieGroups.size() > 0}">
-                            <div class="two wide column">
+                        <div class="four wide column">
+                            <g:if test="${subscription.ieGroups.size() > 0}">
                                 <div class="field">
                                     <label><g:message code="subscription.details.ieGroups"/></label>
                                     <select class="ui dropdown" name="titleGroupInsert" id="titleGroupInsert">
@@ -343,18 +378,9 @@
                                         </g:each>
                                     </select>
                                 </div>
-                            </div>
-                        </g:if>
-
-
-                    </div>
-                    <div class="row">
-                        <div class="ten wide column">
-                            <div class="field la-field-noLabel">
-                                <input id="select-all" type="checkbox" name="chkall" onClick="JSPC.app.selectAll()"/>
-                            </div>
+                            </g:if>
                         </div>
-                        <div class="four wide column">
+                        <%--<div class="four wide column">
                             <div class="field la-field-noLabel">
                                 <div class="ui selection dropdown la-clearable">
                                     <input type="hidden" id="bulkOperationSelect" name="bulkOperation">
@@ -375,21 +401,27 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>--%>
+                    </div>
+                    <div class="row">
+                        <div class="one wide column">
+                            <div class="field la-field-noLabel">
+                                <input id="select-all" type="checkbox" name="chkall" onClick="JSPC.app.selectAll()"/>
+                            </div>
                         </div>
-                        <div class="two wide column">
-                            <div class="field">
-                                <label><g:message code="default.button.apply_batch.label"/></label>
+                        <div class="twelve wide column"></div>
+                        <div class="three wide column">
+                            <div class="field right align">
                                 <button data-position="top right"
                                         data-content="${message(code: 'default.button.apply_batch.label')}"
                                         type="submit" onClick="return JSPC.app.confirmSubmit()"
-                                        class="ui icon button la-popup-tooltip la-delay"><i class="check icon"></i>
+                                        class="ui icon button la-popup-tooltip la-delay"><g:message code="default.button.apply_batch.label"/>
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
             </g:if>
-
                 <g:if test="${entitlements}">
                     <div class="ui fluid card">
                         <div class="content">
@@ -398,14 +430,33 @@
                                     <div class="ui raised segments la-accordion-segments">
                                         <div class="ui fluid segment title" data-ajaxTippId="${ie.tipp.id}" data-ajaxIeId="${ie ? ie.id : null}">
                                             <div class="ui stackable equal width grid">
+                                                <g:if test="${ie.perpetualAccessBySub}">
+                                                    <g:if test="${ie.perpetualAccessBySub && ie.perpetualAccessBySub != subscription}">
+                                                        <g:link controller="subscription" action="index" id="${ie.perpetualAccessBySub.id}">
+                                                            <span class="ui mini left corner label la-perpetualAccess la-js-notOpenAccordion la-popup-tooltip la-delay"
+                                                                  data-content="${message(code: 'subscription.start.with')} ${ie.perpetualAccessBySub.dropdownNamingConvention()}"
+                                                                  data-position="left center" data-variation="tiny">
+                                                                <i class="star blue icon"></i>
+                                                            </span>
+                                                        </g:link>
+                                                    </g:if>
+                                                    <g:else>
+                                                        <span class="ui mini left corner label la-perpetualAccess la-js-notOpenAccordion la-popup-tooltip la-delay"
+                                                              data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')}"
+                                                              data-position="left center" data-variation="tiny">
+                                                            <i class="star icon"></i>
+                                                        </span>
+                                                    </g:else>
+                                                </g:if>
                                                 <div class="one wide column la-js-show-hide" style="display: none">
                                                     <g:if test="${editable}"><input type="checkbox"
                                                                                     name="_bulkflag.${ie.id}"
-                                                                                    class="bulkcheck"/></g:if>
+                                                                                    class="bulkcheck la-vertical-centered la-js-notOpenAccordion"/></g:if>
                                                 </div>
 
                                                 <div class="one wide column">
-                                                    ${counter++}
+
+                                                    <span class="la-vertical-centered">${counter++}</span>
                                                 </div>
 
                                                 <div class="column">
@@ -415,7 +466,7 @@
                                                         <laser:render
                                                                 template="/templates/title_short_accordion"
                                                                 model="${[ie         : ie, tipp: ie.tipp,
-                                                                          showPackage: true, showPlattform: true, showCompact: true, showEmptyFields: false]}"/>
+                                                                          showPackage: true, showPlattform: true, showEmptyFields: false]}"/>
                                                         <!-- END TEMPLATE -->
 
                                                     </div>
@@ -590,21 +641,6 @@
                                                         <div class="ui list">
                                                             <g:if test="${ie}">
                                                                 <div class="item">
-                                                                    <i class="grey save icon la-popup-tooltip la-delay"
-                                                                       data-content="${message(code: 'issueEntitlement.perpetualAccessBySub.label')}"></i>
-
-                                                                    <div class="content">
-                                                                        <div class="header">
-                                                                            ${showCompact ? '' : message(code: 'issueEntitlement.perpetualAccessBySub.label') + ':'}
-                                                                        </div>
-
-                                                                        <div class="description">
-                                                                            <ui:xEditableBoolean owner="${subscription}"
-                                                                                                 field="hasPerpetualAccess"/>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="item">
                                                                     <i class="grey icon edit la-popup-tooltip la-delay"
                                                                        data-content="${message(code: 'issueEntitlement.myNotes')}"></i>
                                                                     <div class="content">
@@ -671,14 +707,14 @@
                                                                             </div>
                                                                         </div>
                                                                     </div>
-                                                                    <g:if test="${editable}">
-                                                                        <g:link action="editEntitlementGroupItem"
-                                                                                params="${[cmd: 'edit', ie: ie.id, id: subscription.id]}"
-                                                                                class="ui tiny button">
-                                                                            <i class="object group icon"></i>${message(code: 'subscription.details.ieGroups.edit')}
-                                                                        </g:link>
-                                                                    </g:if>
                                                                 </g:each>
+                                                                <g:if test="${editable}">
+                                                                    <g:link action="editEntitlementGroupItem"
+                                                                            params="${[cmd: 'edit', ie: ie.id, id: subscription.id]}"
+                                                                            class="ui tiny button trigger-modal">
+                                                                        <i class="object group icon"></i>${message(code: 'subscription.details.ieGroups.edit')}
+                                                                    </g:link>
+                                                                </g:if>
                                                             </g:if>
 
 
@@ -698,10 +734,11 @@
         </div><%-- .column --%>
     </div><%--.row --%>
 </div><%--.grid --%>
+</div>
 
-<g:if test="${subscription.ieGroups.size() > 0}">
+%{--<g:if test="${subscription.ieGroups.size() > 0}">
     </div><%-- .ui.bottom.attached.tab.active.segment --%>
-</g:if>
+</g:if>--}%
 
 
 <g:if test="${entitlements}">
@@ -759,14 +796,12 @@
 
     $('.la-books.icon').popup({
         delay: {
-            show: 150,
-            hide: 0
+            show: 150, hide: 0
         }
       });
     $('.la-notebook.icon').popup({
         delay: {
-            show: 150,
-            hide: 0
+            show: 150, hide: 0
         }
       });
     $('.trigger-modal').on('click', function(e) {
@@ -783,7 +818,6 @@
                         r2d2.initDynamicUiStuff('#editEntitlementGroupItemModal');
                         r2d2.initDynamicXEditableStuff('#editEntitlementGroupItemModal');
                         $("html").css("cursor", "auto");
-                        JSPC.callbacks.dynPostFunc()
                     },
                     detachable: true,
                     autofocus: false,

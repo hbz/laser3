@@ -4,7 +4,7 @@
 <g:if test="${showOpenParticipantsAgainButtons}">
     <g:set var="mailSubject"
            value="${escapeService.replaceUmlaute(g.message(code: 'email.subject.surveys', args: ["${surveyConfig.surveyInfo.type.getI10n('value')}"]) + " " + surveyConfig.surveyInfo.name + "")}"/>
-    <g:set var="mailBody" value="${surveyService.notificationSurveyAsStringInHtml(surveyConfig.surveyInfo)}"/>
+    <g:set var="mailBody" value="${surveyService.surveyMailHtmlAsString(surveyConfig.surveyInfo)}"/>
     <g:set var="mailString" value=""/>
 </g:if>
 
@@ -39,7 +39,7 @@
     </g:if>
 
     <g:if test="${!surveyConfig.subscription}">
-        <g:link  class="ui right floated button la-inline-labeled" controller="survey" action="surveyParticipants"
+        <g:link class="ui right floated button la-inline-labeled" controller="survey" action="surveyParticipants"
                 id="${surveyConfig.surveyInfo.id}"
                 params="[surveyConfigID: surveyConfig.id]">
             <strong>${message(code: 'surveyconfig.orgs.label')}:</strong>
@@ -55,9 +55,9 @@
 
     <div class="la-inline-lists">
 
+        <g:if test="${propertiesChanged}">
         <h3 class="ui header">${message(code:'renewalEvaluation.propertiesChanged')}</h3>
 
-        <g:if test="${propertiesChanged}">
             <g:link class="ui right floated button" controller="survey" action="showPropertiesChanged"
                     id="${surveyConfig.surveyInfo.id}"
                     params="[surveyConfigID: surveyConfig.id, tab: params.tab, exportXLSX: true]">
@@ -65,7 +65,6 @@
             </g:link>
             <br/>
             <br/>
-        </g:if>
 
 
         <table class="ui la-js-responsive-table la-table table">
@@ -102,7 +101,7 @@
                     </table>
 
 
-
+        </g:if>
     </div>
 </g:if>
 
@@ -121,9 +120,14 @@
 
 
 
-<g:form action="${processAction}" controller="survey" method="post" class="ui form"
+<g:form action="${processAction}" controller="${processController ?: 'survey'}" method="post" class="ui form"
         params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: params.tab]">
     <br/><br/>
+
+    <g:if test="${processController == 'mail'}">
+        <g:hiddenField name="objectType" value="${surveyInfo.class.name}"/>
+        <g:hiddenField name="originalAction" value="${actionName}"/>
+    </g:if>
 
     <div class="ui blue large label">
         <g:message code="surveyEvaluation.participants"/>: <div class="detail">${participants.size()}</div>
@@ -132,7 +136,7 @@
     <h4 class="ui header"><g:message code="surveyParticipants.hasAccess"/></h4>
 
     <g:set var="surveyParticipantsHasAccess"
-           value="${participants.findAll { it.org.hasAccessOrg() }}"/>
+           value="${participants.findAll { it.org.hasInstAdmin() }}"/>
 
 
         <g:if test="${surveyParticipantsHasAccess}">
@@ -325,10 +329,10 @@
                                    value="${surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)}"/>
                             <div class="ui circular label">
                             <g:if test="${surveyConfig.pickAndChoosePerpetualAccess}">
-                                ${surveyService.countPerpetualAccessTitlesBySub(subParticipant)} / ${subscriptionService.countIssueEntitlementsNotFixed(subParticipant)}
+                                ${surveyService.countPerpetualAccessTitlesBySub(subParticipant)} / ${surveyService.countIssueEntitlementsByIEGroup(subParticipant, surveyConfig)}
                             </g:if>
                             <g:else>
-                                ${subscriptionService.countIssueEntitlementsFixed(subParticipant)} / ${subscriptionService.countIssueEntitlementsNotFixed(subParticipant)}
+                                ${subscriptionService.countCurrentIssueEntitlements(subParticipant)} / ${surveyService.countIssueEntitlementsByIEGroup(subParticipant, surveyConfig)}
                             </g:else>
                             </div>
 
@@ -364,19 +368,25 @@
         <div class="content">
             <div class="ui form twelve wide column">
                 <div class="two fields">
-                    <g:if test="${params.tab == 'participantsViewAllNotFinish'}">
-                        <div class="eight wide field" style="text-align: left;">
+                    <g:if test="${actionName == 'participantsReminder'}">
+                       %{-- <div class="eight wide field" style="text-align: left;">
                             <a data-ui="modal" class="ui button"
                                href="#generateEmailWithAddresses_ajaxModal">
                                 ${message(code: 'openParticipantsAgain.reminder.participantsHasAccess')}
-                            </a>
+                            </a>--}%
 
-                            <laser:render template="generateEmailWithAddresses"
+                    %{--        <laser:render template="generateEmailWithAddresses"
                                           model="[modalID: 'generateEmailWithAddresses_ajaxModal', formUrl: processAction ?  g.createLink([controller: 'survey',action: processAction, params: [id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: params.tab]]) : '',
                                                   messageCode: 'openParticipantsAgain.reminder.participantsHasAccess',
                                                   submitButtonValue: 'ReminderMail',
-                                                    mailText: surveyService.notificationSurveyAsStringInText(surveyConfig.surveyInfo, true)]"/>
+                                                    mailText: surveyService.notificationSurveyAsStringInText(surveyConfig.surveyInfo, true)]"/>--}%
 
+                        </div>
+
+                        <div class="eight wide field" style="text-align: left;">
+                            <button name="openOption" type="submit" value="ReminderMail" class="ui button">
+                                ${message(code: 'openParticipantsAgain.reminder.participantsHasAccess')}
+                            </button>
                         </div>
                     </g:if>
                 </div>
@@ -387,7 +397,7 @@
     <h4 class="ui header"><g:message code="surveyParticipants.hasNotAccess"/></h4>
 
     <g:set var="surveyParticipantsHasNotAccess"
-           value="${participants.findAll { !it.org.hasAccessOrg() }}"/>
+           value="${participants.findAll { !it.org.hasInstAdmin() }}"/>
 
 
     <g:if test="${surveyParticipantsHasNotAccess}">
@@ -403,7 +413,7 @@
         <thead>
         <tr>
             <g:if test="${showCheckbox}">
-                    <g:if test="${surveyParticipantsHasNotAccess && actionName != 'openParticipantsAgain' && params.tab != 'participantsViewAllNotFinish'}">
+                    <g:if test="${surveyParticipantsHasNotAccess && !(actionName in ['openParticipantsAgain', 'participantsReminder']) && params.tab != 'participantsViewAllNotFinish'}">
                         <th>
                         <g:checkBox name="orgListToggler" id="orgListToggler" checked="false"/>
                         </th>
@@ -473,7 +483,7 @@
 
             <tr>
                 <g:if test="${showCheckbox}">
-                    <g:if test="${actionName != 'openParticipantsAgain' && params.tab != 'participantsViewAllNotFinish'}">
+                    <g:if test="${!(actionName in ['openParticipantsAgain', 'participantsReminder']) && params.tab != 'participantsViewAllNotFinish'}">
                     <td>
                         <g:checkBox name="selectedOrgs" value="${participant.id}" checked="false"/>
                     </td>
@@ -579,7 +589,12 @@
                             <g:set var="subParticipant"
                                    value="${surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(participant)}"/>
                             <div class="ui circular label">
-                                ${subscriptionService.countIssueEntitlementsFixed(subParticipant)} / ${subscriptionService.countIssueEntitlementsNotFixed(subParticipant)}
+                                <g:if test="${surveyConfig.pickAndChoosePerpetualAccess}">
+                                    ${surveyService.countPerpetualAccessTitlesBySub(subParticipant)} / ${surveyService.countIssueEntitlementsByIEGroup(subParticipant, surveyConfig)}
+                                </g:if>
+                                <g:else>
+                                    ${subscriptionService.countCurrentIssueEntitlements(subParticipant)} / ${surveyService.countIssueEntitlementsByIEGroup(subParticipant, surveyConfig)}
+                                </g:else>
                             </div>
 
                         </td>
@@ -651,7 +666,7 @@
         <div class="content">
             <div class="ui form twelve wide column">
                 <div class="two fields">
-                    <g:if test="${params.tab == 'participantsViewAllFinish' ? 'active' : ''}">
+                    <g:if test="${actionName == 'openParticipantsAgain'}">
 
                         <div class="eight wide field" style="text-align: left;">
                             <button name="openOption" type="submit" value="OpenWithoutMail" class="ui button">

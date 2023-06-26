@@ -1,4 +1,4 @@
-<%@ page import="de.laser.reporting.report.ReportingCache; de.laser.reporting.report.myInstitution.base.BaseConfig" %>
+<%@ page import="de.laser.reporting.report.ReportingCache; de.laser.reporting.report.myInstitution.base.BaseConfig; de.laser.storage.RDStore;" %>
 <laser:htmlStart message="myinst.reporting" serviceInjection="true">
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
 </laser:htmlStart>
@@ -8,8 +8,8 @@
         <ui:controlButtons>
             <laser:render template="actions" />
         </ui:controlButtons>
-    
-        <ui:h1HeaderWithIcon>
+<g:set var="visibleOrgRelationsJoin" value="${visibleOrgRelations.findAll{it.roleType != RDStore.OR_SUBSCRIPTION_CONSORTIA}.sort{it.org.sortname}.collect{it.org}.join(' – ')}"/>
+        <ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}" visibleOrgRelationsJoin="${visibleOrgRelationsJoin}">
             <laser:render template="iconSubscriptionIsChild"/>
             <ui:xEditable owner="${subscription}" field="name" />
         </ui:h1HeaderWithIcon>
@@ -111,7 +111,12 @@
                         else {
                             var dsl = JSPC.app.reporting.current.chart.option.dataset.source.length
                             if (JSPC.app.reporting.current.request.query.split('-')[0] != 'timeline') {
-                                var cwh = (JSPC.app.reporting.current.request.chart == 'pie') ? 320 : 220;
+                                var cwh = 220;
+                                if (JSPC.app.reporting.current.request.chart == 'pie') {
+                                    cwh = 320;
+                                    JSPC.app.reporting.current.myCountsToggle = false;
+                                }
+
                                 $('#chart-wrapper').css('height', cwh + (20 * JSPC.app.reporting.current.chart.option.dataset.source.length) + 'px');
                             } else {
                                 $('#chart-wrapper').removeAttr('style');

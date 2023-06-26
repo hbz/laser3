@@ -2,25 +2,27 @@
 
 <laser:serviceInjection/>
 
-<laser:htmlStart message="menu.institutions.myAddressbook" />
+<laser:htmlStart message="menu.institutions.addressbook" />
 
 <ui:breadcrumbs>
     <ui:crumb controller="org" action="show" id="${institution.id}" text="${institution.getDesignation()}"/>
-    <ui:crumb message="menu.institutions.myAddressbook" class="active"/>
+    <ui:crumb message="menu.institutions.addressbook" class="active"/>
 </ui:breadcrumbs>
 
 <ui:controlButtons>
     <ui:exportDropdown>
         <ui:exportDropdownItem>
-            <a class="item" data-ui="modal" href="#individuallyExportModal">Click Me Excel Export</a>
+            <a class="item" data-ui="modal" href="#individuallyExportModal">Export</a>
         </ui:exportDropdownItem>
         <g:if test="${filterSet == true}">
+            <%--
             <ui:exportDropdownItem>
                 <g:link class="item js-open-confirm-modal" params="${params+[exportXLS: true]}" action="addressbook"
                         data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}" data-confirm-term-how="ok">
                     <g:message code="default.button.exports.xls"/>
                 </g:link>
             </ui:exportDropdownItem>
+            --%>
             <ui:exportDropdownItem>
                 <g:link class="item js-open-confirm-modal" params="${params+[format: 'csv']}" action="addressbook"
                         data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}" data-confirm-term-how="ok">
@@ -29,9 +31,11 @@
             </ui:exportDropdownItem>
         </g:if>
         <g:else>
+            <%--
             <ui:exportDropdownItem>
                 <g:link class="item" params="${params+[exportXLS: true]}" action="addressbook"><g:message code="default.button.exports.xls"/></g:link>
             </ui:exportDropdownItem>
+            --%>
             <ui:exportDropdownItem>
                 <g:link class="item" params="${params+[format: 'csv']}" action="addressbook"><g:message code="default.button.exports.csv"/></g:link>
             </ui:exportDropdownItem>
@@ -54,6 +58,8 @@
                onclick="JSPC.app.personCreate('contactPersonForPublic');"><g:message
                     code="person.create_new.contactPersonForPublic.label"/></a>
 
+            <a href="#addressFormModal" class="item" onclick="JSPC.app.addresscreate_org('${institution.id}');"><g:message code="address.add.label"/></a>
+
         </g:if>
 
         <ui:actionsDropdownItem notActive="true" data-ui="modal" href="#copyFilteredEmailAddresses_ajaxModal"
@@ -63,7 +69,7 @@
 
 <laser:render template="/templates/copyFilteredEmailAddresses" model="[emailAddresses: emailAddresses]"/>
 
-<ui:h1HeaderWithIcon message="menu.institutions.myAddressbook" total="${num_visiblePersons}" floated="true" />
+<ui:h1HeaderWithIcon message="menu.institutions.addressbook" type="addressbook" total="${num_visiblePersons}" floated="true" />
 
 <ui:messages data="${flash}"/>
 
@@ -182,6 +188,11 @@
                 }).modal('show');
             }
         });
+    }
+    JSPC.app.addresscreate_org = function (orgId) {
+        var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>?orgId=' + orgId;
+        var func = bb8.ajax4SimpleModalFunction("#addressFormModal", url);
+        func();
     }
 </laser:script>
 

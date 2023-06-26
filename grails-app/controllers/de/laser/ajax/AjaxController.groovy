@@ -11,6 +11,7 @@ import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.cache.EhcacheWrapper
 import de.laser.cache.SessionCacheWrapper
 import de.laser.ctrl.SubscriptionControllerService
+import de.laser.finance.PriceItem
 import de.laser.helper.*
 import de.laser.interfaces.CalculatedType
 import de.laser.interfaces.ShareSupport
@@ -20,6 +21,7 @@ import de.laser.properties.PropertyDefinitionGroupBinding
 import de.laser.storage.PropertyStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
+import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyOrg
 import de.laser.survey.SurveyResult
 import de.laser.utils.CodeUtils
@@ -29,6 +31,7 @@ import de.laser.utils.SwissKnife
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
+import grails.web.servlet.mvc.GrailsParameterMap
 import org.apache.http.HttpStatus
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
@@ -347,7 +350,7 @@ class AjaxController {
               log.debug('ignored value "' + it + '" from result because of constraint: '+ params.constraint)
           }
           //value is correct incorrectly translated!
-          if (it.value.equalsIgnoreCase('local subscription') && accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && params.constraint?.contains('removeValue_localSubscription')) {
+          if (it.value.equalsIgnoreCase('local subscription') && contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && params.constraint?.contains('removeValue_localSubscription')) {
               log.debug('ignored value "' + it + '" from result because of constraint: '+ params.constraint)
           }
           // default ..
@@ -442,37 +445,20 @@ class AjaxController {
 		  Map<String, String> newChecked = checked ?: [:]
           if(params.referer == 'renewEntitlementsWithSurvey'){
 
-              Subscription baseSub = Subscription.get(params.baseSubID)
+              /*Subscription baseSub = Subscription.get(params.baseSubID)
               Subscription newSub = Subscription.get(params.newSubID)
               Subscription previousSubscription = newSub._getCalculatedPreviousForSurvey()
 
               List<Long> sourceTipps
-
-              Map query2 = filterService.getIssueEntitlementQuery(params+[ieAcceptStatusNotFixed: true], newSub)
+              GrailsParameterMap parameterMap = params.clone()
+              Map query2 = filterService.getIssueEntitlementQuery(parameterMap+[titleGroup: params.titleGroup], newSub)
               List<Long> selectedIETipps = IssueEntitlement.executeQuery("select ie.tipp.id " + query2.query, query2.queryParams)
 
-              Map query3 = filterService.getIssueEntitlementQuery(params+[ieAcceptStatusFixed: true], newSub)
+              Map query3 = filterService.getIssueEntitlementQuery(params, newSub)
               List<Long> targetIETipps = IssueEntitlement.executeQuery("select ie.tipp.id " + query3.query, query3.queryParams)
 
               List<IssueEntitlement> sourceIEs
 
-              if(params.tab == 'currentIEs') {
-                  Map query = filterService.getIssueEntitlementQuery(params+[ieAcceptStatusFixed: true], previousSubscription)
-                  List<IssueEntitlement> previousTipps = previousSubscription ? IssueEntitlement.executeQuery("select ie.tipp.id " + query.query, query.queryParams) : []
-                  sourceIEs = previousTipps ? IssueEntitlement.findAllByTippInListAndSubscriptionAndStatusNotEqual(TitleInstancePackagePlatform.findAllByIdInList(previousTipps), previousSubscription, RDStore.TIPP_STATUS_REMOVED) : []
-                  sourceIEs = sourceIEs + (sourceTipps ? IssueEntitlement.findAllByTippInListAndSubscriptionAndStatusNotEqual(TitleInstancePackagePlatform.findAllByIdInList(targetIETipps), newSub, RDStore.TIPP_STATUS_REMOVED) : [])
-
-              }
-
-              //TODO @Moe please verify
-              if(params.tab in ['allIEs', 'toBeSelectedIEs']) {
-                  Map query = filterService.getIssueEntitlementQuery(params, baseSub)
-                  List<Long> allIETipps = IssueEntitlement.executeQuery("select ie.tipp.id " + query.query, query.queryParams)
-                  sourceTipps = allIETipps
-                  sourceTipps = sourceTipps.minus(selectedIETipps)
-                  sourceTipps = sourceTipps.minus(targetIETipps)
-                  sourceIEs = sourceTipps ? IssueEntitlement.findAllByTippInListAndSubscriptionAndStatus(TitleInstancePackagePlatform.findAllByIdInList(sourceTipps), baseSub, RDStore.TIPP_STATUS_CURRENT) : []
-              }
               if(params.tab == 'selectedIEs') {
                   sourceTipps = selectedIETipps
                   sourceTipps = sourceTipps.minus(targetIETipps)
@@ -481,6 +467,35 @@ class AjaxController {
 
               sourceIEs.each { IssueEntitlement ie ->
                   newChecked[ie.id.toString()] = params.checked == 'true' ? 'checked' : null
+              }*/
+
+              Subscription baseSub = Subscription.get(params.baseSubID)
+
+              if(params.tab == 'allTipps') {
+                  params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
+                  Map<String, Object> query = filterService.getTippQuery(params, baseSub.packages.pkg)
+                  List<Long> titleIDList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
+
+                  titleIDList.each { Long tippID ->
+                      newChecked[tippID.toString()] = params.checked == 'true' ? 'checked' : null
+                  }
+              }
+
+              if(params.tab == 'selectedIEs') {
+                  Subscription subscriberSub = Subscription.get(params.newSubID)
+                  SurveyConfig surveyConfig = SurveyConfig.findById(params.surveyConfigID)
+                  IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscriberSub)
+                  if(issueEntitlementGroup) {
+                      params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
+                      params.titleGroup = issueEntitlementGroup.id.toString()
+                      Map query = filterService.getIssueEntitlementQuery(params, subscriberSub)
+                      List<Long> ieIDList = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
+
+                      ieIDList.each { Long ieID ->
+                          newChecked[ieID.toString()] = params.checked == 'true' ? 'checked' : null
+                      }
+
+                  }
               }
 
           }
@@ -1204,7 +1219,10 @@ class AjaxController {
 
             }
         }
-        redirect(url: request.getHeader('referer'))
+        if(Boolean.valueOf(params.returnSuccessAsJSON))
+            render([success: true] as JSON)
+        else
+            redirect(url: request.getHeader('referer'))
     }
 
     /**
@@ -1525,7 +1543,7 @@ class AjaxController {
         result.institution = contextService.getOrg()
         flash.error = ''
 
-        if (! (result.user as User).isMemberOf(result.institution as Org)) {
+        if (! (result.user as User).isFormal(result.institution as Org)) {
             flash.error = "You do not have permission to access ${contextService.getOrg().name} pages. Please request access on the profile page"
             response.sendError(HttpStatus.SC_FORBIDDEN)
             return
@@ -1587,7 +1605,7 @@ class AjaxController {
         result.institution = contextService.getOrg()
         flash.error = ''
 
-        if (! (result.user as User).isMemberOf(result.institution as Org)) {
+        if (! (result.user as User).isFormal(result.institution as Org)) {
             flash.error = "You do not have permission to access ${contextService.getOrg().name} pages. Please request access on the profile page"
             response.sendError(HttpStatus.SC_FORBIDDEN)
             return
@@ -1817,23 +1835,25 @@ class AjaxController {
     result
   }
 
-    /**
-     * Removes a given object from the given owner and refreshes the owner's collection
-     */
     @Transactional
     @Secured(['ROLE_USER'])
-  def deleteThrough() {
-    // log.debug("deleteThrough(${params})");
-    def context_object = resolveOID2(params.contextOid)
-    def target_object = resolveOID2(params.targetOid)
-    if ( context_object."${params.contextProperty}".contains(target_object) ) {
-      def otr = context_object."${params.contextProperty}".remove(target_object)
-      target_object.delete()
-      context_object.save()
-    }
-    redirect(url: request.getHeader('referer'))
+    def unsetAffiliation() {
+        String[] keys = params.key.split(':')
+        if (keys.size() == 3) {
+            User u = User.get(keys[0])
+            Org fo = Org.get(keys[1])
+            Role fr = Role.get(keys[2])
 
-  }
+            if (u && fo && fr) {
+                if (u.formalOrg?.id == fo.id && u.formalRole?.id == fr.id) {
+                    u.formalOrg = null
+                    u.formalRole = null
+                    u.save()
+                }
+            }
+        }
+        redirect(url: request.getHeader('referer'))
+    }
 
     /**
      * This is the call route for processing an xEditable change other than reference data or role
@@ -2035,9 +2055,9 @@ class AjaxController {
     /**
      * Deletes the given task
      */
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR'])
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     })
     def deleteTask() {
 
@@ -2095,7 +2115,7 @@ class AjaxController {
         result.institution = contextService.getOrg()
         flash.error = ''
 
-        if (! (result.user as User).isMemberOf(result.institution as Org)) {
+        if (! (result.user as User).isFormal(result.institution as Org)) {
             flash.error = "You do not have permission to access ${contextService.getOrg().name} pages. Please request access on the profile page"
             response.sendError(HttpStatus.SC_FORBIDDEN)
             return

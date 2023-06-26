@@ -1,5 +1,5 @@
-<%@ page import="de.laser.utils.DateUtils; de.laser.Org; de.laser.finance.CostItem; de.laser.Subscription; de.laser.Platform; de.laser.Package; java.text.SimpleDateFormat; de.laser.PendingChangeConfiguration; de.laser.RefdataCategory; de.laser.storage.RDConstants; de.laser.storage.RDStore;" %>
-<laser:htmlStart message="subscription.details.linkPackage.heading" />
+<%@ page import="de.laser.utils.DateUtils; de.laser.Org; de.laser.finance.CostItem; de.laser.Subscription; de.laser.Platform; de.laser.Package; java.text.SimpleDateFormat; de.laser.PendingChangeConfiguration; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.storage.RDConstants; de.laser.storage.RDStore;" %>
+<laser:htmlStart message="subscription.details.linkPackage.heading" serviceInjection="true"/>
 
 <ui:breadcrumbs>
     <ui:crumb controller="myInstitution" action="currentSubscriptions"
@@ -56,6 +56,7 @@
             <g:sortableColumn property="name"
                               title="${message(code: 'package.show.pkg_name')}"
                               params="${params}"/>
+            <th>${message(code: 'package.status.label')}</th>
             <g:sortableColumn property="titleCount"
                               title="${message(code: 'package.compare.overview.tipps')}"
                               params="${params}"/>
@@ -65,7 +66,7 @@
                               title="${message(code: 'platform.label')}"
                               params="${params}"/>
             <th>${message(code: 'package.curatoryGroup.label')}</th>
-            <th>${message(code: 'package.source.label')}</th>
+            <th>${message(code: 'package.source.automaticUpdates')}</th>
             <g:sortableColumn property="lastUpdatedDisplay"
                               title="${message(code: 'package.lastUpdated.label')}"
                               params="${params}"/>
@@ -93,8 +94,11 @@
                     </g:else>
                 </td>
                 <td>
-                    <g:if test="${record.titleCount}">
-                        ${record.titleCount}
+                    ${RefdataValue.getByValueAndCategory(record.status, RDConstants.PACKAGE_STATUS)?.getI10n("value")}
+                </td>
+                <td>
+                    <g:if test="${record.currentTippCount}">
+                        ${record.currentTippCount}
                     </g:if>
                     <g:else>
                         0
@@ -194,7 +198,7 @@
 
 <div id="magicArea"></div>
 
-<ui:modal contentClass="scrolling" id="linkPackageModal" message="myinst.currentSubscriptions.link_pkg"
+<ui:modal id="linkPackageModal" message="myinst.currentSubscriptions.link_pkg"
              msgSave="${message(code: 'default.button.link.label')}">
 
     <g:form class="ui form" id="linkPackageForm" url="[controller: 'subscription', action: 'processLinkPackage', id: params.id]">
@@ -203,6 +207,39 @@
             <label for="pkgName">${message(code: 'package.label')}</label>
             <input type="text" id="pkgName" name="pkgName" value="" readonly/>
         </div>
+        <g:if test="${pkgs}">
+            ${message(code: 'subscription.holdingSelection.label')} <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code: "subscription.holdingSelection.explanation")}"><i class="question circle icon la-popup"></i></span>${subscription.holdingSelection.getI10n('value')}
+            <g:if test="${institution.isCustomerType_Consortium() && auditService.getAuditConfig(subscription, 'holdingSelection')}">
+                <i class="ui thumbtack icon la-popup-tooltip"></i>
+            </g:if>
+        </g:if>
+        <g:else>
+            <div class="field">
+                <label for="holdingSelection">${message(code: 'subscription.holdingSelection.label')} <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code: "subscription.holdingSelection.explanation")}"><i class="question circle icon la-popup"></i></span></label>
+            </div>
+            <div class="two fields">
+                <div class="field">
+                    <ui:select class="ui dropdown search selection" id="holdingSelection" name="holdingSelection" from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_HOLDING)}" optionKey="id" optionValue="value"/>
+                </div>
+                <g:if test="${institution.isCustomerType_Consortium()}">
+                    <div class="field">
+                        <g:if test="${auditService.getAuditConfig(subscription, 'holdingSelection')}">
+                            <button id="inheritHoldingSelection" data-content="${message(code: 'subscription.holdingSelection.inherited')}" class="ui icon green button la-modern-button la-audit-button la-popup-tooltip la-delay" data-inherited="true">
+                                <i aria-hidden="true" class="icon la-js-editmode-icon thumbtack"></i>
+                            </button>
+                        </g:if>
+                        <g:else>
+                            <button id="inheritHoldingSelection" data-content="${message(code: 'subscription.holdingSelection.inherit')}" class="ui icon blue button la-modern-button la-audit-button la-popup-tooltip la-delay" data-inherited="false">
+                                <i aria-hidden="true" class="icon la-js-editmode-icon la-thumbtack slash"></i>
+                            </button>
+                        </g:else>
+                    </div>
+                </g:if>
+            </div>
+        </g:else>
+    </g:form>
+
+        <%--
         <div class="ui divided grid">
             <g:set var="colCount" value="${institution.isCustomerType_Consortium() ? 'eight' : 'sixteen'}"/>
             <div class="${colCount} wide column">
@@ -226,7 +263,11 @@
 
                 <br/>
                 <br/>
+            </div>
+        </div>
+        --%>
 
+                <%--
                 <div class="field">
                     <h5 class="ui dividing header">
                         <g:message code="subscription.packages.config.label" args="${[""]}"/>
@@ -305,7 +346,6 @@
 
                     <br/>
                     <br/>
-
                     <div class="field">
                         <h5 class="ui dividing header">
                             <g:message code="subscription.packages.config.children.label" args="${[""]}"/>
@@ -353,21 +393,13 @@
         </div>
 
     </g:form>
+    --%>
 
     <laser:script file="${this.getGroovyPageFileName()}">
-        JSPC.callbacks.modal.show.linkPackageModal = function(trigger) {
+        JSPC.callbacks.modal.onShow.linkPackageModal = function(trigger) {
             $('#linkPackageModal #pkgName').attr('value', $(trigger).attr('data-packageName'))
             $('#linkPackageModal input[name=addUUID]').attr('value', $(trigger).attr('data-addUUID'))
         }
-
-        $('#linkPackageForm').submit(function(e){
-                e.preventDefault();
-                if($('#With').prop('checked') == false && $('#Without').prop('checked') == false) {
-                    alert("${message(code:'subscription.details.linkPackage.error.withORWithoutIEs')}");
-                }else{
-                    $('#linkPackageForm').unbind('submit').submit();
-                }
-                });
     </laser:script>
 
 </ui:modal>
@@ -390,6 +422,27 @@
       $('#durationAlert').toggle();
     }
 
+    $("#inheritHoldingSelection").click(function(e) {
+        e.preventDefault();
+        let isInherited = $(this).attr('data-inherited') === 'true';
+        let button = $(this);
+        let icon = $(this).find('i');
+        $.ajax({
+            url: '<g:createLink controller="ajax" action="toggleAudit" params="[owner: genericOIDService.getOID(subscription), property: 'holdingSelection', returnSuccessAsJSON: true]"/>'
+        }).done(function(response) {
+            button.toggleClass('blue').toggleClass('green');
+            if(isInherited) {
+                icon.addClass('la-thumbtack slash').removeClass('thumbtack');
+                button.attr('data-inherited', 'false');
+            }
+            else {
+                icon.removeClass('la-thumbtack slash').addClass('thumbtack');
+                button.attr('data-inherited', 'true');
+            }
+        }).fail(function () {
+            console.log("AJAX error! Please check logs!");
+        });
+    });
 
       $(".packageLink").click(function(evt) {
           evt.preventDefault();

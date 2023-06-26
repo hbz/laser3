@@ -32,12 +32,13 @@ import java.util.regex.Pattern
 @Transactional
 class FinanceService {
 
-    ContextService contextService
-    GenericOIDService genericOIDService
-    MessageSource messageSource
     AccessService accessService
+    ContextService contextService
+    DeletionService deletionService
     EscapeService escapeService
     FinanceControllerService financeControllerService
+    GenericOIDService genericOIDService
+    MessageSource messageSource
 
     String genericExcludes = ' and ci.surveyOrg = null and ci.costItemStatus != :deleted '
 
@@ -241,7 +242,9 @@ class FinanceService {
         }
         if(selectedCostItems) {
             if(Boolean.valueOf(params.delete)) {
-                CostItem.executeUpdate('update CostItem ci set ci.costItemStatus = :deleted where ci.id in (:ids)',[deleted:RDStore.COST_ITEM_DELETED,ids:selectedCostItems])
+                CostItem.findAllByIdInList(selectedCostItems).each { CostItem ci ->
+                    deletionService.deleteCostItem(ci)
+                }
             }
             else if(params.percentOnOldPrice) {
                 Double percentage = 1 + params.double('percentOnOldPrice') / 100
@@ -359,48 +362,6 @@ class FinanceService {
             }
         }
         [result:result,status:STATUS_OK]
-    }
-
-    /**
-     * Deletes the given cost item and unsets eventual links. If it is the last item in a cost item group,
-     * the group will be deleted as well for that it will not appear in dropdowns any more
-     * @param params the parameter map containing the cost item id to delete and the tab which should be displayed after deletion
-     * @return result status map: OK if succeeded, error otherwise
-     */
-    Map<String,Object> deleteCostItem(GrailsParameterMap params) {
-        Map<String, Object> result = [showView:params.showView]
-        CostItem ci = CostItem.get(params.id)
-        if (ci) {
-            List<CostItemGroup> cigs = CostItemGroup.findAllByCostItem(ci)
-            Order order = ci.order
-            Invoice invoice = ci.invoice
-            log.debug("deleting CostItem: " + ci)
-            ci.costItemStatus = RDStore.COST_ITEM_DELETED
-            ci.invoice = null
-            ci.order = null
-            ci.sub = null
-            ci.subPkg = null
-            ci.issueEntitlement = null
-            ci.issueEntitlementGroup = null
-            if(ci.save()) {
-                if (!CostItem.findByOrderAndIdNotEqualAndCostItemStatusNotEqual(order, ci.id, RDStore.COST_ITEM_DELETED))
-                    order.delete()
-                if (!CostItem.findByInvoiceAndIdNotEqualAndCostItemStatusNotEqual(invoice, ci.id, RDStore.COST_ITEM_DELETED))
-                    invoice.delete()
-                PendingChange.executeUpdate('delete from PendingChange pc where pc.costItem = :ci', [ci: ci])
-                cigs.each { CostItemGroup item ->
-                    item.delete()
-                    log.debug("deleting CostItemGroup: " + item)
-                }
-            }
-            else {
-                log.error(ci.errors.toString())
-                result.error = messageSource.getMessage('default.delete.error.general.message',null, LocaleUtils.getCurrentLocale())
-                [result:result,status:STATUS_ERROR]
-            }
-            [result:result,status:STATUS_OK]
-        }
-        else [result:result,status:STATUS_ERROR]
     }
 
     /**
@@ -1204,9 +1165,9 @@ class FinanceService {
                 if(subIdentifier) {
                     //fetch possible identifier namespaces
                     List<Subscription> subMatches
-                    if(accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC))
+                    if(contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC))
                         subMatches = Subscription.executeQuery("select oo.sub from OrgRole oo where (cast(oo.sub.id as string) = :idCandidate or oo.sub.globalUID = :idCandidate) and oo.org = :org and oo.roleType in :roleType",[idCandidate:subIdentifier,org:costItem.owner,roleType:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER]])
-                    else if(accessService.ctxPerm(CustomerTypeService.ORG_INST_PRO))
+                    else if(contextService.hasPerm(CustomerTypeService.ORG_INST_PRO))
                         subMatches = Subscription.executeQuery("select oo.sub from OrgRole oo where (cast(oo.sub.id as string) = :idCandidate or oo.sub.globalUID = :idCandidate) and oo.org = :org and oo.roleType in :roleType",[idCandidate:subIdentifier,org:costItem.owner,roleType:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER]])
                     if(!subMatches)
                         mappingErrorBag.noValidSubscription = subIdentifier

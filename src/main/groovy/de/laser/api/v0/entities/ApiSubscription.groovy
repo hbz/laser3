@@ -1,6 +1,7 @@
 package de.laser.api.v0.entities
 
-
+import de.laser.traces.DelCombo
+import de.laser.traces.DeletedObject
 import de.laser.Identifier
 import de.laser.Links
 import de.laser.Org
@@ -31,10 +32,20 @@ class ApiSubscription {
 
         switch(query) {
             case 'id':
-				result.obj = Subscription.findAllWhere(id: Long.parseLong(value))
+				result.obj = Subscription.findAllById(Long.parseLong(value))
+				if(!result.obj) {
+					DeletedObject.withTransaction {
+						result.obj = DeletedObject.findAllByOldDatabaseIDAndOldObjectType(Long.parseLong(value), Subscription.class.name)
+					}
+				}
                 break
             case 'globalUID':
-				result.obj = Subscription.findAllWhere(globalUID: value)
+				result.obj = Subscription.findAllByGlobalUID(value)
+				if(!result.obj) {
+					DeletedObject.withTransaction {
+						result.obj = DeletedObject.findAllByOldGlobalUID(value)
+					}
+				}
                 break
             case 'ns:identifier':
 				result.obj = Identifier.lookupObjectsByIdentifierString(new Subscription(), value)
@@ -106,6 +117,7 @@ class ApiSubscription {
      */
     static JSON getSubscriptionList(Org owner, Org context){
         Collection<Object> result = []
+		List<DeletedObject> deleted = []
 
         List<Subscription> available = Subscription.executeQuery(
                 'SELECT DISTINCT(sub) FROM Subscription sub JOIN sub.orgRelations oo WHERE oo.org = :owner AND oo.roleType in (:roles )' ,
@@ -115,11 +127,25 @@ class ApiSubscription {
                 ]
         )
 
-		println "${available.size()} available subscriptions found .."
+		DeletedObject.withTransaction {
+			deleted.addAll(DeletedObject.executeQuery(
+					'SELECT DISTINCT(del) FROM DeletedObject del JOIN del.combos delc WHERE delc.accessibleOrg = :owner AND del.oldObjectType = :objType' ,
+					[
+							owner: owner.globalUID,
+							objType: Subscription.class.name
+					]
+			))
+		}
+
+
+		println "${available.size()}+${deleted.size()} available subscriptions found .."
 
         available.each { sub ->
 			result.add(ApiStubReader.requestSubscriptionStub(sub, context))
         }
+		deleted.each { DeletedObject deletedObject ->
+			result.add(ApiStubReader.requestDeletedObjectStub(deletedObject, context))
+		}
 
 		ApiToolkit.cleanUpDebugInfo(result)
 
@@ -152,6 +178,7 @@ class ApiSubscription {
 
 		result.form         			= sub.form?.value
         result.isMultiYear  			= sub.isMultiYear ? 'Yes' : 'No'
+		result.referenceYear			= sub.referenceYear
 		result.isAutomaticRenewAnnually = sub.isAutomaticRenewAnnually ? 'Yes' : 'No'
 		result.resource     			= sub.resource?.value
 		result.status       			= sub.status?.value
@@ -159,6 +186,7 @@ class ApiSubscription {
 		result.isPublicForApi 			= sub.isPublicForApi ? 'Yes' : 'No'
 		result.hasPerpetualAccess 		= sub.hasPerpetualAccess ? 'Yes' : 'No'
 		result.hasPublishComponent 		= sub.hasPublishComponent ? 'Yes' : 'No'
+		result.holdingSelection			= sub.holdingSelection?.value
 
 		// References
 

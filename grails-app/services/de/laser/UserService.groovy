@@ -3,7 +3,6 @@ package de.laser
 
 import de.laser.auth.Role
 import de.laser.auth.User
-import de.laser.auth.UserOrgRole
 import de.laser.auth.UserRole
 import de.laser.config.ConfigMapper
 import de.laser.storage.RDStore
@@ -20,9 +19,9 @@ import org.springframework.validation.FieldError
 @Transactional
 class UserService {
 
+    AccessService accessService
     ContextService contextService
     GenericOIDService genericOIDService
-    InstAdmService instAdmService
     MessageSource messageSource
 
     /**
@@ -33,18 +32,8 @@ class UserService {
     void initMandatorySettings(User user) {
         log.debug('initMandatorySettings for user #' + user.id)
 
-        def uss = UserSetting.get(user, UserSetting.KEYS.DASHBOARD)
-
-        List<Long> userOrgMatches = user.getAffiliationOrgsIdList()
-        if (userOrgMatches.size() > 0) {
-            Org firstOrg = Org.findById(userOrgMatches.first()) //we presume that (except my test ladies) no one can be simultaneously member of a consortia and of a single user
-            if (uss == UserSetting.SETTING_NOT_FOUND) {
-                user.getSetting(UserSetting.KEYS.DASHBOARD, firstOrg)
-            }
-            else if (! uss.getValue()) {
-                uss.setValue(firstOrg)
-            }
-            if(firstOrg.isCustomerType_Inst())
+        if (user.formalOrg) {
+            if(user.formalOrg.isCustomerType_Inst())
                 user.getSetting(UserSetting.KEYS.IS_NOTIFICATION_FOR_SURVEYS_PARTICIPATION_FINISH, RDStore.YN_YES)
         }
 
@@ -69,14 +58,13 @@ class UserService {
         Map queryParams = [:]
 
         if (params.org || params.authority) {
-            baseQuery.add( 'UserOrgRole uo' )
-
             if (params.org) {
-                whereQuery.add( 'uo.user = u and uo.org = :org' )
+                whereQuery.add( 'u.formalOrg = :org' )
                 queryParams.put( 'org', genericOIDService.resolveOID(params.org) )
             }
+            // params.authority vs params.role ???
             if (params.role) {
-                whereQuery.add( 'uo.user = u and uo.formalRole = :role' )
+                whereQuery.add( 'u.formalRole = :role' )
                 queryParams.put('role', genericOIDService.resolveOID(params.role) )
             }
         }
@@ -117,22 +105,22 @@ class UserService {
         defaultRole.save()
 
         if (params.org && params.formalRole) {
-            Org org = Org.get(params.org)
+            Org formalOrg   = Org.get(params.org)
             Role formalRole = Role.get(params.formalRole)
 
-            if (org && formalRole) {
-                int existingUserOrgs = UserOrgRole.findAllByOrgAndFormalRole(org, formalRole).size()
+            if (formalOrg && formalRole) {
+                int existingUserOrgs = User.findAllByFormalOrgAndFormalRole(formalOrg, formalRole).size()
 
-                instAdmService.createAffiliation(user, org, formalRole, flash)
+//                instAdmService.createAffiliation(user, formalOrg, formalRole, flash) // TODO refactoring
+                setAffiliation(user, formalOrg.id, formalRole.id, flash)
 
-                if (formalRole.authority == 'INST_ADM' && existingUserOrgs == 0 && ! org.legallyObligedBy) { // only if new instAdm
-                    if (UserOrgRole.findByOrgAndUserAndFormalRole(org, user, formalRole)) { // only on success
-                        org.legallyObligedBy = contextService.getOrg()
-                        org.save()
-                        log.debug("set legallyObligedBy for ${org} -> ${contextService.getOrg()}")
+                if (formalRole.authority == 'INST_ADM' && existingUserOrgs == 0 && ! formalOrg.legallyObligedBy) { // only if new instAdm
+                    if (user.isFormal(formalRole, formalOrg)) { // only on success
+                        formalOrg.legallyObligedBy = contextService.getOrg()
+                        formalOrg.save()
+                        log.debug("set legallyObligedBy for ${formalOrg} -> ${contextService.getOrg()}")
                     }
                 }
-                user.getSetting(UserSetting.KEYS.DASHBOARD, org)
                 user.getSetting(UserSetting.KEYS.DASHBOARD_TAB, RDStore.US_DASHBOARD_TAB_DUE_DATES)
             }
         }
@@ -141,19 +129,41 @@ class UserService {
     }
 
     /**
-     * Checks whether the arguments are set to link the given user to the given institution, gets the institution
-     * and formal role objects and hands the call to the {@link InstAdmService} to perform linking
      * @param user the user to link
-     * @param orgId the institution ID to which the user should be linked
+     * @param formalOrgId the institution ID to which the user should be linked
      * @param formalRoleId the ID of the role to attribute to the given user
      * @param flash the message container
      */
-    def addAffiliation(User user, orgId, formalRoleId, flash) {
-        Org org = Org.get(orgId)
-        Role formalRole = Role.get(formalRoleId)
+    void setAffiliation(User user, Serializable formalOrgId, Serializable formalRoleId, FlashScope flash) {
+        boolean success = false // instAdmService.setAffiliation(user, formalOrg, formalRole, flash)
 
-        if (user && org && formalRole) {
-            instAdmService.createAffiliation(user, org, formalRole, flash)
+        try {
+            Org formalOrg   = Org.get(formalOrgId)
+            Role formalRole = Role.get(formalRoleId)
+
+            // TODO - handle formalOrg change
+            if (user && formalOrg && formalRole ) {
+                if (user.formalOrg?.id != formalOrg.id) {
+                    user.formalOrg = formalOrg
+                    user.formalRole = formalRole
+
+                    if (user.save()) {
+                        success = true
+                    }
+                }
+            }
+        }
+        catch (Exception e) {}
+
+        if (flash) {
+            Locale loc = LocaleUtils.getCurrentLocale()
+
+            if (success) {
+                flash.message = messageSource.getMessage('user.affiliation.request.success', null, loc)
+            }
+            else {
+                flash.error = messageSource.getMessage('user.affiliation.request.failed', null, loc)
+            }
         }
     }
 
@@ -165,42 +175,25 @@ class UserService {
      * @return true if the given permission is granted to the user in the given institution (or a missing one overridden by global roles), false otherwise
      */
     boolean checkAffiliation_or_ROLEADMIN(User userToCheck, Org orgToCheck, String instUserRole) {
-        boolean check = false
-
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
-            check = true // may the force be with you
+            return true // may the force be with you
         }
         if (! SpringSecurityUtils.ifAnyGranted('ROLE_USER')) {
-            check = false // min restriction fail
+            return false // min restriction fail
         }
 
-        // TODO:
+        return _checkUserOrgRole(userToCheck, orgToCheck, instUserRole)
+    }
 
-        if (! check) {
-            List<String> rolesToCheck = [instUserRole]
-
-            // handling inst role hierarchy
-            if (instUserRole == Role.INST_USER) {
-                rolesToCheck << Role.INST_EDITOR
-                rolesToCheck << Role.INST_ADM
-            }
-            else if (instUserRole == Role.INST_EDITOR) {
-                rolesToCheck << Role.INST_ADM
-            }
-
-            rolesToCheck.each { String rot ->
-                Role role = Role.findByAuthority(rot)
-                if (role) {
-                    UserOrgRole uo = UserOrgRole.findByUserAndOrgAndFormalRole(userToCheck, orgToCheck, role)
-                    //for users with multiple affiliations, login fails because of LazyInitializationException of the domain collection
-                    List<UserOrgRole> affiliations = UserOrgRole.findAllByUser(userToCheck)
-                    check = check || (uo && affiliations.contains(uo))
-                }
-            }
+    boolean checkAffiliationAndCtxOrg(User userToCheck, Org orgToCheck, String instUserRole) {
+        if (! userToCheck || ! orgToCheck) {
+            return false
+        }
+        if (orgToCheck.id != contextService.getOrg().id) { // NEW CONSTRAINT
+            return false
         }
 
-        //TODO: log.debug("checkAffiliation_or_ROLEADMIN(): ${user} ${orgToCheck} ${instUserRole} -> ${check}")
-        check
+        return _checkUserOrgRole(userToCheck, orgToCheck, instUserRole)
     }
 
     boolean checkAffiliationAndCtxOrg_or_ROLEADMIN(User userToCheck, Org orgToCheck, String instUserRole) {
@@ -211,16 +204,8 @@ class UserService {
         checkAffiliationAndCtxOrg(userToCheck, orgToCheck, instUserRole)
     }
 
-    boolean checkAffiliationAndCtxOrg(User userToCheck, Org orgToCheck, String instUserRole) {
-        boolean result = false
-
-        if (! userToCheck || ! orgToCheck) {
-            return result
-        }
-        // NEW CONSTRAINT:
-        if (orgToCheck.id != contextService.getOrg().id) {
-            return result
-        }
+    private boolean _checkUserOrgRole(User userToCheck, Org orgToCheck, String instUserRole) {
+        boolean check = false
 
         List<String> rolesToCheck = [instUserRole]
 
@@ -233,48 +218,40 @@ class UserService {
             rolesToCheck << Role.INST_ADM
         }
 
-        rolesToCheck.each{ String rot ->
-            Role role = Role.findByAuthority(rot)
-            UserOrgRole userOrg = UserOrgRole.findByUserAndOrgAndFormalRole(userToCheck, orgToCheck, role)
-            if (userOrg) {
+        rolesToCheck.each { String rtc ->
+            Role role = Role.findByAuthority(rtc)
+            if (role) {
+                check = check || userToCheck.isFormal(role, orgToCheck)
+            }
+        }
+        //TODO: log.debug("_checkUserOrgRole(): ${userToCheck} ${orgToCheck} ${instUserRole} -> ${check}")
+        check
+    }
+
+    // -- todo: check logic
+
+    boolean hasComboInstAdmPivileges(User user, Org org) {
+        boolean result = checkAffiliationAndCtxOrg(user, org, 'INST_ADM')
+
+        List<Org> topOrgs = Org.executeQuery(
+                'select c.toOrg from Combo c where c.fromOrg = :org and c.type = :type', [org: org, type: RDStore.COMBO_TYPE_CONSORTIUM]
+        )
+        topOrgs.each { top ->
+            if (checkAffiliationAndCtxOrg(user, top as Org, 'INST_ADM')) {
                 result = true
             }
         }
         result
     }
 
-    /**
-     * This setup was used only for QA in order to create test accounts for the hbz employees. Is disused as everyone should start from scratch when using the system
-     * @param orgs the configuration {@link Map} containing the affiliation configurations to process
-     */
-    @Deprecated
-    void setupAdminAccounts(Map<String,Org> orgs) {
-        List adminUsers = ConfigMapper.getConfig('adminUsers', List) as List
-        List<String> customerTypes = ['konsorte','vollnutzer','konsortium']
-        Map<String,Role> userRights = ['benutzer':Role.findByAuthority('INST_USER'), //internal 'Anina'
-                                       'redakteur':Role.findByAuthority('INST_EDITOR'), //internal 'Rahel'
-                                       'admin':Role.findByAuthority('INST_ADM')] //internal 'Viola'
+    // -- todo: check logic
 
-        adminUsers.each { adminUser ->
-            customerTypes.each { String customerKey ->
-                userRights.each { String rightKey, Role userRole ->
-                    String username = "${adminUser.name}_${customerKey}_${rightKey}"
-                    User user = User.findByUsername(username)
-
-                    if(! user) {
-                        log.debug("trying to create new user: ${username}")
-                        user = addNewUser([username: username, password: "${adminUser.pass}", display: username, email: "${adminUser.email}", enabled: true, org: orgs[customerKey]],null)
-
-                        if (user && orgs[customerKey]) {
-                            if (! user.hasOrgAffiliation_or_ROLEADMIN(orgs[customerKey], rightKey)) {
-
-                                instAdmService.createAffiliation(user, orgs[customerKey], userRole, null)
-                                user.getSetting(UserSetting.KEYS.DASHBOARD, orgs[customerKey])
-                            }
-                        }
-                    }
-                }
-            }
+    boolean isUserEditableForInstAdm(User user, User editor) {
+        if (user.formalOrg) {
+            return hasComboInstAdmPivileges(editor, user.formalOrg)
+        }
+        else {
+            return contextService.hasPermAsInstAdm_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
         }
     }
 }

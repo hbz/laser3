@@ -13,6 +13,7 @@ import grails.plugin.springsecurity.annotation.Secured
 class TippController  {
 
   ContextService contextService
+  SurveyService surveyService
 
   //-----
 
@@ -35,12 +36,7 @@ class TippController  {
     result.user = contextService.getUser()
     result.editable = false
 
-    TitleInstancePackagePlatform tipp
-    if(params.id instanceof Long || params.id.isLong())
-      tipp = TitleInstancePackagePlatform.get(params.id)
-    else if(params.id ==~ /[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}/)
-      tipp = TitleInstancePackagePlatform.findByGokbId(params.id)
-    else tipp = Package.findByGlobalUID(params.id)
+    TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.get(params.id)
     result.tipp = tipp
 
     result.currentTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: result.tipp.pkg, status: RDStore.TIPP_STATUS_CURRENT])[0]
@@ -49,6 +45,12 @@ class TippController  {
     result.deletedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: result.tipp.pkg, status: RDStore.TIPP_STATUS_DELETED])[0]
 
     result.titleHistory = TitleHistoryEvent.executeQuery("select distinct thep.event from TitleHistoryEventParticipant as thep where thep.participant = :participant", [participant: result.tipp] )
+
+
+    result.contextOrg = contextService.getOrg()
+    result.participantPerpetualAccessToTitle = []
+
+    result.participantPerpetualAccessToTitle = surveyService.listParticipantPerpetualAccessToTitle(result.contextOrg, tipp)
 
     result
   }

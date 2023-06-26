@@ -5,7 +5,7 @@ import de.laser.custom.CustomPasswordEncoderFactories
 import de.laser.custom.CustomUserDetailsService
 import de.laser.custom.CustomAuthSuccessHandler
 import de.laser.custom.CustomAuditRequestResolver
-import de.laser.custom.CustomWebSocketMessageBrokerConfig
+//import de.laser.custom.CustomWebSocketMessageBrokerConfig
 import de.laser.custom.CustomWkhtmltoxService
 import org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider
@@ -38,7 +38,7 @@ beans = {
 
     // [ websockets ..
     //webSocketConfig( CustomWebSocketConfigurer )
-    webSocketConfig( CustomWebSocketMessageBrokerConfig )
+//    webSocketConfig( CustomWebSocketMessageBrokerConfig )
     // .. ]
 
     // reloadableResourceBundleMessageSource ( CustomReloadableResourceBundleMessageSource )

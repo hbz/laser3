@@ -19,10 +19,12 @@ why = {
             '_info      : shows current details' +
             '_history   : shows existing history \n' +
             '  \n' +
+            '_comments  : shows $(<!-- -->) \n' +
             '_elem(id)  : shows $(*[data-why-id="why-<id>"]) \n' +
             '_forms     : shows $(forms) \n' +
             '_headlines : shows $(h{1..6}) \n' +
-            '_comments  : shows $(<!-- -->) \n' +
+            '_modals    : shows $(*[data-ui="modal"]) \n' +
+            '_scripts   : shows $(script) \n' +
             '_templates : shows $(<!-- [template: .. ] -->) \n'
         )
     },
@@ -35,6 +37,15 @@ why = {
     info: function (expand = true) {
         console.log('why.info')
         why._executeTap (true, expand)
+
+        if ($.toast) {
+            if (why.el_resultCounter.click > 0) {
+                $.toast({message: 'Warning: Duplicate event listeners found', displayTime: 6000, class: 'orange', showIcon: 'bug'});
+            }
+            if (why.id_result.length > 0) {
+                $.toast({message: 'Warning: Duplicate ID attributes found: ' + why.id_result, displayTime: 6000, class: 'red', showIcon: 'code'});
+            }
+        }
     },
 
     history: function () {
@@ -67,9 +78,9 @@ why = {
         })
     },
 
-    forms: function() {
-        console.log('why.forms')
-        $.each($('form'), function (i, elem) {
+    scripts: function() {
+        console.log('why.scripts')
+        $.each($('script'), function (i, elem) {
             console.log(elem)
         })
     },
@@ -79,6 +90,28 @@ why = {
         $.each($('h1,h2,h3,h4,h5,h6'), function (i, elem) {
             console.log(elem)
         })
+    },
+
+    forms: function() {
+        console.log('why.forms')
+        $.each($('form'), function (i, elem) {
+            console.log(elem)
+        })
+    },
+
+    modals: function (id) {
+        console.log('why.elem: $( [data-ui="modal"] )')
+        let elems = $('*[data-ui="modal"]')
+
+        if (elems) {
+            result = []
+            $.each(elems, function (i, elem) {
+                let href = $(elem).attr('href') ? $(elem).attr('href') : $(elem).attr('data-href')
+                let target = $(href)[0 ]? $(href)[0] : 'ERROR'
+                result.push([ elem, href, target ])
+            })
+            if (result) { console.table(result) }
+        }
     },
 
     templates: function() {
@@ -240,5 +273,7 @@ Object.defineProperty (window, '_headlines', { get: function () { why.headlines(
 Object.defineProperty (window, '_help',      { get: function () { why.help() } })
 Object.defineProperty (window, '_history',   { get: function () { why.history() } })
 Object.defineProperty (window, '_info',      { get: function () { why.info() } })
+Object.defineProperty (window, '_modals',    { get: function () { why.modals() } })
+Object.defineProperty (window, '_scripts',   { get: function () { why.scripts() } })
 Object.defineProperty (window, '_tap',       { get: function () { why.tap() } })
 Object.defineProperty (window, '_templates', { get: function () { why.templates() } })

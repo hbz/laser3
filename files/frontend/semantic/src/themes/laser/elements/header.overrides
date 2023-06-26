@@ -19,6 +19,7 @@ h1~h2.ui.header {
 .ui.icon.header .icon.la-object-journal,
 .ui.icon.header .icon.la-object-database,
 .ui.icon.header .icon.la-object-ebook {
+  margin-right: 0.5em;
   font-size: 0.88em !important;
   line-height: 1 !important;
   padding: 0.5em 0 !important;
@@ -165,7 +166,8 @@ body[class*="platform"] .ui.icon.header .icon.la-object:before {
   font-size: @14px;
  }
 .ui.header.la-noMargin-top {
-  margin-top: 1rem;
+  margin-top: 0;
+  margin-bottom: 1.3rem;
   text-align: left;
   position: relative;
 }
@@ -175,4 +177,20 @@ body[class*="platform"] .ui.icon.header .icon.la-object:before {
 }
 .la-positionRelative {
   position: relative;
+}
+/* ERMS-4934 */
+.la-subPlusYear{
+  display: flex;
+}
+.la-subPlusYear-texts {
+  display: flex;
+  flex-direction: column;
+  font-size: 1.4rem;
+  line-height: 1.2em;
+}
+.la-subPlusYear-year {
+  font-size: 1rem
+}
+.la-orgRelations {
+    font-weight: normal
 }

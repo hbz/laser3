@@ -12,42 +12,39 @@
 <table id="costTable_${customerType}" class="ui celled sortable monitor stackable table la-js-responsive-table la-table la-ignore-fixed">
     <thead>
         <tr>
+            <th scope="col" rowspan="2">${message(code:'sidewide.number')}</th>
             <g:if test="${!fixedSubscription}">
-                <th>${message(code:'sidewide.number')}</th>
-                <g:sortableColumn property="ci.costTitle" title="${message(code:'financials.newCosts.costTitle')}" params="[ownSort: true]"/>
-                <g:sortableColumn property="ci.sub.name" title="${message(code:'default.subscription.label')}" params="[ownSort: true]"/>
-                <th class="la-no-uppercase"><span class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center"><i class="money bill alternate icon"></i></span></th>
-                <g:sortableColumn property="ci.costInBillingCurrency" title="${message(code:'financials.invoice_total')}" params="[ownSort: true]"/>
-                <g:sortableColumn property="ci.costInLocalCurrency" title="${message(code:'financials.newCosts.value')}" params="[ownSort: true]"/>
-                <g:sortableColumn property="ci.costItemStatus" title="${message(code:'default.status.label')}" params="[ownSort: true]"/>
-                <g:sortableColumn property="ci.startDate" title="${message(code:'financials.dateFrom')}" params="[ownSort: true]"/>
-                <g:sortableColumn property="ci.costItemElement" title="${message(code:'financials.costItemElement')}" params="[ownSort: true]"/>
-                <th class="la-action-info"><g:message code="default.actions.label"/></th>
+                <g:sortableColumn property="ci.costTitle" title="${message(code:'financials.newCosts.costTitle')}" params="[ownSort: true]" scope="col" rowspan="2"/>
+                <g:sortableColumn property="ci.sub.name" title="${message(code:'default.subscription.label')}" params="[ownSort: true]" scope="col" class="la-smaller-table-head"/>
+                <th class="la-no-uppercase" scope="col" rowspan="2">
+                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center"><i class="money bill alternate icon"></i></span>
+                </th>
+                <g:sortableColumn property="ci.costInBillingCurrency" title="${message(code:'financials.invoice_total')}" params="[ownSort: true]" scope="col" rowspan="2"/>
+                <g:sortableColumn property="ci.costInLocalCurrency" title="${message(code:'financials.newCosts.value')}" params="[ownSort: true]" scope="col" rowspan="2"/>
+                <g:sortableColumn property="ci.costItemStatus" title="${message(code:'default.status.label')}" params="[ownSort: true]" scope="col" rowspan="2"/>
+                <g:sortableColumn property="ci.startDate" title="${message(code:'financials.dateFrom')}" params="[ownSort: true]" scope="col" class="la-smaller-table-head"/>
+                <g:sortableColumn property="ci.costItemElement" title="${message(code:'financials.costItemElement')}" params="[ownSort: true]" scope="col" rowspan="2"/>
             </g:if>
             <g:else>
-                <th>${message(code:'sidewide.number')}</th>
-                <g:sortableColumn property="costTitle" title="${message(code:'financials.newCosts.costTitle')}" params="[ownSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
-                <th class="la-no-uppercase"><span class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center"><i class="money bill alternate icon"></i></span></th>
-                <g:sortableColumn property="costInBillingCurrency" title="${message(code:'financials.invoice_total')}" params="[ownSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
-                <g:sortableColumn property="costInLocalCurrency" title="${message(code:'financials.newCosts.value')}" params="[ownSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
-                <g:sortableColumn property="costItemStatus" title="${message(code:'default.status.label')}" params="[ownSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
-                <g:sortableColumn property="startDate" title="${message(code:'financials.dateFrom')}" params="[ownSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
-                <g:sortableColumn property="costItemElement" title="${message(code:'financials.costItemElement')}" params="[ownSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
-                <th class="la-action-info"><g:message code="default.actions.label"/></th>
+                <g:sortableColumn property="costTitle" title="${message(code:'financials.newCosts.costTitle')}" params="[ownSort: true, sub: fixedSubscription.id]" mapping="subfinance" scope="col" rowspan="2"/>
+                <th class="la-no-uppercase" scope="col" rowspan="2">
+                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center"><i class="money bill alternate icon"></i></span>
+                </th>
+                <g:sortableColumn property="costInBillingCurrency" title="${message(code:'financials.invoice_total')}" params="[ownSort: true, sub: fixedSubscription.id]" mapping="subfinance" scope="col" rowspan="2"/>
+                <g:sortableColumn property="costInLocalCurrency" title="${message(code:'financials.newCosts.value')}" params="[ownSort: true, sub: fixedSubscription.id]" mapping="subfinance" scope="col" rowspan="2"/>
+                <g:sortableColumn property="costItemStatus" title="${message(code:'default.status.label')}" params="[ownSort: true, sub: fixedSubscription.id]" mapping="subfinance" scope="col" rowspan="2"/>
+                <g:sortableColumn property="startDate" title="${message(code:'financials.dateFrom')}" params="[ownSort: true, sub: fixedSubscription.id]" mapping="subfinance" scope="col" class="la-smaller-table-head"/>
+                <g:sortableColumn property="costItemElement" title="${message(code:'financials.costItemElement')}" params="[ownSort: true, sub: fixedSubscription.id]" mapping="subfinance" scope="col" rowspan="2"/>
             </g:else>
+            <th class="la-action-info" scope="col" rowspan="2"><g:message code="default.actions.label"/></th>
         </tr>
         <tr>
             <g:if test="${!fixedSubscription}">
-                <th colspan="2"></th>
-                <g:sortableColumn property="ci.sub.startDate" title="${message(code:'financials.subscriptionRunningTime')}" params="[ownSort: true]"/>
-                <th colspan="4"></th>
-                <g:sortableColumn property="ci.endDate" title="${message(code:'financials.dateTo')}" params="[ownSort: true]"/>
-                <th colspan="2"></th>
+                <g:sortableColumn property="ci.sub.startDate" title="${message(code:'financials.subscriptionRunningTime')}" params="[ownSort: true]" scope="col" class="la-smaller-table-head"/>
+                <g:sortableColumn property="ci.endDate" title="${message(code:'financials.dateTo')}" params="[ownSort: true]" scope="col" class="la-smaller-table-head"/>
             </g:if>
             <g:else>
-                <th colspan="6"></th>
-                <g:sortableColumn property="ci.endDate" title="${message(code:'financials.dateTo')}" params="[ownSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
-                <th colspan="2"></th>
+                <g:sortableColumn property="ci.endDate" title="${message(code:'financials.dateTo')}" params="[ownSort: true, sub: fixedSubscription.id]" mapping="subfinance" scope="col" class="la-smaller-table-head"/>
             </g:else>
         </tr>
     </thead>

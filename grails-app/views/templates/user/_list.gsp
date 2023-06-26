@@ -26,7 +26,7 @@
                     ${fieldValue(bean: us, field: "username")}
 
                     <g:if test="${! SpringSecurityUtils.ifAnyGranted('ROLE_USER')}">
-                        <span  class="la-popup-tooltip la-delay" data-content="Dieser Account besitzt keine ROLE_USER-Rechte." data-position="top right">
+                        <span class="la-popup-tooltip la-delay" data-content="Dieser Account besitzt keine ROLE_USER-Rechte." data-position="top right">
                             <i class="icon minus circle red"></i>
                         </span>
                     </g:if>
@@ -34,16 +34,14 @@
                 <td>${us.getDisplayName()}</td>
                 <td>${us.email}</td>
                 <td>
-                    <g:each in="${us.affiliations}" var="affi">
                         <g:if test="${showAllAffiliations}">
-                            ${affi.org?.getDesignation()} <span>(${affi.formalRole.authority})</span> <br />
+                            ${us.formalOrg?.getDesignation()} <g:if test="${us.formalRole}"><span>(${us.formalRole.authority})</span></g:if>
                         </g:if>
                         <g:else>
-                            <g:if test="${affi.org.id == orgInstance.id}">
-                                <g:message code="cv.roles.${affi.formalRole.authority}"/>
+                            <g:if test="${us.formalOrg?.id == orgInstance.id}">
+                                <g:message code="cv.roles.${us.formalRole?.authority}"/>
                             </g:if>
                         </g:else>
-                    </g:each>
                 </td>
                 <td>
                     <g:if test="${modifyAccountEnability}">
@@ -61,7 +59,7 @@
                     <%
                         boolean check = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN');
                         if (! check) {
-                            check = editable && instAdmService.isUserEditableForInstAdm(us, editor);
+                            check = editable && userService.isUserEditableForInstAdm(us, editor);
                         }
                     %>
 
@@ -92,11 +90,10 @@
                         <%
                             boolean check2 = false
                             if (controllerName == 'user') {
-                                // check2 = ! instAdmService.isUserLastInstAdminForAnyOrgInList(us, us.getAffiliationOrgs()); // correct, but expensive
                                 check2 = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN');
                             }
                             else {
-                                check2 = ! instAdmService.isUserLastInstAdminForOrg(us, orgInstance);
+                                check2 = ! us.isLastInstAdminOf(orgInstance);
                             }
                         %>
                         <g:if test="${check2}">
@@ -128,7 +125,7 @@
 
                         </g:if>
                         <g:else>
-                            <span  class="la-popup-tooltip la-delay" data-content="${message(code:'user.affiliation.lastAdminForOrg1', args: [us.getDisplayName()])}">
+                            <span class="la-popup-tooltip la-delay" data-content="${message(code:'user.affiliation.lastAdminForOrg1', args: [us.getDisplayName()])}">
                                 <button class="ui icon negative button la-modern-button" disabled="disabled"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">

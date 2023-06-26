@@ -29,11 +29,11 @@ class CostItem extends AbstractBase
      * and a display flag
      */
     static enum TAX_TYPES {
-        TAXABLE_7          (RefdataValue.getByValueAndCategory('taxable', RDConstants.TAX_TYPE),7,true),
-        TAXABLE_19         (RefdataValue.getByValueAndCategory('taxable', RDConstants.TAX_TYPE),19,true),
-        TAXABLE_5          (RefdataValue.getByValueAndCategory('taxable', RDConstants.TAX_TYPE),5,true),
-        TAXABLE_16         (RefdataValue.getByValueAndCategory('taxable', RDConstants.TAX_TYPE),16,true),
         //are correct! Cost items flagged with these tax keys already contain the 7 resp. 19 per cent tax
+        TAXABLE_5          (RefdataValue.getByValueAndCategory('taxable', RDConstants.TAX_TYPE),5,true),
+        TAXABLE_7          (RefdataValue.getByValueAndCategory('taxable', RDConstants.TAX_TYPE),7,true),
+        TAXABLE_16         (RefdataValue.getByValueAndCategory('taxable', RDConstants.TAX_TYPE),16,true),
+        TAXABLE_19         (RefdataValue.getByValueAndCategory('taxable', RDConstants.TAX_TYPE),19,true),
         TAX_CONTAINED_7    (RefdataValue.getByValueAndCategory('tax contained 7', RDConstants.TAX_TYPE),0,false),
         TAX_CONTAINED_19   (RefdataValue.getByValueAndCategory('tax contained 19', RDConstants.TAX_TYPE),0,false),
         TAX_EXEMPT         (RefdataValue.getByValueAndCategory('taxable tax-exempt', RDConstants.TAX_TYPE),0,true),

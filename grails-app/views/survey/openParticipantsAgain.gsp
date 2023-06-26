@@ -1,8 +1,7 @@
 <%@ page import="de.laser.survey.SurveyConfig; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.RefdataCategory; de.laser.Org" %>
 
-<g:set var="currenMsgCode" value="${params.tab == 'participantsViewAllFinish' ? 'openParticipantsAgain.label' : 'openParticipantsAgain.reminder'}" />
 
-<laser:htmlStart text="${message(code: 'survey.label')}  ${message(code: currenMsgCode)}" serviceInjection="true" />
+<laser:htmlStart text="${message(code: 'survey.label')}  ${message(code: 'openParticipantsAgain.label')}" serviceInjection="true" />
 
 <ui:breadcrumbs>
     <ui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
@@ -11,7 +10,7 @@
                      text="${surveyConfig.getConfigNameShort()}"/>
     </g:if>
 
-    <ui:crumb message="${currenMsgCode}" class="active"/>
+    <ui:crumb message="openParticipantsAgain.label" class="active"/>
 </ui:breadcrumbs>
 
 <ui:controlButtons>
@@ -22,8 +21,6 @@
     <ui:xEditable owner="${surveyInfo}" field="name"/>
     <uiSurvey:status object="${surveyInfo}"/>
 </ui:h1HeaderWithIcon>
-
-
 
 <laser:render template="nav"/>
 
@@ -44,36 +41,20 @@
         ${surveyConfig.getConfigNameShort()}
     </g:else>:
 
-        ${message(code: "${currenMsgCode}")}
+        ${message(code: "openParticipantsAgain.label")} <div class="ui blue circular label">${participantsFinishTotal}</div>
 </h2>
 <br />
 
 <div class="ui grid">
 
     <div class="sixteen wide stretched column">
-        <div class="ui top attached stackable tabular la-tab-with-js menu">
-
-            <g:link class="item ${params.tab == 'participantsViewAllFinish' ? 'active' : ''}"
-                    controller="survey" action="openParticipantsAgain"
-                    params="[id: params.id, surveyConfigID: surveyConfig.id, tab: 'participantsViewAllFinish']">
-                ${message(code: 'openParticipantsAgain.label')}
-                <div class="ui floating blue circular label">${participantsFinishTotal}</div>
-            </g:link>
-
-            <g:link class="item ${params.tab == 'participantsViewAllNotFinish' ? 'active' : ''}"
-                    controller="survey" action="openParticipantsAgain"
-                    params="[id: params.id, surveyConfigID: surveyConfig.id, tab: 'participantsViewAllNotFinish']">
-                ${message(code: 'openParticipantsAgain.reminder')}
-                <div class="ui floating blue circular label">${participantsNotFinishTotal}</div>
-            </g:link>
-
-        </div>
 
         <ui:greySegment>
 
                 <laser:render template="evaluationParticipantsView" model="[showCheckbox: true,
                                                                         showOpenParticipantsAgainButtons: true,
-                                                                        processAction: 'processOpenParticipantsAgain',
+                                                                        processAction: 'createOwnMail',
+                                                                        processController: 'mail',
                                                                         tmplConfigShow   : ['lineNumber', 'name', (surveyConfig.pickAndChoose ? 'finishedDate' : ''), (surveyConfig.pickAndChoose ? 'surveyTitlesCount' : ''), 'surveyProperties', 'commentOnlyForOwner', 'reminderMailDate']]"/>
 
         </ui:greySegment>

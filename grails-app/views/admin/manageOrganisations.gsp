@@ -13,7 +13,7 @@
         <g:form action="manageOrganisations" method="get" class="ui form">
             <laser:render template="/templates/filter/orgFilter"
                       model="[
-                              tmplConfigShow: [['name', 'identifier', 'type'],
+                              tmplConfigShow: [['name', 'identifier', 'type', 'customerType'],
                                                ['country&region', 'libraryNetwork', 'sector', 'libraryType']],
                               tmplConfigFormFilter: true
                       ]"/>
@@ -61,7 +61,7 @@
                         ${org.sortname}
 
                         <g:if test="${org.status?.value == 'Deleted'}">
-                            <span  class="la-popup-tooltip la-delay" data-content="Diese Organisation wurde als 'gelöscht' markiert." data-position="top left">
+                            <span class="la-popup-tooltip la-delay" data-content="Diese Organisation wurde als 'gelöscht' markiert." data-position="top left">
                                 <i class="icon minus circle red"></i>
                             </span>
                         </g:if>
@@ -156,18 +156,18 @@
                     </td>
 
                     <td>
-                        <g:set var="accessUserList" value="${org?.hasAccessOrgListUser()}"/>
+                        <g:set var="userMap" value="${org.getUserMap()}"/>
 
-                        <g:if test="${accessUserList?.instAdms?.size() > 0}">
-                            Inst_Admins: ${accessUserList?.instAdms?.size()}<br />
+                        <g:if test="${userMap.instAdms.size() > 0}">
+                            Inst_Admins: ${userMap.instAdms.size()}<br />
                         </g:if>
 
-                        <g:if test="${accessUserList?.instEditors?.size() > 0}">
-                            Inst_Editors: ${accessUserList?.instEditors?.size()}<br />
+                        <g:if test="${userMap.instEditors.size() > 0}">
+                            Inst_Editors: ${userMap.instEditors.size()}<br />
                         </g:if>
 
-                        <g:if test="${accessUserList?.instUsers?.size() > 0}">
-                            Inst_Users: ${accessUserList?.instUsers?.size()}<br />
+                        <g:if test="${userMap.instUsers.size() > 0}">
+                            Inst_Users: ${userMap.instUsers.size()}<br />
                         </g:if>
 
                     </td>
@@ -215,6 +215,8 @@
         </tbody>
     </table>
 
+    <ui:paginate action="manageOrganisations" controller="admin" params="${params}" max="${max}" total="${orgListTotal}" />
+
     <%-- changing gasco entry --%>
 
     <ui:modal id="gascoEntryModal" message="org.gascoEntry.label" isEditModal="isEditModal">
@@ -240,7 +242,7 @@
         </g:form>
 
         <laser:script file="${this.getGroovyPageFileName()}">
-            JSPC.callbacks.modal.show.gascoEntryModal = function(trigger) {
+            JSPC.callbacks.modal.onShow.gascoEntryModal = function(trigger) {
                 $('#gascoEntryModal #orgName_gasco').attr('value', $(trigger).attr('data-orgName'))
                 $('#gascoEntryModal input[name=target]').attr('value', $(trigger).attr('data-gascoTarget'))
                 $('#gascoEntryModal select[name=gascoEntry]').dropdown('set selected', $(trigger).attr('data-gascoEntry'))
@@ -285,7 +287,7 @@
         </g:form>
 
         <laser:script file="${this.getGroovyPageFileName()}">
-            JSPC.callbacks.modal.show.legalInformationModal = function(trigger) {
+            JSPC.callbacks.modal.onShow.legalInformationModal = function(trigger) {
                 $('#legalInformationModal input[name=target]').attr('value', $(trigger).attr('data-liTarget'))
                 $('#legalInformationModal #orgName_li').attr('value', $(trigger).attr('data-orgName'))
 
@@ -326,7 +328,7 @@
                           from="${[Role.findByAuthority('FAKE')] + Role.findAllByRoleType('org')}"
                           optionKey="id"
                           optionValue="authority"
-                          class="ui dropdown"
+                          class="ui dropdown la-not-clearable"
                 />
             </div>
         </g:form>
@@ -337,7 +339,7 @@
         </g:form>
 
         <laser:script file="${this.getGroovyPageFileName()}">
-            JSPC.callbacks.modal.show.customerTypeModal = function(trigger) {
+            JSPC.callbacks.modal.onShow.customerTypeModal = function(trigger) {
                 $('#customerTypeModal #orgName_ct').attr('value', $(trigger).attr('data-orgName'))
                 $('#customerTypeModal input[name=target]').attr('value', $(trigger).attr('data-ctTarget'))
 
@@ -369,13 +371,13 @@
                 <label for="apiLevel">${message(code:'org.apiLevel.label')}</label>
                 <g:select id="apiLevel" name="apiLevel"
                           from="${['Kein Zugriff'] + ApiToolkit.getAllApiLevels()}"
-                          class="ui dropdown"
+                          class="ui dropdown la-not-clearable"
                 />
             </div>
         </g:form>
 
         <laser:script file="${this.getGroovyPageFileName()}">
-            JSPC.callbacks.modal.show.apiLevelModal = function(trigger) {
+            JSPC.callbacks.modal.onShow.apiLevelModal = function(trigger) {
                 $('#apiLevelModal #orgName_al').attr('value', $(trigger).attr('data-orgName'))
                 $('#apiLevelModal input[name=target]').attr('value', $(trigger).attr('data-alTarget'))
 

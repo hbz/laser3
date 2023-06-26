@@ -1,6 +1,6 @@
 import java.text.SimpleDateFormat
 
-version '3.0.7'
+version '3.1.3'
 group 'de.laser'
 
 // ---[ build script ]---
@@ -14,9 +14,9 @@ buildscript {
         classpath 'org.grails:grails-gradle-plugin:' + grailsGradlePluginVersion
         classpath 'org.grails.plugins:hibernate5:7.3.1'                                     // 2022
         classpath 'org.grails.plugins:database-migration:4.2.0'                             // 2023
-        classpath 'com.bertramlabs.plugins:asset-pipeline-gradle:4.2.0'                     // 2023
+        classpath 'com.bertramlabs.plugins:asset-pipeline-gradle:4.3.0'                     // 2023
         classpath 'com.gorylenko.gradle-git-properties:gradle-git-properties:2.4.1'         // 2022
-        classpath 'com.github.ben-manes:gradle-versions-plugin:0.46.0'                      // 2023
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.47.0'                      // 2023
 
         // -- dependency resolving issue
 
@@ -61,7 +61,7 @@ configurations {
         resolutionStrategy.eachDependency { DependencyResolveDetails details ->
             if (details.requested.name in ['asset-pipeline-core', 'asset-pipeline-grails']) {
                 // override dependency from org.grails.plugins:cache
-                details.useVersion '4.2.0' // upgrade from 3.x
+                details.useVersion '4.3.0' // upgrade from 3.x
             }
         }
     }
@@ -95,8 +95,8 @@ dependencies {
     implementation 'org.grails.plugins:gsp'
 
     implementation 'io.micronaut:micronaut-http-client'
-    implementation 'org.springframework:spring-websocket'
-    implementation 'org.springframework:spring-messaging'
+//    implementation 'org.springframework:spring-websocket'     // tmp deactivated
+//    implementation 'org.springframework:spring-messaging'     // tmp deactivated
 
     profile 'org.grails.profiles:web'
 
@@ -123,6 +123,7 @@ dependencies {
 
     implementation 'commons-io:commons-io:2.11.0'                           // 2021
     implementation 'com.github.albfernandez:juniversalchardet:2.4.0'        // 2020
+    implementation "io.github.gpc:asynchronous-mail:3.1.1"                  // 2022
     implementation 'org.apache.commons:commons-lang3:3.12.0'                // 2021
     implementation 'org.apache.poi:poi-ooxml:3.17'                          // 2017 : [freeze] : 5.x available
     implementation 'org.codehaus.gpars:gpars:1.2.1'                         // 2014
@@ -218,7 +219,7 @@ assets {
             'bulma/**',
             'crypto-js-4.1.1/**',
             'echarts/**',
-            'spring-websocket/**',
+            // 'spring-websocket/**', // tmp deactivated
             'swagger-ui/**',
     ]
 }

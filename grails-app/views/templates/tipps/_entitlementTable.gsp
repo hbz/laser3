@@ -39,20 +39,12 @@
                         <td>
 
                             <g:if test="${!isContainedByTarget && editable}">
-                                <input type="checkbox" name="bulkflag" data-index="${tipp.gokbId}" class="bulkcheck">
+                                <input type="checkbox" name="bulkflag" data-index="${tipp.gokbId}" class="bulkcheck la-js-notOpenAccordion">
                             </g:if>
 
                         </td>
                         <td>${counter++}</td>
                         <td class="titleCell">
-                            <g:if test="${side == 'target' && targetIE}">
-                                 <ui:ieAcceptStatusIcon status="${targetIE?.acceptStatus}"/>
-                            </g:if>
-                            <g:else>
-                                <div class="la-inline-flexbox la-popup-tooltip la-delay">
-                                    <i class="icon"></i>
-                                </div>
-                            </g:else>
 
                             <!-- START TEMPLATE -->
                                 <laser:render template="/templates/title_short"
@@ -108,7 +100,7 @@
                         </td>
                         <td>
 
-                                <g:if test="${side == 'target' && isContainedByTarget && targetIE?.acceptStatus == RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION && editable}">
+                                <g:if test="${side == 'target' && isContainedByTarget && editable}">
                                     <g:link class="ui icon negative button la-popup-tooltip la-delay" action="processRemoveEntitlements"
                                             params="${[id: subscription.id, singleTitle: tipp.gokbId, packageId: packageId]}"
                                             data-content="${message(code: 'subscription.details.addEntitlements.remove_now')}">

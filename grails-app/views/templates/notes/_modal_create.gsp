@@ -16,8 +16,8 @@
             <laser:script file="${this.getGroovyPageFileName()}">
                 wysiwyg.initEditor ('#modalCreateNote #noteContent');
 
-                JSPC.callbacks.modal.show.modalCreateNote = function(trigger) {
-                    // r2d2.resetModalForm ('#modalCreateNote');
+                JSPC.callbacks.modal.onShow.modalCreateNote = function(trigger) {
+                    // r2d2.helper.resetModalForm ('#modalCreateNote');
                     $('#modalCreateNote #noteTitle').val('');
                     wysiwyg.resetContent ('#modalCreateNote #noteContent');
                 };

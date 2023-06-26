@@ -9,14 +9,17 @@
         <g:if test="${!personInstance}">
             <input name="tenant.id" type="hidden" value="${tenant.id}"/>
             <input name="isPublic" type="hidden" value="${personInstance?.isPublic ?: (isPublic ?: false)}"/>
+            <g:if test="${org}">
+                <input name="personRoleOrg" type="hidden" value="${org.id}"/>
+            </g:if>
         </g:if>
 
     %{--Only for public contact person for Provider/Agency --}%
-        <g:if test="${contactPersonForProviderAgencyPublic && !personInstance}">
+        <%--<g:if test="${contactPersonForProviderAgencyPublic && !personInstance}">
             <input name="personRoleOrg" type="hidden" value="${tenant.id}"/>
             <input name="functionType" type="hidden" value="${presetFunctionType.id}"/>
             <input name="last_name" type="hidden" value="${presetFunctionType.getI10n('value')}"/>
-        </g:if>
+        </g:if>--%>
 
         <g:if test="${!contactPersonForProviderAgencyPublic}">
 
@@ -258,7 +261,7 @@
                 <br />
                 <br />
             <div class="field">
-                <div class="three fields contactField" id="contactFields${personInstance.contacts ? personInstance.contacts.size()+1 : 1}">
+                <div class="three fields contactField" id="contactFields${personInstance?.contacts ? personInstance.contacts.size()+1 : 1}">
                     <div class="field wide four">
                         <label></label>
                         <ui:select class="ui dropdown" name="contentType.id"

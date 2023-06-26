@@ -8,7 +8,7 @@
             <thead>
             <tr>
                 <th class="two wide" rowspan="2" scope="col">${message(code: 'task.endDate.label')}</th>
-                <th class="six wide" rowspan="2" scope="col">
+                <th class="five wide" rowspan="2" scope="col">
                     ${message(code: 'default.title.label')}
                     <g:if test="${controllerName == 'myInstitution'}">
                         / ${message(code: 'task.object.label')}
@@ -20,7 +20,7 @@
                 <th rowspan="2" scope="col">${message(code: 'task.status.label')}</th>
                 <th class="two wide" rowspan="2" scope="col">${message(code: 'task.creator.label')}</th>
                 <th class="two wide la-smaller-table-head" scope="col">${message(code: 'default.lastUpdated.label')}</th>
-                <th class="one wide la-action-info" rowspan="2" scope="col">${message(code:'default.actions.label')}</th>
+                <th class="two wide la-action-info" rowspan="2" scope="col">${message(code:'default.actions.label')}</th>
             </tr>
             <tr>
                 <th class="two wide la-smaller-table-head" scope="col">${message(code: 'default.dateCreated.label')}</th>
@@ -80,15 +80,14 @@
                         </g:if>
                     </td>
 
-                    <td class="x">
+                    <td class="center aligned">
                         <g:if test="${overwriteEditable}">
                             <a onclick="JSPC.app.editTask(${taskInstance.id});" class="ui icon button blue la-modern-button"
-                               role="button"
-                               aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                               role="button" aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                 <i aria-hidden="true" class="write icon"></i>
                             </a>
                         </g:if>
-                        <g:if test="${(user == taskInstance.creator) || contextService.getUser().hasCtxAffiliation_or_ROLEADMIN('INST_ADM')}">
+                        <g:if test="${(user == taskInstance.creator && user.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')) || contextService.getUser().hasCtxAffiliation_or_ROLEADMIN('INST_ADM')}">
                             <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.task")}"
                                     data-confirm-term-how="delete"

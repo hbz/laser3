@@ -8,51 +8,112 @@
 
         <ui:h1HeaderWithIcon text="${institution.name}" />
 
-%{--<pre>--}%
-%{--    ORG_CONSORTIUM_BASIC: ${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}--}%
-%{--    ORG_CONSORTIUM_PRO: ${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)}--}%
-%{--    ORG_INST_BASIC: ${accessService.ctxPerm(CustomerTypeService.ORG_INST_BASIC)}--}%
-%{--    ORG_INST_PRO: ${accessService.ctxPerm(CustomerTypeService.ORG_INST_PRO)}--}%
-
-%{--    getCustomerType: ${institution.getCustomerType()}--}%
-%{--</pre>--}%
-
-        <div class="ui equal width grid la-clear-before">
+        <div class="ui equal width grid la-clear-before" style="margin:1em 0;">
             <div class="row">
-
                 <div class="column">
                     <div class="ui divided relaxed list">
                         <div class="item">
-                            <g:link controller="myInstitution" action="currentSubscriptions">${message(code:'menu.my.subscriptions')}</g:link>
+                            <i class="clipboard icon la-list-icon"></i>
+                            <div class="content">
+                                <g:link controller="myInstitution" action="currentSubscriptions">${message(code:'menu.my.subscriptions')}</g:link>
+                            </div>
                         </div>
                         <div class="item">
-                            <g:link controller="myInstitution" action="currentLicenses">${message(code:'menu.my.licenses')}</g:link>
+                            <i class="balance scale icon la-list-icon"></i>
+                            <div class="content">
+                                <g:link controller="myInstitution" action="currentLicenses">${message(code:'menu.my.licenses')}</g:link>
+                            </div>
                         </div>
                         <div class="item">
-                            <g:link controller="myInstitution" action="currentTitles">${message(code:'menu.my.titles')}</g:link>
+                            <i class="university icon la-list-icon"></i>
+                            <div class="content">
+                                <g:link controller="myInstitution" action="currentProviders">${message(code:'menu.my.providers')}</g:link>
+                            </div>
                         </div>
                     </div>
                 </div>
-
                 <div class="column">
                     <div class="ui divided relaxed list">
                         <div class="item">
-                            <g:link controller="org" action="show" id="${institution.id}">${message(code: 'menu.institutions.org_info')}</g:link>
+                            <i class="calendar check outline icon la-list-icon"></i>
+                            <div class="content">
+                                <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="tasks" message="menu.my.tasks" />
+                            </div>
                         </div>
-                        <ui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="finance" message="menu.institutions.finance" />
-                        <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" affiliation="INST_USER" controller="myInstitution" action="reporting" message="myinst.reporting" />
+                        <div class="item">
+                            <i class="chart pie icon la-list-icon"></i>
+                            <div class="content">
+                                <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_INST_BASIC)}">
+                                    <g:link controller="myInstitution" action="currentSurveys">${message(code:'menu.my.surveys')}</g:link>
+                                </g:if>
+                                <g:elseif test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
+                                    <g:link controller="survey" action="workflowsSurveysConsortia">${message(code:'menu.my.surveys')}</g:link>
+                                </g:elseif>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <i class="tasks icon la-list-icon"></i>
+                            <div class="content">
+                                <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="currentWorkflows" message="menu.my.workflows" />
+                            </div>
+                        </div>
                     </div>
                 </div>
-
                 <div class="column">
                     <div class="ui divided relaxed list">
-                        <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="tasks" message="task.plural" />
-                        <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="addressbook" message="menu.institutions.myAddressbook" />
-                        <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="managePrivatePropertyDefinitions" message="menu.institutions.manage_props" />
+                        <div class="item">
+                            <i class="university icon la-list-icon"></i>
+                            <div class="content">
+                                <g:link controller="org" action="show" id="${institution.id}">${message(code: 'menu.institutions.org_info')}</g:link>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <i class="address book icon la-list-icon"></i>
+                            <div class="content">
+                                <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="addressbook" message="menu.institutions.addressbook" />
+                            </div>
+                        </div>
+                        <div class="item">
+                            <i class="euro sign icon la-list-icon"></i>
+                            <div class="content">
+                                <ui:securedMainNavItem controller="myInstitution" action="finance" message="menu.institutions.finance" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="ui divided relaxed list">
+                        <div class="item">
+                            <i class="university icon la-list-icon"></i>
+                            <div class="content">
+                                <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
+                                    <ui:securedMainNavItem addItemAttributes="true" specRole="ROLE_ADMIN" controller="myInstitution" action="manageMembers" message="menu.my.insts" />
+                                </g:if>
+                                <g:elseif test="${contextService.hasPerm(CustomerTypeService.ORG_INST_BASIC)}">
+                                    <ui:securedMainNavItem addItemAttributes="true" controller="myInstitution" action="currentConsortia" message="menu.my.consortia" />
+                                </g:elseif>
+                            </div>
+                        </div>
+                        <div class="item">
+                            <i class="chartline icon la-list-icon"></i>
+                            <div class="content">
+                                <ui:securedMainNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="reporting" message="myinst.reporting" />
+                            </div>
+                        </div>
+                        <div class="item">
+                            <i class="question icon la-list-icon"></i>
+                            <div class="content">
+                                <g:link controller="profile" action="help">${message(code:'menu.user.help')}</g:link>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+
+        <style>
+            .list .item .content .disabled { color:lightgrey }
+        </style>
 
         <ui:messages data="${flash}" />
         <br />
@@ -94,14 +155,14 @@
             ${systemAnnouncements.size()} ${message(code:'announcement.plural')}
         </a>
 
-        <g:if test="${accessService.ctxPerm(CustomerTypeService.PERMS_INST_BASIC_CONSORTIUM_PRO)}">
+        <g:if test="${contextService.hasPerm(CustomerTypeService.PERMS_INST_BASIC_CONSORTIUM_PRO)}">
             <a class="${us_dashboard_tab.value == 'Surveys' ? 'active item' : 'item'}" data-tab="surveys">
                 <i class="chart pie icon large"></i>
                 <span id="surveyCount">${message(code: 'myinst.dash.survey.label', args: [message(code: 'myinst.loadPending')])}</span>
             </a>
         </g:if>
 
-        <g:if test="${accessService.ctxPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
+        <g:if test="${contextService.hasPerm(CustomerTypeService.PERMS_PRO)}">
             <a class="${us_dashboard_tab.value == 'Tasks' ? 'active item':'item'}" data-tab="tasks">
                 <i class="calendar check outline icon large"></i>
                 ${tasksCount} ${message(code:'myinst.dash.task.label')}
@@ -169,18 +230,18 @@
             </g:if>
         </div>
 
-        <g:if test="${accessService.ctxPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
+        <g:if test="${contextService.hasPerm(CustomerTypeService.PERMS_PRO)}">
         <div class="ui bottom attached tab ${us_dashboard_tab.value == 'Tasks' ? 'active':''}" data-tab="tasks">
 
-            <g:if test="${editable}">
-                <div class="ui right aligned grid">
-                    <div class="right floated right aligned sixteen wide column">
-                        <a onclick="JSPC.app.createTask();" class="ui button">
-                            ${message(code:'task.create.new')}
-                        </a>
-                    </div>
-                </div>
-            </g:if>
+%{--            <g:if test="${editable}">--}%
+%{--                <div class="ui right aligned grid">--}%
+%{--                    <div class="right floated right aligned sixteen wide column">--}%
+%{--                        <a onclick="JSPC.app.createTask();" class="ui button">--}%
+%{--                            ${message(code:'task.create.new')}--}%
+%{--                        </a>--}%
+%{--                    </div>--}%
+%{--                </div>--}%
+%{--            </g:if>--}%
 
             <div class="ui cards">
                 <g:each in="${tasks}" var="tsk">
@@ -188,10 +249,7 @@
 
                         <div class="ui label">
                             <div class="right floated author">
-                                Status:
-                                <span>
-                                <ui:xEditableRefData config="${RDConstants.TASK_STATUS}" owner="${tsk}" field="status" />
-                                </span>
+                                Status: <ui:xEditableRefData config="${RDConstants.TASK_STATUS}" owner="${tsk}" field="status" />
                             </div>
                         </div>
 
@@ -199,7 +257,7 @@
                             <div class="meta">
                                 <div class="">Fällig: <strong><g:formatDate format="${message(code:'default.date.format.notime')}" date="${tsk?.endDate}"/></strong></div>
                             </div>
-                            <a class="header" onclick="JSPC.app.editTask(${tsk?.id});">${tsk?.title}</a>
+                            <a class="header" onclick="JSPC.app.dashboard.editTask(${tsk?.id});">${tsk?.title}</a>
 
                             <div class="description">
                                 <g:if test="${tsk.description}">
@@ -211,7 +269,7 @@
                             <g:if test="${tsk.getObjects()}">
                                 <g:each in="${tsk.getObjects()}" var="tskObj">
                                     <div class="item">
-                                        <span  class="la-popup-tooltip la-delay" data-content="${message(code: 'task.' + tskObj.controller)}" data-position="left center" data-variation="tiny">
+                                        <span class="la-popup-tooltip la-delay" data-content="${message(code: 'task.' + tskObj.controller)}" data-position="left center" data-variation="tiny">
                                             <g:if test="${tskObj.controller == 'organisation'}">
                                                 <i class="university icon"></i>
                                             </g:if>
@@ -238,8 +296,7 @@
                                 </g:each>
                             </g:if>
                             <g:else>
-                                <i class="calendar check outline icon"></i>
-                                ${message(code: 'task.general')}
+                                <i class="calendar check outline icon"></i> ${message(code: 'task.general')}
                             </g:else>
                         </div>
                     </div>
@@ -249,18 +306,17 @@
 
         </g:if>
 
-        <g:if test="${accessService.ctxPerm(CustomerTypeService.PERMS_INST_BASIC_CONSORTIUM_PRO)}">
+        <g:if test="${contextService.hasPerm(CustomerTypeService.PERMS_INST_BASIC_CONSORTIUM_PRO)}">
             <div class="ui bottom attached tab segment ${us_dashboard_tab.value == 'Surveys' ? 'active' : ''}"
                  data-tab="surveys" style="border-top: 1px solid #d4d4d5; ">
                 <div class="la-float-right">
-                    <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
+                    <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
                         <g:link controller="survey" action="workflowsSurveysConsortia"
                                 class="ui button">${message(code: 'menu.my.surveys')}</g:link>
                     </g:if>
                     <g:else>
                         <g:link action="currentSurveys" class="ui button">${message(code: 'menu.my.surveys')}</g:link>
                     </g:else>
-
                 </div>
 
                 <div id="surveyWrapper">
@@ -465,85 +521,79 @@
 
     <laser:script file="${this.getGroovyPageFileName()}">
 
-        $('.wfModalLink').on('click', function(e) {
-            e.preventDefault();
-            var func = bb8.ajax4SimpleModalFunction("#wfModal", $(e.currentTarget).attr('href'), false);
-            func();
-        });
+        JSPC.app.dashboard = {
 
-        $('button[data-wfId]').on ('click', function(e) {
-            var trigger = $(this).hasClass ('la-modern-button');
-            var key     = "${WfChecklist.KEY}:" + $(this).attr ('data-wfId');
-
-            $('button[data-wfId]').addClass ('la-modern-button');
-            $('#wfFlyout').flyout ({
-                onHidden: function (e) { %{-- after animation --}%
-                    $('button[data-wfId]').addClass ('la-modern-button');
-                    document.location = document.location.origin + document.location.pathname + '?view=Workflows';
-                }
-            });
-
-            if (trigger) {
-                $(this).removeClass ('la-modern-button');
-
-                $.ajax ({
-                    url: "<g:createLink controller="ajaxHtml" action="workflowFlyout"/>",
-                    data: {
-                        key: key
-                    }
-                }).done (function (response) {
-                    $('#wfFlyout').html (response).flyout ('show');
-                    r2d2.initDynamicUiStuff ('#wfFlyout');
-                    r2d2.initDynamicXEditableStuff ('#wfFlyout');
-                })
-            }
-        });
-
-        JSPC.app.createTask = bb8.ajax4SimpleModalFunction("#modalCreateTask", "<g:createLink controller="ajaxHtml" action="createTask"/>", true);
-
-        JSPC.app.editTask = function (id) {
-            var func = bb8.ajax4SimpleModalFunction("#modalEditTask", "<g:createLink controller="ajaxHtml" action="editTask"/>?id=" + id, true);
-            func();
-        }
-
-        JSPC.app.loadChanges = function() {
-            $.ajax({
-                url: "<g:createLink controller="ajaxHtml" action="getChanges"/>",
-                data: {
-                    max: ${max},
-                    pendingOffset: ${pendingOffset},
-                    acceptedOffset: ${acceptedOffset}
-                }
-            }).done(function(response){
-                $("#pendingChanges").html($(response).filter("#pendingChangesWrapper"));
-                $("#acceptedChanges").html($(response).filter("#acceptedChangesWrapper"));
-                r2d2.initDynamicUiStuff('#pendingChanges');
-            })
-        }
-
-        JSPC.app.loadSurveys = function() {
-            $.ajax({
-                url: "<g:createLink controller="ajaxHtml" action="getSurveys" params="${params}"/>"
-            }).done(function(response){
-                $("#surveyWrapper").html(response);
-                  r2d2.initDynamicUiStuff('#surveyWrapper');
-            })
-        }
-
-                /* $('.item .widget-content').readmore({
-                    speed: 250,
-                    collapsedHeight: 21,
-                    startOpen: false,
-                    moreLink: '<a href="#">[ ${message(code:'default.button.show.label')} ]</a>',
-                    lessLink: '<a href="#">[ ${message(code:'default.button.hide.label')} ]</a>'
-                }); */
-                $('.xEditableManyToOne').editable({
-                }).on('hidden', function() {
-                        //location.reload();
+            initWorkflows: function() {
+                $('.wfModalLink').on('click', function(e) {
+                    e.preventDefault();
+                    var func = bb8.ajax4SimpleModalFunction("#wfModal", $(e.currentTarget).attr('href'));
+                    func();
                 });
 
-        JSPC.app.loadChanges();
-        JSPC.app.loadSurveys();
+                $('button[data-wfId]').on ('click', function(e) {
+                    var trigger = $(this).hasClass ('la-modern-button');
+                    var key     = "${WfChecklist.KEY}:" + $(this).attr ('data-wfId');
+
+                    $('button[data-wfId]').addClass ('la-modern-button');
+                    $('#wfFlyout').flyout ({
+                        onHidden: function (e) { %{-- after animation --}%
+                            $('button[data-wfId]').addClass ('la-modern-button');
+                            document.location = document.location.origin + document.location.pathname + '?view=Workflows';
+                        }
+                    });
+
+                    if (trigger) {
+                        $(this).removeClass ('la-modern-button');
+
+                        $.ajax ({
+                            url: "<g:createLink controller="ajaxHtml" action="workflowFlyout"/>",
+                            data: {
+                                key: key
+                            }
+                        }).done (function (response) {
+                            $('#wfFlyout').html (response).flyout ('show');
+                            r2d2.initDynamicUiStuff ('#wfFlyout');
+                            r2d2.initDynamicXEditableStuff ('#wfFlyout');
+                        })
+                    }
+                });
+            },
+
+            loadChanges: function() {
+                $.ajax({
+                    url: "<g:createLink controller="ajaxHtml" action="getChanges"/>",
+                    data: {
+                        max: ${max},
+                        pendingOffset: ${pendingOffset},
+                        acceptedOffset: ${acceptedOffset}
+                    }
+                }).done(function(response){
+                    $("#pendingChanges").html($(response).filter("#pendingChangesWrapper"));
+                    $("#acceptedChanges").html($(response).filter("#acceptedChangesWrapper"));
+                    r2d2.initDynamicUiStuff('#pendingChanges');
+                })
+            },
+
+            loadSurveys: function() {
+                $.ajax({
+                    url: "<g:createLink controller="ajaxHtml" action="getSurveys" params="${params}"/>"
+                }).done(function(response){
+                    $("#surveyWrapper").html(response);
+                    r2d2.initDynamicUiStuff('#surveyWrapper');
+                })
+            },
+
+            editTask: function (id) {
+                var func = bb8.ajax4SimpleModalFunction("#modalEditTask", "<g:createLink controller="ajaxHtml" action="editTask"/>?id=" + id, true);
+                func();
+            },
+        }
+
+        JSPC.app.dashboard.loadChanges()
+        JSPC.app.dashboard.loadSurveys()
+        JSPC.app.dashboard.initWorkflows()
+
+    %{--        JSPC.app.createTask = bb8.ajax4SimpleModalFunction("#modalCreateTask", "<g:createLink controller="ajaxHtml" action="createTask"/>", true);--}%
     </laser:script>
 
     <ui:debugInfo>

@@ -24,7 +24,6 @@ import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
-import de.laser.survey.SurveyOrg
 import de.laser.config.ConfigMapper
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
@@ -156,12 +155,6 @@ class SubscriptionControllerService {
             // tasks
             result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.contextOrg, result.subscription)
 
-            Set<Long> excludes = [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id]
-            if(result.institution.isCustomerType_Consortium())
-                excludes << RDStore.OR_SUBSCRIPTION_CONSORTIA.id
-            // restrict visible for templates/links/orgLinksAsList
-            result.visibleOrgRelations = result.subscription.orgRelations.findAll { OrgRole oo -> !(oo.roleType.id in excludes) }
-            //}
             prf.setBenchmark('properties')
             // TODO: experimental asynchronous task
             //def task_properties = task {
@@ -235,7 +228,7 @@ class SubscriptionControllerService {
                         }
                         result.statsWibid = result.institution.getIdentifierByType('wibid')?.value
                         if (result.statsWibid && result.natStatSupplierId) {
-                            result.usageMode = accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) ? 'package' : 'institution'
+                            result.usageMode = contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) ? 'package' : 'institution'
                             result.usage = fsresult?.usage
                             result.missingMonths = fsresult?.missingMonths
                             result.missingSubscriptionMonths = fsLicenseResult?.missingMonths
@@ -316,6 +309,21 @@ class SubscriptionControllerService {
     }
 
     /**
+     * Loads the given subscription details and returns them to the details view. If mandatory properties are missing,
+     * they will be created; that is why this method needs to be transactional
+     * @param params the request parameter map
+     * @return the given subscription's details
+     */
+    Map<String,Object> subTransfer(GrailsParameterMap params) {
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
+        if(!result)
+            [result:null,status:STATUS_ERROR]
+        else {
+            [result:result,status:STATUS_OK]
+        }
+    }
+
+    /**
      * Loads the tasks attached to the given subscription
      * @param controller unused
      * @param params the request parameter map
@@ -366,7 +374,7 @@ class SubscriptionControllerService {
             */
             //at this point, we should be sure that at least the parent subscription has a holding!
             Platform platform = Platform.get(params.platform)
-            Set<IdentifierNamespace> namespaces = [IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISSN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISSN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISBN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.PISBN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.DOI, TitleInstancePackagePlatform.class.name)] as Set<IdentifierNamespace>
+            Set<IdentifierNamespace> namespaces = [IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISSN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISSN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISBN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISBN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.DOI, TitleInstancePackagePlatform.class.name)] as Set<IdentifierNamespace>
             IdentifierNamespace propIdNamespace = IdentifierNamespace.findByNs(platform.titleNamespace)
             namespaces.add(propIdNamespace)
             Set<Subscription> refSubs
@@ -669,8 +677,15 @@ class SubscriptionControllerService {
         if(subscription.startDate && subscription.endDate) {
             //dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
             if(!params.containsKey('tabStat') || params.tabStat == 'total') {
-                dateRangeParams.startDate = subscription.startDate
-                dateRangeParams.endDate = subscription.endDate
+                if(subscription.startDate > new Date()) {
+                    LocalDate lastMonth = LocalDate.now()
+                    lastMonth.minusMonths(1)
+                    dateRangeParams.startDate = Date.from(lastMonth.withDayOfMonth(now.getMonth().length(now.isLeapYear())).atStartOfDay(ZoneId.systemDefault()).toInstant())
+                }
+                else dateRangeParams.startDate = subscription.startDate
+                if(subscription.endDate <= Date.from(now.withDayOfMonth(now.getMonth().length(now.isLeapYear())).atStartOfDay(ZoneId.systemDefault()).toInstant()))
+                    dateRangeParams.endDate = subscription.endDate
+                else dateRangeParams.endDate = Date.from(now.withDayOfMonth(now.getMonth().length(now.isLeapYear())).atStartOfDay(ZoneId.systemDefault()).toInstant())
             }
             else {
                 LocalDate filterDate = LocalDate.parse(params.tabStat+'-01', DateTimeFormatter.ofPattern('yyyy-MM-dd'))
@@ -718,6 +733,7 @@ class SubscriptionControllerService {
             startTime = now.with(TemporalAdjusters.firstDayOfYear())
             endTime = now.with(TemporalAdjusters.lastDayOfYear())
         }*/
+        endTime = endTime.with(TemporalAdjusters.lastDayOfMonth())
         if(params.tabStat && params.tabStat != 'total' && params.exportXLS && params.data != 'fetchAll') {
             monthsInRing << DateUtils.getSDF_yyyyMM().parse(params.tabStat)
         }
@@ -735,12 +751,12 @@ class SubscriptionControllerService {
     Set fetchTitles(GrailsParameterMap params, Set<Subscription> refSubs, Set<IdentifierNamespace> namespaces, String fetchWhat) {
         Set result = []
         String query
-        Map<String, Object> queryParams = [refSubs: refSubs, current: RDStore.TIPP_STATUS_CURRENT, fixed: RDStore.IE_ACCEPT_STATUS_FIXED]//current for now
+        Map<String, Object> queryParams = [refSubs: refSubs, current: RDStore.TIPP_STATUS_CURRENT]//current for now
         if(fetchWhat == 'fullObjects')
-            query = "select tipp from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (:refSubs) and ie.status = :current and ie.acceptStatus = :fixed "
+            query = "select tipp from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (:refSubs) and ie.status = :current "
         else if(fetchWhat == 'ids') {
             //!!!!!! MAY BE A PERFORMANCE BOTTLENECK! OBSERVE CLOSELY !!!!!!!!!
-            query = "select new map(id.value as value, id.ns.ns as namespace, id.tipp as tipp) from Identifier id join id.tipp tipp where id.ns in (:namespaces) and tipp in (select ie.tipp from IssueEntitlement ie where ie.subscription in (:refSubs) and ie.status = :current and ie.acceptStatus = :fixed) "
+            query = "select new map(id.value as value, id.ns.ns as namespace, id.tipp as tipp) from Identifier id join id.tipp tipp where id.ns in (:namespaces) and tipp in (select ie.tipp from IssueEntitlement ie where ie.subscription in (:refSubs) and ie.status = :current ) "
             queryParams.namespaces = namespaces
         }
         if(params.data != 'fetchAll') {
@@ -829,26 +845,26 @@ class SubscriptionControllerService {
             if(!tipp)
                 tipp = titles[IdentifierNamespace.EISSN]?.get(report.onlineIdentifier?.replaceAll('-',''))
             if(!tipp)
-                tipp = titles[IdentifierNamespace.ISBN]?.get(report.onlineIdentifier)
+                tipp = titles[IdentifierNamespace.EISBN]?.get(report.onlineIdentifier)
             if(!tipp)
-                tipp = titles[IdentifierNamespace.ISBN]?.get(report.onlineIdentifier?.replaceAll('-',''))
+                tipp = titles[IdentifierNamespace.EISBN]?.get(report.onlineIdentifier?.replaceAll('-',''))
             if(!tipp)
-                tipp = titles[IdentifierNamespace.ISBN]?.get(report.isbn)
+                tipp = titles[IdentifierNamespace.EISBN]?.get(report.isbn)
             if(!tipp)
-                tipp = titles[IdentifierNamespace.ISBN]?.get(report.isbn?.replaceAll('-',''))
+                tipp = titles[IdentifierNamespace.EISBN]?.get(report.isbn?.replaceAll('-',''))
         }
         if(!tipp && (report.printIdentifier || report.isbn)) {
             tipp = titles[IdentifierNamespace.ISSN]?.get(report.printIdentifier)
             if(!tipp)
                 tipp = titles[IdentifierNamespace.ISSN]?.get(report.printIdentifier?.replaceAll('-',''))
             if(!tipp)
-                tipp = titles[IdentifierNamespace.PISBN]?.get(report.printIdentifier)
+                tipp = titles[IdentifierNamespace.ISBN]?.get(report.printIdentifier)
             if(!tipp)
-                tipp = titles[IdentifierNamespace.PISBN]?.get(report.printIdentifier?.replaceAll('-',''))
+                tipp = titles[IdentifierNamespace.ISBN]?.get(report.printIdentifier?.replaceAll('-',''))
             if(!tipp)
-                tipp = titles[IdentifierNamespace.PISBN]?.get(report.isbn)
+                tipp = titles[IdentifierNamespace.ISBN]?.get(report.isbn)
             if(!tipp)
-                tipp = titles[IdentifierNamespace.PISBN]?.get(report.isbn?.replaceAll('-',''))
+                tipp = titles[IdentifierNamespace.ISBN]?.get(report.isbn?.replaceAll('-',''))
         }
         if(!tipp && report.doi) {
             tipp = titles[IdentifierNamespace.DOI]?.get(report.doi)
@@ -857,29 +873,66 @@ class SubscriptionControllerService {
             if(!tipp)
                 tipp = titles[propIdNamespace]?.get(report.proprietaryIdentifier)
         }
-        GrailsHibernateUtil.unwrapIfProxy(tipp)
+        GrailsHibernateUtil.unwrapIfProxy(tipp) as TitleInstancePackagePlatform
     }
 
     SortedSet getAvailableReports(Set<Platform> subscribedPlatforms, Map<String, Object> configMap) {
         SortedSet<String> allAvailableReports = new TreeSet<String>()
+        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         subscribedPlatforms.each { Platform platform ->
-            Map<String, Object> platformRecord = configMap.platformInstanceRecords.get(platform.gokbId)
-            CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(configMap.subscription.getSubscriber(), platform)
-            configMap.putAll(exportService.prepareSushiCall(platformRecord))
-            if(configMap.revision && configMap.statsUrl) {
-                if(configMap.revision == AbstractReport.COUNTER_5) {
-                    String apiKey = platform.centralApiKey ?: ci.requestorKey
-                    String queryArguments = "?customer_id=${ci.value}"
-                    if(ci.requestorKey || apiKey)
-                        queryArguments += "&requestor_id=${ci.requestorKey}&api_key=${apiKey}"
-                    Map<String, Object> availableReports = statsSyncService.fetchJSONData(configMap.statsUrl + queryArguments, true)
-                    if(availableReports && availableReports.list) {
-                        allAvailableReports.addAll(availableReports.list.collect { listEntry -> listEntry["Report_ID"].toLowerCase() })
-                    }
+            Map<String, Object> queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/sushiSources", [:])
+            Map platformRecord
+            if (queryResult.warning) {
+                Map<String, Object> records = queryResult.warning
+                if(records.counter4ApiSources.containsKey(platform.gokbId)) {
+                    platformRecord = records.counter4ApiSources.get(platform.gokbId)
                 }
-                else if(configMap.revision == AbstractReport.COUNTER_4) {
-                    //unfortunately! I need to alert that there is no possibility to check whether the API supports the report!
-                    allAvailableReports.addAll(Counter4Report.COUNTER_4_REPORTS)
+                else if(records.counter5ApiSources.containsKey(platform.gokbId)) {
+                    platformRecord = records.counter5ApiSources.get(platform.gokbId)
+                }
+            }
+            if(platformRecord) {
+                CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(configMap.subscription.getSubscriber(), platform)
+                configMap.putAll(exportService.prepareSushiCall(platformRecord))
+                if(configMap.revision && configMap.statsUrl && ci.value) {
+                    if(configMap.revision == AbstractReport.COUNTER_5) {
+                        String apiKey = platformRecord.centralApiKey ?: ci.requestorKey
+                        String queryArguments = "?customer_id=${ci.value}"
+                        switch(platformRecord.sushiApiAuthenticationMethod) {
+                            case AbstractReport.API_AUTH_CUSTOMER_REQUESTOR:
+                                if(ci.requestorKey) {
+                                    queryArguments += "&requestor_id=${ci.requestorKey}"
+                                }
+                                break
+                            case AbstractReport.API_AUTH_CUSTOMER_API:
+                            case AbstractReport.API_AUTH_REQUESTOR_API:
+                                if(ci.requestorKey) {
+                                    queryArguments += "&api_key=${ci.requestorKey}"
+                                }
+                                break
+                            case AbstractReport.API_AUTH_CUSTOMER_REQUESTOR_API:
+                                if(ci.requestorKey && platformRecord.centralApiKey) {
+                                    queryArguments += "&requestor_id=${ci.requestorKey}&api_key=${platformRecord.centralApiKey}"
+                                }
+                                break
+                            case AbstractReport.API_IP_WHITELISTING:
+                                break
+                            default:
+                                if(ci.requestorKey || apiKey) {
+                                    queryArguments += "&requestor_id=${ci.requestorKey}&api_key=${apiKey}"
+                                }
+                                break
+                        }
+
+                        Map<String, Object> availableReports = statsSyncService.fetchJSONData(configMap.statsUrl + queryArguments, true)
+                        if(availableReports && availableReports.list) {
+                            allAvailableReports.addAll(availableReports.list.collect { listEntry -> listEntry["Report_ID"].toLowerCase() })
+                        }
+                    }
+                    else if(configMap.revision == AbstractReport.COUNTER_4) {
+                        //unfortunately! I need to alert that there is no possibility to check whether the API supports the report!
+                        allAvailableReports.addAll(Counter4Report.COUNTER_4_REPORTS)
+                    }
                 }
             }
         }
@@ -924,7 +977,7 @@ class SubscriptionControllerService {
             cal.set(Calendar.MONTH, Calendar.DECEMBER)
             cal.set(Calendar.DAY_OF_MONTH, 31)
             result.defaultEndYear = sdf.format(cal.getTime())
-            if(accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+            if(contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
                 params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
                 Map<String,Object> fsq = filterService.getOrgComboQuery(params, result.institution)
                 result.members = Org.executeQuery(fsq.query, fsq.queryParams, params)
@@ -1189,7 +1242,11 @@ class SubscriptionControllerService {
                     List<Subscription> synShareTargetList = []
                     List<License> licensesToProcess = []
                     Set<Package> packagesToProcess = []
-                    //copy package data
+                    result.subscription.packages.each { SubscriptionPackage sp ->
+                        packagesToProcess << sp.pkg
+                    }
+                    /*
+                    copy package data
                     if(params.linkAllPackages) {
                         result.subscription.packages.each { SubscriptionPackage sp ->
                             packagesToProcess << sp.pkg
@@ -1201,6 +1258,7 @@ class SubscriptionControllerService {
                             packagesToProcess << SubscriptionPackage.get(spId).pkg
                         }
                     }
+                    */
                     if(params.generateSlavedLics == "all") {
                         String query = "select l from License l where l.instanceOf in (select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType)"
                         licensesToProcess.addAll(License.executeQuery(query, [subscription:result.subscription, linkType:RDStore.LINKTYPE_LICENSE]))
@@ -1212,9 +1270,11 @@ class SubscriptionControllerService {
                         }
                     }
                     List<String> excludes = PendingChangeConfiguration.SETTING_KEYS.collect { String key -> key }
-                    excludes << 'freezeHolding'
+                    //excludes << 'freezeHolding'
                     excludes.add(PendingChangeConfiguration.TITLE_REMOVED)
                     excludes.add(PendingChangeConfiguration.TITLE_REMOVED+PendingChangeConfiguration.NOTIFICATION_SUFFIX)
+                    excludes.add(PendingChangeConfiguration.TITLE_DELETED)
+                    excludes.add(PendingChangeConfiguration.TITLE_DELETED+PendingChangeConfiguration.NOTIFICATION_SUFFIX)
                     excludes.addAll(PendingChangeConfiguration.SETTING_KEYS.collect { String key -> key+PendingChangeConfiguration.NOTIFICATION_SUFFIX})
                     Set<AuditConfig> inheritedAttributes = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldNotInList(Subscription.class.name,result.subscription.id, excludes)
                     List<Subscription> memberSubs = []
@@ -1313,13 +1373,13 @@ class SubscriptionControllerService {
                     }
 
                     packagesToProcess.each { Package pkg ->
-                        subscriptionService.addToMemberSubscription(result.subscription, memberSubs, pkg, params.linkWithEntitlements == 'on')
-                        /*
-                        if()
-                            subscriptionService.addToSubscriptionCurrentStock(memberSub, result.subscription, pkg)
-                        else
-                            subscriptionService.addToSubscription(memberSub, pkg, false)
-                        */
+                        subscriptionService.addToMemberSubscription(result.subscription, memberSubs, pkg, result.subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE && auditService.getAuditConfig(result.subscription, 'holdingSelection'))
+                            /*
+                            if()
+                                subscriptionService.addToSubscriptionCurrentStock(memberSub, result.subscription, pkg)
+                            else
+                                subscriptionService.addToSubscription(memberSub, pkg, false)
+                            */
                     }
 
                     result.subscription.syncAllShares(synShareTargetList)
@@ -1451,30 +1511,31 @@ class SubscriptionControllerService {
         else {
             SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-            Subscription newSub = result.subscription
+            Subscription subscriberSub = result.subscription
             result.institution = result.contextOrg
-
-            params.tab = params.tab ?: 'allIEs'
-
-            result.preselectValues = params.preselectValues == 'on'
-
             result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
             result.surveyInfo = result.surveyConfig.surveyInfo
 
-            Subscription previousSubscription = newSub._getCalculatedPreviousForSurvey()
-            Subscription baseSub = result.surveyConfig.subscription ?: newSub.instanceOf
+            Subscription previousSubscription = subscriberSub._getCalculatedPreviousForSurvey()
+            Subscription baseSub = result.surveyConfig.subscription ?: subscriberSub.instanceOf
+            result.subscriber = subscriberSub.getSubscriber()
 
-            result.subscriber = newSub.getSubscriber()
+            params.tab = params.tab ?: 'allTipps'
 
-            result.subscriptionIDs = []
+            result.preselectValues = params.preselectValues == 'on'
+
+            //result.subscriptionIDs = []
 
             Set<Subscription> subscriptions = []
             if(result.surveyConfig.pickAndChoosePerpetualAccess) {
-                subscriptions = linksGenerationService.getSuccessionChain(newSub, 'sourceSubscription')
-                subscriptions << newSub
-                result.subscriptionIDs = surveyService.subscriptionsOfOrg(result.subscriber)
-            }else {
-                subscriptions << previousSubscription
+                subscriptions = linksGenerationService.getSuccessionChain(subscriberSub, 'sourceSubscription')
+                //subscriptions << subscriberSub
+                //result.subscriptionIDs = surveyService.subscriptionsOfOrg(result.subscriber)
+            }
+            else {
+                //subscriptions << previousSubscription
+                subscriptions << subscriberSub
+
             }
 
             if (params.hasPerpetualAccess) {
@@ -1482,70 +1543,63 @@ class SubscriptionControllerService {
             }
 
             List<Long> sourceIEs = []
-            if(params.tab in ['allIEs', 'allIEsStats']) {
-                Map query = filterService.getIssueEntitlementQuery(params, baseSub)
-                sourceIEs = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
-            }
-            if(params.tab == 'selectedIEs') {
-                Map query = filterService.getIssueEntitlementQuery(params+[ieAcceptStatusNotFixed: true], newSub)
-                sourceIEs = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
-            }
-            if(params.tab in ['currentIEs','holdingIEsStats', 'topUsed']) {
+            if(params.tab == 'allTipps') {
+                params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
+                params.sort = params.sort ?: 'tipp.sortname'
+                params.order = params.order ?: 'asc'
+                Map<String, Object> query = filterService.getTippQuery(params, baseSub.packages.pkg)
+                result.filterSet = query.filterSet
+                List<Long> titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
+
+                result.tippsListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.tipp tipp ' +
+                        'where p.listPrice is not null and tipp.status.id = :tiStatus and tipp.id in (' + query.query + ' )', [tiStatus: RDStore.TIPP_STATUS_CURRENT.id]+query.queryParams)[0] ?: 0
+
+                result.titlesList = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList.drop(result.offset).take(result.max), [sort: params.sort, order: params.order]) : []
+                result.num_rows = titlesList.size()
+
+                if(baseSub.packages){
+                    result.packageInstance = baseSub.packages.pkg[0]
+                }
+
+            }else if(params.tab == 'selectedIEs') {
+                IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, subscriberSub)
+                if(issueEntitlementGroup) {
+                    params.sort = params.sort ?: 'tipp.sortname'
+                    params.order = params.order ?: 'asc'
+                    params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
+                    result.titleGroup = issueEntitlementGroup.id.toString()
+                    params.titleGroup = result.titleGroup
+                    Map query = filterService.getIssueEntitlementQuery(params, subscriberSub)
+                    sourceIEs = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
+
+                    result.sourceIEs = sourceIEs ? IssueEntitlement.findAllByIdInList(sourceIEs, [sort: params.sort, order: params.order, offset: result.offset, max: result.max]) : []
+                    result.num_rows = sourceIEs ? IssueEntitlement.countByIdInList(sourceIEs) : 0
+
+                    result.iesTotalListPriceSum = surveyService.sumListPriceCurrentIssueEntitlementsByIEGroup(result.subscription, result.surveyConfig)
+
+                }
+            } else if (params.tab == 'currentPerpetualAccessIEs') {
+                params.sort = params.sort ?: 'tipp.sortname'
+                params.order = params.order ?: 'asc'
                 GrailsParameterMap parameterMap = params.clone()
                 Map query = [:]
                 if(subscriptions) {
-                    query = filterService.getIssueEntitlementQuery(parameterMap + [ieAcceptStatusFixed: true], subscriptions)
-                    List<Long> previousIes = previousSubscription ? IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams) : []
-                    sourceIEs = sourceIEs + previousIes
+                    parameterMap.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
+                    parameterMap.hasPerpetualAccess = true
+                    parameterMap.hasPerpetualAccessBySubs = subscriptions
+                    query = filterService.getIssueEntitlementQuery(parameterMap, subscriptions)
+                    //List<Long> previousIes = previousSubscription ? IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams) : []
+                    sourceIEs = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
                 }
+                result.sourceIEs = sourceIEs ? IssueEntitlement.findAllByIdInList(sourceIEs, [sort: params.sort, order: params.order, offset: result.offset, max: result.max]) : []
+                result.num_rows = sourceIEs ? IssueEntitlement.countByIdInList(sourceIEs) : 0
 
-                query = filterService.getIssueEntitlementQuery(parameterMap+[ieAcceptStatusFixed: true], newSub)
-                List<Long> currentIes = newSub ? IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams) : []
-                sourceIEs = sourceIEs + currentIes
-
+                result.iesTotalListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
+                        'where p.listPrice is not null and ie.id in (:ieIDs)', [ieIDs: sourceIEs])[0] ?: 0
             }
 
-            if(params.tab == 'toBeSelectedIEs') {
-                GrailsParameterMap parameterMap = params.clone()
-                Map allQuery = filterService.getIssueEntitlementQuery(params, baseSub)
-                List<Long> allTippIDs = IssueEntitlement.executeQuery("select ie.tipp.id " + allQuery.query, allQuery.queryParams)
-                Map query = filterService.getIssueEntitlementQuery(params+[ieAcceptStatusNotFixed: true], newSub)
-                List<Long> selectedTippIDs = IssueEntitlement.executeQuery("select ie.tipp.id " + query.query, query.queryParams)
-                List<Long> toBeSelectedTippIDs = allTippIDs - selectedTippIDs
-
-
-                if(result.surveyConfig.pickAndChoosePerpetualAccess && subscriptions) {
-                    query = filterService.getIssueEntitlementQuery(parameterMap + [ieAcceptStatusFixed: true], subscriptions)
-                    List<Long> perpetualAccessTippIDs = IssueEntitlement.executeQuery("select ie.tipp.id " + query.query, query.queryParams)
-                    toBeSelectedTippIDs = toBeSelectedTippIDs - perpetualAccessTippIDs
-                }
-
-                allQuery.query = allQuery.query.replace("where", "where ie.tipp.id in (:tippIds) and ")
-                allQuery.queryParams.tippIds = toBeSelectedTippIDs
-                if(toBeSelectedTippIDs.size() > 0)
-                    sourceIEs = IssueEntitlement.executeQuery("select ie.id " + allQuery.query, allQuery.queryParams)
-
-            }
-
-            if (result.hasPerpetualAccess) {
-                params.hasPerpetualAccess = result.hasPerpetualAccess
-            }
-
-            result.countSelectedIEs = subscriptionService.countIssueEntitlementsNotFixed(newSub)
-            result.countAllIEs = subscriptionService.countIssueEntitlementsFixed(baseSub)
-            if (result.surveyConfig.pickAndChoosePerpetualAccess) {
-                result.countCurrentIEs = surveyService.countPerpetualAccessTitlesBySub(result.subscription)
-                result.toBeSelectedIEs = result.countAllIEs - (result.countSelectedIEs + result.countCurrentIEs)
-            } else {
-                result.countCurrentIEs = (previousSubscription ? subscriptionService.countIssueEntitlementsFixed(previousSubscription) : 0) + subscriptionService.countIssueEntitlementsFixed(result.subscription)
-                result.toBeSelectedIEs = result.countAllIEs - result.countSelectedIEs
-            }
-
-
-            result.num_ies_rows = sourceIEs ? IssueEntitlement.countByIdInList(sourceIEs) : 0
             //allIEsStats and holdingIEsStats are left active for possible backswitch
-            if(params.tab in ['allIEsStats', 'holdingIEsStats', 'topUsed']) {
-                //result = surveyService.getStatsForParticipant(result, params, newSub, result.subscriber, subscriptionService.getTippIDsFixed(baseSub))
+            if(params.tab in ['topUsed']) {
 
                 if(!params.tabStat)
                     params.tabStat = 'total'
@@ -1555,9 +1609,9 @@ class SubscriptionControllerService {
                 params.tab = params.tabStat
                 Set<Subscription> refSubs = subscriptions
                 subscriptions << baseSub
-                subscriptions << newSub
+                subscriptions << subscriberSub
                 Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription in (:subscriptions)", [subscriptions: refSubs])
-                Set<IdentifierNamespace> namespaces = [IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISSN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISSN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISBN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.PISBN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.DOI, TitleInstancePackagePlatform.class.name)] as Set<IdentifierNamespace>,
+                Set<IdentifierNamespace> namespaces = [IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISSN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISSN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISBN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISBN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.DOI, TitleInstancePackagePlatform.class.name)] as Set<IdentifierNamespace>,
                                          propIdNamespaces = IdentifierNamespace.findAllByNsInList(subscribedPlatforms.titleNamespace)
                 if(!subscribedPlatforms) {
                     subscribedPlatforms = Platform.executeQuery("select tipp.platform from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (:subscriptions)", [subscriptions: refSubs])
@@ -1570,12 +1624,12 @@ class SubscriptionControllerService {
                 result.platformsJSON = subscribedPlatforms.globalUID as JSON
                 ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
                 subscribedPlatforms.each { Platform platformInstance ->
-                    Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/find?uuid=${platformInstance.gokbId}")
+                    Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: platformInstance.gokbId])
                     if (queryResult.error && queryResult.error == 404) {
                         result.wekbServerUnavailable = message(code: 'wekb.error.404')
                     }
                     else if (queryResult.warning) {
-                        List records = queryResult.warning.records
+                        List records = queryResult.warning.result
                         if(records[0]) {
                             records[0].lastRun = platformInstance.counter5LastRun ?: platformInstance.counter4LastRun
                             records[0].id = platformInstance.id
@@ -1584,10 +1638,10 @@ class SubscriptionControllerService {
                     }
                 }
                 Subscription refSub
-                if(params.loadFor in ['allIEsStats', 'topUsed'])
+                if(params.loadFor in ['allTippsStats', 'topUsed'])
                     refSub = baseSub
                 else if(params.loadFor == 'holdingIEsStats')
-                    refSub = newSub
+                    refSub = subscriberSub
                 Map<String, Object> dateRanges = getDateRange(params, refSub)
                 result.monthsInRing = dateRanges.monthsInRing
                 SortedSet<String> reportTypes = getAvailableReports(subscribedPlatforms, result)
@@ -1597,7 +1651,7 @@ class SubscriptionControllerService {
                     Map<String, Map<String, TitleInstancePackagePlatform>> titles = [:] //structure: namespace -> value -> tipp
                     Set<TitleInstancePackagePlatform> titlesSorted = [] //fallback structure to preserve sorting
                     fetchTitles(params, refSubs, namespaces, 'ids').each { Map titleMap ->
-                        titlesSorted << GrailsHibernateUtil.unwrapIfProxy(titleMap.tipp)
+                        titlesSorted << titleMap.tipp
                         Map<String, TitleInstancePackagePlatform> innerMap = titles.get(titleMap.namespace)
                         if(!innerMap)
                             innerMap = [:]
@@ -1609,7 +1663,7 @@ class SubscriptionControllerService {
                     if(params.platform) {
                         Platform platform = Platform.get(params.platform)
                         IdentifierNamespace propIdNamespace = IdentifierNamespace.findByNs(platform.titleNamespace)
-                        Map<String, Object> queryParams = [reportType: params.reportType, customer: newSub.getSubscriber(), platform: platform]
+                        Map<String, Object> queryParams = [reportType: params.reportType, customer: subscriberSub.getSubscriber(), platform: platform]
                         if(params.metricType) {
                             queryParams.metricTypes = params.list('metricType').join('%7C')
                         }
@@ -1622,20 +1676,44 @@ class SubscriptionControllerService {
                         queryParams.startDate = dateRanges.startDate
                         queryParams.endDate = dateRanges.endDate
                         Map<String, Object> requestResponse = exportService.getReports(queryParams)
-                        for(Map reportItem : requestResponse.items) {
-                            Map<String, String> identifierMap = exportService.buildIdentifierMap(reportItem, AbstractReport.COUNTER_5)
-                            TitleInstancePackagePlatform tipp = matchReport(titles, propIdNamespace, identifierMap)
-                            if(tipp) {
-                                for(Map performance : reportItem.Performance) {
-                                    for(Map instance : performance.Instance) {
-                                        Map<String, Integer> metrics = usages.containsKey(tipp) ? usages.get(tipp): [:]
-                                        Integer topCount = usageTopList.containsKey(tipp) ? usageTopList.get(tipp) : 0
-                                        Integer metricCount = metrics.get(instance.Metric_Type) ?: 0, count = instance.Count as Integer
-                                        metricCount += count
-                                        metrics.put(instance.Metric_Type, metricCount)
-                                        if(metricCount > topCount)
-                                            usageTopList.put(tipp, metricCount)
-                                        usages.put(tipp, metrics)
+                        if(result.platformInstanceRecords.get(platform.gokbId).counterR5SushiApiSupported == "Yes") {
+                            for(Map reportItem : requestResponse.items) {
+                                Map<String, String> identifierMap = exportService.buildIdentifierMap(reportItem, AbstractReport.COUNTER_5)
+                                TitleInstancePackagePlatform tipp = matchReport(titles, propIdNamespace, identifierMap)
+                                if(tipp) {
+                                    for(Map performance : reportItem.Performance) {
+                                        for(Map instance : performance.Instance) {
+                                            Map<String, Integer> metrics = usages.containsKey(tipp) ? usages.get(tipp): [:]
+                                            Integer topCount = usageTopList.containsKey(tipp) ? usageTopList.get(tipp) : 0
+                                            Integer metricCount = metrics.get(instance.Metric_Type) ?: 0, count = instance.Count as Integer
+                                            metricCount += count
+                                            metrics.put(instance.Metric_Type, metricCount)
+                                            if(metricCount > topCount)
+                                                usageTopList.put(tipp, metricCount)
+                                            usages.put(tipp, metrics)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        else if(result.platformInstanceRecords.get(platform.gokbId).counterR4SushiApiSupported == RDStore.YN_YES.value) {
+                            for(GPathResult reportItem : requestResponse.reports) {
+                                Map<String, String> identifierMap = exportService.buildIdentifierMap(reportItem, AbstractReport.COUNTER_4)
+                                TitleInstancePackagePlatform tipp = matchReport(titles, propIdNamespace, identifierMap)
+                                if(tipp) {
+                                    for(GPathResult performance : reportItem.'ns2:ItemPerformance') {
+                                        for(GPathResult instance : performance.'ns2:Instance') {
+                                            Map<String, Integer> metrics = usages.containsKey(tipp) ? usages.get(tipp): [:]
+                                            Integer topCount = usageTopList.containsKey(tipp) ? usageTopList.get(tipp) : 0
+                                            if((params.metricType && params.metricType == instance.'ns2:MetricType'.text()) || !params.metricType) {
+                                                Integer metricCount = metrics.get(instance.'ns2:MetricType') ?: 0, count = Integer.parseInt(instance.'ns2:Count'.text())
+                                                metricCount += count
+                                                metrics.put(instance.'ns2:MetricType', metricCount)
+                                                if(metricCount > topCount)
+                                                    usageTopList.put(tipp, metricCount)
+                                                usages.put(tipp, metrics)
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -1643,7 +1721,7 @@ class SubscriptionControllerService {
                     }
                     /*
                     Counter5Report.withTransaction {
-                        String customerUID = newSub.getSubscriber().globalUID
+                        String customerUID = subscriberSub.getSubscriber().globalUID
                         Set<String> platforms = subscribedPlatforms.globalUID
                         Map<String, Object> queryParams = [customer: customerUID, platforms: platforms]
                         if(dateRanges.dateRange.length() > 0) {
@@ -1771,24 +1849,20 @@ class SubscriptionControllerService {
                     result.usages = usages
                 }
                 params.tab = oldTab
-            }else {
-
-                result.iesListPriceSum = PriceItem.executeQuery('select sum(p.listPrice) from PriceItem p join p.issueEntitlement ie ' +
-                        'where p.listPrice is not null and ie.id in (:ieIDs)', [ieIDs: sourceIEs])[0] ?: 0
-
-                params.sort = params.sort ?: 'sortname'
-                params.order = params.order ?: 'asc'
-                result.sourceIEs = sourceIEs ? IssueEntitlement.findAllByIdInList(sourceIEs, [sort: params.sort, order: params.order, offset: result.offset, max: result.max]) : []
-
-                /*Map query = filterService.getIssueEntitlementQuery(params, newSub)
-                List<IssueEntitlement> targetIEs = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
-                result.targetIEs = []
-                targetIEs.collate(32767).each {
-                    result.targetIEs.addAll(IssueEntitlement.findAllByIdInList(targetIEs.take(32768)))
-                }*/
             }
 
-            result.newSub = newSub
+            result.countSelectedIEs = surveyService.countIssueEntitlementsByIEGroup(subscriberSub, result.surveyConfig)
+            result.countAllTipps = result.subscription.packages ? TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.status = :status and pkg in (:pkgs)", [pkgs: result.subscription.packages.pkg, status: RDStore.TIPP_STATUS_CURRENT])[0] : 0
+
+            result.countCurrentPermanentTitles = subscriptionService.countCurrentPermanentTitles(result.subscription, false)
+
+/*            if (result.surveyConfig.pickAndChoosePerpetualAccess) {
+                result.countCurrentIEs = surveyService.countPerpetualAccessTitlesBySub(result.subscription)
+            } else {
+                result.countCurrentIEs = subscriptionService.countCurrentIssueEntitlements(result.subscription)
+            }*/
+
+            result.subscriberSub = subscriberSub
             result.subscription = baseSub
             result.previousSubscription = previousSubscription
 
@@ -1798,27 +1872,27 @@ class SubscriptionControllerService {
             }
 
             result.editable = surveyService.isEditableSurvey(result.institution, result.surveyInfo)
-            result.showStatisticByParticipant = surveyService.showStatisticByParticipant(result.surveyConfig.subscription, result.subscriber)
+            //result.showStatisticByParticipant = surveyService.showStatisticByParticipant(result.surveyConfig.subscription, result.subscriber)
 
 
             if (result.editable) {
                 SessionCacheWrapper sessionCache = contextService.getSessionCache()
-                Map<String, Object> checkedCache = sessionCache.get("/subscription/renewEntitlementsWithSurvey/${newSub.id}?${params.tab}")
+                Map<String, Object> checkedCache = sessionCache.get("/subscription/renewEntitlementsWithSurvey/${subscriberSub.id}?${params.tab}")
 
                 if (!checkedCache) {
-                    sessionCache.put("/subscription/renewEntitlementsWithSurvey/${newSub.id}?${params.tab}", ["checked": [:]])
-                    checkedCache = sessionCache.get("/subscription/renewEntitlementsWithSurvey/${newSub.id}?${params.tab}")
+                    sessionCache.put("/subscription/renewEntitlementsWithSurvey/${subscriberSub.id}?${params.tab}", ["checked": [:]])
+                    checkedCache = sessionCache.get("/subscription/renewEntitlementsWithSurvey/${subscriberSub.id}?${params.tab}")
                 }
 
-                if (params.kbartPreselect) {
+                if (params.kbartPreselect && params.tab == 'allTipps') {
                     //checkedCache.put('checked', [:])
 
                     MultipartFile kbartFile = params.kbartPreselect
                     InputStream stream = kbartFile.getInputStream()
-                    result.selectProcess = subscriptionService.issueEntitlementSelectForSurvey(stream, result.subscription, result.surveyConfig, newSub)
+                    result.selectProcess = subscriptionService.tippSelectForSurvey(stream, result.subscription, result.surveyConfig, subscriberSub)
 
-                        if (result.selectProcess.selectedIEs) {
-                            checkedCache.put('checked', result.selectProcess.selectedIEs)
+                        if (result.selectProcess.selectedTipps) {
+                            checkedCache.put('checked', result.selectProcess.selectedTipps)
                         }
 
                     params.remove("kbartPreselect")
@@ -1827,18 +1901,11 @@ class SubscriptionControllerService {
                 result.checkedCache = checkedCache.get('checked')
                 result.checkedCount = result.checkedCache.findAll { it.value == 'checked' }.size()
 
-
                 result.allChecked = ""
-                if (params.tab == 'allIEs' && result.countAllIEs > 0 && result.countAllIEs == result.checkedCount) {
+                if (params.tab == 'allTipps' && result.countAllTipps > 0 && result.countAllTipps == result.checkedCount) {
                     result.allChecked = "checked"
                 }
-                else if (params.tab == 'selectedIEs' && result.countSelectedIEs > 0 && result.countSelectedIEs == result.checkedCount) {
-                    result.allChecked = "checked"
-                }
-                else if (params.tab == 'currentIEs' && result.countCurrentIEs > 0 && result.countCurrentIEs == result.checkedCount) {
-                    result.allChecked = "checked"
-                }
-                else if (params.tab == 'allIEsStats' && result.countAllIEs > 0 && result.countAllIEs == result.checkedCount) {
+                if (params.tab == 'selectedIEs' && result.countSelectedIEs > 0 && result.countSelectedIEs == result.checkedCount) {
                     result.allChecked = "checked"
                 }
             }
@@ -1917,34 +1984,41 @@ class SubscriptionControllerService {
             SwissKnife.setPaginationParams(result, params, result.user)
 
             result.editUrl = apiSource.baseUrl
-            String esQuery = "?componentType=Package"
+            Map<String, Object> queryParams = [componentType: 'Package']
             if (params.q) {
                 result.filterSet = true
                 //workaround for or-connection; find api supports only and-connection
-                esQuery += "&name=${params.q}"
-                esQuery += "&ids=Anbieter_Produkt_ID,*${params.q}*"
-                esQuery += "&ids=isil,*${params.q}*"
+                queryParams.name = params.q
+                queryParams.ids = ["Anbieter_Produkt_ID,${params.q}", "isil,${params.q}"]
             }
+
+            if(params.status) {
+                result.filterSet = true
+            }
+            else if(!params.status) {
+                params.status = ['Current', 'Expected', 'Retired', 'Deleted']
+            }
+            queryParams.status = params.status
 
             if(params.provider) {
                 result.filterSet = true
-                esQuery += "&provider=${params.provider.replaceAll('&','ampersand').replaceAll('\\+','%2B').replaceAll(' ','%20')}"
+                queryParams.provider = params.provider
             }
 
             if(params.curatoryGroup) {
                 result.filterSet = true
-                esQuery += "&curatoryGroupExact=${params.curatoryGroup.replaceAll('&','ampersand').replaceAll('\\+','%2B').replaceAll(' ','%20')}"
+                queryParams.curatoryGroupExact = params.curatoryGroup
             }
 
             if(params.resourceTyp) {
                 result.filterSet = true
-                esQuery += "&contentType=${params.resourceTyp}"
+                queryParams.contentType = params.resourceTyp
             }
 
             if (params.ddc) {
                 result.filterSet = true
                 params.list("ddc").each { String key ->
-                    esQuery += "&ddc=${RefdataValue.get(key).value}"
+                    queryParams.ddc = RefdataValue.get(key).value
                 }
             }
 
@@ -1952,19 +2026,19 @@ class SubscriptionControllerService {
             if (params.containsKey('curatoryGroupProvider') ^ params.containsKey('curatoryGroupOther')) {
                 result.filterSet = true
                 if(params.curatoryGroupProvider)
-                    esQuery += "&curatoryGroupType=provider"
+                    queryParams.curatoryGroupType = "provider"
                 else if(params.curatoryGroupOther)
-                    esQuery += "&curatoryGroupType=other" //setting to this includes also missing ones, this is already implemented in we:kb
+                    queryParams.curatoryGroupType = "other" //setting to this includes also missing ones, this is already implemented in we:kb
             }
 
-            String sort = params.sort ? "&sort="+params.sort: "&sort=sortname"
-            String order = params.order ? "&order="+params.order: "&order=asc"
-            String max = params.max ? "&max=${params.max}": "&max=${result.max}"
-            String offset = params.offset ? "&offset=${params.offset}": "&offset=${result.offset}"
+            queryParams.sort = params.sort ?: "name"
+            queryParams.order = params.order ?: "asc"
+            queryParams.max = params.max ?: result.max
+            queryParams.offset = params.offset ?: result.offset
 
             result.flagContentGokb = true // gokbService.queryElasticsearch
 
-            Map queryCuratoryGroups = gokbService.queryElasticsearch(apiSource.baseUrl+apiSource.fixToken+'/groups')
+            Map queryCuratoryGroups = gokbService.queryElasticsearch(apiSource.baseUrl+apiSource.fixToken+'/groups', [:])
             if(queryCuratoryGroups.error && queryCuratoryGroups.error == 404) {
                 result.error = messageSource.getMessage('wekb.error.404', null, LocaleUtils.getCurrentLocale())
                 [result:result, status: STATUS_ERROR]
@@ -1977,13 +2051,19 @@ class SubscriptionControllerService {
                 result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
 
                 Set records = []
-                Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/find' + esQuery + sort + order + max + offset)
-                if (queryResult.warning) {
-                    records.addAll(queryResult.warning.records)
-                    result.recordsCount = queryResult.warning.count
-                    result.records = records
+                Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/searchApi' , queryParams)
+                if (queryResult.containsKey("warning")) {
+                    if(queryResult.warning.containsKey("result")) {
+                        records.addAll(queryResult.warning.result)
+                        result.recordsCount = queryResult.warning.result_count_total
+                        result.records = records
+                        [result:result,status:STATUS_OK]
+                    }
+                    else if(queryResult.warning.code == "error") {
+                        result.error = messageSource.getMessage('wekb.error.500', [queryResult.warning.message].toArray(), LocaleUtils.getCurrentLocale())
+                        [result: result, status: STATUS_ERROR]
+                    }
                 }
-                [result:result,status:STATUS_OK]
             }
 
         }
@@ -2007,10 +2087,18 @@ class SubscriptionControllerService {
             boolean bulkProcessRunning = false
             if(params.addUUID && !bulkProcessRunning) {
                 String pkgUUID = params.addUUID
-                String addType = params.addType
-                String addTypeChildren = params.addTypeChildren
                 ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
                 result.source = apiSource.baseUrl
+                RefdataValue holdingSelection = RefdataValue.get(params.holdingSelection)
+                if(params.holdingSelection) {
+                    holdingSelection = RefdataValue.get(params.holdingSelection)
+                    result.subscription.holdingSelection = holdingSelection
+                    result.subscription.save()
+                }
+                else {
+                    holdingSelection = GrailsHibernateUtil.unwrapIfProxy(result.subscription.holdingSelection)
+                }
+                result.holdingSelection = holdingSelection
                 GlobalRecordSource source = GlobalRecordSource.findByUriLikeAndRectype(result.source+'%', GlobalSourceSyncService.RECTYPE_TIPP)
                 log.debug("linkPackage. Global Record Source URL: " +source.uri)
                 globalSourceSyncService.source = source
@@ -2020,7 +2108,7 @@ class SubscriptionControllerService {
                     Thread.currentThread().setName("PackageTransfer_"+result.subscription.id)
                     if(!Package.findByGokbId(pkgUUID)) {
                         try {
-                            Map<String,Object> queryResult = globalSourceSyncService.fetchRecordJSON(false,[componentType:'TitleInstancePackagePlatform',pkg:pkgUUID,max:5000])
+                            Map<String,Object> queryResult = globalSourceSyncService.fetchRecordJSON(false,[componentType:'TitleInstancePackagePlatform',tippPackageUuid:pkgUUID,max:5000])
                             if(queryResult.error && queryResult.error == 404) {
                                 log.error("we:kb server currently unavailable")
                             }
@@ -2038,12 +2126,11 @@ class SubscriptionControllerService {
                                 }
                                 Package pkgToLink = Package.findByGokbId(pkgUUID)
                                 result.packageName = pkgToLink.name
-                                log.debug("Add package ${addType} entitlements to subscription ${result.subscription}")
-                                subscriptionService.addToSubscription(result.subscription, pkgToLink, addType == 'With')
-                                if(addTypeChildren) {
-                                    subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, addTypeChildren == 'WithForChildren')
+                                subscriptionService.addToSubscription(result.subscription, pkgToLink, holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
+                                if(auditService.getAuditConfig(result.subscription, 'holdingSelection')) {
+                                    subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
                                 }
-                                subscriptionService.addPendingChangeConfiguration(result.subscription, pkgToLink, params.clone())
+                                //subscriptionService.addPendingChangeConfiguration(result.subscription, pkgToLink, params.clone())
                             }
                         }
                         catch (Exception e) {
@@ -2053,12 +2140,11 @@ class SubscriptionControllerService {
                     }
                     else {
                         Package pkgToLink = globalSourceSyncService.createOrUpdatePackage(pkgUUID)
-                        log.debug("Add package ${addType} entitlements to subscription ${result.subscription}")
-                        subscriptionService.addToSubscription(result.subscription, pkgToLink, addType == 'With')
-                        if(addTypeChildren) {
-                            subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, addTypeChildren == 'WithForChildren')
+                        subscriptionService.addToSubscription(result.subscription, pkgToLink, holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
+                        if(auditService.getAuditConfig(result.subscription, 'holdingSelection')) {
+                            subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
                         }
-                        subscriptionService.addPendingChangeConfiguration(result.subscription, pkgToLink, params.clone())
+                        //subscriptionService.addPendingChangeConfiguration(result.subscription, pkgToLink, params.clone())
                     }
                 })
             }
@@ -2080,15 +2166,9 @@ class SubscriptionControllerService {
         result.package = Package.get(params.package)
         Locale locale = LocaleUtils.getCurrentLocale()
         if(params.confirmed) {
-            Set<Subscription> childSubs = Subscription.findAllByInstanceOf(result.subscription)
-            boolean unlinkErrorChild = false
-            childSubs.each { Subscription child ->
-                if(!packageService.unlinkFromSubscription(result.package, child, result.institution, true)) {
-                    unlinkErrorChild = true
-                    return
-                }
-            }
-            if(!unlinkErrorChild && packageService.unlinkFromSubscription(result.package, result.subscription, result.institution, true)){
+            Set<Subscription> subList = [result.subscription]
+            subList.addAll(Subscription.findAllByInstanceOf(result.subscription))
+            if(packageService.unlinkFromSubscription(result.package, subList.id, result.institution, true)){
                 result.message = messageSource.getMessage('subscription.details.unlink.successfully',null,locale)
                 [result:result,status:STATUS_OK]
             }else {
@@ -2154,11 +2234,46 @@ class SubscriptionControllerService {
                     [sub: result.subscription, status: RDStore.PENDING_CHANGE_PENDING])
             result.pendingChanges = pendingChanges*/
 
-            params.ieAcceptStatusFixed = true
-            params.status = params.status ?: (result.subscription.hasPerpetualAccess ? [RDStore.TIPP_STATUS_CURRENT.id.toString(), RDStore.TIPP_STATUS_RETIRED.id.toString()] : [RDStore.TIPP_STATUS_CURRENT.id.toString()])
+
+            //params.status = params.status ?: (result.subscription.hasPerpetualAccess ? [RDStore.TIPP_STATUS_CURRENT.id.toString(), RDStore.TIPP_STATUS_RETIRED.id.toString()] : [RDStore.TIPP_STATUS_CURRENT.id.toString()])
+
+            if(params.tab){
+                if(params.tab == 'currentIEs'){
+                    params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
+                }else if(params.tab == 'plannedIEs'){
+                    params.status = [RDStore.TIPP_STATUS_EXPECTED.id.toString()]
+                }else if(params.tab == 'expiredIEs'){
+                    params.status = [RDStore.TIPP_STATUS_RETIRED.id.toString()]
+                }else if(params.tab == 'deletedIEs'){
+                    params.status = [RDStore.TIPP_STATUS_DELETED.id.toString()]
+                }else if(params.tab == 'allIEs'){
+                    params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString(), RDStore.TIPP_STATUS_EXPECTED.id.toString(), RDStore.TIPP_STATUS_RETIRED.id.toString(), RDStore.TIPP_STATUS_DELETED.id.toString()]
+                }
+            }
+            else if(params.list('status').size() == 1) {
+                if(params.list('status')[0] == RDStore.TIPP_STATUS_CURRENT.id.toString()){
+                    params.tab = 'currentIEs'
+                }else if(params.list('status')[0] == RDStore.TIPP_STATUS_RETIRED.id.toString()){
+                    params.tab = 'expiredIEs'
+                }else if(params.list('status')[0] == RDStore.TIPP_STATUS_EXPECTED.id.toString()){
+                    params.tab = 'plannedIEs'
+                }else if(params.list('status')[0] == RDStore.TIPP_STATUS_DELETED.id.toString()){
+                    params.tab = 'deletedIEs'
+                }
+            }else{
+                if(params.list('status').size() > 1){
+                    params.tab = 'allIEs'
+                }else {
+                    params.tab = 'currentIEs'
+                    params.status = [RDStore.TIPP_STATUS_CURRENT.id.toString()]
+                }
+            }
+
+
+
             Map query = filterService.getIssueEntitlementQuery(params, result.subscription)
             result.filterSet = query.filterSet
-            Set entitlements = IssueEntitlement.executeQuery("select new map(ie.id as id, ie.sortname as sortname) " + query.query, query.queryParams)
+            Set entitlements = IssueEntitlement.executeQuery("select new map(ie.id as id, tipp.sortname as sortname) " + query.query, query.queryParams)
             result.entitlementIDs = entitlements
             if(params.kbartPreselect) {
                 MultipartFile kbartFile = params.kbartPreselect
@@ -2176,16 +2291,16 @@ class SubscriptionControllerService {
                 result.num_ies = IssueEntitlement.executeQuery("select count(ie.id) " + query2.query, query2.queryParams)[0]
             }
             result.num_ies_rows = entitlements.size()
-            if(entitlements) {
-                String orderClause = 'order by ie.sortname'
+            if(entitlements && !params.containsKey('fileformat')) {
+                String orderClause = 'order by tipp.sortname'
                 if(params.sort){
                     if(params.sort == 'startDate')
-                        orderClause = "order by ic.startDate ${params.order}, lower(ie.sortname), lower(ie.tipp.sortname) "
+                        orderClause = "order by ic.startDate ${params.order}, lower(tipp.sortname) "
                     else if(params.sort == 'endDate')
-                        orderClause = "order by ic.endDate ${params.order}, lower(ie.sortname), lower(ie.tipp.sortname) "
+                        orderClause = "order by ic.endDate ${params.order}, lower(tipp.sortname) "
                     else {
                         if(params.sort.contains('sortname'))
-                            orderClause = "order by ie.sortname ${params.order}, ie.name ${params.order}, tipp.sortname ${params.order}, tipp.name ${params.order} "
+                            orderClause = "order by tipp.sortname ${params.order}, tipp.name ${params.order} "
                         else
                             orderClause = "order by ${params.sort} ${params.order} "
                     }
@@ -2202,14 +2317,24 @@ class SubscriptionControllerService {
                     result.deletedSPs << [name:sp.pkg.name,link:"${source.editUrl}/public/packageContent/?id=${sp.pkg.gokbId}"]
                 }
             }
+            /*
             Date now = new Date()
             if (now > result.subscription.endDate) {
                 result.frozenHoldings = result.subscription.packages.findAll { SubscriptionPackage sp -> sp.freezeHolding }.pkg
             }
+            */
             if (executorWrapperService.hasRunningProcess(result.subscription)) {
                 result.processingpc = true
             }
             result.considerInBatch = ["sort", "order", "offset", "max", "status", "pkgfilter", "asAt", "series_name", "subject_reference", "ddc", "language", "yearsFirstOnline", "identifier", "title_types", "publishers", "coverageDepth", "inTitleGroups"]
+
+
+            result.currentIECounts = IssueEntitlement.executeQuery("select count(ie) from IssueEntitlement as ie where ie.subscription = :sub and ie.tipp.status = :status and ie.status != :ieStatus", [sub: result.subscription, status: RDStore.TIPP_STATUS_CURRENT, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+            result.plannedIECounts = IssueEntitlement.executeQuery("select count(ie) from IssueEntitlement as ie where ie.subscription = :sub and ie.tipp.status = :status and ie.status != :ieStatus", [sub: result.subscription, status: RDStore.TIPP_STATUS_EXPECTED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+            result.expiredIECounts = IssueEntitlement.executeQuery("select count(ie) from IssueEntitlement as ie where ie.subscription = :sub and ie.tipp.status = :status and ie.status != :ieStatus", [sub: result.subscription, status: RDStore.TIPP_STATUS_RETIRED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+            result.deletedIECounts = IssueEntitlement.executeQuery("select count(ie) from IssueEntitlement as ie where ie.subscription = :sub and ie.tipp.status = :status and ie.status != :ieStatus", [sub: result.subscription, status: RDStore.TIPP_STATUS_DELETED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+            result.allIECounts = IssueEntitlement.executeQuery("select count(ie) from IssueEntitlement as ie where ie.subscription = :sub and ie.tipp.status in (:status) and ie.status != :ieStatus", [sub: result.subscription, status: [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_EXPECTED, RDStore.TIPP_STATUS_RETIRED, RDStore.TIPP_STATUS_DELETED], ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+
 
             [result:result,status:STATUS_OK]
         }
@@ -2234,7 +2359,10 @@ class SubscriptionControllerService {
             Set<String> excludes = PendingChangeConfiguration.GENERIC_EXCLUDES
             result.subscription.packages.each { SubscriptionPackage sp ->
                 //(pcc.settingValue == RDStore.PENDING_CHANGE_CONFIG_PROMPT || pcc.withNotification)
-                Map<String, RefdataValue> keysWithPendingOrNotification = sp.pendingChangeConfig.findAll { PendingChangeConfiguration pcc -> !(pcc.settingKey in excludes) && (pcc.settingValue in [RDStore.PENDING_CHANGE_CONFIG_PROMPT, RDStore.PENDING_CHANGE_CONFIG_ACCEPT]) }.collectEntries { PendingChangeConfiguration pcc -> [pcc.settingKey, pcc.settingValue] }
+                /*
+                Map<String, RefdataValue> keysWithPendingOrNotification = sp.pendingChangeConfig.findAll { PendingChangeConfiguration pcc -> !(pcc.settingKey in excludes) }.collectEntries { PendingChangeConfiguration pcc -> [pcc.settingKey, pcc.settingValue] }
+                */
+                Map<String, RefdataValue> keysWithPendingOrNotification = [:]
                 keysWithPendingOrNotification.put(PendingChangeConfiguration.TITLE_REMOVED, RDStore.PENDING_CHANGE_CONFIG_PROMPT)
                 if(keysWithPendingOrNotification) {
                     pkgSettingMap.put(sp, keysWithPendingOrNotification)
@@ -2242,50 +2370,65 @@ class SubscriptionControllerService {
                 }
             }
 
-            if(!params.sort) {
-                if(params.tab == 'acceptedChanges') {
-                    params.sort = 'iec.actionDate'
-                }
-                else if(params.tab == 'changes') {
-                    params.sort = 'tic.dateCreated'
-                }
-            }
-
             params.order = params.order ?: 'desc'
+            if(!params.tab)
+                params.tab = 'acceptedChanges'
             if(!params.eventType) {
+                params.eventType = PendingChangeConfiguration.TITLE_REMOVED
+                /*
                 if(params.tab == 'acceptedChanges') {
                     params.eventType = PendingChangeConfiguration.NEW_TITLE
                 }
                 else if(params.tab == 'changes') {
                     params.eventType = PendingChangeConfiguration.TITLE_REMOVED
                 }
+                */
             }
             else if(params.eventType == PendingChangeConfiguration.TITLE_REMOVED && params.tab == 'acceptedChanges')
                 params.eventType = PendingChangeConfiguration.NEW_TITLE
+
+            if(!params.sort) {
+                if(params.tab == 'acceptedChanges' && params.eventType == PendingChangeConfiguration.NEW_TITLE) {
+                    params.sort = 'iec.actionDate'
+                }
+                else {
+                    params.sort = 'tic.dateCreated'
+                }
+            }
             String order = " order by ${params.sort} ${params.order}"
             params.tab = params.tab ?: 'changes'
             if(pkgSettingMap && pendingOrWithNotification) {
                 pkgSettingMap.each { SubscriptionPackage sp, Map<String, RefdataValue> settings ->
                     Set titleChanges = []
-                    if(params.tab == 'changes') {
+                    if(params.tab == 'changes' && settings.get(params.eventType) != RDStore.PENDING_CHANGE_CONFIG_REJECT) {
                         switch(params.eventType) {
-                            case PendingChangeConfiguration.TITLE_REMOVED:
-                                titleChanges.addAll(TitleChange.executeQuery('select tic from TitleChange tic join tic.tipp tipp where tic.event = :event and tipp.pkg = :pkg and not exists (select ie.id from IssueEntitlement ie where ie.status = :removed and ie.tipp = tipp and ie.subscription = :sub) and tic.dateCreated >= :entryDate '+order,
-                                    [pkg: sp.pkg, sub: sp.subscription, event: PendingChangeConfiguration.TITLE_REMOVED, removed: RDStore.TIPP_STATUS_REMOVED, entryDate: sp.dateCreated]))
-                                break
                             case PendingChangeConfiguration.NEW_TITLE:
-                                titleChanges.addAll(TitleChange.executeQuery('select tic from TitleChange tic join tic.tipp tipp where tic.event = :event and tipp.pkg = :pkg and not exists (select iec.id from IssueEntitlementChange iec where iec.status in (:processed) and iec.titleChange = tic and iec.subscription = :sub) and not exists (select ie.id from IssueEntitlement ie where ie.tipp = tipp and ie.status != :removed and ie.subscription = :sub) and tic.dateCreated >= :entryDate '+order,
-                                    [pkg: sp.pkg, sub: sp.subscription, event: params.eventType, processed: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED, RDStore.PENDING_CHANGE_SUPERSEDED], removed: RDStore.TIPP_STATUS_REMOVED, entryDate: sp.dateCreated]))
-                                break
-                            case PendingChangeConfiguration.TITLE_DELETED:
                                 titleChanges.addAll(TitleChange.executeQuery('select tic from TitleChange tic join tic.tipp tipp where tic.event = :event and tipp.pkg = :pkg and not exists (select iec.id from IssueEntitlementChange iec where iec.status in (:processed) and iec.titleChange = tic and iec.subscription = :sub) and tic.dateCreated >= :entryDate '+order,
                                     [pkg: sp.pkg, sub: sp.subscription, event: params.eventType, processed: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED, RDStore.PENDING_CHANGE_SUPERSEDED], entryDate: sp.dateCreated]))
+                                break
+                            case PendingChangeConfiguration.TITLE_DELETED:
+                                //check against both deleted or removed because otherwise, there are changes displayed!
+                                titleChanges.addAll(TitleChange.executeQuery('select tic from TitleChange tic join tic.tipp tipp where tic.event = :event and tipp.pkg = :pkg and not exists (select ie.id from IssueEntitlement ie where ie.status in (:deleted) and ie.tipp = tipp and ie.subscription = :sub) and tic.dateCreated >= :entryDate '+order,
+                                        [pkg: sp.pkg, sub: sp.subscription, event: PendingChangeConfiguration.TITLE_DELETED, deleted: [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED], entryDate: sp.dateCreated]))
                                 break
                         }
                     }
                     else if(params.tab == 'acceptedChanges') {
-                        titleChanges.addAll(IssueEntitlementChange.executeQuery('select iec from IssueEntitlementChange iec join iec.titleChange tic join tic.tipp tipp where tic.event = :event and tipp.pkg = :pkg and iec.subscription = :sub and iec.status = :accepted '+order,
-                                [pkg: sp.pkg, sub: sp.subscription, event: params.eventType, accepted: RDStore.PENDING_CHANGE_ACCEPTED]))
+                        switch(params.eventType) {
+                            case PendingChangeConfiguration.TITLE_REMOVED:
+                                /*
+                                titleChanges.addAll(TitleChange.executeQuery('select tic from TitleChange tic join tic.tipp tipp where tic.event = :event and tipp.pkg = :pkg and not exists (select ie.id from IssueEntitlement ie where ie.status = :removed and ie.tipp = tipp and ie.subscription = :sub) and tic.dateCreated >= :entryDate '+order,
+                                    [pkg: sp.pkg, sub: sp.subscription, event: PendingChangeConfiguration.TITLE_REMOVED, removed: RDStore.TIPP_STATUS_REMOVED, entryDate: sp.dateCreated]))
+                                */
+                                titleChanges.addAll(IssueEntitlement.executeQuery("select ie from IssueEntitlement ie join ie.tipp tipp where tipp.pkg = :pkg and ie.subscription = :sub and ie.status = :removed order by ie.lastUpdated desc", [pkg: sp.pkg, sub: sp.subscription, removed: RDStore.TIPP_STATUS_REMOVED], [max: result.max, offset: result.offset]))
+                                break
+                            case PendingChangeConfiguration.NEW_TITLE: titleChanges.addAll(IssueEntitlementChange.executeQuery('select iec from IssueEntitlementChange iec join iec.titleChange tic join tic.tipp tipp where tic.event = :event and tipp.pkg = :pkg and iec.subscription = :sub and iec.status = :accepted '+order,
+                                        [pkg: sp.pkg, sub: sp.subscription, event: params.eventType, accepted: RDStore.PENDING_CHANGE_ACCEPTED]))
+                                break
+                            case PendingChangeConfiguration.TITLE_STATUS_CHANGED: titleChanges.addAll(TitleChange.executeQuery('select tic from TitleChange tic join tic.tipp tipp where tic.event = :event and tipp.pkg = :pkg'+order,
+                                    [pkg: sp.pkg, event: params.eventType]))
+                                break
+                        }
                     }
                     result.changes = titleChanges.drop(result.offset).take(result.max)
                     result.num_change_rows = titleChanges.size()
@@ -2405,7 +2548,9 @@ class SubscriptionControllerService {
             }*/
             // We need all issue entitlements from the parent subscription where no row exists in the current subscription for that item.
 
-            result.subscriptionIDs = surveyService.subscriptionsOfOrg(result.subscription.getSubscriber())
+            //result.subscriptionIDs = surveyService.subscriptionsOfOrg(result.subscription.getSubscriber())
+
+            result.subscriber = result.subscription.getSubscriber()
 
             String basequery
             Map<String,Object> qry_params = [subscription:result.subscription,tippStatus:tipp_current,issueEntitlementStatus:ie_current]
@@ -2435,12 +2580,13 @@ class SubscriptionControllerService {
             result.filterSet = query.filterSet
 
             if(result.subscription.packages?.pkg) {
+                Set<Package> subPkgs = result.subscription.packages.collect { SubscriptionPackage sp -> sp.pkg }
                 //now, assemble the identifiers available to highlight
                 Map<String, IdentifierNamespace> namespaces = [zdb  : IdentifierNamespace.findByNsAndNsType('zdb', TitleInstancePackagePlatform.class.name),
                                                                eissn: IdentifierNamespace.findByNsAndNsType('eissn', TitleInstancePackagePlatform.class.name),
                                                                isbn: IdentifierNamespace.findByNsAndNsType('isbn',TitleInstancePackagePlatform.class.name),
                                                                issn : IdentifierNamespace.findByNsAndNsType('issn', TitleInstancePackagePlatform.class.name),
-                                                               pisbn: IdentifierNamespace.findByNsAndNsType('pisbn', TitleInstancePackagePlatform.class.name),
+                                                               eisbn: IdentifierNamespace.findByNsAndNsType('eisbn', TitleInstancePackagePlatform.class.name),
                                                                doi: IdentifierNamespace.findByNsAndNsType('doi', TitleInstancePackagePlatform.class.name)]
 
                 Set<Long> tippIds = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
@@ -2457,6 +2603,14 @@ class SubscriptionControllerService {
                     //checkedCache.put('checked', [:])
                 }
                 if (params.kbartPreselect && !params.pagination) {
+                    Sql sql = GlobalService.obtainSqlConnection()
+
+                    String identifierMapQuery = "select id_value, tipp_gokb_id, tipp_host_platform_url from identifier join title_instance_package_platform on tipp_id = id_tipp_fk where tipp_pkg_fk = any(:pkgIds) and id_ns_fk = any(:idns)"
+                    Map<String, String> titleIdentifierMap = [:]
+                    sql.rows(identifierMapQuery, [pkgIds: sql.getDataSource().getConnection().createArrayOf('bigint', subPkgs.id as Object[]), idns: sql.getDataSource().getConnection().createArrayOf('bigint', namespaces.values().id as Object[])]).each { GroovyRowResult row ->
+                        titleIdentifierMap.put(row['id_value'], row['tipp_gokb_id'])
+                        titleIdentifierMap.put(row['tipp_host_platform_url'], row['tipp_gokb_id'])
+                    }
                     MultipartFile kbartFile = params.kbartPreselect
                     identifiers.filename = kbartFile.originalFilename
                     InputStream stream = kbartFile.getInputStream()
@@ -2539,6 +2693,7 @@ class SubscriptionControllerService {
                     Set<String> selectedTippIds = []
                     //after having read off the header row, pop the first row
                     rows.remove(0)
+                    TitleInstancePackagePlatform match
                     rows.eachWithIndex { row, int i ->
                         String titleUrl = null
                         Map<String, Object> ieCandidate = [:]
@@ -2556,7 +2711,7 @@ class SubscriptionControllerService {
                             identifiers.onlineIds.add(cols[colMap.onlineIdentifierCol])
                             idCandidate = [namespaces: [], value: cols[colMap.onlineIdentifierCol]]
                             idCandidate.namespaces.add(namespaces.eissn)
-                            idCandidate.namespaces.add(namespaces.isbn)
+                            idCandidate.namespaces.add(namespaces.eisbn)
                             if (ieCandIdentifier == null && !issueEntitlementOverwrite[cols[colMap.onlineIdentifierCol]])
                                 ieCandIdentifier = cols[colMap.onlineIdentifierCol]
                             else if (issueEntitlementOverwrite[cols[colMap.onlineIdentifierCol]])
@@ -2566,7 +2721,7 @@ class SubscriptionControllerService {
                             identifiers.printIds.add(cols[colMap.printIdentifierCol])
                             idCandidate = [namespaces: [], value: cols[colMap.printIdentifierCol]]
                             idCandidate.namespaces.add(namespaces.issn)
-                            idCandidate.namespaces.add(namespaces.pisbn)
+                            idCandidate.namespaces.add(namespaces.isbn)
                             if (ieCandIdentifier == null && !issueEntitlementOverwrite[cols[colMap.printIdentifierCol]])
                                 ieCandIdentifier = cols[colMap.printIdentifierCol]
                             else if (issueEntitlementOverwrite[cols[colMap.printIdentifierCol]])
@@ -2581,7 +2736,7 @@ class SubscriptionControllerService {
                         }
 
                         if (colMap.titleUrlCol >= 0 && !cols[colMap.titleUrlCol]?.trim()?.isEmpty()) {
-                            titleUrl = cols[colMap.titleUrlCol]
+                            titleUrl = cols[colMap.titleUrlCol].replace("\r", "")
                         }
 
                         if (!titleUrl && ((colMap.zdbCol >= 0 && cols[colMap.zdbCol].trim().isEmpty()) || colMap.zdbCol < 0) &&
@@ -2592,33 +2747,43 @@ class SubscriptionControllerService {
                         } else {
                             //make checks ...
                             //is title in LAS:eR?
-                            String ieQuery = "select tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and "
-                            Map ieQueryParams = [subPkgs: result.subscription.packages.collect { SubscriptionPackage sp -> sp.pkg }]
+                            /*
+                            should be changed due to excessive performance loss
+                            String ieQuery = "select tipp from TitleInstancePackagePlatform tipp where tipp.pkg in (:subPkgs) and "
+                            Map ieQueryParams = [subPkgs: subPkgs]
 
                             if(titleUrl){
                                 ieQuery = ieQuery + " ( tipp.hostPlatformURL = :titleUrl "
                                 ieQueryParams.titleUrl = titleUrl.replace("\r", "")
 
                                 if(idCandidate) {
-                                    ieQuery = ieQuery + " or (id.value = :value and id.ns in (:ns))"
+                                    ieQuery = ieQuery + " or exists (select id.id from Identifier id where id.value = :value and id.ns in (:ns) and id.tipp = tipp)"
                                     ieQueryParams.value = idCandidate.value.replace("\r", "")
                                     ieQueryParams.ns = idCandidate.namespaces
                                 }
                                 ieQuery = ieQuery + " )"
                             }
                             else {
-                                ieQuery = ieQuery + " id.value = :value and id.ns in (:ns)"
+                                ieQuery = ieQuery + " exists (select id.id from Identifier id where id.value = :value and id.ns in (:ns) and id.tipp = tipp)"
                                 ieQueryParams.value = idCandidate.value.replace("\r", "")
                                 ieQueryParams.ns = idCandidate.namespaces
                             }
 
+                            long start = System.currentTimeMillis()
                             List<TitleInstancePackagePlatform> matchingTipps = TitleInstancePackagePlatform.executeQuery(ieQuery, ieQueryParams) //it is *always* possible to have multiple packages linked to a subscription!
+                            log.debug("after matchingTipps ${System.currentTimeMillis()-start} msecs")
+                             */
 
-                            if (matchingTipps) {
-                                TitleInstancePackagePlatform tipp = matchingTipps.find { TitleInstancePackagePlatform matchingTipp -> matchingTipp.pkg in result.subscription.packages.pkg } as TitleInstancePackagePlatform
+
+                            if ((idCandidate.value && titleIdentifierMap.containsKey(idCandidate.value.replace("\r", ""))) || titleIdentifierMap.containsKey(titleUrl)) {
+                                String tippKey = titleIdentifierMap.containsKey(titleUrl) ? titleIdentifierMap.get(titleUrl) : titleIdentifierMap.get(idCandidate.value.replace("\r", ""))
                                 //is title already added?
-                                if (addedTipps.contains(tipp.gokbId)) {
+                                if (addedTipps.contains(tippKey)) {
                                     errorList.add("${cols[colMap.publicationTitleCol]}&#9;${cols[colMap.zdbCol] && colMap.zdbCol ? cols[colMap.zdbCol] : " "}&#9;${cols[colMap.onlineIdentifierCol] && colMap.onlineIndentifierCol > -1 ? cols[colMap.onlineIdentifierCol] : " "}&#9;${cols[colMap.printIdentifierCol] && colMap.printIdentifierCol > -1 ? cols[colMap.printIdentifierCol] : " "}&#9;${messageSource.getMessage('subscription.details.addEntitlements.titleAlreadyAdded', null, locale)}")
+                                }
+                                else {
+                                    //TEST!
+                                    match = TitleInstancePackagePlatform.findByGokbId(tippKey)
                                 }
                             }
                             else {
@@ -2698,35 +2863,15 @@ class SubscriptionControllerService {
                                 }
                             }
                         }
-                        if (ieCandIdentifier || titleUrl) {
-                            String tippQuery = "select tipp.gokbId from TitleInstancePackagePlatform tipp join tipp.ids id where tipp.pkg in (:pkgs) and tipp.status != :deleted and "
-                            Map<String, Object> unfilteredParams = [pkgs:result.subscription.packages.pkg, deleted:RDStore.TIPP_STATUS_REMOVED]
-                            if(titleUrl){
-                                tippQuery = tippQuery + " (tipp.hostPlatformURL = :url "
-                                unfilteredParams.url = titleUrl.replace("\r", "")
-                                if(ieCandIdentifier){
-                                    tippQuery = tippQuery + " or id.value = :value "
-                                    unfilteredParams.value = ieCandIdentifier.replace("\r", "")
-                                }
-                                tippQuery = tippQuery + ")"
-
-                            }else {
-                                tippQuery = tippQuery + " id.value = :value "
-                                unfilteredParams.value = ieCandIdentifier.replace("\r", "")
-                            }
-                            //check where indices are needed!
-                            List<String> matches = TitleInstancePackagePlatform.executeQuery(tippQuery, unfilteredParams)
+                        if(covStmt) {
                             ieCoverages.add(covStmt)
                             ieCandidate.coverages = ieCoverages
-                            matches.each { String match ->
-                                TitleInstancePackagePlatform titleInstancePackagePlatform = TitleInstancePackagePlatform.findByGokbId(match)
-                                if(result.subscriptionIDs && titleInstancePackagePlatform) {
-                                    boolean participantPerpetualAccessToTitle = surveyService.hasParticipantPerpetualAccessToTitle2(result.subscriptionIDs, titleInstancePackagePlatform)
-                                    if(!participantPerpetualAccessToTitle) {
-                                        issueEntitlementOverwrite[match] = ieCandidate
-                                        selectedTippIds << match
-                                    }
-                                }
+                        }
+                        if(result.subscription && match) {
+                            boolean participantPerpetualAccessToTitle = surveyService.hasParticipantPerpetualAccessToTitle3(result.subscriber, match)
+                            if(!participantPerpetualAccessToTitle) {
+                                issueEntitlementOverwrite[match.gokbId] = ieCandidate
+                                selectedTippIds << match.gokbId
                             }
                         }
                     }
@@ -2820,6 +2965,12 @@ class SubscriptionControllerService {
     Map<String,Object> removeEntitlement(GrailsParameterMap params) {
         IssueEntitlement ie = IssueEntitlement.get(params.ieid)
         ie.status = RDStore.TIPP_STATUS_REMOVED
+
+        PermanentTitle permanentTitle = PermanentTitle.findByOwnerAndTipp(ie.subscription.subscriber, ie.tipp)
+        if (permanentTitle) {
+            permanentTitle.delete()
+        }
+
         if(ie.save())
             [result:null,status:STATUS_OK]
         else [result:null,status:STATUS_ERROR]
@@ -2835,6 +2986,12 @@ class SubscriptionControllerService {
         RefdataValue oldStatus = ie.status
         ie.status = RDStore.TIPP_STATUS_REMOVED
         if(ie.save()){
+
+            PermanentTitle permanentTitle = PermanentTitle.findByOwnerAndTipp(ie.subscription.subscriber, ie.tipp)
+            if (permanentTitle) {
+                permanentTitle.delete()
+            }
+
             if(IssueEntitlementGroupItem.findByIe(ie)) {
                 if (IssueEntitlementGroupItem.executeUpdate("delete from IssueEntitlementGroupItem iegi where iegi.ie = :ie", [ie: ie])) {
                     return [result: null, status: STATUS_OK]
@@ -2873,7 +3030,7 @@ class SubscriptionControllerService {
                 if(checked) {
                     //executorService.execute({
                         //Thread.currentThread().setName("EntitlementEnrichment_${result.subscription.id}")
-                        subscriptionService.bulkAddEntitlements(result.subscription, issueEntitlementCandidates, checked, Boolean.valueOf(params.uploadPriceInfo), RDStore.IE_ACCEPT_STATUS_FIXED.id, false)
+                        subscriptionService.bulkAddEntitlements(result.subscription, issueEntitlementCandidates, checked, Boolean.valueOf(params.uploadPriceInfo), false)
                         //IssueEntitlement.withNewTransaction { TransactionStatus ts ->
                         /*
                         checked.each { k, v ->
@@ -2944,11 +3101,11 @@ class SubscriptionControllerService {
                 try {
                     Object[] args = [TitleInstancePackagePlatform.findByGokbId(params.singleTitle)?.name]
                     if(issueEntitlementCandidates?.get(params.singleTitle) || Boolean.valueOf(params.uploadPriceInfo))  {
-                        if(subscriptionService.addEntitlement(result.subscription, params.singleTitle, issueEntitlementCandidates?.get(params.singleTitle), Boolean.valueOf(params.uploadPriceInfo), RDStore.IE_ACCEPT_STATUS_FIXED))
+                        if(subscriptionService.addEntitlement(result.subscription, params.singleTitle, issueEntitlementCandidates?.get(params.singleTitle), Boolean.valueOf(params.uploadPriceInfo)))
                             log.debug("Added tipp ${params.singleTitle} to sub ${result.subscription.id} with issue entitlement overwrites")
                         result.message = messageSource.getMessage('subscription.details.addEntitlements.titleAddToSub', args,locale)
                     }
-                    else if(subscriptionService.addEntitlement(result.subscription, params.singleTitle, null, true, RDStore.IE_ACCEPT_STATUS_FIXED))
+                    else if(subscriptionService.addEntitlement(result.subscription, params.singleTitle, null, true))
                         log.debug("Added tipp ${params.singleTitle} to sub ${result.subscription.id}")
                     result.message = messageSource.getMessage('subscription.details.addEntitlements.titleAddToSub', args,locale)
                 }
@@ -3078,14 +3235,16 @@ class SubscriptionControllerService {
                     sql.executeUpdate("update pending_change set pc_status_rdv_fk = :rejected from subscription, subscription_package where split_part(pc_oid, ':', 2)::bigint = sub_id and split_part(pc_oid, ':', 2)::bigint = sp_sub_fk and sp_pkg_fk = :pkgId and (sub_id = :subId or sub_parent_sub_fk = :subId) and pc_date_created > sub_end_date and pc_status_rdv_fk = any(:pendingStatus)", [rejected: RDStore.PENDING_CHANGE_REJECTED.id, pendingStatus: sql.connection.createArrayOf('bigint', pendingStatus.toArray()), subId: sp.subscription.id, pkgId: sp.pkg.id])
                     sql.executeUpdate("update pending_change_configuration set pcc_with_notification = false, pcc_setting_value_rv_fk = :reject where pcc_sp_fk = :spId", [reject: RDStore.PENDING_CHANGE_CONFIG_REJECT.id, spId: sp.id])
                 }
-                sp.freezeHolding = true
+                //sp.freezeHolding = true
                 sp.save()
+                /*
                 PendingChangeConfiguration.SETTING_KEYS.each { String settingKey ->
                     AuditConfig.removeConfig(sp.subscription, settingKey)
                     AuditConfig.removeConfig(sp.subscription, settingKey+PendingChangeConfiguration.NOTIFICATION_SUFFIX)
                     if(!AuditConfig.getConfig(sp.subscription, SubscriptionPackage.FREEZE_HOLDING))
                         AuditConfig.addConfig(sp.subscription, SubscriptionPackage.FREEZE_HOLDING)
                 }
+                */
             })
             [result: result, status: STATUS_OK]
         }
@@ -3106,9 +3265,10 @@ class SubscriptionControllerService {
             SimpleDateFormat formatter = DateUtils.getLocalizedSDF_noTime()
             boolean error = false
             if(params.chkall == 'on') {
-                params.ieAcceptStatusFixed = true
-                Map<String, Object> query = filterService.getIssueEntitlementQuery(params, result.subscription)
-                if(params.bulkOperation == "edit") {
+                Map<String, Object> cfgMap = [:]
+                cfgMap.putAll(params)
+                Map<String, Object> query = filterService.getIssueEntitlementQuery(cfgMap, result.subscription)
+                //if(params.bulkOperation == "edit") {
                     if(GlobalService.isset(params, 'bulk_local_price') && GlobalService.isset(params, 'bulk_local_currency')) {
                         NumberFormat format = NumberFormat.getInstance( LocaleUtils.getCurrentLocale() )
                         BigDecimal localPrice = format.parse(params.bulk_local_price).doubleValue()
@@ -3141,13 +3301,13 @@ class SubscriptionControllerService {
                                     break
                                 case 'titleGroupInsert':
                                     Sql sql = GlobalService.obtainSqlConnection()
-                                    params.select = 'bulkInsertTitleGroup'
+                                    cfgMap.select = 'bulkInsertTitleGroup'
                                     if(!params.pkgIds && !params.pkgfilter)
-                                        params.pkgIds = result.subscription.packages.pkg.id
-                                    Map<String, Object> sqlQuery = filterService.prepareTitleSQLQuery(params, IssueEntitlement.class.name, sql)
+                                        cfgMap.pkgIds = result.subscription.packages.pkg.id
+                                    Map<String, Object> sqlQuery = filterService.prepareTitleSQLQuery(cfgMap, IssueEntitlement.class.name, sql)
                                     //log.debug("insert into issue_entitlement_group_item (igi_version, igi_date_created, igi_ie_fk, igi_ie_group_fk, igi_last_updated) "+sqlQuery.query+" where "+sqlQuery.where+" and not exists(select igi_id from issue_entitlement_group_item where igi_ie_fk = ie_id)")
                                     //log.debug(sqlQuery.params.toMapString())
-                                    sql.execute("insert into issue_entitlement_group_item (igi_version, igi_date_created, igi_ie_fk, igi_ie_group_fk, igi_last_updated, igi_date_created) "+sqlQuery.query+" where "+sqlQuery.where+" and not exists(select igi_id from issue_entitlement_group_item where igi_ie_fk = ie_id)", sqlQuery.params)
+                                    sql.execute("insert into issue_entitlement_group_item (igi_version, igi_date_created, igi_ie_fk, igi_ie_group_fk, igi_last_updated) "+sqlQuery.query+" where "+sqlQuery.where+" and not exists(select igi_id from issue_entitlement_group_item where igi_ie_fk = ie_id)", sqlQuery.params)
                                     /*if(entitlementGroup && !IssueEntitlementGroupItem.findByIeGroupAndIe(entitlementGroup, ie) && !IssueEntitlementGroupItem.findByIe(ie)){
                                         IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
                                                 ie: ie,
@@ -3191,7 +3351,8 @@ class SubscriptionControllerService {
                             }
                         }
                     }
-                }
+                //}
+                /*
                 else if(params.bulkOperation in ["remove", "removeWithChildren"]) {
                     if(params.bulkOperation == "removeWithChildren") {
                         //case statement fails to evaluate with parameters ... so, let's go the hard-coded way!
@@ -3204,23 +3365,24 @@ class SubscriptionControllerService {
                         IssueEntitlement.executeUpdate(deleteQuery, query.queryParams)
                     }
                 }
+                */
             }
             else {
                 params.each { Map.Entry<Object,Object> p ->
                     if (p.key.startsWith('_bulkflag.') && (p.value == 'on')) {
                         String ie_to_edit = p.key.substring(10)
                         IssueEntitlement ie = IssueEntitlement.get(ie_to_edit)
-                        if (params.bulkOperation == "edit") {
-                            if (params.bulk_access_start_date) {
+                        //if (params.bulkOperation == "edit") {
+                            if (GlobalService.isset(params, 'bulk_access_start_date')) {
                                 ie.accessStartDate = formatter.parse(params.bulk_access_start_date)
                             }
-                            if (params.bulk_access_end_date) {
+                            if (GlobalService.isset(params, 'bulk_access_end_date')) {
                                 ie.accessEndDate = formatter.parse(params.bulk_access_end_date)
                             }
-                            if (params.bulk_notes) {
+                            if (GlobalService.isset(params, 'bulk_notes')) {
                                 ie.notes = params.bulk_notes
                             }
-                            if (params.bulk_local_price && params.bulk_local_currency) {
+                            if (GlobalService.isset(params, 'bulk_local_price') && GlobalService.isset(params, 'bulk_local_currency')) {
                                 NumberFormat format = NumberFormat.getInstance( LocaleUtils.getCurrentLocale() )
                                 BigDecimal localPrice = format.parse(params.bulk_local_price).doubleValue()
                                 RefdataValue localCurrency = RefdataValue.get(params.bulk_local_currency)
@@ -3248,32 +3410,33 @@ class SubscriptionControllerService {
                                     }
                                 }
                             }
-                            if (params.bulk_start_date) {
+                            if (GlobalService.isset(params, 'bulk_start_date')) {
                                 IssueEntitlementCoverage.executeUpdate('update IssueEntitlementCoverage ic set ic.startDate = :startDate where ic.issueEntitlement = :ie', [ie: ie, startDate: formatter.parse(params.bulk_start_date)])
                             }
-                            if (params.bulk_start_volume) {
+                            if (GlobalService.isset(params, 'bulk_start_volume')) {
                                 IssueEntitlementCoverage.executeUpdate('update IssueEntitlementCoverage ic set ic.startVolume = :startVolume where ic.issueEntitlement = :ie', [ie: ie, startVolume: params.bulk_start_volume])
                             }
-                            if (params.bulk_start_issue) {
+                            if (GlobalService.isset(params, 'bulk_start_issue')) {
                                 IssueEntitlementCoverage.executeUpdate('update IssueEntitlementCoverage ic set ic.startIssue = :startIssue where ic.issueEntitlement = :ie', [ie: ie, startIssue: params.bulk_start_issue])
                             }
-                            if (params.bulk_end_date) {
+                            if (GlobalService.isset(params, 'bulk_end_date')) {
                                 IssueEntitlementCoverage.executeUpdate('update IssueEntitlementCoverage ic set ic.endDate = :endDate where ic.issueEntitlement = :ie', [ie: ie, endDate: formatter.parse(params.bulk_end_date)])
                             }
-                            if (params.bulk_end_volume) {
+                            if (GlobalService.isset(params, 'bulk_end_volume')) {
                                 IssueEntitlementCoverage.executeUpdate('update IssueEntitlementCoverage ic set ic.endVolume = :endVolume where ic.issueEntitlement = :ie', [ie: ie, endVolume: params.bulk_end_volume])
                             }
-                            if (params.bulk_end_issue) {
+                            if (GlobalService.isset(params, 'bulk_end_issue')) {
                                 IssueEntitlementCoverage.executeUpdate('update IssueEntitlementCoverage ic set ic.endIssue = :endIssue where ic.issueEntitlement = :ie', [ie: ie, endIssue: params.bulk_end_issue])
                             }
-                            if (params.bulk_embargo) {
+                            if (GlobalService.isset(params, 'bulk_embargo')) {
                                 IssueEntitlementCoverage.executeUpdate('update IssueEntitlementCoverage ic set ic.embargo = :embargo where ic.issueEntitlement = :ie', [ie: ie, embargo: params.bulk_embargo])
                             }
                             if (!ie.save()) {
                                 log.error("Problem saving ${ie.errors.getAllErrors().toListString()}")
                                 error = true
                             }
-                        }
+                        //}
+                        /*
                         else if (params.bulkOperation in ["remove", "removeWithChildren"]) {
                             if(ie.tipp.status == RDStore.TIPP_STATUS_REMOVED) {
                                 log.debug("Updating ie ${ie.id} status to removed")
@@ -3292,6 +3455,7 @@ class SubscriptionControllerService {
                                 error = true
                             }
                         }
+                        */
                     }
                 }
             }
@@ -3485,7 +3649,7 @@ class SubscriptionControllerService {
             List tippsToDelete = params."tippsToDelete".split(",")
             tippsToAdd.each { tipp ->
                 try {
-                    if(subscriptionService.addEntitlement(result.subscription,tipp,null,false, RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION))
+                    if(subscriptionService.addEntitlement(result.subscription,tipp,null,false))
                         log.debug("Added tipp ${tipp} to sub ${result.subscription.id}")
                 }
                 catch (EntitlementCreationException e) {
@@ -3545,12 +3709,11 @@ class SubscriptionControllerService {
                 [result:result,status:STATUS_ERROR]
 
             }else if(params.process == "preliminary" && result.checked.size() > 0) {
-                Integer countIEsToAdd = 0
+                Integer countTippsToAdd = 0
                 result.checked.each {
-                    IssueEntitlement ie = IssueEntitlement.findById(it.key)
-                    if(ie) {
-                        TitleInstancePackagePlatform tipp = ie.tipp
-
+                    println(it)
+                    TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findById(it.key)
+                    if(tipp) {
                         boolean tippExistsInParentSub = false
 
                         if (IssueEntitlement.findByTippAndSubscriptionAndStatus(tipp, result.surveyConfig.subscription, RDStore.TIPP_STATUS_CURRENT)) {
@@ -3567,15 +3730,18 @@ class SubscriptionControllerService {
 
                         if (tippExistsInParentSub) {
                             try {
-                                RefdataValue acceptStatus = RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION
 
-                                if(result.contextOrg.id == result.surveyConfig.surveyInfo.owner.id && SurveyOrg.findBySurveyConfigAndOrg(result.surveyConfig, result.subscription.subscriber).finishDate != null){
-                                    acceptStatus = RDStore.IE_ACCEPT_STATUS_UNDER_NEGOTIATION
+                                IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, result.subscription)
+
+                                if(!issueEntitlementGroup) {
+                                    IssueEntitlementGroup.withTransaction {
+                                        issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: result.subscription, name: result.surveyConfig.issueEntitlementGroupName).save()
+                                    }
                                 }
 
-                                if (subscriptionService.addEntitlement(result.subscription, tipp.gokbId, ie, (ie.priceItems.size() > 0), acceptStatus, result.surveyConfig.pickAndChoosePerpetualAccess)) {
+                                if (issueEntitlementGroup && subscriptionService.addEntitlement(result.subscription, tipp.gokbId, null, (tipp.priceItems != null), result.surveyConfig.pickAndChoosePerpetualAccess, issueEntitlementGroup)) {
                                     log.debug("Added tipp ${tipp.gokbId} to sub ${result.subscription.id}")
-                                    ++countIEsToAdd
+                                    ++countTippsToAdd
                                     removeFromCache << it.key
                                 }
                             }
@@ -3587,8 +3753,8 @@ class SubscriptionControllerService {
                         }
                     }
                 }
-                if(countIEsToAdd > 0){
-                    Object[] args = [countIEsToAdd]
+                if(countTippsToAdd > 0){
+                    Object[] args = [countTippsToAdd]
                     result.message = messageSource.getMessage('renewEntitlementsWithSurvey.tippsToAdd',args,locale)
                 }
 
@@ -3603,9 +3769,20 @@ class SubscriptionControllerService {
                 Integer countIEsToDelete = 0
                 result.checked.each {
                     try {
-                        if (subscriptionService.deleteEntitlementbyID(result.subscription, it.key.toString())) {
-                            ++countIEsToDelete
-                            removeFromCache << it.key
+                        IssueEntitlement issueEntitlement = IssueEntitlement.findById(Long.parseLong(it.key.toString()))
+                        IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, result.subscription)
+                        if(issueEntitlement && issueEntitlementGroup) {
+                            IssueEntitlementGroupItem issueEntitlementGroupItem = IssueEntitlementGroupItem.findByIeGroupAndIe(issueEntitlementGroup, issueEntitlement)
+                            if (issueEntitlementGroupItem) {
+                                IssueEntitlementGroup.withTransaction {
+                                    issueEntitlementGroupItem.delete()
+                                }
+
+                                if (subscriptionService.deleteEntitlementbyID(result.subscription, it.key.toString())) {
+                                    ++countIEsToDelete
+                                    removeFromCache << it.key
+                                }
+                            }
                         }
                     }
                     catch (EntitlementCreationException e) {
@@ -3675,6 +3852,7 @@ class SubscriptionControllerService {
                         isPublicForApi: result.subscription.isPublicForApi,
                         hasPerpetualAccess: result.subscription.hasPerpetualAccess,
                         hasPublishComponent: result.subscription.hasPublishComponent,
+                        holdingSelection: result.subscription.holdingSelection,
                         status: sub_status,
                         isMultiYear: sub_isMultiYear ?: false,
                         administrative: result.subscription.administrative,
@@ -3685,7 +3863,7 @@ class SubscriptionControllerService {
                 }
                 else {
                     log.debug("Save ok")
-                    if(accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+                    if(contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
                         if (params.list('auditList')) {
                             //copy audit
                             params.list('auditList').each { auditField ->
@@ -3876,7 +4054,7 @@ class SubscriptionControllerService {
         if (!result.editable) {
             //the explicit comparison against bool(true) should ensure that not only the existence of the parameter is checked but also its proper value
             if(params.copyMyElements == true) {
-                if(accessService.ctxPermAffiliation(CustomerTypeService.ORG_INST_PRO, 'INST_EDITOR'))
+                if(contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_INST_PRO))
                     result
             }
             else null
@@ -3918,7 +4096,7 @@ class SubscriptionControllerService {
                 result.auditConfigs = auditService.getAllAuditConfigs(result.subscription.instanceOf)
             else result.auditConfigs = auditService.getAllAuditConfigs(result.subscription)
 
-            result.currentTitlesCounts = IssueEntitlement.executeQuery("select count(ie.id) from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :status and ie.acceptStatus = :acceptStatus ", [sub: result.subscription, status: RDStore.TIPP_STATUS_CURRENT, acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED])[0]
+            result.currentTitlesCounts = IssueEntitlement.executeQuery("select count(ie.id) from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :status ", [sub: result.subscription, status: RDStore.TIPP_STATUS_CURRENT])[0]
 
             if ((result.contextOrg as Org).isCustomerType_Consortium()) {
                 if(result.subscription.instanceOf){
@@ -3986,10 +4164,15 @@ class SubscriptionControllerService {
         }
         else {
             if (checkOption in [AccessService.CHECK_EDIT, AccessService.CHECK_VIEW_AND_EDIT]) {
-                result.editable = accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')
+                result.editable = contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
             }
         }
         result.consortialView = result.showConsortiaFunctions ?: result.contextOrg.isCustomerType_Consortium()
+        Set<Long> excludes = [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id]
+        if(result.institution.isCustomerType_Consortium())
+            excludes << RDStore.OR_SUBSCRIPTION_CONSORTIA.id
+        // restrict visible for templates/links/orgLinksAsList; done by Andreas Gálffy
+        result.visibleOrgRelations = result.subscription.orgRelations.findAll { OrgRole oo -> !(oo.roleType.id in excludes) }
 
         Map args = [:]
         if (result.consortialView) {

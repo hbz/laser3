@@ -12,18 +12,18 @@
 			<laser:render template="/templates/filter/platformFilter"/>
 
 			<g:if test="${records}">
+
 				<table class="ui sortable celled la-js-responsive-table la-table table">
 					<thead>
 					<tr>
 						<th>${message(code:'sidewide.number')}</th>
 						<g:sortableColumn property="sortname" title="${message(code: 'default.name.label')}" />
-						<g:sortableColumn property="providerName" title="${message(code:'default.provider.label')}" />
 						<th>${message(code:'default.url.label')}</th> <%-- needs we:kb rework to make the property sortable --%>
+						<g:sortableColumn property="providerName" title="${message(code:'default.provider.label')}" />
 						<th class="center aligned">
-							<span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.platforms')}">
-								<i class="icon star"></i>
-							</span>
+							<span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.platforms')}"><i class="icon star"></i></span>
 						</th>
+						<th>${message(code:'org.isWekbCurated.label')}</th>
 					</tr>
 					</thead>
 					<tbody>
@@ -47,29 +47,6 @@
 								</g:else>
 							</th>
 							<td>
-								<g:if test="${platformInstance && platformInstance.org}">
-									<div class="la-flexbox">
-										<g:if test="${platformInstance.org.gokbId != null && RDStore.OT_PROVIDER.id in platformInstance.org.getAllOrgTypeIds()}">
-											<span class="la-long-tooltip la-popup-tooltip la-delay"
-												  data-content="${message(code: 'org.isWekbCurated.header.label')}">
-												<i class="la-gokb icon la-list-icon"></i>
-											</span>
-										</g:if>
-										<g:link controller="organisation" action="show" id="${platformInstance.org.id}">${platformInstance.org.getDesignation()}</g:link>
-									</div>
-								</g:if>
-								<g:elseif test="${record.providerUuid}">
-									<span class="la-long-tooltip la-popup-tooltip la-delay"
-										  data-content="${message(code: 'org.isWekbCurated.header.label')}">
-										<i class="la-gokb icon la-list-icon"></i>
-									</span>
-									${record.providerName}
-									<a target="_blank" href="${editUrl ? editUrl + '/public/orgContent?id=' + record.providerUuid : '#'}">
-										<i title="we:kb Link" class="external alternate icon"></i>
-									</a>
-								</g:elseif>
-							</td>
-							<td>
 								<g:if test="${platformInstance && platformInstance.primaryUrl}">
 									<g:set var="primaryUrl" value="${platformInstance.primaryUrl}"/>
 								</g:if>
@@ -77,14 +54,33 @@
 									<g:set var="primaryUrl" value="${record.primaryUrl}"/>
 								</g:elseif>
 								<g:if test="${primaryUrl}">
-									${primaryUrl}<a href="<g:createLink url="${primaryUrl}" />" target="_blank"> <i class="external alternate icon"></i></a>
+									${primaryUrl} <ui:linkWithIcon href="${primaryUrl}"/>
 								</g:if>
+							</td>
+							<td>
+								<g:if test="${platformInstance && platformInstance.org}">
+									<g:if test="${platformInstance.org.gokbId != null && RDStore.OT_PROVIDER.id in platformInstance.org.getAllOrgTypeIds()}">
+										<ui:wekbIconLink type="org" gokbId="${platformInstance.org.gokbId}" />
+									</g:if>
+									<g:link controller="organisation" action="show" id="${platformInstance.org.id}">${platformInstance.org.getDesignation()}</g:link>
+								</g:if>
+								<g:elseif test="${record.providerUuid}">
+									${record.providerName}
+									<a target="_blank" href="${editUrl ? editUrl + '/public/orgContent?id=' + record.providerUuid : '#'}">
+										<i title="we:kb Link" class="external alternate icon"></i>
+									</a>
+								</g:elseif>
 							</td>
 							<td class="center aligned">
 								<g:if test="${platformInstance && myPlatformIds.contains(platformInstance.id)}">
 									<span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.platforms')}">
 										<i class="icon yellow star"></i>
 									</span>
+								</g:if>
+							</td>
+							<td>
+								<g:if test="${platformInstance}">
+									<ui:wekbButtonLink type="platform" gokbId="${platformInstance.gokbId}" />
 								</g:if>
 							</td>
 						</tr>

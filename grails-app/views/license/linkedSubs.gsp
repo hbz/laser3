@@ -10,11 +10,11 @@
         </g:if>
     </ui:controlButtons>
 
-    <ui:h1HeaderWithIcon>
+    <g:set var="visibleOrgRelationsJoin" value="${visibleOrgRelations.findAll{it.roleType != RDStore.OR_SUBSCRIPTION_CONSORTIA}.sort{it.org.sortname}.collect{it.org}.join(' – ')}"/>
+    <ui:h1HeaderWithIcon visibleOrgRelationsJoin="${visibleOrgRelationsJoin}">
         <ui:xEditable owner="${license}" field="reference" id="reference"/>
-        <ui:totalNumber total="${subscriptions.size() ?: 0}"/>
     </ui:h1HeaderWithIcon>
-
+    <ui:totalNumber total="${subscriptions.size() ?: 0}"/>
     <ui:anualRings object="${license}" controller="license" action="linkedSubs" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
 
 <laser:render template="nav" />
@@ -154,12 +154,7 @@
                             </span>
                         </g:if>
 
-                        <g:if test="${subscr.isCustomerType_Inst_Pro()}">
-                            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                                  data-content="${subscr.getCustomerTypeI10n()}">
-                                <i class="chess rook grey icon"></i>
-                            </span>
-                        </g:if>
+                        <ui:customerTypeIcon org="${subscr}" />
 
                         <div class="ui list">
                             <g:each in="${Person.getPublicByOrgAndFunc(subscr, 'General contact person')}" var="gcp">

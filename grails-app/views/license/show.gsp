@@ -11,7 +11,8 @@
             <laser:render template="actions" />
         </ui:controlButtons>
 
-        <ui:h1HeaderWithIcon>
+        <g:set var="visibleOrgRelationsJoin" value="${visibleOrgRelations.findAll{it.roleType != RDStore.OR_SUBSCRIPTION_CONSORTIA}.sort{it.org.sortname}.collect{it.org}.join(' – ')}"/>
+        <ui:h1HeaderWithIcon visibleOrgRelationsJoin="${visibleOrgRelationsJoin}">
             <ui:xEditable owner="${license}" field="reference" id="reference"/>
         </ui:h1HeaderWithIcon>
 
@@ -34,7 +35,7 @@
         <laser:render template="/templates/meta/identifier" model="${[object: license, editable: editable]}" />
 
         <ui:messages data="${flash}" />
-        <g:render template="/templates/workflow/status" model="${[cmd: cmd, status: status]}" />
+        <laser:render template="/templates/workflow/status" model="${[cmd: cmd, status: status]}" />
 
         <div class="ui stackable grid">
 
@@ -150,26 +151,42 @@
                                                     showPersons: true
                                           ]}" />
 
-                                <laser:render template="/templates/links/orgLinksSimpleModal"
-                                          model="${[linkType: license.class.name,
-                                                    parent: license.class.name + ':' + license.id,
-                                                    property: 'orgRelations',
-                                                    recip_prop: 'lic',
-                                                    tmplRole: RDStore.OR_LICENSOR,
-                                                    tmplEntity: message(code:'license.details.tmplEntity'),
-                                                    tmplText: message(code:'license.details.tmplText'),
-                                                    tmplButtonText: message(code:'license.details.tmplButtonText'),
-                                                    tmplModalID:'osel_add_modal_lizenzgeber',
-                                                    tmplType: RDStore.OT_LICENSOR,
-                                                    editmode: editable
-                                          ]}" />
+                                <div class="ui la-vertical buttons la-js-hide-this-card">
+                                    <laser:render template="/templates/links/orgLinksSimpleModal"
+                                              model="${[linkType: license.class.name,
+                                                        parent: license.class.name + ':' + license.id,
+                                                        property: 'orgRelations',
+                                                        recip_prop: 'lic',
+                                                        tmplRole: RDStore.OR_LICENSOR,
+                                                        tmplEntity: message(code:'license.details.tmplEntity'),
+                                                        tmplText: message(code:'license.details.tmplText'),
+                                                        tmplButtonText: message(code:'license.details.tmplLinkProviderText'),
+                                                        tmplModalID:'osel_add_modal_lizenzgeber',
+                                                        tmplType: RDStore.OT_LICENSOR,
+                                                        editmode: editable
+                                              ]}" />
+
+                                    <laser:render template="/templates/links/orgLinksSimpleModal"
+                                              model="${[linkType: license.class.name,
+                                                        parent: license.class.name + ':' + license.id,
+                                                        property: 'orgRelations',
+                                                        recip_prop: 'lic',
+                                                        tmplRole: RDStore.OR_AGENCY,
+                                                        tmplEntity: message(code:'license.details.linkAgency.tmplEntity'),
+                                                        tmplText: message(code:'license.details.linkAgency.tmplText'),
+                                                        tmplButtonText: message(code:'license.details.tmplLinkAgencyText'),
+                                                        tmplModalID:'osel_add_modal_agency',
+                                                        tmplType: RDStore.OT_AGENCY,
+                                                        editmode: editable
+                                              ]}" />
+                                </div>
                             </div>
                         </div>
                     </div>
                     <div id="container-links">
                         <div class="ui card" id="links"></div>
                     </div>
-                    <laser:render template="/templates/aside1" model="${[ownobj:license, owntp:'license']}" />
+                    <laser:render template="/templates/sidebar/aside" model="${[ownobj:license, owntp:'license']}" />
                 </div>
             </aside><!-- .four -->
 

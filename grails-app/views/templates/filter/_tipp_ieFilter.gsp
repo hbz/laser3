@@ -1,6 +1,6 @@
 <%@ page import="de.laser.TitleInstancePackagePlatform; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.base.AbstractReport" %>
 <laser:serviceInjection />
-<g:if test="${controllerName == 'package'}">
+<g:if test="${controllerName == 'package' || fillDropdownsWithPackage}">
     <g:set var="seriesNames"
            value="${packageInstance ? controlledListService.getAllPossibleSeriesByPackage(packageInstance,actionName) : []}"/>
     <g:set var="subjects"
@@ -20,8 +20,7 @@
     <g:set var="coverageDepths"
            value="${packageInstance ? controlledListService.getAllPossibleCoverageDepthsByPackage(packageInstance,actionName) : []}"/>
 </g:if>
-
-<g:if test="${controllerName == 'subscription'}">
+<g:elseif test="${controllerName == 'subscription'}">
     <g:set var="seriesNames"
            value="${subscription ? controlledListService.getAllPossibleSeriesBySub(subscription) : []}"/>
     <g:set var="subjects"
@@ -40,8 +39,33 @@
            value="${subscription ? controlledListService.getAllPossibleMediumTypesBySub(subscription) : []}"/>
     <g:set var="coverageDepths"
            value="${subscription ? controlledListService.getAllPossibleCoverageDepthsBySub(subscription) : []}"/>
-</g:if>
+</g:elseif>
+<g:elseif test="${controllerName == 'title' || actionName == 'currentPermanentTitles'}">
+    <g:set var="seriesNames"
+           value="${params.status ? controlledListService.getAllPossibleSeriesByStatus(params) : []}"/>
+    <g:set var="subjects"
+           value="${params.status ? controlledListService.getAllPossibleSubjectsByStatus(params) : []}"/>
+    <g:set var="ddcs"
+           value="${params.status ? controlledListService.getAllPossibleDdcsByStatus(params) : []}"/>
+    <g:set var="languages"
+           value="${params.status ? controlledListService.getAllPossibleLanguagesByStatus(params) : []}"/>
+    <g:set var="yearsFirstOnline"
+           value="${params.status ? controlledListService.getAllPossibleDateFirstOnlineYearByStatus(params) : []}"/>
+    <g:set var="publishers"
+           value="${params.status ? controlledListService.getAllPossiblePublisherByStatus(params) : []}"/>
+    <g:set var="titleTypes"
+           value="${params.status ? controlledListService.getAllPossibleTitleTypesByStatus(params) : []}"/>
+    <g:set var="mediumTypes"
+           value="${params.status ? controlledListService.getAllPossibleMediumTypesByStatus(params) : []}"/>
+    <g:set var="coverageDepths"
+           value="${params.status ? controlledListService.getAllPossibleCoverageDepthsByStatus(params) : []}"/>
+</g:elseif>
+
 <g:set var="availableStatus" value="${RefdataCategory.getAllRefdataValues(RDConstants.TIPP_STATUS)-RDStore.TIPP_STATUS_REMOVED}"/>
+
+<g:if test="${actionName == 'currentPermanentTitles'}">
+    <g:set var="availableStatus" value="${availableStatus-RDStore.TIPP_STATUS_EXPECTED}"/>
+</g:if>
 
 <ui:filter>
     <g:form controller="${controllerName}" action="${actionName}" id="${params.id}" method="get" class="ui form">
@@ -51,7 +75,7 @@
         <g:hiddenField name="surveyConfigID" value="${params.surveyConfigID}"/>
         <g:hiddenField name="tab" value="${params.tab}"/>
         <g:hiddenField name="tabStat" value="${params.tabStat}"/>
-        <g:hiddenField name="titleGroup" value="${params.titleGroup}"/>
+        %{--<g:hiddenField name="titleGroup" value="${params.titleGroup}"/>--}%
 
         <div class="four fields">
             <div class="field">
@@ -262,7 +286,7 @@
 
 
         <div class="three fields">
-            <g:if test="${controllerName == 'subscription' && !showStatsFilter}">
+            <g:if test="${controllerName == 'subscription' && !showStatsFilter && !notShow}">
                 <div class="field">
                     <label>${message(code: 'issueEntitlement.perpetualAccessBySub.label')}</label>
                     <ui:select class="ui fluid dropdown" name="hasPerpetualAccess"
@@ -274,6 +298,16 @@
                 </div>
                 <g:if test="${actionName =='index' && subscription.ieGroups.size() > 0}">
                     <div class="field">
+                        <label>${message(code: 'issueEntitlementGroup.label')}</label>
+                        <g:select class="ui fluid dropdown" name="titleGroup"
+                                   from="${subscription.ieGroups}"
+                                   optionKey="id"
+                                   optionValue="name"
+                                   value="${params.titleGroup}"
+                                   noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+                    </div>
+
+                    %{--<div class="field">
                         <label>${message(code: 'issueEntitlement.inTitleGroups')}</label>
                         <ui:select class="ui fluid dropdown" name="inTitleGroups"
                                       from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
@@ -281,7 +315,7 @@
                                       optionValue="value"
                                       value="${params.inTitleGroups}"
                                       noSelection="${['': message(code: 'default.select.choose.label')]}"/>
-                    </div>
+                    </div>--}%
                 </g:if>
             </g:if>
         </div>

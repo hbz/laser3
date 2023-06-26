@@ -13,11 +13,11 @@
             baseItems << it
         }
     }
-    boolean editable2 = accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_PRO, 'INST_EDITOR')
+    boolean editable2 = contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)
 
 %>
 
-<g:if test="${accessService.ctxPerm(CustomerTypeService.PERMS_INST_BASIC_CONSORTIUM_PRO)}">
+<g:if test="${contextService.hasPerm(CustomerTypeService.PERMS_INST_BASIC_CONSORTIUM_PRO)}">
     <ui:card message="${controllerName == 'survey' ? 'surveyConfigsInfo.docs' : 'license.documents'}" class="documents la-js-hideable ${css_class}" href="${controllerName == 'survey' ? '#modalCreateDocument' : ''}" editable="${(controllerName == 'survey')  ? (actionName == 'show') : (editable || editable2)}">
         <g:each in="${baseItems}" var="docctx">
            <g:if test="${docctx.isDocAFile() && (docctx.status?.value != 'Deleted')}">
@@ -52,7 +52,7 @@
                             <ui:documentIcon doc="${docctx.owner}" showText="false" showTooltip="true"/>
 
                             %{--//Vorerst alle Umfrage Dokumente als geteilt nur Kennzeichen--}%
-                            <span  class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.on')}">
+                            <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.on')}">
                                 <i class="green alternate share icon"></i>
                             </span>
                         </div>

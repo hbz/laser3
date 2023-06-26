@@ -12,136 +12,97 @@
         <ui:crumb controller="myInstitution" action="surveyInfos"
                      params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id]" message="issueEntitlementsSurvey.label"/>
     </g:else>
-    <ui:crumb controller="subscription" action="index" id="${newSub.id}" class="active" text="${newSub.name}"/>
+    <ui:crumb controller="subscription" action="index" id="${subscriberSub.id}" class="active" text="${subscriberSub.name}"/>
 </ui:breadcrumbs>
 
 <ui:controlButtons>
     <ui:exportDropdown>
 
         <div class="header">KBART Exports</div>
-        <g:if test="${surveyConfig.pickAndChoosePerpetualAccess}">
-            <ui:exportDropdownItem>
-                <g:link class="item" action="renewEntitlementsWithSurvey"
-                        id="${newSub.id}"
-                        params="${[surveyConfigID: surveyConfig.id,
-                                   exportKBart   : true,
-                                   tab           : 'toBeSelectedIEs']}">${message(code: 'renewEntitlementsWithSurvey.toBeSelectedIEs')}</g:link>
-            </ui:exportDropdownItem>
-        </g:if>
 
         <ui:exportDropdownItem>
             <g:link class="item" action="renewEntitlementsWithSurvey"
-                    id="${newSub.id}"
+                    id="${subscriberSub.id}"
                     params="${[surveyConfigID: surveyConfig.id,
                                exportKBart   : true,
-                               tab           : 'allIEs']}">${message(code: 'renewEntitlementsWithSurvey.selectableTitles')}</g:link>
+                               tab           : 'allTipps']}">${message(code: 'renewEntitlementsWithSurvey.selectableTitles')}</g:link>
         </ui:exportDropdownItem>
 
-        <g:if test="${countCurrentIEs > 0}">
+        <g:if test="${countCurrentPermanentTitles > 0}">
 
             <ui:exportDropdownItem>
                 <g:link class="item" action="renewEntitlementsWithSurvey"
-                        id="${newSub.id}"
+                        id="${subscriberSub.id}"
                         params="${[surveyConfigID: surveyConfig.id,
                                    exportKBart   : true,
-                                   tab           : 'currentIEs']}">${message(code: 'renewEntitlementsWithSurvey.currentTitles')}</g:link>
+                                   tab           : 'currentPerpetualAccessIEs']}">${message(code: 'renewEntitlementsWithSurvey.currentTitles')}</g:link>
             </ui:exportDropdownItem>
         </g:if>
 
-        <ui:exportDropdownItem>
+%{--        <ui:exportDropdownItem>
             <g:link class="item" action="renewEntitlementsWithSurvey"
-                    id="${newSub.id}"
+                    id="${subscriberSub.id}"
                     params="${[surveyConfigID: surveyConfig.id,
                                exportKBart   : true,
                                tab           : 'selectedIEs']}">${message(code: 'renewEntitlementsWithSurvey.currentTitlesSelect')}</g:link>
-        </ui:exportDropdownItem>
+        </ui:exportDropdownItem>--}%
 
         <div class="divider"></div>
 
         <div class="header">${message(code: 'default.button.exports.xls')}s</div>
 
-        <g:if test="${surveyConfig.pickAndChoosePerpetualAccess}">
-            <ui:exportDropdownItem>
-                <g:link class="item" action="renewEntitlementsWithSurvey"
-                        id="${newSub.id}"
-                        params="${[surveyConfigID: surveyConfig.id,
-                                   exportXLS     : true,
-                                   tab           : 'toBeSelectedIEs']}">${message(code: 'renewEntitlementsWithSurvey.toBeSelectedIEs')}</g:link>
-            </ui:exportDropdownItem>
-        </g:if>
-
         <ui:exportDropdownItem>
             <g:link class="item" action="renewEntitlementsWithSurvey"
-                    id="${newSub.id}"
+                    id="${subscriberSub.id}"
                     params="${[surveyConfigID: surveyConfig.id,
                                exportXLS     : true,
-                               tab           : 'allIEs']}">${message(code: 'renewEntitlementsWithSurvey.selectableTitles')}</g:link>
+                               tab           : 'allTipps']}">${message(code: 'renewEntitlementsWithSurvey.selectableTitles')}</g:link>
         </ui:exportDropdownItem>
 
-        <g:if test="${countCurrentIEs > 0}">
+        <g:if test="${countCurrentPermanentTitles > 0}">
             <ui:exportDropdownItem>
                 <g:link class="item" action="renewEntitlementsWithSurvey"
-                        id="${newSub.id}"
+                        id="${subscriberSub.id}"
                         params="${[surveyConfigID : surveyConfig.id,
                                    exportXLS     : true,
-                                   tab           : 'currentIEs']}">
+                                   tab           : 'currentPerpetualAccessIEs']}">
                     ${message(code: 'renewEntitlementsWithSurvey.currentTitles')}
                 </g:link>
             </ui:exportDropdownItem>
         </g:if>
 
-        <ui:exportDropdownItem>
-            <g:link class="item" action="renewEntitlementsWithSurvey"
-                    id="${newSub.id}"
-                    params="${[surveyConfigID: surveyConfig.id,
-                               exportXLS     : true,
-                               tab           : 'selectedIEs']}">${message(code: 'renewEntitlementsWithSurvey.currentTitlesSelect')}</g:link>
-        </ui:exportDropdownItem>
 
-        <g:if test="${showStatisticByParticipant && surveyConfig.pickAndChoosePerpetualAccess}">
+%{--        <g:if test="${showStatisticByParticipant && params.tab == 'topUsed'}">
             <ui:exportDropdownItem>
                 <g:link class="item statsExport" action="renewEntitlementsWithSurvey"
-                        id="${newSub.id}"
+                        id="${subscriberSub.id}"
                         params="${[surveyConfigID : surveyConfig.id,
                                    exportForImport: true,
-                                   tab            : 'toBeSelectedIEs',
-                                   revision: revision]}">
-                    ${message(code: 'renewEntitlementsWithSurvey.toBeSelectedIEs')} + ${message(code: 'default.stats.label')}
-                </g:link>
-            </ui:exportDropdownItem>
-        </g:if>
-
-        <g:if test="${showStatisticByParticipant}">
-            <ui:exportDropdownItem>
-                <g:link class="item statsExport" action="renewEntitlementsWithSurvey"
-                        id="${newSub.id}"
-                        params="${[surveyConfigID : surveyConfig.id,
-                                   exportForImport: true,
-                                   tab            : 'allIEs',
+                                   tab            : 'allTipps',
                                    revision: revision]}">
                     ${message(code: 'renewEntitlementsWithSurvey.selectableTitles')} + ${message(code: 'default.stats.label')}
                 </g:link>
             </ui:exportDropdownItem>
         </g:if>
 
-        <g:if test="${showStatisticByParticipant}">
+        <g:if test="${showStatisticByParticipant && params.tab == 'topUsed'}">
             <ui:exportDropdownItem>
                 <g:link class="item statsExport" action="renewEntitlementsWithSurvey"
-                        id="${newSub.id}"
+                        id="${subscriberSub.id}"
                         params="${[surveyConfigID: surveyConfig.id,
                                    exportXLSStats     : true,
-                                   loadFor       : 'allIEsStats',
+                                   loadFor       : 'allTippsStats',
                                    revision: revision]}">${message(code:'default.usage.exports.filtered')} "${message(code: 'default.stats.label')}"</g:link>
             </ui:exportDropdownItem>
             <ui:exportDropdownItem>
                 <g:link class="item statsExport" action="renewEntitlementsWithSurvey"
-                        id="${newSub.id}"
+                        id="${subscriberSub.id}"
                         params="${[surveyConfigID: surveyConfig.id,
                                    exportXLSStats     : true,
                                    loadFor       : 'holdingIEsStats',
                                    revision: revision]}">${message(code:'default.usage.exports.filtered')} "${message(code: 'default.stats.label')}" ${message(code: 'default.stats.holding')}</g:link>
             </ui:exportDropdownItem>
-        </g:if>
+        </g:if>--}%
     </ui:exportDropdown>
 </ui:controlButtons>
 
@@ -215,16 +176,16 @@
 <g:if test="${selectProcess}">
     <ui:msg class="positive" header="${message(code:'renewEntitlementsWithSurvey.issueEntitlementSelect.label')}">
             <g:message code="renewEntitlementsWithSurvey.issueEntitlementSelect.selectProcess"
-                       args="[selectProcess.processCount, countAllIEs, selectProcess.countSelectIEs]"/>
+                       args="[selectProcess.processCount, countAllTipps, selectProcess.countSelectTipps]"/>
     </ui:msg>
 </g:if>
 
 
-<g:if test="${(params.tab == 'allIEs' || params.tab == 'allIEsStats' || params.tab == 'topUsed') && editable}">
+<g:if test="${(params.tab == 'allTipps') && editable}">
 
     <ui:greySegment>
         <g:form class="ui form" controller="subscription" action="renewEntitlementsWithSurvey"
-                params="${[id: newSub.id, surveyConfigID: surveyConfig.id, tab: params.tab]}"
+                params="${[id: subscriberSub.id, surveyConfigID: surveyConfig.id, tab: params.tab]}"
                 method="post" enctype="multipart/form-data">
 
             <h4 class="ui dividing header"><g:message code="renewEntitlementsWithSurvey.issueEntitlementSelect.label"/>
@@ -236,10 +197,10 @@
                 %{--<div class="field">
                     ${message(code:'renewEntitlementsWithSurvey.issueEntitlementSelect.uploadFile.info')}
                     <g:link class="item" action="renewEntitlementsWithSurvey"
-                            id="${newSub.id}"
+                            id="${subscriberSub.id}"
                             params="${[surveyConfigID: surveyConfig.id,
                                        exportForImport   : true,
-                                       tab           : 'allIEs']}">
+                                       tab           : 'allTipps']}">
                         ${message(code:'renewEntitlementsWithSurvey.issueEntitlementSelect.uploadFile.info2')}
                     </g:link> ${message(code:'renewEntitlementsWithSurvey.issueEntitlementSelect.uploadFile.info3')}
                 </div>--}%
@@ -282,84 +243,84 @@
 <div class="row">
     <div class="column">
 
-        <laser:render template="/templates/filter/tipp_ieFilter" model="[showStatsFilter: params.tab in ['allIEsStats', 'topUsed']]"/>
+        <laser:render template="/templates/filter/tipp_ieFilter" model="[showStatsFilter: params.tab in ['topUsed'], notShow: params.tab == 'allTipps', fillDropdownsWithPackage: params.tab == 'allTipps']"/>
 
     </div>
 </div><!--.row-->
 
-<g:if test="${num_ies_rows}">
-    <div class="row">
-        <div class="column">
-
-            <div class="ui blue large label"><g:message code="title.plural"/>: <div class="detail">${num_ies_rows}</div>
-            </div>
-        </div>
-    </div>
-</g:if>
-
 <br />
 <ui:tabs actionName="${actionName}">
     <ui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
-                    params="[id: newSub.id, surveyConfigID: surveyConfig.id, tab: 'allIEs']"
-                    text="${message(code: "renewEntitlementsWithSurvey.selectableTitles")}" tab="allIEs"
-                    counts="${countAllIEs}"/>
-    <g:if test="${surveyConfig.pickAndChoosePerpetualAccess}">
-        <ui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
-                        params="[id: newSub.id, surveyConfigID: surveyConfig.id, tab: 'toBeSelectedIEs']"
-                        text="${message(code: "renewEntitlementsWithSurvey.toBeSelectedIEs")}" tab="toBeSelectedIEs"
-                        counts="${toBeSelectedIEs}"/>
-    </g:if>
+                    params="[id: subscriberSub.id, surveyConfigID: surveyConfig.id, tab: 'allTipps']"
+                    text="${message(code: "renewEntitlementsWithSurvey.selectableTitles")}" tab="allTipps"
+                    counts="${countAllTipps}"/>
     <ui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
-                    params="[id: newSub.id, surveyConfigID: surveyConfig.id, tab: 'selectedIEs']"
+                    params="[id: subscriberSub.id, surveyConfigID: surveyConfig.id, tab: 'selectedIEs']"
                     text="${message(code: "renewEntitlementsWithSurvey.currentTitlesSelect")}" tab="selectedIEs"
                     counts="${countSelectedIEs}"/>
-    <ui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
-                    params="[id: newSub.id, surveyConfigID: surveyConfig.id, tab: 'currentIEs']"
-                    text="${message(code: "renewEntitlementsWithSurvey.currentTitles")}" tab="currentIEs"
-                    counts="${countCurrentIEs}"/>
+    <g:link controller="subscription" action="renewEntitlementsWithSurvey"
+            class="item ${'currentPerpetualAccessIEs' == params.tab ? 'active' : ''}"
+            params="[id: subscriberSub.id, surveyConfigID: surveyConfig.id, tab: 'currentPerpetualAccessIEs']">
+        <g:message code="renewEntitlementsWithSurvey.currentTitles"/>
+            <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
+                  data-content="${message(code: 'renewEntitlementsWithSurvey.currentTitles.mouseover')}">
+                <i class="question circle icon"></i>
+            </span>
+        <div class="ui circular label">${countCurrentPermanentTitles}</div>
+    </g:link>
 
-    <g:if test="${showStatisticByParticipant}">
+%{--    <g:if test="${showStatisticByParticipant}">
         <ui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
-                     params="[id: newSub.id, surveyConfigID: surveyConfig.id, tab: 'stats']"
+                     params="[id: subscriberSub.id, surveyConfigID: surveyConfig.id, tab: 'stats']"
                      text="${message(code: "renewEntitlementsWithSurvey.stats")}" tab="stats"/>
         <ui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
-                     params="[id: newSub.id, surveyConfigID: surveyConfig.id, tab: 'topUsed']"
+                     params="[id: subscriberSub.id, surveyConfigID: surveyConfig.id, tab: 'topUsed']"
                      text="${message(code: "renewEntitlementsWithSurvey.topUsed")}" tab="topUsed"/>
-        <%--<ui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
-                        params="[id: newSub.id, surveyConfigID: surveyConfig.id, tab: 'holdingIEsStats']"
-                        text="${message(code: "renewEntitlementsWithSurvey.holdingIEsStats")}" tab="holdingIEsStats"/>--%>
-    </g:if>
+    </g:if>--}%
 
 </ui:tabs>
 
 
-<%--<g:if test="${params.tab in ['allIEsStats', 'holdingIEsStats', 'topUsed']}">
-    <g:if test="${params.reportType && params.metricType}">
-        <ui:tabs class="la-overflowX-auto">
-            <ui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
-                         params="${params + [tabStat: 'total']}"
-                         text="${message(code: 'default.usage.allUsageGrid.header')}" tab="total" subTab="tabStat"/>
-            <g:each in="${monthsInRing}" var="month">
-                <ui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
-                             params="${params + [tabStat: DateUtils.getSDF_yyyyMM().format(month)]}" text="${DateUtils.getSDF_yyyyMM().format(month)}"
-                             tab="${DateUtils.getSDF_yyyyMM().format(month)}" subTab="tabStat"/>
-            </g:each>
-        </ui:tabs>
-    </g:if>
-</g:if>--%>
 <div class="ui bottom attached tab active segment">
-    <g:form name="renewEntitlements" id="${newSub.id}" action="processRenewEntitlementsWithSurvey" class="ui form">
+    <g:form name="renewEntitlements" id="${subscriberSub.id}" action="processRenewEntitlementsWithSurvey" class="ui form">
     <g:hiddenField id="packageId" name="packageId" value="${params.packageId}"/>
     <g:hiddenField name="surveyConfigID" value="${surveyConfig.id}"/>
     <g:hiddenField name="tab" value="${params.tab}"/>
-        <div class="ui segment grid la-filter">
-            <div class="field" style="padding: 10px 15px">
-                <g:if test="${editable}"><input id="select-all" type="checkbox" name="chkall" ${allChecked}/></g:if>
+        <g:if test="${params.tab == 'allTipps' || params.tab == 'selectedIEs' || params.tab == 'currentPerpetualAccessIEs'}">
+            <%
+                Map<String, String>
+                sortFieldMap = ['tipp.sortname': message(code: 'title.label')]
+                if (journalsOnly) {
+                    sortFieldMap['startDate'] = message(code: 'default.from')
+                    sortFieldMap['endDate'] = message(code: 'default.to')
+                } else {
+                    sortFieldMap['tipp.dateFirstInPrint'] = message(code: 'tipp.dateFirstInPrint')
+                    sortFieldMap['tipp.dateFirstOnline'] = message(code: 'tipp.dateFirstOnline')
+                }
+                sortFieldMap['tipp.accessStartDate'] = "${message(code: 'subscription.details.access_dates')} ${message(code: 'default.from')}"
+                sortFieldMap['tipp.accessEndDate'] = "${message(code: 'subscription.details.access_dates')} ${message(code: 'default.to')}"
+            %>
+            <div class="ui grid">
+                <div class="row">
+                    <div class="eight wide column">
+                        <h3 class="ui icon header la-clear-before la-noMargin-top"><span
+                                class="ui circular  label">${num_rows}</span> <g:message code="title.filter.result"/>
+                        </h3>
+                    </div>
+                </div><!--.row-->
+            </div><!--.grid-->
+
+            <div class="ui form">
+                <div class="three wide fields">
+                    <div class="field">
+                        <ui:sortingDropdown noSelection="${message(code:'default.select.choose.label')}" from="${sortFieldMap}" sort="${params.sort}" order="${params.order}"/>
+                    </div>
+                </div>
             </div>
-        </div>
+        </g:if>
 
 
-        <g:if test="${params.tab in ['allIEsStats', 'holdingIEsStats', 'topUsed']}">
+        <g:if test="${params.tab in ['topUsed']}">
             <g:if test="${usages && usages.size() > 0}">
                 <laser:render template="/templates/survey/entitlementTableSurveyWithStats"
                               model="${[stats: usages, sumsByTitle: sumsByTitle, showPackage: true, showPlattform: true]}"/>
@@ -378,6 +339,10 @@
                 <g:message code="renewEntitlementsWithSurvey.stats.button"/>
             </g:link>
         </g:elseif>
+        <g:elseif test="${params.tab == 'allTipps'}">
+            <laser:render template="/templates/survey/tippTableSurvey"
+                          model="${[titlesList: titlesList, showPackage: true, showPlattform: true]}"/>
+        </g:elseif>
         <g:else>
             <laser:render template="/templates/survey/entitlementTableSurvey"
                       model="${[ies: [sourceIEs: sourceIEs], showPackage: true, showPlattform: true]}"/>
@@ -389,7 +354,7 @@
             <div class="two fields">
             <g:if test="${params.tab != 'stats'}">
                 <div class="eight wide field" style="text-align: left;">
-                    <g:if test="${editable && params.tab != 'selectedIEs'}">
+                    <g:if test="${editable && params.tab == 'allTipps'}">
                         <button type="submit" name="process" id="processButton" value="preliminary" class="ui green button">
                             ${params.tab == 'topUsed' ? '' :checkedCount} <g:message code="renewEntitlementsWithSurvey.preliminary"/></button>
                     </g:if>
@@ -422,13 +387,12 @@
 
 </g:form>
 </div>
-<g:if test="${sourceIEs}">
+<g:if test="${sourceIEs || titlesList}">
     <ui:paginate action="renewEntitlementsWithSurvey" controller="subscription" params="${params}"
-                    max="${max}" total="${num_ies_rows}"/>
+                    max="${max}" total="${num_rows}"/>
 </g:if>
 
 <laser:script file="${this.getGroovyPageFileName()}">
-
 
         JSPC.app.selectAll = function () {
            if ( $('#select-all').is( ":checked") ){
@@ -464,22 +428,25 @@
                 medium: ${params.list("medium")},
                 title_types: ${params.list("title_types")},
                 publishers: ${params.list("pulishers")},
-                hasPerpetualAccess: "${params.hasPerpetualAccess}"
+                hasPerpetualAccess: "${params.hasPerpetualAccess}",
+                titleGroup: "${params.titleGroup}"
             };
             $.ajax({
                 url: "<g:createLink controller="ajax" action="updateChecked" />",
                 data: {
-                    sub: "${newSub.id}?${params.tab}",
+                    sub: "${subscriberSub.id}?${params.tab}",
                     index: index,
                     filterParams: JSON.stringify(filterParams),
                     referer: "${actionName}",
                     checked: checked,
                     tab: "${params.tab}",
                     baseSubID: "${subscription.id}",
-                    newSubID: "${newSub.id}"
+                    newSubID: "${subscriberSub.id}",
+                    surveyConfigID: "${surveyConfig.id}"
+
                 },
                 success: function (data) {
-                        <g:if test="${editable && params.tab != 'selectedIEs'}">
+                        <g:if test="${editable && params.tab == 'allTipps'}">
                             $("#processButton").html(data.checkedCount + " ${g.message(code: 'renewEntitlementsWithSurvey.preliminary')}");
                         </g:if>
 
@@ -498,36 +465,42 @@
         JSPC.app.selectAll();
     });
 
-
-
     $(".bulkcheck").change(function() {
-        console.log("geklickt");
         var index = $(this).parents(".la-js-checkItem").attr("data-index");
 
             if (this.checked) {
-                $("div[data-index='" + index + "'").addClass("positive");
+                $("div[data-index='" + index + "']").addClass("positive");
             } else {
-                $("div[data-index='" + index + "'").removeClass("positive");
+                $("div[data-index='" + index + "']").removeClass("positive");
             }
 
+    <g:if test="${editable && params.tab == 'allTipps'}">
+        JSPC.app.updateSelectionCache($(this).parents(".la-js-checkItem").attr("data-tippId"), $(this).prop('checked'));
+    </g:if>
 
+    <g:if test="${editable && params.tab == 'selectedIEs'}">
         JSPC.app.updateSelectionCache($(this).parents(".la-js-checkItem").attr("data-ieId"), $(this).prop('checked'));
+    </g:if>
+
     });
 
     $(".statsExport").on('click', function(e) {
         e.preventDefault();
         /*
-        kept for reasons of debug
+        kept for reasons of debug*/
         console.log($("#reportType").dropdown('get value'));
         console.log($("#metricType").dropdown('get value'));
         console.log($("#accessType").dropdown('get value'));
         console.log($("#accessMethod").dropdown('get value'));
-        */
+
         let url = $(this).attr('href')+'&reportType='+$("#reportType").dropdown('get value');
-        url+='&metricType='+$("#metricType").dropdown('get value');
-        url+='&accessType='+$("#accessType").dropdown('get value');
-        url+='&accessMethod='+$("#accessMethod").dropdown('get value');
-        if($("#platform").dropdown('get value') !== '') {
+        if($("#metricType").dropdown('get value').length > 0)
+            url+='&metricType='+$("#metricType").dropdown('get value');
+        if($("#accessType").dropdown('get value').length > 0)
+            url+='&accessType='+$("#accessType").dropdown('get value');
+        if($("#accessMethod").dropdown('get value').length > 0)
+            url+='&accessMethod='+$("#accessMethod").dropdown('get value');
+        if($("#platform").dropdown('get value').length > 0) {
             $.each($("#platform").dropdown('get value'), function(i, val) {
                 url+='&platform='+val;
             });
@@ -536,7 +509,7 @@
             url+='&platform='+$("#platform").val();
         }
         //do not forget to communicate that to the users!
-        if($("#reportType").dropdown('get value') !== '')
+        if($("#reportType").dropdown('get value') !== '' && $("#reportType").dropdown('get value').length > 0)
             window.location.href = url;
     });
 </laser:script>

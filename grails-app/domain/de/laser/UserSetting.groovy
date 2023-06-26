@@ -23,8 +23,8 @@ class UserSetting {
      */
     static enum KEYS {
         PAGE_SIZE                                   (Integer),
-        DASHBOARD                                   (Org),
         THEME                                       (RefdataValue, RDConstants.USER_SETTING_THEME),
+        DASHBOARD                                   (Org), // todo - remove after migration
         DASHBOARD_TAB                               (RefdataValue, RDConstants.USER_SETTING_DASHBOARD_TAB),
         DASHBOARD_ITEMS_TIME_WINDOW                 (Integer),
         LANGUAGE                                    (RefdataValue, RDConstants.LANGUAGE),

@@ -11,7 +11,7 @@
             <input type="hidden" name="tab" value="${params.tab}"/>
             <input type="hidden" name="propertiesFilterPropDef" value="${propertiesFilterPropDef}"/>
         </g:if>
-        <div class="three fields">
+        <div class="five fields">
             %{--<div class="four fields">--}%
             <% /* 1-1 */ %>
             <div class="field">
@@ -45,6 +45,19 @@
             <div class="field">
                 <ui:datepicker label="default.valid_on.label" id="validOn" name="validOn" placeholder="filter.placeholder" value="${validOn}" />
             </div>
+            <% /* 1-4 */ %>
+            <div class="field">
+                <label for="referenceYears">${message(code: 'subscription.referenceYear.label')}</label>
+                <select id="referenceYears" name="referenceYears" multiple="" class="ui search selection fluid dropdown">
+                    <option value="">${message(code: 'default.select.choose.label')}</option>
+                    <g:each in="${referenceYears}" var="referenceYear">
+                        <option <%=(params.list('referenceYears').contains(referenceYear.toString())) ? 'selected="selected"' : ''%>
+                                value="${referenceYear}">
+                            ${referenceYear}
+                        </option>
+                    </g:each>
+                </select>
+            </div>
             <% /*
             <!-- 1-4 -->
             <div class="field disabled">
@@ -57,7 +70,7 @@
                                   id="durationDate" name="durationDate" placeholder="filter.placeholder" value="${params.durationDate}"/>
             </div>
             */ %>
-            <% /* 1-4 */ %>
+            <% /* 1-5 */ %>
             <div class="field">
                 <label for="status"><g:message code="default.status.label"/></label>
                 <select id="status" name="status" multiple="" class="ui search selection fluid dropdown">
@@ -182,13 +195,14 @@
 
         <div class="four fields">
             <div class="field">
-                <label for="referenceYears">${message(code: 'subscription.referenceYear.label')}</label>
-                <select id="referenceYears" name="referenceYears" multiple="" class="ui search selection fluid dropdown">
+                <label>${message(code: 'subscription.holdingSelection.label')}</label>
+                <select id="holdingSelection" name="holdingSelection" multiple="" class="ui search selection fluid dropdown">
                     <option value="">${message(code: 'default.select.choose.label')}</option>
-                    <g:each in="${referenceYears}" var="referenceYear">
-                        <option <%=(params.list('referenceYears').contains(referenceYear.toString())) ? 'selected="selected"' : ''%>
-                                value="${referenceYear}">
-                            ${referenceYear}
+
+                    <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_HOLDING)}" var="holdingSelection">
+                        <option <%=(params.list('holdingSelection').contains(holdingSelection.id.toString())) ? 'selected="selected"' : ''%>
+                                value="${holdingSelection.id}">
+                            ${holdingSelection.getI10n('value')}
                         </option>
                     </g:each>
                 </select>
@@ -214,7 +228,7 @@
             </div>
             <% /* 4-2 */ %>
         <%-- TODO [ticket=2276] provisoric, name check is in order to prevent id mismatch --%>
-            <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_INST_PRO) || institution.globalUID == Org.findByName('LAS:eR Backoffice').globalUID}">
+            <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_INST_PRO) || institution.globalUID == Org.findByName('LAS:eR Backoffice').globalUID}">
                 <div class="field">
                     <fieldset id="subscritionType">
                         <label>${message(code: 'myinst.currentSubscriptions.subscription_type')}</label>
@@ -244,7 +258,7 @@
                 <div class="field"></div>
             </g:else>
 
-            <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_INST_BASIC)}">
+            <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_INST_BASIC)}">
                 <div class="field">
                     <fieldset>
                         <legend id="la-legend-searchDropdown">${message(code: 'gasco.filter.consortialAuthority')}</legend>

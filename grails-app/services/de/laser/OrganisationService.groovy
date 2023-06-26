@@ -1,15 +1,15 @@
 package de.laser
 
+import de.laser.api.v0.ApiToolkit
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.config.ConfigMapper
 import de.laser.properties.PropertyDefinition
 import de.laser.remote.ApiSource
-import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
-import de.laser.utils.AppUtils
 import de.laser.utils.LocaleUtils
 import grails.gorm.transactions.Transactional
+import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
 
 /**
@@ -21,8 +21,6 @@ class OrganisationService {
     ContextService contextService
     MessageSource messageSource
     ExportService exportService
-    InstAdmService instAdmService
-    UserService userService
     GokbService gokbService
 
     List<String> errors = []
@@ -213,86 +211,6 @@ class OrganisationService {
     }
 
     /**
-     * Should be used for an empty QA environment only; currently disused as new users should start completely from scratch.
-     * Creates a bunch of (now empty; initially, also a hard-coded test data set was defined as well!) organisations with a set of users assigned to it
-     */
-    void createOrgsFromScratch() {
-        String currentServer = AppUtils.getCurrentServer()
-        Map<String,Role> customerTypes = [
-                konsorte:   Role.findByAuthority( CustomerTypeService.ORG_INST_BASIC ),
-                vollnutzer: Role.findByAuthority( CustomerTypeService.ORG_INST_PRO ),
-                konsortium: Role.findByAuthority( CustomerTypeService.ORG_CONSORTIUM_BASIC )
-        ]
-        RefdataValue institution = RDStore.OT_INSTITUTION
-        RefdataValue consortium = RDStore.OT_CONSORTIUM
-        //create home org
-        Org hbz = Org.findByName('hbz Konsortialstelle Digitale Inhalte')
-        if(!hbz) {
-            hbz = createOrg([name: 'hbz Konsortialstelle Digitale Inhalte', sortname: 'Köln, hbz', orgType: [consortium], sector: RDStore.O_SECTOR_HIGHER_EDU])
-            if(!hbz.hasErrors()) {
-                OrgSetting.add(hbz,OrgSetting.KEYS.CUSTOMER_TYPE,customerTypes.konsortium)
-                ConfigMapper.getConfig('systemUsers', List)?.each { su ->
-                    User admin = User.findByUsername(su.name)
-                    instAdmService.createAffiliation(admin, hbz, Role.findByAuthority('INST_ADM'), null)
-                    admin.getSetting(UserSetting.KEYS.DASHBOARD,hbz)
-                }
-            }
-            else if(hbz.hasErrors()) {
-                log.error(hbz.errors.toString())
-                //log.error(e.getStackTrace())
-            }
-        }
-        if(currentServer == AppUtils.QA) { //include SERVER_LOCAL when testing in local environment
-            Map<String,Map> modelOrgs = [konsorte: [name:'Musterkonsorte', sortname:'Musterstadt, Muster', orgType: [institution]],
-                                         vollnutzer: [name:'Mustereinrichtung',sortname:'Musterstadt, Uni', orgType: [institution]],
-                                         konsortium: [name:'Musterkonsortium',orgType: [consortium]]]
-            Map<String,Map> testOrgs = [konsorte: [name:'Testkonsorte',sortname:'Teststadt, Test',orgType: [institution]],
-                                        vollnutzer: [name:'Testeinrichtung',sortname:'Teststadt, Uni',orgType: [institution]],
-                                        konsortium: [name:'Testkonsortium',orgType: [consortium]]]
-            Map<String,Map> QAOrgs = [konsorte: [name:'QA-Konsorte',sortname:'QA-Stadt, QA',orgType: [institution]],
-                                      vollnutzer: [name:'QA-Einrichtung',sortname:'QA-Stadt, Uni',orgType: [institution]],
-                                      konsortium: [name:'QA-Konsortium',orgType: [consortium]]]
-            [modelOrgs,testOrgs,QAOrgs].each { Map<String,Map> orgs ->
-                Map<String,Org> orgMap = [:]
-                orgs.each { String customerType, Map orgData ->
-                    Org org = createOrg(orgData)
-                    if(!org.hasErrors()) {
-                        //other ones are covered by Org.setDefaultCustomerType()
-                        if (customerType in ['vollnutzer', 'konsortium']) {
-                            OrgSetting.add(org, OrgSetting.KEYS.CUSTOMER_TYPE, customerTypes[customerType])
-                            if (customerType == 'konsortium') {
-                                Combo c = new Combo(fromOrg: Org.findByName(orgs.konsorte.name), toOrg: org, type: RDStore.COMBO_TYPE_CONSORTIUM)
-                                c.save()
-                            }
-                        }
-                        orgMap[customerType] = org
-                    }
-                    else if(org.hasErrors())
-                        log.error(org.errors.toString())
-                    //log.error(e.getStackTrace())
-                }
-                userService.setupAdminAccounts(orgMap)
-            }
-        }
-        else if(currentServer == AppUtils.DEV) {
-            userService.setupAdminAccounts([konsortium:hbz])
-        }
-    }
-
-    /**
-     * Creates a new organisation with the given basic parameters and sets the mandatory config settings for it
-     * @param params the parameter {@link Map} containing name, sortname, type and sector
-     * @return the new {@link Org}
-     */
-    Org createOrg(Map params) {
-        Org obj = new Org(name: params.name, sortname: params.sortname, orgType: params.orgType, sector: params.orgSector)
-        if(obj.save()) {
-            initMandatorySettings(obj)
-        }
-        obj
-    }
-
-    /**
      * Helper method to group reader numbers by their key property which is a temporal unit
      * @param readerNumbers the {@link List} of {@link ReaderNumber}s to group
      * @param keyProp may be a dueDate or semester; a temporal unit to group the reader numbers by
@@ -318,9 +236,23 @@ class OrganisationService {
     List<Platform> getAllPlatforms() {
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         Set<String> uuids = []
-        Map<String, Object> result = gokbService.doQuery([user: contextService.getUser(), editUrl: apiSource.editUrl], [max: '1000', offset: '0'], "?componentType=Platform&status=Current")
+        Map<String, Object> result = gokbService.doQuery([user: contextService.getUser(), editUrl: apiSource.editUrl], [max: '1000', offset: '0'], [componentType: 'Platform', status: 'Current'])
         uuids.addAll(result.records.collect { Map platRecord -> platRecord.uuid })
         Platform.executeQuery('select p from Platform p join p.org o where p.gokbId in (:uuids) and p.org is not null order by o.name, o.sortname, p.name', [uuids: uuids])
+    }
+
+    Map<String, Map> getWekbOrgRecords(GrailsParameterMap params, Map result) {
+        Map<String, Object> queryParams = [componentType: "Org"]
+        if (params.curatoryGroup || params.providerRole) {
+            if(params.curatoryGroup)
+                queryParams.curatoryGroupExact = params.curatoryGroup.replaceAll('&','ampersand').replaceAll('\\+','%2B').replaceAll(' ','%20')
+            if(params.providerRole)
+                queryParams.role = RefdataValue.get(params.providerRole).value.replaceAll(' ','%20')
+        }
+        Map<String, Object> wekbResult = gokbService.doQuery(result, [max: 10000, offset: 0], queryParams)
+        if(wekbResult.recordsCount > 0)
+            wekbResult.records.collectEntries { Map wekbRecord -> [wekbRecord.uuid, wekbRecord] }
+        else [:]
     }
 
 }

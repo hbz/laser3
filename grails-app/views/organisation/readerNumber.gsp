@@ -6,13 +6,11 @@
         <laser:render template="breadcrumb"
                       model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView]}"/>
 
-        <g:if test="${editable}">
-            <ui:controlButtons>
-                <laser:render template="actions" />
-            </ui:controlButtons>
-        </g:if>
-
         <ui:h1HeaderWithIcon text="${orgInstance.name}" />
+
+        <ui:controlButtons>
+            <laser:render template="actions" />
+        </ui:controlButtons>
 
         <laser:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: orgInstance.id == contextService.getOrg().id]}"/>
 

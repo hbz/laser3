@@ -1,12 +1,12 @@
 <%@ page import="de.laser.CustomerTypeService; de.laser.storage.BeanStore; de.laser.finance.CostItem; de.laser.Links; de.laser.Person; de.laser.interfaces.CalculatedType; de.laser.storage.RDStore; de.laser.Subscription" %>
 
-<laser:htmlStart text="${BeanStore.getAccessService().ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) ? message(code:'subscription.details.consortiaMembers.label') : ''}" serviceInjection="true" />
+<laser:htmlStart text="${BeanStore.getContextService().hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) ? message(code:'subscription.details.consortiaMembers.label') : ''}" serviceInjection="true" />
 
     <laser:render template="breadcrumb" model="${[ params:params ]}"/>
 
     <ui:controlButtons>
         <ui:exportDropdown>
-            <ui:exportDropdownItem>
+            <%--<ui:exportDropdownItem>
                 <g:if test="${filterSet}">
                     <g:link class="item js-open-confirm-modal"
                             data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
@@ -18,10 +18,11 @@
                 <g:else>
                     <g:link class="item" action="members" params="${params+[exportXLS:true]}">${message(code:'default.button.exports.xls')}</g:link>
                 </g:else>
-            </ui:exportDropdownItem>
+            </ui:exportDropdownItem>--%>
             <ui:exportDropdownItem>
-                <a class="item" data-ui="modal" href="#individuallyExportModal">Click Me Excel Export</a>
+                <a class="item" data-ui="modal" href="#individuallyExportModal">Export</a>
             </ui:exportDropdownItem>
+            <%--
             <ui:exportDropdownItem>
                 <g:if test="${filterSet}">
                     <g:link class="item js-open-confirm-modal"
@@ -81,14 +82,17 @@
                     <g:link class="item" action="members" params="${params+[exportShibboleths:true]}">${message(code:'subscriptionDetails.members.exportShibboleths')}</g:link>
                 </g:else>
             </ui:exportDropdownItem>
+            --%>
         </ui:exportDropdown>
         <laser:render template="actions" />
     </ui:controlButtons>
 
-    <ui:h1HeaderWithIcon>
+    <g:set var="visibleOrgRelationsJoin" value="${visibleOrgRelations.findAll{it.roleType != RDStore.OR_SUBSCRIPTION_CONSORTIA}.sort{it.org.sortname}.collect{it.org}.join(' – ')}"/>
+    <ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}" visibleOrgRelationsJoin="${visibleOrgRelationsJoin}">
         <ui:xEditable owner="${subscription}" field="name" />
-        <ui:totalNumber total="${filteredSubChilds.size() ?: 0}"/>
     </ui:h1HeaderWithIcon>
+    <ui:totalNumber class="la-numberHeader" total="${filteredSubChilds.size() ?: 0}"/>
+
     <ui:anualRings object="${subscription}" controller="subscription" action="members" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
     <laser:render template="nav" />
@@ -168,12 +172,7 @@
                                 </span>
                             </g:if>
 
-                            <g:if test="${subscr.isCustomerType_Inst_Pro()}">
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                                      data-content="${subscr.getCustomerTypeI10n()}">
-                                    <i class="chess rook grey icon"></i>
-                                </span>
-                            </g:if>
+                            <ui:customerTypeIcon org="${subscr}" />
 
                             <div class="ui list">
                                 <g:each in="${Person.getPublicByOrgAndFunc(subscr, 'General contact person')}" var="gcp">
@@ -240,7 +239,7 @@
                                     params="[next: true, memberOrg: subscr.id, memberSubID: sub.id]"><i class="arrow right icon grey"></i></g:link>
                         </g:elseif>
                     </td>
-                    <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
+                    <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
                         <td class="center aligned">
                             <g:set var="license" value="${Links.executeQuery('select li.id from Links li where li.destinationSubscription = :destination and li.linkType = :linktype',[destination:sub,linktype:RDStore.LINKTYPE_LICENSE])}"/>
                             <g:if test="${!license}">
@@ -255,7 +254,7 @@
                             </g:else>
                         </td>
                     </g:if>
-                    <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
+                    <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
                         <td class="center aligned">
                             <g:if test="${!sub.packages}">
                                 <g:link controller="subscription" action="membersSubscriptionsManagement" params="[tab: 'linkPackages']" id="${subscription.id}" class="ui icon ">

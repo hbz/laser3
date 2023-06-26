@@ -21,7 +21,6 @@ class SubscriptionPackage implements Comparable {
   Subscription subscription
   Package pkg
   Date finishDate
-  boolean freezeHolding = false
 
   Date dateCreated
   Date lastUpdated
@@ -33,10 +32,9 @@ class SubscriptionPackage implements Comparable {
   static mapping = {
                 id column:'sp_id'
            version column:'sp_version'
-      subscription column:'sp_sub_fk',  index: 'sp_sub_pkg_idx'
-               pkg column:'sp_pkg_fk',  index: 'sp_sub_pkg_idx'
+      subscription column:'sp_sub_fk',  index: 'sp_sub_idx, sp_sub_pkg_idx'
+               pkg column:'sp_pkg_fk',  index: 'sp_pkg_idx, sp_sub_pkg_idx'
         finishDate column:'sp_finish_date'
-     freezeHolding column:'sp_freeze_holding'
 
     dateCreated column: 'sp_date_created'
     lastUpdated column: 'sp_last_updated'
@@ -109,7 +107,7 @@ class SubscriptionPackage implements Comparable {
    * @return a {@link Set} of {@link IssueEntitlement}s in the {@link Subscription}'s holding which are current and accepted
    */
   Set getIssueEntitlementsofPackage(){
-    this.subscription.issueEntitlements.findAll{(it.status?.id == RDStore.TIPP_STATUS_CURRENT.id) && (it.acceptStatus?.id == RDStore.IE_ACCEPT_STATUS_FIXED.id)}
+    this.subscription.issueEntitlements.findAll{(it.status?.id == RDStore.TIPP_STATUS_CURRENT.id)}
   }
 
   /**
@@ -131,7 +129,7 @@ class SubscriptionPackage implements Comparable {
    */
   String getIEandPackageSize(){
 
-    return '(<span data-tooltip="Titel in der Lizenz"><i class="ui icon archive"></i></span>' + executeQuery('select count(ie.id) from IssueEntitlement ie join ie.subscription s join s.packages sp where sp = :ctx and ie.status = :current and ie.acceptStatus = :fixed',[ctx:this,current:RDStore.TIPP_STATUS_CURRENT,fixed:RDStore.IE_ACCEPT_STATUS_FIXED])[0] + ' / <span data-tooltip="Titel im Paket"><i class="ui icon book"></i></span>' + executeQuery('select count(tipp.id) from TitleInstancePackagePlatform tipp join tipp.pkg pkg where pkg = :ctx and tipp.status = :current',[ctx:this.pkg,current:RDStore.TIPP_STATUS_CURRENT])[0] + ')'
+    return '(<span data-tooltip="Titel in der Lizenz"><i class="ui icon archive"></i></span>' + executeQuery('select count(ie.id) from IssueEntitlement ie join ie.subscription s join s.packages sp where sp = :ctx and ie.status = :current',[ctx:this,current:RDStore.TIPP_STATUS_CURRENT])[0] + ' / <span data-tooltip="Titel im Paket"><i class="ui icon book"></i></span>' + executeQuery('select count(tipp.id) from TitleInstancePackagePlatform tipp join tipp.pkg pkg where pkg = :ctx and tipp.status = :current',[ctx:this.pkg,current:RDStore.TIPP_STATUS_CURRENT])[0] + ')'
   }
 
   /**
@@ -167,6 +165,11 @@ class SubscriptionPackage implements Comparable {
    * @return the {@link PendingChangeConfiguration} for the given config key and this subscription package
    */
   PendingChangeConfiguration getPendingChangeConfig(String config) {
-    PendingChangeConfiguration.findBySubscriptionPackageAndSettingKey(this,config)
+    if(this.subscription.instanceOf) {
+      if(AuditConfig.getConfig(this.subscription.instanceOf, config))
+        PendingChangeConfiguration.executeQuery('select pcc from PendingChangeConfiguration pcc join pcc.subscriptionPackage sp where sp.subscription.instanceOf = :sub and sp.settingKey = :config', [sub: this.subscription.instanceOf, config: config]).get(0)
+    }
+    else
+      PendingChangeConfiguration.findBySubscriptionPackageAndSettingKey(this,config)
   }
 }

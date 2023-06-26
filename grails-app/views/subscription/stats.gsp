@@ -8,7 +8,9 @@
         <ui:controlButtons>
             <laser:render template="actions" />
         </ui:controlButtons>
-        <ui:h1HeaderWithIcon>
+
+        <g:set var="visibleOrgRelationsJoin" value="${visibleOrgRelations.findAll{it.roleType != RDStore.OR_SUBSCRIPTION_CONSORTIA}.sort{it.org.sortname}.collect{it.org}.join(' – ')}"/>
+        <ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}" visibleOrgRelationsJoin="${visibleOrgRelationsJoin}">
             <laser:render template="iconSubscriptionIsChild"/>
             ${subscription.name}
         </ui:h1HeaderWithIcon>
@@ -31,9 +33,10 @@
                 <div class="ui two doubling stackable cards">
                     <div class="ui card">
                         <div class="content">
-                            <h4>
-                                ${platformInstanceRecord.name}
-                            </h4>
+                            <dl>
+                                <dt><g:message code="platform.name"/></dt>
+                                <dd>${platformInstanceRecord.name} <g:link url="${platformInstanceRecord.wekbUrl}" target="_blank" class="la-popup-tooltip la-delay" data-content="we:kb Link"><i class="ui icon la-gokb"></i></g:link></dd>
+                            </dl>
                             <g:if test="${platformInstanceRecord.statisticsFormat}">
                                 <dl>
                                     <dt><g:message code="platform.stats.format"/></dt>
@@ -51,7 +54,7 @@
                                     <dt><g:message code="platform.stats.adminURL"/></dt>
                                     <dd>
                                         <g:if test="${platformInstanceRecord.statisticsAdminPortalUrl.startsWith('http')}">
-                                            ${platformInstanceRecord.statisticsAdminPortalUrl} <a href="${platformInstanceRecord.statisticsAdminPortalUrl}"><i title="${message(code: 'platform.stats.adminURL')} Link" class="external alternate icon"></i></a>
+                                            ${platformInstanceRecord.statisticsAdminPortalUrl} <ui:linkWithIcon href="${platformInstanceRecord.statisticsAdminPortalUrl}"/>
                                         </g:if>
                                         <g:else>
                                             <g:message code="default.url.invalid"/>
@@ -76,7 +79,7 @@
                                     <dt><g:message code="platform.stats.counter.registryURL"/></dt>
                                     <dd>
                                         <g:if test="${platformInstanceRecord.counterRegistryUrl.startsWith('http')}">
-                                            ${platformInstanceRecord.counterRegistryUrl} <a href="${platformInstanceRecord.counterRegistryUrl}"><i title="${message(code: 'platform.stats.counter.registryURL')} Link" class="external alternate icon"></i></a>
+                                            ${platformInstanceRecord.counterRegistryUrl} <ui:linkWithIcon href="${platformInstanceRecord.counterRegistryUrl}"/>
                                         </g:if>
                                         <g:else>
                                             <g:message code="default.url.invalid"/>
@@ -117,7 +120,7 @@
                                     <dt><g:message code="platform.stats.counter.r4serverURL"/></dt>
                                     <dd>
                                         <g:if test="${platformInstanceRecord.counterR4SushiServerUrl.startsWith('http')}">
-                                            ${platformInstanceRecord.counterR4SushiServerUrl} <a href="${platformInstanceRecord.counterR4SushiServerUrl}"><i title="${message(code: 'platform.stats.counter.r4serverURL')} Link" class="external alternate icon"></i></a>
+                                            ${platformInstanceRecord.counterR4SushiServerUrl} <ui:linkWithIcon href="${platformInstanceRecord.counterR4SushiServerUrl}"/>
                                         </g:if>
                                         <g:else>
                                             ${platformInstanceRecord.counterR4SushiServerUrl}
@@ -130,33 +133,13 @@
                                     <dt><g:message code="platform.stats.counter.r5serverURL"/></dt>
                                     <dd>
                                         <g:if test="${platformInstanceRecord.counterR5SushiServerUrl.startsWith('http')}">
-                                            ${platformInstanceRecord.counterR5SushiServerUrl} <a href="${platformInstanceRecord.counterR5SushiServerUrl}"><i title="${message(code: 'platform.stats.counter.r5serverURL')} Link" class="external alternate icon"></i></a>
+                                            ${platformInstanceRecord.counterR5SushiServerUrl} <ui:linkWithIcon href="${platformInstanceRecord.counterR5SushiServerUrl}"/>
                                         </g:if>
                                         <g:else>
                                             ${platformInstanceRecord.counterR5SushiServerUrl}
                                         </g:else>
                                     </dd>
                                 </dl>
-                            </g:if>
-                        <%-- lastRun and centralApiKey come from LAS:eR, not from we:kb! --%>
-                            <g:if test="${platformInstanceRecord.lastRun}">
-                                <dl>
-                                    <dt><g:message code="platform.stats.counter.lastRun"/></dt>
-                                    <dd>
-                                        <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${platformInstanceRecord.lastRun}"/>
-                                    </dd>
-                                </dl>
-                            </g:if>
-                            <g:if test="${platformInstanceRecord.counterR5SushiApiSupported}">
-                                <sec:ifAnyGranted roles="ROLE_YODA">
-                                    <g:set var="laserPlat" value="${Platform.get(platformInstanceRecord.id)}"/>
-                                    <dl>
-                                        <dt><g:message code="platform.stats.counter.centralApiKey"/></dt>
-                                        <dd>
-                                            <ui:xEditable owner="${laserPlat}" field="centralApiKey" overwriteEditable="${true}"/>
-                                        </dd>
-                                    </dl>
-                                </sec:ifAnyGranted>
                             </g:if>
                         </div>
                     </div>
@@ -182,12 +165,9 @@
             </g:if>
         </g:if>
         <g:else>
-            <ui:filter>
+            <g:if test="${reportTypes}">
                 <g:if test="${revision == AbstractReport.COUNTER_4}">
                     <ui:msg icon="ui info icon" class="info" header="${message(code: 'default.usage.counter4reportInfo.header')}" message="default.usage.counter4reportInfo.text" noClose="true"/>
-                </g:if>
-                <g:if test="${error}">
-                    <ui:msg icon="ui times icon" class="error" message="${message(code: "default.stats.error.${error}")}" noClose="true"/>
                 </g:if>
                 <g:form action="generateReport" name="stats" class="ui form" method="get">
                     <g:hiddenField name="id" value="${subscription.id}"/>
@@ -218,7 +198,7 @@
                             </select>
                         </div>
                         <g:if test="${params.reportType}">
-                            <g:render template="/templates/filter/statsFilter"/>
+                            <laser:render template="/templates/filter/statsFilter"/>
                         </g:if>
                         <%-- reports filters in COUNTER 5 count only for master reports (tr, pr, dr, ir)! COUNTER 4 has no restriction on filter usage afaik --%>
                     </div>
@@ -226,16 +206,31 @@
                         <div class="field"></div>
                         <div class="field"></div>
                         <div class="field la-field-right-aligned">
-                        <%-- deactivated as of ERMS-3996; concept needs to be clarified
-                        <input id="generateCostPerUse" type="button" class="ui secondary button" value="${message(code: 'default.stats.generateCostPerUse')}"/>--%>
+                            <%-- deactivated as of ERMS-3996; concept needs to be clarified
+                            <input id="generateCostPerUse" type="button" class="ui secondary button" value="${message(code: 'default.stats.generateCostPerUse')}"/>--%>
+                            <g:link action="stats" id="${subscription.id}" class="ui button secondary">${message(code:'default.button.reset.label')}</g:link>
                         </div>
                         <div class="field la-field-right-aligned">
-                            <input type="submit" class="ui primary button" value="${message(code: 'default.stats.generateReport')}"/>
+                            <input id="generateReport" type="button" class="ui primary button" disabled="disabled" value="${message(code: 'default.stats.generateReport')}"/>
                         </div>
                     </div>
                 </g:form>
-            </ui:filter>
-            <div id="costPerUseWrapper"></div>
+            </g:if>
+            <g:elseif test="${error}">
+                <ui:msg icon="ui times icon" class="error" noClose="true">
+                    <g:message code="default.stats.error.${error}" args="${errorArgs}"/>
+                    <g:if test="${error == 'noCustomerId'}">
+                        <%-- proxies are coming!!! --%>
+                        <g:if test="${contextOrg.id == subscription.getConsortia()?.id}">
+                            <g:link controller="subscription" action="membersSubscriptionsManagement" id="${subscription.instanceOf.id}" params="[tab: 'customerIdentifiers', isSiteReloaded: false]"><g:message code="org.customerIdentifier"/></g:link>
+                        </g:if>
+                        <g:elseif test="${contextOrg.id == subscription.getSubscriber().id}">
+                            <g:link controller="org" action="ids" id="${institution.id}" params="[tab: 'customerIdentifiers']"><g:message code="org.customerIdentifier"/></g:link>
+                        </g:elseif>
+                    </g:if>
+                </ui:msg>
+            </g:elseif>
+            <div id="reportWrapper"></div>
         </g:else>
         <laser:script file="${this.getGroovyPageFileName()}">
             $("#reportType").on('change', function() {
@@ -253,12 +248,14 @@
                 }).done(function(response) {
                     $('.dynFilter').remove();
                     $('#filterDropdownWrapper').append(response);
+                    $('#generateReport').removeAttr('disabled');
                     r2d2.initDynamicUiStuff('#filterDropdownWrapper');
                 });
             });
             $("#generateCostPerUse").on('click', function() {
+                $('#globalLoadingIndicator').show();
                 let fd = new FormData($('#stats')[0]);
-                console.log($('#stats')[0]);
+                //console.log($('#stats')[0]);
                 $.ajax({
                     url: "<g:createLink controller="ajax" action="generateCostPerUse"/>",
                     data: fd,
@@ -266,7 +263,22 @@
                     processData: false,
                     contentType: false
                 }).done(function(response){
-                    $("#costPerUseWrapper").html(response);
+                    $("#reportWrapper").html(response);
+                    $('#globalLoadingIndicator').hide();
+                });
+            });
+            $("#generateReport").on('click', function() {
+                $('#globalLoadingIndicator').show();
+                let fd = new FormData($('#stats')[0]);
+                $.ajax({
+                    url: "<g:createLink action="generateReport"/>",
+                    data: fd,
+                    type: 'POST',
+                    processData: false,
+                    contentType: false
+                }).done(function(response){
+                    $("#reportWrapper").html(response);
+                    $('#globalLoadingIndicator').hide();
                 });
             });
         </laser:script>

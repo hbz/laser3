@@ -53,13 +53,13 @@
         </form>
         <laser:script file="${this.getGroovyPageFileName()}">
 
-            liveFilterFunction = function() {
-                var fCat = $('#filter_category').val()
-                var fRel = $('#filter_relevance').val()
-                var fSrc = $('#filter_source').val()
-                var fExc = $('#filter_exclude').val()
+            JSPC.app.liveFilterFunction = function() {
+                let fCat = $('#filter_category').val()
+                let fRel = $('#filter_relevance').val()
+                let fSrc = $('#filter_source').val()
+                let fExc = $('#filter_exclude').val()
 
-                var selector = ''
+                let selector = ''
 
                 if (fCat) { selector += "[data-category='" + fCat + "']" }
                 if (fRel) { selector += "[data-relevance='" + fRel + "']" }
@@ -69,9 +69,9 @@
                 $('table tbody tr').addClass('hidden')
                 $('table tbody tr' + selector).removeClass('hidden')
             }
-            liveFilterFunction();
+            JSPC.app.liveFilterFunction();
 
-            $('.liveFilter').on('change', liveFilterFunction)
+            $('.liveFilter').on('change', JSPC.app.liveFilterFunction)
 
             $('.reloadFilter').on('change', function() {
                 if ($('#filter_limit').val() != $('#filter_limit').dropdown('get default value')) {

@@ -1,7 +1,7 @@
 <%@ page import="de.laser.workflow.WfCheckpoint; de.laser.workflow.WfChecklist; de.laser.WorkflowService; de.laser.utils.AppUtils; de.laser.utils.DateUtils; de.laser.storage.RDStore" %>
 <laser:serviceInjection />
 
-<g:render template="/templates/workflow/status" model="${[cmd: cmd, status: status]}" />
+<laser:render template="/templates/workflow/status" model="${[cmd: cmd, status: status]}" />
 
 %{-- CHECKLISTS --}%
 <g:if test="${checklists}">
@@ -48,7 +48,7 @@
                         <button class="ui icon button blue la-modern-button" data-wfId="${clist.id}"><i class="icon pencil"></i></button>
                     </g:if>
                     <g:elseif test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
-                        <button class="ui icon button blue la-modern-button" data-wfId="${clist.id}"><i class="icon pencil"></i></button>
+                        <button class="ui icon button blue la-modern-button" data-wfId="${clist.id}"><i class="icon search"></i></button>
                     </g:elseif>
                     <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
                         <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
@@ -73,7 +73,7 @@
 <laser:script file="${this.getGroovyPageFileName()}">
     $('.wfModalLink').on ('click', function(e) {
         e.preventDefault();
-        var func = bb8.ajax4SimpleModalFunction ("#wfModal", $(e.currentTarget).attr ('href'), false);
+        var func = bb8.ajax4SimpleModalFunction ("#wfModal", $(e.currentTarget).attr ('href'));
         func();
     });
 

@@ -1,20 +1,16 @@
 <%@ page import="de.laser.interfaces.CalculatedType;de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
-<laser:htmlStart message="menu.my.subscriptionsManagement" serviceInjection="true"/>
+<laser:htmlStart message="menu.institutions.subscriptionsManagement" serviceInjection="true"/>
 
 <ui:breadcrumbs>
-    <ui:crumb message="menu.my.subscriptionsManagement" class="active"/>
+    <ui:crumb controller="org" action="show" id="${institution.id}" text="${institution.getDesignation()}"/>
+    <ui:crumb message="menu.institutions.subscriptionsManagement" class="active"/>
 </ui:breadcrumbs>
 
-<ui:controlButtons>
-</ui:controlButtons>
-
-<ui:h1HeaderWithIcon message="menu.my.subscriptionsManagement" total="${num_sub_rows}" />
+<ui:h1HeaderWithIcon message="menu.institutions.subscriptionsManagement" total="${num_sub_rows}" />
 
 <laser:render template="/templates/management/navSubscriptionManagement" model="${[args: args]}"/>
 
 <ui:messages data="${flash}"/>
-
-
 
 <g:if test="${params.tab == 'properties'}">
     <laser:render template="/templates/management/properties"/>

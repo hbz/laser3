@@ -4,7 +4,7 @@
         <div class="menu ui top attached tabular la-tab-with-js">
             <a class="active item" data-tab="lic-filter-tab-1">${message(code:'license.plural')}</a>
             %{--<a class="item" data-tab="lic-filter-tab-2">Einrichtung</a>--}%
-            <a class="item" data-tab="lic-filter-tab-3">${message(code:'license.licensor.label')}</a>
+            <a class="item" data-tab="lic-filter-tab-3">${message(code:'default.ProviderAgency.singular')}</a>
         </div><!-- .menu -->
 
         <div class="ui bottom attached active tab segment" data-tab="lic-filter-tab-1">

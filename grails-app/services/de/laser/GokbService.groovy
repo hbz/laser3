@@ -1,8 +1,11 @@
 package de.laser
 
+import de.laser.config.ConfigMapper
 import de.laser.http.BasicHttpClient
 import de.laser.remote.ApiSource
+import de.laser.utils.LocaleUtils
 import grails.gorm.transactions.Transactional
+import org.springframework.context.MessageSource
 
 /**
  * Is actually a we:kb service. It contains methods to communicate with the we:kb ElasticSearch index
@@ -10,6 +13,8 @@ import grails.gorm.transactions.Transactional
  */
 @Transactional
 class GokbService {
+
+    MessageSource messageSource
 
     @Deprecated
     Map<String, Object> getPackagesMap(ApiSource apiSource, def qterm = null, def suggest = true, def max = 2000) {
@@ -204,30 +209,33 @@ class GokbService {
      */
     Map geElasticsearchFindings(final String apiUrl, final String query, final String type,
                                 final String role, final Integer max) {
-        String url = _buildUri(apiUrl+'/find', query, type, role, max)
+        String url = _buildUri(apiUrl+'/searchApi', query, type, role, max)
         queryElasticsearch(url)
     }
 
     /**
      * A wrapper for controller-fed filters using the ElasticSearch data
      * @param ctrlResult the base result of the controller
-     * @param params the request parameter map
-     * @param esQuery the query string
+     * @param params the pagination setting data
+     * @param queryParams the request parameter map
      * @return the ElasticSearch result map
      */
-    Map doQuery(Map ctrlResult, Map params, String esQuery) {
+    Map doQuery(Map ctrlResult, Map params, Map queryParams) {
         Map result = [:]
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
-        Map<String, String> pagination = setupPaginationParams(ctrlResult, params)
+        queryParams.putAll(setupPaginationParams(ctrlResult, params))
 
         Set records = []
-        Map queryResult = queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/find' + esQuery + pagination.sort + pagination.order + pagination.max + pagination.offset)
-        if (queryResult.warning) {
-            records.addAll(queryResult.warning.records)
-            result.recordsCount = queryResult.warning.count
+
+        Map queryResult = queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/searchApi', queryParams)
+        if (queryResult.warning && queryResult.warning.result) {
+            records.addAll(queryResult.warning.result)
+            result.recordsCount = queryResult.warning.result_count_total
             result.records = records
         }
         else {
+            if(queryResult.warning.code == "error")
+                result.error = messageSource.getMessage('wekb.error.500', [queryResult.warning.message] as Object[], LocaleUtils.getCurrentLocale())
             result.recordsCount = 0
             result.records = records
         }
@@ -241,10 +249,10 @@ class GokbService {
      * @return the query string parts for sort, order, max and offset, in a named map
      */
     Map<String, String> setupPaginationParams(Map ctrlResult, Map params) {
-        String sort = params.sort ? "&sort=" + params.sort : "&sort=sortname"
-        String order = params.order ? "&order=" + params.order : "&order=asc"
-        String max = params.max ? "&max=${params.max}" : "&max=${ctrlResult.max}"
-        String offset = (params.offset != null) ? "&offset=${params.offset}" : "&offset=${ctrlResult.offset}"
+        String sort = params.sort ?: "sortname"
+        String order = params.order ?: "asc"
+        String max = params.max ?: ctrlResult.max
+        String offset = (params.offset != null) ? params.offset : ctrlResult.offset
         [sort: sort, order: order, max: max, offset: offset]
     }
 
@@ -255,12 +263,15 @@ class GokbService {
      * @param url the query string to pass to the we:kb ElasticSearch API
      * @return the result map (access either as result.warning or result.info), reflecting the ElasticSearch response
      */
-    Map queryElasticsearch(String url){
+    Map queryElasticsearch(String baseUrl, Map queryParams){
         Map result = [:]
 
         BasicHttpClient http
         try {
-            http = new BasicHttpClient( url.replaceAll(" ", "+") )
+            //url = url.contains('?') ? url.replaceAll(" ", "+")+"&username=${ConfigMapper.getWekbApiUsername()}&password=${ConfigMapper.getWekbApiPassword()}" : url.replaceAll(" ", "+")+"?username=${ConfigMapper.getWekbApiUsername()}&password=${ConfigMapper.getWekbApiPassword()}"
+            queryParams.username = ConfigMapper.getWekbApiUsername()
+            queryParams.password = ConfigMapper.getWekbApiPassword()
+            http = new BasicHttpClient( baseUrl )
 
             Closure success = { resp, json ->
                 log.debug ("server response: ${resp.getStatus().getReason()}, server: ${resp.getHeaders().get('Server')}, content length: ${resp.getHeaders().get('Content-Length')}")
@@ -276,7 +287,7 @@ class GokbService {
                 result = ['error': resp.getStatus().getCode()]
             }
 
-            http.get(['User-Agent' : 'laser'], BasicHttpClient.ResponseType.JSON, success, failure)
+            http.post(['User-Agent' : 'laser'], BasicHttpClient.ResponseType.JSON, BasicHttpClient.PostType.URLENC, queryParams, success, failure)
 
         } catch (Exception e) {
             log.error e.getMessage()

@@ -30,6 +30,7 @@ class PackageController {
 
     AccessService accessService
     AddressbookService addressbookService
+    AuditService auditService
     ContextService contextService
     EscapeService escapeService
     ExecutorService executorService
@@ -76,28 +77,35 @@ class PackageController {
 
         result.editUrl = apiSource.editUrl
 
-        String esQuery = "?componentType=Package"
+        Map<String, Object> queryParams = [componentType: "Package"]
         if (params.q) {
             result.filterSet = true
-            esQuery += "&name=${params.q}"
-            esQuery += "&ids=Anbieter_Produkt_ID,*${params.q}*"
-            esQuery += "&ids=isil,*${params.q}*"
+            queryParams.name = params.q
+            queryParams.ids = ["Anbieter_Produkt_ID,${params.q}", "isil,${params.q}"]
         }
+
+        if(params.status) {
+            result.filterSet = true
+        }
+        else if(!params.status) {
+            params.status = ['Current', 'Expected', 'Retired', 'Deleted']
+        }
+        queryParams.status = params.status
 
         if (params.provider) {
             result.filterSet = true
-            esQuery += "&provider=${params.provider.replaceAll('&','ampersand').replaceAll('\\+','%2B').replaceAll(' ','%20')}"
+            queryParams.provider = params.provider
         }
 
         if (params.curatoryGroup) {
             result.filterSet = true
-            esQuery += "&curatoryGroupExact=${params.curatoryGroup.replaceAll('&','ampersand').replaceAll('\\+','%2B').replaceAll(' ','%20')}"
+            queryParams.curatoryGroupExact = params.curatoryGroup
         }
 
         if (params.ddc) {
             result.filterSet = true
             params.list("ddc").each { String key ->
-                esQuery += "&ddc=${RefdataValue.get(key).value}"
+                queryParams.ddc = RefdataValue.get(key).value
             }
         }
 
@@ -105,13 +113,15 @@ class PackageController {
         if (params.containsKey('curatoryGroupProvider') ^ params.containsKey('curatoryGroupOther')) {
             result.filterSet = true
             if(params.curatoryGroupProvider)
-                esQuery += "&curatoryGroupType=provider"
+                queryParams.curatoryGroupType = "provider"
             else if(params.curatoryGroupOther)
-                esQuery += "&curatoryGroupType=other" //setting to this includes also missing ones, this is already implemented in we:kb
+                queryParams.curatoryGroupType = "other" //setting to this includes also missing ones, this is already implemented in we:kb
         }
 
-        Map queryCuratoryGroups = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/groups')
-        if(queryCuratoryGroups.error == 404) {
+        Map queryCuratoryGroups = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/groups', [:])
+        if(!params.sort)
+            params.sort = 'name'
+        if(queryCuratoryGroups.code == 404) {
             result.error = message(code:'wekb.error.'+queryCuratoryGroups.error) as String
         }
         else {
@@ -120,8 +130,7 @@ class PackageController {
                 result.curatoryGroups = recordsCuratoryGroups?.findAll { it.status == "Current" }
             }
             result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
-
-            result.putAll(gokbService.doQuery(result, params.clone(), esQuery))
+            result.putAll(gokbService.doQuery(result, params.clone(), queryParams))
         }
 
         result
@@ -220,12 +229,7 @@ class PackageController {
         Map<String, Object> result = [:]
 
         result.user = contextService.getUser()
-        Package packageInstance
-        if(params.id instanceof Long || params.id.isLong())
-            packageInstance = Package.get(params.id)
-        else if(params.id ==~ /[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}/)
-            packageInstance = Package.findByGokbId(params.id)
-        else packageInstance = Package.findByGlobalUID(params.id)
+        Package packageInstance = Package.get(params.id)
 
         result.currentTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_CURRENT])[0]
         result.plannedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_EXPECTED])[0]
@@ -248,7 +252,7 @@ class PackageController {
         //result.visibleOrgs.sort { it.org.sortname }
 
         List<RefdataValue> roleTypes = [RDStore.OR_SUBSCRIBER]
-        if (accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+        if (contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
             roleTypes.addAll([RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS])
         }
 
@@ -265,11 +269,9 @@ class PackageController {
             }
         }
 
-        result.lasttipp = result.offset + result.max > result.num_tipp_rows ? result.num_tipp_rows : result.offset + result.max
-
         if (OrgSetting.get(result.contextOrg, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID) instanceof OrgSetting) {
             result.statsWibid = result.contextOrg.getIdentifierByType('wibid')?.value
-            result.usageMode = accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) ? 'package' : 'institution'
+            result.usageMode = contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) ? 'package' : 'institution'
             result.packageIdentifier = packageInstance.getIdentifierByType('isil')?.value
         }
 
@@ -280,12 +282,15 @@ class PackageController {
             Org gascoNegotiator = s.getConsortia()
             if(gascoNegotiator) {
                 Map<String, Object> gascoContactData = gascoContacts.get(gascoNegotiator)
-                if(!gascoContactData) {
-                    gascoContactData = [:]
-                    String gascoDisplay = s.propertySet.find{ it.type == gascoDisplayName}?.stringValue
-                    gascoContactData.orgDisplay = gascoDisplay ?: gascoNegotiator.name
-                    gascoContactData.personRoles = PersonRole.findAllByFunctionTypeAndOrg(RDStore.PRS_FUNC_GASCO_CONTACT, gascoNegotiator)
-                    gascoContacts.put(gascoNegotiator, gascoContactData)
+                Set<PersonRole> personRoles = PersonRole.findAllByFunctionTypeAndOrg(RDStore.PRS_FUNC_GASCO_CONTACT, gascoNegotiator)
+                if(personRoles) {
+                    if(!gascoContactData) {
+                        gascoContactData = [:]
+                        String gascoDisplay = s.propertySet.find{ it.type == gascoDisplayName}?.stringValue
+                        gascoContactData.orgDisplay = gascoDisplay ?: gascoNegotiator.name
+                        gascoContactData.personRoles = personRoles
+                        gascoContacts.put(gascoNegotiator, gascoContactData)
+                    }
                 }
             }
         }
@@ -296,20 +301,20 @@ class PackageController {
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         result.editUrl = apiSource.editUrl.endsWith('/') ? apiSource.editUrl : apiSource.editUrl+'/'
 
-        Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/find?uuid=${packageInstance.gokbId}")
+        Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: packageInstance.gokbId])
         if (queryResult.error && queryResult.error == 404) {
             flash.error = message(code:'wekb.error.404') as String
         }
         else if (queryResult.warning) {
-            List records = queryResult.warning.records
+            List records = queryResult.warning.result
             result.packageInstanceRecord = records ? records[0] : [:]
         }
         if(packageInstance.nominalPlatform) {
             //record filled with LAS:eR and we:kb data
             Map<String, Object> platformInstanceRecord = [:]
-            queryResult = gokbService.queryElasticsearch(apiSource.baseUrl+apiSource.fixToken+"/find?uuid=${packageInstance.nominalPlatform.gokbId}")
+            queryResult = gokbService.queryElasticsearch(apiSource.baseUrl+apiSource.fixToken+"/searchApi", [uuid: packageInstance.nominalPlatform.gokbId])
             if(queryResult.warning) {
-                List records = queryResult.warning.records
+                List records = queryResult.warning.result
                 if(records)
                     platformInstanceRecord.putAll(records[0])
                 platformInstanceRecord.name = packageInstance.nominalPlatform.name
@@ -363,6 +368,18 @@ class PackageController {
         String filename = "${escapeService.escapeString(packageInstance.name + '_' + message(code: 'package.show.nav.current'))}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
 
         result.filename = filename
+        ArrayList<TitleInstancePackagePlatform> tipps = []
+        Map<String, Object> selectedFields = [:]
+
+        if(params.fileformat) {
+            if (params.filename) {
+                filename =params.filename
+            }
+
+            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+
+        }
 
         if (params.exportKBart) {
             response.setHeader( "Content-Disposition", "attachment; filename=${filename}.tsv")
@@ -378,7 +395,8 @@ class PackageController {
             out.flush()
             out.close()
             return
-        } else if (params.exportXLSX) {
+        }
+        /*else if (params.exportXLSX) {
             response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             Map<String, Object> configMap = [:]
@@ -393,17 +411,9 @@ class PackageController {
             response.outputStream.close()
             workbook.dispose()
             return
-        }else if(params.exportClickMeExcel) {
-            if (params.filename) {
-                filename =params.filename
-            }
-
-            ArrayList<TitleInstancePackagePlatform> tipps = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList,[sort:'sortname']) : [:]
-
-            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
-            Map<String, Object> selectedFields = [:]
-            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportTipps(tipps, selectedFields)
+        }else */
+        if(params.fileformat == 'xlsx') {
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportTipps(titlesList, selectedFields, ExportClickMeService.FORMAT.XLS)
             response.setHeader "Content-disposition", "attachment; filename=${filename}.xlsx"
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             wb.write(response.outputStream)
@@ -412,32 +422,27 @@ class PackageController {
             wb.dispose()
             return
         }
-        withFormat {
-            html {
-                result.currentTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_CURRENT])[0]
-                result.plannedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_EXPECTED])[0]
-                result.expiredTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_RETIRED])[0]
-                result.deletedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_DELETED])[0]
-                //we can be sure that no one will request more than 32768 entries ...
-                result.titlesList = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList.drop(result.offset).take(result.max), [sort: 'sortname']) : []
-                result.num_tipp_rows = titlesList.size()
+        else if(params.fileformat == 'csv') {
+            response.setHeader( "Content-Disposition", "attachment; filename=${filename}.csv")
+            response.contentType = "text/csv"
 
-                result.lasttipp = result.offset + result.max > result.num_tipp_rows ? result.num_tipp_rows : result.offset + result.max
-                result
+            ServletOutputStream out = response.outputStream
+            out.withWriter { writer ->
+                writer.write((String) exportClickMeService.exportTipps(titlesList, selectedFields, ExportClickMeService.FORMAT.CSV))
             }
-            csv {
-                response.setHeader( "Content-Disposition", "attachment; filename=${filename}.csv")
-                response.contentType = "text/csv"
-
-                ServletOutputStream out = response.outputStream
-                Map<String, List> tableData = titlesList ? exportService.generateTitleExportCSV(titlesList,TitleInstancePackagePlatform.class.name) : []
-                out.withWriter { writer ->
-                    writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.rows, '|'))
-                }
-                out.flush()
-                out.close()
-                return
-            }
+            out.flush()
+            out.close()
+            return
+        }
+        else {
+            result.currentTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_CURRENT])[0]
+            result.plannedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_EXPECTED])[0]
+            result.expiredTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_RETIRED])[0]
+            result.deletedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_DELETED])[0]
+            //we can be sure that no one will request more than 32768 entries ...
+            result.titlesList = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList.drop(result.offset).take(result.max), [sort: params.sort?: 'sortname', order: params.order]) : []
+            result.num_tipp_rows = titlesList.size()
+            result
         }
     }
 
@@ -502,13 +507,13 @@ class PackageController {
         String filename
 
         if (func == "planned") {
-            params.status = RDStore.TIPP_STATUS_EXPECTED.id
+            params.status = RDStore.TIPP_STATUS_EXPECTED.id.toString()
             filename = "${escapeService.escapeString(packageInstance.name + '_' + message(code: 'package.show.nav.planned'))}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
         } else if (func == "expired") {
-            params.status = RDStore.TIPP_STATUS_RETIRED.id
+            params.status = RDStore.TIPP_STATUS_RETIRED.id.toString()
             filename = "${escapeService.escapeString(packageInstance.name + '_' + message(code: 'package.show.nav.expired'))}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
         } else if (func == "deleted") {
-            params.status = RDStore.TIPP_STATUS_DELETED.id
+            params.status = RDStore.TIPP_STATUS_DELETED.id.toString()
             filename = "${escapeService.escapeString(packageInstance.name + '_' + message(code: 'package.show.nav.deleted'))}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
         }
 
@@ -517,6 +522,19 @@ class PackageController {
 
         List<Long> titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
         result.filename = filename
+
+        Map<String, Object> selectedFields = [:]
+        ArrayList<TitleInstancePackagePlatform> tipps = []
+        if(params.fileformat) {
+            if (params.filename) {
+                filename = params.filename
+            }
+
+            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+            if(titlesList)
+                tipps.addAll(TitleInstancePackagePlatform.findAllByIdInList(titlesList,[sort:'sortname']))
+        }
 
         if (params.exportKBart) {
             response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
@@ -531,7 +549,8 @@ class PackageController {
             }
             out.flush()
             out.close()
-        } else if (params.exportXLSX) {
+        }
+        /* else if (params.exportXLSX) {
             response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             Map<String, Object> configMap = [:]
@@ -546,17 +565,9 @@ class PackageController {
             response.outputStream.close()
             workbook.dispose()
             return
-        }else if(params.exportClickMeExcel) {
-            if (params.filename) {
-                filename =params.filename
-            }
-
-            ArrayList<TitleInstancePackagePlatform> tipps = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList,[sort:'sortname']) : [:]
-
-            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
-            Map<String, Object> selectedFields = [:]
-            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportTipps(tipps, selectedFields)
+        }*/
+        else if(params.fileformat == 'xlsx') {
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportTipps(tipps, selectedFields, ExportClickMeService.FORMAT.XLS)
             response.setHeader "Content-disposition", "attachment; filename=${filename}.xlsx"
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             wb.write(response.outputStream)
@@ -565,27 +576,21 @@ class PackageController {
             wb.dispose()
             return
         }
-        withFormat {
-            html {
+        else if(params.fileformat == 'csv') {
+            response.setHeader("Content-disposition", "attachment; filename=${filename}.csv")
+            response.contentType = "text/csv"
 
-                result.titlesList = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList,[sort:'sortname']).drop(result.offset).take(result.max) : []
-                result.num_tipp_rows = titlesList.size()
-
-                result.lasttipp = result.offset + result.max > result.num_tipp_rows ? result.num_tipp_rows : result.offset + result.max
-                result
+            ServletOutputStream out = response.outputStream
+            out.withWriter { writer ->
+                writer.write((String) exportClickMeService.exportTipps(tipps, selectedFields, ExportClickMeService.FORMAT.CSV))
             }
-            csv {
-                response.setHeader("Content-disposition", "attachment; filename=${filename}.csv")
-                response.contentType = "text/csv"
-
-                ServletOutputStream out = response.outputStream
-                Map<String, List> tableData = exportService.generateTitleExportCSV(titlesList,TitleInstancePackagePlatform.class.name)
-                out.withWriter { writer ->
-                    writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.rows, '|'))
-                }
-                out.flush()
-                out.close()
-            }
+            out.flush()
+            out.close()
+        }
+        else {
+            result.titlesList = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList, [sort: params.sort?: 'sortname', order: params.order]).drop(result.offset).take(result.max) : []
+            result.num_tipp_rows = titlesList.size()
+            result
         }
     }
 
@@ -664,31 +669,30 @@ class PackageController {
                     bulkProcessRunning = true
                 }
             }
+            if(params.holdingSelection) {
+                RefdataValue holdingSelection = RefdataValue.get(params.holdingSelection)
+                result.subscription.holdingSelection = holdingSelection
+                result.subscription.save()
+            }
             //to be deployed in parallel thread
             if (result.pkg) {
                 if(!bulkProcessRunning) {
                     executorService.execute({
                         Thread.currentThread().setName('PackageSync_' + result.subscription.id)
-                        String addType = params.addType
-                        log.debug("Add package ${addType} entitlements to subscription ${result.subscription}")
-                        if (addType == 'With') {
-                            subscriptionService.addToSubscription(result.subscription, result.pkg, true)
-                        } else if (addType == 'Without') {
-                            subscriptionService.addToSubscription(result.subscription, result.pkg, false)
-                        }
-
-                        if (addType != null && addType != '') {
-                            subscriptionService.addPendingChangeConfiguration(result.subscription, result.pkg, params.clone())
+                        log.debug("Add package entitlements to subscription ${result.subscription}")
+                        subscriptionService.addToSubscription(result.subscription, result.pkg, result.subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
+                        if(auditService.getAuditConfig(result.subscription, 'holdingSelection')) {
+                            subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), result.pkg, result.subscription.holdingSelection == RDStore.SUBSCRIPTION_HOLDING_ENTIRE)
                         }
                     })
                 }
             }
-            switch (params.addType) {
-                case "With": flash.message = message(code: 'subscription.details.link.processingWithEntitlements') as String
+            switch (result.subscription.holdingSelection) {
+                case RDStore.SUBSCRIPTION_HOLDING_ENTIRE: flash.message = message(code: 'subscription.details.link.processingWithEntitlements') as String
                     redirect controller: 'subscription', action: 'index', params: [id: result.subscription.id, gokbId: result.pkg.gokbId]
                     return
                     break
-                case "Without": flash.message = message(code: 'subscription.details.link.processingWithoutEntitlements') as String
+                case RDStore.SUBSCRIPTION_HOLDING_PARTIAL: flash.message = message(code: 'subscription.details.link.processingWithoutEntitlements') as String
                     redirect controller: 'subscription', action: 'addEntitlements', params: [id: result.subscription.id, packageLinkPreselect: result.pkg.gokbId, preselectedName: result.pkg.name]
                     return
                     break

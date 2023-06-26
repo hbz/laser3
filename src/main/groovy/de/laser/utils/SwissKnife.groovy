@@ -115,7 +115,7 @@ class SwissKnife {
         return cloned
     }
 
-    static boolean checkAndCacheNavPerms(GroovyPageAttributes attrs, HttpServletRequest request) {
+    static boolean checkAndCacheNavPermsForCurrentRequest(GroovyPageAttributes attrs, HttpServletRequest request) {
         ContextService contextService = BeanStore.getContextService()
         AccessService accessService   = BeanStore.getAccessService()
 
@@ -137,7 +137,7 @@ class SwissKnife {
         User user = (User) checkMap.get('laser_secured_nav_user')
         Org org = (Org) checkMap.get('laser_secured_nav_org')
 
-        String lsmnic = org?.id + ':' + attrs.specRole + ':' + attrs.affiliation + ':' + attrs.orgPerm + ':' + attrs.affiliationOrg
+        String lsmnic = org?.id + ':' + attrs.specRole + ':' + attrs.instRole + ':' + attrs.orgPerm + ':' + attrs.affiliationOrg
 
         if (checkMap.containsKey(lsmnic)) {
             check = (boolean) checkMap.get(lsmnic)
@@ -146,20 +146,14 @@ class SwissKnife {
             check = SpringSecurityUtils.ifAnyGranted(attrs.specRole ?: [])
 
             if (!check) {
-                if (attrs.affiliation && attrs.orgPerm) {
-                    if (user.hasCtxAffiliation_or_ROLEADMIN(attrs.affiliation) && accessService.ctxPerm(attrs.orgPerm)) {
-                        check = true
-                    }
-                }
-                else if (attrs.affiliation && user.hasCtxAffiliation_or_ROLEADMIN(attrs.affiliation)) {
-                    check = true
-                }
-                else if (attrs.orgPerm && accessService.ctxPerm(attrs.orgPerm)) {
-                    check = true
-                }
 
-                if (attrs.affiliation && attrs.affiliationOrg && check) {
-                    check = user.hasOrgAffiliation_or_ROLEADMIN(attrs.affiliationOrg, attrs.affiliation)
+                boolean instRoleCheck   = attrs.instRole ? user.hasCtxAffiliation_or_ROLEADMIN(attrs.instRole) : true
+                boolean orgPermCheck    = attrs.orgPerm ? contextService.hasPerm(attrs.orgPerm) : true
+
+                check = instRoleCheck && orgPermCheck
+
+                if (attrs.instRole && attrs.affiliationOrg && check) { // ???
+                    check = user.hasOrgAffiliation_or_ROLEADMIN(attrs.affiliationOrg, attrs.instRole)
                 }
             }
             checkMap.put(lsmnic, check)

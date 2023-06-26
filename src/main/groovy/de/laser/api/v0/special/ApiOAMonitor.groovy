@@ -14,6 +14,7 @@ import de.laser.storage.Constants
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.titles.TitleInstance
+import de.laser.traces.DeletedObject
 import grails.converters.JSON
 import groovy.util.logging.Slf4j
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
@@ -98,9 +99,14 @@ class ApiOAMonitor {
     static JSON getAllOrgs() {
         Collection<Object> result = []
 
-        List<Org> orgs = getAccessibleOrgs()
+        List<Org> orgs = getAccessibleOrgs(), orgsWithOAPerm = ApiToolkit.getOrgsWithSpecialAPIAccess(ApiToolkit.API_LEVEL_OAMONITOR)
         orgs.each { o ->
             result << ApiUnsecuredMapReader.getOrganisationStubMap(o)
+        }
+        DeletedObject.withTransaction {
+            DeletedObject.executeQuery('select do from DeletedObject do join do.combos delc where do.oldObjectType = :org and delc.accessibleOrg in (:orgsWithOAPerm)', [org: Org.class.name, orgsWithOAPerm: orgsWithOAPerm]).each { DeletedObject delObj ->
+                result.addAll(ApiUnsecuredMapReader.getDeletedObjectStubMap(delObj))
+            }
         }
 
         return result ? new JSON(result) : null

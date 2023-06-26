@@ -2,22 +2,23 @@ package de.laser
 
 import de.laser.annotations.Check404
 import de.laser.annotations.DebugInfo
+import de.laser.config.ConfigMapper
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.interfaces.CalculatedType
 import de.laser.remote.ApiSource
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
-import de.laser.survey.SurveyOrg
 import de.laser.utils.DateUtils
-import de.laser.utils.SwissKnife
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.time.TimeCategory
+import org.apache.http.HttpStatus
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 
 import javax.servlet.ServletOutputStream
 import java.text.SimpleDateFormat
+import java.time.Year
 
 /**
  * This controller is responsible for the subscription handling. Many of the controller calls do
@@ -72,13 +73,29 @@ class SubscriptionController {
         else ctrlResult.result
     }
 
+    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)
+    })
+    @Check404()
+    def subTransfer() {
+        Map<String,Object> ctrlResult = subscriptionControllerService.subTransfer(params)
+        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+                return
+            }
+        }
+        else ctrlResult.result
+    }
+
     /**
      * Call to list the tasks related to this subscription
      * @return the task listing for this subscription
      */
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER')
+        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
     })
     @Check404()
     def tasks() {
@@ -124,67 +141,89 @@ class SubscriptionController {
         result.platforms = subscribedPlatforms
         result.platformsJSON = subscribedPlatforms.globalUID as JSON
         subscribedPlatforms.each { Platform platformInstance ->
-            Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/find?uuid=${platformInstance.gokbId}")
+            Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: platformInstance.gokbId])
             if (queryResult.error && queryResult.error == 404) {
                 result.wekbServerUnavailable = message(code: 'wekb.error.404')
             }
             else if (queryResult.warning) {
-                List records = queryResult.warning.records
+                List records = queryResult.warning.result
                 if(records[0]) {
                     records[0].lastRun = platformInstance.counter5LastRun ?: platformInstance.counter4LastRun
                     records[0].id = platformInstance.id
                     result.platformInstanceRecords[platformInstance.gokbId] = records[0]
-                }
-            }
-        }
-        if(result.subscription._getCalculatedType() != CalculatedType.TYPE_CONSORTIAL) {
-            //Set<String> tippUIDs = subscriptionControllerService.fetchTitles(params, refSubs, 'uids')
-            Map<String, Object> dateRangeParams = subscriptionControllerService.getDateRange(params, result.subscription)
-            result.reportTypes = []
-            SortedSet allAvailableReports = subscriptionControllerService.getAvailableReports(subscribedPlatforms, result)
-            result.reportTypes = allAvailableReports
-            //detach from here!
-            /*
-            Counter5Report.withTransaction {
-                Set allAvailableReports = []
-                allAvailableReports.addAll(Counter5Report.executeQuery('select new map(lower(r.reportType) as reportType, r.accessType as accessType, r.metricType as metricType, r.accessMethod as accessMethod) from Counter5Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms) '+dateRangeParams.dateRange+' group by r.reportType, r.accessType, r.metricType, r.accessMethod', queryParamsBound))
-                if(allAvailableReports.size() > 0) {
-                    Set<String> reportTypes = [], metricTypes = [], accessTypes = [], accessMethods = []
-                    allAvailableReports.each { row ->
-                        if(!params.loadFor || (params.loadFor && row.reportType in Counter5Report.COUNTER_5_TITLE_REPORTS)) {
-                            if (row.reportType)
-                                reportTypes << row.reportType
-                            if (row.metricType)
-                                metricTypes << row.metricType
-                            if (row.accessMethod)
-                                accessMethods << row.accessMethod
-                            if (row.accessType)
-                                accessTypes << row.accessType
+                    result.platformInstanceRecords[platformInstance.gokbId].wekbUrl = apiSource.editUrl + "/resource/show/${platformInstance.gokbId}"
+                    if(records[0].statisticsFormat == 'COUNTER' && records[0].counterR4SushiServerUrl == null && records[0].counterR5SushiServerUrl == null) {
+                        result.error = 'noSushiSource'
+                        ArrayList<Object> errorArgs = ["${apiSource.editUrl}/resource/show/${platformInstance.gokbId}", platformInstance.name]
+                        result.errorArgs = errorArgs.toArray()
+                    }
+                    else {
+                        CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(result.subscription.getSubscriber(), platformInstance)
+                        if(!ci?.value) {
+                            result.error = 'noCustomerId'
                         }
                     }
-                    result.reportTypes = reportTypes
-                    result.metricTypes = metricTypes
-                    result.accessTypes = accessTypes
-                    result.accessMethods = accessMethods
-                    result.revision = 'counter5'
-                }
-                else {
-                    allAvailableReports.addAll(Counter4Report.executeQuery('select new map(r.reportType as reportType, r.metricType as metricType) from Counter4Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms) '+dateRangeParams.dateRange+' group by r.reportType, r.metricType order by r.reportType', queryParamsBound))
-                    Set<String> reportTypes = [], metricTypes = []
-                    allAvailableReports.each { row ->
-                        if(!params.loadFor || (params.loadFor && row.reportType != Counter4Report.PLATFORM_REPORT_1)) {
-                            if (row.reportType)
-                                reportTypes << row.reportType
-                            if (row.metricType)
-                                metricTypes << row.metricType
-                        }
-                    }
-                    result.reportTypes = reportTypes
-                    result.metricTypes = metricTypes
-                    result.revision = 'counter4'
                 }
             }
-            */
+            if(result.subscription._getCalculatedType() != CalculatedType.TYPE_CONSORTIAL) {
+                //Set<String> tippUIDs = subscriptionControllerService.fetchTitles(params, refSubs, 'uids')
+                Map<String, Object> dateRangeParams = subscriptionControllerService.getDateRange(params, result.subscription)
+                result.reportTypes = []
+                CustomerIdentifier ci = CustomerIdentifier.findByCustomerAndPlatform(result.subscription.getSubscriber(), platformInstance)
+                if(ci?.value) {
+                    SortedSet allAvailableReports = subscriptionControllerService.getAvailableReports([platformInstance].toSet(), result)
+                    if(allAvailableReports)
+                        result.reportTypes.addAll(allAvailableReports)
+                    else {
+                        result.error = 'noReportAvailable'
+                    }
+                }
+                else if(!ci?.value) {
+                    result.error = 'noCustomerId'
+                }
+                //detach from here!
+                /*
+                Counter5Report.withTransaction {
+                    Set allAvailableReports = []
+                    allAvailableReports.addAll(Counter5Report.executeQuery('select new map(lower(r.reportType) as reportType, r.accessType as accessType, r.metricType as metricType, r.accessMethod as accessMethod) from Counter5Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms) '+dateRangeParams.dateRange+' group by r.reportType, r.accessType, r.metricType, r.accessMethod', queryParamsBound))
+                    if(allAvailableReports.size() > 0) {
+                        Set<String> reportTypes = [], metricTypes = [], accessTypes = [], accessMethods = []
+                        allAvailableReports.each { row ->
+                            if(!params.loadFor || (params.loadFor && row.reportType in Counter5Report.COUNTER_5_TITLE_REPORTS)) {
+                                if (row.reportType)
+                                    reportTypes << row.reportType
+                                if (row.metricType)
+                                    metricTypes << row.metricType
+                                if (row.accessMethod)
+                                    accessMethods << row.accessMethod
+                                if (row.accessType)
+                                    accessTypes << row.accessType
+                            }
+                        }
+                        result.reportTypes = reportTypes
+                        result.metricTypes = metricTypes
+                        result.accessTypes = accessTypes
+                        result.accessMethods = accessMethods
+                        result.revision = 'counter5'
+                    }
+                    else {
+                        allAvailableReports.addAll(Counter4Report.executeQuery('select new map(r.reportType as reportType, r.metricType as metricType) from Counter4Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms) '+dateRangeParams.dateRange+' group by r.reportType, r.metricType order by r.reportType', queryParamsBound))
+                        Set<String> reportTypes = [], metricTypes = []
+                        allAvailableReports.each { row ->
+                            if(!params.loadFor || (params.loadFor && row.reportType != Counter4Report.PLATFORM_REPORT_1)) {
+                                if (row.reportType)
+                                    reportTypes << row.reportType
+                                if (row.metricType)
+                                    metricTypes << row.metricType
+                            }
+                        }
+                        result.reportTypes = reportTypes
+                        result.metricTypes = metricTypes
+                        result.revision = 'counter4'
+                    }
+                }
+                */
+            }
         }
         result
     }
@@ -198,25 +237,81 @@ class SubscriptionController {
         ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
     })
     def generateReport() {
-        if(!params.reportType && !params.metricType) {
-            redirect action: 'stats', id: params.id, params: [error: 'noReportSelected']
+        if(!params.reportType) {
+            Map<String, Object> errorMap = [error: message(code: "default.stats.error.noReportSelected")]
+            render template: '/templates/usageReport', model: errorMap
         }
         else {
-            Map<String, Object> ctrlResult = exportService.generateReport(params)
-            if(ctrlResult.containsKey('result')) {
-                SXSSFWorkbook wb = ctrlResult.result
-                Date dateRun = new Date()
-                response.setHeader "Content-disposition", "attachment; filename=report_${DateUtils.getSDF_yyyyMMdd().format(dateRun)}.xlsx"
-                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                wb.write(response.outputStream)
-                response.outputStream.flush()
-                response.outputStream.close()
-                wb.dispose()
-                return
+            Subscription sub = Subscription.get(params.id)
+            String token = "report_${params.reportType}_${params.platform}_${sub.getSubscriber().id}_${sub.id}"
+            if(params.metricType) {
+                token += '_'+params.list('metricType').join('_')
+            }
+            if(params.accessType) {
+                token += '_'+params.list('accessType').join('_')
+            }
+            if(params.accessMethod) {
+                token += '_'+params.list('accessMethod').join('_')
+            }
+            String dir = ConfigMapper.getStatsReportSaveLocation() ?: '/usage'
+            File folder = new File(dir)
+            if (!folder.exists()) {
+                folder.mkdir()
+            }
+            File f = new File(dir+'/'+token)
+            Map<String, String> fileResult = [token: token]
+            if(!f.exists()) {
+                Map<String, Object> ctrlResult = exportService.generateReport(params)
+                if(ctrlResult.containsKey('result')) {
+                    SXSSFWorkbook wb = ctrlResult.result
+                    /*
+                    see DocstoreController and https://stackoverflow.com/questions/24827571/how-to-convert-xssfworkbook-to-file
+                     */
+                    FileOutputStream fos = new FileOutputStream(dir+'/'+token)
+                    //--> to document
+                    wb.write(fos)
+                    fos.flush()
+                    fos.close()
+                    wb.dispose()
+                    render template: '/templates/usageReport', model: fileResult
+                }
+                else {
+                    Map<String, Object> errorMap = [error: ctrlResult.error]
+                    render template: '/templates/usageReport', model: errorMap
+                }
             }
             else {
-                redirect action: 'stats', id: params.id, params: [error: ctrlResult.error, reportType: params.reportType, metricType: params.metricType, accessType: params.accessType, accessMethod: params.accessMethod]
+                render template: '/templates/usageReport', model: fileResult
             }
+        }
+    }
+
+    /**
+     * Call to fetch the usage data for the given subscription
+     * @return the (filtered) usage data view for the given subscription, rendered as Excel worksheet
+     */
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+    })
+    def downloadReport() {
+        /*
+        get file from token and offer to download with filename
+         */
+        byte[] output = []
+        try {
+            Date dateRun = new Date()
+            String dir = ConfigMapper.getStatsReportSaveLocation() ?: '/usage'
+            File f = new File(dir+'/'+params.token)
+            output = f.getBytes()
+            response.setHeader "Content-disposition", "attachment; filename=report_${DateUtils.getSDF_yyyyMMdd().format(dateRun)}.xlsx"
+            response.setHeader("Content-Length", "${output.length}")
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            response.outputStream << output
+        }
+        catch(Exception e) {
+            log.error(e.getMessage())
+            response.sendError(HttpStatus.SC_NOT_FOUND)
         }
     }
 
@@ -246,9 +341,9 @@ class SubscriptionController {
      * Call to create a new subscription
      * @return the empty subscription form or the list of subscriptions in case of an error
      */
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     })
     def emptySubscription() {
         Map<String,Object> ctrlResult = subscriptionControllerService.emptySubscription(this,params)
@@ -265,9 +360,9 @@ class SubscriptionController {
      * Call to process the given input and to create a new subscription instance
      * @return the new subscription's details view in case of success, the subscription list view otherwise
      */
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     })
     def processEmptySubscription() {
         Map<String,Object> ctrlResult = subscriptionControllerService.processEmptySubscription(this,params)
@@ -333,9 +428,9 @@ class SubscriptionController {
      * Call to list the documents attached to the given subscription
      * @return the table view of documents for the given subscription
      */
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER')
+        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     })
     @Check404()
     def documents() {
@@ -408,39 +503,41 @@ class SubscriptionController {
             SimpleDateFormat sdf = DateUtils.getSDF_yyyyMMdd()
             String datetoday = sdf.format(new Date())
             String filename = escapeService.escapeString(ctrlResult.result.subscription.name) + "_" + message(code:'subscriptionDetails.members.members') + "_" + datetoday
-            if(params.exportXLS || params.exportShibboleths || params.exportEZProxys || params.exportProxys || params.exportIPs || params.exportClickMeExcel) {
+            Map<String, Object> selectedFields = [:]
+            Set<String> contactSwitch = []
+            if(params.fileformat) {
+                if (params.filename) {
+                    filename =params.filename
+                }
+                Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+                selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+                contactSwitch.addAll(params.list("contactSwitch"))
+            }
+            if(params.exportShibboleths || params.exportEZProxys || params.exportProxys || params.exportIPs || params.fileformat == 'xlsx') {
                 SXSSFWorkbook wb
+                /*
                 if(params.exportXLS) {
                     wb = (SXSSFWorkbook) exportService.exportOrg(ctrlResult.result.orgs, filename, true, 'xlsx')
                 }
-                if(params.exportClickMeExcel) {
-                    if (params.filename) {
-                        filename =params.filename
-                    }
-
-                    Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
-                    Map<String, Object> selectedFields = [:]
-                    selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
-                    Set<String> contactSwitch = []
-                    contactSwitch.addAll(params.list("contactSwitch"))
-
-                    wb = (SXSSFWorkbook) exportClickMeService.exportSubscriptionMembers(ctrlResult.result.filteredSubChilds, selectedFields, ctrlResult.result.subscription, ctrlResult.result.institution, contactSwitch)
+                */
+                if(params.fileformat == 'xlsx') {
+                    wb = (SXSSFWorkbook) exportClickMeService.exportSubscriptionMembers(ctrlResult.result.filteredSubChilds, selectedFields, ctrlResult.result.subscription, ctrlResult.result.institution, contactSwitch, ExportClickMeService.FORMAT.XLS)
                 }
                 else if (params.exportIPs) {
                     filename = "${datetoday}_" + escapeService.escapeString(message(code: 'subscriptionDetails.members.exportIPs.fileName'))
-                    wb = (SXSSFWorkbook) accessPointService.exportIPsOfOrgs(ctrlResult.result.filteredSubChilds.orgs.flatten())
+                    wb = (SXSSFWorkbook) accessPointService.exportIPsOfOrgs(ctrlResult.result.filteredSubChilds.orgs.flatten(), ExportClickMeService.FORMAT.XLS)
                 }else if (params.exportProxys) {
                     filename = "${datetoday}_" + escapeService.escapeString(message(code: 'subscriptionDetails.members.exportProxys.fileName'))
-                    wb = (SXSSFWorkbook) accessPointService.exportProxysOfOrgs(ctrlResult.result.filteredSubChilds.orgs.flatten())
+                    wb = (SXSSFWorkbook) accessPointService.exportProxysOfOrgs(ctrlResult.result.filteredSubChilds.orgs.flatten(), ExportClickMeService.FORMAT.XLS)
                 }else if (params.exportEZProxys) {
                     filename = "${datetoday}_" + escapeService.escapeString(message(code: 'subscriptionDetails.members.exportEZProxys.fileName'))
-                    wb = (SXSSFWorkbook) accessPointService.exportEZProxysOfOrgs(ctrlResult.result.filteredSubChilds.orgs.flatten())
+                    wb = (SXSSFWorkbook) accessPointService.exportEZProxysOfOrgs(ctrlResult.result.filteredSubChilds.orgs.flatten(), ExportClickMeService.FORMAT.XLS)
                 }else if (params.exportShibboleths) {
                     filename = "${datetoday}_" + escapeService.escapeString(message(code: 'subscriptionDetails.members.exportShibboleths.fileName'))
-                    wb = (SXSSFWorkbook) accessPointService.exportShibbolethsOfOrgs(ctrlResult.result.filteredSubChilds.orgs.flatten())
+                    wb = (SXSSFWorkbook) accessPointService.exportShibbolethsOfOrgs(ctrlResult.result.filteredSubChilds.orgs.flatten(), ExportClickMeService.FORMAT.XLS)
                 }else if (params.exportMailDomains) {
                     filename = "${datetoday}_" + escapeService.escapeString(message(code: 'subscriptionDetails.members.exportMailDomains.fileName'))
-                    wb = (SXSSFWorkbook) accessPointService.exportMailDomainsOfOrgs(ctrlResult.result.filteredSubChilds.orgs.flatten())
+                    wb = (SXSSFWorkbook) accessPointService.exportMailDomainsOfOrgs(ctrlResult.result.filteredSubChilds.orgs.flatten(), ExportClickMeService.FORMAT.XLS)
                 }
                 if(wb) {
                     response.setHeader "Content-disposition", "attachment; filename=${filename}.xlsx"
@@ -452,21 +549,17 @@ class SubscriptionController {
                     return
                 }
             }
-            else {
-                withFormat {
-                    html {
-                        ctrlResult.result
-                    }
-                    csv {
-                        response.setHeader("Content-disposition", "attachment; filename=${filename}.csv")
-                        response.contentType = "text/csv"
-                        ServletOutputStream out = response.outputStream
-                        out.withWriter { writer ->
-                            writer.write((String) exportService.exportOrg(ctrlResult.result.orgs, filename, true, "csv"))
-                        }
-                        out.close()
-                    }
+            else if(params.fileformat == 'csv') {
+                response.setHeader("Content-disposition", "attachment; filename=${filename}.csv")
+                response.contentType = "text/csv"
+                ServletOutputStream out = response.outputStream
+                out.withWriter { writer ->
+                    writer.write((String) exportClickMeService.exportSubscriptionMembers(ctrlResult.result.filteredSubChilds, selectedFields, ctrlResult.result.subscription, ctrlResult.result.institution, contactSwitch, ExportClickMeService.FORMAT.CSV))
                 }
+                out.close()
+            }
+            else {
+                ctrlResult.result
             }
         }
     }
@@ -479,7 +572,7 @@ class SubscriptionController {
     @Secured(closure = {
         ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
     })
-    @Check404
+    @Check404()
     def addMembers() {
         log.debug("addMembers ..")
         Map<String,Object> ctrlResult = subscriptionControllerService.addMembers(this,params)
@@ -522,9 +615,9 @@ class SubscriptionController {
      * Call to insert a succession link between two member subscriptions
      * @return the members view
      */
-    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
     def linkNextPrevMemberSub() {
         Map<String,Object> ctrlResult = subscriptionControllerService.linkNextPrevMemberSub(this,params)
@@ -544,9 +637,9 @@ class SubscriptionController {
      * Call to a bulk operation view on member instances
      * @return the requested tab view
      */
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR')
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC)
     })
     def membersSubscriptionsManagement() {
         def input_file
@@ -583,9 +676,9 @@ class SubscriptionController {
      * Call to unset the given customer identifier
      * @return the customer identifier tabs view
      */
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR')
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC)
     })
     def deleteCustomerIdentifier() {
         managementService.deleteCustomerIdentifier(params.long("deleteCI"))
@@ -616,9 +709,9 @@ class SubscriptionController {
      * Call to list surveys linked to a consortial subscription
      * @return a table view of surveys from the consortium's point of view
      */
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.ORG_CONSORTIUM_PRO, 'INST_USER'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_PRO, 'INST_USER')
+        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)
     })
     @Check404()
     def surveysConsortia() {
@@ -691,12 +784,12 @@ class SubscriptionController {
         }
         else {
             if(params.addUUID) {
-                switch(params.addType) {
-                    case "With": flash.message = message(code:'subscription.details.link.processingWithEntitlements') as String
+                switch(ctrlResult.result.holdingSelection) {
+                    case RDStore.SUBSCRIPTION_HOLDING_ENTIRE: flash.message = message(code:'subscription.details.link.processingWithEntitlements') as String
                         redirect action: 'index', params: [id: params.id, gokbId: params.addUUID]
                         return
                         break
-                    case "Without": flash.message = message(code:'subscription.details.link.processingWithoutEntitlements') as String
+                    case RDStore.SUBSCRIPTION_HOLDING_PARTIAL: flash.message = message(code:'subscription.details.link.processingWithoutEntitlements') as String
                         redirect action: 'addEntitlements', params: [id: params.id, packageLinkPreselect: params.addUUID, preselectedName: ctrlResult.result.packageName]
                         return
                         break
@@ -764,6 +857,16 @@ class SubscriptionController {
         }
         else {
             String filename = "${escapeService.escapeString(ctrlResult.result.subscription.dropdownNamingConvention())}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
+            //ArrayList<IssueEntitlement> issueEntitlements = []
+            Map<String, Object> selectedFields = [:]
+            if(params.fileformat) {
+                if (params.filename) {
+                    filename = params.filename
+                }
+                //issueEntitlements.addAll(IssueEntitlement.findAllByIdInList(ctrlResult.result.entitlementIDs.id,[sort:'tipp.sortname']))
+                Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+                selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+            }
             if (params.exportKBart) {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
                 response.contentType = "text/tab-separated-values"
@@ -779,7 +882,7 @@ class SubscriptionController {
                 out.flush()
                 out.close()
             }
-            else if(params.exportXLSX) {
+            /*else if(params.exportXLSX) {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 Map<String, Object> configMap = [:]
@@ -795,18 +898,9 @@ class SubscriptionController {
                 response.outputStream.close()
                 workbook.dispose()
                 return
-            }
-            else if(params.exportClickMeExcel) {
-                if (params.filename) {
-                    filename =params.filename
-                }
-
-                ArrayList<IssueEntitlement> issueEntitlements = ctrlResult.result.entitlementIDs ? IssueEntitlement.findAllByIdInList(ctrlResult.result.entitlementIDs.id,[sort:'tipp.sortname']) : [:]
-
-                Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
-                Map<String, Object> selectedFields = [:]
-                selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
-                SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportIssueEntitlements(issueEntitlements, selectedFields)
+            }*/
+            else if(params.fileformat == 'xlsx') {
+                SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportIssueEntitlements(ctrlResult.result.entitlementIDs.id, selectedFields, ExportClickMeService.FORMAT.XLS)
                 response.setHeader "Content-disposition", "attachment; filename=${filename}.xlsx"
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 wb.write(response.outputStream)
@@ -815,23 +909,18 @@ class SubscriptionController {
                 wb.dispose()
                 return
             }
-            else {
-                withFormat {
-                    html {
-                        flash.message = ctrlResult.result.message
-                        ctrlResult.result
-                    }
-                    csv {
-                        response.setHeader("Content-disposition", "attachment; filename=${filename}.csv")
-                        response.contentType = "text/csv"
-                        ServletOutputStream out = response.outputStream
-                        Map<String,List> tableData = exportService.generateTitleExportCSV(ctrlResult.result.entitlementIDs.id,IssueEntitlement.class.name)
-                        out.withWriter { writer ->
-                            writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.rows,';'))
-                        }
-                        out.close()
-                    }
+            else if(params.fileformat == 'csv') {
+                response.setHeader("Content-disposition", "attachment; filename=${filename}.csv")
+                response.contentType = "text/csv"
+                ServletOutputStream out = response.outputStream
+                out.withWriter { writer ->
+                    writer.write((String) exportClickMeService.exportIssueEntitlements(ctrlResult.result.entitlementIDs.id, selectedFields, ExportClickMeService.FORMAT.CSV))
                 }
+                out.close()
+            }
+            else {
+                flash.message = ctrlResult.result.message
+                ctrlResult.result
             }
         }
     }
@@ -882,6 +971,13 @@ class SubscriptionController {
             configMap.putAll(params)
             configMap.remove("subscription")
             configMap.pkgIds = ctrlResult.result.subscription.packages?.pkg?.id //GORM sometimes does not initialise the sorted set
+            ArrayList<TitleInstancePackagePlatform> tipps = []
+            Map<String, Object> selectedFields = [:]
+            if(params.fileformat) {
+                tipps.addAll(TitleInstancePackagePlatform.findAllByIdInList(ctrlResult.result.tipps,[sort:'sortname']))
+                Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+                selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+            }
             if(params.exportKBart) {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
                 response.contentType = "text/tsv"
@@ -893,7 +989,7 @@ class SubscriptionController {
                 out.flush()
                 out.close()
             }
-            else if(params.exportXLSX) {
+            /*else if(params.exportXLSX) {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 Map<String,List> export = exportService.generateTitleExportCustom(configMap, TitleInstancePackagePlatform.class.name) //subscription given
@@ -905,17 +1001,9 @@ class SubscriptionController {
                 response.outputStream.close()
                 workbook.dispose()
                 return
-            }else if(params.exportClickMeExcel) {
-                if (params.filename) {
-                    filename =params.filename
-                }
-
-                ArrayList<IssueEntitlement> tipps = ctrlResult.result.tipps ? TitleInstancePackagePlatform.findAllByIdInList(ctrlResult.result.tipps,[sort:'tipp.sortname']) : [:]
-
-                Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
-                Map<String, Object> selectedFields = [:]
-                selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
-                SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportTipps(tipps, selectedFields)
+            }*/
+            else if(params.fileformat == 'xlsx') {
+                SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportTipps(tipps, selectedFields, ExportClickMeService.FORMAT.XLS)
                 response.setHeader "Content-disposition", "attachment; filename=${filename}.xlsx"
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 wb.write(response.outputStream)
@@ -924,23 +1012,20 @@ class SubscriptionController {
                 wb.dispose()
                 return
             }
-            withFormat {
-                html {
-                    flash.message = ctrlResult.result.message
-                    flash.error = ctrlResult.result.error
-                    ctrlResult.result
+            else if(params.fileformat == 'csv') {
+                response.setHeader("Content-disposition", "attachment; filename=${filename}.csv")
+                response.contentType = "text/csv"
+                ServletOutputStream out = response.outputStream
+                out.withWriter { writer ->
+                    writer.write((String) exportClickMeService.exportTipps(tipps, selectedFields, ExportClickMeService.FORMAT.CSV))
                 }
-                csv {
-                    response.setHeader("Content-disposition", "attachment; filename=${filename}.csv")
-                    response.contentType = "text/csv"
-                    ServletOutputStream out = response.outputStream
-                    Map<String,List> tableData = exportService.generateTitleExportCSV(ctrlResult.result.tipps,TitleInstancePackagePlatform.class.name)
-                    out.withWriter { writer ->
-                        writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.rows,';'))
-                    }
-                    out.flush()
-                    out.close()
-                }
+                out.flush()
+                out.close()
+            }
+            else {
+                flash.message = ctrlResult.result.message
+                flash.error = ctrlResult.result.error
+                ctrlResult.result
             }
         }
     }
@@ -1040,13 +1125,12 @@ class SubscriptionController {
         result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
         result.editable = surveyService.isEditableSurvey(result.institution, result.surveyConfig.surveyInfo)
         if (result.subscription) {
-            if(params.singleTitle) {
-                IssueEntitlement ie = IssueEntitlement.get(params.singleTitle)
-                TitleInstancePackagePlatform tipp = ie.tipp
+            if(result.editable && params.singleTitle) {
+                TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.get(params.singleTitle)
 
                 boolean tippExistsInParentSub = false
 
-                if(IssueEntitlement.findByTippAndSubscriptionAndStatus(tipp, result.surveyConfig.subscription, RDStore.TIPP_STATUS_CURRENT)) {
+/*                if(IssueEntitlement.findByTippAndSubscriptionAndStatus(tipp, result.surveyConfig.subscription, RDStore.TIPP_STATUS_CURRENT)) {
                     tippExistsInParentSub = true
                 }else {
                    List<TitleInstancePackagePlatform> titleInstancePackagePlatformList = TitleInstancePackagePlatform.findAllByHostPlatformURLAndStatus(tipp.hostPlatformURL, RDStore.TIPP_STATUS_CURRENT)
@@ -1056,19 +1140,23 @@ class SubscriptionController {
                             tipp = titleInstancePackagePlatform
                         }
                     }
-                }
-
+                }*/
+                tippExistsInParentSub = true
                 if(tippExistsInParentSub) {
                     try {
 
-                        RefdataValue acceptStatus = RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION
+                        IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, result.subscription)
 
-                        if(result.contextOrg.id == result.surveyConfig.surveyInfo.owner.id && SurveyOrg.findBySurveyConfigAndOrg(result.surveyConfig, result.subscription.subscriber).finishDate != null){
-                            acceptStatus = RDStore.IE_ACCEPT_STATUS_UNDER_NEGOTIATION
+                        if(!issueEntitlementGroup) {
+                            IssueEntitlementGroup.withTransaction {
+                                issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: result.subscription, name: result.surveyConfig.issueEntitlementGroupName).save()
+                            }
                         }
 
-                        if (subscriptionService.addEntitlement(result.subscription, tipp.gokbId, ie, (ie.priceItems != null), acceptStatus, result.surveyConfig.pickAndChoosePerpetualAccess)) {
+                        if (issueEntitlementGroup && subscriptionService.addEntitlement(result.subscription, tipp.gokbId, null, (tipp.priceItems != null), result.surveyConfig.pickAndChoosePerpetualAccess, issueEntitlementGroup)) {
                             flash.message = message(code: 'subscription.details.addEntitlements.titleAddToSub', args: [tipp.name]) as String
+                        }else {
+                            log.error("no issueEntitlementGroup found and no issueEntitlementGroup created, because it is not set a issueEntitlementGroupName in survey config!")
                         }
                     }
                     catch (EntitlementCreationException e) {
@@ -1096,8 +1184,25 @@ class SubscriptionController {
         Map<String, Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
         result.editable = surveyService.isEditableSurvey(result.institution, result.surveyConfig.surveyInfo)
-        if(subscriptionService.deleteEntitlementbyID(result.subscription,params.singleTitle))
-            log.debug("Deleted ie ${params.singleTitle} from sub ${result.subscription.id}")
+
+        if(result.editable){
+
+            IssueEntitlement issueEntitlement = IssueEntitlement.findById(Long.parseLong(params.singleTitle))
+            IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, result.subscription)
+            if(issueEntitlement && issueEntitlementGroup) {
+                IssueEntitlementGroupItem issueEntitlementGroupItem = IssueEntitlementGroupItem.findByIeGroupAndIe(issueEntitlementGroup, issueEntitlement)
+                if(issueEntitlementGroupItem) {
+                    IssueEntitlementGroup.withTransaction {
+                        issueEntitlementGroupItem.delete()
+                    }
+
+                    if (subscriptionService.deleteEntitlementbyID(result.subscription, params.singleTitle))
+                        log.debug("Deleted ie ${params.singleTitle} from sub ${result.subscription.id}")
+                }
+            }
+        }
+
+
         redirect(url: request.getHeader("referer"))
     }
 
@@ -1325,57 +1430,6 @@ class SubscriptionController {
         redirect action: 'index', id: params.id
     }
 
-    @Deprecated
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
-    })
-    def showEntitlementsRenewWithSurvey() {
-        Map<String,Object> result = [user: contextService.getUser()]//subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
-        result.contextOrg = contextService.getOrg()
-        result.institution = result.contextOrg
-        SwissKnife.setPaginationParams(result,params,result.user)
-        result.surveyConfig = SurveyConfig.get(params.id)
-        result.surveyInfo = result.surveyConfig.surveyInfo
-        result.subscription =  result.surveyConfig.subscription
-        result.newSub = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.institution)
-        result.subscriber = result.newSub.getSubscriber()
-        result.ieIDs = subscriptionService.getIssueEntitlementIDsNotFixed(result.newSub)
-        result.ies = result.ieIDs ? IssueEntitlement.findAllByIdInList(result.ieIDs.drop(result.offset).take(result.max)) : []
-        result.filename = "renewEntitlements_${escapeService.escapeString(result.subscription.dropdownNamingConvention())}"
-        if (params.exportKBart) {
-            response.setHeader("Content-disposition", "attachment; filename=${result.filename}.tsv")
-            response.contentType = "text/tsv"
-            ServletOutputStream out = response.outputStream
-            Map<String, List> tableData = exportService.generateTitleExportKBART([sub: result.newSub, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT, pkgIds: result.newSub.packages?.pkg?.id], IssueEntitlement.class.name)
-            out.withWriter { Writer writer ->
-                writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
-            }
-            out.flush()
-            out.close()
-        }
-        else if(params.exportXLS) {
-            response.setHeader("Content-disposition", "attachment; filename=${result.filename}.xlsx")
-            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            Map<String,List> export = exportService.generateTitleExportCustom([sub: result.newSub, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT, pkgIds: result.newSub.packages?.pkg?.id],IssueEntitlement.class.name)
-            Map sheetData = [:]
-            sheetData[g.message(code:'subscription.details.renewEntitlements.label')] = [titleRow:export.titles,columnData:export.rows]
-            SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
-            workbook.write(response.outputStream)
-            response.outputStream.flush()
-            response.outputStream.close()
-            workbook.dispose()
-            return
-        }
-        else {
-            withFormat {
-                html {
-                    result
-                }
-            }
-        }
-    }
-
     /**
      * Call to load the selection list for the title renewal. The list may be exported as a (configurable) Excel table with usage data for each title
      * @return the title list for selection; either as HTML table or as Excel export, configured with the given parameters
@@ -1392,7 +1446,7 @@ class SubscriptionController {
             if(params.reportType) {
                 exportResult = exportService.generateReport(params, true,  true, true)
             }
-            if(exportResult.result) {
+            if(exportResult) {
                 wb = exportResult.result
                 ctrlResult = [status: SubscriptionControllerService.STATUS_OK]
             }
@@ -1417,8 +1471,8 @@ class SubscriptionController {
         else {
             Map queryMap = [:]
             String filename
-            if(params.tab == 'allIEs') {
-                queryMap = [sub: ctrlResult.result.subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT, pkgIds: ctrlResult.result.subscription.packages?.pkg?.id]
+            if(params.tab == 'allTipps') {
+                queryMap = [sub: ctrlResult.result.subscription, ieStatus: RDStore.TIPP_STATUS_CURRENT, pkgIds: ctrlResult.result.subscription.packages?.pkg?.id]
                 if(params.reportType)
                     queryMap.reportType = params.reportType
                 if(params.metricType)
@@ -1427,52 +1481,28 @@ class SubscriptionController {
                     queryMap.accessTypes = params.accessType
                 if(params.accessMethod)
                     queryMap.accessMethods = params.accessMethod
-                queryMap.platform = Platform.get(params.platform)
                 filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.selectableTitles') + '_' + ctrlResult.result.subscription.dropdownNamingConvention())
             }
             if(params.tab == 'selectedIEs') {
-                queryMap = [sub: ctrlResult.result.newSub, ieAcceptStatusNotFixed: true, ieStatus: RDStore.TIPP_STATUS_CURRENT, pkgIds: ctrlResult.result.subscription.packages?.pkg?.id]
-                filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.currentTitlesSelect') + '_' + ctrlResult.result.newSub.dropdownNamingConvention())
+                queryMap = [sub: ctrlResult.result.subscriberSub, ieStatus: RDStore.TIPP_STATUS_CURRENT, pkgIds: ctrlResult.result.subscription.packages?.pkg?.id, titleGroup: ctrlResult.result.titleGroup]
+                filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.currentTitlesSelect') + '_' + ctrlResult.result.subscriberSub.dropdownNamingConvention())
             }
+            queryMap.platform = Platform.get(params.platform)
 
-            if(params.tab == 'currentIEs' && ctrlResult.result.previousSubscription) {
+            if(params.tab == 'currentPerpetualAccessIEs') {
                 Set<Subscription> subscriptions = []
                 Set<Long> packageIds = []
                 if(ctrlResult.result.surveyConfig.pickAndChoosePerpetualAccess) {
-                    subscriptions = linksGenerationService.getSuccessionChain(ctrlResult.result.newSub, 'sourceSubscription')
+                    subscriptions = linksGenerationService.getSuccessionChain(ctrlResult.result.subscriberSub, 'sourceSubscription')
                     subscriptions.each {
                         packageIds.addAll(it.packages?.pkg?.id)
                     }
-                    subscriptions << ctrlResult.result.newSub
-                    packageIds.addAll(ctrlResult.result.newSub.packages?.pkg?.id)
-                }else {
-                    subscriptions << ctrlResult.result.previousSubscription
-                    packageIds.addAll(ctrlResult.result.previousSubscription.packages?.pkg?.id)
+                    subscriptions << ctrlResult.result.subscriberSub
+                    packageIds.addAll(ctrlResult.result.subscriberSub.packages?.pkg?.id)
                 }
 
-                queryMap = [subscriptions: subscriptions, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT, pkgIds: packageIds]
-                filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.currentTitles') + '_' + ctrlResult.result.previousSubscription.dropdownNamingConvention())
-            }
-
-            List<Long> toBeSelectedTippIDs = []
-            if(params.tab == 'toBeSelectedIEs') {
-                List<Long> allTippIDs = IssueEntitlement.executeQuery("select ie.tipp.id from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus", [sub: ctrlResult.result.subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])
-
-                List<Long> selectedTippIDs =  IssueEntitlement.executeQuery("select ie.tipp.id from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus != :acceptStat and ie.status = :ieStatus ", [sub: ctrlResult.result.newSub, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])
-                toBeSelectedTippIDs.addAll(allTippIDs - selectedTippIDs)
-                if(toBeSelectedTippIDs.size()) {
-                    queryMap = [sub: ctrlResult.result.subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT, tippIds: toBeSelectedTippIDs, pkgIds: ctrlResult.result.subscription.packages?.pkg?.id]
-                    if(params.reportType)
-                        queryMap.reportType = params.reportType
-                    if(params.metricType)
-                        queryMap.metricTypes = params.metricType
-                    if(params.accessType)
-                        queryMap.accessTypes = params.accessType
-                    if(params.accessMethod)
-                        queryMap.accessMethods = params.accessMethod
-                    queryMap.platform = Platform.get(params.platform)
-                }
-                filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.toBeSelectedIEs') + '_' + ctrlResult.result.newSub.dropdownNamingConvention())
+                queryMap = [subscriptions: subscriptions, ieStatus: RDStore.TIPP_STATUS_CURRENT, pkgIds: packageIds, hasPerpetualAccess: true]
+                filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.currentTitles') + '_' + ctrlResult.result.subscriberSub.dropdownNamingConvention())
             }
 
             if (params.exportKBart) {
@@ -1491,12 +1521,12 @@ class SubscriptionController {
                 List monthsInRing = []
                 if(ctrlResult.result.showStatisticByParticipant) {
                     Calendar startTime = GregorianCalendar.getInstance(), endTime = GregorianCalendar.getInstance()
-                    if (ctrlResult.result.newSub.startDate && ctrlResult.result.newSub.endDate) {
-                        startTime.setTime(ctrlResult.result.newSub.startDate)
-                        if (ctrlResult.result.newSub.endDate < new Date())
-                            endTime.setTime(ctrlResult.result.newSub.endDate)
-                    } else if (ctrlResult.result.newSub.startDate) {
-                        startTime.setTime(ctrlResult.result.newSub.startDate)
+                    if (ctrlResult.result.subscriberSub.startDate && ctrlResult.result.subscriberSub.endDate) {
+                        startTime.setTime(ctrlResult.result.subscriberSub.startDate)
+                        if (ctrlResult.result.subscriberSub.endDate < new Date())
+                            endTime.setTime(ctrlResult.result.subscriberSub.endDate)
+                    } else if (ctrlResult.result.subscriberSub.startDate) {
+                        startTime.setTime(ctrlResult.result.subscriberSub.startDate)
                         endTime.setTime(new Date())
                     }
                     while (startTime.before(endTime)) {
@@ -1504,8 +1534,8 @@ class SubscriptionController {
                         startTime.add(Calendar.MONTH, 1)
                     }
                 }
-                List<String> perpetuallyPurchasedTitleURLs = TitleInstancePackagePlatform.executeQuery('select tipp.hostPlatformURL from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (select oo.sub from OrgRole oo where oo.org = :org and oo.roleType in (:roleTypes)) and ie.acceptStatus = :acceptStatus and tipp.status = :tippStatus and ie.status = :tippStatus and ie.perpetualAccessBySub is not null',
-                [org: ctrlResult.result.subscriber, acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED, tippStatus: RDStore.TIPP_STATUS_CURRENT, roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS]])
+                List<String> perpetuallyPurchasedTitleURLs = TitleInstancePackagePlatform.executeQuery('select tipp.hostPlatformURL from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (select oo.sub from OrgRole oo where oo.org = :org and oo.roleType in (:roleTypes)) and tipp.status = :tippStatus and ie.status = :tippStatus and ie.perpetualAccessBySub is not null',
+                [org: ctrlResult.result.subscriber, tippStatus: RDStore.TIPP_STATUS_CURRENT, roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS]])
 
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -1522,12 +1552,26 @@ class SubscriptionController {
                 return
             }
             else if (params.exportXLS) {
-                List<String> perpetuallyPurchasedTitleURLs = TitleInstancePackagePlatform.executeQuery('select tipp.hostPlatformURL from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (select oo.sub from OrgRole oo where oo.org = :org and oo.roleType in (:roleTypes)) and ie.acceptStatus = :acceptStatus and tipp.status = :tippStatus and ie.status = :tippStatus and ie.perpetualAccessBySub is not null',
-                        [org: ctrlResult.result.subscriber, acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED, tippStatus: RDStore.TIPP_STATUS_CURRENT, roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS]])
+                List<String> perpetuallyPurchasedTitleURLs = TitleInstancePackagePlatform.executeQuery('select tipp.hostPlatformURL from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (select oo.sub from OrgRole oo where oo.org = :org and oo.roleType in (:roleTypes)) and tipp.status = :tippStatus and ie.status = :tippStatus and ie.perpetualAccessBySub is not null',
+                        [org: ctrlResult.result.subscriber, tippStatus: RDStore.TIPP_STATUS_CURRENT, roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS]])
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 Map<String, List> export = exportService.generateTitleExportCustom(queryMap, IssueEntitlement.class.name, [], null, perpetuallyPurchasedTitleURLs)
                 Map sheetData = [:]
+
+                export.titles << message(code: 'renewEntitlementsWithSurvey.toBeSelectedIEs.export')
+                export.titles << "Pick"
+
+                String refYes = RDStore.YN_YES.getI10n('value')
+                String refNo = RDStore.YN_NO.getI10n('value')
+                export.rows.eachWithIndex { def field, int index ->
+                    if(export.rows[index][0] && export.rows[index][0].style == 'negative'){
+                        export.rows[index] << [field: refNo, style: 'negative']
+                    }else {
+                        export.rows[index] << [field: refYes, style: null]
+                    }
+
+                }
                 sheetData[g.message(code: 'renewEntitlementsWithSurvey.selectableTitles')] = [titleRow: export.titles, columnData: export.rows]
                 wb = exportService.generateXLSXWorkbook(sheetData)
                 wb.write(response.outputStream)
@@ -1663,9 +1707,9 @@ class SubscriptionController {
      * Call for manual renewal of a given subscription, i.e. without performing a renewal survey before
      * @return the starting page of the subscription renewal process
      */
-    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def renewSubscription() {
         Map<String,Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
@@ -1674,6 +1718,7 @@ class SubscriptionController {
         SimpleDateFormat sdf = DateUtils.getSDF_ddMMyyyy()
         Date newStartDate
         Date newEndDate
+        Year newReferenceYear = subscription.referenceYear ? subscription.referenceYear.plusYears(1) : null
         use(TimeCategory) {
             newStartDate = subscription.endDate ? (subscription.endDate + 1.day) : null
             newEndDate = subscription.endDate ? (subscription.endDate + 1.year) : null
@@ -1681,7 +1726,7 @@ class SubscriptionController {
         result.isRenewSub = true
         result.permissionInfo = [sub_startDate    : newStartDate ? sdf.format(newStartDate) : null,
                                  sub_endDate      : newEndDate ? sdf.format(newEndDate) : null,
-                                 sub_referenceYear: subscription.referenceYear,
+                                 sub_referenceYear: newReferenceYear ?: null,
                                  sub_name         : subscription.name,
                                  sub_id           : subscription.id,
                                  sub_status       : RDStore.SUBSCRIPTION_INTENDED.id.toString()]
@@ -1693,9 +1738,9 @@ class SubscriptionController {
      * copying process
      * @return the first page of the element copy processing
      */
-    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def processRenewSubscription() {
         Map<String,Object> ctrlResult = subscriptionControllerService.processRenewSubscription(this,params)
@@ -1725,9 +1770,9 @@ class SubscriptionController {
      * Call to load the given section of subscription copying procedure
      * @return the view with the given copy parameters, depending on the tab queried
      */
-    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def copySubscription() {
         Map<String,Object> ctrlResult = subscriptionControllerService.copySubscription(params)
@@ -1754,7 +1799,7 @@ class SubscriptionController {
                     break
                 case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
                     ctrlResult.result << copyElementsService.copyObjectElements_DocsAnnouncementsTasks(params)
-                    if (ctrlResult.result.isConsortialObjects && accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_USER')){
+                    if (ctrlResult.result.isConsortialObjects && contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC)){
                         params.workFlowPart = CopyElementsService.WORKFLOW_SUBSCRIBER
                         ctrlResult.result << copyElementsService.loadDataFor_Subscriber(params)
                     } else {
@@ -1788,9 +1833,9 @@ class SubscriptionController {
      * turning to the next page); if data has been submitted, it will be processed
      * @return the copy parameters for the given (or its following) procedure section
      */
-    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def copyElementsIntoSubscription() {
         Map<String,Object> ctrlResult = subscriptionControllerService.copyElementsIntoSubscription(params)
@@ -1886,9 +1931,9 @@ class SubscriptionController {
      * Call for a single user to copy private properties from a consortial member subscription into its successor instance
      * @return the reduced subscription element copy view
      */
-    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_INST_PRO], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_INST_PRO], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_INST_PRO )
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_INST_PRO )
     })
     def copyMyElements() {
         Map<String, Object> result = subscriptionControllerService.setCopyResultGenerics(params+[copyMyElements: true])
@@ -1936,9 +1981,9 @@ class SubscriptionController {
      * Processes the given subscription candidates and creates subscription instances based on the submitted data
      * @return the subscription list view in case of success, the import starting page otherwise
      */
-    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def addSubscriptions() {
         def candidates = JSON.parse(params.candidates)
@@ -1960,9 +2005,9 @@ class SubscriptionController {
      * Call for the reporting view for the given subscription
      * @return the reporting index for the subscription
      */
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_PRO, 'INST_USER'])
+    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_USER')
+        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
     })
     @Check404()
     def reporting() {
@@ -1986,9 +2031,9 @@ class SubscriptionController {
      * Call for the workflows related to this subscription
      * @return the workflow landing page for the given subscription
      */
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_PRO, 'INST_USER'])
+    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_USER')
+        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
     })
     @Check404()
     def workflows() {

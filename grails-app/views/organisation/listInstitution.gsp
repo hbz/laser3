@@ -9,15 +9,17 @@
     <ui:controlButtons>
         <ui:exportDropdown>
             <ui:exportDropdownItem>
-                <a class="item" data-ui="modal" href="#individuallyExportModal">Click Me Excel Export</a>
+                <a class="item" data-ui="modal" href="#individuallyExportModal">Export</a>
             </ui:exportDropdownItem>
         </ui:exportDropdown>
 
         <%
-            editable = (editable && accessService.ctxPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || accessService.is_ORG_COM_EDITOR()
+            editable = (editable && contextService.hasPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || accessService.is_ORG_COM_EDITOR()
         %>
         <g:if test="${editable}">
-            <laser:render template="actions" />
+            <ui:actionsDropdown>
+                <ui:actionsDropdownItem controller="organisation" action="findOrganisationMatches" message="org.create_new_institution.label"/>
+            </ui:actionsDropdown>
         </g:if>
     </ui:controlButtons>
 
@@ -30,7 +32,7 @@
             <laser:render template="/templates/filter/orgFilter"
                       model="[
                               tmplConfigShow: [
-                                      ['name', 'orgStatus', 'isLegallyObligedBy'],
+                                      ['name', 'orgStatus', 'isLegallyObliged'],
                                       ['identifier', 'identifierNamespace', 'customerIDNamespace', 'isMyX'],
                                       ['country&region', 'libraryNetwork', 'libraryType', 'subjectGroup']
                               ],

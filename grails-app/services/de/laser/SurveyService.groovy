@@ -1,8 +1,6 @@
 package de.laser
 
-
 import de.laser.auth.User
-import de.laser.auth.UserOrgRole
 import de.laser.finance.CostItem
 import de.laser.config.ConfigDefaults
 import de.laser.properties.PropertyDefinition
@@ -13,7 +11,6 @@ import de.laser.stats.Counter5ApiSource
 import de.laser.stats.Counter5Report
 import de.laser.storage.BeanStore
 import de.laser.storage.PropertyStore
-import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyConfigProperties
@@ -21,8 +18,6 @@ import de.laser.survey.SurveyInfo
 import de.laser.survey.SurveyOrg
 import de.laser.survey.SurveyResult
 import de.laser.survey.SurveyUrl
-import de.laser.system.SystemEvent
-import de.laser.utils.AppUtils
 import de.laser.config.ConfigMapper
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
@@ -53,6 +48,7 @@ class SurveyService {
     LinksGenerationService linksGenerationService
     MessageSource messageSource
     SubscriptionService subscriptionService
+    MailSendService mailSendService
 
     PageRenderer groovyPageRenderer
 
@@ -76,7 +72,7 @@ class SurveyService {
      */
     boolean isEditableSurvey(Org org, SurveyInfo surveyInfo) {
 
-        if (accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO ) && surveyInfo.owner?.id == contextService.getOrg().id) {
+        if (contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO ) && surveyInfo.owner?.id == contextService.getOrg().id) {
             return true
         }
 
@@ -84,7 +80,7 @@ class SurveyService {
             return false
         }
 
-        if (accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )) {
+        if (contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )) {
             SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfigInList(org, surveyInfo.surveyConfigs)
 
             if (surveyOrg.finishDate) {
@@ -100,7 +96,7 @@ class SurveyService {
     @Deprecated
     boolean isEditableIssueEntitlementsSurvey(Org org, SurveyConfig surveyConfig) {
 
-        if (accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO ) && surveyConfig.surveyInfo.owner?.id == contextService.getOrg().id) {
+        if (contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO ) && surveyConfig.surveyInfo.owner?.id == contextService.getOrg().id) {
             return true
         }
 
@@ -112,7 +108,7 @@ class SurveyService {
             return false
         }
 
-        if (accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )) {
+        if (contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )) {
 
             if (SurveyOrg.findByOrgAndSurveyConfig(org, surveyConfig)?.finishDate) {
                 return false
@@ -803,21 +799,20 @@ class SurveyService {
         if(orgs)
         {
             //Only User that approved
-            List<UserOrgRole> userOrgs = UserOrgRole.findAllByOrgInList(orgs)
+            List<User> formalUserList = orgs ? User.findAllByFormalOrgInList(orgs) : []
 
             //Only User with Notification by Email and for Surveys Start
-            userOrgs.each { userOrg ->
-                if(userOrg.user.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_FOR_SURVEYS_START) == RDStore.YN_YES &&
-                        userOrg.user.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES)
+            formalUserList.each { fu ->
+                if (fu.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_FOR_SURVEYS_START) == RDStore.YN_YES &&
+                        fu.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES)
                 {
-
                     List<SurveyInfo> orgSurveys = SurveyInfo.executeQuery("SELECT s FROM SurveyInfo s " +
                             "LEFT JOIN s.surveyConfigs surConf " +
                             "LEFT JOIN surConf.orgs surOrg  " +
                             "WHERE surOrg.org IN (:org) " +
-                            "AND s.id IN (:survey)", [org: userOrg.org, survey: surveys?.id])
+                            "AND s.id IN (:survey)", [org: fu.formalOrg, survey: surveys?.id])
 
-                    mailSendService.sendSurveyEmail(userOrg.user, userOrg.org, orgSurveys, false)
+                    mailSendService.sendSurveyEmail(fu, fu.formalOrg, orgSurveys, false)
                 }
             }
         }
@@ -832,19 +827,17 @@ class SurveyService {
     void emailsToSurveyUsersOfOrg(SurveyInfo surveyInfo, Org org, boolean reminderMail){
 
         //Only User that approved
-        List<UserOrgRole> userOrgs = UserOrgRole.findAllByOrg(org)
+        List<User> formalUserList = org ? User.findAllByFormalOrg(org) : []
 
         //Only User with Notification by Email and for Surveys Start
-        userOrgs.each { userOrg ->
-            if(userOrg.user.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_FOR_SURVEYS_START) == RDStore.YN_YES &&
-                    userOrg.user.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES)
+        formalUserList.each { fu ->
+            if (fu.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_FOR_SURVEYS_START) == RDStore.YN_YES &&
+                    fu.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES)
             {
-                mailSendService.sendSurveyEmail(userOrg.user, userOrg.org, [surveyInfo], reminderMail)
+                mailSendService.sendSurveyEmail(fu, fu.formalOrg, [surveyInfo], reminderMail)
             }
         }
     }
-
-
 
     /**
      * Limits the given institution query to the set of institution IDs
@@ -1453,12 +1446,10 @@ class SurveyService {
                     'tipp.hostPlatformURL = :hostPlatformURL and ' +
                     'tipp.status != :tippStatus and ' +
                     'ie.status != :tippStatus and ' +
-                    'ie.acceptStatus = :acceptStatus and ' +
                     'ie.subscription.id in (:subscriptionIDs)',
                     [hostPlatformURL: tipp.hostPlatformURL,
                      tippStatus: RDStore.TIPP_STATUS_REMOVED,
-                     subscriptionIDs: subscriptionIDs,
-                     acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED])[0]
+                     subscriptionIDs: subscriptionIDs])[0]
 
             if(countIes > 0){
                 return true
@@ -1468,6 +1459,36 @@ class SurveyService {
         }else {
             return false
         }
+    }
+
+    boolean hasParticipantPerpetualAccessToTitle3(Org org, TitleInstancePackagePlatform tipp){
+            Integer countPermanentTitles = PermanentTitle.executeQuery('select count(pt.id) from PermanentTitle pt join pt.tipp tipp where ' +
+                    '(tipp = :tipp or tipp.hostPlatformURL = :hostPlatformURL) and ' +
+                    'tipp.status != :tippStatus AND ' +
+                    'pt.owner = :org',
+                    [hostPlatformURL: tipp.hostPlatformURL,
+                     tippStatus: RDStore.TIPP_STATUS_REMOVED,
+                     tipp: tipp,
+                     org: org])[0]
+
+            if(countPermanentTitles > 0){
+                return true
+            }else {
+                return false
+            }
+    }
+
+    List<PermanentTitle> listParticipantPerpetualAccessToTitle(Org org, TitleInstancePackagePlatform tipp){
+        List<PermanentTitle> permanentTitles = PermanentTitle.executeQuery('select pt from PermanentTitle pt join pt.tipp tipp where ' +
+                '(tipp = :tipp or tipp.hostPlatformURL = :hostPlatformURL) and ' +
+                'tipp.status != :tippStatus AND ' +
+                'pt.owner = :org',
+                [hostPlatformURL: tipp.hostPlatformURL,
+                 tippStatus: RDStore.TIPP_STATUS_REMOVED,
+                 tipp: tipp,
+                 org: org])
+
+        permanentTitles
     }
 
     /**
@@ -1598,8 +1619,8 @@ class SurveyService {
         Sql sql = GlobalService.obtainSqlConnection()
         Connection connection = sql.dataSource.getConnection()
 
-        List newIes = sql.executeInsert("insert into issue_entitlement (ie_version, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_medium_rv_fk, ie_status_rv_fk, ie_accept_status_rv_fk, ie_name, ie_sortname, ie_perpetual_access_by_sub_fk) " +
-                "select 0, now(), now(), ${participantSub.id},  ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_medium_rv_fk, ie_status_rv_fk, ${RDStore.IE_ACCEPT_STATUS_FIXED.id}, ie_name, ie_sortname, ie_perpetual_access_by_sub_fk from issue_entitlement where ie_tipp_fk not in (select ie_tipp_fk from issue_entitlement where ie_subscription_fk = ${participantSub.id}) and ie_id = any(:ieIds)", [ieIds: connection.createArrayOf('bigint', entitlementsToTake.toArray())])
+        List newIes = sql.executeInsert("insert into issue_entitlement (ie_version, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_medium_rv_fk, ie_status_rv_fk, ie_name, ie_sortname, ie_perpetual_access_by_sub_fk) " +
+                "select 0, now(), now(), ${participantSub.id},  ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_medium_rv_fk, ie_status_rv_fk, ie_name, ie_sortname, ie_perpetual_access_by_sub_fk from issue_entitlement where ie_tipp_fk not in (select ie_tipp_fk from issue_entitlement where ie_subscription_fk = ${participantSub.id}) and ie_id = any(:ieIds)", [ieIds: connection.createArrayOf('bigint', entitlementsToTake.toArray())])
 
         if(newIes.size() > 0){
 
@@ -1636,14 +1657,13 @@ class SurveyService {
             Sql sql = GlobalService.obtainSqlConnection()
             Connection connection = sql.dataSource.getConnection()
             def ieIds = sql.rows("select ie.ie_id from issue_entitlement ie join title_instance_package_platform tipp on tipp.tipp_id = ie.ie_tipp_fk " +
-                    "where ie.ie_subscription_fk = any(:subs) and ie.ie_accept_status_rv_fk = :acceptStatus " +
+                    "where ie.ie_subscription_fk = any(:subs) " +
                     "and tipp.tipp_status_rv_fk = :tippStatus and ie.ie_status_rv_fk = :tippStatus " +
                     "and tipp.tipp_host_platform_url in " +
                     "(select tipp2.tipp_host_platform_url from issue_entitlement ie2 join title_instance_package_platform tipp2 on tipp2.tipp_id = ie2.ie_tipp_fk " +
                     "where ie2.ie_subscription_fk = any(:subs) " +
                     "and ie2.ie_perpetual_access_by_sub_fk = any(:subs) " +
-                    "and ie2.ie_accept_status_rv_fk = :acceptStatus " +
-                    "and tipp2.tipp_status_rv_fk = :tippStatus and ie2.ie_status_rv_fk = :tippStatus)", [subs: connection.createArrayOf('bigint', subIds.toArray()), acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED.id, tippStatus: RDStore.TIPP_STATUS_CURRENT.id])
+                    "and tipp2.tipp_status_rv_fk = :tippStatus and ie2.ie_status_rv_fk = :tippStatus)", [subs: connection.createArrayOf('bigint', subIds.toArray()), tippStatus: RDStore.TIPP_STATUS_CURRENT.id])
 
             issueEntitlements = ieIds.size() > 0 ? IssueEntitlement.executeQuery("select ie from IssueEntitlement ie where ie.id in (:ieIDs)", [ieIDs: ieIds.ie_id]) : []
         }
@@ -1661,14 +1681,13 @@ class SurveyService {
             Sql sql = GlobalService.obtainSqlConnection()
             Connection connection = sql.dataSource.getConnection()
             def ieIds = sql.rows("select ie.ie_id from issue_entitlement ie join title_instance_package_platform tipp on tipp.tipp_id = ie.ie_tipp_fk " +
-                    "where ie.ie_subscription_fk = any(:subs) and ie.ie_accept_status_rv_fk = :acceptStatus " +
+                    "where ie.ie_subscription_fk = any(:subs) " +
                     " and ie.ie_status_rv_fk = :tippStatus " +
                     "and tipp.tipp_host_platform_url in " +
                     "(select tipp2.tipp_host_platform_url from issue_entitlement ie2 join title_instance_package_platform tipp2 on tipp2.tipp_id = ie2.ie_tipp_fk " +
                     "where ie2.ie_subscription_fk = any(:subs) " +
                     "and ie2.ie_perpetual_access_by_sub_fk = any(:subs) " +
-                    "and ie2.ie_accept_status_rv_fk = :acceptStatus " +
-                    " and ie2.ie_status_rv_fk = :tippStatus)", [subs: connection.createArrayOf('bigint', subIds.toArray()), acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED.id, tippStatus: RDStore.TIPP_STATUS_CURRENT.id])
+                    " and ie2.ie_status_rv_fk = :tippStatus)", [subs: connection.createArrayOf('bigint', subIds.toArray()), tippStatus: RDStore.TIPP_STATUS_CURRENT.id])
 
             issueEntitlementIds = ieIds.ie_id
         }
@@ -1686,30 +1705,64 @@ class SurveyService {
             Sql sql = GlobalService.obtainSqlConnection()
             Connection connection = sql.dataSource.getConnection()
             /*def titles = sql.rows("select count(tipp.tipp_id) from issue_entitlement ie join title_instance_package_platform tipp on tipp.tipp_id = ie.ie_tipp_fk " +
-                    "where ie.ie_subscription_fk = any(:subs) and ie.ie_accept_status_rv_fk = :acceptStatus " +
+                    "where ie.ie_subscription_fk = any(:subs)  " +
                     "and tipp.tipp_status_rv_fk = :tippStatus and ie.ie_status_rv_fk = :tippStatus " +
                     "and tipp.tipp_host_platform_url in " +
                     "(select tipp2.tipp_host_platform_url from issue_entitlement ie2 join title_instance_package_platform tipp2 on tipp2.tipp_id = ie2.ie_tipp_fk " +
                     " where ie2.ie_perpetual_access_by_sub_fk = any(:subs)" +
-                    " and ie2.ie_accept_status_rv_fk = :acceptStatus" +
-                    " and tipp2.tipp_status_rv_fk = :tippStatus and ie2.ie_status_rv_fk = :tippStatus) group by tipp.tipp_id", [subs: connection.createArrayOf('bigint', subIds.toArray()), acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED.id, tippStatus: RDStore.TIPP_STATUS_CURRENT.id])*/
+                    " and tipp2.tipp_status_rv_fk = :tippStatus and ie2.ie_status_rv_fk = :tippStatus) group by tipp.tipp_id", [subs: connection.createArrayOf('bigint', subIds.toArray()), tippStatus: RDStore.TIPP_STATUS_CURRENT.id])*/
 
             def titles = sql.rows("select count(tipp2.tipp_host_platform_url) from issue_entitlement ie2 join title_instance_package_platform tipp2 on tipp2.tipp_id = ie2.ie_tipp_fk " +
                     " where ie2.ie_subscription_fk = any(:subs) and ie2.ie_perpetual_access_by_sub_fk = any(:subs)" +
-                    " and ie2.ie_accept_status_rv_fk = :acceptStatus" +
-                    " and ie2.ie_status_rv_fk = :tippStatus group by tipp2.tipp_host_platform_url", [subs: connection.createArrayOf('bigint', subIds.toArray()), acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED.id, tippStatus: RDStore.TIPP_STATUS_CURRENT.id])
+                    " and ie2.ie_status_rv_fk = :tippStatus group by tipp2.tipp_host_platform_url", [subs: connection.createArrayOf('bigint', subIds.toArray()), tippStatus: RDStore.TIPP_STATUS_CURRENT.id])
 
             count = titles.size()
         }
         return count
     }
 
-    String notificationSurveyAsStringInHtml(SurveyInfo surveyInfo, boolean reminder = false) {
+    Integer countIssueEntitlementsByIEGroup(Subscription subscription, SurveyConfig surveyConfig) {
+        IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscription)
+        Integer countIes = issueEntitlementGroup ?
+                IssueEntitlementGroupItem.executeQuery("select count(igi) from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup",
+                        [ieGroup: issueEntitlementGroup])[0]
+                : 0
+        countIes
+    }
+
+    BigDecimal sumListPriceIssueEntitlementsByIEGroup(Subscription subscription, SurveyConfig surveyConfig) {
+        IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscription)
+        BigDecimal sumListPrice = issueEntitlementGroup ?
+                IssueEntitlementGroupItem.executeQuery("select sum(p.listPrice) from PriceItem p where p.issueEntitlement in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup)",
+                        [ieGroup: issueEntitlementGroup])[0]
+                : 0.0
+        sumListPrice
+    }
+
+    BigDecimal sumListPriceCurrentIssueEntitlementsByIEGroup(Subscription subscription, SurveyConfig surveyConfig) {
+        IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscription)
+        BigDecimal sumListPrice = issueEntitlementGroup ?
+                IssueEntitlementGroupItem.executeQuery("select sum(p.listPrice) from PriceItem p where p.issueEntitlement in (select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup) and p.issueEntitlement.status = :status",
+                        [ieGroup: issueEntitlementGroup, status: RDStore.TIPP_STATUS_CURRENT])[0]
+                : 0.0
+        sumListPrice
+    }
+
+    List<IssueEntitlement> issueEntitlementsByIEGroup(Subscription subscription, SurveyConfig surveyConfig) {
+        IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(surveyConfig, subscription)
+        List<IssueEntitlement> ies = issueEntitlementGroup ?
+                IssueEntitlementGroupItem.executeQuery("select igi.ie from IssueEntitlementGroupItem as igi where igi.ieGroup = :ieGroup",
+                        [ieGroup: issueEntitlementGroup])
+                : []
+        ies
+    }
+
+    String surveyMailHtmlAsString(SurveyInfo surveyInfo, boolean reminder = false) {
         Locale language = new Locale("de")
         groovyPageRenderer.render view: '/mailTemplates/html/notificationSurveyForMailClient', model: [language: language, survey: surveyInfo, reminder: false]
     }
 
-    String notificationSurveyAsStringInText(SurveyInfo surveyInfo, boolean reminder = false) {
+    String surveyMailTextAsString(SurveyInfo surveyInfo, boolean reminder = false) {
         Locale language = new Locale("de")
         groovyPageRenderer.render view: '/mailTemplates/text/notificationSurvey', model: [language: language, survey: surveyInfo, reminder: reminder]
     }

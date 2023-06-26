@@ -16,6 +16,7 @@ import de.laser.api.v0.entities.*
 import de.laser.api.v0.special.ApiOAMonitor
 import de.laser.api.v0.special.ApiStatistic
 import de.laser.storage.Constants
+import de.laser.traces.DeletedObject
 import grails.converters.JSON
 import groovy.sql.Sql
 import groovy.util.logging.Slf4j
@@ -34,7 +35,7 @@ class ApiManager {
     /**
      * The current version of the API. To be updated on every change which affects the output
      */
-    static final VERSION = '1.7'
+    static final VERSION = '2.0'
 
     /**
      * Checks if the request is valid and if, whether the permissions are granted for the context institution making
@@ -99,7 +100,12 @@ class ApiManager {
             result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
 
             if (tmp.checkFailureCodes_3()) {
-                result = ApiCostItem.requestCostItem((CostItem) tmp.obj, contextOrg, isInvoiceTool)
+                if(tmp.obj instanceof CostItem) {
+                    result = ApiCostItem.requestCostItem((CostItem) tmp.obj, contextOrg, isInvoiceTool)
+                }
+                else if(tmp.obj instanceof DeletedObject) {
+                    result = ApiDeletedObject.requestDeletedObject((DeletedObject) tmp.obj, contextOrg, isInvoiceTool)
+                }
             }
         }
         else if (checkValidRequest('costItemList')) {
@@ -192,7 +198,12 @@ class ApiManager {
             result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
 
             if (tmp.checkFailureCodes_3()) {
-                result = ApiLicense.requestLicense((License) tmp.obj, contextOrg)
+                if(tmp.obj instanceof License) {
+                    result = ApiLicense.requestLicense((License) tmp.obj, contextOrg)
+                }
+                else if(tmp.obj instanceof DeletedObject) {
+                    result = ApiDeletedObject.requestDeletedObject((DeletedObject) tmp.obj, contextOrg)
+                }
             }
         }
         else if (checkValidRequest('licenseList')) {
@@ -221,7 +232,10 @@ class ApiManager {
             result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
 
             if (tmp.checkFailureCodes_3()) {
-                result = ApiOAMonitor.requestOrganisation((Org) tmp.obj, contextOrg)
+                if(tmp.obj instanceof Org)
+                    result = ApiOAMonitor.requestOrganisation((Org) tmp.obj, contextOrg)
+                else if(tmp.obj instanceof DeletedObject)
+                    result = ApiDeletedObject.requestDeletedObject((DeletedObject) tmp.obj, contextOrg, isInvoiceTool)
             }
         }
         else if (checkValidRequest('oamonitor/subscriptions')) {
@@ -234,7 +248,8 @@ class ApiManager {
             result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
 
             if (tmp.checkFailureCodes_3()) {
-                result = ApiOAMonitor.requestSubscription((Subscription) tmp.obj, contextOrg)
+                if(tmp.obj instanceof Subscription)
+                    result = ApiOAMonitor.requestSubscription((Subscription) tmp.obj, contextOrg)
             }
         }
         else if (checkValidRequest('organisation')) {
@@ -243,7 +258,10 @@ class ApiManager {
             result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
 
             if (tmp.checkFailureCodes_3()) {
-                result = ApiOrg.requestOrganisation((Org) tmp.obj, contextOrg, isInvoiceTool)
+                if(tmp.obj instanceof Org)
+                    result = ApiOrg.requestOrganisation((Org) tmp.obj, contextOrg, isInvoiceTool)
+                else if(tmp.obj instanceof DeletedObject)
+                    result = ApiDeletedObject.requestDeletedObject((DeletedObject) tmp.obj, contextOrg, isInvoiceTool)
             }
         }else if (checkValidRequest('orgAccessPoint')) {
 
@@ -311,9 +329,14 @@ class ApiManager {
             result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
 
             if (tmp.checkFailureCodes_3()) {
-                Sql sql = GlobalService.obtainSqlConnection()
-                result = ApiSubscription.requestSubscription((Subscription) tmp.obj, contextOrg, isInvoiceTool, sql)
-                sql.close()
+                if(tmp.obj instanceof Subscription) {
+                    Sql sql = GlobalService.obtainSqlConnection()
+                    result = ApiSubscription.requestSubscription((Subscription) tmp.obj, contextOrg, isInvoiceTool, sql)
+                    sql.close()
+                }
+                else if(tmp.obj instanceof DeletedObject) {
+                    result = ApiDeletedObject.requestDeletedObject((DeletedObject) tmp.obj, contextOrg, isInvoiceTool)
+                }
             }
         }
         else if (checkValidRequest('subscriptionList')) {

@@ -4,7 +4,6 @@ import de.laser.finance.CostItem
 import de.laser.oap.OrgAccessPointLink
 import de.laser.storage.RDStore
 import de.laser.utils.LocaleUtils
-import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.web.mapping.LinkGenerator
 import groovy.sql.Sql
@@ -101,29 +100,39 @@ class PackageService {
      * @param pkgId the ID of the package whose holding should be added to the subscription
      * @param hasPerpetualAccess the flag whether the title access have been purchased perpetually
      */
-    void bulkAddHolding(Sql sql, Long subId, Long pkgId, boolean hasPerpetualAccess, Long consortiumId = null) {
+    void bulkAddHolding(Sql sql, Long subId, Long pkgId, boolean hasPerpetualAccess, Long consortiumId = null, Long sourceSubId = null) {
         String perpetualAccessCol = '', perpetualAccessColHeader = ''
         if(hasPerpetualAccess) {
             perpetualAccessColHeader = ', ie_perpetual_access_by_sub_fk'
             perpetualAccessCol = ", ${subId}"
         }
         if(consortiumId) {
-            sql.executeInsert("insert into issue_entitlement (ie_version, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_medium_rv_fk, ie_status_rv_fk, ie_access_type_rv_fk, ie_open_access_rv_fk, ie_accept_status_rv_fk, ie_name, ie_sortname ${perpetualAccessColHeader}) " +
-                    "select 0, now(), now(), ${subId}, tipp_id, tipp_access_start_date, tipp_access_end_date, tipp_medium_rv_fk, tipp_status_rv_fk, tipp_access_type_rv_fk, tipp_open_access_rv_fk, ${RDStore.IE_ACCEPT_STATUS_FIXED.id}, tipp_name, tipp_sort_name ${perpetualAccessCol} from title_instance_package_platform where tipp_pkg_fk = :pkgId and tipp_status_rv_fk != :removed and tipp_id in (select ie_tipp_fk from issue_entitlement where ie_subscription_fk = :consortiumId and ie_status_rv_fk != :removed)", [pkgId: pkgId, removed: RDStore.TIPP_STATUS_REMOVED.id, consortiumId: consortiumId])
+            sql.executeInsert("insert into issue_entitlement (ie_version, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_medium_rv_fk, ie_status_rv_fk, ie_access_type_rv_fk, ie_open_access_rv_fk ${perpetualAccessColHeader}) " +
+                    "select 0, now(), now(), ${subId}, tipp_id, tipp_access_start_date, tipp_access_end_date, tipp_medium_rv_fk, tipp_status_rv_fk, tipp_access_type_rv_fk, tipp_open_access_rv_fk ${perpetualAccessCol} from title_instance_package_platform where tipp_pkg_fk = :pkgId and tipp_status_rv_fk != :removed and tipp_id in (select ie_tipp_fk from issue_entitlement where ie_subscription_fk = :consortiumId and ie_status_rv_fk != :removed) and not exists(select ie_id from issue_entitlement where ie_subscription_fk = :subId and ie_tipp_fk = tipp_id and ie_status_rv_fk != :removed)", [subId: subId, pkgId: pkgId, removed: RDStore.TIPP_STATUS_REMOVED.id, consortiumId: consortiumId])
             sql.executeInsert("insert into issue_entitlement_coverage (ic_version, ic_ie_fk, ic_date_created, ic_last_updated) " +
-                    "select 0, (select ie_id from issue_entitlement where ie_tipp_fk = tipp_id and ie_subscription_fk = :subId and ie_status_rv_fk = tipp_status_rv_fk), now(), now() from tippcoverage join title_instance_package_platform on tc_tipp_fk = tipp_id where tipp_pkg_fk = :pkgId and tipp_status_rv_fk != :removed and tipp_id in (select ie_tipp_fk from issue_entitlement where ie_subscription_fk = :consortiumId and ie_status_rv_fk != :removed)", [subId: subId, pkgId: pkgId, removed: RDStore.TIPP_STATUS_REMOVED.id, consortiumId: consortiumId])
-            sql.executeInsert("insert into price_item (pi_version, pi_ie_fk, pi_date_created, pi_last_updated, pi_guid) " +
-                    "select 0, (select ie_id from issue_entitlement where ie_tipp_fk = tipp_id and ie_subscription_fk = :subId and ie_status_rv_fk = tipp_status_rv_fk), now(), now(), concat('priceitem:',gen_random_uuid()) from price_item join title_instance_package_platform on pi_tipp_fk = tipp_id where tipp_pkg_fk = :pkgId and tipp_status_rv_fk != :removed and tipp_id in (select ie_tipp_fk from issue_entitlement where ie_subscription_fk = :consortiumId and ie_status_rv_fk != :removed)", [subId: subId, pkgId: pkgId, removed: RDStore.TIPP_STATUS_REMOVED.id, consortiumId: consortiumId])
+                    "select 0, (select ie_id from issue_entitlement where ie_tipp_fk = tipp_id and ie_subscription_fk = :subId and ie_status_rv_fk = tipp_status_rv_fk), now(), now() from tippcoverage join title_instance_package_platform on tc_tipp_fk = tipp_id where tipp_pkg_fk = :pkgId and tipp_status_rv_fk != :removed and tipp_id in (select ie_tipp_fk from issue_entitlement where ie_subscription_fk = :consortiumId and ie_status_rv_fk != :removed) and not exists(select ie_id from issue_entitlement where ie_subscription_fk = :subId and ie_tipp_fk = tipp_id and ie_status_rv_fk != :removed)", [subId: subId, pkgId: pkgId, removed: RDStore.TIPP_STATUS_REMOVED.id, consortiumId: consortiumId])
+        }
+        else if(sourceSubId) {
+            sql.executeInsert("insert into issue_entitlement (ie_version, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_medium_rv_fk, ie_status_rv_fk, ie_access_type_rv_fk, ie_open_access_rv_fk, ie_notes ${perpetualAccessColHeader}) " +
+                    "select 0, now(), now(), ${subId}, ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_medium_rv_fk, ie_status_rv_fk, ie_access_type_rv_fk, ie_open_access_rv_fk, ie_notes ${perpetualAccessCol} from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where ie_subscription_fk = :sourceSubId and ie_status_rv_fk != :removed and tipp_pkg_fk = :pkgId and not exists(select ie_id from issue_entitlement where ie_subscription_fk = :subId and ie_tipp_fk = tipp_id and ie_status_rv_fk != :removed)", [subId: subId, pkgId: pkgId, removed: RDStore.TIPP_STATUS_REMOVED.id, sourceSubId: sourceSubId])
+            sql.executeInsert("insert into issue_entitlement_coverage (ic_version, ic_ie_fk, ic_start_date, ic_start_volume, ic_start_issue, ic_end_date, ic_end_volume, ic_end_issue, ic_date_created, ic_last_updated) " +
+                    "select 0, (select ie_id from issue_entitlement where ie_tipp_fk = tipp_id and ie_subscription_fk = :subId and ie_status_rv_fk = tipp_status_rv_fk), ic_start_date, ic_start_volume, ic_start_issue, ic_end_date, ic_end_volume, ic_end_issue, now(), now() from issue_entitlement_coverage join issue_entitlement on ic_ie_fk = ie_id join title_instance_package_platform on ie_tipp_fk = tipp_id where ie_subscription_fk = :sourceSubId and tipp_pkg_fk = :pkgId and ie_status_rv_fk != :removed and not exists(select ic_id from issue_entitlement_coverage join issue_entitlement on ic_ie_fk = ie_id where ic_ie_fk = :subId and ie_tipp_fk = tipp_id and ie_status_rv_fk != :removed)", [subId: subId, pkgId: pkgId, removed: RDStore.TIPP_STATUS_REMOVED.id, sourceSubId: sourceSubId])
+            sql.executeInsert("insert into price_item (pi_version, pi_ie_fk, pi_local_price, pi_local_currency_rv_fk, pi_date_created, pi_last_updated, pi_guid) " +
+                    "select 0, (select ie_id from issue_entitlement where ie_tipp_fk = tipp_id and ie_subscription_fk = :subId and ie_status_rv_fk = tipp_status_rv_fk), pi_local_price, pi_local_currency_rv_fk, now(), now(), concat('priceitem:',gen_random_uuid()) from price_item join issue_entitlement on pi_ie_fk = ie_id join title_instance_package_platform on ie_tipp_fk = tipp_id where ie_subscription_fk = :sourceSubId and tipp_pkg_fk = :pkgId and ie_status_rv_fk != :removed and not exists(select pi_id from price_item join issue_entitlement on pi_ie_fk = ie_id where pi_ie_fk = :subId and ie_tipp_fk = tipp_id and ie_status_rv_fk != :removed)", [subId: subId, pkgId: pkgId, removed: RDStore.TIPP_STATUS_REMOVED.id, sourceSubId: sourceSubId])
         }
         else {
-            sql.executeInsert("insert into issue_entitlement (ie_version, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_medium_rv_fk, ie_status_rv_fk, ie_access_type_rv_fk, ie_open_access_rv_fk, ie_accept_status_rv_fk, ie_name, ie_sortname ${perpetualAccessColHeader}) " +
-                    "select 0, now(), now(), ${subId}, tipp_id, tipp_access_start_date, tipp_access_end_date, tipp_medium_rv_fk, tipp_status_rv_fk, tipp_access_type_rv_fk, tipp_open_access_rv_fk, ${RDStore.IE_ACCEPT_STATUS_FIXED.id}, tipp_name, tipp_sort_name ${perpetualAccessCol} from title_instance_package_platform where tipp_pkg_fk = :pkgId and tipp_status_rv_fk != :removed", [pkgId: pkgId, removed: RDStore.TIPP_STATUS_REMOVED.id])
+            sql.executeInsert("insert into issue_entitlement (ie_version, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_medium_rv_fk, ie_status_rv_fk, ie_access_type_rv_fk, ie_open_access_rv_fk ${perpetualAccessColHeader}) " +
+                    "select 0, now(), now(), ${subId}, tipp_id, tipp_access_start_date, tipp_access_end_date, tipp_medium_rv_fk, tipp_status_rv_fk, tipp_access_type_rv_fk, tipp_open_access_rv_fk ${perpetualAccessCol} from title_instance_package_platform where tipp_pkg_fk = :pkgId and tipp_status_rv_fk != :removed and not exists(select ie_id from issue_entitlement where ie_subscription_fk = :subId and ie_tipp_fk = tipp_id and ie_status_rv_fk != :removed)", [subId: subId, pkgId: pkgId, removed: RDStore.TIPP_STATUS_REMOVED.id])
             sql.executeInsert("insert into issue_entitlement_coverage (ic_version, ic_ie_fk, ic_date_created, ic_last_updated) " +
-                    "select 0, (select ie_id from issue_entitlement where ie_tipp_fk = tipp_id and ie_subscription_fk = :subId and ie_status_rv_fk = tipp_status_rv_fk), now(), now() from tippcoverage join title_instance_package_platform on tc_tipp_fk = tipp_id where tipp_pkg_fk = :pkgId and tipp_status_rv_fk != :removed", [subId: subId, pkgId: pkgId, removed: RDStore.TIPP_STATUS_REMOVED.id])
+                    "select 0, (select ie_id from issue_entitlement where ie_tipp_fk = tipp_id and ie_subscription_fk = :subId and ie_status_rv_fk = tipp_status_rv_fk), now(), now() from tippcoverage join title_instance_package_platform on tc_tipp_fk = tipp_id where tipp_pkg_fk = :pkgId and tipp_status_rv_fk != :removed and not exists(select ie_id from issue_entitlement where ie_subscription_fk = :subId and ie_tipp_fk = tipp_id and ie_status_rv_fk != :removed)", [subId: subId, pkgId: pkgId, removed: RDStore.TIPP_STATUS_REMOVED.id])
             sql.executeInsert("insert into price_item (pi_version, pi_ie_fk, pi_date_created, pi_last_updated, pi_guid) " +
-                    "select 0, (select ie_id from issue_entitlement where ie_tipp_fk = tipp_id and ie_subscription_fk = :subId and ie_status_rv_fk = tipp_status_rv_fk), now(), now(), concat('priceitem:',gen_random_uuid()) from price_item join title_instance_package_platform on pi_tipp_fk = tipp_id where tipp_pkg_fk = :pkgId and tipp_status_rv_fk != :removed", [subId: subId, pkgId: pkgId, removed: RDStore.TIPP_STATUS_REMOVED.id])
+                    "select 0, (select ie_id from issue_entitlement where ie_tipp_fk = tipp_id and ie_subscription_fk = :subId and ie_status_rv_fk = tipp_status_rv_fk), now(), now(), concat('priceitem:',gen_random_uuid()) from price_item join title_instance_package_platform on pi_tipp_fk = tipp_id where tipp_pkg_fk = :pkgId and tipp_status_rv_fk != :removed and not exists(select ie_id from issue_entitlement where ie_subscription_fk = :subId and ie_tipp_fk = tipp_id and ie_status_rv_fk != :removed)", [subId: subId, pkgId: pkgId, removed: RDStore.TIPP_STATUS_REMOVED.id])
         }
 
+    }
+
+    boolean unlinkFromSubscription(de.laser.Package pkg, Subscription subscription, Org contextOrg, deletePackage) {
+        unlinkFromSubscription(pkg, [subscription.id], contextOrg, deletePackage)
     }
 
     /**
@@ -134,13 +143,11 @@ class PackageService {
      * @param deletePackage should the package be unlinked, too?
      * @return true if the unlink was successful, false otherwise
      */
-    boolean unlinkFromSubscription(de.laser.Package pkg, Subscription subscription, Org contextOrg, deletePackage) {
-        SubscriptionPackage subPkg = SubscriptionPackage.findByPkgAndSubscription(pkg, subscription)
+    boolean unlinkFromSubscription(de.laser.Package pkg, List<Long> subList, Org contextOrg, deletePackage) {
 
         //Not Exist CostItem with Package
-        if(!CostItem.executeQuery('select ci from CostItem ci where ci.subPkg.subscription = :sub and ci.subPkg.pkg = :pkg and ci.owner = :context and ci.costItemStatus != :deleted',[pkg:pkg, deleted: RDStore.COST_ITEM_DELETED, sub:subscription, context: contextOrg])) {
+        if(!CostItem.executeQuery('select ci from CostItem ci where ci.subPkg.subscription.id in (:subIds) and ci.subPkg.pkg = :pkg and ci.owner = :context and ci.costItemStatus != :deleted',[pkg:pkg, deleted: RDStore.COST_ITEM_DELETED, subIds: subList, context: contextOrg])) {
 
-            List<Long> subList = [subscription.id]
             Map<String,Object> queryParams = [sub: subList, pkg_id: pkg.id]
             //delete matches
             //IssueEntitlement.withSession { Session session ->

@@ -1,6 +1,5 @@
 package de.laser
 
-import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.properties.LicenseProperty
 import de.laser.properties.SubscriptionProperty

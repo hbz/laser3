@@ -1,4 +1,4 @@
-<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
+<%@ page import="de.laser.CustomerTypeService; grails.plugin.springsecurity.SpringSecurityUtils" %>
 <laser:serviceInjection/>
 
 <g:if test="${actionName == 'list'}">%{-- /user/list --}%
@@ -15,11 +15,26 @@
 </g:elseif>
 <g:elseif test="${actionName == 'users'}">
     <g:if test="${controllerName == 'myInstitution'}">%{-- /myInstitution/users --}%
-        <g:if test="${contextService.getUser().hasCtxAffiliation_or_ROLEADMIN('INST_ADM')}">
-            <ui:actionsDropdown>
+        <ui:actionsDropdown>%{-- todo -- move to template --}%
+            <g:set var="createNTDWModals" value="${true}"/>
+            <g:if test="${contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_BASIC)}">
+                <ui:actionsDropdownItem data-ui="modal" href="#modalCreateNote" message="template.notes.add"/>
+            </g:if>
+            <g:if test="${contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)}">
+                <ui:actionsDropdownItem data-ui="modal" href="#modalCreateTask" message="task.create.new"/>
+            </g:if>
+            <g:if test="${contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
+                <ui:actionsDropdownItem data-ui="modal" href="#modalCreateDocument" message="template.documents.add"/>
+            </g:if>
+            <g:if test="${contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)}"><!-- TODO: workflows-permissions -->
+                <ui:actionsDropdownItem data-ui="modal" href="#modalCreateWorkflow" message="workflow.instantiate"/>
+            </g:if>
+
+            <g:if test="${contextService.getUser().hasCtxAffiliation_or_ROLEADMIN('INST_ADM')}">
+                <div class="divider"></div>
                 <ui:actionsDropdownItem controller="myInstitution" action="createUser" message="user.create_new.label" />
-            </ui:actionsDropdown>
-        </g:if>
+            </g:if>
+        </ui:actionsDropdown>
     </g:if>
     <g:elseif test="${controllerName == 'organisation'}">%{-- organisation/users - TODO: isComboInstAdminOf --}%
         <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
@@ -45,3 +60,18 @@
         </g:if>
     </g:elseif>
 </g:elseif>
+
+<g:if test="${createNTDWModals}">
+    <g:if test="${contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_BASIC)}">
+        <laser:render template="/templates/notes/modal_create" model="${[ownobj: orgInstance, owntp: 'org']}"/>
+    </g:if>
+    <g:if test="${contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)}">
+        <laser:render template="/templates/tasks/modal_create" model="${[ownobj: orgInstance, owntp: 'org']}"/>
+    </g:if>
+    <g:if test="${contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
+        <laser:render template="/templates/documents/modal" model="${[ownobj: orgInstance, institution: institution, owntp: 'org']}"/>
+    </g:if>
+    <g:if test="${contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)}"><!-- TODO: workflows-permissions -->
+        <laser:render template="/templates/workflow/instantiate" model="${[target: orgInstance]}"/>
+    </g:if>
+</g:if>

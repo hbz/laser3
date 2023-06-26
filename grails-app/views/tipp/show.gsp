@@ -16,6 +16,37 @@
 
 
 <div class="la-inline-lists">
+    <g:if test="${participantPerpetualAccessToTitle}">
+        <div class="ui card">
+            <div class="content">
+                <div class="header"><g:message code="myinst.currentPermanentTitles.label"/> in: </div>
+            </div>
+
+            <div class="content">
+                <div class="ui list">
+                    <g:each in="${participantPerpetualAccessToTitle}" var="pt">
+                        <div class="item">
+                            <div class="sixteen wide column">
+                                <i class="icon clipboard outline la-list-icon"></i>
+                                <g:link controller="subscription"
+                                        action="index"
+                                        id="${pt.subscription.id}">${pt.subscription.dropdownNamingConvention(contextOrg)}</g:link>
+                                &nbsp;
+                                <br/>
+                                <br/>
+                                <g:link controller="issueEntitlement"
+                                        action="show"
+                                        id="${pt.id}">${message(code: 'myinst.currentTitles.full_ie')}</g:link>
+                                <br/>
+                            </div>
+                        </div>
+                    </g:each>
+
+                </div>
+            </div>
+        </div>
+    </g:if>
+
 
     <div class="ui card">
         <div class="content">
@@ -43,8 +74,7 @@
             </g:else>
 
             <div class="la-icon-list">
-                <laser:render template="/templates/tipps/coverages"
-                          model="${[ie: null, tipp: tipp]}"/>
+                <laser:render template="/templates/tipps/coverages" model="${[ie: null, tipp: tipp]}"/>
             </div>
             <br/>
 
@@ -198,7 +228,7 @@
                     <a role="button" class="ui icon mini blue button la-modern-button la-js-dont-hide-button la-popup-tooltip la-delay"
                        data-content="${message(code: 'tipp.tooltip.callUrl')}"
                        href="${tipp.platform.primaryUrl?.contains('http') ? tipp.platform.primaryUrl : 'http://' + tipp.platform.primaryUrl}"
-                       target="_blank"><i class="share square icon"></i></a>
+                       target="_blank"><i class="external alternate icon"></i></a>
                 </g:if>
             </div>
             <br/>

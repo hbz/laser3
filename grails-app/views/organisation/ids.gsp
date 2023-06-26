@@ -8,7 +8,7 @@
 <laser:render template="breadcrumb"
           model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView]}"/>
 
-<g:if test="${editable_identifier || editable_customeridentifier}">
+%{--<g:if test="${editable_identifier || editable_customeridentifier}">--}%
     <ui:controlButtons>
         <laser:render template="actions" model="${[
                 org: orgInstance,
@@ -19,7 +19,7 @@
                 hasAccessToCustomeridentifier: hasAccessToCustomeridentifier
         ]}"/>
     </ui:controlButtons>
-</g:if>
+%{--</g:if>--}%
 
 <ui:h1HeaderWithIcon text="${orgInstance.name}" />
 

@@ -316,11 +316,7 @@ class TaskService {
      * @return a list of users
      */
     List<User> getUserDropdown(Org org) { // modal_create
-        List<User> validResponsibleUsers   = org ? User.executeQuery(
-                "select u from User as u where exists (select uo from UserOrgRole as uo where uo.user = u and uo.org = :org) order by lower(u.display)",
-                [org: org]) : []
-
-        validResponsibleUsers
+        org ? User.executeQuery( 'select u from User as u where u.formalOrg = :org order by lower(u.display)', [org: org]) : []
     }
 
     /**
@@ -466,7 +462,7 @@ class TaskService {
             String licensesQueryOhneInstanceOf =
                     'SELECT lic.id, lic.reference, o.roleType, lic.startDate, lic.endDate from License lic left join lic.orgRelations o WHERE  o.org = :lic_org AND o.roleType.id IN (:org_roles) and lic.instanceOf is null order by lic.sortableReference asc'
 
-            if (accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)){
+            if (contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)){
                 Map<String, Object> qry_params_for_lic = [
                     lic_org:    contextOrg,
                     org_roles:  [
@@ -480,7 +476,7 @@ class TaskService {
                 }
 
             }
-            else if (accessService.ctxPerm(CustomerTypeService.ORG_INST_PRO)) {
+            else if (contextService.hasPerm(CustomerTypeService.ORG_INST_PRO)) {
                 Map<String, Object> qry_params_for_lic = [
                     lic_org:    contextOrg,
                     org_roles:  [

@@ -57,57 +57,62 @@ class PlatformController  {
         ]
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        String esQuery = "?componentType=Platform"
+        Map queryParams = [componentType: "Platform"]
 
         if(params.q) {
             result.filterSet = true
-            esQuery += "&q=${params.q}"
+            queryParams.q = params.q
         }
 
         if(params.provider) {
             result.filterSet = true
-            esQuery += "&provider=${params.provider}"
+            queryParams.provider = params.provider
         }
 
         if(params.status) {
             result.filterSet = true
-            esQuery += "&status=${RefdataValue.get(params.status).value}"
+            queryParams.status = RefdataValue.get(params.status).value
         }
         else if(!params.filterSet) {
             result.filterSet = true
-            esQuery += "&status=Current"
+            queryParams.status = "Current"
             params.status = RDStore.PLATFORM_STATUS_CURRENT.id.toString()
         }
 
         if(params.ipSupport) {
             result.filterSet = true
             List<String> ipSupport = params.list("ipSupport")
+            queryParams.ipAuthentication = []
             ipSupport.each { String ip ->
                 RefdataValue rdv = RefdataValue.get(ip)
-                esQuery += "&ipAuthentication=${rdv.value}"
+                queryParams.ipAuthentication << rdv.value
             }
         }
 
         if(params.shibbolethSupport) {
             result.filterSet = true
             List<String> shibbolethSupport = params.list("shibbolethSupport")
+            queryParams.shibbolethAuthentication = []
             shibbolethSupport.each { String shibboleth ->
                 RefdataValue rdv = RefdataValue.get(shibboleth)
-                esQuery += "&shibbolethAuthentication=${rdv == RDStore.GENERIC_NULL_VALUE ? "null" : rdv.value}"
+                String auth = rdv == RDStore.GENERIC_NULL_VALUE ? "null" : rdv.value
+                queryParams.shibbolethAuthentication << auth
             }
         }
 
         if(params.counterCertified) {
             result.filterSet = true
             List<String> counterCertified = params.list("counterCertified")
+            queryParams.counterCertified = []
             counterCertified.each { String counter ->
                 RefdataValue rdv = RefdataValue.get(counter)
-                esQuery += "&counterCertified=${rdv == RDStore.GENERIC_NULL_VALUE ? "null" : rdv.value}"
+                String cert = rdv == RDStore.GENERIC_NULL_VALUE ? "null" : rdv.value
+                queryParams.counterCertified = cert
             }
         }
 
         // overridden pagination - all uuids are required
-        Map wekbResultMap = gokbService.doQuery(result, [offset:0, max:1000, status: params.status], esQuery)
+        Map wekbResultMap = gokbService.doQuery(result, [offset:0, max:1000, status: params.status], queryParams)
 
         // ? --- copied from myInstitutionController.currentPlatforms()
         String instanceFilter = ""
@@ -187,6 +192,8 @@ class PlatformController  {
             if (xFilter.contains('wekb_exclusive')) {
                 f2Result.addAll( wekbResultMap.records.findAll {
                     if (it.providerUuid) { return true }
+//                    Platform p = Platform.findByGokbId(it.uuid)
+//                    return (p && p.gokbId != null)
                     Platform p = Platform.findByGokbId(it.uuid)
                     if (p && p.org) { return p.org.gokbId != null } else { return false }
                 }.collect{ it.uuid } )
@@ -194,6 +201,8 @@ class PlatformController  {
             }
             if (xFilter.contains('wekb_not')) {
                 f2Result.addAll( wekbResultMap.records.findAll {
+//                    Platform p = Platform.findByGokbId(it.uuid)
+//                    return (!p || p.gokbId == null)
                     if (it.providerUuid) { return false }
                     return Platform.findByGokbId(it.uuid)?.org?.gokbId == null
                 }.collect{ it.uuid } )
@@ -202,15 +211,6 @@ class PlatformController  {
 
             if (f1Set) { wekbResultMap.records = wekbResultMap.records.findAll { f1Result.contains(it.uuid) } }
             if (f2Set) { wekbResultMap.records = wekbResultMap.records.findAll { f2Result.contains(it.uuid) } }
-
-//            if (xFilter.contains('ismyx_exclusive')) {
-//                wekbResultMap.records      = wekbResultMap.records.findAll { result.myPlatformsUuids.contains( it.uuid ) }
-//                wekbResultMap.recordsCount = wekbResultMap.records.size()
-//            }
-//            else if (xFilter.contains('ismyx_not')) {
-//                wekbResultMap.records      = wekbResultMap.records.findAll { ! result.myPlatformsUuids.contains( it.uuid ) }
-//                wekbResultMap.recordsCount = wekbResultMap.records.size()
-//            }
         }
         wekbResultMap.recordsCount = wekbResultMap.records.size()
         wekbResultMap.records      = wekbResultMap.records.drop((int) result.offset).take((int) result.max) // pagination
@@ -228,12 +228,7 @@ class PlatformController  {
     @Check404()
     def show() {
         Map<String, Object> result = platformControllerService.getResultGenerics(params)
-        Platform platformInstance
-        if(params.id instanceof Long || params.id.isLong())
-            platformInstance = Platform.get(params.id)
-        else if(params.id ==~ /[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}/)
-            platformInstance = Platform.findByGokbId(params.id)
-        else platformInstance = Platform.findByGlobalUID(params.id)
+        Platform platformInstance = Platform.get(params.id)
 
         result.platformInstance = platformInstance
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
@@ -241,16 +236,16 @@ class PlatformController  {
 
         result.flagContentGokb = true // gokbService.queryElasticsearch
         result.platformInstanceRecord = [:]
-        Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/find?uuid=${platformInstance.gokbId}")
+        Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: platformInstance.gokbId])
         if (queryResult.error && queryResult.error == 404) {
             flash.error = message(code:'wekb.error.404') as String
         }
         else if (queryResult.warning) {
-            List records = queryResult.warning.records
+            List records = queryResult.warning.result
             result.platformInstanceRecord = records ? records[0] : [:]
             result.platformInstanceRecord.id = params.id
         }
-        result.editable = accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_BASIC )
+        result.editable = contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_BASIC )
 
         String hql = "select oapl from OrgAccessPointLink oapl join oapl.oap as ap " +
                     "where ap.org =:institution and oapl.active=true and oapl.platform.id=${platformInstance.id} " +
@@ -320,7 +315,6 @@ class PlatformController  {
         Platform platformInstance = Platform.get(params.id)
 
         Org selectedInstitution = contextService.getOrg()
-        List<Org> authorizedOrgs = contextService.getUser().getAffiliationOrgs()
 
         String hql = "select oapl from OrgAccessPointLink oapl join oapl.oap as ap "
             hql += "where ap.org =:institution and oapl.active=true and oapl.platform.id=${platformInstance.id}"
@@ -335,7 +329,7 @@ class PlatformController  {
 
         result.accessPointLinks = results
         result.platformInstance = platformInstance
-        result.institution = authorizedOrgs
+        result.institution = contextService.getUser().formalOrg ? [contextService.getUser().formalOrg] : []
         result.accessPointList = accessPointList
         result.selectedInstitution = selectedInstitution.id
         result
@@ -358,7 +352,6 @@ class PlatformController  {
             redirect action: 'list'
             return
         }
-        List<Org> authorizedOrgs = contextService.getUser().getAffiliationOrgs()
         Org selectedInstitution =  contextService.getOrg()
         if (params.institution_id){
             selectedInstitution = Org.get(params.institution_id)
@@ -376,7 +369,7 @@ class PlatformController  {
 
         result.accessPointLinks = results
         result.platformInstance = platformInstance
-        result.institution = authorizedOrgs
+        result.institution = contextService.getUser().formalOrg ? [contextService.getUser().formalOrg] : []
         result.accessPointList = accessPointList
         result.selectedInstitution = selectedInstitution.id
         render(view: "_apLinkContent", model: result)
@@ -386,9 +379,9 @@ class PlatformController  {
      * Call to add a new derivation to the given platform
      * @return redirect to the referer
      */
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_BASIC, 'INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_BASIC, 'INST_EDITOR')
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_BASIC)
     })
     def addDerivation() {
         Map<String,Object> ctrlResult = platformControllerService.addDerivation(params)
@@ -402,9 +395,9 @@ class PlatformController  {
      * Call to remove a new derivation to the given platform
      * @return redirect to the referer
      */
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_BASIC, 'INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_BASIC, 'INST_EDITOR')
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_BASIC)
     })
     def removeDerivation() {
         Map<String,Object> ctrlResult = platformControllerService.removeDerivation(params)
@@ -415,9 +408,9 @@ class PlatformController  {
     }
 
     @Deprecated
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_BASIC, 'INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_BASIC, 'INST_EDITOR')
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_BASIC)
     })
     def linkAccessPoint() {
         OrgAccessPoint apInstance
@@ -440,9 +433,9 @@ class PlatformController  {
     }
 
     @Deprecated
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_BASIC, 'INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_BASIC, 'INST_EDITOR')
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_BASIC)
     })
     def removeAccessPoint() {
         Map<String,Object> ctrlResult = platformControllerService.removeAccessPoint(params)

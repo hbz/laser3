@@ -53,7 +53,7 @@ class RDConstants {
 
     public static final String GENDER                 = 'gender'
 
-    public static final String IE_ACCEPT_STATUS       = 'ie.accept.status'
+
     public static final String IE_ACCESS_STATUS       = 'ie.access.status'
     public static final String IE_MEDIUM              = 'ie.medium'
     public static final String ILL_CODE               = 'ill.code'
@@ -62,6 +62,9 @@ class RDConstants {
     public static final String IP_AUTHENTICATION      = 'ip.authentication'
     public static final String IPV4_ADDRESS_FORMAT    = 'ipv4.address.format'
     public static final String IPV6_ADDRESS_FORMAT    = 'ipv6.address.format'
+
+    public static final String MAIL_STATUS            = 'mail.status'
+    public static final String MAIL_TYPE              = 'mail.type'
 
     public static final String LANGUAGE               = 'language'
     public static final String LANGUAGE_ISO           = 'language.iso'
@@ -145,6 +148,7 @@ class RDConstants {
     public static final String SIS_USER_GROUP_ATTR2     = 'sis.user.group.attr2'
     public static final String SUBJECT_GROUP          = 'subjectgroup'
     public static final String SUBSCRIPTION_FORM      = 'subscription.form'
+    public static final String SUBSCRIPTION_HOLDING   = 'subscription.holding'
     public static final String SUBSCRIPTION_RESOURCE  = 'subscription.resource'
     public static final String SUBSCRIPTION_STATUS    = 'subscription.status'
     public static final String SUBSCRIPTION_TYPE      = 'subscription.type'

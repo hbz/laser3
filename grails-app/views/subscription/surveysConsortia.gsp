@@ -6,11 +6,12 @@
 <ui:controlButtons>
     <laser:render template="actions"/>
 </ui:controlButtons>
-
-<ui:h1HeaderWithIcon>
-<ui:xEditable owner="${subscription}" field="name"/>
-<ui:totalNumber total="${surveys.size()}"/>
+<g:set var="visibleOrgRelationsJoin" value="${visibleOrgRelations.findAll{it.roleType != RDStore.OR_SUBSCRIPTION_CONSORTIA}.sort{it.org.sortname}.collect{it.org}.join(' – ')}"/>
+<ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}" visibleOrgRelationsJoin="${visibleOrgRelationsJoin}">
+    <ui:xEditable owner="${subscription}" field="name"/>
 </ui:h1HeaderWithIcon>
+<ui:totalNumber class="la-numberHeader" total="${surveys.size()}"/>
+
 <ui:anualRings object="${subscription}" controller="subscription" action="surveysConsortia"
                   navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 

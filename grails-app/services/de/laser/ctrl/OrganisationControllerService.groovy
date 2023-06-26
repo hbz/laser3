@@ -218,20 +218,16 @@ class OrganisationControllerService {
         }
 
         if (params.id) {
-            if(params.id instanceof Long || params.id.isLong())
-                result.orgInstance = Org.get(params.id)
-            else if(params.id ==~ /[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}/)
-                result.orgInstance = Org.findByGokbId(params.id)
-            else result.orgInstance = Org.findByGlobalUID(params.id)
+            result.orgInstance = Org.get(params.id)
             if(result.orgInstance.gokbId) {
                 ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
                 result.editUrl = apiSource.editUrl.endsWith('/') ? apiSource.editUrl : apiSource.editUrl+'/'
-                Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/find?uuid=${result.orgInstance.gokbId}")
+                Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: result.orgInstance.gokbId])
                 if (queryResult.error && queryResult.error == 404) {
                     result.error = messageSource.getMessage('wekb.error.404', null, LocaleUtils.getCurrentLocale())
                 }
                 else if (queryResult.warning) {
-                    List records = queryResult.warning.records
+                    List records = queryResult.warning.result
                     result.orgInstanceRecord = records ? records[0] : [:]
                 }
             }
@@ -248,9 +244,9 @@ class OrganisationControllerService {
                     result.consortialView = true
             }
             //restrictions hold if viewed org is not the context org
-            if (!result.inContextOrg && !accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && !SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
+            if (!result.inContextOrg && !contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && !SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
                 //restrictions further concern only single users or consortium members, not consortia
-                if (!accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && result.orgInstance.isCustomerType_Inst()) {
+                if (!contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && result.orgInstance.isCustomerType_Inst()) {
                     return null
                 }
             }

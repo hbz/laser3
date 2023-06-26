@@ -5,6 +5,7 @@ import de.laser.exceptions.SyncException
 import de.laser.http.BasicHttpClient
 import de.laser.properties.OrgProperty
 import de.laser.remote.GlobalRecordSource
+import de.laser.storage.Constants
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
@@ -18,6 +19,7 @@ import io.micronaut.http.client.DefaultHttpClientConfiguration
 import io.micronaut.http.client.HttpClientConfiguration
 import org.hibernate.Session
 
+import java.time.Duration
 import java.util.concurrent.ExecutorService
 
 /**
@@ -29,9 +31,11 @@ class YodaService {
     ContextService contextService
     DeletionService deletionService
     GlobalSourceSyncService globalSourceSyncService
-    GokbService gokbService
+    GlobalService globalService
     PackageService packageService
     ExecutorService executorService
+
+    boolean bulkOperationRunning = false
 
     /**
      * Checks whether debug information should be displayed
@@ -132,83 +136,106 @@ class YodaService {
         [tipps: tippsWithAlternate, issueEntitlements: ieTippMap, toDelete: toDelete, toUUIDfy: toUUIDfy]
     }
 
-    /**
-     * Deletes the given titles and merges duplicates with the given instance
-     * @param toDelete titles to be deleted
-     * @param toUUIDfy titles which should persist but marked with null entry for that the gokbId property may be set not null
-     */
-    void purgeTIPPsWihtoutGOKBId(toDelete,toUUIDfy) {
-        toDelete.each { oldTippId, newTippId ->
-            TitleInstancePackagePlatform oldTipp = TitleInstancePackagePlatform.get(oldTippId)
-            TitleInstancePackagePlatform newTipp = TitleInstancePackagePlatform.get(newTippId)
-            deletionService.deleteTIPP(oldTipp,newTipp)
-        }
-        toUUIDfy.each { tippId ->
-            TitleInstancePackagePlatform.executeUpdate("update TitleInstancePackagePlatform tipp set tipp.gokbId = :missing where tipp.id = :id",[missing:"${RDStore.GENERIC_NULL_VALUE}.${tippId}",id:tippId])
-        }
+    void matchTitleStatus() {
+        int max = 100000
+        bulkOperationRunning = true
+        executorService.execute({
+            int total = IssueEntitlement.executeQuery('select count(ie) from IssueEntitlement ie where ie.tipp.status != ie.status and ie.status != :removed', [removed: RDStore.TIPP_STATUS_REMOVED])[0]
+            log.debug("${total} titles concerned")
+            for(int offset = 0; offset < total; offset += max) {
+                Set<IssueEntitlement> iesConcerned = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp.status != ie.status and ie.status != :removed', [removed: RDStore.TIPP_STATUS_REMOVED], [max: max, offset: offset])
+                iesConcerned.eachWithIndex { IssueEntitlement ie, int i ->
+                    log.debug("now processing record #${i+offset} from total ${total}")
+                    ie.status = ie.tipp.status
+                    ie.save()
+                }
+                globalService.cleanUpGorm()
+            }
+            log.debug("release lock ...")
+            bulkOperationRunning = false
+        })
     }
 
     /**
      * Call to load titles marked as deleted; if the confirm is checked, the deletion of titles and issue entitlements marked as deleted as well is executed
      * @param doIt execute the cleanup?
      * @return a result map of titles whose we:kb entry has been marked as deleted
+     * @deprecated does not work as should and it should be more appropriate to reload the packages themselves; use reloadPackage() instead
      */
+    @Deprecated
     void expungeRemovedTIPPs() {
         executorService.execute( {
             GlobalRecordSource grs = GlobalRecordSource.findByActiveAndRectype(true, GlobalSourceSyncService.RECTYPE_TIPP)
             Map<String, Object> result = [:]
             Map<String, String> wekbUuids = [:]
-            Set<Map> titles = []
             HttpClientConfiguration config = new DefaultHttpClientConfiguration()
-            config.maxContentLength = 1024 * 1024 * 20
-            BasicHttpClient http = new BasicHttpClient(grs.uri+'/find', config) //we presume that the count will never get beyond 10000
-            Closure success = { resp, json ->
+            config.maxContentLength = 1024 * 1024 * 100
+            config.readTimeout = Duration.ofMinutes(2)
+            BasicHttpClient http = new BasicHttpClient(grs.uri+'searchApi', config)
+            int offset = 0, max = 20000
+            boolean more = true
+            Map<String, Object> queryParams = [componentType: 'TitleInstancePackagePlatform',
+                                               status: ['Removed', Constants.PERMANENTLY_DELETED],
+                                               username: ConfigMapper.getWekbApiUsername(),
+                                               password: ConfigMapper.getWekbApiPassword(),
+                                               max:max, offset:offset]
+            Closure failure = { resp, reader ->
+                if(resp?.code() == 404) {
+                    result.error = resp.code()
+                }
+                else
+                    throw new SyncException("error on request: ${resp?.status()} : ${reader}")
+            }
+            Closure success
+            success = { resp, json ->
                 if(resp.code() == 200) {
-                    json.records.each{ Map record ->
+                    json.result.each{ Map record ->
                         wekbUuids.put(record.uuid, record.status)
+                    }
+                    more = json.page_current < json.page_total
+                    if(more) {
+                        offset += max
+                        queryParams.offset = offset
+                        http.post(BasicHttpClient.ResponseType.JSON, BasicHttpClient.PostType.URLENC, queryParams, success, failure)
                     }
                 }
                 else {
                     throw new SyncException("erroneous response")
                 }
             }
-            Closure failure = { resp, reader ->
-                log.warn ('Response: ' + resp.getStatus().getCode() + ' - ' + resp.getStatus().getReason())
-                if(resp.code() == 404) {
-                    result.error = resp.status
-                }
-                else
-                    throw new SyncException("error on request: ${resp.getStatus().getCode()} : ${reader}")
-            }
-            Map<String, Object> queryParams = [componentType: 'TitleInstancePackagePlatform',
-                                               max: 10000,
-                                               status: ['Removed', GlobalSourceSyncService.PERMANENTLY_DELETED]]
             http.post(BasicHttpClient.ResponseType.JSON, BasicHttpClient.PostType.URLENC, queryParams, success, failure)
-            BasicHttpClient httpScroll = new BasicHttpClient(grs.uri+'/scroll', config)
             //invert: check if non-deleted TIPPs still exist in we:kb instance
-            GParsPool.withPool(3) {
-                Package.findAllByPackageStatusNotEqual(RDStore.PACKAGE_STATUS_DELETED).eachWithIndexParallel { Package pkg, int i ->
+            Set<Package> allPackages = Package.findAllByPackageStatusNotEqual(RDStore.PACKAGE_STATUS_DELETED)
+            GParsPool.withPool(8) {
+                allPackages.eachWithIndexParallel { Package pkg, int i ->
                     Package.withTransaction {
+                        log.debug("Thread ${Thread.currentThread().getName()} processes now package record ${i} out of ${allPackages.size()} records!")
+                        Map<String, String> wekbPkgTipps = [:]
+                        offset = 0
                         Set<TitleInstancePackagePlatform> tipps = TitleInstancePackagePlatform.findAllByPkg(pkg)
-                        queryParams = [pkg: pkg.gokbId, status: ['Current', 'Expected', 'Retired', 'Deleted', 'Removed', GlobalSourceSyncService.PERMANENTLY_DELETED], max: 10000]
-                        Set<String> wekbPkgTipps = []
-                        boolean more = true
+                        queryParams = [componentType: 'TitleInstancePackagePlatform',
+                                       tippPackageUuid: pkg.gokbId,
+                                       username: ConfigMapper.getWekbApiUsername(),
+                                       password: ConfigMapper.getWekbApiPassword(),
+                                       status: ['Current', 'Expected', 'Retired', 'Deleted', 'Removed', Constants.PERMANENTLY_DELETED], max: max, offset: offset]
+                        more = true
                         Closure checkSuccess
                         checkSuccess = { resp, json ->
                             if(resp.code() == 200) {
-                                if(json.size == 0) {
+                                if(json.result_count == 0) {
                                     tipps.each { TitleInstancePackagePlatform tipp ->
-                                        wekbUuids.put(tipp.gokbId, 'inexistent')
+                                        wekbUuids.put(tipp.gokbId, Constants.PERMANENTLY_DELETED)
                                     }
                                     //because of parallel process; session mismatch when accessing via GORM
                                     Package.executeUpdate('update Package pkg set pkg.packageStatus = :deleted where pkg = :pkg',[deleted: RDStore.PACKAGE_STATUS_DELETED, pkg: pkg])
                                 }
                                 else {
-                                    wekbPkgTipps.addAll(json.records.collect { Map record -> record.uuid }.toSet())
-                                    more = Boolean.valueOf(json.hasMoreRecords)
+                                    wekbPkgTipps.putAll(json.result.collectEntries { Map record -> [record.uuid, record.status] })
+                                    more = json.page_current < json.page_total
                                     if(more) {
-                                        queryParams.scrollId = json.scrollId
-                                        httpScroll.post(BasicHttpClient.ResponseType.JSON, BasicHttpClient.PostType.URLENC, queryParams, checkSuccess, failure)
+                                        offset += max
+                                        queryParams.offset = offset
+                                        http.post(BasicHttpClient.ResponseType.JSON, BasicHttpClient.PostType.URLENC, queryParams, checkSuccess, failure)
                                     }
                                 }
                             }
@@ -216,31 +243,30 @@ class YodaService {
                                 throw new SyncException("erroneous response")
                             }
                         }
-                        if (tipps.size() > 10000) {
-                            queryParams.component_type = 'TitleInstancePackagePlatform'
-                            httpScroll.post(BasicHttpClient.ResponseType.JSON, BasicHttpClient.PostType.URLENC, queryParams, checkSuccess, failure)
-                        } else {
-                            queryParams.componentType = 'TitleInstancePackagePlatform'
-                            http.post(BasicHttpClient.ResponseType.JSON, BasicHttpClient.PostType.URLENC, queryParams, checkSuccess, failure)
-                        }
+                        http.post(BasicHttpClient.ResponseType.JSON, BasicHttpClient.PostType.URLENC, queryParams, checkSuccess, failure)
                         tipps.each { TitleInstancePackagePlatform tipp ->
-                            if (!wekbPkgTipps.contains(tipp.gokbId))
-                                wekbUuids.put(tipp.gokbId, 'inexistent')
+                            if (!wekbPkgTipps.containsKey(tipp.gokbId) || wekbPkgTipps.get(tipp.gokbId) in [Constants.PERMANENTLY_DELETED, RDStore.TIPP_STATUS_REMOVED.value] || wekbUuids.get(tipp.gokbId) in [Constants.PERMANENTLY_DELETED, RDStore.TIPP_STATUS_REMOVED.value]) {
+                                log.info("mark ${tipp.gokbId} in package ${tipp.pkg.gokbId} as removed:")
+                                log.info("reason: !wekbPkgTipps.contains(tipp.gokbId): ${!wekbPkgTipps.containsKey(tipp.gokbId)} / ")
+                                log.info("wekbPkgTipps.get(tipp.gokbId) in [Constants.PERMANENTLY_DELETED, RDStore.TIPP_STATUS_REMOVED.value] / ${wekbPkgTipps.get(tipp.gokbId) in [Constants.PERMANENTLY_DELETED, RDStore.TIPP_STATUS_REMOVED.value]}")
+                                log.info("wekbUuids.get(tipp.gokbId) in [Constants.PERMANENTLY_DELETED, RDStore.TIPP_STATUS_REMOVED.value]: ${wekbUuids.get(tipp.gokbId) in [Constants.PERMANENTLY_DELETED, RDStore.TIPP_STATUS_REMOVED.value]}")
+                                tipp.status = RDStore.TIPP_STATUS_REMOVED
+                                tipp.save()
+                                log.info("marked as deleted ${IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.status = :removed, ie.lastUpdated = :now where ie.tipp = :tipp and ie.status != :removed', [removed: RDStore.TIPP_STATUS_REMOVED, tipp: tipp, now: new Date()])} issue entitlements")
+                            }
                         }
                     }
                 }
             }
             http.close()
-            httpScroll.close()
-
+            /*
             if(wekbUuids) {
                 GParsPool.withPool(8) { pool ->
                     wekbUuids.eachParallel { String key, String status ->
                         TitleInstancePackagePlatform.withTransaction {
-                            TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGokbId(key)
+                            TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGokbIdAndStatusNotEqual(key, RDStore.TIPP_STATUS_REMOVED)
                             if (tipp) {
                                 tipp.status = RDStore.TIPP_STATUS_REMOVED
-                                TitleChange.construct([msgToken: PendingChangeConfiguration.TITLE_REMOVED, target: tipp, status: RDStore.PENDING_CHANGE_HISTORY])
                                 tipp.save()
                             }
                         }
@@ -262,13 +288,14 @@ class YodaService {
                     if(toDelete) {
                         //we should check the underlying queries instead of chunking
                         deletionService.deleteTIPPsCascaded(toDelete)
-                        /*toDelete.collate(50).each { List<TitleInstancePackagePlatform> subList ->
+                        toDelete.collate(50).each { List<TitleInstancePackagePlatform> subList ->
                             deletionService.deleteTIPPsCascaded(subList)
-                        }*/
+                        }
                     }
                     else log.info("no titles to delete")
                 }
             }
+            */
         })
     }
 
@@ -278,28 +305,22 @@ class YodaService {
      * failed to do so because of bugs
      */
     @Transactional
-    void matchPackageHoldings() {
+    void matchPackageHoldings(Long pkgId) {
         Sql sql = GlobalService.obtainSqlConnection()
         sql.withTransaction {
-            List subscriptionPackagesConcerned = sql.rows("select sp_sub_fk, sp_pkg_fk, sub_has_perpetual_access, " +
-                    "(select count(tipp_id) from title_instance_package_platform where tipp_pkg_fk = sp_pkg_fk and tipp_status_rv_fk = :current) as pkg_cnt, " +
-                    "(select count(ie_id) from issue_entitlement join title_instance_package_platform as t_ie on ie_tipp_fk = t_ie.tipp_id where ie_subscription_fk = sp_sub_fk and sp_pkg_fk = t_ie.tipp_pkg_fk and ie_status_rv_fk = :current) as holding_cnt " +
-                    "from subscription_package join pending_change_configuration on pcc_sp_fk = sp_id join subscription on sp_sub_fk = sub_id " +
-                    "where pcc_setting_key_enum = :newTitle and pcc_setting_value_rv_fk = :accept "+
-                    "and ((select count(tipp_id) from title_instance_package_platform where tipp_pkg_fk = sp_pkg_fk and tipp_status_rv_fk = :current) != " +
-                    " (select count(ie_id) from issue_entitlement join title_instance_package_platform as t_ie on ie_tipp_fk = t_ie.tipp_id where ie_subscription_fk = sp_sub_fk and sp_pkg_fk = t_ie.tipp_pkg_fk and ie_status_rv_fk = :current))",
-            [newTitle: PendingChangeConfiguration.NEW_TITLE, current: RDStore.TIPP_STATUS_CURRENT.id, accept: RDStore.PENDING_CHANGE_CONFIG_ACCEPT.id])
+            List subscriptionPackagesConcerned = sql.rows("select sp_sub_fk, sp_pkg_fk, sub_has_perpetual_access " +
+                    "from subscription_package join subscription on sp_sub_fk = sub_id " +
+                    "where sub_holding_selection_rv_fk = :entire and sp_pkg_fk = :pkgId",
+            [pkgId: pkgId, entire: RDStore.SUBSCRIPTION_HOLDING_ENTIRE.id])
             subscriptionPackagesConcerned.eachWithIndex { GroovyRowResult row, int ax ->
                 Set<Long> subIds = [row['sp_sub_fk']]
-                List inheritingSubs = sql.rows("select sub_id from subscription join audit_config on auc_reference_id = sub_parent_sub_fk where auc_reference_field = :newTitle and sub_parent_sub_fk = :parent", [newTitle: PendingChangeConfiguration.NEW_TITLE, parent: row['sp_sub_fk']])
+                List inheritingSubs = sql.rows("select sub_id from subscription join audit_config on auc_reference_id = sub_parent_sub_fk where auc_reference_field = 'holdingSelection' and sub_parent_sub_fk = :parent", [parent: row['sp_sub_fk']])
                 subIds.addAll(inheritingSubs.collect { GroovyRowResult inherit -> inherit['sub_id'] })
-                int pkgId = row['sp_pkg_fk'], subCount = row['holding_cnt'], pkgCount = row['pkg_cnt']
                 boolean perpetualAccess = row['sub_has_perpetual_access']
-                if(pkgCount > 0 && pkgCount > subCount) {
-                    subIds.each { Long subId ->
-                        log.debug("now processing package ${subId}:${pkgId}, counts: ${subCount} vs. ${pkgCount}")
-                        packageService.bulkAddHolding(sql, subId, pkgId, perpetualAccess)
-                    }
+                subIds.each { Long subId ->
+                    log.debug("now processing package ${subId}:${pkgId}")
+                    packageService.bulkAddHolding(sql, subId, pkgId, perpetualAccess)
+                    sql.executeUpdate('update issue_entitlement set ie_status_rv_fk = tipp_status_rv_fk from title_instance_package_platform where ie_tipp_fk = tipp_id and ie_subscription_fk = :subId and ie_status_rv_fk != tipp_status_rv_fk', [subId: subId])
                 }
             }
         }
@@ -355,4 +376,9 @@ class YodaService {
         }
     }
 
+    @Transactional
+    void retriggerInheritance(String field) {
+        String query = "update Subscription s set s.${field} = (select parent.${field} from Subscription parent where parent = s.instanceOf) where s.instanceOf != null and exists(select auc.id from AuditConfig auc where auc.referenceId = s.instanceOf.id and auc.referenceClass = '${Subscription.class.name}' and auc.referenceField = '${field}')"
+        log.debug("updated subscriptions: ${Subscription.executeUpdate(query)}")
+    }
 }

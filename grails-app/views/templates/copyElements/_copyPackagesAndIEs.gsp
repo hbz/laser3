@@ -69,9 +69,9 @@
                                     <g:link controller="subscription" action="index" id="${sourceObject.id}"><strong>${message(code: 'issueEntitlement.countSubscription')}</strong> ${sp.getIssueEntitlementCountOfPackage()}</g:link>
                                 </div>
                                 <%--
-                                <g:set var="ies" value="${sp.getIssueEntitlementsofPackage()}"/>
                                 <div class="ui accordion">
                                     <div class="title">
+                                        <g:set var="ies" value="${sp.getIssueEntitlementsofPackage()}"/>
                                         <i class="dropdown icon"></i> ${message(code: 'issueEntitlement.countSubscription')} </strong>${ies.size()}
                                     </div>
 
@@ -98,7 +98,6 @@
                                         </div>
                                     </div>
                                 </div>
-                                --%>
 
                                 <g:set var="packageSettings"
                                        value="${PendingChangeConfiguration.findAllBySubscriptionPackage(sp)}"/>
@@ -121,7 +120,7 @@
                                                                     <i class="ui large icon bullhorn"></i>
                                                                 </span>
                                                             </th>
-                                                            <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR')}">
+                                                            <g:if test="${contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
                                                                 <th>
                                                                     <span class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.packages.auditable')}">
                                                                         <i class="ui large icon thumbtack"></i>
@@ -155,7 +154,7 @@
                                                                                         data-action="copy" checked="${true}"/>
                                                                         </div>
                                                                     </td>
-                                                                    <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR')}">
+                                                                    <g:if test="${contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
                                                                         <g:if test="${!(pcc.settingKey in excludes)}">
                                                                             <td>
                                                                                 <div class="ui checkbox la-toggle-radio la-inherit">
@@ -184,13 +183,14 @@
                                             </div>
                                         </div>
 
-                                        <%--<div class="ui checkbox la-toggle-radio la-replace">
+                                        <div class="ui checkbox la-toggle-radio la-replace">
                                             <g:checkBox name="subscription.takePackageSettings"
                                                         value="${genericOIDService.getOID(sp)}" data-pkgid="${sp.id}"
                                                         data-action="copy" checked="${true}"/>
-                                        </div>--%>
+                                        </div>
                                     </div>
                                 </g:if>
+                                --%>
                             </div>
                             %{--COPY:--}%
 
@@ -249,7 +249,6 @@
                                         </div>
                                     </div>
                                 </div>
-                                --%>
                                 <g:set var="packageSettings"
                                        value="${PendingChangeConfiguration.findAllBySubscriptionPackage(sp)}"/>
 
@@ -268,7 +267,7 @@
                                                                 <g:message
                                                                         code="subscription.packages.${pcc.settingKey}"/>: ${pcc.settingValue ? pcc.settingValue.getI10n('value') : RDStore.PENDING_CHANGE_CONFIG_PROMPT.getI10n('value')} (<g:message
                                                                     code="subscription.packages.notification.label"/>: ${pcc.withNotification ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')})
-                                                                <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR')}">
+                                                                <g:if test="${contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
                                                                     <g:if test="${!(pcc.settingKey in excludes)}">
                                                                         <g:if test="${auditService.getAuditConfig(targetObject, pcc.settingKey)}">
                                                                             <span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.packages.auditable')}"><i
@@ -281,7 +280,6 @@
                                                 </ul>
                                             </div>
                                         </div>
-                                        <%--
                                         <g:if test="${sp.pendingChangeConfig}">
                                             <div class="ui checkbox la-toggle-radio la-noChange setDeletionConfirm">
                                                 <g:checkBox name="subscription.deletePackageSettings"
@@ -290,9 +288,9 @@
                                                             data-action="delete" checked="${false}"/>
                                             </div>
                                         </g:if>
-                                        --%>
                                     </div>
                                 </g:if>
+                                --%>
 
                             </div>
 
@@ -329,7 +327,7 @@
 
                                         <div class="content">
                                             <div class="ui list">
-                                                <g:each in="${titleGroup.items?.sort { it.ie.sortname }}"
+                                                <g:each in="${titleGroup.items?.sort { it.ie.tipp.sortname }}"
                                                         var="item">
                                                     <div class="item">
                                                         <ui:listIcon hideTooltip="true" type="${item.ie.tipp.titleType}"/>

@@ -44,7 +44,7 @@
 </ui:tabs>
 
 <div class="ui bottom attached active tab segment">
-    <h2 class="ui header la-noMargin-top"><g:message code="default.edit.label" args="[accessPoint.accessMethod.getI10n('value')]"/></h2>
+
 
 
     <div class="la-inline-lists">
@@ -72,18 +72,24 @@
 
     <div class="ui bottom attached ${tab == 'IPv4' ? 'active' : ''} tab segment" data-tab="IPv4">
 
-        <h3 class="ui header">${message(code: 'accessPoint.ip.configuration')}
-        %{--<span class="la-long-tooltip la-popup-tooltip la-delay" data-html='${message(code:'accessPoint.permittedIpRanges')}'>
-            <i class="question circle icon la-popup"></i>
-        </span>--}%
-        </h3>
-
         <table class="ui celled la-js-responsive-table la-table table very compact">
             <thead>
             <tr>
-                <th class="five wide">${message(code: 'accessPoint.ip.format.input')}</th>
-                <th class="five wide">${message(code: 'accessPoint.ip.format.range')}</th>
-                <th class="five wide">${message(code: 'accessPoint.ip.format.cidr')}</th>
+                <th class="five wide">${message(code: 'accessPoint.ip.format.input')}
+                    &nbsp; <button class="ui small icon button" onclick="JSPC.app.copyToClipboardIpv4Inputs()">
+                    <i class="copy outline icon"></i>
+                    </button>
+                </th>
+                <th class="five wide">${message(code: 'accessPoint.ip.format.range')}
+                    &nbsp; <button class="ui small icon button" onclick="JSPC.app.copyToClipboardIpv4Ranges()">
+                        <i class="copy outline icon"></i>
+                    </button>
+                </th>
+                <th class="five wide">${message(code: 'accessPoint.ip.format.cidr')}
+                    &nbsp; <button class="ui small icon button" onclick="JSPC.app.copyToClipboardIpv4Cidrs()">
+                        <i class="copy outline icon"></i>
+                    </button>
+                </th>
                 <th class="one wide">${message(code: 'default.actions.label')}</th>
             </tr>
             </thead>
@@ -145,18 +151,25 @@
     </div>
 
 <div class="ui bottom attached tab ${tab == 'IPv6' ? 'active' : ''} segment" data-tab="IPv6">
-    <h3 class="ui header">${message(code: 'accessPoint.ip.configuration')}
-    %{--<span class="la-long-tooltip la-popup-tooltip la-delay" data-html='${message(code:'accessPoint.permittedIpRanges')}'>
-        <i class="question circle icon la-popup"></i>
-    </span>--}%
-    </h3>
 
     <table class="ui celled la-js-responsive-table la-table table very compact">
         <thead>
         <tr>
-            <th class="five wide">${message(code: 'accessPoint.ip.format.input')}</th>
-            <th class="five wide">${message(code: 'accessPoint.ip.format.range')}</th>
-            <th class="five wide">${message(code: 'accessPoint.ip.format.cidr')}</th>
+            <th class="five wide">${message(code: 'accessPoint.ip.format.input')}
+                &nbsp; <button class="ui small icon button" onclick="JSPC.app.copyToClipboardIpv6Inputs()">
+                    <i class="copy outline icon"></i>
+                </button>
+            </th>
+            <th class="five wide">${message(code: 'accessPoint.ip.format.range')}
+                &nbsp; <button class="ui small icon button" onclick="JSPC.app.copyToClipboardIpv6Ranges()">
+                    <i class="copy outline icon"></i>
+                </button>
+            </th>
+            <th class="five wide">${message(code: 'accessPoint.ip.format.cidr')}
+                &nbsp; <button class="ui small icon button" onclick="JSPC.app.copyToClipboardIpv6Cidrs()">
+                    <i class="copy outline icon"></i>
+                </button>
+            </th>
             <th class="one wide">${message(code: 'default.actions.label')}</th>
         </tr>
         </thead>
@@ -227,5 +240,40 @@
     </div>
 
 </div>
+
+<laser:script file="${this.getGroovyPageFileName()}">
+    JSPC.app.jsonIpv4Inputs = <%=groovy.json.JsonOutput.toJson((Set) accessPointDataList?.ipv4Ranges?.collect { it.ipInput })%>;
+    JSPC.app.jsonIpv4Ranges = <%=groovy.json.JsonOutput.toJson((Set) accessPointDataList?.ipv4Ranges?.collect { it.ipRange })%>;
+    JSPC.app.jsonIpv4Cidrs = <%=groovy.json.JsonOutput.toJson((Set) accessPointDataList?.ipv4Ranges?.collect { it.ipCidr })%>;
+
+    JSPC.app.jsonIpv6Inputs = <%=groovy.json.JsonOutput.toJson((Set) accessPointDataList?.ipv6Ranges?.collect { it.ipInput })%>;
+    JSPC.app.jsonIpv6Ranges = <%=groovy.json.JsonOutput.toJson((Set) accessPointDataList?.ipv6Ranges?.collect { it.ipRange })%>;
+    JSPC.app.jsonIpv6Cidrs = <%=groovy.json.JsonOutput.toJson((Set) accessPointDataList?.ipv6Ranges?.collect { it.ipCidr })%>;
+
+    JSPC.app.copyToClipboardIpv4Inputs = function () {
+            navigator.clipboard.writeText(JSPC.app.jsonIpv4Inputs);
+        }
+
+    JSPC.app.copyToClipboardIpv4Ranges = function () {
+            navigator.clipboard.writeText(JSPC.app.jsonIpv4Ranges);
+        }
+
+    JSPC.app.copyToClipboardIpv4Cidrs = function () {
+            navigator.clipboard.writeText(JSPC.app.jsonIpv4Cidrs);
+        }
+
+    JSPC.app.copyToClipboardIpv6Inputs = function () {
+            navigator.clipboard.writeText(JSPC.app.jsonIpv6Inputs);
+        }
+
+    JSPC.app.copyToClipboardIpv6Ranges = function () {
+            navigator.clipboard.writeText(JSPC.app.jsonIpv6Ranges);
+        }
+
+    JSPC.app.copyToClipboardIpv6Cidrs = function () {
+            navigator.clipboard.writeText(JSPC.app.jsonIpv6Cidrs);
+        }
+
+</laser:script>
 
 <laser:htmlEnd/>

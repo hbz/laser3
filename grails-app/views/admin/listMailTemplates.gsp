@@ -84,7 +84,7 @@
             <g:textArea id="mailTemplateTextEdit" name="text" rows="5" cols="40"/>
         </div>
 
-        <div  class="field required">
+        <div class="field required">
             <label for="mailTemplateLanguage">${message(code:'mailTemplate.language.label')} <g:message code="messageRequiredField" /></label>
             <g:select id="mailTemplateLanguageEdit"
                       name="language"
@@ -95,7 +95,7 @@
                       noSelection="[null: '']"/>
         </div>
 
-        <div  class="field required">
+        <div class="field required">
             <label for="mailTemplateType">${message(code:'default.type.label')} <g:message code="messageRequiredField" /></label>
             <g:select id="mailTemplateTypeEdit"
                       name="type"
@@ -108,7 +108,7 @@
     </g:form>
 
     <laser:script file="${this.getGroovyPageFileName()}">
-        JSPC.callbacks.modal.show.editMailTemplate = function(trigger) {
+        JSPC.callbacks.modal.onShow.editMailTemplate = function(trigger) {
             $('#editMailTemplate #mailTemplateNameEdit').attr('value', $(trigger).attr('data-mailTemplateName'))
             $('#editMailTemplate #mailTemplateSubjectEdit').attr('value', $(trigger).attr('data-mailTemplateSubject'))
             $('#editMailTemplate #mailTemplateTextEdit').text($(trigger).attr('data-mailTemplateText'))
@@ -139,7 +139,7 @@
             <g:textArea id="mailTemplateText" name="text" rows="5" cols="40"/>
         </div>
 
-        <div  class="field required">
+        <div class="field required">
         <label for="mailTemplateLanguage">${message(code:'mailTemplate.language.label')} <g:message code="messageRequiredField" /></label>
         <g:select id="mailTemplateLanguage"
                   name="language"
@@ -150,7 +150,7 @@
                   noSelection="[null: '']"/>
         </div>
 
-        <div  class="field required">
+        <div class="field required">
             <label for="mailTemplateType">${message(code:'default.type.label')} <g:message code="messageRequiredField" /></label>
             <g:select id="mailTemplateType"
                       name="type"

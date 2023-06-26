@@ -63,12 +63,11 @@ class RDStore {
     public final static RefdataValue DOC_CTX_STATUS_DELETED     = getRefdataValue('Deleted', RDConstants.DOCUMENT_CONTEXT_STATUS)
     public final static RefdataValue DOC_TYPE_ANNOUNCEMENT      = getRefdataValue('Announcement', RDConstants.DOCUMENT_TYPE)
     public final static RefdataValue DOC_TYPE_NOTE              = getRefdataValue('Note', RDConstants.DOCUMENT_TYPE)
+    public final static RefdataValue DOC_TYPE_RENEWAL           = getRefdataValue('Renewal', RDConstants.DOCUMENT_TYPE)
+    public final static RefdataValue DOC_TYPE_OFFER           = getRefdataValue('Offer', RDConstants.DOCUMENT_TYPE)
     public final static RefdataValue DOC_TYPE_ONIXPL            = getRefdataValue('ONIX-PL License', RDConstants.DOCUMENT_TYPE)
 
     public final static RefdataValue IE_ACCESS_CURRENT                      = getRefdataValue('Current', RDConstants.IE_ACCESS_STATUS)
-    public final static RefdataValue IE_ACCEPT_STATUS_FIXED                 = getRefdataValue('Fixed', RDConstants.IE_ACCEPT_STATUS)
-    public final static RefdataValue IE_ACCEPT_STATUS_UNDER_NEGOTIATION     = getRefdataValue('Under Negotiation', RDConstants.IE_ACCEPT_STATUS)
-    public final static RefdataValue IE_ACCEPT_STATUS_UNDER_CONSIDERATION   = getRefdataValue('Under Consideration', RDConstants.IE_ACCEPT_STATUS)
 
     public final static RefdataValue LANGUAGE_DE            = getRefdataValue('de', RDConstants.LANGUAGE)
     
@@ -84,6 +83,11 @@ class RDStore {
 
     public final static RefdataValue LINKTYPE_FOLLOWS       = getRefdataValue('follows', RDConstants.LINK_TYPE)
     public final static RefdataValue LINKTYPE_LICENSE       = getRefdataValue('license', RDConstants.LINK_TYPE)
+
+    public final static RefdataValue MAIL_STATUS_SEND       = getRefdataValue('Sent', RDConstants.MAIL_STATUS)
+
+    public final static RefdataValue MAIL_TYPE_SURVEY_REMINDER   = getRefdataValue('Survey-Reminder', RDConstants.MAIL_TYPE)
+    public final static RefdataValue MAIL_TYPE_SURVEY_OPEN       = getRefdataValue('Survey-Open', RDConstants.MAIL_TYPE)
 
     public final static RefdataValue ORG_STATUS_CURRENT     = getRefdataValue('Current', RDConstants.ORG_STATUS)
     public final static RefdataValue ORG_STATUS_DELETED     = getRefdataValue('Deleted', RDConstants.ORG_STATUS)
@@ -112,12 +116,19 @@ class RDStore {
     public final static RefdataValue O_STATUS_CURRENT       = getRefdataValue('Current', RDConstants.ORG_STATUS)
     public final static RefdataValue O_STATUS_DELETED       = getRefdataValue('Deleted', RDConstants.ORG_STATUS)
 
+    public final static RefdataValue OT_BROKER              = getRefdataValue('Broker', RDConstants.ORG_TYPE)
     public final static RefdataValue OT_CONSORTIUM          = getRefdataValue('Consortium', RDConstants.ORG_TYPE)
+    public final static RefdataValue OT_CONTENT_PROVIDER    = getRefdataValue('Content Provider', RDConstants.ORG_TYPE)
+    public final static RefdataValue OT_IMPRINT             = getRefdataValue('Imprint', RDConstants.ORG_TYPE)
     public final static RefdataValue OT_INSTITUTION         = getRefdataValue('Institution', RDConstants.ORG_TYPE)
+    public final static RefdataValue OT_ISSUING_BODY        = getRefdataValue('Issuing Body', RDConstants.ORG_TYPE)
     public final static RefdataValue OT_AGENCY              = getRefdataValue('Agency', RDConstants.ORG_TYPE)
+    public final static RefdataValue OT_LICENSEE            = getRefdataValue('Licensee', RDConstants.ORG_TYPE)
     public final static RefdataValue OT_LICENSOR            = getRefdataValue('Licensor', RDConstants.ORG_TYPE)
+    public final static RefdataValue OT_PLATFORM_PROVIDER   = getRefdataValue('Platform Provider', RDConstants.ORG_TYPE)
     public final static RefdataValue OT_PROVIDER            = getRefdataValue('Provider', RDConstants.ORG_TYPE)
     public final static RefdataValue OT_PUBLISHER           = getRefdataValue('Publisher', RDConstants.ORG_TYPE)
+    public final static RefdataValue OT_VENDOR              = getRefdataValue('Vendor', RDConstants.ORG_TYPE)
 
     public final static RefdataValue PACKAGE_STATUS_DELETED     = getRefdataValue('Deleted', RDConstants.PACKAGE_STATUS)
     public final static RefdataValue PACKAGE_STATUS_REMOVED     = getRefdataValue('Removed', RDConstants.PACKAGE_STATUS)
@@ -200,6 +211,9 @@ class RDStore {
     public final static RefdataValue SHARE_CONF_UPLOADER_AND_TARGET     = getRefdataValue('only for author and target organisation', RDConstants.SHARE_CONFIGURATION)
     public final static RefdataValue SHARE_CONF_CONSORTIUM              = getRefdataValue('only for consortia members', RDConstants.SHARE_CONFIGURATION)
 
+    public final static RefdataValue SUBSCRIPTION_HOLDING_ENTIRE    = getRefdataValue('entire', RDConstants.SUBSCRIPTION_HOLDING)
+    public final static RefdataValue SUBSCRIPTION_HOLDING_PARTIAL   = getRefdataValue('partial', RDConstants.SUBSCRIPTION_HOLDING)
+
     public final static RefdataValue SUBSCRIPTION_CURRENT           = getRefdataValue('Current', RDConstants.SUBSCRIPTION_STATUS)
     public final static RefdataValue SUBSCRIPTION_INTENDED          = getRefdataValue('Intended', RDConstants.SUBSCRIPTION_STATUS)
     public final static RefdataValue SUBSCRIPTION_EXPIRED           = getRefdataValue('Expired', RDConstants.SUBSCRIPTION_STATUS)
@@ -256,8 +270,6 @@ class RDStore {
     public final static RefdataValue TIPP_STATUS_RETIRED            = getRefdataValue('Retired', RDConstants.TIPP_STATUS)
     public final static RefdataValue TIPP_STATUS_EXPECTED           = getRefdataValue('Expected', RDConstants.TIPP_STATUS)
     public final static RefdataValue TIPP_STATUS_REMOVED            = getRefdataValue('Removed', RDConstants.TIPP_STATUS)
-    public final static RefdataValue TIPP_STATUS_TRANSFERRED        = getRefdataValue('Transferred', RDConstants.TIPP_STATUS)
-    public final static RefdataValue TIPP_STATUS_UNKNOWN            = getRefdataValue('Unknown', RDConstants.TIPP_STATUS)
     public final static RefdataValue TIPP_STATUS_DELETED            = getRefdataValue('Deleted',  RDConstants.TIPP_STATUS)
 
     public final static RefdataValue US_DASHBOARD_TAB_DUE_DATES = getRefdataValue('Due Dates', RDConstants.USER_SETTING_DASHBOARD_TAB)

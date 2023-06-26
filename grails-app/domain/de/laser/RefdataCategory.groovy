@@ -151,7 +151,8 @@ class RefdataCategory extends AbstractI10n {
         if (! category_name) {
             return []
         }
-        String query = "select rdv from RefdataValue as rdv, RefdataCategory as rdc where rdv.owner = rdc and lower(rdc.desc) = :category order by rdv.order asc, rdv.value asc"
+        String i10nAttr = LocaleUtils.getLocalizedAttributeName('value')
+        String query = "select rdv from RefdataValue as rdv, RefdataCategory as rdc where rdv.owner = rdc and lower(rdc.desc) = :category order by rdv.order asc, rdv.${i10nAttr} asc"
 
         RefdataValue.executeQuery( query, [category: category_name.toLowerCase()] )
     }

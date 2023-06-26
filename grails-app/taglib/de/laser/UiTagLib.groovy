@@ -35,21 +35,27 @@ class UiTagLib {
     // </ui:headerWithIcon>
 
     def h1HeaderWithIcon = { attrs, body ->
+
         if (attrs.floated && attrs.floated != 'false') {
             out << '<h1 class="ui icon header la-clear-before left floated aligned la-positionRelative">'
         } else {
             out << '<h1 class="ui icon header la-clear-before la-noMargin-top">'
         }
-
+        if ( (attrs.referenceYear) || (attrs.visibleOrgRelationsJoin) ){
+            out << '<div class="la-subPlusYear">'
+        }
         if (attrs.type) {
             out << ui.headerTitleIcon([type: attrs.type])
         } else {
             out << ui.headerIcon()
         }
-
+        if ( (attrs.referenceYear)|| (attrs.visibleOrgRelationsJoin) ) {
+            out << '<div class="la-subPlusYear-texts">'
+        }
         if (attrs.text) {
             out << attrs.text
         }
+
         if (attrs.message) {
             SwissKnife.checkMessageKey(attrs.message as String)
             out << "${message(code: attrs.message, args: attrs.args)}"
@@ -60,6 +66,19 @@ class UiTagLib {
         }
         if ( body ) {
             out << body()
+        }
+        if ( (attrs.referenceYear)|| (attrs.visibleOrgRelationsJoin) ) {
+            out << '<span class="la-subPlusYear-year">'
+            out << attrs.referenceYear
+            if (attrs.referenceYear) {
+                out << ' – '
+            }
+            out << '<span class="la-orgRelations">'
+            out << attrs.visibleOrgRelationsJoin
+            out << '</span>'
+            out << '</span>'
+            out << '</div>'
+            out << '</div>'
         }
         out << '</h1>'
     }
@@ -419,6 +438,16 @@ class UiTagLib {
         out << '</div>'
     }
 
+    def flagDeprecated = { attrs, body ->
+
+        out << '<div class="ui icon message error">'
+        out << '<i class="icon exclamation triangle"></i>'
+        out << '<div class="content">'
+        out << 'Diese Funktionalität wird demnächst entfernt.<br/>Bitte nicht mehr verwenden und ggfs. Daten migrieren.'
+        out << '</div>'
+        out << '</div>'
+    }
+
     /**
      * @attr hideWrapper Renders only the &lt;form&gt; without a &lt;div&gt; wrapper
      * @attr action The name of the action to use in the link, if not specified the default action will be linked
@@ -621,11 +650,11 @@ class UiTagLib {
                 }
                 out << '</div> </div>'
             }
-        } else {
-            out << '<i aria-hidden="true" class="arrow left icon disabled"></i>'
+        } else if (object.hasProperty('retirementDate')){}
+        else out << '<i aria-hidden="true" class="arrow left icon disabled"></i>'
+        if ( (startDate) || (endDate) ) {
+            out << '<span class="la-annual-rings-text">' + startDate + dash + endDate + '</span>'
         }
-        out << '<span class="la-annual-rings-text">' + startDate + dash + endDate + '</span>'
-
         out << "<a class='ui ${color} circular tiny label la-popup-tooltip la-delay'  data-variation='tiny' data-content='Status: ${tooltip}'>"
         out << '       &nbsp;'
         out << '</a>'
@@ -660,13 +689,13 @@ class UiTagLib {
                 }
                 out << '</div> </div>'
             }
-        } else {
-            out << '<i aria-hidden="true" class="arrow right icon disabled"></i>'
-        }
+
+        } else if (object.hasProperty('retirementDate')){}
+        else out << '<i aria-hidden="true" class="arrow right icon disabled"></i>'
         out << '</div>'
     }
 
-    def anualRingsModern = { attrs, body ->
+/*    def anualRingsModern = { attrs, body ->
         String ddf_notime = message(code: 'default.date.format.notime')
 
         def object = attrs.object
@@ -773,7 +802,7 @@ class UiTagLib {
             out << '<i aria-hidden="true" class="arrow right icon disabled"></i>'
         }
         out << '</div>'
-    }
+    }*/
 
     def totalNumber = { attrs, body ->
         def total = attrs.total ?: 0

@@ -1,3 +1,5 @@
+<%@ page import="de.laser.storage.RDStore;" %>
+
 <laser:htmlStart message="default.notes.label" />
 
         <laser:render template="breadcrumb" model="${[ params:params ]}"/>
@@ -5,7 +7,8 @@
                 <laser:render template="actions" />
         </ui:controlButtons>
 
-        <ui:h1HeaderWithIcon>
+        <g:set var="visibleOrgRelationsJoin" value="${visibleOrgRelations.findAll{it.roleType != RDStore.OR_SUBSCRIPTION_CONSORTIA}.sort{it.org.sortname}.collect{it.org}.join(' – ')}"/>
+        <ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}" visibleOrgRelationsJoin="${visibleOrgRelationsJoin}">
             <g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
                 <laser:render template="iconSubscriptionIsChild"/>
             </g:if>

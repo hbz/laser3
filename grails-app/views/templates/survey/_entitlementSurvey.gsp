@@ -34,9 +34,9 @@
         </span>
     </a>
 
-    <g:if test="${surveyService.showStatisticByParticipant(surveyConfig.subscription, subscriber)}">
+%{--    <g:if test="${surveyService.showStatisticByParticipant(surveyConfig.subscription, subscriber)}">
         <a class="item" data-tab="stats"><g:message code="default.stats.label"/></a>
-    </g:if>
+    </g:if>--}%
 </div>
 
 <div class="ui bottom attached active tab segment" data-tab="currentTitlesSelect">
@@ -48,7 +48,7 @@
             </dl>
             <dl>
                 <dt class="control-label">${message(code: 'tipp.price.listPrice')}</dt>
-                <dd><g:formatNumber number="${iesListPriceSum}" type="currency"/></dd>
+                <dd><g:formatNumber number="${sumListPriceSelectedIEs}" type="currency"/></dd>
             </dl>
         </div>
     </div>
@@ -69,7 +69,7 @@
         <div class="content">
             <dl>
                 <dt class="control-label">${message(code: 'myinst.selectPackages.pkg_titles')}</dt>
-                <dd>${countCurrentIEs}</dd>
+                <dd>${countCurrentPermanentTitles}</dd>
             </dl>
            %{-- <dl>
                 <dt class="control-label">${message(code: 'tipp.price.listPrice')}</dt>
@@ -82,13 +82,14 @@
     <g:link controller="subscription" action="renewEntitlementsWithSurvey"
             id="${subscription.id}"
             params="${[surveyConfigID: surveyConfig.id,
-                       tab           : 'currentIEs']}"
+                       tab           : 'currentPerpetualAccessIEs']}"
             class="ui button">
         <g:message code="renewEntitlementsWithSurvey.currentTitles.button"/>
     </g:link>
 
 </div>
 
+%{--
 <g:if test="${surveyService.showStatisticByParticipant(surveyConfig.subscription, subscriber)}">
     <div class="ui bottom attached tab segment" data-tab="stats">
 
@@ -102,4 +103,4 @@
 
     </div>
 
-</g:if>
+</g:if>--}%

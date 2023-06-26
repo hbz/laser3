@@ -4,11 +4,11 @@
 <!-- _individuallyExportModal.gsp -->
 <g:set var="formFields" value="${exportClickMeService.getExportSubscriptionFieldsForUI(institution)}"/>
 
-<ui:modal modalSize="large" id="${modalID}" text="Excel-Export" refreshModal="true" hideSubmitButton="true">
+<ui:modal modalSize="large" id="${modalID}" text="Export" refreshModal="true" hideSubmitButton="true">
 
-    <g:form action="${actionName}" controller="${controllerName}" params="${params+[exportClickMeExcel: true]}">
+    <g:form action="${actionName}" controller="${controllerName}" params="${params}">
 
-        <laser:render template="/templates/export/individuallyExportForm" model="${[formFields: formFields, exportFileName: message(code: 'subscription.plural')]}"/>
+        <laser:render template="/templates/export/individuallyExportForm" model="${[formFields: formFields, exportFileName: message(code: 'subscription.plural'), csvFieldSeparator: ',']}"/>
 
     </g:form>
 

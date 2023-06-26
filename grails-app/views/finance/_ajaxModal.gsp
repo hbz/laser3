@@ -21,11 +21,9 @@
         </g:elseif>
         <div class="ui blue right right floated mini button la-js-clickButton" data-position="top center" data-title="${costItem.globalUID}"><g:message code="globalUID.label"/></div>
         <laser:script file="${this.getGroovyPageFileName()}">
-            $('.la-js-clickButton')
-              .popup({
+            $('.la-js-clickButton').popup({
                 on: 'click'
-              })
-            ;
+            });
         </laser:script>
     </g:if>
 

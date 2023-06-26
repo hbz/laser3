@@ -1,5 +1,5 @@
 <%@page import="de.laser.CustomerTypeService; de.laser.RefdataCategory; de.laser.storage.RDConstants; de.laser.storage.RDStore" %>
-<laser:htmlStart message="menu.my.documents" serviceInjection="true" />
+<laser:htmlStart message="default.documents.label" serviceInjection="true" />
 
     <%
       List notAvailable = [ RDStore.DOC_TYPE_ONIXPL, RDStore.DOC_TYPE_NOTE, RDStore.DOC_TYPE_ANNOUNCEMENT ]
@@ -9,11 +9,9 @@
     <laser:render template="breadcrumb"
               model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView]}"/>
 
-    <g:if test="${accessService.ctxPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
-        <ui:controlButtons>
-          <laser:render template="actions" model="[org:org]" />
-        </ui:controlButtons>
-    </g:if>
+    <ui:controlButtons>
+      <laser:render template="actions" model="[org:org]" />
+    </ui:controlButtons>
 
     <ui:h1HeaderWithIcon text="${orgInstance.name}" />
 

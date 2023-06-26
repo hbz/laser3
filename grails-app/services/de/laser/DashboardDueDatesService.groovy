@@ -7,7 +7,6 @@ import de.laser.utils.AppUtils
 import de.laser.utils.DateUtils
 import de.laser.storage.BeanStore
 import de.laser.config.ConfigMapper
-import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyInfo
 import de.laser.system.SystemEvent
@@ -43,8 +42,6 @@ class DashboardDueDatesService {
     String from
     String replyTo
     boolean update_running = false
-
-    public static final String QRY_ALL_ORGS_OF_USER = "select distinct o from Org as o where exists ( select uo from UserOrgRole as uo where uo.org = o and uo.user = :user) order by o.name"
 
     // TODO: refactoring; change event DBDD_SERVICE_START_2
 
@@ -121,9 +118,8 @@ class DashboardDueDatesService {
         List<DashboardDueDate> dashboarEntriesToInsert = []
         List<User> users = User.findAllByEnabledAndAccountExpiredAndAccountLocked(true, false, false)
         users.each { user ->
-            List<Org> orgs = Org.executeQuery(QRY_ALL_ORGS_OF_USER, [user: user])
-            orgs.each {org ->
-                List dueObjects = queryService.getDueObjectsCorrespondingUserSettings(org, user)
+            if (user.formalOrg) {
+                List dueObjects = queryService.getDueObjectsCorrespondingUserSettings(user.formalOrg, user)
                 dueObjects.each { obj ->
                     String attributeName = DashboardDueDate.getAttributeName(obj, user)
                     String oid = genericOIDService.getOID(obj)
@@ -132,7 +128,7 @@ class DashboardDueDatesService {
                             where das.responsibleUser = :user and das.responsibleOrg = :org and ddo.attribute_name = :attribute_name and ddo.oid = :oid
                             order by ddo.date""",
                             [user: user,
-                             org: org,
+                             org: user.formalOrg,
                              attribute_name: attributeName,
                              oid: oid
                             ])[0]
@@ -141,12 +137,11 @@ class DashboardDueDatesService {
                         das.update(messageSource, obj)
                         log.debug("DashboardDueDatesService UPDATE: " + das);
                     } else {//insert
-                        das = new DashboardDueDate(messageSource, obj, user, org, false, false)
+                        das = new DashboardDueDate(messageSource, obj, user, user.formalOrg, false, false)
                         das.save()
                         dashboarEntriesToInsert << das
                         log.debug("DashboardDueDatesService INSERT: " + das);
                     }
-
                 }
             }
         }
@@ -189,10 +184,9 @@ class DashboardDueDatesService {
             users.each { user ->
                 boolean userWantsEmailReminder = RDStore.YN_YES.equals(user.getSetting(UserSetting.KEYS.IS_REMIND_BY_EMAIL, RDStore.YN_NO).rdValue)
                 if (userWantsEmailReminder) {
-                    List<Org> orgs = Org.executeQuery(QRY_ALL_ORGS_OF_USER, [user: user])
-                    orgs.each { org ->
-                        List<DashboardDueDate> dashboardEntries = getDashboardDueDates(user, org, false, false)
-                        _sendEmail(user, org, dashboardEntries)
+                    if (user.formalOrg) {
+                        List<DashboardDueDate> dashboardEntries = getDashboardDueDates(user, user.formalOrg, false, false)
+                        _sendEmail(user, user.formalOrg, dashboardEntries)
                     }
                 }
             }

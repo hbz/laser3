@@ -71,6 +71,8 @@
                             <br />
                             <i class="comment icon"></i>${message(code:'subscription.hasPublishComponent.label')}
                             <br />
+                            <i class="pizza slice icon"></i>${message(code:'subscription.holdingSelection.label')}
+                            <br />
                             <i class="balance scale icon"></i>${message(code: 'license.label')}
                             <br />
                             <i class="university icon"></i>${message(code: 'subscription.organisations.label')}
@@ -101,7 +103,7 @@
                 </div>
             </div>
 
-            <g:if test="${!fromSurvey && isSubscriberVisible && accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_USER')}">
+            <g:if test="${!fromSurvey && isSubscriberVisible && contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
                 <div class="${workFlowPart == CopyElementsService.WORKFLOW_SUBSCRIBER ? 'active' : (workFlowPart in [CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS, CopyElementsService.WORKFLOW_PROPERTIES] ? 'completed' : '')} step">
 
                     <div class="content">
@@ -167,6 +169,9 @@
                         <i class="flag outline icon"></i>${message(code:'subscription.hasPerpetualAccess.label')}
                         <i class="comment icon"></i>${message(code:'subscription.hasPublishComponent.label')}
                         <br />
+                        <g:if test="${sourceObject?.packages}">
+                            <i class="pizza slice icon"></i>${message(code:'subscription.holdingSelection.label')}
+                        </g:if>
                         <i class="balance scale icon"></i>${message(code: 'license.label')}
                         <i class="university icon"></i>${message(code: 'subscription.organisations.label')}
                         <i class="address card icon"></i>${message(code: 'subscription.specificSubscriptionEditors')}
@@ -188,7 +193,7 @@
                 </div>
             </ui:complexSubNavItem>
 
-            <g:if test="${isSubscriberVisible && accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR')}">
+            <g:if test="${isSubscriberVisible && contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
                 <ui:complexSubNavItem class="${workFlowPart == CopyElementsService.WORKFLOW_SUBSCRIBER ? 'active' : ''}" controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: CopyElementsService.WORKFLOW_SUBSCRIBER]}" >
                     <div class="content">
                         <div class="title">
@@ -233,7 +238,7 @@
     <g:if test="${workFlowPart == CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS}">
         <laser:render template="/templates/copyElements/copyDocsAndTasks" />
     </g:if>
-    <g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_SUBSCRIBER && isSubscriberVisible && accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR')}">
+    <g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_SUBSCRIBER && isSubscriberVisible && contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
         <laser:render template="/templates/copyElements/copySubscriber" />
     </g:elseif>
     <g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_PROPERTIES}">

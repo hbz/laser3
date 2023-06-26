@@ -113,7 +113,7 @@ class AjaxJsonController {
                 if(s[0] != params.long("context")) {
                     Map subscriptionRow = subscriptionRows.get(s[0])
                     if(!subscriptionRow)
-                        subscriptionRow = [name: s[1], startDate: s[2], endDate: s[3], status: s[4], instanceOf: s[7], orgRelations: [:]]
+                        subscriptionRow = [name: s[1], startDate: s[2], endDate: s[3], status: s[4], instanceOf: s[7], holdingSelection: s[8], orgRelations: [:]]
                     subscriptionRow.orgRelations.put(s[6].id, s[5])
                     subscriptionRows.put(s[0], subscriptionRow)
                 }
@@ -136,7 +136,7 @@ class AjaxJsonController {
                 }
                 String text = "${entry.name} - ${entry.status.getI10n("value")} (${startDate} - ${endDate})${additionalInfo}"
                 if (params.valueAsOID) {
-                    result.add([value: "${Subscription.class.name}:${subId}", text: text])
+                    result.add([value: "${Subscription.class.name}:${subId}", text: text, holdingSelection: entry.holdingSelection])
                 }
                 else {
                     result.add([value: subId, text: text])
@@ -201,7 +201,7 @@ class AjaxJsonController {
         queryParams.showConnectedObjs = showConnectedObjs
 
         data = compareService.getMySubscriptions(queryParams)
-        if (accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+        if (contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
             if (showSubscriber) {
                 List parents = data.clone()
                 Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]
@@ -242,7 +242,7 @@ class AjaxJsonController {
         queryParams.showConnectedLics = showConnectedLics
 
         data = compareService.getMyLicenses(queryParams)
-        if (accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+        if (contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
             if (showSubscriber) {
                 List parents = data.clone()
                 Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_LICENSEE_CONS, RDStore.OR_LICENSEE]
@@ -728,7 +728,8 @@ class AjaxJsonController {
             render controlledListService.getSubscriptionPackages(params) as JSON
         }
         else {
-            render [:] as JSON
+            Map empty = [results: []]
+            render empty as JSON
         }
     }
 
@@ -979,9 +980,9 @@ class AjaxJsonController {
      * Outputs a chart from the given report parameters
      * @return the template to output and the one of the results {@link de.laser.ReportingGlobalService#doChart(java.util.Map, grails.web.servlet.mvc.GrailsParameterMap)} or {@link de.laser.ReportingLocalService#doChart(java.util.Map, grails.web.servlet.mvc.GrailsParameterMap)}
      */
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_PRO, 'INST_USER'])
+    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_USER')
+        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
     })
     def chart() {
         Map<String, Object> result = [:]

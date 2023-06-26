@@ -3,8 +3,6 @@ package de.laser
 import de.laser.auth.User
 import de.laser.storage.RDStore
 import grails.gorm.transactions.Transactional
-import grails.plugin.springsecurity.SpringSecurityUtils
-import org.codehaus.groovy.syntax.Numbers
 
 /**
  * This service handles retrieval and processing of contact data
@@ -47,8 +45,7 @@ class AddressbookService {
      * @return true if the user is affiliated at least as INST_EDITOR with the given tenant or institution or is a global admin, false otherwise
      */
     boolean isAddressEditable(Address address, User user) {
-        Org org = address.getPrs()?.tenant ?: address.org
-        userService.checkAffiliationAndCtxOrg_or_ROLEADMIN(user, org, 'INST_EDITOR')
+        userService.checkAffiliationAndCtxOrg_or_ROLEADMIN(user, address.org, 'INST_EDITOR')
     }
 
     /**

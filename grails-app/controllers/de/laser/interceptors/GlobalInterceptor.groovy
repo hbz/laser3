@@ -1,7 +1,7 @@
 package de.laser.interceptors
 
 import de.laser.annotations.Check404
-import de.laser.custom.CustomWebSocketMessageBrokerConfig
+//import de.laser.custom.CustomWebSocketMessageBrokerConfig
 import de.laser.utils.AppUtils
 import de.laser.utils.CodeUtils
 import grails.core.GrailsControllerClass
@@ -16,7 +16,8 @@ import java.lang.reflect.Method
 class GlobalInterceptor implements grails.artefact.Interceptor {
 
     GlobalInterceptor() {
-        matchAll().excludes(uri: CustomWebSocketMessageBrokerConfig.WS_STOMP + '/**') // websockets
+        matchAll()
+//                .excludes(uri: CustomWebSocketMessageBrokerConfig.WS_STOMP + '/**') // websockets
     }
 
     boolean before() {
@@ -25,6 +26,7 @@ class GlobalInterceptor implements grails.artefact.Interceptor {
         response.setHeader("Expires", "0")
 
         _handleGlobalUID(params)
+        _handleWekbID(params)
         _handleDebugMode(params)
 
         _handleCheck404(params) // true | false
@@ -36,7 +38,7 @@ class GlobalInterceptor implements grails.artefact.Interceptor {
 
     private void _handleGlobalUID(GrailsParameterMap params) {
 
-        if (params.id?.contains(':')) {
+        if (params.id && params.id.contains(':')) {
             try {
                 String objName  = params.id.split(':')[0]
                 Class dc = CodeUtils.getAllDomainClasses().find {it.simpleName == objName.capitalize() }
@@ -50,6 +52,43 @@ class GlobalInterceptor implements grails.artefact.Interceptor {
 
                     if (match) {
                         log.debug("requested by globalUID: [ ${params.id} ] > ${dc} # ${match.id}")
+                        params.id = match.getId()
+                    }
+                    else {
+                        params.id = 0
+                    }
+                }
+            }
+            catch (Exception e) {
+                params.id = 0
+            }
+        }
+    }
+
+    private void _handleWekbID(GrailsParameterMap params) {
+
+        if (params.id && params.id ==~ /[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}/) {
+            try {
+                String objName = getControllerClass()?.name
+
+                switch (objName) {
+                    case 'Organisation':
+                        objName = 'Org'; break
+                    case 'Tipp':
+                        objName = 'TitleInstancePackagePlatform'; break
+                }
+
+                Class dc = CodeUtils.getAllDomainClasses().find {it.simpleName == objName }
+
+                if (!dc) {
+                    // TODO - remove fallback - db cleanup, e.g. issueentitlement -> issueEntitlement
+                    dc = CodeUtils.getAllDomainClasses().find {it.simpleName.equalsIgnoreCase( objName ) }
+                }
+                if (dc) {
+                    def match = dc.findByGokbId(params.id)
+
+                    if (match) {
+                        log.debug("requested by wekbID: [ ${params.id} ] > ${dc} # ${match.id}")
                         params.id = match.getId()
                     }
                     else {

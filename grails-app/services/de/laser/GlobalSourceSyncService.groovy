@@ -2,11 +2,13 @@ package de.laser
 
 import de.laser.base.AbstractCoverage
 import de.laser.base.AbstractLockableService
+import de.laser.config.ConfigMapper
 import de.laser.exceptions.SyncException
 import de.laser.finance.PriceItem
 import de.laser.http.BasicHttpClient
 import de.laser.remote.ApiSource
 import de.laser.remote.GlobalRecordSource
+import de.laser.storage.Constants
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.system.SystemEvent
@@ -42,8 +44,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
     static final long RECTYPE_PLATFORM = 1
     static final long RECTYPE_ORG = 2
     static final long RECTYPE_TIPP = 3
-    static final String PERMANENTLY_DELETED = "Permanently Deleted"
     static final int MAX_CONTENT_LENGTH = 1024 * 1024 * 100
+    static final int MAX_TIPP_COUNT_PER_PAGE = 20000
 
     Map<String, RefdataValue> titleMedium = [:],
             tippStatus = [:],
@@ -56,7 +58,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
             ddc = [:],
             contactTypes = [:]
     Long maxTimestamp
-    Map<String,Set<Map<String,Object>>> packagesToNotify
+    //Map<String,Set<Map<String,Object>>> packagesToNotify
+    Set<String> packagesAlreadyUpdated, platformsAlreadyUpdated
     //Map<String,Integer> initialPackagesCounter
     //Map<String,Set<Map<String,Object>>> pkgPropDiffsContainer
 
@@ -120,20 +123,24 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         break
                 }
                 //do prequest: are we needing the scroll api?
-                //5000 records because of local testing ability
-                Map<String,Object> result = fetchRecordJSON(false,[componentType:componentType,changedSince:sdf.format(oldDate),max:5000]) //changedBefore:'2022-09-27 00:00:00',
+                Map<String,Object> result = fetchRecordJSON(false,[componentType:componentType,changedSince:sdf.format(oldDate),max:MAX_TIPP_COUNT_PER_PAGE]) //changedBefore:'2022-09-27 00:00:00',
                 if(result.error == 404) {
                     log.error("we:kb server is down")
                     SystemEvent.createEvent('GSSS_JSON_ERROR',['jobId':source.id])
                 }
                 else {
                     if(result) {
-                        processScrollPage(result, componentType, sdf.format(oldDate))
+                        Set<String> permanentlyDeletedTitles = []
+                        if(source.rectype == RECTYPE_TIPP) {
+                            permanentlyDeletedTitles = getPermanentlyDeletedTitles(sdf.format(oldDate))
+                        }
+                        processScrollPage(result, componentType, sdf.format(oldDate), null, permanentlyDeletedTitles)
                     }
                     else {
                         log.info("no records updated - leaving everything as is ...")
                     }
                     if(source.rectype == RECTYPE_TIPP) {
+                        /*
                         if(packagesToNotify.keySet().size() > 0) {
                             log.info("notifying subscriptions ...")
                             Map<String, Set<TitleChange>> packageChanges = trackPackageHistory()
@@ -163,6 +170,20 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         else {
                             log.info("no diffs recorded ...")
                         }
+                        */
+                        globalService.cleanUpGorm()
+                        log.info("clearing removed titles")
+                        packageService.clearRemovedTitles()
+                        log.info("end clearing titles")
+                    }
+                    else if(source.rectype == RECTYPE_PACKAGE) {
+                        /*if(packagesToNotify.keySet().size() > 0) {
+                            log.info("notifying subscriptions ...")
+                            Map<String, Set<TitleChange>> packageChanges = trackPackageHistory()
+                        }
+                        else {
+                            log.info("no diffs recorded ...")
+                        }*/
                     }
                     if(maxTimestamp+1000 > source.haveUpTo.getTime()) {
                         source.refresh()
@@ -211,7 +232,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     }
                 */
                 //do prequest: are we needing the scroll api?
-                Map<String,Object> result = fetchRecordJSON(false,[componentType:componentType,pkg:packageUUID,max:5000])
+                Map<String,Object> result = fetchRecordJSON(false,[componentType:componentType,tippPackageUuid:packageUUID,max:MAX_TIPP_COUNT_PER_PAGE])
                 if(result.error == 404) {
                     log.error("we:kb server is down")
                 }
@@ -222,6 +243,18 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     else {
                         log.info("no records updated - leaving everything as is ...")
                     }
+                    Package pkg = Package.findByGokbId(packageUUID)
+                    if(pkg) {
+                        permanentlyDeletedTitles.each { String delUUID ->
+                            TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGokbIdAndPkgAndStatusNotEqual(delUUID, pkg, RDStore.TIPP_STATUS_REMOVED)
+                            if(tipp) {
+                                tipp.status = RDStore.TIPP_STATUS_REMOVED
+                                tipp.save()
+                                IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.status = :removed, ie.lastUpdated = :now where ie.tipp = :tipp and ie.status != :removed', [removed: RDStore.TIPP_STATUS_REMOVED, tipp: tipp, now: new Date()])
+                            }
+                        }
+                    }
+                    /*
                     if(packagesToNotify.keySet().size() > 0) {
                         log.info("notifying subscriptions ...")
                         Map<String, Set<TitleChange>> packageChanges = trackPackageHistory()
@@ -247,6 +280,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     else {
                         log.info("no diffs recorded ...")
                     }
+                    */
                     globalService.cleanUpGorm()
                     log.info("package reload finished")
                 }
@@ -282,8 +316,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             this.apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI,true)
             log.info("getting all records from job #${source.id} with uri ${source.uri}")
             try {
-                //5000 records because of local testing ability
-                Map<String,Object> result = fetchRecordJSON(false,[componentType: componentType, max: 5000])
+                Map<String,Object> result = fetchRecordJSON(false,[componentType: componentType, max: MAX_TIPP_COUNT_PER_PAGE])
                 if(result) {
                     if(result.error == 404) {
                         log.error("we:kb server currently down")
@@ -312,28 +345,34 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 case "identifier": triggeredTypes = ['Package','Org','TitleInstancePackagePlatform']
                     max = 100
                     break
+                case "abbreviatedName": triggeredTypes = ['Org']
+                    max = 1000
+                    break
+                case "sortTitle": triggeredTypes = ['Package', 'TitleInstancePackagePlatform']
+                    max = MAX_TIPP_COUNT_PER_PAGE
+                    break
                 case "ddc": triggeredTypes = ['TitleInstancePackagePlatform']
                     RefdataCategory.getAllRefdataValues(RDConstants.DDC).each { RefdataValue rdv ->
                         ddc.put(rdv.value, rdv)
                     }
-                    max = 5000
+                    max = MAX_TIPP_COUNT_PER_PAGE
                     break
                 case "accessType": triggeredTypes = ['TitleInstancePackagePlatform']
                     RefdataCategory.getAllRefdataValues(RDConstants.TIPP_ACCESS_TYPE).each { RefdataValue rdv ->
                         accessType.put(rdv.value, rdv)
                     }
-                    max = 5000
+                    max = MAX_TIPP_COUNT_PER_PAGE
                     break
                 case "openAccess": triggeredTypes = ['TitleInstancePackagePlatform']
                     buildWekbLaserRefdataMap(RDConstants.LICENSE_OA_TYPE)
-                    max = 5000
+                    max = MAX_TIPP_COUNT_PER_PAGE
                     break
                 case [ "language", "editionStatement" ]:
                     triggeredTypes = ['TitleInstancePackagePlatform']
-                    max = 5000
+                    max = MAX_TIPP_COUNT_PER_PAGE
                     break
                 case "titleNamespace": triggeredTypes = ['Platform']
-                    max = 5000
+                    max = MAX_TIPP_COUNT_PER_PAGE
                     break
                 default: triggeredTypes = []
                     break
@@ -342,8 +381,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 triggeredTypes.each { String componentType ->
                     GlobalRecordSource.withNewSession { Session sess ->
                         int offset = 0
-                        Map<String, Object> queryParams = [component_type: componentType, max: max]
-                        Map<String,Object> result = fetchRecordJSON(true,queryParams)
+                        Map<String, Object> queryParams = [componentType: componentType, max: max, offset: offset]
+                        Map<String,Object> result = fetchRecordJSON(false,queryParams)
                         if(result) {
                             if(result.error == 404) {
                                 log.error("we:kb server currently down")
@@ -352,57 +391,70 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                 boolean more = true
                                 while(more) {
                                     log.debug("processing entries ${offset}-${offset+max} for ${componentType} ...")
-                                    Set<String> uuids = result.records.collect { Map entry -> entry.uuid } as Set<String>
+                                    Map<String, Map> wekbRecords = result.records.collectEntries { Map entry -> [entry.uuid, entry] }
                                     switch(componentType) {
-                                        case 'Package': List<Package> packages = Package.findAllByGokbIdInList(uuids.toList())
+                                        case 'Package': List<Package> packages = Package.findAllByGokbIdInList(wekbRecords.keySet().toList())
                                             log.debug("from current page, ${packages.size()} packages exist in LAS:eR")
                                             packages.eachWithIndex { Package pkg, int idx ->
                                                 log.debug("now processing package ${idx} with uuid ${pkg.gokbId}, total entry: ${offset+idx}")
-                                                List identifiers = result.records.find { record -> record.uuid == pkg.gokbId }.identifiers
-                                                if(identifiers) {
-                                                    if(pkg.ids) {
-                                                        Identifier.executeUpdate('delete from Identifier i where i.pkg = :pkg',[pkg:pkg]) //damn those wrestlers ...
-                                                    }
-                                                    identifiers.each { id ->
-                                                        if(!(id.namespace.toLowerCase() in ['originediturl','uri'])) {
-                                                            Identifier.construct([namespace: id.namespace, value: id.value, name_de: id.namespaceName, reference: pkg, isUnique: false, nsType: Package.class.name])
+                                                if(dataToLoad == 'identifier') {
+                                                    List identifiers = wekbRecords.get(pkg.gokbId).identifiers
+                                                    if(identifiers) {
+                                                        if(pkg.ids) {
+                                                            Identifier.executeUpdate('delete from Identifier i where i.pkg = :pkg',[pkg:pkg]) //damn those wrestlers ...
+                                                        }
+                                                        identifiers.each { id ->
+                                                            if(!(id.namespace.toLowerCase() in ['originediturl','uri'])) {
+                                                                Identifier.construct([namespace: id.namespace, value: id.value, name_de: id.namespaceName, reference: pkg, isUnique: false, nsType: Package.class.name])
+                                                            }
                                                         }
                                                     }
                                                 }
+                                                else if(dataToLoad == 'sortTitle') {
+                                                    pkg.sortname = escapeService.generateSortTitle(pkg.name)
+                                                    pkg.save()
+                                                }
                                             }
                                             break
-                                        case 'Platform': List<Platform> platforms = Platform.findAllByGokbIdInList(uuids.toList())
+                                        case 'Platform': List<Platform> platforms = Platform.findAllByGokbIdInList(wekbRecords.keySet().toList())
                                             log.debug("from current page, ${platforms.size()} packages exist in LAS:eR")
                                             platforms.eachWithIndex { Platform platform, int idx ->
                                                 log.debug("now processing platform ${idx} with uuid ${platform.gokbId}, total entry: ${offset+idx}")
-                                                platform.titleNamespace = result.records.find { record -> record.uuid == platform.gokbId }.titleNamespace
+                                                platform.titleNamespace = wekbRecords.get(platform.gokbId).titleNamespace
                                                 platform.save()
                                             }
                                             break
-                                        case 'Org': List<Org> providers = Org.findAllByGokbIdInList(uuids.toList())
+                                        case 'Org': List<Org> providers = Org.findAllByGokbIdInList(wekbRecords.keySet().toList())
                                             log.debug("from current page, ${providers.size()} providers exist in LAS:eR")
                                             providers.eachWithIndex { Org provider, int idx ->
                                                 log.debug("now processing org ${idx} with uuid ${provider.gokbId}, total entry: ${offset+idx}")
-                                                List identifiers = result.records.find { record -> record.uuid == provider.gokbId }.identifiers
-                                                if(identifiers) {
-                                                    if(provider.ids) {
-                                                        Identifier.executeUpdate('delete from Identifier i where i.org = :org',[org:provider]) //damn those wrestlers ...
-                                                    }
-                                                    identifiers.each { id ->
-                                                        if(!(id.namespace.toLowerCase() in ['originediturl','uri'])) {
-                                                            Identifier.construct([namespace: id.namespace, value: id.value, name_de: id.namespaceName, reference: provider, isUnique: false, nsType: Org.class.name])
+                                                switch(dataToLoad) {
+                                                    case "identifier":
+                                                        List identifiers = wekbRecords.get(provider.gokbId).identifiers
+                                                        if(identifiers) {
+                                                            if(provider.ids) {
+                                                                Identifier.executeUpdate('delete from Identifier i where i.org = :org',[org:provider]) //damn those wrestlers ...
+                                                            }
+                                                            identifiers.each { id ->
+                                                                if(!(id.namespace.toLowerCase() in ['originediturl','uri'])) {
+                                                                    Identifier.construct([namespace: id.namespace, value: id.value, name_de: id.namespaceName, reference: provider, isUnique: false, nsType: Org.class.name])
+                                                                }
+                                                            }
                                                         }
-                                                    }
+                                                        break
+                                                    case "abbreviatedName": provider.sortname = wekbRecords.get(provider.gokbId).abbreviatedName
+                                                        provider.save()
+                                                        break
                                                 }
                                             }
                                             break
-                                        case 'TitleInstancePackagePlatform': List<TitleInstancePackagePlatform> tipps = TitleInstancePackagePlatform.findAllByGokbIdInList(uuids.toList())
+                                        case 'TitleInstancePackagePlatform': List<TitleInstancePackagePlatform> tipps = TitleInstancePackagePlatform.findAllByGokbIdInList(wekbRecords.keySet().toList())
                                             log.debug("from this page, ${tipps.size()} TIPPs do exist in LAS:eR")
                                             tipps.eachWithIndex { TitleInstancePackagePlatform tipp, int idx ->
                                                 log.debug("now processing tipp ${idx} with uuid ${tipp.gokbId}, total entry: ${offset+idx}")
                                                 switch(dataToLoad) {
                                                     case "identifier":
-                                                        List identifiers = result.records.find { record -> record.uuid == tipp.gokbId }.identifiers
+                                                        List identifiers = wekbRecords.get(tipp.gokbId).identifiers
                                                         Set<String> oldIds = []
                                                         if(tipp.ids)
                                                             oldIds.addAll(tipp.ids.collect { Identifier id -> id.value })
@@ -419,7 +471,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                                         }
                                                         break
                                                     case "ddc":
-                                                        List ddcs = result.records.find { record -> record.uuid == tipp.gokbId }.ddcs
+                                                        List ddcs = wekbRecords.get(tipp.gokbId).ddcs
                                                         Set<String> oldDdcs = []
                                                         if(tipp.ddcs)
                                                             oldDdcs.addAll(tipp.ddcs.collect { DeweyDecimalClassification ddc -> ddc.ddc.value })
@@ -435,7 +487,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                                         }
                                                         break
                                                     case "language":
-                                                        List languages = result.records.find { record -> record.uuid == tipp.gokbId }.languages
+                                                        List languages = wekbRecords.get(tipp.gokbId).languages
                                                         Set<String> oldLanguages = []
                                                         if(tipp.languages)
                                                             oldLanguages.addAll(tipp.languages.collect { Language language -> language.language.value })
@@ -452,17 +504,22 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                                         }
                                                         break
                                                     case "editionStatement":
-                                                        tipp.editionStatement = result.records.find { record -> record.uuid == tipp.gokbId }.editionStatement
+                                                        tipp.editionStatement = wekbRecords.get(tipp.gokbId).editionStatement
                                                         tipp.save()
                                                         break
                                                     case "accessType":
-                                                        String newAccessType = result.records.find { record -> record.uuid == tipp.gokbId }.accessType
+                                                        String newAccessType = wekbRecords.get(tipp.gokbId).accessType
                                                         tipp.accessType = accessType.get(newAccessType)
                                                         tipp.save()
                                                         break
                                                     case "openAccess":
-                                                        String newOpenAccess = result.records.find { record -> record.uuid == tipp.gokbId }.openAccess
+                                                        String newOpenAccess = wekbRecords.get(tipp.gokbId).openAccess
                                                         tipp.openAccess = openAccess.get(newOpenAccess)
+                                                        tipp.save()
+                                                        break
+                                                    case "sortTitle":
+                                                        tipp.name = wekbRecords.get(tipp.gokbId).name
+                                                        tipp.sortname = escapeService.generateSortTitle(tipp.name)
                                                         tipp.save()
                                                         break
                                                 }
@@ -471,14 +528,14 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                             sess.flush()
                                             break
                                     }
-                                    if(result.hasMoreRecords) {
-                                        String scrollId = result.scrollId
+                                    more = result.currentPage < result.lastPage
+                                    if(more) {
+                                        //String scrollId = result.scrollId
                                         offset += max
-                                        log.debug("using scrollId ${scrollId}")
-                                        result = fetchRecordJSON(true, queryParams+[scrollId: scrollId])
-                                    }
-                                    else {
-                                        more = false
+                                        queryParams.offset = offset
+                                        //log.debug("using scrollId ${scrollId}")
+                                        //result = fetchRecordJSON(false, queryParams+[scrollId: scrollId])
+                                        result = fetchRecordJSON(false, queryParams)
                                     }
                                     sess.flush()
                                     sess.clear()
@@ -503,106 +560,95 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * @throws SyncException if an error occurs during the update process
      */
     void processScrollPage(Map<String, Object> result, String componentType, String changedSince, String pkgFilter = null, Set<String> permanentlyDeletedTitles = []) throws SyncException {
-        if(result.count >= 5000) {
-            int offset = 0, max = 5000
-            Map<String, Object> queryParams = [component_type: componentType, max: max]
+        if(result.count >= MAX_TIPP_COUNT_PER_PAGE) {
+            int offset = 0, max = MAX_TIPP_COUNT_PER_PAGE
+            Map<String, Object> queryParams = [componentType: componentType, offset: offset, max: max]
             if(changedSince) {
                 queryParams.changedSince = changedSince
                 //queryParams.changedBefore = "2022-09-27 00:00:00" //debug only
             }
             if(pkgFilter)
-                queryParams.pkg = pkgFilter
-            String scrollId
-            boolean more = true
-            while(more) {
-                //actually, scrollId alone should do the trick but tests revealed that other parameters are necessary, too, because of current workaround solution
-                log.debug("using scrollId ${scrollId}")
-                if(scrollId) {
-                    result = fetchRecordJSON(true, queryParams+[scrollId: scrollId])
-                }
-                else {
-                    result = fetchRecordJSON(true, queryParams)
-                }
-                if(result.error && result.error == 404) {
-                    more = false
-                }
-                else if(result.count > 0) {
-                    switch (source.rectype) {
-                        case RECTYPE_ORG:
-                            result.records.each { record ->
-                                record.platforms.each { Map platformData ->
-                                    try {
-                                        createOrUpdatePlatform(platformData.uuid)
-                                    }
-                                    catch (SyncException e) {
-                                        log.error("Error on updating platform ${platformData.uuid}: ",e)
-                                        SystemEvent.createEvent("GSSS_JSON_WARNING",[platformRecordKey:platformData.uuid])
-                                    }
-                                }
-                                createOrUpdateOrg(record)
-                            }
-                            break
-                        case RECTYPE_PACKAGE:
-                            result.records.eachWithIndex { record, int i ->
-                                try {
-                                    log.debug("now processing record #${i}, total #${i+offset}")
-                                    Package pkg = createOrUpdatePackage(record)
-                                    if(pkg.packageStatus == RDStore.PACKAGE_STATUS_REMOVED) {
-                                        log.info("${pkg.name} / ${pkg.gokbId} has been removed, mark titles in package as removed ...")
-                                        TitleInstancePackagePlatform.findAllByPkgAndStatusNotEqual(pkg, RDStore.TIPP_STATUS_REMOVED).each { TitleInstancePackagePlatform tipp ->
-                                            tipp.status = RDStore.TIPP_STATUS_REMOVED
-                                            TitleChange.construct([event: PendingChangeConfiguration.TITLE_REMOVED, tipp: tipp])
-                                            tipp.save()
+                queryParams.tippPackageUuid = pkgFilter
+            if(!result.containsKey('error')) {
+                while(result.currentPage < result.lastPage) {
+                    //actually, scrollId alone should do the trick but tests revealed that other parameters are necessary, too, because of current workaround solution
+                    //log.debug("using scrollId ${scrollId}")
+                    result = fetchRecordJSON(false, queryParams)
+                    log.debug("-------------- processing page ${result.currentPage} out of ${result.lastPage} ------------------")
+                    if(result.count > 0) {
+                        switch (source.rectype) {
+                            case RECTYPE_ORG:
+                                result.records.each { record ->
+                                    record.platforms.each { Map platformData ->
+                                        try {
+                                            createOrUpdatePlatform(platformData.uuid)
+                                        }
+                                        catch (SyncException e) {
+                                            log.error("Error on updating platform ${platformData.uuid}: ",e)
+                                            SystemEvent.createEvent("GSSS_JSON_WARNING",[platformRecordKey:platformData.uuid])
                                         }
                                     }
+                                    createOrUpdateOrg(record)
                                 }
-                                catch (SyncException e) {
-                                    log.error("Error on updating package ${record.uuid}: ",e)
-                                    SystemEvent.createEvent("GSSS_JSON_WARNING",[packageRecordKey: record.uuid])
+                                break
+                            case RECTYPE_PACKAGE:
+                                result.records.eachWithIndex { record, int i ->
+                                    try {
+                                        log.debug("now processing record #${i}, total #${i+offset}")
+                                        Package pkg = createOrUpdatePackage(record)
+                                        if(pkg.packageStatus == RDStore.PACKAGE_STATUS_REMOVED) {
+                                            log.info("${pkg.name} / ${pkg.gokbId} has been removed, mark titles in package as removed ...")
+                                            log.info("${IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.status = :removed, ie.lastUpdated = :now where ie.tipp in (select tipp from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg) and ie.status != :removed', [pkg: pkg, removed: RDStore.TIPP_STATUS_REMOVED, now: new Date()])} issue entitlements marked as removed")
+                                            log.info("${TitleInstancePackagePlatform.executeUpdate('update TitleInstancePackagePlatform tipp set tipp.status = :removed, tipp.lastUpdated = :now where tipp.pkg = :pkg and tipp.status != :removed', [pkg: pkg, removed: RDStore.TIPP_STATUS_REMOVED, now: new Date()])} package titles (tipps) marked as removed")
+                                            /*
+                                            TitleInstancePackagePlatform.findAllByPkgAndStatusNotEqual(pkg, RDStore.TIPP_STATUS_REMOVED).each { TitleInstancePackagePlatform tipp ->
+                                                tipp.status = RDStore.TIPP_STATUS_REMOVED
+                                                TitleChange.construct([event: PendingChangeConfiguration.TITLE_REMOVED, tipp: tipp])
+                                                tipp.save()
+                                            }
+                                            */
+                                        }
+                                    }
+                                    catch (SyncException e) {
+                                        log.error("Error on updating package ${record.uuid}: ",e)
+                                        SystemEvent.createEvent("GSSS_JSON_WARNING",[packageRecordKey: record.uuid])
+                                    }
                                 }
+                                break
+                            case RECTYPE_PLATFORM:
+                                result.records.each { record ->
+                                    try {
+                                        createOrUpdatePlatform(record)
+                                    }
+                                    catch (SyncException e) {
+                                        log.error("Error on updating platform ${record.uuid}: ",e)
+                                        SystemEvent.createEvent("GSSS_JSON_WARNING",[platformRecordKey:record.uuid])
+                                    }
+                                }
+                                break
+                            case RECTYPE_TIPP:
+                                if(offset == 0)
+                                    updateRecords(result.records, offset, permanentlyDeletedTitles)
+                                else updateRecords(result.records, offset)
+                                break
+                        }
+                        if(result.currentPage < result.lastPage) {
+                            //scrollId = result.scrollId
+                            //flush after one page ... seems that Grails 3 onwards fills memory, too!
+                            offset += max
+                            queryParams.offset = offset
+                            if(offset % MAX_TIPP_COUNT_PER_PAGE == 0 && offset > 0) {
+                                globalService.cleanUpGorm()
                             }
-                            break
-                        case RECTYPE_PLATFORM:
-                            result.records.each { record ->
-                                try {
-                                    createOrUpdatePlatform(record)
-                                }
-                                catch (SyncException e) {
-                                    log.error("Error on updating platform ${record.uuid}: ",e)
-                                    SystemEvent.createEvent("GSSS_JSON_WARNING",[platformRecordKey:record.uuid])
-                                }
-                            }
-                            break
-                        case RECTYPE_TIPP: if(offset == 0) updateRecords(result.records, offset, permanentlyDeletedTitles)
-                            else updateRecords(result.records, offset)
-                            break
-                    }
-                    if(result.hasMoreRecords) {
-                        scrollId = result.scrollId
-                        //flush after 50000 records ... seems that Grails 3 onwards fills memory, too!
-                        offset += max
-                        if(offset % 50000 == 0 && offset > 0) {
-                            globalService.cleanUpGorm()
                         }
                     }
                     else {
-                        more = false
-                    }
-                }
-                else {
-                    //workaround until GOKb-ES migration is done and hopefully works ...
-                    if(result.hasMoreRecords) {
-                        scrollId = result.scrollId
-                        log.info("page is empty, turning to next page ...")
-                    }
-                    else {
-                        more = false
                         log.info("no records updated - leaving everything as is ...")
                     }
                 }
             }
         }
-        else if(result.count > 0 && result.count < 5000) {
+        else if(result.count > 0 && result.count < MAX_TIPP_COUNT_PER_PAGE) {
             switch (source.rectype) {
                 case RECTYPE_ORG:
                     result.records.each { record ->
@@ -626,11 +672,16 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             //package may be null in case it has been marked as removed and did not exist in LAS:eR before
                             if(pkg?.packageStatus == RDStore.PACKAGE_STATUS_REMOVED) {
                                 log.info("${pkg.name} / ${pkg.gokbId} has been removed, record status is ${record.status}, mark titles in package as removed ...")
+                                log.info("${IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.status = :removed, ie.lastUpdated = :now where ie.tipp in (select tipp from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg) and ie.status != :removed', [pkg: pkg, removed: RDStore.TIPP_STATUS_REMOVED, now: new Date()])} issue entitlements marked as removed")
+                                log.info("${TitleInstancePackagePlatform.executeUpdate('update TitleInstancePackagePlatform tipp set tipp.status = :removed, tipp.lastUpdated = :now where tipp.pkg = :pkg and tipp.status != :removed', [pkg: pkg, removed: RDStore.TIPP_STATUS_REMOVED, now: new Date()])} package titles (tipps) marked as removed")
+                                /*
                                 TitleInstancePackagePlatform.findAllByPkgAndStatusNotEqual(pkg, RDStore.TIPP_STATUS_REMOVED).each { TitleInstancePackagePlatform tipp ->
                                     tipp.status = RDStore.TIPP_STATUS_REMOVED
-                                    TitleChange.construct([event: PendingChangeConfiguration.TITLE_REMOVED, tipp: tipp])
+                                    IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.status = :removed, ie.lastUpdated = :now where ie.tipp = :tipp and ie.status != :removed', [tipp: tipp, removed: RDStore.TIPP_STATUS_REMOVED, now: new Date()])
+                                    //TitleChange.construct([event: PendingChangeConfiguration.TITLE_REMOVED, tipp: tipp])
                                     tipp.save()
                                 }
+                                */
                             }
                             if(i % 500 == 0 && i > 0) {
                                 globalService.cleanUpGorm()
@@ -671,17 +722,16 @@ class GlobalSourceSyncService extends AbstractLockableService {
     void updateRecords(List<Map> rawRecords, int offset, Set<String> permanentlyDeletedTitles = []) {
         //necessary filter for DEV database
         List<Map> records = rawRecords.findAll { Map tipp -> tipp.containsKey("hostPlatformUuid") && tipp.containsKey("tippPackageUuid") }
-        SimpleDateFormat sdf = DateUtils.getSDF_yyyyMMddTHHmmssZ()
         Set<String> platformUUIDs = records.collect { Map tipp -> tipp.hostPlatformUuid } as Set<String>
-        log.debug("found platform UUIDs: ${platformUUIDs.toListString()}")
+        //log.debug("found platform UUIDs: ${platformUUIDs.toListString()}")
         Set<String> packageUUIDs = records.collect { Map tipp -> tipp.tippPackageUuid } as Set<String>
-        log.debug("found package UUIDs: ${packageUUIDs.toListString()}")
+        //log.debug("found package UUIDs: ${packageUUIDs.toListString()}")
         Set<String> tippUUIDs = records.collect { Map tipp -> tipp.uuid } as Set<String>
         Map<String,Package> packagesOnPage = [:]
         Map<String,Platform> platformsOnPage = [:]
 
         //packageUUIDs is null if package has no tipps
-        Set<String> existingPackageUUIDs = packageUUIDs ? Platform.executeQuery('select pkg.gokbId from Package pkg where pkg.gokbId in (:pkgUUIDs)',[pkgUUIDs:packageUUIDs]) : []
+        //Set<String> existingPackageUUIDs = packageUUIDs ? Platform.executeQuery('select pkg.gokbId from Package pkg where pkg.gokbId in (:pkgUUIDs)',[pkgUUIDs:packageUUIDs]) : []
         Map<String,TitleInstancePackagePlatform> tippsInLaser = [:]
         //collect existing TIPPs and purge deleted ones
         if(tippUUIDs) {
@@ -692,7 +742,10 @@ class GlobalSourceSyncService extends AbstractLockableService {
         //create or update platforms
         platformUUIDs.each { String platformUUID ->
             try {
-                platformsOnPage.put(platformUUID,createOrUpdatePlatform(platformUUID))
+                if(platformsAlreadyUpdated.add(platformUUID))
+                    platformsOnPage.put(platformUUID,createOrUpdatePlatform(platformUUID))
+                else
+                    platformsOnPage.put(platformUUID,Platform.findByGokbId(platformUUID))
             }
             catch (SyncException e) {
                 log.error("Error on updating platform ${platformUUID}: ",e)
@@ -702,9 +755,14 @@ class GlobalSourceSyncService extends AbstractLockableService {
         //create or update packages
         packageUUIDs.each { String packageUUID ->
             try {
-                Package pkg = createOrUpdatePackage(packageUUID)
-                if(pkg)
-                    packagesOnPage.put(packageUUID,pkg)
+                if(packagesAlreadyUpdated.add(packageUUID)) {
+                    Package pkg = createOrUpdatePackage(packageUUID)
+                    if (pkg)
+                        packagesOnPage.put(packageUUID, pkg)
+                }
+                else {
+                    packagesOnPage.put(packageUUID, Package.findByGokbId(packageUUID))
+                }
             }
             catch (SyncException e) {
                 log.error("Error on updating package ${packageUUID}: ",e)
@@ -712,6 +770,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             }
         }
 
+        Set<TitleInstancePackagePlatform> newTitles = []
         records.eachWithIndex { Map tipp, int idx ->
             log.debug("now processing entry #${idx}, total entry #${offset+idx} with uuid ${tipp.uuid}")
             try {
@@ -765,7 +824,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 }
                 tipp.prices.each { price ->
                     updatedTIPP.priceItems << [
-                            listPrice: escapeService.parseFinancialValue(price.amount),
+                            listPrice: price.amount instanceof String ? escapeService.parseFinancialValue(price.amount) : BigDecimal.valueOf(price.amount),
                             startDate: DateUtils.parseDateGeneric(price.startDate),
                             endDate: DateUtils.parseDateGeneric(price.endDate),
                             listCurrency: currency.get(price.currency)
@@ -789,43 +848,51 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 tipp.titleHistory.each { historyEvent ->
                     updatedTIPP.history << [date:DateUtils.parseDateGeneric(historyEvent.date),from:historyEvent.from,to:historyEvent.to]
                 }
-                if(updatedTIPP.packageUUID in existingPackageUUIDs) {
+                if(Package.findByGokbId(updatedTIPP.packageUUID)) {
+                    TitleInstancePackagePlatform newTitle = createOrUpdateTIPP(tippsInLaser.get(updatedTIPP.uuid),updatedTIPP,packagesOnPage,platformsOnPage)
+                    if(newTitle)
+                        newTitles << newTitle
+                    /*
                     Map<String,Object> diffs = createOrUpdateTIPP(tippsInLaser.get(updatedTIPP.uuid),updatedTIPP,packagesOnPage,platformsOnPage)
                     Set<Map<String,Object>> diffsOfPackage = packagesToNotify.get(updatedTIPP.packageUUID)
                     if(!diffsOfPackage) {
                         diffsOfPackage = []
                     }
                     diffsOfPackage << diffs
-                    /*
                     if(pkgPropDiffsContainer.get(updatedTIPP.packageUUID)) {
                         diffsOfPackage.addAll(pkgPropDiffsContainer.get(updatedTIPP.packageUUID))
                     }
-                     */
                     //test with set, otherwise make check
                     packagesToNotify.put(updatedTIPP.packageUUID,diffsOfPackage)
+                    */
                 }
-                else if(updatedTIPP.status == PERMANENTLY_DELETED) {
+                else if(updatedTIPP.status == Constants.PERMANENTLY_DELETED) {
                     TitleInstancePackagePlatform tippA = TitleInstancePackagePlatform.findByGokbIdAndStatusNotEqual(updatedTIPP.uuid, RDStore.TIPP_STATUS_REMOVED)
                     if(tippA) {
                         log.info("TIPP with UUID ${tippA.gokbId} has been permanently deleted")
                         tippA.status = RDStore.TIPP_STATUS_REMOVED
                         tippA.save()
+                        IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.status = :removed, ie.lastUpdated = :now where ie.tipp = :tipp and ie.status != :removed', [removed: RDStore.TIPP_STATUS_REMOVED, tipp: tippA, now: new Date()])
+                        /*
                         Set<Map<String,Object>> diffsOfPackage = packagesToNotify.get(tippA.pkg.gokbId)
                         if(!diffsOfPackage) {
                             diffsOfPackage = []
                         }
                         diffsOfPackage << [event: "remove", target: tippA]
                         packagesToNotify.put(tippA.pkg.gokbId,diffsOfPackage)
+                        */
                     }
                 }
-                else if(!(updatedTIPP.status in [RDStore.TIPP_STATUS_DELETED.value, RDStore.TIPP_STATUS_REMOVED.value, PERMANENTLY_DELETED])) {
+                else if(!(updatedTIPP.status in [RDStore.TIPP_STATUS_REMOVED.value, Constants.PERMANENTLY_DELETED])) {
                     Package pkg = packagesOnPage.get(updatedTIPP.packageUUID)
                     if(pkg)
-                        addNewTIPP(pkg, updatedTIPP, platformsOnPage)
+                        newTitles << addNewTIPP(pkg, updatedTIPP, platformsOnPage)
                 }
-                Date lastUpdatedTime = DateUtils.parseDateGeneric(tipp.lastUpdatedDisplay)
-                if(lastUpdatedTime.getTime() > maxTimestamp) {
-                    maxTimestamp = lastUpdatedTime.getTime()
+                if(source.rectype == RECTYPE_TIPP) {
+                    Date lastUpdatedTime = DateUtils.parseDateGeneric(tipp.lastUpdatedDisplay)
+                    if(lastUpdatedTime.getTime() > maxTimestamp) {
+                        maxTimestamp = lastUpdatedTime.getTime()
+                    }
                 }
             }
             catch (SyncException e) {
@@ -839,12 +906,23 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 log.info("TIPP with UUID ${tippA.gokbId} has been permanently deleted")
                 tippA.status = RDStore.TIPP_STATUS_REMOVED
                 tippA.save()
+                IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.status = :removed, ie.lastUpdated = :now where ie.tipp = :tipp and ie.status != :removed', [removed: RDStore.TIPP_STATUS_REMOVED, tipp: tippA, now: new Date()])
+                /*
                 Set<Map<String,Object>> diffsOfPackage = packagesToNotify.get(tippA.pkg.gokbId)
                 if(!diffsOfPackage) {
                     diffsOfPackage = []
                 }
                 diffsOfPackage << [event: "remove", target: tippA]
                 packagesToNotify.put(tippA.pkg.gokbId,diffsOfPackage)
+                */
+            }
+        }
+        Date now = new Date()
+        newTitles.each { TitleInstancePackagePlatform tipp ->
+            Set<Subscription> subsConcerned = Subscription.executeQuery('select s from Subscription s join s.packages sp where s.startDate is not null and s.startDate <= :now and s.endDate is not null and s.endDate >= :now and s.holdingSelection = :entire and sp.pkg = :pkg', [now: now, entire: RDStore.SUBSCRIPTION_HOLDING_ENTIRE, pkg: tipp.pkg])
+            //we may need to switch to native sql ...
+            subsConcerned.each { Subscription s ->
+                IssueEntitlement.construct([subscription: s, tipp: tipp])
             }
         }
     }
@@ -866,23 +944,24 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     switch(diff.event) {
                         case 'add': packageChanges << TitleChange.construct([event:PendingChangeConfiguration.NEW_TITLE,tipp:diff.target])
                             break
-                        /* void as of ERMS-4585, comment February 27th
+                        /* changed as of ERMS-4585, comment February 27th and ERMS-4986
                         case 'update':
                             diff.diffs.each { tippDiff ->
-                                packagePendingChanges << PendingChange.construct([msgToken:PendingChangeConfiguration.TITLE_UPDATED,target:diff.target,status:RDStore.PENDING_CHANGE_HISTORY,prop:tippDiff.prop,newValue:tippDiff.newValue,oldValue:tippDiff.oldValue])
-                            }
-                            break*/
-                        case 'delete': packageChanges << TitleChange.construct([event:PendingChangeConfiguration.TITLE_DELETED,tipp:diff.target,oldValue:diff.oldValue])
-                            break
-                        case 'remove': TitleChange.construct([event:PendingChangeConfiguration.TITLE_REMOVED,tipp:diff.target,oldValue:diff.oldValue]) //dealt elsewhere!
-                            break
-                        /* never worked, no one seemed to miss that
-                        case 'pkgPropDiffs':
-                            diff.diffs.each { pkgPropDiff ->
-                                packagePendingChanges << PendingChange.construct([mskTogen: PendingChangeConfiguration.PACKAGE_PROP, target: diff.target, prop: pkgPropDiff.prop, newValue: pkgPropDiff.newValue, oldValue: pkgPropDiff.oldValue, status: RDStore.PENDING_CHANGE_HISTORY])
+                                TitleChange.construct([event:PendingChangeConfiguration.TITLE_UPDATED,target:diff.target,prop:tippDiff.prop,newValue:tippDiff.newValue,oldValue:tippDiff.oldValue])
                             }
                             break
                             */
+                        case 'statusChange': TitleChange.construct([event: PendingChangeConfiguration.TITLE_STATUS_CHANGED,tipp:diff.target,oldValue:diff.oldValue,newValue:diff.newValue]) //notification only, to be applied directly
+                            break
+                        case 'delete': TitleChange.construct([event:PendingChangeConfiguration.TITLE_DELETED,tipp:diff.target,oldValue:diff.oldValue]) //dealt elsewhere!
+                            break
+                        case 'remove': TitleChange.construct([event:PendingChangeConfiguration.TITLE_REMOVED,tipp:diff.target,oldValue:diff.oldValue]) //dealt elsewhere!
+                            break
+                        case 'pkgPropDiffs':
+                            diff.diffs.each { pkgPropDiff ->
+                                packageChanges << PendingChange.construct([msgToken: PendingChangeConfiguration.PACKAGE_PROP, target: diff.target, prop: pkgPropDiff.prop, newValue: pkgPropDiff.newValue, oldValue: pkgPropDiff.oldValue, status: RDStore.PENDING_CHANGE_HISTORY])
+                            }
+                            break
                     }
                     //PendingChange.construct([msgToken,target,status,prop,newValue,oldValue])
                 }
@@ -922,7 +1001,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         get each change for each subscribed package and token, fetch issue entitlement equivalent and process the change
                         if a change is being accepted, create an issue entitlement change record pointing to that change
                          */
-                        //continue here: adapt pending change logic
                         pendingChangeService.applyPendingChange(newChange,subPkg,contextOrg)
                     //}
                 }
@@ -938,25 +1016,26 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * @param newPlatforms the {@link Platform}s of the scroll page
      * @return a {@link Map} containing the recorded differences which are recorded as {@link PendingChange}s
      */
-    Map<String,Object> createOrUpdateTIPP(TitleInstancePackagePlatform tippA,Map tippB, Map<String,Package> newPackages,Map<String,Platform> newPlatforms) {
-        Map<String,Object> result = [:]
+    TitleInstancePackagePlatform createOrUpdateTIPP(TitleInstancePackagePlatform tippA,Map tippB, Map<String,Package> newPackages,Map<String,Platform> newPlatforms) {
+        //Map<String,Object> result = [:]
         //TitleInstancePackagePlatform.withSession { Session sess ->
             if(tippA) {
                 //update or delete TIPP
-                result.putAll(processTippDiffs(tippA,tippB))
+                //result.putAll(processTippDiffs(tippA,tippB))
+                processTippDiffs(tippA,tippB)
             }
             else {
                 Package pkg = newPackages.get(tippB.packageUUID)
                 //Unbelievable! But package may miss at this point!
-                if(pkg && pkg?.packageStatus != RDStore.PACKAGE_STATUS_REMOVED && !(tippB.status in [PERMANENTLY_DELETED, RDStore.TIPP_STATUS_DELETED.value, RDStore.TIPP_STATUS_REMOVED.value])) {
+                if(pkg && pkg?.packageStatus != RDStore.PACKAGE_STATUS_REMOVED && !(tippB.status in [Constants.PERMANENTLY_DELETED, RDStore.TIPP_STATUS_REMOVED.value])) {
                     //new TIPP
-                    TitleInstancePackagePlatform target = addNewTIPP(pkg, tippB, newPlatforms)
-                    result.event = 'add'
-                    result.target = target
+                    addNewTIPP(pkg, tippB, newPlatforms)
+                    //result.event = 'add'
+                    //result.target = target
                 }
             }
         //}
-        result
+        //result
     }
 
     /**
@@ -1001,7 +1080,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
         if(packageRecord) {
             Date lastUpdatedDisplay = DateUtils.parseDateGeneric(packageRecord.lastUpdatedDisplay)
-            if(!result || result?.lastUpdated < lastUpdatedDisplay) {
+            //if(!result || result?.lastUpdated < lastUpdatedDisplay) {
                 log.info("package record loaded, reconciling package record for UUID ${packageRecord.uuid}")
                 RefdataValue packageRecordStatus = packageRecord.status ? packageStatus.get(packageRecord.status) : null
                 RefdataValue contentType = packageRecord.contentType ? RefdataValue.getByValueAndCategory(packageRecord.contentType,RDConstants.PACKAGE_CONTENT_TYPE) : null
@@ -1036,21 +1115,30 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             newPackageProps.contentProvider = Org.findByGokbId(packageRecord.providerUuid)
                         }
                         /*
-                        not used
                         Set<Map<String,Object>> pkgPropDiffs = getPkgPropDiff(result, newPackageProps)
                         if(pkgPropDiffs) {
-                            pkgPropDiffsContainer.put(packageInput, [event: "pkgPropUpdate", diffs: pkgPropDiffs, target: result])
-                        }
+                            //pkgPropDiffsContainer.put(packageInput, [event: "pkgPropUpdate", diffs: pkgPropDiffs, target: result])
+                            Set<Map<String,Object>> diffsOfPackage = packagesToNotify.get(packageRecord.uuid)
+                            if(!diffsOfPackage) {
+                                diffsOfPackage = []
+                            }
+                            diffsOfPackage.addAll(pkgPropDiffs)
 
-                        if(!initialPackagesCounter.get(packageUUID))
-                            initialPackagesCounter.put(packageUUID,TitleInstancePackagePlatform.executeQuery('select count(tipp.id) from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg',[pkg:result])[0] as Integer)
-                         */
+                            if(pkgPropDiffsContainer.get(updatedTIPP.packageUUID)) {
+                                diffsOfPackage.addAll(pkgPropDiffsContainer.get(updatedTIPP.packageUUID))
+                            }
+
+                            //test with set, otherwise make check
+                            packagesToNotify.put(packageRecord.uuid,diffsOfPackage)
+                        }
+                        */
                     }
                     result.name = packageRecord.name
-                    result.packageStatus?.id = packageRecordStatus?.id
-                    result.contentType?.id = contentType?.id
-                    result.scope?.id = scope?.id
-                    result.file?.id = file?.id
+                    result.sortname = escapeService.generateSortTitle(packageRecord.name)
+                    result.packageStatus = packageRecordStatus
+                    result.contentType = contentType
+                    result.scope = scope
+                    result.file = file
                     if(result.save()) {
                         if(packageRecord.nominalPlatformUuid) {
                             Platform nominalPlatform = Platform.findByGokbId(packageRecord.nominalPlatformUuid)
@@ -1114,6 +1202,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         throw new SyncException(result.errors)
                     }
                 }
+            //}
+            if(source.rectype == RECTYPE_PACKAGE) {
+                Date lastUpdatedTime = DateUtils.parseDateGeneric(packageRecord.lastUpdatedDisplay)
+                if(lastUpdatedTime.getTime() > maxTimestamp) {
+                    maxTimestamp = lastUpdatedTime.getTime()
+                }
             }
             result
         }
@@ -1148,7 +1242,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
         //second attempt failed - create new org if record is not deleted
         if(!provider) {
-            if(!(providerRecord.status in [PERMANENTLY_DELETED, 'Removed']))
+            if(!(providerRecord.status in [Constants.PERMANENTLY_DELETED, 'Removed']))
                 provider = new Org(
                         name: providerRecord.name,
                         gokbId: providerRecord.uuid
@@ -1156,6 +1250,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
         //avoid creating new deleted entries
         if(provider) {
+            provider.sortname = providerRecord.abbreviatedName
             provider.url = providerRecord.homepage
             if((provider.status == RDStore.ORG_STATUS_CURRENT || !provider.status) && providerRecord.status == RDStore.ORG_STATUS_RETIRED.value) {
                 //value is not implemented in we:kb yet
@@ -1231,9 +1326,11 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         }
                     }
                 }
-                Date lastUpdatedTime = DateUtils.parseDateGeneric(providerRecord.lastUpdatedDisplay)
-                if(lastUpdatedTime.getTime() > maxTimestamp) {
-                    maxTimestamp = lastUpdatedTime.getTime()
+                if(source.rectype == RECTYPE_ORG) {
+                    Date lastUpdatedTime = DateUtils.parseDateGeneric(providerRecord.lastUpdatedDisplay)
+                    if(lastUpdatedTime.getTime() > maxTimestamp) {
+                        maxTimestamp = lastUpdatedTime.getTime()
+                    }
                 }
                 provider
             }
@@ -1362,12 +1459,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
             if(platform) {
                 platform.name = platformRecord.name
             }
-            else if(!(platformRecord.status in [PERMANENTLY_DELETED, 'Removed'])){
+            else if(!(platformRecord.status in [Constants.PERMANENTLY_DELETED, 'Removed'])){
                 platform = new Platform(name: platformRecord.name, gokbId: platformRecord.uuid)
             }
             //trigger if both records exist or if we:kb record is deleted but LAS:eR is not
             if(platform) {
-                platform.status = platformRecord.status == PERMANENTLY_DELETED ? RDStore.PLATFORM_STATUS_REMOVED : RefdataValue.getByValueAndCategory(platformRecord.status, RDConstants.PLATFORM_STATUS)
+                platform.status = platformRecord.status == Constants.PERMANENTLY_DELETED ? RDStore.PLATFORM_STATUS_REMOVED : RefdataValue.getByValueAndCategory(platformRecord.status, RDConstants.PLATFORM_STATUS)
                 platform.normname = platformRecord.name.toLowerCase()
                 if(platformRecord.primaryUrl)
                     platform.primaryUrl = new URL(platformRecord.primaryUrl)
@@ -1391,9 +1488,11 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     if(packagesOfPlatform && packagesOfPlatform.count > 0) {
                         Package.executeUpdate('update Package pkg set pkg.nominalPlatform = :plat where pkg.gokbId in (:uuids)', [uuids: packagesOfPlatform.records.uuid, plat: platform])
                     }
-                    Date lastUpdatedTime = DateUtils.parseDateGeneric(platformRecord.lastUpdatedDisplay)
-                    if(lastUpdatedTime.getTime() > maxTimestamp) {
-                        maxTimestamp = lastUpdatedTime.getTime()
+                    if(source.rectype == RECTYPE_PLATFORM) {
+                        Date lastUpdatedTime = DateUtils.parseDateGeneric(platformRecord.lastUpdatedDisplay)
+                        if(lastUpdatedTime.getTime() > maxTimestamp) {
+                            maxTimestamp = lastUpdatedTime.getTime()
+                        }
                     }
                     platform
                 }
@@ -1423,13 +1522,11 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * @param pkgA the old package (as {@link Package} which is already persisted)
      * @param pkgB the new package (as unprocessed {@link Map}
      * @return a {@link Set} of {@link Map}s with the differences
-     * @deprecated observe if needed, no one seems to have missed the result ...
      */
-    @Deprecated
     Set<Map<String,Object>> getPkgPropDiff(Package pkgA, Map<String,Object> pkgB) {
         log.info("processing package prop diffs; the respective GOKb UUIDs are: ${pkgA.gokbId} (LAS:eR) vs. ${pkgB.uuid} (remote)")
         Set<Map<String,Object>> result = []
-        Set<String> controlledProperties = ['name','packageStatus']
+        Set<String> controlledProperties = ['name','breakable','file','scope','packageStatus']
 
         controlledProperties.each { String prop ->
             if(pkgA[prop] != pkgB[prop]) {
@@ -1439,12 +1536,16 @@ class GlobalSourceSyncService extends AbstractLockableService {
             }
         }
 
-        if(pkgA.nominalPlatform != pkgB.nominalPlatform) {
-            result.add([prop: 'nominalPlatform', newValue: pkgB.nominalPlatform?.name, oldValue: pkgA.nominalPlatform?.name])
+        if(pkgA.nominalPlatform) {
+            if (pkgA.nominalPlatform.name != pkgB.nominalPlatform.name) {
+                result.add([prop: 'nominalPlatform', newValue: pkgB.nominalPlatform?.name, oldValue: pkgA.nominalPlatform.name])
+            }
         }
 
-        if(pkgA.contentProvider != pkgB.contentProvider) {
-            result.add([prop: 'nominalProvider', newValue: pkgB.contentProvider?.name, oldValue: pkgA.contentProvider?.name])
+        if(pkgA.contentProvider) {
+            if (pkgA.contentProvider.name != pkgB.contentProvider.name) {
+                result.add([prop: 'nominalProvider', newValue: pkgB.contentProvider?.name, oldValue: pkgA.contentProvider?.name])
+            }
         }
 
         //the tipp diff count cannot be executed at this place because it depends on TIPP processing result
@@ -1467,28 +1568,31 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * ]
      * reflecting those differences in each title record which are not applied automatically on the derived issue entitlements
      */
-    Map<String,Object> processTippDiffs(TitleInstancePackagePlatform tippA, Map tippB) {
+    void processTippDiffs(TitleInstancePackagePlatform tippA, Map tippB) {
         //ex updatedTippClosure / tippUnchangedClosure
+        /*
         RefdataValue status = tippStatus.get(tippB.status)
         if(status == RDStore.TIPP_STATUS_REMOVED && tippA.status != status) {
             //the difference to event: delete is that the title is an error and should have never been appeared in LAS:eR!
             log.info("TIPP with UUID ${tippA.gokbId} has been marked as erroneous and removed")
             tippA.status = RDStore.TIPP_STATUS_REMOVED
             tippA.save()
-            [event: "remove", target: tippA]
+            //[event: "remove", target: tippA]
         }
         else if ((status == RDStore.TIPP_STATUS_DELETED || tippA.pkg.packageStatus == RDStore.PACKAGE_STATUS_DELETED || tippA.platform.status == RDStore.PLATFORM_STATUS_DELETED) && tippA.status != status) {
             log.info("TIPP with UUID ${tippA.gokbId} has been deleted from package ${tippA.pkg.gokbId} or package/platform itself are marked as deleted")
             RefdataValue oldStatus = tippA.status
             tippA.status = RDStore.TIPP_STATUS_DELETED
             tippA.save()
-            [event: "delete", oldValue: oldStatus, target: tippA]
+            //[event: "delete", oldValue: oldStatus, target: tippA]
         }
+        */
         //tippA may be deleted; it occurred that deleted titles have been reactivated - whilst deactivation (tippB deleted/removed) needs a different handler!
-        else if(tippA.status != RDStore.TIPP_STATUS_REMOVED && !(status in [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED])) {
+        //else if(tippA.status != RDStore.TIPP_STATUS_REMOVED && !(status in [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED])) {
             //process central differences which are without effect to issue entitlements
             tippA.titleType = tippB.titleType
             tippA.name = tippB.name
+            tippA.sortname = escapeService.generateSortTitle(tippB.name)
             if(tippA.altnames) {
                 List<String> oldAltNames = tippA.altnames.collect { AlternativeName altname -> altname.name }
                 tippB.altnames.each { String newAltName ->
@@ -1498,6 +1602,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     }
                 }
             }
+            RefdataValue oldStatus = tippA.status, newStatus = tippStatus.get(tippB.status)
+            //boolean statusChanged = oldStatus != newStatus
             tippA.status = tippStatus.get(tippB.status)
             tippA.accessType = accessType.get(tippB.accessType)
             tippA.openAccess = openAccess.get(tippB.openAccess)
@@ -1516,7 +1622,24 @@ class GlobalSourceSyncService extends AbstractLockableService {
             tippA.accessEndDate = tippB.accessEndDate
             tippA.volume = tippB.volume
             if(!tippA.save())
-                throw new SyncException("Error on updating base title data: ${tippA.errors}")
+                throw new SyncException("Error on updating base title data: ${tippA.getErrors().getAllErrors().toListString()}")
+            //these queries have to be observed very closely. They may first cause an extreme bottleneck (the underlying query may have many Sequence Scans), then they direct the issue holdings
+            if(oldStatus != newStatus) {
+                int updateCount = IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.status = :newStatus where ie.tipp = :tipp and ie.status != :newStatus', [tipp: tippA, newStatus: newStatus])
+                log.debug("status updated for ${tippA.gokbId}: ${oldStatus} to ${newStatus}, concerned are ${updateCount} entitlements")
+                if(newStatus == RDStore.TIPP_STATUS_CURRENT) {
+                    IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.subscription s where ie.tipp = :title and ie.status in (:considered) and s.hasPerpetualAccess = true', [title: tippA, considered: [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_EXPECTED]]).each { IssueEntitlement ie ->
+                        ie.perpetualAccessBySub = ie.subscription
+                        Org owner = ie.subscription.getSubscriber()
+                        PermanentTitle perm = PermanentTitle.findByOwnerAndTipp(owner, ie.tipp)
+                        if(!perm) {
+                            perm = new PermanentTitle(owner: owner, tipp: ie.tipp, subscription: ie.subscription, issueEntitlement: ie)
+                            perm.save()
+                        }
+                        ie.save()
+                    }
+                }
+            }
             if(tippB.titlePublishers) {
                 if(tippA.publishers) {
                     OrgRole.executeUpdate('delete from OrgRole oo where oo.tipp = :tippA',[tippA:tippA])
@@ -1613,6 +1736,13 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     }
                 }
             }
+            /*
+            if(statusChanged) {
+                //bootleneck?
+                IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.status = :newStatus where ie.tipp = :tipp and ie.status != :removed', [newStatus: tippStatus.get(tippB.status), tipp: tippA, removed: RDStore.TIPP_STATUS_REMOVED])
+                [event: 'statusChange', target: tippA, oldValue: oldStatus, newValue: newStatus]
+            }
+            */
             //get to diffs that need to be notified
             //println("tippA:"+tippA)
             //println("tippB:"+tippB)
@@ -1648,8 +1778,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
             }
             else [:]
             */
-        }
-        [:]
+        //}
+        //[:]
     }
 
     /**
@@ -2095,8 +2225,10 @@ class GlobalSourceSyncService extends AbstractLockableService {
         BasicHttpClient http
         String uri = source.uri.endsWith('/') ? source.uri : source.uri+'/'
         HttpClientConfiguration config = new DefaultHttpClientConfiguration()
-        config.readTimeout = Duration.ofMinutes(1)
+        config.readTimeout = Duration.ofMinutes(5)
         config.maxContentLength = MAX_CONTENT_LENGTH
+        queryParams.username = ConfigMapper.getWekbApiUsername()
+        queryParams.password = ConfigMapper.getWekbApiPassword()
         if(useScroll) {
             http = new BasicHttpClient(uri + 'scroll', config)
             String debugString = uri+'scroll?'
@@ -2105,26 +2237,30 @@ class GlobalSourceSyncService extends AbstractLockableService {
             }
             log.debug(debugString)
         }
-        else http = new BasicHttpClient(uri+'find', config)
+        else http = new BasicHttpClient(uri+'searchApi', config)
         Map<String,Object> result = [:]
         //setting default status
+        /*
         if(!queryParams.status) {
-            queryParams.status = ["Current","Expected","Retired","Deleted",PERMANENTLY_DELETED,"Removed"]
+            queryParams.status = ["Current","Expected","Retired","Deleted",Constants.PERMANENTLY_DELETED,"Removed"]
             //queryParams.status = ["Removed"] //debug only
         }
+        */
         //log.debug(queryParams.toMapString())
         Closure success = { HttpResponse resp, json ->
-            result.count = json.size ?: json.count
-            result.records = json.records
-            result.scrollId = json.scrollId
-            result.hasMoreRecords = Boolean.valueOf(json.hasMoreRecords)
+            result.count = json.result_count_total
+            result.records = json.result
+            result.currentPage = json.page_current
+            result.lastPage = json.page_total
+            //result.scrollId = json.scrollId
+            //result.hasMoreRecords = Boolean.valueOf(json.hasMoreRecords)
         }
         Closure failure = { HttpResponse resp, reader ->
-            if(resp.code() == 404) {
+            if(resp?.code() == 404) {
                 result.error = resp.code()
             }
             else
-                throw new SyncException("error on request: ${resp.status()} : ${reader}")
+                throw new SyncException("error on request: ${resp?.status()} : ${reader}")
         }
         http.post(BasicHttpClient.ResponseType.JSON, BasicHttpClient.PostType.URLENC, queryParams, success, failure)
         http.close()
@@ -2132,15 +2268,21 @@ class GlobalSourceSyncService extends AbstractLockableService {
         result
     }
 
-    Set<String> getPermanentlyDeletedTitles() {
+    Set<String> getPermanentlyDeletedTitles(String changedFrom = null) {
         Set<String> result = []
-        Map<String, Object> recordBatch = fetchRecordJSON(true, [component_type: 'TitleInstancePackagePlatform', status: PERMANENTLY_DELETED])
+        Map<String, Object> queryParams = [componentType: 'deletedkbcomponent', status: Constants.PERMANENTLY_DELETED, max: MAX_TIPP_COUNT_PER_PAGE]
+        if(changedFrom)
+            queryParams.changedSince = changedFrom
+        Map<String, Object> recordBatch = fetchRecordJSON(false, queryParams)
         boolean more = true
+        int offset = 0
         while(more) {
-            result.addAll(recordBatch.records.collect { record -> record.uuid })
-            more = recordBatch.hasMoreRecords
-            if(more)
-                recordBatch = fetchRecordJSON(true, [component_type: 'TitleInstancePackagePlatform', scrollId: recordBatch.scrollId])
+            result.addAll(recordBatch.records.findAll { record -> record.componentType == 'TitleInstancePackagePlatform' }.collect { record -> record.uuid })
+            more = recordBatch.currentPage < recordBatch.lastPage
+            if(more) {
+                offset += MAX_TIPP_COUNT_PER_PAGE
+                recordBatch = fetchRecordJSON(false, queryParams + [offset: offset])
+            }
         }
         result
     }
@@ -2152,11 +2294,10 @@ class GlobalSourceSyncService extends AbstractLockableService {
         //define map fields
         tippStatus.put(RDStore.TIPP_STATUS_CURRENT.value,RDStore.TIPP_STATUS_CURRENT)
         tippStatus.put(RDStore.TIPP_STATUS_DELETED.value,RDStore.TIPP_STATUS_DELETED)
-        tippStatus.put(PERMANENTLY_DELETED,RDStore.TIPP_STATUS_REMOVED)
+        tippStatus.put(Constants.PERMANENTLY_DELETED,RDStore.TIPP_STATUS_REMOVED)
         tippStatus.put(RDStore.TIPP_STATUS_RETIRED.value,RDStore.TIPP_STATUS_RETIRED)
         tippStatus.put(RDStore.TIPP_STATUS_EXPECTED.value,RDStore.TIPP_STATUS_EXPECTED)
         tippStatus.put(RDStore.TIPP_STATUS_REMOVED.value,RDStore.TIPP_STATUS_REMOVED)
-        tippStatus.put(RDStore.TIPP_STATUS_UNKNOWN.value,RDStore.TIPP_STATUS_UNKNOWN)
         contactTypes.put(RDStore.PRS_FUNC_TECHNICAL_SUPPORT.value,RDStore.PRS_FUNC_TECHNICAL_SUPPORT)
         contactTypes.put(RDStore.PRS_FUNC_SERVICE_SUPPORT.value,RDStore.PRS_FUNC_SERVICE_SUPPORT)
         contactTypes.put(RDStore.PRS_FUNC_METADATA.value,RDStore.PRS_FUNC_METADATA)
@@ -2171,10 +2312,10 @@ class GlobalSourceSyncService extends AbstractLockableService {
         RefdataValue.findAllByIdNotInListAndOwner(packageStatus.values().collect { RefdataValue rdv -> rdv.id }, RefdataCategory.findByDesc(RDConstants.PACKAGE_STATUS)).each { RefdataValue rdv ->
             packageStatus.put(rdv.value, rdv)
         }
-        packageStatus.put(PERMANENTLY_DELETED, RDStore.PACKAGE_STATUS_REMOVED)
+        packageStatus.put(Constants.PERMANENTLY_DELETED, RDStore.PACKAGE_STATUS_REMOVED)
         orgStatus.put(RDStore.ORG_STATUS_CURRENT.value,RDStore.ORG_STATUS_CURRENT)
         orgStatus.put(RDStore.ORG_STATUS_DELETED.value,RDStore.ORG_STATUS_DELETED)
-        orgStatus.put(PERMANENTLY_DELETED,RDStore.ORG_STATUS_REMOVED)
+        orgStatus.put(Constants.PERMANENTLY_DELETED,RDStore.ORG_STATUS_REMOVED)
         orgStatus.put(RDStore.ORG_STATUS_REMOVED.value,RDStore.ORG_STATUS_REMOVED)
         orgStatus.put(RDStore.ORG_STATUS_RETIRED.value,RDStore.ORG_STATUS_RETIRED)
         RefdataCategory.getAllRefdataValues(RDConstants.CURRENCY).each { RefdataValue rdv ->
@@ -2194,7 +2335,9 @@ class GlobalSourceSyncService extends AbstractLockableService {
             accessType.put(rdv.value, rdv)
         }
         buildWekbLaserRefdataMap(RDConstants.LICENSE_OA_TYPE)
-        packagesToNotify = [:]
+        //packagesToNotify = [:]
+        packagesAlreadyUpdated = []
+        platformsAlreadyUpdated = []
     }
 
     /**

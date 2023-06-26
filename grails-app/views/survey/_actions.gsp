@@ -10,9 +10,9 @@
         </g:if>
         <g:else>
 
+            <ui:actionsDropdownItem message="template.addNote" data-ui="modal" href="#modalCreateNote" />
             <ui:actionsDropdownItem message="task.create.new" data-ui="modal" href="#modalCreateTask" />
             <ui:actionsDropdownItem message="template.documents.add" data-ui="modal" href="#modalCreateDocument" />
-            <ui:actionsDropdownItem message="template.addNote" data-ui="modal" href="#modalCreateNote" />
             <div class="divider"></div>
 
             <g:if test="${surveyInfo.type.id != RDStore.SURVEY_TYPE_RENEWAL.id}">
@@ -63,14 +63,16 @@
                 <ui:actionsDropdownItem controller="survey" action="openParticipantsAgain" params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
                                            message="openParticipantsAgain.button"/>
 
+                <ui:actionsDropdownItem controller="survey" action="participantsReminder" params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
+                                        message="participantsReminder.button"/>
+
                 <div class="ui divider"></div>
             </g:if>
 
             <g:if test="${surveyInfo && surveyInfo.status.id in [RDStore.SURVEY_IN_EVALUATION.id, RDStore.SURVEY_SURVEY_COMPLETED.id,RDStore.SURVEY_COMPLETED.id]}">
 
-                <ui:actionsDropdownItem data-ui="modal"
-                                           href="#openSurveyAgain"
-                                           message="openSurveyAgain.button"/>
+                <ui:actionsDropdownItem controller="survey" action="participantsReminder" params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
+                                        message="participantsReminder.button"/>
                 <div class="ui divider"></div>
 
             </g:if>
@@ -162,8 +164,8 @@
     </ui:modal>
 </g:if>
 
-<g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_PRO, 'INST_EDITOR') && (actionName != 'currentSurveysConsortia' && actionName != 'workflowsSurveysConsortia')}">
-    <laser:render template="/templates/documents/modal" model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
-    <laser:render template="/templates/tasks/modal_create" model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
+<g:if test="${contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO) && (actionName != 'currentSurveysConsortia' && actionName != 'workflowsSurveysConsortia')}">
     <laser:render template="/templates/notes/modal_create" model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
+    <laser:render template="/templates/tasks/modal_create" model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
+    <laser:render template="/templates/documents/modal" model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
 </g:if>

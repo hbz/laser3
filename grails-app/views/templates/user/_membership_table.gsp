@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Org; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.auth.UserOrgRole;" %>
+<%@ page import="de.laser.storage.RDStore; de.laser.Org; grails.plugin.springsecurity.SpringSecurityUtils;" %>
 <laser:serviceInjection />
 
 <div class="ui card">
@@ -17,36 +17,36 @@
         </thead>
         <tbody>
         <%
-            int affiCount = 0
-            List comboOrgIds = Org.executeQuery('select c.fromOrg.id from Combo c where c.toOrg = :org', [org: contextService.getOrg()])
+            List comboOrgIds = Org.executeQuery('select c.fromOrg.id from Combo c where c.toOrg = :org and c.type = :type', [org: contextService.getOrg(), type: RDStore.COMBO_TYPE_CONSORTIUM])
         %>
-        <g:each in="${userInstance.affiliations}" var="aff">
-            <g:if test="${controllerName == 'profile' || (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || (aff.org.id == contextService.getOrg().id) || (aff.org.id in comboOrgIds))}">
-                <% affiCount++ %>
+
+        <g:if test="${userInstance.formalOrg}">
+            <g:if test="${controllerName == 'profile' || (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || (userInstance.isFormal(contextService.getOrg())) || (userInstance.formalOrg.id in comboOrgIds))}">
                 <tr>
                     <td>
-                        <g:link controller="organisation" action="show" id="${aff.org.id}">${aff.org.name}</g:link>
+                        <g:link controller="organisation" action="show" id="${userInstance.formalOrg.id}">${userInstance.formalOrg.name}</g:link>
                     </td>
                     <td>
                         <%
-                            boolean check = ! instAdmService.isUserLastInstAdminForOrg(userInstance, aff.org) && (
+                            boolean check = ! userInstance.isLastInstAdminOf(userInstance.formalOrg) && (
                                     SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || (
-                                        ( aff.org.id == contextService.getOrg().id || aff.org.id in comboOrgIds ) &&
-                                                contextService.getUser().isComboInstAdminOf(aff.org)
+                                        ( userInstance.isFormal(contextService.getOrg()) || userInstance.formalOrg.id in comboOrgIds ) &&
+                                                contextService.getUser().isComboInstAdminOf(userInstance.formalOrg)
                                     )
                             )
                         %>
                         <g:if test="${check}">
-                            <ui:xEditableRole owner="${aff}" field="formalRole" type="user" />
+                            <ui:xEditableRole owner="${userInstance}" field="formalRole" type="user" />
                         </g:if>
                         <g:else>
-                            <g:message code="cv.roles.${aff.formalRole?.authority}"/>
+                            <g:message code="cv.roles.${userInstance.formalRole?.authority}"/>
                         </g:else>
                     </td>
                     <g:if test="${(SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'))}">
                         <td class="x">
-                            <g:if test="${! instAdmService.isUserLastInstAdminForOrg(userInstance, aff.org)}">
-                                    <g:link controller="ajax" action="deleteThrough" params='${[contextOid:"${userInstance.class.name}:${userInstance.id}",contextProperty:"affiliations",targetOid:"${aff.class.name}:${aff.id}"]}'
+                            <g:if test="${! userInstance.isLastInstAdminOf(userInstance.formalOrg)}">
+                                    <g:link controller="ajax" action="unsetAffiliation"
+                                            params='${[key:"${userInstance.id}:${userInstance.formalOrg.id}:${userInstance.formalRole.id}"]}'
                                             class="ui icon negative button la-modern-button js-open-confirm-modal"
                                             data-confirm-tokenMsg="${message(code:'confirm.dialog.unlink.user.affiliation')}"
                                             data-confirm-term-how="unlink"
@@ -55,24 +55,18 @@
                                     </g:link>
                             </g:if>
                             <g:else>
-                                    <span  class="la-popup-tooltip la-delay" data-content="${message(code:'user.affiliation.lastAdminForOrg2', args: [userInstance.getDisplayName()])}">
-                                        <button class="ui icon negative button la-modern-button" disabled="disabled">
-                                            <i class="unlink icon"></i>
-                                        </button>
-                                    </span>
+                                <span class="la-popup-tooltip la-delay" data-content="${message(code:'user.affiliation.lastAdminForOrg2', args: [userInstance.getDisplayName()])}">
+                                    <button class="ui icon negative button la-modern-button" disabled="disabled">
+                                        <i class="unlink icon"></i>
+                                    </button>
+                                </span>
                             </g:else>
                         </td>
                     </g:if>
                 </tr>
             </g:if>
-        </g:each>
-        <g:if test="${affiCount != userInstance.affiliations?.size()}">
-            <tr>
-                <td colspan="5">
-                    und ${userInstance.affiliations.size() - affiCount} weitere ..
-                </td>
-            </tr>
         </g:if>
+
         </tbody>
     </table>
 

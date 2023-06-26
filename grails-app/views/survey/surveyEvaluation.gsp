@@ -4,16 +4,17 @@
 <ui:breadcrumbs>
     <ui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code:'menu.my.surveys')}" />
     <g:if test="${surveyInfo}">
-        <ui:crumb controller="survey" action="show" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]" text="${surveyConfig.getConfigNameShort()}" />
+%{--        <ui:crumb controller="survey" action="show" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]" text="${surveyConfig.getConfigNameShort()}" />--}%
+        <ui:crumb class="active" text="${surveyConfig.getConfigNameShort()}" />
     </g:if>
-    <ui:crumb message="surveyResult.label" class="active"/>
+%{--    <ui:crumb message="surveyResult.label" class="active"/>--}%
 </ui:breadcrumbs>
 
 <ui:controlButtons>
     <g:if test="${surveyInfo.status != RDStore.SURVEY_IN_PROCESSING}">
         <ui:exportDropdown>
             <ui:exportDropdownItem>
-                <a class="item" data-ui="modal" href="#individuallyExportModal">Click Me Excel Export</a>
+                <a class="item" data-ui="modal" href="#individuallyExportModal">Export</a>
             </ui:exportDropdownItem>
 
             %{--<ui:exportDropdownItem>
@@ -36,10 +37,8 @@
 <ui:h1HeaderWithIcon type="Survey">
 <ui:xEditable owner="${surveyInfo}" field="name"/>
 </ui:h1HeaderWithIcon>
+
 <uiSurvey:statusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="surveyEvaluation"/>
-
-
-
 
 <laser:render template="nav"/>
 

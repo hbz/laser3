@@ -90,13 +90,12 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     @RefdataInfo(cat = RDConstants.SUBSCRIPTION_RESOURCE)
     RefdataValue resource
 
+    @RefdataInfo(cat = RDConstants.SUBSCRIPTION_HOLDING)
+    RefdataValue holdingSelection
+
     // If a subscription is slaved then any changes to instanceOf will automatically be applied to this subscription
     boolean isSlaved = false
 	boolean isPublicForApi = false
-
-    //explicitely demanded as of ERMS-2503 - but demand has been revoked! Keep in u.f.n. until discussions on orderer side are terminated!
-    //@RefdataInfo(cat = RDConstants.Y_N)
-    //RefdataValue hasPerpetualAccess
     boolean hasPerpetualAccess = false
     boolean hasPublishComponent = false
     boolean isMultiYear = false
@@ -115,6 +114,16 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
     //Only for Consortia: ERMS-2098
     String comment
+
+    //Only for Consortia and instanceOf = true
+    boolean offerRequested = false
+    Date offerRequestedDate
+    boolean offerAccepted = false
+    String offerNote
+    String priceIncreaseInfo
+    boolean renewalSent = false
+    Date renewalSentDate
+    boolean participantTransferWithSurvey = false
 
     Subscription instanceOf
     // If a subscription is administrative, subscription members will not see it resp. there is a toggle which en-/disables visibility
@@ -172,6 +181,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         kind        column:'sub_kind_rv_fk'
         form        column:'sub_form_fk'
         resource    column:'sub_resource_fk'
+        holdingSelection column:'sub_holding_selection_rv_fk', index: 'sub_holding_selection_idx'
         name        column:'sub_name'
         comment     column: 'sub_comment', type: 'text'
         identifier  column:'sub_identifier'
@@ -191,6 +201,15 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         dateCreated          column: 'sub_date_created'
         lastUpdated          column: 'sub_last_updated'
         lastUpdatedCascading column: 'sub_last_updated_cascading'
+
+        offerRequested column:'sub_offer_requested'
+        offerRequestedDate column:'sub_offer_requested_date'
+        offerAccepted column:'sub_offer_accepted'
+        offerNote column:'sub_offer_note'
+        priceIncreaseInfo column:'sub_price_increase_info'
+        renewalSent column:'sub_renewal_sent'
+        renewalSentDate column:'sub_renewal_sent_date'
+        participantTransferWithSurvey column:'sub_participant_transfer_with_survey'
 
         noticePeriod    column:'sub_notice_period'
         isMultiYear column: 'sub_is_multi_year'
@@ -213,6 +232,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         kind        (nullable:true)
         form        (nullable:true)
         resource    (nullable:true)
+        holdingSelection (nullable:true)
         startDate(nullable:true, validator: { val, obj ->
             if(obj.startDate != null && obj.endDate != null) {
                 if(obj.startDate > obj.endDate) return ['startDateAfterEndDate']
@@ -233,11 +253,20 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         cancellationAllowances(nullable:true, blank:true)
         lastUpdated(nullable: true)
         lastUpdatedCascading (nullable: true)
+
+        offerRequested (nullable: true)
+        offerRequestedDate (nullable:true, blank:true)
+        offerAccepted (nullable: true)
+        offerNote (nullable:true, blank:true)
+        priceIncreaseInfo (nullable:true, blank:true)
+        renewalSent (nullable: true)
+        renewalSentDate (nullable:true, blank:true)
+        participantTransferWithSurvey (nullable: true)
     }
 
     @Override
     Collection<String> getLogIncluded() {
-        [ 'name', 'startDate', 'endDate', 'manualCancellationDate', 'referenceYear', 'status', 'type', 'kind', 'form', 'resource', 'isPublicForApi', 'hasPerpetualAccess', 'hasPublishComponent' ]
+        [ 'name', 'startDate', 'endDate', 'manualCancellationDate', 'referenceYear', 'status', 'type', 'kind', 'form', 'resource', 'isPublicForApi', 'hasPerpetualAccess', 'hasPublishComponent', 'holdingSelection' ]
     }
     @Override
     Collection<String> getLogExcluded() {
@@ -279,19 +308,33 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
                 && changes.newMap.containsKey('hasPerpetualAccess')
                 && changes.oldMap.hasPerpetualAccess != changes.newMap.hasPerpetualAccess) {
             if(changes.newMap.hasPerpetualAccess == true) {
-                List<Long> ieIDs = IssueEntitlement.executeQuery('select ie.id from IssueEntitlement ie where ie.subscription = :sub and ie.status = :status and ie.acceptStatus = :acceptStatus and ie.perpetualAccessBySub is null', [sub: this, status: RDStore.TIPP_STATUS_CURRENT, acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED])
+                Set<RefdataValue> status = [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_RETIRED, RDStore.TIPP_STATUS_DELETED]
+                List<Long> ieIDs = IssueEntitlement.executeQuery('select ie.id from IssueEntitlement ie where ie.subscription = :sub and ie.perpetualAccessBySub is null and ie.status in (:status)', [sub: this, status: status])
                 if (ieIDs.size() > 0) {
                     log.debug("beforeUpdate() set perpetualAccessBySub of ${ieIDs.size()} IssueEntitlements to sub:" + this)
-                    ieIDs.collate(32767).each {
-                        IssueEntitlement.executeUpdate("update IssueEntitlement ie set ie.perpetualAccessBySub = :sub where ie.id in (:idList)", [sub: this, idList: it])
+                    Org owner = this.subscriber
+
+                    ieIDs.each { Long ieID ->
+                        IssueEntitlement.executeUpdate("update IssueEntitlement ie set ie.perpetualAccessBySub = :sub where ie.id = :ieID ", [sub: this, ieID: ieID])
+
+                        IssueEntitlement issueEntitlement = IssueEntitlement.get(ieID)
+                        TitleInstancePackagePlatform titleInstancePackagePlatform = issueEntitlement.tipp
+
+                        if(!PermanentTitle.findByOwnerAndTipp(owner, titleInstancePackagePlatform)){
+                            PermanentTitle permanentTitle = new PermanentTitle(subscription: this,
+                                    issueEntitlement: issueEntitlement,
+                                    tipp: titleInstancePackagePlatform,
+                                    owner: owner).save()
+                        }
                     }
                 }
             }else {
-                List<Long> ieIDs = IssueEntitlement.executeQuery('select ie.id from IssueEntitlement ie where ie.subscription = :sub and ie.status = :status and ie.acceptStatus = :acceptStatus and ie.perpetualAccessBySub is not null', [sub: this, status: RDStore.TIPP_STATUS_CURRENT, acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED])
+                List<Long> ieIDs = IssueEntitlement.executeQuery('select ie.id from IssueEntitlement ie where ie.subscription = :sub and ie.perpetualAccessBySub is not null', [sub: this])
                 if (ieIDs.size() > 0) {
                     log.debug("beforeUpdate() set perpetualAccessBySub of ${ieIDs.size()} IssueEntitlements to null:" + this)
                     ieIDs.collate(32767).each {
                         IssueEntitlement.executeUpdate("update IssueEntitlement ie set ie.perpetualAccessBySub = null where ie.id in (:idList)", [idList: it])
+                        PermanentTitle.executeUpdate("delete PermanentTitle pt where pt.issueEntitlement.id in (:idList)", [idList: it])
                     }
 
 
@@ -704,31 +747,22 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
      * @return true if the given permission has been granted to the given user for this subscription, false otherwise
      */
     boolean hasPerm(String perm, User user) {
-        Role adm = Role.findByAuthority('ROLE_ADMIN')
-        Role yda = Role.findByAuthority('ROLE_YODA')
-
-        if (user.getAuthorities().contains(adm) || user.getAuthorities().contains(yda)) {
+        if (user.isAdmin() || user.isYoda()) {
             return true
         }
+        ContextService contextService = BeanStore.getContextService()
+        Org contextOrg = contextService.getOrg()
 
-        Org contextOrg = BeanStore.getContextService().getOrg()
-        if (user.getAffiliationOrgsIdList().contains(contextOrg?.id)) {
-
-            OrgRole cons = OrgRole.findBySubAndOrgAndRoleType(
-                    this, contextOrg, RDStore.OR_SUBSCRIPTION_CONSORTIA
-            )
-            OrgRole subscrCons = OrgRole.findBySubAndOrgAndRoleType(
-                    this, contextOrg, RDStore.OR_SUBSCRIBER_CONS
-            )
-            OrgRole subscr = OrgRole.findBySubAndOrgAndRoleType(
-                    this, contextOrg, RDStore.OR_SUBSCRIBER
-            )
+        if (user.isFormal(contextOrg)) {
+            OrgRole cons       = OrgRole.findBySubAndOrgAndRoleType( this, contextOrg, RDStore.OR_SUBSCRIPTION_CONSORTIA )
+            OrgRole subscrCons = OrgRole.findBySubAndOrgAndRoleType( this, contextOrg, RDStore.OR_SUBSCRIBER_CONS )
+            OrgRole subscr     = OrgRole.findBySubAndOrgAndRoleType( this, contextOrg, RDStore.OR_SUBSCRIBER )
 
             if (perm == 'view') {
                 return cons || subscrCons || subscr
             }
             if (perm == 'edit') {
-                if (BeanStore.getAccessService().ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC ))
+                if (BeanStore.getContextService().hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC ))
                     return cons || subscr
             }
         }

@@ -43,70 +43,14 @@
         </form>
     </ui:filter>
 
-    <table class="ui celled la-js-responsive-table la-table table">
-        <thead>
-        <tr>
-            <th>${message(code:'sidewide.number')}</th>
-            <th>${message(code:'issueEntitlement.label')}</th>
-            <th>${message(code:'default.identifiers.label')}</th>
-        </tr>
-        </thead>
-        <tbody>
+    <div class="ui grid">
+        <div class="row">
+            <div class="column">
+                <laser:render template="/templates/tipps/table_accordion"
+                              model="[tipps: issueEntitlements?.tipp, showPackage: false, showPlattform: true]"/>
+            </div>
+        </div>
+    </div>
 
-            <g:each in="${issueEntitlements}" var="issueEntitlement" status="counter">
-                <g:set var="tipp" value="${issueEntitlement.tipp}"/>
-                <tr>
-                    <td>${counter + 1}</td>
-                    <td>
-                        <ui:listIcon type="${tipp.medium?.value}"/>
-                        <strong>${tipp.name}</strong>
-                        <br />
-
-                        <g:if test="${tipp.hostPlatformURL}">
-                            <ui:linkWithIcon href="${tipp.hostPlatformURL.startsWith('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"/>
-                        </g:if>
-                        <br />
-
-                        ${message(code:'tipp.platform')}:
-                        <g:if test="${tipp.platform.name}">
-                            ${tipp.platform.name}
-                        </g:if>
-                        <g:else>
-                            ${message(code:'default.unknown')}
-                        </g:else>
-                        <br />
-
-                        ${message(code:'package.label')}:
-                        <g:if test="${tipp.pkg}"><!-- TODO: show all packages -->
-                            ${tipp.pkg}
-                        </g:if>
-                        <g:else>
-                            ${message(code:'default.unknown')}
-                        </g:else>
-                        <br />
-                    </td>
-
-                    <td>
-                            <laser:render template="/templates/identifier"
-                                          model="${[tipp: tipp]}"/>
-                    </td>
-                </tr>
-            </g:each>
-
-        </tbody>
-    </table>
-
-<style>
-.ui.table thead tr:first-child>th {
-    top: 48px!important;
-}
-</style>
-<sec:ifAnyGranted roles="ROLE_USER">
-    <style>
-    .ui.table thead tr:first-child>th {
-        top: 90px!important;
-    }
-    </style>
-</sec:ifAnyGranted>
 
 <laser:htmlEnd />

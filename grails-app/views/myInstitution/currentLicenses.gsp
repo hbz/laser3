@@ -8,6 +8,10 @@
 
   <ui:controlButtons>
       <ui:exportDropdown>
+          <ui:exportDropdownItem>
+              <a class="item" data-ui="modal" href="#individuallyExportModal">Export</a>
+          </ui:exportDropdownItem>
+      <%--
           <g:if test="${filterSet || defaultSet}">
               <ui:exportDropdownItem>
                   <g:link class="item js-open-confirm-modal" data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
@@ -33,6 +37,7 @@
                   <g:link class="item" action="currentLicenses" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link>
               </ui:exportDropdownItem>
           </g:else>
+      --%>
       </ui:exportDropdown>
 
       <laser:render template="actions" />
@@ -81,7 +86,7 @@
                                 noSelection="${['' : message(code:'default.select.choose.label')]}"/>
               </div>
               <div class="field">
-                  <label for="licensor"><g:message code="license.licensor.label"/></label>
+                  <label for="licensor"><g:message code="default.ProviderAgency.singular"/></label>
                   <select id="licensor" name="licensor" multiple="" class="ui search selection fluid dropdown">
                       <option value=""><g:message code="default.select.choose.label"/></option>
                       <g:each in="${orgs.licensors}" var="licensor">
@@ -122,7 +127,7 @@
           </div>
           <div class="three fields">
           <%-- TODO [ticket=2276] provisoric, name check is in order to prevent id mismatch --%>
-              <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_INST_PRO) || institution.globalUID == Org.findByName('LAS:eR Backoffice').globalUID}">
+              <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_INST_PRO) || institution.globalUID == Org.findByName('LAS:eR Backoffice').globalUID}">
                   <div class="field">
                       <fieldset id="licenseType">
                           <div class="inline fields la-filter-inline">
@@ -180,17 +185,17 @@
                               </span>
                           </th>
                       </g:if>
-                      <th rowspan="2"><g:message code="license.licensor.label"/></th>
+                      <th rowspan="2"><g:message code="default.ProviderAgency.singular"/></th>
                       <g:if test="${'licensingConsortium' in licenseFilterTable}">
                           <th rowspan="2"><g:message code="consortium"/></th>
                       </g:if>
-                      <g:sortableColumn params="${params}" property="startDate" title="${message(code:'license.start_date')}" />
+                      <g:sortableColumn class="la-smaller-table-head" params="${params}" property="startDate" title="${message(code:'license.start_date')}" />
                       <g:if test="${'action' in licenseFilterTable}">
                           <th rowspan="2" class="la-action-info"><g:message code="default.actions.label"/></th>
                       </g:if>
                   </tr>
                   <tr>
-                      <g:sortableColumn params="${params}" property="endDate" title="${message(code:'license.end_date')}" />
+                      <g:sortableColumn class="la-smaller-table-head" params="${params}" property="endDate" title="${message(code:'license.end_date')}" />
                   </tr>
               </thead>
               <tbody>
@@ -223,16 +228,16 @@
                               </td>
                           </g:if>
                           <td>
-                              <g:set var="licensor" value="${l.getLicensor()}"/>
-                              <g:if test="${licensor}">
+                              <g:set var="licensors" value="${l.getProviderAgency()}"/>
+                              <g:each in="${licensors}" var="licensor">
                                   <g:link controller="organisation" action="show" id="${licensor.id}">
                                       ${fieldValue(bean: licensor, field: "name")}
                                       <g:if test="${licensor.sortname}">
-                                          <br />
                                           (${fieldValue(bean: licensor, field: "sortname")})
                                       </g:if>
                                   </g:link>
-                              </g:if>
+                                  <br>
+                              </g:each>
                           </td>
                           <g:if test="${'licensingConsortium' in licenseFilterTable}">
                               <td>${l.getLicensingConsortium()?.name}</td>
@@ -273,8 +278,9 @@
   </g:if>
 
   </g:form>
-      <ui:paginate action="currentLicenses" controller="myInstitution" params="${params}" max="${max}" total="${licenseCount}" />
-      <ui:debugInfo>
-          <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
-      </ui:debugInfo>
+  <ui:paginate action="currentLicenses" controller="myInstitution" params="${params}" max="${max}" total="${licenseCount}" />
+  <ui:debugInfo>
+      <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
+  </ui:debugInfo>
+  <laser:render template="export/individuallyExportModalLics" model="[modalID: 'individuallyExportModal']" />
 <laser:htmlEnd />

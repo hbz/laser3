@@ -102,7 +102,7 @@ class BaseQuery {
         result.data = idList ? Org.executeQuery( dataHql, [idList: idList] ) : []
 
         result.data.each { d ->
-            d[1] = d[0]
+            d[1] = d[0].toString()
 
             result.dataDetails.add( [
                     query:  query,

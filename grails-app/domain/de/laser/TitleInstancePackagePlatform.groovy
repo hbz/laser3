@@ -133,15 +133,15 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
                pkg column:'tipp_pkg_fk',    index: 'tipp_idx, tipp_pkg_idx, tipp_status_pkg_idx, tipp_status_plat_pkg_idx'
           platform column:'tipp_plat_fk',   index: 'tipp_idx, tipp_plat_idx, tipp_status_plat_idx, tipp_status_plat_pkg_idx'
           // title column:'tipp_ti_fk',     index: 'tipp_idx'
-         titleType column:'tipp_title_type'
-            medium column:'tipp_medium_rv_fk', index: 'tipp_medium_idx'
+         titleType column:'tipp_title_type',                        index: 'tipp_title_type_idx'
+            medium column:'tipp_medium_rv_fk',                      index: 'tipp_medium_idx'
               name column:'tipp_name', type: 'text'
           sortname column:'tipp_sort_name', type: 'text'
           normName column:'tipp_norm_name', type: 'text'
-     publisherName column:'tipp_publisher_name', type: 'text'
-        seriesName column:'tipp_series_name', type: 'text'
+     publisherName column:'tipp_publisher_name', type: 'text',      index: 'tipp_publisher_name_idx'
+        seriesName column:'tipp_series_name', type: 'text',         index: 'tipp_series_name_idx'
            imprint column:'tipp_imprint', type: 'text'
-  subjectReference column:'tipp_subject_reference', type: 'text'
+  subjectReference column:'tipp_subject_reference', type: 'text',   index: 'tipp_subject_reference_idx'
             gokbId column:'tipp_gokb_id'
             status column:'tipp_status_rv_fk', index: 'tipp_status_idx, tipp_status_pkg_idx, tipp_status_plat_idx, tipp_status_plat_pkg_idx'
          delayedOA column:'tipp_delayedoa_rv_fk'
@@ -336,6 +336,7 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
      * @param s the string to decode
      * @return the ASCII-decoded string
      */
+    @Deprecated
     private static String _asciify(String s) {
         char[] c = s.toCharArray()
         StringBuffer b = new StringBuffer()
@@ -351,6 +352,7 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
      * @param c the character to translate
      * @return the ASCII representation of the char
      */
+    @Deprecated
     static char translateChar(char c) {
         switch(c) {
             case '\u00C0':

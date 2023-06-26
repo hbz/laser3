@@ -13,7 +13,6 @@ import de.laser.ContextService
 import de.laser.DeletionService
 import de.laser.EscapeService
 import de.laser.FinanceService
-import de.laser.InstAdmService
 import de.laser.LicenseService
 import de.laser.LinksGenerationService
 import de.laser.OrgTypeService
@@ -119,9 +118,6 @@ class BeanStore {
     }
     static GenericOIDService getGenericOIDService() {
         Holders.grailsApplication.mainContext.getBean('genericOIDService') as GenericOIDService
-    }
-    static InstAdmService getInstAdmService() {
-        Holders.grailsApplication.mainContext.getBean('instAdmService') as InstAdmService
     }
     static LicenseService getLicenseService() {
         Holders.grailsApplication.mainContext.getBean('licenseService') as LicenseService

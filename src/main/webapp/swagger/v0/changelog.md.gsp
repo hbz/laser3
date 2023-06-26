@@ -2,6 +2,28 @@
 
 Source: ${de.laser.config.ConfigMapper.getGrailsServerURL()} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
+#### 2.0
+
+- internal refactoring
+- added new attribute: `Subscription.holdingSelection`
+- added new attribute: `Subscription.referenceYear`
+- added new attribute: `OrgAccessPoint.mailDomain`
+- added new attribute: `OrganisationStub.sortname`
+- removed attribute: `IssueEntitlement.name`
+- removed attribute: `IssueEntitlement.status`
+- removed attribute: `Org.shortname` (moved to OrganisationStub)
+- removed attribute: `Org.name`
+- removed attribute: `Person.addresses`
+- removed attribute: `TitleInstancePackagePlatform.addresses`
+
+#### 1.9
+
+- internal refactoring
+
+#### 1.8
+
+- internal refactoring
+
 #### 1.7
 
 - internal refactoring

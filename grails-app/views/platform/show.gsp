@@ -55,7 +55,7 @@
                                     <a role="button" class="ui icon blue button la-modern-button la-js-dont-hide-button la-popup-tooltip la-delay"
                                        data-content="${message(code: 'tipp.tooltip.callUrl')}"
                                        href="${platformInstance.primaryUrl.startsWith('http') ? platformInstance.primaryUrl : 'http://' + platformInstance.primaryUrl}"
-                                       target="_blank"><i class="share square icon"></i></a>
+                                       target="_blank"><i class="external alternate icon"></i></a>
                                 </g:if>
                             </dd>
                         </dl>
@@ -121,7 +121,7 @@
                             <dt><g:message code="platform.stats.adminURL"/></dt>
                             <dd>
                                 <g:if test="${platformInstanceRecord.statisticsAdminPortalUrl.startsWith('http')}">
-                                    ${platformInstanceRecord.statisticsAdminPortalUrl} <a href="${platformInstanceRecord.statisticsAdminPortalUrl}"><i title="${message(code: 'platform.stats.adminURL')} Link" class="external alternate icon"></i></a>
+                                    ${platformInstanceRecord.statisticsAdminPortalUrl} <ui:linkWithIcon href="${platformInstanceRecord.statisticsAdminPortalUrl}"/>
                                 </g:if>
                                 <g:else>
                                     <g:message code="default.url.invalid"/>
@@ -146,7 +146,7 @@
                             <dt><g:message code="platform.stats.counter.registryURL"/></dt>
                             <dd>
                                 <g:if test="${platformInstanceRecord.counterRegistryUrl.startsWith('http')}">
-                                    ${platformInstanceRecord.counterRegistryUrl} <a href="${platformInstanceRecord.counterRegistryUrl}"><i title="${message(code: 'platform.stats.counter.registryURL')} Link" class="external alternate icon"></i></a>
+                                    ${platformInstanceRecord.counterRegistryUrl} <ui:linkWithIcon href="${platformInstanceRecord.counterRegistryUrl}"/>
                                 </g:if>
                                 <g:else>
                                     <g:message code="default.url.invalid"/>
@@ -183,7 +183,7 @@
                             <dt><g:message code="platform.stats.counter.r4serverURL"/></dt>
                             <dd>
                                 <g:if test="${platformInstanceRecord.counterR4SushiServerUrl.startsWith('http')}">
-                                    ${platformInstanceRecord.counterR4SushiServerUrl} <a href="${platformInstanceRecord.counterR4SushiServerUrl}"><i title="${message(code: 'platform.stats.counter.r4serverURL')} Link" class="external alternate icon"></i></a>
+                                    ${platformInstanceRecord.counterR4SushiServerUrl} <ui:linkWithIcon href="${platformInstanceRecord.counterR4SushiServerUrl}"/>
                                 </g:if>
                                 <g:else>
                                     ${platformInstanceRecord.counterR4SushiServerUrl}
@@ -196,32 +196,13 @@
                             <dt><g:message code="platform.stats.counter.r5serverURL"/></dt>
                             <dd>
                                 <g:if test="${platformInstanceRecord.counterR5SushiServerUrl.startsWith('http')}">
-                                    ${platformInstanceRecord.counterR5SushiServerUrl} <a href="${platformInstanceRecord.counterR5SushiServerUrl}"><i title="${message(code: 'platform.stats.counter.r5serverURL')} Link" class="external alternate icon"></i></a>
+                                    ${platformInstanceRecord.counterR5SushiServerUrl} <ui:linkWithIcon href="${platformInstanceRecord.counterR5SushiServerUrl}"/>
                                 </g:if>
                                 <g:else>
                                     ${platformInstanceRecord.counterR5SushiServerUrl}
                                 </g:else>
                             </dd>
                         </dl>
-                    </g:if>
-                <%-- lastRun and centralApiKey come from LAS:eR, not from we:kb! --%>
-                    <g:if test="${platformInstance.counter4LastRun || platformInstance.counter5LastRun}">
-                        <dl>
-                            <dt><g:message code="platform.stats.counter.lastRun"/></dt>
-                            <dd>
-                                <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${platformInstance.counter5LastRun ?: platformInstance.counter4LastRun}"/>
-                            </dd>
-                        </dl>
-                    </g:if>
-                    <g:if test="${platformInstanceRecord.counterR5SushiApiSupported}">
-                        <sec:ifAnyGranted roles="ROLE_YODA">
-                            <dl>
-                                <dt><g:message code="platform.stats.counter.centralApiKey"/></dt>
-                                <dd>
-                                    <ui:xEditable owner="${platformInstance}" field="centralApiKey" overwriteEditable="${true}"/>
-                                </dd>
-                            </dl>
-                        </sec:ifAnyGranted>
                     </g:if>
                 </div>
             </div>

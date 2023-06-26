@@ -26,6 +26,8 @@ class SubscriptionReport {
     static String NO_STARTDATE = 'Ohne Laufzeit-Beginn'
     static String NO_ENDDATE = 'Ohne Laufzeit-Ende'
 
+    static int NUMBER_OF_TIMELINE_ELEMENTS = 4
+
     static Map<String, Object> getCurrentConfig(Subscription sub) {
 
         String calcType = sub._getCalculatedType()
@@ -158,8 +160,8 @@ class SubscriptionReport {
 
                     timeline.eachWithIndex { s, i ->
                         ieIdLists.add(IssueEntitlement.executeQuery(
-                                'select ie.id from IssueEntitlement ie where ie.subscription = :sub and ie.status = :status and ie.acceptStatus = :acceptStatus',
-                                [sub: s, status: RDStore.TIPP_STATUS_CURRENT, acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED]
+                                'select ie.id from IssueEntitlement ie where ie.subscription = :sub and ie.status = :status',
+                                [sub: s, status: RDStore.TIPP_STATUS_CURRENT]
                         ))
                         List data = [
                                 s.id,
@@ -274,13 +276,17 @@ class SubscriptionReport {
                     }
                     result.data = newData
                 }
+
+                // keep all data for correct processing and only then limit
+                result.data = (result.data as List).takeRight(NUMBER_OF_TIMELINE_ELEMENTS)
+                result.dataDetails = (result.dataDetails as List).takeRight(NUMBER_OF_TIMELINE_ELEMENTS)
             }
 
             else if (prefix == 'tipp') {
 
                 List<Long> idList = TitleInstancePackagePlatform.executeQuery(
-                        'select tipp.id from IssueEntitlement ie join ie.tipp tipp where ie.subscription.id = :id and ie.status = :status and ie.acceptStatus = :acceptStatus',
-                        [id: id, status: RDStore.TIPP_STATUS_CURRENT, acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED]
+                        'select tipp.id from IssueEntitlement ie join ie.tipp tipp where ie.subscription.id = :id and ie.status = :status ',
+                        [id: id, status: RDStore.TIPP_STATUS_CURRENT]
                 )
 
                 if (params.query == 'tipp-seriesName') {
@@ -302,6 +308,23 @@ class SubscriptionReport {
                 else if (params.query == 'tipp-medium') {
 
                     processSimpleTippRefdataQuery(params.query, 'medium', idList, result)
+                }
+                else if (params.query == 'tipp-dateFirstOnline') {
+
+                    String tippYear = 'year(tipp.dateFirstOnline)'
+                    List<String> PROPERTY_QUERY = [
+                            'select ' + tippYear + ', ' + tippYear + ', count(*) ',
+                            'and ' + tippYear + ' is not null group by ' + tippYear + ' order by ' + tippYear
+                    ]
+
+                    BaseQuery.handleGenericQuery(
+                            params.query,
+                            PROPERTY_QUERY[0] + 'from TitleInstancePackagePlatform tipp where tipp.id in (:idList) ' + PROPERTY_QUERY[1],
+                            'select tipp.id from TitleInstancePackagePlatform tipp where tipp.id in (:idList) and ' + tippYear + ' = :d order by tipp.dateFirstOnline',
+                            'select tipp.id from TitleInstancePackagePlatform tipp where tipp.id in (:idList) and tipp.dateFirstOnline is null',
+                            idList,
+                            result
+                    )
                 }
                 else if (params.query == 'tipp-ddcs') {
 
@@ -540,7 +563,6 @@ class SubscriptionReport {
             tmp = getNext(tmp)
             if (tmp) { result.push(tmp) }
         }
-
         result
     }
 

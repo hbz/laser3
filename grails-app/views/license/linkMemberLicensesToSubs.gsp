@@ -17,9 +17,8 @@
 
 <ui:h1HeaderWithIcon>
     <ui:xEditable owner="${license}" field="reference" id="reference"/>
-    <ui:totalNumber total="${totalCount}"/>
 </ui:h1HeaderWithIcon>
-
+<ui:totalNumber total="${totalCount}"/>
 <ui:anualRings object="${license}" controller="license" action="linkMemberLicensesToSubs" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
 
 <laser:render template="nav" />

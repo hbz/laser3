@@ -7,7 +7,7 @@
     <ui:crumb message="menu.institutions.financeImport" class="active"/>
   </ui:breadcrumbs>
 
-    <ui:h1HeaderWithIcon message="menu.institutions.financeImport" />
+    <ui:h1HeaderWithIcon message="menu.institutions.financeImport" type="finance" />
 
     <ui:messages data="${flash}" />
 

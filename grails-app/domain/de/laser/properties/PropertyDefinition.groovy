@@ -81,6 +81,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
             //ORG_PROP, // erms-4798
             SUB_PROP,
             PLA_PROP,
+            SVY_PROP,
             LIC_PROP
     ]
 
@@ -424,6 +425,10 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
             if (parts[0] == "Organisation") {
                 parts[0] = "Org"
             }
+            if (parts[0] == "Survey") {
+                parts[0] = "survey.SurveyConfig"
+            }
+
             try {
                 result = Class.forName('de.laser.' + parts[0])?.name
             } catch(Exception e) {

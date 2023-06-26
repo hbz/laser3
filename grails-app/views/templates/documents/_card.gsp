@@ -6,14 +6,14 @@
     Org contextOrg = contextOrg ?: contextService.getOrg()
     String documentMessage
     switch(ownobj.class.name) {
-        case Org.class.name: documentMessage = "menu.my.documents"
+        case Org.class.name: documentMessage = "default.documents.label"
             editable = userService.checkAffiliationAndCtxOrg_or_ROLEADMIN(contextService.getUser(), contextOrg, 'INST_EDITOR')
             break
         default: documentMessage = "license.documents"
             break
     }
 
-    boolean editable2 = accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')
+    boolean editable2 = contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     Set<DocContext> documentSet = ownobj.documents
 
     //Those are the rights settings the DMS needs to cope with. See the following documentation which is currently a requirement specification, too, and serves as base for ERMS-2393
@@ -63,7 +63,7 @@
         }
     }
 %>
-<g:if test="${accessService.ctxPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
+<g:if test="${contextService.hasPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
     <ui:card message="${documentMessage}" class="documents la-js-hideable ${css_class}" href="#modalCreateDocument" editable="${editable || editable2}">
         <g:each in="${baseItems}" var="docctx">
             <g:if test="${docctx.isDocAFile() && (docctx.status?.value!='Deleted')}">
@@ -85,6 +85,12 @@
                             <ui:documentIcon doc="${docctx.owner}" showText="false" showTooltip="true"/>
                         </div>
                         <div class="right aligned eight wide column la-column-left-lessPadding">
+
+                        <g:if test="${! (editable || editable2)}">
+                            <%-- 1 --%>
+                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button la-js-dont-hide-button" target="_blank"><i class="download icon"></i></g:link>
+                        </g:if>
+                        <g:else>
                             <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                 <%-- 1 --%>
                                 <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button la-js-dont-hide-button" target="_blank"><i class="download icon"></i></g:link>
@@ -95,7 +101,8 @@
                                         data-ui="modal"
                                         data-href="#modalEditDocument_${docctx.id}"
                                         aria-label="${message(code: 'ariaLabel.change.universal')}">
-                                    <i class="pencil icon"></i></button>
+                                    <i class="pencil icon"></i>
+                                </button>
                             </g:if>
 
                             <%-- 3 --%>
@@ -143,9 +150,10 @@
                             </g:if>
                             <g:else>
                                 <div class="ui icon button la-hidden">
-                                    <i class="coffe icon"></i><%-- Hidden Fake Button --%>
+                                    <i class="fake icon"></i><%-- Hidden Fake Button --%>
                                 </div>
                             </g:else>
+                        </g:else>%{-- (editable || editable2) --}%
                         </div>
 
                                 %{-- old --}%
@@ -174,17 +182,17 @@
 %{--                                </g:if>--}%
 %{--                                <g:else>--}%
 %{--                                    <div class="ui icon button la-hidden">--}%
-%{--                                        <i class="coffe icon"></i><%-- Hidden Fake Button --%>--}%
+%{--                                        <i class="fake icon"></i><%-- Hidden Fake Button --%>--}%
 %{--                                    </div>--}%
 %{--                                </g:else>--}%
 %{--                                <%-- STOP Second Button --%>--}%
 %{--                            </g:if>--}%
 %{--                            <g:else>--}%
 %{--                                <div class="ui icon button la-hidden">--}%
-%{--                                    <i class="coffe icon"></i><%-- Hidden Fake Button --%>--}%
+%{--                                    <i class="fake icon"></i><%-- Hidden Fake Button --%>--}%
 %{--                                </div>--}%
 %{--                                <div class="ui icon button la-hidden">--}%
-%{--                                    <i class="coffe icon"></i><%-- Hidden Fake Button --%>--}%
+%{--                                    <i class="fake icon"></i><%-- Hidden Fake Button --%>--}%
 %{--                                </div>--}%
 %{--                            </g:else>--}%
 %{--                            <%-- START Third Button --%>--}%

@@ -49,88 +49,68 @@
     <thead>
         <tr>
             <g:if test="${tmplShowCheckbox && editable}">
-                <th>
+                <th scope="col" rowspan="2">
                     <g:if test="${data.costItems}">
                         <g:checkBox name="costItemListToggler" id="costItemListToggler" checked="false"/>
                     </g:if>
                 </th>
             </g:if>
             <g:if test="${!fixedSubscription}">
-                <th>${message(code:'sidewide.number')}</th>
+                <th scope="col" rowspan="2">${message(code:'sidewide.number')}</th>
                 <g:if test="${showView == "cons"}">
-                    <g:sortableColumn property="oo.org.sortname" title="${message(code:'financials.newCosts.costParticipants')}" params="${sorting}"/>
+                    <g:sortableColumn property="oo.org.sortname" title="${message(code:'financials.newCosts.costParticipants')}" params="${sorting}" scope="col" rowspan="2"/>
                 </g:if>
-                <g:sortableColumn property="ci.costTitle" title="${message(code:'financials.newCosts.costTitle')}" params="${sorting}"/>
-                <g:sortableColumn property="sub.name" title="${message(code:'default.subscription.label')}" params="${sorting}"/>
-                <th class="la-no-uppercase"><span class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center"><i class="money bill alternate icon"></i></span></th>
-                <g:sortableColumn property="ci.billingCurrency" title="${message(code:'default.currency.label')}" params="${sorting}"/>
-                <g:sortableColumn property="ci.costInBillingCurrency" title="${message(code:'financials.invoice_total')}" params="${sorting}"/>
-                <g:sortableColumn property="ci.taxKey.taxRate" title="${message(code:'financials.taxRate')}" params="${sorting}"/>
-                <th>${message(code:'financials.amountFinal')}</th>
-                <g:sortableColumn property="ci.costInLocalCurrency" title="${message(code:'financials.newCosts.value')}" params="${sorting}"/>
-                <g:sortableColumn property="ci.startDate" title="${message(code:'financials.dateFrom')}" params="${sorting}"/>
-                <g:sortableColumn property="ci.costItemElement" title="${message(code:'financials.costItemElement')}" params="${sorting}"/>
+                <g:sortableColumn property="ci.costTitle" title="${message(code:'financials.newCosts.costTitle')}" params="${sorting}" scope="col" rowspan="2"/>
+                <g:sortableColumn property="sub.name" title="${message(code:'default.subscription.label')}" params="${sorting}" scope="col" class="la-smaller-table-head"/>
+                <th class="la-no-uppercase" scope="col" rowspan="2">
+                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center"><i class="money bill alternate icon"></i></span>
+                </th>
+                <g:sortableColumn property="ci.billingCurrency" title="${message(code:'default.currency.label')}" params="${sorting}" scope="col" rowspan="2"/>
+                <g:sortableColumn property="ci.costInBillingCurrency" title="${message(code:'financials.invoice_total')}" params="${sorting}" scope="col" rowspan="2"/>
+                <th scope="col" rowspan="2">${message(code:'financials.taxRate')}</th>
+                <th scope="col" rowspan="2">${message(code:'financials.amountFinal')}</th>
+                <g:sortableColumn property="ci.costInLocalCurrency" title="${message(code:'financials.newCosts.value')}" params="${sorting}" scope="col" rowspan="2"/>
+                <g:sortableColumn property="ci.startDate" title="${message(code:'financials.dateFrom')}" params="${sorting}" scope="col" class="la-smaller-table-head" />
+                <g:sortableColumn property="ci.costItemElement" title="${message(code:'financials.costItemElement')}" params="${sorting}" scope="col" rowspan="2"/>
                 <%-- editable must be checked here as well because of the consortia preview! --%>
-                <g:if test="${editable && accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')}">
-                    <th class="la-action-info"><g:message code="default.actions.label"/></th>
+                <g:if test="${editable && contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
+                    <th class="la-action-info" scope="col" rowspan="2"><g:message code="default.actions.label"/></th>
                 </g:if>
             </g:if>
             <g:else>
-                <th>${message(code:'sidewide.number')}</th>
+                <th scope="col" rowspan="2">${message(code:'sidewide.number')}</th>
                 <g:if test="${showView == "cons"}">
-                    <g:sortableColumn property="oo.org.sortname" title="${message(code:'financials.newCosts.costParticipants')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance"/>
+                    <g:sortableColumn property="oo.org.sortname" title="${message(code:'financials.newCosts.costParticipants')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance" scope="col" rowspan="2"/>
                 </g:if>
-                <g:sortableColumn property="costTitle" title="${message(code:'financials.newCosts.costTitle')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance"/>
-                <th class="la-no-uppercase"><span class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center"><i class="money bill alternate icon"></i></span></th>
-                <g:sortableColumn property="billingCurrency" title="${message(code:'default.currency.label')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance"/>
-                <g:sortableColumn property="costInBillingCurrency" title="${message(code:'financials.invoice_total')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance"/>
-                <g:sortableColumn property="taxKey.taxRate" title="${message(code:'financials.taxRate')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance"/>
-                <th>${message(code:'financials.amountFinal')}</th>
-                <g:sortableColumn property="costInLocalCurrency" title="${message(code:'financials.newCosts.value')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance"/>
-                <g:sortableColumn property="startDate" title="${message(code:'financials.dateFrom')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance"/>
-                <g:sortableColumn property="costItemElement" title="${message(code:'financials.costItemElement')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance"/>
-                <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR') && !params.orgBasicMemberView}">
-                    <th class="la-action-info"><g:message code="default.actions.label"/></th>
+                <g:sortableColumn property="costTitle" title="${message(code:'financials.newCosts.costTitle')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance" scope="col" rowspan="2"/>
+                <th class="la-no-uppercase" scope="col" rowspan="2">
+                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center"><i class="money bill alternate icon"></i></span>
+                </th>
+                <g:sortableColumn property="billingCurrency" title="${message(code:'default.currency.label')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance" scope="col" rowspan="2"/>
+                <g:sortableColumn property="costInBillingCurrency" title="${message(code:'financials.invoice_total')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance" scope="col" rowspan="2"/>
+                <th scope="col" rowspan="2">${message(code:'financials.taxRate')}</th>
+                <th scope="col" rowspan="2">${message(code:'financials.amountFinal')}</th>
+                <g:sortableColumn property="costInLocalCurrency" title="${message(code:'financials.newCosts.value')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance" scope="col" rowspan="2"/>
+                <g:sortableColumn property="startDate" title="${message(code:'financials.dateFrom')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance" scope="col" class="la-smaller-table-head" />
+                <g:sortableColumn property="costItemElement" title="${message(code:'financials.costItemElement')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance" scope="col" rowspan="2"/>
+                <g:if test="${contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC) && !params.orgBasicMemberView}">
+                    <th class="la-action-info" scope="col" rowspan="2"><g:message code="default.actions.label"/></th>
                 </g:if>
             </g:else>
         </tr>
         <tr>
             <g:if test="${!fixedSubscription}">
                 <g:if test="${showView == "cons"}">
-                    <g:if test="${editable}">
-                        <th colspan="4"></th>
-                    </g:if>
-                    <g:else>
-                        <th colspan="3"></th>
-                    </g:else>
-                    <g:sortableColumn property="sub.startDate" title="${message(code:'financials.subscriptionRunningTime')}" params="[consSort: true]"/>
-                    <th colspan="6"></th>
+                    <g:sortableColumn property="sub.startDate" title="${message(code:'financials.subscriptionRunningTime')}" params="[consSort: true]" scope="col" class="la-smaller-table-head" />
                 </g:if>
                 <g:elseif test="${showView == "subscr"}">
-                    <g:if test="${editable}">
-                        <th colspan="3"></th>
-                    </g:if>
-                    <g:else>
-                        <th colspan="2"></th>
-                    </g:else>
-                    <g:sortableColumn property="sub.startDate" title="${message(code:'financials.subscriptionRunningTime')}" params="[consSort: true]"/>
-                    <th colspan="6"></th>
+                    <g:sortableColumn property="sub.startDate" title="${message(code:'financials.subscriptionRunningTime')}" params="[consSort: true]" scope="col" class="la-smaller-table-head" />
                 </g:elseif>
-                <g:sortableColumn property="ci.endDate" title="${message(code:'financials.dateTo')}" params="[consSort: true]"/>
+                <g:sortableColumn property="ci.endDate" title="${message(code:'financials.dateTo')}" params="[consSort: true]" scope="col" class="la-smaller-table-head" />
             </g:if>
             <g:else>
-                <g:if test="${showView == "cons"}">
-                    <th colspan="10"></th>
-                </g:if>
-                <g:elseif test="${showView == "consAtSubscr"}">
-                    <th colspan="9"></th>
-                </g:elseif>
-                <g:elseif test="${showView == "subscr"}">
-                    <th colspan="8"></th>
-                </g:elseif>
-                <g:sortableColumn property="ci.endDate" title="${message(code:'financials.dateTo')}" params="[consSort: true, sub: fixedSubscription.id]" mapping="subfinance"/>
+                <g:sortableColumn property="ci.endDate" title="${message(code:'financials.dateTo')}" params="[consSort: true, sub: fixedSubscription.id]" mapping="subfinance" scope="col" class="la-smaller-table-head" />
             </g:else>
-            <th colspan="2"></th>
         </tr>
     </thead>
     <tbody>
@@ -267,7 +247,7 @@
                         ${ci.costItemElement?.getI10n("value")}
                     </td>
                     <g:if test="${!params.orgBasicMemberView}">
-                        <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR')}">
+                        <g:if test="${contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
                             <td class="x">
                                 <g:if test="${fixedSubscription}">
                                     <g:link mapping="subfinanceEditCI" params='[sub:"${fixedSubscription.id}", id:"${ci.id}", showView:"cons", offset: params.offset]' class="ui icon button blue la-modern-button trigger-modal" data-id_suffix="edit_${ci.id}"
@@ -287,7 +267,7 @@
                                         aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                         <i aria-hidden="true" class="write icon"></i>
                                     </g:link>
-                                    <span  class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'financials.costItem.copy.tooltip')}">
+                                    <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'financials.costItem.copy.tooltip')}">
                                         <g:link controller="finance" action="copyCostItem" params='[sub:"${ci.sub?.id}", id:"${ci.id}", showView:"cons", offset: params.offset]' class="ui icon button blue la-modern-button trigger-modal" data-id_suffix="copy_${ci.id}">
                                             <i class="copy icon"></i>
                                         </g:link>
@@ -302,7 +282,7 @@
                                 </g:link>
                             </td>
                         </g:if>
-                        <g:elseif test="${accessService.ctxPermAffiliation(CustomerTypeService.ORG_INST_PRO, 'INST_EDITOR')}">
+                        <g:elseif test="${contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_INST_PRO)}">
                             <td class="x">
                                 <g:if test="${fixedSubscription}">
                                     <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'financials.costItem.transfer.tooltip')}">

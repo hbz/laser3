@@ -19,13 +19,11 @@
           </tr>
         </thead>
         <tbody>
-          <g:each in="${user.affiliations}" var="af">
             <tr>
-              <td>${af.id}</td>
-              <td>${af.org.name}</td>
-              <td>${message(code:"cv.roles.${af.formalRole.authority}")}</td>
+              <td>${user.id}</td>
+              <td>${user.formalOrg?.name}</td>
+              <td>${message(code:"cv.roles.${user.formalRole?.authority}")}</td>
             </tr>
-          </g:each>
         </tbody>
       </table>
 

@@ -3,6 +3,7 @@ package de.laser.api.v0.special
 import de.laser.*
 import de.laser.api.v0.*
 import de.laser.storage.Constants
+import de.laser.traces.DeletedObject
 import de.laser.utils.DateUtils
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
@@ -131,9 +132,14 @@ class ApiEZB {
     static JSON getAllOrgs() {
         Collection<Object> result = []
 
-        List<Org> orgs = getAccessibleOrgs()
+        List<Org> orgs = getAccessibleOrgs(), orgsWithEZBPerm = ApiToolkit.getOrgsWithSpecialAPIAccess(ApiToolkit.API_LEVEL_EZB)
         orgs.each { o ->
             result << ApiUnsecuredMapReader.getOrganisationStubMap(o)
+        }
+        DeletedObject.withTransaction {
+            DeletedObject.executeQuery('select do from DeletedObject do join do.combos delc where do.oldObjectType = :org and delc.accessibleOrg in (:orgsWithOAPerm)', [org: Org.class.name, orgsWithEZBPerm: orgsWithEZBPerm]).each { DeletedObject delObj ->
+                result.addAll(ApiUnsecuredMapReader.getDeletedObjectStubMap(delObj))
+            }
         }
 
         return result ? new JSON(result) : null
@@ -226,7 +232,7 @@ class ApiEZB {
                         "case ie_access_end_date when null then tipp_access_end_date else ie_access_end_date end as access_end_date " +
                         "from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id " +
                         "where ie_subscription_fk = :subId and ie_status_rv_fk != :removed ${dateFilter} order by ie_sortname, ie_name", genericFilter+[removed: RDStore.TIPP_STATUS_REMOVED.id])
-                List<GroovyRowResult> packageData = sql.rows('select pkg_id, pkg_name from subscription_package join package on sp_pkg_fk = pkg_id where sp_sub_fk = :subId', [subId: sub.id])
+                List<GroovyRowResult> packageData = sql.rows('select pkg_id, pkg_name, pkg_nominal_platform_fk, plat_name from subscription_package join package on sp_pkg_fk = pkg_id join platform on pkg_nominal_platform_fk = plat_id where sp_sub_fk = :subId', [subId: sub.id])
                 List<GroovyRowResult> packageIDs = sql.rows('select id_pkg_fk, id_value, idns_ns from identifier join identifier_namespace on id_ns_fk = idns_id join subscription_package on id_pkg_fk = sp_pkg_fk where sp_sub_fk = :subId', [subId: sub.id])
                 //log.debug("select id_pkg_fk, id_value, idns_ns from identifier join identifier_namespace on id_ns_fk = idns_id join subscription_package on id_pkg_fk = sp_pkg_fk where sp_sub_fk = ${sub.id}")
                 List<GroovyRowResult> otherTitleIdentifierNamespaces = sql.rows('select distinct(idns_ns) from identifier_namespace join identifier on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id join issue_entitlement on tipp_id = ie_tipp_fk where ie_subscription_fk = :subId and lower(idns_ns) != any(:coreTitleNS)', [subId: sub.id, coreTitleNS: sql.connection.createArrayOf('varchar', IdentifierNamespace.CORE_TITLE_NS as Object[])])
@@ -311,8 +317,8 @@ class ApiEZB {
         //log.debug("processing ${tipp.name}")
         //publication_title
         outRow.add(row['ie_name'])
-        GroovyRowResult printIdentifier = identifiers.find { GroovyRowResult idRow -> idRow['idns_ns'] in ['pisbn', 'issn'] },
-                        onlineIdentifier = identifiers.find { GroovyRowResult idRow -> idRow['idns_ns'] in ['isbn', 'eissn'] }
+        GroovyRowResult printIdentifier = identifiers.find { GroovyRowResult idRow -> idRow['idns_ns'] in ['isbn', 'issn'] },
+                        onlineIdentifier = identifiers.find { GroovyRowResult idRow -> idRow['idns_ns'] in ['eisbn', 'eissn'] }
         //print_identifier - namespace pISBN is proprietary for LAS:eR because no eISBN is existing and ISBN is used for eBooks as well
         if (printIdentifier)
             outRow.add(printIdentifier['id_value'])

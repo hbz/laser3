@@ -107,6 +107,7 @@
                             <g:message code="myinst.noSubscriptionOwner"/>
                         </g:else>
                     </div>
+                    <%--
                     <div class="field">
                         <label><g:message code="myinst.addMembers.linkPackages"/></label>
                         <div class="field">
@@ -135,6 +136,7 @@
                             </g:else>
                         </div>
                     </div>
+                    --%>
                     <div class="field">
                         <ui:datepicker label="subscription.startDate.label" id="valid_from" name="valid_from" value="" />
                         <ui:datepicker label="subscription.endDate.label" id="valid_to" name="valid_to" value="" />
@@ -208,7 +210,7 @@
         </g:if>
     </g:form>
 
-    <g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR')}">
+    <g:if test="${contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
         <hr />
 
             <ui:msg class="info" header="${message(code: 'myinst.noMembers.cons.header')}" noClose="true">
@@ -221,22 +223,26 @@
     $.fn.form.settings.rules.memberAssignal = function() {
         let isUnique = false;
         if($("[name='selectedOrgs']:checked").length > 1) {
-            $(".memberProperty").each( function(i) {
-                isUnique = $(this).val().length === 0;
-                if(!isUnique) {
-                    return;
-                }
-            });
-            if(!isUnique)
-                return false;
-            $(".memberPropertyDropdown").each( function(i) {
-                isUnique = $(this).dropdown('get value').length === 0;
-                if(!isUnique) {
-                    return;
-                }
-            });
-            if(!isUnique)
-                return false;
+            if($(".memberProperty").length > 0) {
+                $(".memberProperty").each( function(i) {
+                    isUnique = $(this).val().length === 0;
+                    if(!isUnique) {
+                        return;
+                    }
+                });
+                if(!isUnique)
+                    return false;
+            }
+            if($(".memberPropertyDropdown").length) {
+                $(".memberPropertyDropdown").each( function(i) {
+                    isUnique = $(this).dropdown('get value').length === 0;
+                    if(!isUnique) {
+                        return;
+                    }
+                });
+                if(!isUnique)
+                    return false;
+            }
             return $('#customerIdentifier').val().length === 0 && $('#requestorId').val().length === 0
         }
         else return true;
