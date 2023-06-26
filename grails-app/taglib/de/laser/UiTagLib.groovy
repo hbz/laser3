@@ -650,11 +650,11 @@ class UiTagLib {
                 }
                 out << '</div> </div>'
             }
-        } else {
-            out << '<i aria-hidden="true" class="arrow left icon disabled"></i>'
+        } else if (object.hasProperty('retirementDate')){}
+        else out << '<i aria-hidden="true" class="arrow left icon disabled"></i>'
+        if ( (startDate) || (endDate) ) {
+            out << '<span class="la-annual-rings-text">' + startDate + dash + endDate + '</span>'
         }
-        out << '<span class="la-annual-rings-text">' + startDate + dash + endDate + '</span>'
-
         out << "<a class='ui ${color} circular tiny label la-popup-tooltip la-delay'  data-variation='tiny' data-content='Status: ${tooltip}'>"
         out << '       &nbsp;'
         out << '</a>'
@@ -689,9 +689,9 @@ class UiTagLib {
                 }
                 out << '</div> </div>'
             }
-        } else {
-            out << '<i aria-hidden="true" class="arrow right icon disabled"></i>'
-        }
+
+        } else if (object.hasProperty('retirementDate')){}
+        else out << '<i aria-hidden="true" class="arrow right icon disabled"></i>'
         out << '</div>'
     }
 
