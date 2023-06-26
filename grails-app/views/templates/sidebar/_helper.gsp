@@ -12,7 +12,7 @@
     <g:if test="${contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
         <ui:actionsDropdownItem data-ui="modal" href="#modalCreateDocument" message="template.documents.add"/>
     </g:if>
-    <g:if test="${contextService.hasAffiliathasPermAsInstEditor_or_ROLEADMINion(CustomerTypeService.PERMS_PRO)}"><!-- TODO: workflows-permissions -->
+    <g:if test="${contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)}"><!-- TODO: workflows-permissions -->
         <ui:actionsDropdownItem data-ui="modal" href="#modalCreateWorkflow" message="workflow.instantiate"/>
     </g:if>
 </g:if>
