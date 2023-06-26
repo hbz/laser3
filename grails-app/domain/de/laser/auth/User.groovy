@@ -39,8 +39,8 @@ class User {
         display     blank: true, nullable: true
         email       blank: true, nullable: true
         image       blank: true, nullable: true
-        formalOrg   blank: false, nullable: true
-        formalRole  blank: false, nullable: true
+        formalOrg                nullable: true
+        formalRole               nullable: true
     }
 
     static mapping = {
