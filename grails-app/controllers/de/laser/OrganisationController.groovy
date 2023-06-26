@@ -248,9 +248,9 @@ class OrganisationController  {
      * Call to list the academic institutions without consortia
      * @return a list of institutions; basic consortia members or single users
      */
-    @DebugInfo(ctxConsortiumCheckPermAffiliation_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_USER'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasAffiliationForConsortium_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_USER'], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = { 
-        ctx.accessService.ctxConsortiumCheckPermAffiliation_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_USER')
+        ctx.contextService.hasAffiliationForConsortium_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_USER')
     })
     def listInstitution() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
@@ -1196,9 +1196,9 @@ class OrganisationController  {
      * @return the task table view
      * @see Task
      */
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_PRO, 'INST_USER'])
+    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_USER')
+        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
     })
     @Check404(domain=Org)
     def tasks() {
@@ -1213,9 +1213,9 @@ class OrganisationController  {
         result
     }
 
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_PRO, 'INST_USER'])
+    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_USER')
+        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
     })
     @Check404()
     def workflows() {
@@ -1232,9 +1232,9 @@ class OrganisationController  {
      * @see Doc
      * @see DocContext
      */
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER'])
+    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER')
+        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     })
     @Check404(domain=Org)
     def documents() {
@@ -1563,9 +1563,9 @@ class OrganisationController  {
      * Call to list the public contacts of the given organisation
      * @return a table view of public contacts
      */
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER'])
+    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER')
+        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     })
     @Check404(domain=Org)
     def addressbook() {
@@ -1604,9 +1604,9 @@ class OrganisationController  {
      * @return a table view of the reader numbers, grouped by semesters on the one hand, due dates on the other
      * @see ReaderNumber
      */
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_BASIC, 'INST_USER'])
+    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_BASIC])
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_BASIC, 'INST_USER')
+        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_BASIC)
     })
     @Check404(domain=Org)
     def readerNumber() {
@@ -1688,9 +1688,9 @@ class OrganisationController  {
      * @return a list view of access points
      * @see de.laser.oap.OrgAccessPoint
      */
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_BASIC, 'INST_USER'])
+    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_BASIC])
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_BASIC, 'INST_USER')
+        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_BASIC)
     })
     @Check404(domain=Org)
     def accessPoints() {
@@ -1859,9 +1859,9 @@ class OrganisationController  {
      * (adds or removes a combo link between the institution and the consortium)
      * @see Combo
      */
-    @DebugInfo(ctxConsortiumCheckPermAffiliation_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasAffiliationForConsortium_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.ctxConsortiumCheckPermAffiliation_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR')
+        ctx.contextService.hasAffiliationForConsortium_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR')
     })
     def toggleCombo() {
         Map<String,Object> ctrlResult = organisationControllerService.toggleCombo(this,params)

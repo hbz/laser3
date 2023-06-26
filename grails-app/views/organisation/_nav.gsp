@@ -45,7 +45,7 @@
     </g:if>
     <g:if test="${!isProviderOrAgency}">
         <g:if test="${inContextOrg}">
-            <ui:securedSubNavItem affiliation="INST_ADM" controller="myInstitution" action="users" message="org.nav.users" />
+            <ui:securedSubNavItem instRole="INST_ADM" controller="myInstitution" action="users" message="org.nav.users" />
         </g:if>
         <g:else>
             <%-- this kind of check is necessary because it should not be displayed at all if user has no specRole --%>
@@ -54,7 +54,7 @@
             </sec:ifAnyGranted>
         </g:else>
         <g:if test="${inContextOrg}">
-            <ui:securedSubNavItem affiliation="INST_ADM" affiliationOrg="${orgInstance}"
+            <ui:securedSubNavItem instRole="INST_ADM" affiliationOrg="${orgInstance}"
                                   controller="organisation" action="settings" params="${breadcrumbParams}" message="org.nav.dataTransfer" />
         </g:if>
         <g:elseif test="${accessService.otherOrgAndComboCheckPermAffiliation_or_ROLEADMIN(orgInstance, CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_ADM')}">

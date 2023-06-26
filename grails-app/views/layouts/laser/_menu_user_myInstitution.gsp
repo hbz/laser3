@@ -21,13 +21,13 @@
 
         <ui:securedMainNavItem addItemAttributes="true" controller="myInstitution" action="finance" message="menu.institutions.finance" />
         <ui:securedMainNavItem addItemAttributes="true" orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" specRole="ROLE_ADMIN" controller="costConfiguration" action="index" message="menu.institutions.costConfiguration" />
-        <ui:securedMainNavItem addItemAttributes="true" affiliation="INST_EDITOR" orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" specRole="ROLE_ADMIN" controller="myInstitution" action="financeImport" message="menu.institutions.financeImport" />
+        <ui:securedMainNavItem addItemAttributes="true" instRole="INST_EDITOR" orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" specRole="ROLE_ADMIN" controller="myInstitution" action="financeImport" message="menu.institutions.financeImport" />
         <ui:securedMainNavItem addItemAttributes="true" orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" specRole="ROLE_ADMIN" controller="myInstitution" action="budgetCodes" message="menu.institutions.budgetCodes" />
 
         <div class="divider"></div>
 
         <ui:securedMainNavItem addItemAttributes="true" orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="subscriptionsManagement" message="menu.institutions.subscriptionsManagement" />
-        <ui:securedMainNavItem addItemAttributes="true" affiliation="INST_ADM" controller="myInstitution" action="users" message="menu.institutions.users" />
+        <ui:securedMainNavItem addItemAttributes="true" instRole="INST_ADM" controller="myInstitution" action="users" message="menu.institutions.users" />
         <ui:securedMainNavItem addItemAttributes="true" orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="managePrivatePropertyDefinitions" message="menu.institutions.manage_props" />
 
         <div class="divider"></div>

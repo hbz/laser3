@@ -84,7 +84,7 @@
         </ui:exportDropdown>
 </g:if>
 
-<g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')}">
+<g:if test="${contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
     <ui:actionsDropdown>
         <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionDropdownItems: true]]}" />
 
@@ -205,17 +205,17 @@
         </g:if>
     </ui:actionsDropdown>
 </g:if>
-<g:elseif test="${accessService.ctxPermAffiliation(CustomerTypeService.PERMS_BASIC, 'INST_EDITOR')}">
+<g:elseif test="${contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_BASIC)}">
     <ui:actionsDropdown>
         <ui:actionsDropdownItem message="template.addNote" data-ui="modal" href="#modalCreateNote" />
     </ui:actionsDropdown>
 </g:elseif>
 
-<g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.PERMS_BASIC, 'INST_EDITOR')}">
+<g:if test="${contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_BASIC)}">
     <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionModals: true, ownobj: subscription, owntp: 'subscription']]}" />
 </g:if>
 
-%{--<g:if test="${editable || accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_EDITOR')}">--}%
+%{--<g:if test="${editable || contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)}">--}%
 %{--    <laser:render template="/templates/documents/modal" model="${[ownobj: subscription, owntp: 'subscription']}"/>--}%
 %{--    <laser:render template="/templates/tasks/modal_create" model="${[ownobj: subscription, owntp: 'subscription']}"/>--}%
 %{--    <laser:render template="/templates/notes/modal_create" model="${[ownobj: subscription, owntp: 'subscription']}"/>--}%

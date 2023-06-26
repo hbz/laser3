@@ -66,7 +66,7 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
             </div>
         </div>
     </div>
-    <g:if test="${isConsortialObjects && accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_USER')}">
+    <g:if test="${isConsortialObjects && contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
         <div class="${workFlowPart == CopyElementsService.WORKFLOW_SUBSCRIBER ? 'active' : (workFlowPart in [CopyElementsService.WORKFLOW_PROPERTIES, CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS] ? 'completed' : '')} step">
             <i class=" icon"></i>
             <div class="content">
@@ -114,7 +114,7 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
 <g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS}">
     <laser:render template="/templates/copyElements/copyPackagesAndIEs" />
 </g:elseif>
-<g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_SUBSCRIBER && isConsortialObjects && accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR')}">
+<g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_SUBSCRIBER && isConsortialObjects && contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
     <laser:render template="/templates/copyElements/copySubscriber" />
 </g:elseif>
 <g:else>
