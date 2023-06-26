@@ -87,7 +87,8 @@
                                 <i aria-hidden="true" class="write icon"></i>
                             </a>
                         </g:if>
-                        <g:if test="${(user == taskInstance.creator && user.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')) || contextService.getUser().hasCtxAffiliation_or_ROLEADMIN('INST_ADM')}">
+                        <g:if test="${(user == taskInstance.creator && userService.checkAffiliation_or_ROLEADMIN(user, contextService.getOrg(), 'INST_EDITOR')) || contextService.isInstAdm_or_ROLEADMIN()}">
+%{-- todo: orig.                       <g:if test="${(user == taskInstance.creator && user.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')) || contextService.isInstAdm_or_ROLEADMIN()}">--}%
                             <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.task")}"
                                     data-confirm-term-how="delete"

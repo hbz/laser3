@@ -30,7 +30,7 @@ class IssueEntitlementGroup {
         name        (blank: false, unique: 'sub')
         description (nullable: true, blank: true)
         sub         (unique: 'name')
-        surveyConfig (nullable: true, blank: false)
+        surveyConfig (nullable: true)
     }
 
     static mapping = {

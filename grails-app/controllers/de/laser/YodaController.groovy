@@ -457,6 +457,22 @@ class YodaController {
                                     test     : ''
                             ]
 
+                            if (da.isInstUser_or_ROLEADMIN()) {
+                                mInfo.debug.test        = 'isInstUser_or_ROLEADMIN()'
+                                mInfo.debug.affil       = 'INST_USER'
+                                mInfo.debug.specRole    = 'ROLE_ADMIN'
+                            }
+                            if (da.isInstEditor_or_ROLEADMIN()) {
+                                mInfo.debug.test        = 'isInstEditor_or_ROLEADMIN()'
+                                mInfo.debug.affil       = 'INST_EDITOR'
+                                mInfo.debug.specRole    = 'ROLE_ADMIN'
+                            }
+                            if (da.isInstAdm_or_ROLEADMIN()) {
+                                mInfo.debug.test        = 'isInstAdm_or_ROLEADMIN()'
+                                mInfo.debug.affil       = 'INST_ADM'
+                                mInfo.debug.specRole    = 'ROLE_ADMIN'
+                            }
+
                             if (da.hasPermAsInstUser_or_ROLEADMIN()) {
                                 mInfo.debug.test        = 'hasPermAsInstUser_or_ROLEADMIN()' //  + da.hasPermAsInstUser_or_ROLEADMIN().toList()
                                 mInfo.debug.perm        = da.hasPermAsInstUser_or_ROLEADMIN().toList()[0]
@@ -475,17 +491,11 @@ class YodaController {
                                 mInfo.debug.affil       = 'INST_ADM'
                                 mInfo.debug.specRole    = 'ROLE_ADMIN'
                             }
-                            if (da.hasAffiliationForConsortium_or_ROLEADMIN()) {
-                                mInfo.debug.test        = 'hasAffiliationForConsortium_or_ROLEADMIN()' //  + da.hasAffiliationForConsortium_or_ROLEADMIN().toList()
-                                mInfo.debug.perm        = da.hasAffiliationForConsortium_or_ROLEADMIN().toList()[0]
-                                mInfo.debug.affil       = da.hasAffiliationForConsortium_or_ROLEADMIN().toList()[1]
+                            if (da.hasPermAsInstRoleAsConsortium_or_ROLEADMIN()) {
+                                mInfo.debug.test        = 'hasPermAsInstRoleAsConsortium_or_ROLEADMIN()' //  + da.hasPermAsInstRoleAsConsortium_or_ROLEADMIN().toList()
+                                mInfo.debug.perm        = da.hasPermAsInstRoleAsConsortium_or_ROLEADMIN().toList()[0]
+                                mInfo.debug.affil       = da.hasPermAsInstRoleAsConsortium_or_ROLEADMIN().toList()[1]
                                 mInfo.debug.type        = 'Consortium'
-                                mInfo.debug.specRole    = 'ROLE_ADMIN'
-                            }
-
-                            if (da.hasCtxAffiliation_or_ROLEADMIN()) {
-                                mInfo.debug.test        = 'hasCtxAffiliation_or_ROLEADMIN()' //  + da.hasCtxAffiliation_or_ROLEADMIN().toList()
-                                mInfo.debug.affil       = da.hasCtxAffiliation_or_ROLEADMIN().toList()[0]
                                 mInfo.debug.specRole    = 'ROLE_ADMIN'
                             }
 

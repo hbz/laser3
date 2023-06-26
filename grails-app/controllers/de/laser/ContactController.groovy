@@ -31,9 +31,9 @@ class ContactController  {
 	 * Creating a new contact entity: takes the given parameters and constructs a new contact entity with them
 	 * @return the contact view in case of success or returning to the creation page with an error message
 	 */
-	@DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], wtc = DebugInfo.WITH_TRANSACTION)
+	@DebugInfo(isInstEditor_or_ROLEADMIN = true, wtc = DebugInfo.WITH_TRANSACTION)
 	@Secured(closure = {
-		ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+		ctx.contextService.isInstEditor_or_ROLEADMIN()
 	})
     def create() {
 		Contact.withTransaction {
@@ -78,9 +78,9 @@ class ContactController  {
 	 * Deletes the given contact entity
 	 * @return the contact list in case of success; the details view otherwise
 	 */
-	@DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], wtc = DebugInfo.WITH_TRANSACTION)
+	@DebugInfo(isInstEditor_or_ROLEADMIN = true, wtc = DebugInfo.WITH_TRANSACTION)
 	@Secured(closure = {
-		ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+		ctx.contextService.isInstEditor_or_ROLEADMIN()
 	})
     def delete() {
 		Contact.withTransaction {
