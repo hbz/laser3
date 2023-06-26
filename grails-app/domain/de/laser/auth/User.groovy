@@ -198,6 +198,7 @@ class User {
      * @param instUserRole the INST_-role to check for
      * @return does the user have the given INST_-role granted?
      */
+    @Deprecated
     boolean hasCtxAffiliation_or_ROLEADMIN(String instUserRole) {
         BeanStore.getUserService().checkAffiliation_or_ROLEADMIN(this, BeanStore.getContextService().getOrg(), instUserRole)
     }

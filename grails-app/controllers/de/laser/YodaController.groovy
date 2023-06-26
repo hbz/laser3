@@ -499,12 +499,6 @@ class YodaController {
                                 mInfo.debug.specRole    = 'ROLE_ADMIN'
                             }
 
-                            if (da.hasCtxAffiliation_or_ROLEADMIN()) {
-                                mInfo.debug.test        = 'hasCtxAffiliation_or_ROLEADMIN()' //  + da.hasCtxAffiliation_or_ROLEADMIN().toList()
-                                mInfo.debug.affil       = da.hasCtxAffiliation_or_ROLEADMIN().toList()[0]
-                                mInfo.debug.specRole    = 'ROLE_ADMIN'
-                            }
-
                             if (da.ctrlService()) {
                                 mInfo.ctrlService = da.ctrlService()
                                 if (da.ctrlService() == DebugInfo.WITH_TRANSACTION) {
