@@ -22,7 +22,7 @@ class ContextService {
     SpringSecurityService springSecurityService
     UserService userService
 
-    // -- Formal --
+    // -- Formal/context object getter --
 
     /**
      * Retrieves the institution used for the current session
@@ -97,7 +97,7 @@ class ContextService {
         return new SessionCacheWrapper()
     }
 
-    // -- Formal checks @ user.formalOrg, user.formalRole + user.isFormal(role, formalOrg)
+    // -- Formal checks @ user.isFormal(user.formalRole, user.formalOrg)
 
     boolean isInstUser_or_ROLEADMIN() {
         _hasInstRole_or_ROLEADMIN('INST_USER')
