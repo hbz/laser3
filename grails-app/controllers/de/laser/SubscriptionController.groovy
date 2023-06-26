@@ -1337,6 +1337,21 @@ class SubscriptionController {
     }
 
     /**
+     * Call to list the current title groups of the subscription
+     * @return the list of title groups for the given subscription
+     */
+    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+    })
+    def manageDiscountScale() {
+        Map<String, Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
+        result.discountScales = result.subscription.discountScales
+        result
+    }
+
+
+    /**
      * Call to edit the given title group
      * @return either the edit view or the index view, when form data has been submitted
      */
