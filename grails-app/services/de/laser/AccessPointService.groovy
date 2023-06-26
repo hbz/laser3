@@ -256,7 +256,7 @@ class AccessPointService {
                     }
                 }
             }
-            accessPointData.add([exportClickMeService.createTableCell(format, ' ')])
+            //accessPointData.add([exportClickMeService.createTableCell(format, ' ')])
 
         }
 
@@ -322,7 +322,7 @@ class AccessPointService {
                     }
                 }
             }
-            accessPointData.add([[field: '', style: null]])
+            //accessPointData.add([[field: '', style: null]])
 
         }
         if(onlyMap){
@@ -390,7 +390,7 @@ class AccessPointService {
                     }
                 }
             }
-            accessPointData.add([[field: '', style: null]])
+            //accessPointData.add([[field: '', style: null]])
 
         }
 
@@ -436,7 +436,7 @@ class AccessPointService {
                 }
             }
             accessPointData.add(row)
-            accessPointData.add([[field: '', style: null]])
+            //accessPointData.add([[field: '', style: null]])
 
 
         }
