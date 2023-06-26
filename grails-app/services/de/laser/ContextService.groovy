@@ -20,6 +20,7 @@ class ContextService {
     AccessService accessService
     CacheService cacheService
     SpringSecurityService springSecurityService
+    UserService userService
 
     // -- Formal --
 
@@ -96,6 +97,18 @@ class ContextService {
         return new SessionCacheWrapper()
     }
 
+    // -- Formal checks @ user.formalOrg, user.formalRole + user.isFormal(role, formalOrg)
+
+    boolean isInstUser_or_ROLEADMIN() {
+        _hasInstRole_or_ROLEADMIN('INST_USER')
+    }
+    boolean isInstEditor_or_ROLEADMIN() {
+        _hasInstRole_or_ROLEADMIN('INST_EDITOR')
+    }
+    boolean isInstAdm_or_ROLEADMIN() {
+        _hasInstRole_or_ROLEADMIN('INST_ADM')
+    }
+
     // -- Formal checks @ user.formalOrg - all withFakeRole --
 
     /**
@@ -145,6 +158,14 @@ class ContextService {
     }
 
     // -- private
+
+    private boolean _hasInstRole_or_ROLEADMIN(String instUserRole) {
+        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
+            return true
+        }
+        //BeanStore.getUserService().checkAffiliation_or_ROLEADMIN(this, BeanStore.getContextService().getOrg(), instUserRole)
+        userService.checkAffiliation_or_ROLEADMIN(getUser(), getOrg(), instUserRole)
+    }
 
     private boolean _hasAffiliation(String orgPerms, String instUserRole) {
         accessService._hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(orgPerms.split(','), instUserRole)
