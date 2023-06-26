@@ -131,7 +131,7 @@
                                     <g:set var="countOrgsWithTermination"
                                            value="${surveyConfig.countOrgsWithTermination()}"/>
                                 </g:if>
-                                <g:if test="${countOrgsWithTermination >= 0}">
+                                <g:if test="${surveyConfig && countOrgsWithTermination >= 0}">
                                     <g:link controller="survey" action="renewalEvaluation"
                                             id="${surveyConfig.surveyInfo.id}">
                                         ${countOrgsWithTermination}
@@ -145,7 +145,39 @@
 
                 <div class="ui card">
                     <div class="content">
+                        <dl>
+                            <dt class="control-label">${message(code: 'subscription.discountScale.label')}</dt>
+                            <dd>
 
+                                <a href="#" id="discountScale" class="xEditableManyToOne editable editable-click" data-onblur="ignore" data-pk="${subscription.class.name}:${subscription.id}" data-confirm-term-how="ok"
+                                   data-type="select" data-name="discountScale" data-source="/ajaxJson/getSubscriptionDiscountScaleList?sub=${subscription.id}" data-url="/ajax/editableSetValue" data-emptytext="${message(code:'default.button.edit.label')}">
+
+                                    <g:if test="${subscription.discountScale}">
+                                        ${subscription.discountScale.name} : ${subscription.discountScale.discount}
+                                        <g:if test="${subscription.discountScale.note}">
+                                            <span data-position="top left" class="la-popup-tooltip la-delay"
+                                                  data-content="${subscription.discountScale.note}">
+                                                <i class="info circle icon blue"></i>
+                                            </span>
+                                        </g:if>
+                                    </g:if>
+                                </a>
+                                <laser:script file="${this.getGroovyPageFileName()}">
+                                    $('body #discountScale').editable('destroy').editable({
+                                        tpl: '<select class="ui dropdown"></select>'
+                                        }).on('shown', function() {
+                                        r2d2.initDynamicUiStuff('body');
+
+                                        $('.ui.dropdown')
+                                            .dropdown({
+                                            clearable: true
+                                        })
+                                        ;
+                                        }).on('hidden', function() {
+                                        });
+                                </laser:script>
+                            </dd>
+                        </dl>
                     </div>
                 </div>
             </div>
