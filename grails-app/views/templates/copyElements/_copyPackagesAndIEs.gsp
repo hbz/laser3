@@ -332,7 +332,7 @@
                                                     <div class="item">
                                                         <ui:listIcon hideTooltip="true" type="${item.ie.tipp.titleType}"/>
                                                         <strong>
-                                                            <g:link controller="tipp" action="show" id="${item.ie.tipp.id}">${item.ie.name}</g:link>
+                                                            <g:link controller="tipp" action="show" id="${item.ie.tipp.id}">${item.ie.tipp.name}</g:link>
                                                         </strong>
                                                     </div>
                                                 </g:each>
@@ -380,7 +380,7 @@
                                                         <ui:listIcon hideTooltip="true"
                                                                         type="${item.ie.tipp.titleType}"/>
                                                         <strong><g:link controller="tipp" action="show"
-                                                                        id="${item.ie.tipp.id}">${item.ie.name}</g:link></strong>
+                                                                        id="${item.ie.tipp.id}">${item.ie.tipp.name}</g:link></strong>
                                                     </div>
                                                 </g:each>
                                             </div>

@@ -271,7 +271,7 @@ class DetailsExportManager {
         else if (export.KEY == IssueEntitlementExport.KEY) {
             Long subId = LocalExportHelper.getDetailsCache( export.token ).id
             result = IssueEntitlement.executeQuery(
-                    'select ie from IssueEntitlement ie where ie.subscription.id = :subId and ie.tipp.id in (:idList) order by ie.name',
+                    'select ie from IssueEntitlement ie where ie.subscription.id = :subId and ie.tipp.id in (:idList) order by ie.tipp.sortname',
                     [subId: subId, idList: idList]
             )
         }

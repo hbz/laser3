@@ -108,7 +108,7 @@ class IssueEntitlementExport extends BaseDetailsExport {
                     content.add( piList ? piList.join( BaseDetailsExport.CSV_VALUE_SEPARATOR ) : '' )
                 }
                 else if (key == '@-entitlement-tippName') {
-                    content.add( ie.name ?: '' )
+                    content.add( ie.tipp.name ?: '' )
                 }
                 else if (key == '@-entitlement-tippDeweyDecimalClassification') {
                     List<String> ddcList = ie.tipp.ddcs.collect { ddc ->

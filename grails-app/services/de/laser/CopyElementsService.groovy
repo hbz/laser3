@@ -1545,7 +1545,7 @@ class CopyElementsService {
                             boolean check = targetIEs.find { IssueEntitlement targetIE -> targetIE.tipp.id == ie.tipp.id && targetIE.status != RDStore.TIPP_STATUS_REMOVED }
                             if (check) {
                                 // mich gibts schon! Da aber der Prozeß asynchron läuft, kann keine Fehlermeldung (mehr) ausgegeben werden!
-                                Object[] args = [ie.name]
+                                Object[] args = [ie.tipp.name]
                                 //flash.error += messageSource.getMessage('subscription.err.titleAlreadyExistsInTargetSub', args, locale)
                             } else {
                                 def properties = ie.properties

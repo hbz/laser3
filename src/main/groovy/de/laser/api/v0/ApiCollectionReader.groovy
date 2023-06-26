@@ -343,8 +343,7 @@ class ApiCollectionReader {
                 [sub: subPkg.subscription, pkg: subPkg.pkg, statusTipp: RDStore.TIPP_STATUS_REMOVED, statusIe: RDStore.TIPP_STATUS_REMOVED]
         )
         */
-        //missing are names etc., verify output - continue here!
-        List ieRows = sql.rows("select ie_id, ie_name, ie_guid, ie_access_start_date, ie_access_end_date, ie_last_updated, (select rdv_value from refdata_value where rdv_id = ie_status_rv_fk) as ie_status, (select rdv_value from refdata_value where (rdv_id = ie_medium_rv_fk and ie_medium_rv_fk is not null) or (ie_medium_rv_fk is null and rdv_id = tipp_medium_rv_fk)) as ie_medium, ie_perpetual_access_by_sub_fk, " +
+        List ieRows = sql.rows("select ie_id, ie_guid, ie_access_start_date, ie_access_end_date, ie_last_updated, (select rdv_value from refdata_value where rdv_id = tipp_medium_rv_fk) as tipp_medium, ie_perpetual_access_by_sub_fk, " +
                 "tipp_guid, tipp_name, tipp_host_platform_url, tipp_gokb_id, tipp_pkg_fk, tipp_date_first_in_print, tipp_date_first_online, tipp_first_author, tipp_first_editor, " +
                 "tipp_publisher_name, tipp_imprint, tipp_volume, tipp_edition_number, tipp_last_updated, tipp_series_name, tipp_subject_reference, (select rdv_value from refdata_value where rdv_id = tipp_access_type_rv_fk) as tipp_access_type, (select rdv_value from refdata_value where rdv_id = tipp_open_access_rv_fk) as tipp_open_access, " +
                 "tipp_last_updated, tipp_id, (select rdv_value from refdata_value where rdv_id = tipp_status_rv_fk) as tipp_status, " +
@@ -380,13 +379,13 @@ class ApiCollectionReader {
             //println "now processing row ${i}"
             //result << ApiIssueEntitlement.getIssueEntitlementMap(ie, ignoreRelation, context) // de.laser.IssueEntitlement
             Map<String, Object> ie = [globalUID: row['ie_guid']]
-            ie.name = row['ie_name']
+            //ie.name = row['ie_name']
             ie.accessStartDate = row['ie_access_start_date'] ? ApiToolkit.formatInternalDate(row['ie_access_start_date']) : null
             ie.accessEndDate = row['ie_access_end_date'] ? ApiToolkit.formatInternalDate(row['ie_access_end_date']) : null
             ie.lastUpdated = row['ie_last_updated'] ? ApiToolkit.formatInternalDate(row['ie_last_updated']) : null
-            //RefdataValues
-            ie.medium = row['ie_medium'] //fallback tipp_medium already in query
-            ie.status = row['ie_status']
+            //RefdataValues - both removed as of API version 2.0
+            //ie.medium = row['ie_medium']
+            //ie.status = row['tipp_status']
             ie.perpetualAccessBySub = ApiStubReader.requestSubscriptionStub(Subscription.get(row['ie_perpetual_access_by_sub_fk']), context, false)
             List coverages = [], priceItems = []
             coverageMap.get(row['ie_id']).eachWithIndex { GroovyRowResult covRow, int j ->
