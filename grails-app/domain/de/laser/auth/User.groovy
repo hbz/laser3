@@ -171,7 +171,7 @@ class User {
 
         (formalOrg?.id in orgIdList) && (formalRole?.id == Role.findByAuthority('INST_ADM').id)
     }
-    
+
     /**
      * Checks if the user is the last INST_ADM of the ${@link Org}s affiliated to
      * @return is the user the last institution admin?
@@ -200,16 +200,6 @@ class User {
      */
     boolean hasCtxAffiliation_or_ROLEADMIN(String instUserRole) {
         BeanStore.getUserService().checkAffiliation_or_ROLEADMIN(this, BeanStore.getContextService().getOrg(), instUserRole)
-    }
-
-    /**
-     * Checks if the user has the given affiliation for the foreign {@link Org} to check
-     * @param instUserRole the INST_-role to check for
-     * @param orgToCheck the {@link Org} to check whether the user is affiliated to
-     * @return does the user have the given INST_-role for the given org?
-     */
-    boolean hasOrgAffiliation_or_ROLEADMIN(Org orgToCheck, String instUserRole) {
-        BeanStore.getUserService().checkAffiliation_or_ROLEADMIN(this, orgToCheck, instUserRole)
     }
 
     /**

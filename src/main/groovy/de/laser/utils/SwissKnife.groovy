@@ -153,7 +153,8 @@ class SwissKnife {
                 check = instRoleCheck && orgPermCheck
 
                 if (attrs.instRole && attrs.affiliationOrg && check) { // ???
-                    check = user.hasOrgAffiliation_or_ROLEADMIN(attrs.affiliationOrg, attrs.instRole)
+                    check = BeanStore.getUserService().checkAffiliation_or_ROLEADMIN(user, attrs.affiliationOrg, attrs.instRole)
+                    // check = user.hasOrgAffiliation_or_ROLEADMIN(attrs.affiliationOrg, attrs.instRole)
                 }
             }
             checkMap.put(lsmnic, check)
