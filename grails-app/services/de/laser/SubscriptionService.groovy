@@ -1109,7 +1109,7 @@ join sub.orgRelations or_sub where
     }
 
     /**
-     * Substitution call for {@link #addEntitlement(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, boolean)}
+     * Substitution call for {@link #addEntitlement(java.lang.Object, java.lang.Object, java.lang.Object, java.lang.Object, boolean, java.lang.Object)}
      * @param sub the subscription to which the title should be added
      * @param gokbId the we:kb ID of the title
      * @param issueEntitlementOverwrite eventually cached imported local data
@@ -1838,6 +1838,9 @@ join sub.orgRelations or_sub where
                 case "cancellation date":
                 case "manual cancellation date": colMap.manualCancellationDate = c
                     break
+                case "automatische verlängerung":
+                case "automatic renewal": colMap.isAutomaticRenewAnnually = c
+                    break
                 case "lizenztyp":
                 case "subscription type":
                 case "type": colMap.kind = c
@@ -1867,6 +1870,9 @@ join sub.orgRelations or_sub where
                     break
                 case "data exchange release":
                 case "freigabe daten": colMap.isPublicForApi = c
+                    break
+                case "holding selection":
+                case "paketzuschnitt": colMap.holdingSelection = c
                     break
                 default:
                     //check if property definition
@@ -2003,6 +2009,19 @@ join sub.orgRelations or_sub where
                     }
                 }
             }
+            //holdingSelection(nullable:true, blank:false) -> to holdingSelection
+            if(colMap.holdingSelection != null) {
+                String holdingSelectionKey = cols[colMap.holdingSelection].trim()
+                if(holdingSelectionKey) {
+                    String holdingSelection = refdataService.retrieveRefdataValueOID(holdingSelectionKey,RDConstants.SUBSCRIPTION_HOLDING)
+                    if(holdingSelection) {
+                        candidate.holdingSelection = holdingSelection
+                    }
+                    else {
+                        mappingErrorBag.noValidHoldingSelection = holdingSelectionKey
+                    }
+                }
+            }
             //provider
             if(colMap.provider != null) {
                 String providerIdCandidate = cols[colMap.provider]?.trim()
@@ -2069,6 +2088,24 @@ join sub.orgRelations or_sub where
                 Date manualCancellationDate = DateUtils.parseDateGeneric(cols[colMap.manualCancellationDate])
                 if(manualCancellationDate)
                     candidate.manualCancellationDate = manualCancellationDate
+            }
+            //isAutomaticRenewAnnually
+            if(colMap.isAutomaticRenewAnnually != null) {
+                if(startDate && endDate) {
+                    String autoRenewKey = cols[colMap.isAutomaticRenewAnnually].trim()
+                    if(autoRenewKey) {
+                        String yesNo = refdataService.retrieveRefdataValueOID(autoRenewKey,RDConstants.Y_N)
+                        if(yesNo) {
+                            candidate.isAutomaticRenewAnnually = (yesNo == "${RDStore.YN_YES.class.name}:${RDStore.YN_YES.id}")
+                        }
+                        else {
+                            mappingErrorBag.noValidAutoRenew = autoRenewKey
+                        }
+                    }
+                }
+                else {
+                    mappingErrorBag.invalidDateRangeForRenew = true
+                }
             }
             //instanceOf(nullable:true, blank:false)
             if(colMap.instanceOf != null && colMap.member != null) {
@@ -2203,6 +2240,7 @@ join sub.orgRelations or_sub where
                 sub.startDate = entry.startDate ? databaseDateFormatParser.parse(entry.startDate) : null
                 sub.endDate = entry.endDate ? databaseDateFormatParser.parse(entry.endDate) : null
                 sub.manualCancellationDate = entry.manualCancellationDate ? databaseDateFormatParser.parse(entry.manualCancellationDate) : null
+                sub.isAutomaticRenewAnnually = entry.isAutomaticRenewAnnually ?: false
                 /* TODO [ticket=2276]
                 if(sub.type == SUBSCRIPTION_TYPE_ADMINISTRATIVE)
                     sub.administrative = true*/
