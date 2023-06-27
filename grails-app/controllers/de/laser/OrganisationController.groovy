@@ -1939,8 +1939,7 @@ class OrganisationController  {
     boolean checkIsEditable(User user, Org org) {
         boolean isEditable = false
         Org contextOrg = contextService.getOrg()
-        Org orgInstance = org
-        boolean inContextOrg =  orgInstance?.id == contextOrg.id
+        boolean inContextOrg = org.id == contextOrg.id
         boolean userHasEditableRights = userService.hasAffiliation_or_ROLEADMIN(user, contextOrg, 'INST_EDITOR')
         // todo: orig. --- boolean userHasEditableRights = user.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
         boolean userIsYoda            = user.isYoda()
@@ -1976,7 +1975,7 @@ class OrganisationController  {
                 } else {
                     switch (contextOrg.getCustomerType()){
                         case [ CustomerTypeService.ORG_INST_BASIC, CustomerTypeService.ORG_INST_PRO ] :
-                            switch (orgInstance.getCustomerType()){
+                            switch (org.getCustomerType()){
                                 case CustomerTypeService.ORG_INST_BASIC:        isEditable = userIsYoda; break
                                 case CustomerTypeService.ORG_INST_PRO:          isEditable = userIsYoda; break
                                 case CustomerTypeService.ORG_CONSORTIUM_BASIC:  isEditable = userIsYoda; break
@@ -1985,7 +1984,7 @@ class OrganisationController  {
                             }
                             break
                         case [ CustomerTypeService.ORG_CONSORTIUM_BASIC, CustomerTypeService.ORG_CONSORTIUM_PRO ] :
-                            switch (orgInstance.getCustomerType()){
+                            switch (org.getCustomerType()){
                                 case CustomerTypeService.ORG_INST_BASIC:        isEditable = userHasEditableRights; break
                                 case CustomerTypeService.ORG_INST_PRO:          isEditable = userHasEditableRights; break
                                 case CustomerTypeService.ORG_CONSORTIUM_BASIC:  isEditable = userIsYoda; break
