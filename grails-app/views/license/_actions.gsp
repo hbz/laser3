@@ -9,7 +9,7 @@
     </ui:exportDropdown>
 </g:if>
 
-<g:if test="${userService.checkAffiliationAndCtxOrg(user, institution, 'INST_EDITOR')}">
+<g:if test="${userService.hasFormalAffiliation(user, institution, 'INST_EDITOR')}">
     <ui:actionsDropdown>
         <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionDropdownItems: true]]}" />
 

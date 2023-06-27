@@ -110,7 +110,7 @@ class AccessService {
     boolean _hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(String[] orgPerms, String instUserRole) {
 
         if (contextService.getUser() && instUserRole) {
-            if (userService.checkAffiliation_or_ROLEADMIN(contextService.getUser(), contextService.getOrg(), instUserRole)) {
+            if (userService.hasAffiliation_or_ROLEADMIN(contextService.getUser(), contextService.getOrg(), instUserRole)) {
 // todo: orig. ---            if (contextService.getUser().hasCtxAffiliation_or_ROLEADMIN( instUserRole )) {
                 return _hasPerm_forOrg_withFakeRole(orgPerms, contextService.getOrg())
             }

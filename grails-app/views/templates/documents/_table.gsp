@@ -191,13 +191,13 @@
                                 </g:if>
                                 <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i class="download icon"></i></g:link>
                                 %{-- todo: !docctx.sharedFrom --}%
-                                <g:if test="${userService.checkAffiliationAndCtxOrg(user, docctx.owner.owner, 'INST_EDITOR') && inOwnerOrg && !docctx.sharedFrom}">
+                                <g:if test="${userService.hasFormalAffiliation(user, docctx.owner.owner, 'INST_EDITOR') && inOwnerOrg && !docctx.sharedFrom}">
                                     <button type="button" class="ui icon blue button la-modern-button la-popup-tooltip la-delay" data-ui="modal" data-href="#modalEditDocument_${docctx.id}" data-content="${message(code:"template.documents.edit")}"><i class="pencil icon"></i></button>
                                     <%
                                         securityWorkaroundList.add(docctx as DocContext)
                                     %>
                                 </g:if>
-                                <g:if test="${!docctx.sharedFrom && !docctx.isShared && userService.checkAffiliationAndCtxOrg(user, docctx.owner.owner, 'INST_EDITOR') && inOwnerOrg}">
+                                <g:if test="${!docctx.sharedFrom && !docctx.isShared && userService.hasFormalAffiliation(user, docctx.owner.owner, 'INST_EDITOR') && inOwnerOrg}">
                                     <g:link controller="${controllerName}" action="deleteDocuments" class="ui icon negative button la-modern-button js-open-confirm-modal"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"
                                             data-confirm-term-how="delete"

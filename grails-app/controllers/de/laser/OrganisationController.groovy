@@ -101,8 +101,8 @@ class OrganisationController  {
         result.isComboRelated = isComboRelated
         result.contextOrg = result.institution //for the properties template
 
-        Boolean hasAccess = (result.inContextOrg && userService.checkAffiliationAndCtxOrg(result.user, result.orgInstance, 'INST_ADM')) ||
-                (isComboRelated && userService.checkAffiliationAndCtxOrg(result.user, result.institution, 'INST_ADM')) ||
+        Boolean hasAccess = (result.inContextOrg && userService.hasFormalAffiliation(result.user, result.orgInstance, 'INST_ADM')) ||
+                (isComboRelated && userService.hasFormalAffiliation(result.user, result.institution, 'INST_ADM')) ||
                 SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
         // forbidden access
@@ -1109,17 +1109,17 @@ class OrganisationController  {
 
         //IF ORG is a Provider and is NOT ex we:kb
         if(!result.orgInstance.gokbId && (result.orgInstance.sector == RDStore.O_SECTOR_PUBLISHER || RDStore.OT_PROVIDER.id in result.allOrgTypeIds)) {
-            result.editable_identifier = userService.checkAffiliationAndCtxOrg(result.user, result.orgInstance, 'INST_EDITOR') ||
+            result.editable_identifier = userService.hasFormalAffiliation(result.user, result.orgInstance, 'INST_EDITOR') ||
                     contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
         }
         else if(!result.orgInstance.gokbId) {
             if (contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
                 List<Long> consortia = Combo.executeQuery('select c.id from Combo c where c.type = :type and c.fromOrg = :target and c.toOrg = :context',[type:RDStore.COMBO_TYPE_CONSORTIUM,target:result.orgInstance,context:result.institution])
-                if(consortia.size() == 1 && userService.checkAffiliationAndCtxOrg(result.user, result.institution, 'INST_EDITOR'))
+                if(consortia.size() == 1 && userService.hasFormalAffiliation(result.user, result.institution, 'INST_EDITOR'))
                     result.editable_identifier = true
             }
             else
-                result.editable_identifier = userService.checkAffiliationAndCtxOrg_or_ROLEADMIN(result.user, result.orgInstance, 'INST_EDITOR')
+                result.editable_identifier = userService.hasFormalAffiliation_or_ROLEADMIN(result.user, result.orgInstance, 'INST_EDITOR')
         }
         // TODO: experimental asynchronous task
         //waitAll(task_orgRoles, task_properties)
@@ -1132,14 +1132,14 @@ class OrganisationController  {
         Boolean isComboRelated = Combo.findByFromOrgAndToOrg(result.orgInstance, result.institution)
         result.isComboRelated = isComboRelated
 
-        result.hasAccessToCustomeridentifier = ((inContextOrg && userService.checkAffiliationAndCtxOrg(result.user, result.institution, 'INST_USER')) ||
-                (isComboRelated && userService.checkAffiliationAndCtxOrg(result.user, result.institution, 'INST_USER')) ||
+        result.hasAccessToCustomeridentifier = ((inContextOrg && userService.hasFormalAffiliation(result.user, result.institution, 'INST_USER')) ||
+                (isComboRelated && userService.hasFormalAffiliation(result.user, result.institution, 'INST_USER')) ||
                 SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) && OrgSetting.get(result.orgInstance, OrgSetting.KEYS.CUSTOMER_TYPE) != OrgSetting.SETTING_NOT_FOUND
 
         if (result.hasAccessToCustomeridentifier) {
 
-            result.editable_customeridentifier = (inContextOrg && userService.checkAffiliationAndCtxOrg(result.user, result.institution, 'INST_EDITOR')) ||
-                    (isComboRelated && userService.checkAffiliationAndCtxOrg(result.user, result.institution, 'INST_EDITOR')) ||
+            result.editable_customeridentifier = (inContextOrg && userService.hasFormalAffiliation(result.user, result.institution, 'INST_EDITOR')) ||
+                    (isComboRelated && userService.hasFormalAffiliation(result.user, result.institution, 'INST_EDITOR')) ||
                     SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
             // adding default settings
@@ -1941,7 +1941,7 @@ class OrganisationController  {
         Org contextOrg = contextService.getOrg()
         Org orgInstance = org
         boolean inContextOrg =  orgInstance?.id == contextOrg.id
-        boolean userHasEditableRights = userService.checkAffiliation_or_ROLEADMIN(user, contextOrg, 'INST_EDITOR')
+        boolean userHasEditableRights = userService.hasAffiliation_or_ROLEADMIN(user, contextOrg, 'INST_EDITOR')
         // todo: orig. --- boolean userHasEditableRights = user.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
         boolean userIsYoda            = user.isYoda()
         // TODO: --> CHECK LOGIC IMPLEMENTATION <--
@@ -1955,13 +1955,13 @@ class OrganisationController  {
                 isEditable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
                 break
             case 'properties':
-                isEditable = userService.checkAffiliationAndCtxOrg_or_ROLEADMIN(user, Org.get(params.id), 'INST_EDITOR')
+                isEditable = userService.hasFormalAffiliation_or_ROLEADMIN(user, Org.get(params.id), 'INST_EDITOR')
                 break
             case 'users':
-                isEditable = userService.checkAffiliationAndCtxOrg_or_ROLEADMIN(user, Org.get(params.id), 'INST_ADM')
+                isEditable = userService.hasFormalAffiliation_or_ROLEADMIN(user, Org.get(params.id), 'INST_ADM')
                 break
             case [ 'addOrgType', 'deleteOrgType' ]:
-                isEditable = userService.checkAffiliationAndCtxOrg_or_ROLEADMIN(user, Org.get(params.org), 'INST_ADM')
+                isEditable = userService.hasFormalAffiliation_or_ROLEADMIN(user, Org.get(params.org), 'INST_ADM')
                 break
             case 'myPublicContacts':
                 if (inContextOrg) {
@@ -1997,7 +1997,7 @@ class OrganisationController  {
                 }
                 break
             default:
-                isEditable = userService.checkAffiliationAndCtxOrg_or_ROLEADMIN(user, org,'INST_EDITOR')
+                isEditable = userService.hasFormalAffiliation_or_ROLEADMIN(user, org,'INST_EDITOR')
         }
         isEditable
     }

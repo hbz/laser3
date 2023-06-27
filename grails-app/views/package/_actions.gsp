@@ -9,7 +9,7 @@
         <ui:actionsDropdownItem message="task.create.new" data-ui="modal" href="#modalCreateTask" />
         <ui:actionsDropdownItem message="template.documents.add" data-ui="modal" href="#modalCreateDocument" />
     </g:if>
-    <g:if test="${userService.checkAffiliationAndCtxOrg(user,org,'INST_EDITOR') && ! ['list'].contains(actionName)}">
+    <g:if test="${userService.hasFormalAffiliation(user,org,'INST_EDITOR') && ! ['list'].contains(actionName)}">
         <ui:actionsDropdownItem message="template.addNote" data-ui="modal" href="#modalCreateNote" />
     </g:if>
     <g:if test="${(editable || contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_ORG_PRO_CONSORTIUM_BASIC)) && ! ['list'].contains(actionName)}">
@@ -266,6 +266,6 @@
     <laser:render template="/templates/documents/modal" model="${[ownobj: packageInstance, institution: contextService.getOrg(), owntp: 'pkg']}"/>
     <laser:render template="/templates/tasks/modal_create" model="${[ownobj:packageInstance, owntp:'pkg']}"/>
 </g:if>
-<g:if test="${userService.checkAffiliationAndCtxOrg(user,org,'INST_EDITOR') && ! ['list'].contains(actionName)}">
+<g:if test="${userService.hasFormalAffiliation(user,org,'INST_EDITOR') && ! ['list'].contains(actionName)}">
     <laser:render template="/templates/notes/modal_create" model="${[ownobj: packageInstance, owntp: 'pkg']}"/>
 </g:if>--}%

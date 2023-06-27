@@ -45,7 +45,7 @@ class AddressbookService {
      * @return true if the user is affiliated at least as INST_EDITOR with the given tenant or institution or is a global admin, false otherwise
      */
     boolean isAddressEditable(Address address, User user) {
-        userService.checkAffiliationAndCtxOrg_or_ROLEADMIN(user, address.org, 'INST_EDITOR')
+        userService.hasFormalAffiliation_or_ROLEADMIN(user, address.org, 'INST_EDITOR')
     }
 
     /**
@@ -56,7 +56,7 @@ class AddressbookService {
      */
     boolean isContactEditable(Contact contact, User user) {
         Org org = contact.getPrs()?.tenant ?: contact.org
-        userService.checkAffiliationAndCtxOrg_or_ROLEADMIN(user, org, 'INST_EDITOR')
+        userService.hasFormalAffiliation_or_ROLEADMIN(user, org, 'INST_EDITOR')
     }
 
     /**
@@ -66,7 +66,7 @@ class AddressbookService {
      * @return true if the user is affiliated at least as INST_EDITOR with the given tenant or is a global admin, false otherwise
      */
     boolean isPersonEditable(Person person, User user) {
-        userService.checkAffiliationAndCtxOrg_or_ROLEADMIN(user, person.tenant , 'INST_EDITOR')
+        userService.hasFormalAffiliation_or_ROLEADMIN(user, person.tenant , 'INST_EDITOR')
     }
 
     /**

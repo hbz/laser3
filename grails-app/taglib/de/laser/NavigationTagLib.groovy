@@ -287,7 +287,7 @@ class NavigationTagLib {
             )
         }
         else {
-            if (userService.checkAffiliation_or_ROLEADMIN(contextService.getUser(), contextService.getOrg(), attrs.instRole as String)) {
+            if (userService.hasAffiliation_or_ROLEADMIN(contextService.getUser(), contextService.getOrg(), attrs.instRole as String)) {
 // todo: orig. ---           if (contextService.getUser().hasCtxAffiliation_or_ROLEADMIN(attrs.instRole)) {
                 out << '<div class="item disabled la-popup-tooltip la-delay" data-position="left center" data-content="' + message(code:'tooltip.onlyFullMembership') + '" role="menuitem">' + linkBody + '</div>'
             }

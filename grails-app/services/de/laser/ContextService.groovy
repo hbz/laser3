@@ -163,8 +163,7 @@ class ContextService {
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
             return true
         }
-        //BeanStore.getUserService().checkAffiliation_or_ROLEADMIN(this, BeanStore.getContextService().getOrg(), instUserRole)
-        userService.checkAffiliation_or_ROLEADMIN(getUser(), getOrg(), instUserRole)
+        userService.hasAffiliation_or_ROLEADMIN(getUser(), getOrg(), instUserRole)
     }
 
     private boolean _hasAffiliation(String orgPerms, String instUserRole) {

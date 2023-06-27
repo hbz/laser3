@@ -44,7 +44,7 @@ class CostConfigurationController {
             }
         }
 
-        result.editable = userService.checkAffiliationAndCtxOrg(user, org, 'INST_EDITOR')
+        result.editable = userService.hasFormalAffiliation(user, org, 'INST_EDITOR')
         result.costItemElementConfigurations = costItemElementConfigurations
         result.costItemElements = costItemElements
         result.institution = org

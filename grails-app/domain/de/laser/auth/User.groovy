@@ -195,9 +195,9 @@ class User {
 
 //    @Deprecated
 //    boolean hasCtxAffiliation_or_ROLEADMIN(String instUserRole) {
-//        BeanStore.getUserService().checkAffiliation_or_ROLEADMIN(this, BeanStore.getContextService().getOrg(), instUserRole)
+//        BeanStore.getUserService().hasAffiliation_or_ROLEADMIN(this, BeanStore.getContextService().getOrg(), instUserRole)
 //        // TODO - replace with ..
-//        // userService.checkAffiliation_or_ROLEADMIN(user, contextService.getOrg(), instUserRole)
+//        // userService.hasAffiliation_or_ROLEADMIN(user, contextService.getOrg(), instUserRole)
 //    }
 
     /**
