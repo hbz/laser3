@@ -1,15 +1,13 @@
 <%@ page import="de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.Org" %>
 <laser:serviceInjection/>
 
-<g:if test="${contextService.isInstEditor_or_ROLEADMIN()}">
-    <ui:actionsDropdown>
-            <g:if test="${actionName == 'currentSurveysConsortia' || actionName == 'workflowsSurveysConsortia'}">
 
-                <laser:render template="actionsCreate"/>
-
-            </g:if>
-            <g:else>
-
+<g:if test="${contextService.getUser().hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')}">
+<ui:actionsDropdown>
+        <g:if test="${actionName == 'currentSurveysConsortia' || actionName == 'workflowsSurveysConsortia'}">
+            <laser:render template="actionsCreate"/>
+        </g:if>
+        <g:else>
                 <ui:actionsDropdownItem message="template.addNote" data-ui="modal" href="#modalCreateNote" />
                 <ui:actionsDropdownItem message="task.create.new" data-ui="modal" href="#modalCreateTask" />
                 <ui:actionsDropdownItem message="template.documents.add" data-ui="modal" href="#modalCreateDocument" />
@@ -145,7 +143,6 @@
                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
                         <i class="trash alternate outline icon"></i> ${message(code:'deletion.survey')}
                     </g:link>
-
                 </g:if>
             </g:else>
     </ui:actionsDropdown>
