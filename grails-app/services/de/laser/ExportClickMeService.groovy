@@ -1267,7 +1267,7 @@ class ExportClickMeService {
 
         EXPORT_SUBSCRIPTION_CONFIG.keySet().each { String key ->
             if(key == 'institutions') {
-                if(customerTypeService.isConsortium(institution.getCustomerType())) {
+                if (institution.isCustomerType_Consortium()) {
                     EXPORT_SUBSCRIPTION_CONFIG.get(key).fields.each {
                         exportFields.put(it.key, it.value)
                     }
@@ -1345,7 +1345,7 @@ class ExportClickMeService {
         Map<String, Object> fields = EXPORT_SUBSCRIPTION_CONFIG as Map
         if(institution.getCustomerType() == CustomerTypeService.ORG_INST_PRO)
             fields.subscription.fields.put('subscription.isAutomaticRenewAnnually', [field: 'isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'])
-        if(!customerTypeService.isConsortium(institution.getCustomerType())) {
+        if (!institution.isCustomerType_Consortium()) {
             fields.remove('institutions')
             fields.subscription.fields.put('subscription.consortium', [field: null, label: 'Consortium', message: 'consortium.label', defaultChecked: true])
             fields.licenses.fields.put('license.consortium', [field: null, label: 'Consortium', message: 'exportClickMe.license.consortium', defaultChecked: true])
@@ -1443,7 +1443,7 @@ class ExportClickMeService {
 
         EXPORT_LICENSE_CONFIG.keySet().each { String key ->
             if(key == 'institutions') {
-                if(customerTypeService.isConsortium(institution.getCustomerType())) {
+                if (institution.isCustomerType_Consortium()) {
                     EXPORT_LICENSE_CONFIG.get(key).fields.each {
                         exportFields.put(it.key, it.value)
                     }
@@ -1484,7 +1484,7 @@ class ExportClickMeService {
     Map<String, Object> getExportLicenseFieldsForUI(Org institution) {
 
         Map<String, Object> fields = EXPORT_LICENSE_CONFIG as Map
-        if(!customerTypeService.isConsortium(institution.getCustomerType())) {
+        if (!institution.isCustomerType_Consortium()) {
             fields.remove('institutions')
             fields.licenses.fields.put('consortium', [field: null, label: 'Consortium', message: 'consortium.label', defaultChecked: true])
         }
