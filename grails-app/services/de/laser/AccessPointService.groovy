@@ -256,7 +256,7 @@ class AccessPointService {
                     }
                 }
             }
-            accessPointData.add([exportClickMeService.createTableCell(format, ' ')])
+            //accessPointData.add([exportClickMeService.createTableCell(format, ' ')])
 
         }
 
@@ -322,7 +322,7 @@ class AccessPointService {
                     }
                 }
             }
-            accessPointData.add([[field: '', style: null]])
+            //accessPointData.add([[field: '', style: null]])
 
         }
         if(onlyMap){
@@ -390,7 +390,7 @@ class AccessPointService {
                     }
                 }
             }
-            accessPointData.add([[field: '', style: null]])
+            //accessPointData.add([[field: '', style: null]])
 
         }
 
@@ -427,16 +427,17 @@ class AccessPointService {
             accessPoints.each { accessPoint ->
 
                 if (accessPoint.accessMethod == RDStore.ACCESS_POINT_TYPE_SHIBBOLETH) {
-                    String sortname = org.sortname ?: ' ', name = it.name ?: ' ', accessPointName = accessPoint.name ?: ' ', accessMethod = accessPoint.accessMethod ? accessPoint.accessMethod.getI10n('value') : ' ', entityId = accessPoint.entityId ?: ' '
+                    String sortname = org.sortname ?: ' ', name = org.name ?: ' ', accessPointName = accessPoint.name ?: ' ', accessMethod = accessPoint.accessMethod ? accessPoint.accessMethod.getI10n('value') : ' ', entityId = accessPoint.entityId ?: ' '
                     row.add(exportClickMeService.createTableCell(format, sortname))
-                    row.add(exportClickMeService.createTableCell(format, org.name))
+                    row.add(exportClickMeService.createTableCell(format, name))
                     row.add(exportClickMeService.createTableCell(format, accessPointName))
                     row.add(exportClickMeService.createTableCell(format, accessMethod))
                     row.add(exportClickMeService.createTableCell(format, entityId))
+                    accessPointData.add(row)
                 }
             }
-            accessPointData.add(row)
-            accessPointData.add([[field: '', style: null]])
+            
+            //accessPointData.add([[field: '', style: null]])
 
 
         }
