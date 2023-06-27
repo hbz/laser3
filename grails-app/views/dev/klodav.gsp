@@ -108,7 +108,9 @@
     contextUser: ${contextUser}
     contextOrg: ${contextOrg}
 
-        SpringSecurityUtils.ifAnyGranted([])      : ${SpringSecurityUtils.ifAnyGranted([])}
+    md5: ${contextUser.id.encodeAsMD5()}
+
+    SpringSecurityUtils.ifAnyGranted([])      : ${SpringSecurityUtils.ifAnyGranted([])}
 
     Roles                 : ${Role.executeQuery("select r from Role r where r.roleType not in ('org', 'fake') order by r.id").collect{ it.id + ':' + it.authority }}
 
