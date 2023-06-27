@@ -1810,7 +1810,7 @@ join sub.orgRelations or_sub where
                 case "name": colMap.name = c
                     break
                 case "member":
-                case "teilnehmer": colMap.member = c
+                case "einrichtung": colMap.member = c
                     break
                 case "vertrag":
                 case "license": colMap.licenses = c

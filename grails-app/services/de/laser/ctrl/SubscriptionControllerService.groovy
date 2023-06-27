@@ -4161,6 +4161,11 @@ class SubscriptionControllerService {
                     return null
                 }
             }
+            Set<Long> excludes = [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id]
+            if(result.institution.isCustomerType_Consortium())
+                excludes << RDStore.OR_SUBSCRIPTION_CONSORTIA.id
+            // restrict visible for templates/links/orgLinksAsList; done by Andreas Gálffy
+            result.visibleOrgRelations = result.subscription.orgRelations.findAll { OrgRole oo -> !(oo.roleType.id in excludes) }
         }
         else {
             if (checkOption in [AccessService.CHECK_EDIT, AccessService.CHECK_VIEW_AND_EDIT]) {
@@ -4168,11 +4173,6 @@ class SubscriptionControllerService {
             }
         }
         result.consortialView = result.showConsortiaFunctions ?: result.contextOrg.isCustomerType_Consortium()
-        Set<Long> excludes = [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id]
-        if(result.institution.isCustomerType_Consortium())
-            excludes << RDStore.OR_SUBSCRIPTION_CONSORTIA.id
-        // restrict visible for templates/links/orgLinksAsList; done by Andreas Gálffy
-        result.visibleOrgRelations = result.subscription.orgRelations.findAll { OrgRole oo -> !(oo.roleType.id in excludes) }
 
         Map args = [:]
         if (result.consortialView) {

@@ -14,6 +14,7 @@ import de.laser.LicenseService
 import de.laser.LinksGenerationService
 import de.laser.ReportingGlobalService
 import de.laser.ReportingLocalService
+import de.laser.SubscriptionDiscountScale
 import de.laser.SubscriptionService
 import de.laser.auth.Role
 import de.laser.ctrl.SubscriptionControllerService
@@ -332,6 +333,22 @@ class AjaxJsonController {
                 [value: 50, text: '50'],
                 [value: 100, text: '100'],
         ]
+        render result as JSON
+    }
+
+    @Secured(['ROLE_USER'])
+    def getSubscriptionDiscountScaleList() {
+        List result = []
+        if(params.sub) {
+            Subscription subscription = Subscription.findById(params.sub)
+            println(subscription)
+            if (subscription) {
+                List<SubscriptionDiscountScale> subscriptionDiscountScaleList = SubscriptionDiscountScale.findAllBySubscription(subscription)
+                subscriptionDiscountScaleList.each {
+                    result << [value: it.id, text: it.name +': '+it.discount ]
+                }
+            }
+        }
         render result as JSON
     }
 

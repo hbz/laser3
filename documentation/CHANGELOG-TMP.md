@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5160    26.06.2023  rc-3.1  3.1.4       Moe     Bug         Lizenzumfrage für Nicht-Teilnehmer: "Lizenzname" in GASCO-Monitor ohne Anführungszeichen übernehmen
+
+--      26.06.2023  rc-3.1  3.1.4       Moe     Bug         Username vergessen Mail geht nicht raus
+
+5159    26.06.2023  rc-3.1  3.1.4       Moe     Bug         Lizenzumfrage: Informations-URL wird mit Codefetzen angezeigt
+
 4973    26.06.2023  dev     3.2         Andreas Feature     Abbau obsoleter Felder aus issueEntitlement
 
 4974    22.06.2023  dev     3.2         Andreas Feature     Verwaltung gelöschter Elemente umgestellt
