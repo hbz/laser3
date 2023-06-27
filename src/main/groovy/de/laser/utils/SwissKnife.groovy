@@ -1,6 +1,5 @@
 package de.laser.utils
 
-import de.laser.AccessService
 import de.laser.ContextService
 import de.laser.Org
 import de.laser.auth.User
@@ -117,7 +116,6 @@ class SwissKnife {
 
     static boolean checkAndCacheNavPermsForCurrentRequest(GroovyPageAttributes attrs, HttpServletRequest request) {
         ContextService contextService = BeanStore.getContextService()
-        AccessService accessService   = BeanStore.getAccessService()
 
         boolean check = false
 
