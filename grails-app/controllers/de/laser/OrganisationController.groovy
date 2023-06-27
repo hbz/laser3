@@ -248,9 +248,9 @@ class OrganisationController  {
      * Call to list the academic institutions without consortia
      * @return a list of institutions; basic consortia members or single users
      */
-    @DebugInfo(hasAffiliationForConsortium_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_USER'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstRoleAsConsortium_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_USER'], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = { 
-        ctx.contextService.hasAffiliationForConsortium_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_USER')
+        ctx.contextService.hasPermAsInstRoleAsConsortium_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_USER')
     })
     def listInstitution() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
@@ -1255,9 +1255,9 @@ class OrganisationController  {
      * it has been attached to; content editing of an uploaded document is not possible in this app!
      * @return the modal to edit the document parameters
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'])
+    @DebugInfo(isInstEditor_or_ROLEADMIN = true)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     def editDocument() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
@@ -1280,9 +1280,9 @@ class OrganisationController  {
      * @return the document table view ({@link #documents()})
      * @see DocstoreService#unifiedDeleteDocuments()
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'])
+    @DebugInfo(isInstEditor_or_ROLEADMIN = true)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     def deleteDocuments() {
         log.debug("deleteDocuments ${params}");
@@ -1300,9 +1300,9 @@ class OrganisationController  {
      * @see Doc
      * @see DocContext
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'])
+    @DebugInfo(isInstUser_or_ROLEADMIN = true)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+        ctx.contextService.isInstUser_or_ROLEADMIN()
     })
     @Check404(domain=Org)
     def notes() {
@@ -1345,9 +1345,9 @@ class OrganisationController  {
      * @return renders the user list template with the users affiliated to this institution
      * @see User
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_ADM'])
+    @DebugInfo(isInstAdm_or_ROLEADMIN = true)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
+        ctx.contextService.isInstAdm_or_ROLEADMIN()
     })
     @Check404(domain=Org)
     def users() {
@@ -1859,9 +1859,9 @@ class OrganisationController  {
      * (adds or removes a combo link between the institution and the consortium)
      * @see Combo
      */
-    @DebugInfo(hasAffiliationForConsortium_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstRoleAsConsortium_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.hasAffiliationForConsortium_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR')
+        ctx.contextService.hasPermAsInstRoleAsConsortium_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR')
     })
     def toggleCombo() {
         Map<String,Object> ctrlResult = organisationControllerService.toggleCombo(this,params)
@@ -1884,9 +1884,9 @@ class OrganisationController  {
      * Call to list the contacts the context institution has attached to the given organisation
      * @return a table view of the contacts
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'])
+    @DebugInfo(isInstUser_or_ROLEADMIN = true)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+        ctx.contextService.isInstUser_or_ROLEADMIN()
     })
     @Check404(domain=Org)
     def myPublicContacts() {
@@ -1941,7 +1941,8 @@ class OrganisationController  {
         Org contextOrg = contextService.getOrg()
         Org orgInstance = org
         boolean inContextOrg =  orgInstance?.id == contextOrg.id
-        boolean userHasEditableRights = user.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+        boolean userHasEditableRights = userService.checkAffiliation_or_ROLEADMIN(user, contextOrg, 'INST_EDITOR')
+        // todo: orig. --- boolean userHasEditableRights = user.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
         boolean userIsYoda            = user.isYoda()
         // TODO: --> CHECK LOGIC IMPLEMENTATION <--
         // TODO: userIsYoda != SpringSecurityUtils.ifAnyGranted('ROLE_YODA') @ user.hasMinRole('ROLE_YODA')

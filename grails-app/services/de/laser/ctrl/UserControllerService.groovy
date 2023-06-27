@@ -40,7 +40,7 @@ class UserControllerService {
             result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || userService.isUserEditableForInstAdm(result.user as User, result.editor as User)
         }
         else {
-            result.editable = result.editor.hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
+            result.editable = contextService.isInstAdm_or_ROLEADMIN() // @ result.editor
         }
         result
     }
@@ -62,7 +62,7 @@ class UserControllerService {
             result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || userService.isUserEditableForInstAdm(result.user as User, result.editor as User)
         }
         else {
-            result.editable = result.editor.hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
+            result.editable = contextService.isInstAdm_or_ROLEADMIN() // @ result.editor
         }
         result
     }

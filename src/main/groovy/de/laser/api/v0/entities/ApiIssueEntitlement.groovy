@@ -82,8 +82,8 @@ class ApiIssueEntitlement {
         result.accessEndDate    = ApiToolkit.formatInternalDate(ie.accessEndDate)
         result.lastUpdated      = ApiToolkit.formatInternalDate(ie.lastUpdated)
 
-        // RefdataValues
-        result.medium           = ie.medium ? ie.medium.value : ie.tipp.medium?.value
+        // RefdataValues - both removed as of API version 2.0
+        //result.medium           = ie.medium ? ie.medium.value : ie.tipp.medium?.value
         //result.status           = ie.status?.value
 
         result.perpetualAccessBySub 	= ApiStubReader.requestSubscriptionStub(ie.perpetualAccessBySub, context)
