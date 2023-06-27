@@ -145,8 +145,7 @@
                                 ${message(code: 'surveyconfig.url.label', args: [i+1])}
                             </dt>
                             <dd>
-                                <ui:xEditable owner="${surveyUrl}" field="url" type="text"/>
-                                overwriteEditable="${false}"/>
+                                <ui:xEditable owner="${surveyUrl}" field="url" type="text" overwriteEditable="${false}"/>
 
                                 <g:if test="${surveyUrl.urlComment}">
                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
