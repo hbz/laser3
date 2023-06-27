@@ -87,7 +87,7 @@
     <div class="withBorder" style="border: 1px solid black;">
         <h4>
             <g:link absolute="true" controller="public" action="gasco"
-                    params="${[q: '"' + surveyConfig.subscription.name + '"']}">
+                    params="${[q: surveyConfig.subscription.name, consortia: "${surveyInfo.owner.class.name}:${surveyInfo.owner.id}"]}">
                 ${surveyConfig.subscription.name} (GASCO-Monitor)
             </g:link>
         </h4>
