@@ -17,7 +17,7 @@
         }
     }
 
-    boolean editable2 = userService.checkAffiliationAndCtxOrg(contextService.getUser(), contextService.getOrg(), 'INST_EDITOR')
+    boolean editable2 = userService.hasFormalAffiliation(contextService.getUser(), contextService.getOrg(), 'INST_EDITOR')
 %>
 
     <ui:card message="license.notes" class="notes la-js-hideable ${css_class}" href="#modalCreateNote" editable="${editable || editable2}">

@@ -347,7 +347,7 @@ class MyInstitutionController  {
 		Profiler prf = new Profiler()
 		prf.setBenchmark('init')
 
-        result.is_inst_admin = userService.checkAffiliationAndCtxOrg(result.user, result.institution, 'INST_ADM')
+        result.is_inst_admin = userService.hasFormalAffiliation(result.user, result.institution, 'INST_ADM')
 
         Date date_restriction = null
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
@@ -748,7 +748,7 @@ class MyInstitutionController  {
 
         result.defaultEndYear = sdf.format(cal.getTime())
 
-        result.is_inst_admin = userService.checkAffiliationAndCtxOrg(result.user, result.institution, 'INST_EDITOR')
+        result.is_inst_admin = userService.hasFormalAffiliation(result.user, result.institution, 'INST_EDITOR')
 
         result.licenses = [] // ERMS-2431
         result.numLicenses = 0
@@ -782,7 +782,7 @@ class MyInstitutionController  {
             params.asOrgType = params.asOrgType ? [params.asOrgType] : defaultOrgRoleType
 
 
-            if (! userService.checkAffiliationAndCtxOrg(user, org, 'INST_EDITOR')) {
+            if (! userService.hasFormalAffiliation(user, org, 'INST_EDITOR')) {
                 flash.error = message(code:'myinst.error.noAdmin', args:[org.name]) as String
                 response.sendError(HttpStatus.SC_FORBIDDEN)
                 // render(status: '403', text:"You do not have permission to access ${org.name}. Please request access on the profile page");
@@ -4423,7 +4423,7 @@ join sub.orgRelations or_sub where
             License license = License.get(params.id)
             boolean isEditable = license.isEditableBy(result.user)
 
-            if (! (userService.checkAffiliationAndCtxOrg(result.user, result.institution, 'INST_EDITOR'))) {
+            if (! (userService.hasFormalAffiliation(result.user, result.institution, 'INST_EDITOR'))) {
                 flash.error = message(code:'license.permissionInfo.noPerms') as String
                 response.sendError(HttpStatus.SC_FORBIDDEN)
                 return;

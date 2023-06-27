@@ -124,7 +124,6 @@ class UserService {
                 user.getSetting(UserSetting.KEYS.DASHBOARD_TAB, RDStore.US_DASHBOARD_TAB_DUE_DATES)
             }
         }
-
         user
     }
 
@@ -174,34 +173,31 @@ class UserService {
      * @param orgToCheck the institution to which affiliation should be checked
      * @return true if the given permission is granted to the user in the given institution (or a missing one overridden by global roles), false otherwise
      */
-    boolean checkAffiliation_or_ROLEADMIN(User userToCheck, Org orgToCheck, String instUserRole) {
+    boolean hasAffiliation_or_ROLEADMIN(User userToCheck, Org orgToCheck, String instUserRole) {
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
             return true // may the force be with you
         }
         if (! SpringSecurityUtils.ifAnyGranted('ROLE_USER')) {
             return false // min restriction fail
         }
-
-        return _checkUserOrgRole(userToCheck, orgToCheck, instUserRole)
+        _checkUserOrgRole(userToCheck, orgToCheck, instUserRole)
     }
 
-    boolean checkAffiliationAndCtxOrg(User userToCheck, Org orgToCheck, String instUserRole) {
+    boolean hasFormalAffiliation(User userToCheck, Org orgToCheck, String instUserRole) {
         if (! userToCheck || ! orgToCheck) {
             return false
         }
         if (orgToCheck.id != contextService.getOrg().id) { // NEW CONSTRAINT
             return false
         }
-
-        return _checkUserOrgRole(userToCheck, orgToCheck, instUserRole)
+        _checkUserOrgRole(userToCheck, orgToCheck, instUserRole)
     }
 
-    boolean checkAffiliationAndCtxOrg_or_ROLEADMIN(User userToCheck, Org orgToCheck, String instUserRole) {
+    boolean hasFormalAffiliation_or_ROLEADMIN(User userToCheck, Org orgToCheck, String instUserRole) {
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
             return true
         }
-
-        checkAffiliationAndCtxOrg(userToCheck, orgToCheck, instUserRole)
+        hasFormalAffiliation(userToCheck, orgToCheck, instUserRole)
     }
 
     private boolean _checkUserOrgRole(User userToCheck, Org orgToCheck, String instUserRole) {
@@ -231,13 +227,13 @@ class UserService {
     // -- todo: check logic
 
     boolean hasComboInstAdmPivileges(User user, Org org) {
-        boolean result = checkAffiliationAndCtxOrg(user, org, 'INST_ADM')
+        boolean result = hasFormalAffiliation(user, org, 'INST_ADM')
 
         List<Org> topOrgs = Org.executeQuery(
                 'select c.toOrg from Combo c where c.fromOrg = :org and c.type = :type', [org: org, type: RDStore.COMBO_TYPE_CONSORTIUM]
         )
         topOrgs.each { top ->
-            if (checkAffiliationAndCtxOrg(user, top as Org, 'INST_ADM')) {
+            if (hasFormalAffiliation(user, top as Org, 'INST_ADM')) {
                 result = true
             }
         }

@@ -117,7 +117,7 @@ class SubscriptionService {
             date_restriction = sdf.parse(params.validOn)
         }
 
-        result.editable = userService.checkAffiliationAndCtxOrg(contextUser, contextOrg, 'INST_EDITOR')
+        result.editable = userService.hasFormalAffiliation(contextUser, contextOrg, 'INST_EDITOR')
 
         if (! params.status) {
             if (params.isSiteReloaded != "yes") {
@@ -181,7 +181,7 @@ class SubscriptionService {
         Map<String,Object> result = [:]
         SwissKnife.setPaginationParams(result, params, contextUser)
 
-        result.editable = userService.checkAffiliationAndCtxOrg(contextUser, contextOrg, 'INST_EDITOR')
+        result.editable = userService.hasFormalAffiliation(contextUser, contextOrg, 'INST_EDITOR')
 
         def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextOrg)
         result.filterSet = tmpQ[2]

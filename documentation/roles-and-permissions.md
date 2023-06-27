@@ -37,9 +37,61 @@
     boolean isConsortium (String customerType)
 
 
+
+### Permission Checks (formal)
+
+#### de.laser.ContextService
+
+    // formal; no fake role
+    boolean isInstUser_or_ROLEADMIN ()
+    boolean isInstEditor_or_ROLEADMIN ()
+    boolean isInstAdm_or_ROLEADMIN ()
+
+    // formal; with fake role
+    boolean hasPerm (String orgPerms)
+    boolean hasPerm_or_ROLEADMIN (String orgPerms)
+
+    // formal; with fake role - in progress
+    boolean hasPermAsInstUser_or_ROLEADMIN (String orgPerms)
+    boolean hasPermAsInstEditor_or_ROLEADMIN (String orgPerms)
+    boolean hasPermAsInstAdm_or_ROLEADMIN (String orgPerms)
+
+### Affiliation Checks
+
+#### de.laser.UserService
+
+    boolean hasAffiliation_or_ROLEADMIN (User userToCheck, Org orgToCheck, String instUserRole)
+
+    boolean hasFormalAffiliation (User userToCheck, Org orgToCheck, String instUserRole)
+    boolean hasFormalAffiliation_or_ROLEADMIN (User userToCheck, Org orgToCheck, String instUserRole)
+
+
+
 ### Various
+
+#### de.laser.auth.User
+
+    Org formalOrg
+    Role formalRole
+
+    boolean isFormal (Role role)
+    boolean isFormal (Org org)
+    boolean isFormal (Role role, Org org)
+
+    boolean isLastInstAdminOf (Org org)
+    boolean isAdmin ()
+    boolean isYoda ()
 
 #### de.laser.Org
 
     boolean hasInstAdmin ()
     boolean hasInstAdminEnabled ()
+
+#### de.laser.ContextService
+
+    User getUser ()
+    Org getOrg ()
+
+#### de.laser.UserService
+
+    void setAffiliation (User user, Serializable formalOrgId, Serializable formalRoleId, FlashScope flash)

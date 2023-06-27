@@ -145,14 +145,14 @@ class SwissKnife {
 
             if (!check) {
 
-                boolean instRoleCheck = attrs.instRole ? BeanStore.getUserService().checkAffiliation_or_ROLEADMIN(user, BeanStore.getContextService().getOrg(), attrs.instRole) : true
+                boolean instRoleCheck = attrs.instRole ? BeanStore.getUserService().hasAffiliation_or_ROLEADMIN(user, BeanStore.getContextService().getOrg(), attrs.instRole) : true
                 // todo: orig. ---  boolean instRoleCheck   = attrs.instRole ? user.hasCtxAffiliation_or_ROLEADMIN(attrs.instRole) : true
                 boolean orgPermCheck  = attrs.orgPerm ? contextService.hasPerm(attrs.orgPerm) : true
 
                 check = instRoleCheck && orgPermCheck
 
                 if (attrs.instRole && attrs.affiliationOrg && check) { // ???
-                    check = BeanStore.getUserService().checkAffiliation_or_ROLEADMIN(user, attrs.affiliationOrg, attrs.instRole)
+                    check = BeanStore.getUserService().hasAffiliation_or_ROLEADMIN(user, attrs.affiliationOrg, attrs.instRole)
                     // check = user.hasOrgAffiliation_or_ROLEADMIN(attrs.affiliationOrg, attrs.instRole)
                 }
             }
