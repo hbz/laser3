@@ -7,6 +7,14 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5165    28.06.2023  dev     3.2         Andreas Bug         lokale Verträge konnten mit Konsortiallizenzen verknüpft werden
+
+5158    28.06.2023  dev     3.2         Andreas Feature     KBART-Export großer Titelmengen umgestellt
+
+5151    28.06.2023  dev     3.2         Andreas Bug         überflüssiges Menü abgeblendet
+
+5155    27.06.2023  dev     3.2         Andreas Feature     Trennzeichen im Einrichtungsexport umgestellt
+
 4943    27.06.2023  dev     3.2         Andreas Feature     Umstellungen und Erweiterungen im Lizenzimport
 
 5160    26.06.2023  rc-3.1  3.1.4       Moe     Bug         Lizenzumfrage für Nicht-Teilnehmer: "Lizenzname" in GASCO-Monitor ohne Anführungszeichen übernehmen

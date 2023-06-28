@@ -87,9 +87,14 @@ class ExportService {
 		List output = []
 		output.add(titleRow.join(separator))
 		columnData.each { row ->
-			if(row.size() > 0)
-				output.add(row.join(separator))
-			else output.add(" ")
+			if(row instanceof GroovyRowResult) {
+				output.add(row.values().join(separator).replaceAll('null', ''))
+			}
+			else {
+				if(row.size() > 0)
+					output.add(row.join(separator))
+				else output.add(" ")
+			}
 		}
 		output.join("\n")
 	}
@@ -2622,9 +2627,30 @@ class ExportService {
 	Map<String,List> generateTitleExportKBART(Map configMap, String entitlementInstance) {
 		log.debug("Begin generateTitleExportKBART")
 		Sql sql = GlobalService.obtainSqlConnection()
-		List<String> titleHeaders = getBaseTitleHeaders()
-		Map<String, List> export = [titleRow:titleHeaders]
+		Map<String, String> titleHeaders = getBaseTitleHeaders(entitlementInstance)
+		Map<String, List> export = [titleRow:titleHeaders.keySet()]
+		Map<String, Object> queryClauseParts = filterService.prepareTitleSQLQuery(configMap, entitlementInstance, sql)
+		String queryBase, countQuery
+		if(entitlementInstance == IssueEntitlement.class.name) {
+			queryBase = "select ${titleHeaders.values().join(', ')} from issue_entitlement left join issue_entitlement_coverage on ic_ie_fk = ie_id join title_instance_package_platform on ie_tipp_fk = tipp_id join package on tipp_pkg_fk = pkg_id join platform on pkg_nominal_platform_fk = plat_id where ${queryClauseParts.where}${queryClauseParts.order}"
+			//countQuery = "select count(*) as countTotal from issue_entitlement left join issue_entitlement_coverage on ic_ie_fk = ie_id join title_instance_package_platform on ie_tipp_fk = tipp_id join package on tipp_pkg_fk = pkg_id join platform on pkg_nominal_platform_fk = plat_id where ${queryClauseParts.where}"
+		}
+		else {
+			queryBase = "select ${titleHeaders.values().join(', ')} from title_instance_package_platform left join tippcoverage on tc_tipp_fk = tipp_id join package on tipp_pkg_fk = pkg_id join platform on pkg_nominal_platform_fk = plat_id where ${queryClauseParts.where}${queryClauseParts.order}"
+			//countQuery = "select count(*) as countTotal from title_instance_package_platform join package on tipp_pkg_fk = pkg_id join platform on pkg_nominal_platform_fk = plat_id where ${queryClauseParts.where}"
+		}
+		//int count = sql.rows(countQuery, queryClauseParts.params)[0]['countTotal'] as int, max = 100000
 		List rows = []
+		/* kept in case of further experiments
+		if(count > 300000) {
+			for(int i = 0; i < count; i+=max) {
+				log.debug("fetching records ${i}-${i+max}")
+				rows.addAll(sql.rows(queryBase+' limit '+max+' offset '+i, queryClauseParts.params))
+			}
+		}
+		else*/
+		rows.addAll(sql.rows(queryBase, queryClauseParts.params))
+		/*
 		Map<String, Object> data = getTitleData(configMap+[format: 'kbart'], entitlementInstance, sql)
         titleHeaders.addAll(data.otherTitleIdentifierNamespaces.idns_ns)
 		data.titles.eachWithIndex { GroovyRowResult title, int outer ->
@@ -2647,6 +2673,7 @@ class ExportService {
 				rows.add(buildRow('kbart', title, data.identifierMap, data.priceItemMap, data.reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces))
 			}
 		}
+		*/
 		export.columnData = rows
 		/*
 		Set<IdentifierNamespace> otherTitleIdentifierNamespaces = getOtherIdentifierNamespaces(entitlementIDs,entitlementInstance)
@@ -3361,62 +3388,94 @@ class ExportService {
 	}
 
 	/**
-	 * Gets the list of column headers for KBART export
-	 * @return a list of column headers
+	 * Gets the map of column headers for KBART export with their database query mappings
+	 * @return a map of column headers and SQL query parts
 	 */
-	List<String> getBaseTitleHeaders() {
-		['publication_title',
-		 'print_identifier',
-		 'online_identifier',
-		 'date_first_issue_online',
-		 'num_first_vol_online',
-		 'num_first_issue_online',
-		 'date_last_issue_online',
-		 'num_last_vol_online',
-		 'num_last_issue_online',
-		 'title_url',
-		 'first_author',
-		 'title_id',
-		 'embargo_info',
-		 'coverage_depth',
-		 'notes',
-		 'publication_type',
-		 'publisher_name',
-		 'date_monograph_published_print',
-		 'date_monograph_published_online',
-		 'monograph_volume',
-		 'monograph_edition',
-		 'first_editor',
-		 'parent_publication_title_id',
-		 'preceding_publication_title_id',
-		 'package_name',
-		 'platform_name',
-		 'last_changed',
-		 'access_start_date',
-		 'access_end_date',
-		 'medium',
-		 'zdb_id',
-		 'doi_identifier',
-		 'ezb_id',
-		 'title_gokb_uuid',
-		 'package_gokb_uuid',
-		 'package_isci',
-		 'package_isil',
-		 'package_ezb_anchor',
-		 'ill_indicator',
-		 'superceding_publication_title_id',
-		 'monograph_parent_collection_title',
-		 'subject_area',
-		 'status',
-		 'access_type',
-		 'oa_type',
-		 'zdb_ppn',
-		 'listprice_eur',
-		 'listprice_gbp',
-		 'listprice_usd',
-		 'localprice_eur',
-		 'localprice_gbp',
-		 'localprice_usd']
+	Map<String, String> getBaseTitleHeaders(String entitlementInstance) {
+		Locale locale = LocaleUtils.getCurrentLocale()
+		Map <String, String> mapping = [publication_title: 'tipp_name as publication_title',
+		 print_identifier: "(select id_value from identifier where id_tipp_fk = tipp_id and ((lower(tipp_title_type) in ('book','monograph') and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.ISBN).id}) or (lower(tipp_title_type) in ('journal','serial') and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.ISSN).id}))) as print_identifier",
+		 online_identifier: "(select id_value from identifier where id_tipp_fk = tipp_id and ((lower(tipp_title_type) in ('book','monograph') and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.EISBN).id}) or (lower(tipp_title_type) in ('journal','serial') and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.EISSN).id}))) as online_identifier",
+		 date_first_issue_online: '',
+		 num_first_vol_online: '',
+		 num_first_issue_online: '',
+		 date_last_issue_online: '',
+		 num_last_vol_online: '',
+		 num_last_issue_online: '',
+		 title_url: 'tipp_host_platform_url as title_url',
+		 first_author: 'tipp_first_author as first_author',
+		 title_id: "(select id_value from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNs('title_id').id}) as title_id",
+		 embargo_info: '',
+		 coverage_depth: '',
+		 notes: '',
+		 publication_type: 'tipp_title_type as publication_type',
+		 publisher_name: 'tipp_publisher_name as publisher_name',
+		 date_monograph_published_print: "to_char(tipp_date_first_in_print, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}') as date_monograph_published_print",
+		 date_monograph_published_online: "to_char(tipp_date_first_online, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}') as date_monograph_published_online",
+		 monograph_volume: 'tipp_volume as monograph_volume',
+		 monograph_edition: 'tipp_edition_statement as monograph_edition',
+		 first_editor: 'tipp_first_editor as first_editor',
+		 parent_publication_title_id: "null as parent_publication_title_id",
+		 preceding_publication_title_id: "null as preceding_publication_title_id",
+		 package_name: 'pkg_name as package_name',
+		 platform_name: 'plat_name as platform_name',
+		 last_changed: "to_char(tipp_last_updated, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}') as last_changed",
+		 access_start_date: "to_char(tipp_access_start_date, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}') as access_start_date",
+		 access_end_date: "to_char(tipp_access_end_date, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}') as access_end_date",
+		 medium: '(select rdv_value from refdata_value where rdv_id = tipp_medium_rv_fk) as medium',
+		 zdb_id: "(select id_value from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.ZDB).id}) as zdb_id",
+		 doi_identifier: "(select id_value from identifier where id_tipp_fk = tipp_id and id_ns_fk = '${IdentifierNamespace.findByNs(IdentifierNamespace.DOI).id}') as doi_identifier",
+		 ezb_id: "(select id_value from identifier where id_tipp_fk = tipp_id and id_ns_fk = '${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EZB, IdentifierNamespace.NS_TITLE).id}') as ezb_id",
+		 title_gokb_uuid: 'tipp_gokb_id as title_gokb_uuid',
+		 package_gokb_uuid: 'pkg_gokb_id as package_gokb_uuid',
+		 package_isci: "(select id_value from identifier where id_pkg_fk = pkg_id and id_ns_fk = '${IdentifierNamespace.findByNs(IdentifierNamespace.ISCI).id}') as package_isci",
+		 package_isil: "(select id_value from identifier where id_pkg_fk = pkg_id and id_ns_fk = '${IdentifierNamespace.findByNsAndNsType("isil", IdentifierNamespace.NS_PACKAGE).id}') as package_isil",
+		 package_ezb_anchor: "(select id_value from identifier where id_pkg_fk = pkg_id and id_ns_fk = '${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EZB, IdentifierNamespace.NS_PACKAGE).id}') as package_ezb_anchor",
+		 ill_indicator: "null as ill_indicator",
+		 superceding_publication_title_id: "null as superceding_publication_title_id",
+		 monograph_parent_collection_title: "null as monograph_parent_collection_title",
+		 subject_area: 'tipp_subject_reference as subject_area',
+		 status: '(select rdv_value from refdata_value where rdv_id = tipp_status_rv_fk) as status',
+		 access_type: '(select rdv_value from refdata_value where rdv_id = tipp_access_type_rv_fk) as access_type',
+		 oa_type: '(select rdv_value from refdata_value where rdv_id = tipp_open_access_rv_fk) as oa_type',
+		 zdb_ppn: "(select id_value from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.ZDB_PPN).id}) as zdb_ppn",
+		 listprice_eur: "(select trim(to_char(pi_list_price, '999999999D99')) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_EUR.id} order by pi_last_updated desc limit 1) as listprice_eur",
+		 listprice_gbp: "(select trim(to_char(pi_list_price, '999999999D99')) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_GBP.id} order by pi_last_updated desc limit 1) as listprice_gbp",
+		 listprice_usd: "(select trim(to_char(pi_list_price, '999999999D99')) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_USD.id} order by pi_last_updated desc limit 1) as listprice_usd",
+		 localprice_eur: '',
+		 localprice_gbp: '',
+		 localprice_usd: '']
+		if(entitlementInstance == IssueEntitlement.class.name) {
+			mapping.date_first_issue_online = "to_char(ic_start_date, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}') as date_first_issue_online"
+			mapping.num_first_vol_online = 'ic_start_volume as num_first_vol_online'
+			mapping.num_first_issue_online = 'ic_start_issue as num_first_issue_online'
+			mapping.date_last_issue_online = "to_char(ic_end_date, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}') as date_last_issue_online"
+			mapping.num_last_vol_online = 'ic_end_volume as num_last_vol_online'
+			mapping.num_last_issue_online = 'ic_end_issue as num_last_issue_online'
+			mapping.embargo_info = 'ic_embargo as embargo_info'
+			mapping.coverage_depth = 'ic_coverage_depth as coverage_depth'
+			mapping.notes = 'ic_coverage_note as notes'
+			mapping.localprice_eur = "(select trim(to_char(pi_local_price, '999999999D99')) from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = ${RDStore.CURRENCY_EUR.id} order by pi_last_updated desc limit 1) as localprice_eur"
+			mapping.localprice_gbp = "(select trim(to_char(pi_local_price, '999999999D99')) from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = ${RDStore.CURRENCY_GBP.id} order by pi_last_updated desc limit 1) as localprice_gbp"
+			mapping.localprice_usd = "(select trim(to_char(pi_local_price, '999999999D99')) from price_item where pi_ie_fk = ie_id and pi_local_currency_rv_fk = ${RDStore.CURRENCY_USD.id} order by pi_last_updated desc limit 1) as localprice_usd"
+		}
+		else {
+			//default to TitleInstancePackagePlatform.class.name
+			mapping.date_first_issue_online = "to_char(tc_start_date, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}') as date_first_issue_online"
+			mapping.num_first_vol_online = 'tc_start_volume as num_first_vol_online'
+			mapping.num_first_issue_online = 'tc_start_issue as num_first_issue_online'
+			mapping.date_last_issue_online = "to_char(tc_end_date, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}') as date_last_issue_online"
+			mapping.num_last_vol_online = 'tc_end_volume as num_last_vol_online'
+			mapping.num_last_issue_online = 'tc_end_issue as num_last_issue_online'
+			mapping.embargo_info = 'tc_embargo as embargo_info'
+			mapping.coverage_depth = 'tc_coverage_depth as coverage_depth'
+			mapping.notes = 'tc_coverage_note as notes'
+			//as substitutes
+			mapping.localprice_eur = "(select trim(to_char(pi_local_price, '999999999D99')) from price_item where pi_tipp_fk = tipp_id and pi_local_currency_rv_fk = ${RDStore.CURRENCY_EUR.id} order by pi_last_updated desc limit 1) as localprice_eur"
+			mapping.localprice_gbp = "(select trim(to_char(pi_local_price, '999999999D99')) from price_item where pi_tipp_fk = tipp_id and pi_local_currency_rv_fk = ${RDStore.CURRENCY_GBP.id} order by pi_last_updated desc limit 1) as localprice_gbp"
+			mapping.localprice_usd = "(select trim(to_char(pi_local_price, '999999999D99')) from price_item where pi_tipp_fk = tipp_id and pi_local_currency_rv_fk = ${RDStore.CURRENCY_USD.id} order by pi_last_updated desc limit 1) as localprice_usd"
+		}
+		mapping
 	}
 
 	@Deprecated
@@ -3634,7 +3693,7 @@ class ExportService {
 		if(format == 'excel')
 			[field: data, style: style]
 		else {
-			if(format == 'kbart' && data == '')
+			if(format == 'kbart' && (data == '' || data == null))
 				' '
 			else "${data}"
 		}

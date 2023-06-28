@@ -24,7 +24,7 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
     public static final NS_LICENSE      = License.class.name
     public static final NS_SUBSCRIPTION = Subscription.class.name
     public static final NS_PACKAGE      = Package.class.name
-    public static final NS_TITLE        = TitleInstance.class.name
+    public static final NS_TITLE        = TitleInstancePackagePlatform.class.name
 
     //organisation identifier namespaces
     public static final String CROSSREF_FUNDER_ID = "crossref funder id"
