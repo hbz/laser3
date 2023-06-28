@@ -6,6 +6,14 @@
     <ui:crumb message="menu.my.currentSubscriptionsTransfer" class="active"/>
 </ui:breadcrumbs>
 
+<ui:controlButtons>
+    <ui:exportDropdown>
+        <ui:exportDropdownItem>
+            <a class="item" data-ui="modal" href="#individuallyExportModal">Export</a>
+        </ui:exportDropdownItem>
+    </ui:exportDropdown>
+</ui:controlButtons>
+
 <ui:h1HeaderWithIcon message="menu.my.currentSubscriptionsTransfer" total="${num_sub_rows}" floated="true"/>
 
 <g:if test="${params.referenceYears}">
@@ -294,7 +302,7 @@
                     </g:if>
 
                     <td class="${countOrgsWithTermination > 0 && countOrgsWithTermination <= 10 ? 'warning' : (countOrgsWithTermination > 10 ? 'negative' : '')}">
-                        <g:if test="${countOrgsWithTermination >= 0}">
+                        <g:if test="${surveyConfig && countOrgsWithTermination >= 0}">
                             <g:link controller="survey" action="renewalEvaluation" id="${surveyConfig.surveyInfo.id}">
                                 ${countOrgsWithTermination}
                             </g:link>
@@ -426,5 +434,7 @@
                  max="${max}" total="${num_sub_rows}"/>
 </g:if>
 
+
+<laser:render template="export/individuallyExportModalSubsTransfer" model="[modalID: 'individuallyExportModal']" />
 
 <laser:htmlEnd/>

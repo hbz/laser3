@@ -1,18 +1,25 @@
-<%@ page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Subscription; de.laser.finance.CostItem" %>
+<%@ page import="de.laser.CustomerTypeService; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Subscription; de.laser.finance.CostItem" %>
 <laser:htmlStart message="subscription.details.manageEntitlementGroup.label" />
+
+<laser:serviceInjection/>
 
 <ui:breadcrumbs>
     <ui:crumb controller="myInstitution" action="currentSubscriptions"
                  text="${message(code: 'myinst.currentSubscriptions.label')}"/>
-    <ui:crumb controller="subscription" action="index" id="${subscription.id}"
+    <ui:crumb controller="subscription" action="subTransfer" id="${subscription.id}"
                  text="${subscription.name}"/>
     <ui:crumb class="active"
                  text="${message(code: 'subscription.details.manageDiscountScale.label')}"/>
 </ui:breadcrumbs>
 
-<ui:controlButtons>
-    <laser:render template="actions"/>
-</ui:controlButtons>
+%{--<ui:controlButtons>
+    <g:if test="${contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)}">
+        <ui:actionsDropdown>
+            <ui:actionsDropdownItem controller="subscription" action="manageDiscountScale" params="${[id: params.id]}"
+                                    message="subscription.details.manageDiscountScale.label"/>
+        </ui:actionsDropdown>
+    </g:if>
+</ui:controlButtons>--}%
 
 <ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}">
     <ui:xEditable owner="${subscription}" field="name" />
@@ -50,12 +57,23 @@
                 <td><ui:xEditable owner="${discountScale}" field="note" type="textarea"/></td>
                 <td class="x">
                     <g:if test="${editable}">
-                            <g:link action="removeEntitlementGroup" class="ui icon negative button"
-                                    params="${[titleGroup: titleGroup.id, sub: subscription.id]}"
+                        <g:if test="${!Subscription.findByDiscountScale(discountScale)}">
+                            <g:link action="manageDiscountScale" class="ui icon negative button"
+                                    params="${[cmd: 'removeDiscountScale', discountScaleId: discountScale.id, id: subscription.id]}"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                 <i class="trash alternate outline icon"></i>
                             </g:link>
+                        </g:if>
+                        <g:else>
+                            <div class="ui icon negative buttons la-popup-tooltip" data-content="${message(code:'subscription.details.manageDiscountScale.linkWithSub')}">
+                                <button class="ui disabled button la-modern-button  la-selectable-button"
+                                        role="button"
+                                        aria-label="${message(code: 'ariaLabel.delete.universal')}">
+                                    <i class="trash alternate outline icon"></i>
+                                </button>
+                            </div>
+                        </g:else>
                     </g:if>
                 </td>
             </tr>
@@ -66,7 +84,7 @@
 
 <ui:modal id="createDiscountScaleModal" message="subscription.details.createDiscountScale.label">
 
-    <g:form action="processCreateDiscountScale" controller="subscription" params="[id: params.id]"
+    <g:form action="manageDiscountScale" controller="subscription" params="[id: params.id, cmd: 'createDiscountScale']"
             method="post" class="ui form">
         <div class="field required ">
             <label>${message(code: 'default.name.label')} <g:message code="messageRequiredField" /></label>

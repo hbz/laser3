@@ -1337,17 +1337,22 @@ class SubscriptionController {
     }
 
     /**
-     * Call to list the current title groups of the subscription
-     * @return the list of title groups for the given subscription
+     * Call to list the current discount scales of the subscription
+     * @return the list of discount scales for the given subscription
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     def manageDiscountScale() {
-        Map<String, Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
-        result.discountScales = result.subscription.discountScales
-        result
+        Map<String, Object> ctrlResult = subscriptionControllerService.manageDiscountScale(this, params)
+        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+                return
+            }
+        }
+        else ctrlResult.result
     }
 
 

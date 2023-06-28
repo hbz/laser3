@@ -33,4 +33,13 @@ class SubscriptionDiscountScale {
         note         (nullable:true)
     }
 
+    /**
+     * Outputs the contact as human-readable string
+     * @return the contact as concatenated string
+     */
+    @Override
+    String toString() {
+        name + ' (' + discount + ')'
+    }
+
 }

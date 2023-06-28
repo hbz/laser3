@@ -387,6 +387,24 @@ class ExportClickMeService {
             ]
     ]
 
+    static Map<String, Object> EXPORT_SUBSCRIPTION_TRANSFER_CONFIG = [
+            subscriptionTransfer: [
+                    label: 'Transfer',
+                    message: 'subscription.details.subTransfer.label',
+                    fields: [
+                            'subscription.offerRequested'                : [field: 'offerRequested', label: 'Offer Requested', message: 'subscription.offerRequested.label', defaultChecked: 'true'],
+                            'subscription.offerRequestedDate'            : [field: 'offerRequestedDate', label: 'Offer Requested Date', message: 'subscription.offerRequestedDate.label', defaultChecked: 'true'],
+                            'subscription.offerAccepted'                 : [field: 'offerAccepted', label: 'Offer Accepted', message: 'subscription.offerAccepted.label', defaultChecked: 'true'],
+                            'subscription.manualCancellationDate'        : [field: 'offerNote', label: 'Offer Note', message: 'subscription.offerNote.label', defaultChecked: 'true'],
+                            'subscription.offerNote'                     : [field: 'priceIncreaseInfo', label: 'Price Increase Info', message: 'subscription.priceIncreaseInfo.label', defaultChecked: 'true'],
+                            'subscription.renewalSent'                   : [field: 'renewalSent', label: 'Renewal Sent', message: 'subscription.renewalSent.label', defaultChecked: 'true'],
+                            'subscription.renewalSentDate'               : [field: 'renewalSentDate', label: 'Renewal Sent Date', message: 'subscription.renewalSentDate.label', defaultChecked: 'true'],
+                            'subscription.participantTransferWithSurvey' : [field: 'participantTransferWithSurvey', label: 'Participant Transfe With Survey', message: 'subscription.participantTransferWithSurvey.label', defaultChecked: 'true'],
+                            'subscription.discountScale'                 : [field: 'discountScale', label: 'Discount Scale', message: 'subscription.discountScale.label', defaultChecked: 'true']
+                    ]
+            ],
+    ]
+
     static Map<String, Object> EXPORT_LICENSE_CONFIG = [
             licenses: [
                     label: 'License',
@@ -1249,7 +1267,7 @@ class ExportClickMeService {
      * @param institution the context institution whose perspective should be taken for the export
      * @return the configuration map for the subscription export
      */
-    Map<String, Object> getExportSubscriptionFields(Org institution) {
+    Map<String, Object> getExportSubscriptionFields(Org institution,boolean showTransferFields = false) {
 
         Map<String, Object> exportFields = [:]
         Locale locale = LocaleUtils.getCurrentLocale()
@@ -1277,6 +1295,14 @@ class ExportClickMeService {
                 EXPORT_SUBSCRIPTION_CONFIG.get(key).fields.each {
                     exportFields.put(it.key, it.value)
                 }
+            }
+        }
+
+        if(showTransferFields){
+            EXPORT_SUBSCRIPTION_TRANSFER_CONFIG.keySet().each { String key ->
+                    EXPORT_SUBSCRIPTION_TRANSFER_CONFIG.get(key).fields.each {
+                        exportFields.put(it.key, it.value)
+                    }
             }
         }
 
@@ -1340,7 +1366,7 @@ class ExportClickMeService {
      * @param institution the context institution whose perspective should be taken for the export
      * @return the configuration map for the subscription export for the UI
      */
-    Map<String, Object> getExportSubscriptionFieldsForUI(Org institution) {
+    Map<String, Object> getExportSubscriptionFieldsForUI(Org institution, boolean showTransferFields = false) {
 
         Map<String, Object> fields = EXPORT_SUBSCRIPTION_CONFIG as Map
         if(institution.getCustomerType() == CustomerTypeService.ORG_INST_PRO)
@@ -1350,6 +1376,11 @@ class ExportClickMeService {
             fields.subscription.fields.put('subscription.consortium', [field: null, label: 'Consortium', message: 'consortium.label', defaultChecked: true])
             fields.licenses.fields.put('license.consortium', [field: null, label: 'Consortium', message: 'exportClickMe.license.consortium', defaultChecked: true])
         }
+
+        if(showTransferFields){
+            fields << EXPORT_SUBSCRIPTION_TRANSFER_CONFIG as Map
+        }
+
         Locale locale = LocaleUtils.getCurrentLocale()
         String localizedName
         String localizedValue
@@ -2385,12 +2416,12 @@ class ExportClickMeService {
      * @param institution the institution as reference
      * @return an Excel worksheet containing the export
      */
-    def exportSubscriptions(ArrayList<Subscription> result, Map<String, Object> selectedFields, Org institution, FORMAT format) {
+    def exportSubscriptions(ArrayList<Subscription> result, Map<String, Object> selectedFields, Org institution, FORMAT format, boolean showTransferFields = false) {
         Locale locale = LocaleUtils.getCurrentLocale()
 
         Map<String, Object> selectedExportFields = [:]
 
-        Map<String, Object> configFields = getExportSubscriptionFields(institution)
+        Map<String, Object> configFields = getExportSubscriptionFields(institution, showTransferFields)
 
         configFields.keySet().each { String k ->
             if (k in selectedFields.keySet() ) {
