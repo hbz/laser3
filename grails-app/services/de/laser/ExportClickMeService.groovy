@@ -2298,7 +2298,7 @@ class ExportClickMeService {
             case FORMAT.XLS:
                 return exportService.generateXLSXWorkbook(sheetData)
             case FORMAT.CSV:
-                return exportService.generateSeparatorTableString(sheetData.titleRow, sheetData.columnData, ',')
+                return exportService.generateSeparatorTableString(sheetData.titleRow, sheetData.columnData, '|')
             case FORMAT.TSV:
                 return exportService.generateSeparatorTableString(sheetData.titleRow, sheetData.columnData, '\t')
         }
@@ -2371,7 +2371,7 @@ class ExportClickMeService {
             case FORMAT.XLS:
                 return exportService.generateXLSXWorkbook(sheetData)
             case FORMAT.CSV:
-                return exportService.generateSeparatorTableString(titles, exportData, ',')
+                return exportService.generateSeparatorTableString(titles, exportData, '|')
             case FORMAT.TSV:
                 return exportService.generateSeparatorTableString(titles, exportData, '\t')
         }
@@ -2443,7 +2443,7 @@ class ExportClickMeService {
 
             return exportService.generateXLSXWorkbook(sheetData)
         case FORMAT.CSV:
-            return exportService.generateSeparatorTableString(titles, exportData, ',')
+            return exportService.generateSeparatorTableString(titles, exportData, '|')
         case FORMAT.TSV:
             return exportService.generateSeparatorTableString(titles, exportData, '\t')
         }
@@ -2485,7 +2485,7 @@ class ExportClickMeService {
 
             return exportService.generateXLSXWorkbook(sheetData)
         case FORMAT.CSV:
-            return exportService.generateSeparatorTableString(titles, exportData, ',')
+            return exportService.generateSeparatorTableString(titles, exportData, '|')
         case FORMAT.PDF:
             return [titleRow: titles, columnData: exportData]
         }
@@ -2808,7 +2808,7 @@ class ExportClickMeService {
 
         switch(format) {
             case FORMAT.XLS: return exportService.generateXLSXWorkbook(sheetData)
-            case FORMAT.CSV: return exportService.generateSeparatorTableString(titles, exportData, ',')
+            case FORMAT.CSV: return exportService.generateSeparatorTableString(titles, exportData, '|')
             case FORMAT.TSV: return exportService.generateSeparatorTableString(titles, exportData, '\t')
         }
     }
@@ -2872,7 +2872,7 @@ class ExportClickMeService {
             case FORMAT.XLS:
                 return exportService.generateXLSXWorkbook(sheetData)
             case FORMAT.CSV:
-                return exportService.generateSeparatorTableString(titles, exportData, ',')
+                return exportService.generateSeparatorTableString(titles, exportData, '|')
             case FORMAT.TSV:
                 return exportService.generateSeparatorTableString(titles, exportData, '\t')
         }
