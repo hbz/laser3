@@ -14,7 +14,7 @@
         </ui:exportDropdown>
 
         <%
-            editable = (editable && contextService.hasPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || accessService.is_ORG_COM_EDITOR()
+            editable = (editable && contextService.hasPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || contextService.is_ORG_COM_EDITOR()
         %>
         <g:if test="${editable}">
             <ui:actionsDropdown>
