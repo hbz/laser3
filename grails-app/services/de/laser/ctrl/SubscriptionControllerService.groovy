@@ -3639,6 +3639,40 @@ class SubscriptionControllerService {
         else [result:null,status:STATUS_ERROR]
     }
 
+    Map<String,Object> manageDiscountScale(SubscriptionController controller, GrailsParameterMap params) {
+        Map<String, Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
+        if(!result)
+            [result:null,status:STATUS_ERROR]
+        else {
+            if(result.editable) {
+                switch (params.cmd) {
+                    case 'edit': [result: result, status: STATUS_OK]
+                        break
+                    case 'createDiscountScale':
+                        SubscriptionDiscountScale subscriptionDiscountScale = new SubscriptionDiscountScale(
+                                subscription: result.subscription,
+                                name: params.name,
+                                discount: params.discount,
+                                note: params.note).save()
+
+                        break
+                    case 'removeDiscountScale':
+                        if(params.discountScaleId){
+                            SubscriptionDiscountScale sbs = SubscriptionDiscountScale.findById(Long.parseLong(params.discountScaleId))
+                            if(sbs) {
+                                sbs.delete()
+                            }
+                        }
+                        params.remove('removeDiscountScale')
+                        break
+                }
+            }
+            params.remove('cmd')
+            result.discountScales = result.subscription.discountScales
+            [result:result,status:STATUS_OK]
+        }
+    }
+
     @Deprecated
     Map<String,Object> processRenewEntitlements(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_EDIT)

@@ -257,14 +257,10 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         lastUpdated(nullable: true)
         lastUpdatedCascading (nullable: true)
 
-        offerRequested (nullable: true)
-        offerRequestedDate (nullable:true, blank:true)
-        offerAccepted (nullable: true)
+        offerRequestedDate (nullable:true)
         offerNote (nullable:true, blank:true)
         priceIncreaseInfo (nullable:true, blank:true)
-        renewalSent (nullable: true)
-        renewalSentDate (nullable:true, blank:true)
-        participantTransferWithSurvey (nullable: true)
+        renewalSentDate (nullable:true)
         discountScale (nullable: true)
     }
 
