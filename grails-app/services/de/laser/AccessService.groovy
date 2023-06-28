@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.annotations.ShouldBePrivate
 import de.laser.auth.*
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -26,7 +27,7 @@ class AccessService {
      * @return true if access is granted, false otherwise
      */
     boolean otherOrgPerm(Org orgToCheck, String orgPerms) {
-        _hasPerm_forOrg_withFakeRole(orgPerms.split(','), orgToCheck)
+        x_hasPerm_forOrg_withFakeRole(orgPerms.split(','), orgToCheck)
     }
 
     /**
@@ -50,19 +51,18 @@ class AccessService {
         }
         Org ctx = contextService.getOrg()
 
-        // combo check
-        boolean check1 = _hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(orgPerms.split(','), instUserRole)
+        // combo check @ formalOrg
+        boolean check1 = x_hasPermAndInstRole_withFakeRole_forCtxUser(orgPerms.split(','), instUserRole)
         boolean check2 = (orgToCheck.id == ctx.id) || Combo.findByToOrgAndFromOrg(ctx, orgToCheck)
 
-        // orgToCheck check
+        // orgToCheck check @ otherOrg
         boolean check3 = (orgToCheck.id == ctx.id) && SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
         // boolean check3 = (ctx.id == orgToCheck.id) && contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN(null) // legacy - no affiliation given
 
         (check1 && check2) || check3
     }
 
-    // --- private methods ONLY
-    // --- NO direct call
+    // --- should be private; NO direct calls ---
 
     /**
      * Checks for the context institution if one of the given customer types are granted
@@ -70,8 +70,8 @@ class AccessService {
      * @param orgPerms customer type depending permissions to check against
      * @return true if access is granted, false otherwise
      */
-//    private boolean _hasPerm_forOrg_withFakeRole(String[] orgPerms, Org orgToCheck) {
-    boolean _hasPerm_forOrg_withFakeRole(String[] orgPerms, Org orgToCheck) {
+    @ShouldBePrivate
+    boolean x_hasPerm_forOrg_withFakeRole(String[] orgPerms, Org orgToCheck) {
         boolean check = false
 
         if (orgPerms) {
@@ -106,33 +106,31 @@ class AccessService {
      * @param instUserRole the given institutional permissions to check
      * @return true if the institution has the given customer type and the user the given institutional permissions, false otherwise
      */
-//    private boolean _hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(String[] orgPerms, String instUserRole) {
-    boolean _hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(String[] orgPerms, String instUserRole) {
+    @ShouldBePrivate
+    boolean x_hasPermAndInstRole_withFakeRole_forCtxUser(String[] orgPerms, String instUserRole) {
 
         if (contextService.getUser() && instUserRole) {
             if (userService.hasAffiliation_or_ROLEADMIN(contextService.getUser(), contextService.getOrg(), instUserRole)) {
-// todo: orig. ---            if (contextService.getUser().hasCtxAffiliation_or_ROLEADMIN( instUserRole )) {
-                return _hasPerm_forOrg_withFakeRole(orgPerms, contextService.getOrg())
+                return x_hasPerm_forOrg_withFakeRole(orgPerms, contextService.getOrg())
             }
         }
         return false
     }
 
     // ----- REFACTORING -----
-    // ----- CONSTRAINT CHECKS -----
 
     /**
      * Replacement call for the abandoned ROLE_ORG_COM_EDITOR
      */
     // TODO
     boolean is_ORG_COM_EDITOR() {
-        _hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC.split(','), 'INST_EDITOR')
+        x_hasPermAndInstRole_withFakeRole_forCtxUser(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC.split(','), 'INST_EDITOR')
     }
 
     // TODO
     boolean is_INST_EDITOR_with_PERMS_BASIC(boolean inContextOrg) {
-        boolean a = _hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(CustomerTypeService.ORG_INST_BASIC.split(','), 'INST_EDITOR') && inContextOrg
-        boolean b = _hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(CustomerTypeService.ORG_CONSORTIUM_BASIC.split(','), 'INST_EDITOR')
+        boolean a = x_hasPermAndInstRole_withFakeRole_forCtxUser(CustomerTypeService.ORG_INST_BASIC.split(','), 'INST_EDITOR') && inContextOrg
+        boolean b = x_hasPermAndInstRole_withFakeRole_forCtxUser(CustomerTypeService.ORG_CONSORTIUM_BASIC.split(','), 'INST_EDITOR')
 
         return (a || b)
     }

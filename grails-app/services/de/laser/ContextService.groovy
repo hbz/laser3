@@ -115,7 +115,7 @@ class ContextService {
      * Permission check (granted by customer type) for the current context org.
      */
     boolean hasPerm(String orgPerms) {
-        accessService._hasPerm_forOrg_withFakeRole(orgPerms.split(','), getOrg())
+        accessService.x_hasPerm_forOrg_withFakeRole(orgPerms.split(','), getOrg())
     }
     boolean hasPerm_or_ROLEADMIN(String orgPerms) {
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
@@ -130,19 +130,19 @@ class ContextService {
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
             return true
         }
-        _hasAffiliation(orgPerms, 'INST_USER')
+        _hasPermAndInstRole(orgPerms, 'INST_USER')
     }
     boolean hasPermAsInstEditor_or_ROLEADMIN(String orgPerms) {
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
             return true
         }
-        _hasAffiliation(orgPerms, 'INST_EDITOR')
+        _hasPermAndInstRole(orgPerms, 'INST_EDITOR')
     }
     boolean hasPermAsInstAdm_or_ROLEADMIN(String orgPerms) {
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
             return true
         }
-        _hasAffiliation(orgPerms, 'INST_ADM')
+        _hasPermAndInstRole(orgPerms, 'INST_ADM')
     }
 
     boolean hasPermAsInstRoleAsConsortium_or_ROLEADMIN(String orgPerms, String instUserRole) {
@@ -151,7 +151,7 @@ class ContextService {
         }
         if (getUser() && getOrg() && instUserRole) {
             if (getOrg().getAllOrgTypeIds().contains( RDStore.OT_CONSORTIUM.id )) {
-                return _hasAffiliation(orgPerms, instUserRole)
+                return _hasPermAndInstRole(orgPerms, instUserRole)
             }
         }
         return false
@@ -166,7 +166,7 @@ class ContextService {
         userService.hasAffiliation_or_ROLEADMIN(getUser(), getOrg(), instUserRole)
     }
 
-    private boolean _hasAffiliation(String orgPerms, String instUserRole) {
-        accessService._hasPermAndAffiliation_forCtxOrg_withFakeRole_forCtxUser(orgPerms.split(','), instUserRole)
+    private boolean _hasPermAndInstRole(String orgPerms, String instUserRole) {
+        accessService.x_hasPermAndInstRole_withFakeRole_forCtxUser(orgPerms.split(','), instUserRole)
     }
 }

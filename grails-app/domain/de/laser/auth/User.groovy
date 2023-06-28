@@ -193,13 +193,6 @@ class User {
         getAuthorities().authority.contains('ROLE_YODA')
     }
 
-//    @Deprecated
-//    boolean hasCtxAffiliation_or_ROLEADMIN(String instUserRole) {
-//        BeanStore.getUserService().hasAffiliation_or_ROLEADMIN(this, BeanStore.getContextService().getOrg(), instUserRole)
-//        // TODO - replace with ..
-//        // userService.hasAffiliation_or_ROLEADMIN(user, contextService.getOrg(), instUserRole)
-//    }
-
     /**
      * short-hand for getDisplayName() but with the difference that for YODAs, the ID is displayed for debugging purposes
      * @return

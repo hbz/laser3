@@ -1941,7 +1941,6 @@ class OrganisationController  {
         Org contextOrg = contextService.getOrg()
         boolean inContextOrg = org.id == contextOrg.id
         boolean userHasEditableRights = userService.hasAffiliation_or_ROLEADMIN(user, contextOrg, 'INST_EDITOR')
-        // todo: orig. --- boolean userHasEditableRights = user.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
         boolean userIsYoda            = user.isYoda()
         // TODO: --> CHECK LOGIC IMPLEMENTATION <--
         // TODO: userIsYoda != SpringSecurityUtils.ifAnyGranted('ROLE_YODA') @ user.hasMinRole('ROLE_YODA')
