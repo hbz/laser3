@@ -302,8 +302,16 @@ class LicenseController {
             License newLicense = (License) result.license
             boolean unlink = params.unlink == 'true'
             if(params.subscription == "all") {
-                allSubscriptions.each { s->
-                    subscriptionService.setOrgLicRole(s,newLicense,unlink)
+                allSubscriptions.each { Subscription s->
+                    boolean linkPossible
+                    if(result.institution.isCustomerType_Inst()) {
+                        linkPossible = s._getCalculatedType() == CalculatedType.TYPE_LOCAL
+                    }
+                    else {
+                        linkPossible = institution.isCustomerType_Consortium()
+                    }
+                    if(linkPossible)
+                        subscriptionService.setOrgLicRole(s,newLicense,unlink)
                 }
             }
             else {

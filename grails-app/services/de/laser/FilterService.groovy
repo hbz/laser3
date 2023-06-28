@@ -1877,7 +1877,7 @@ class FilterService {
                                         "(select ${refdata_value_col} from refdata_value where rdv_id = tipp_status_rv_fk) as status",
                                         "(select ${refdata_value_col} from refdata_value where rdv_id = tipp_access_type_rv_fk) as accessType",
                                         "(select ${refdata_value_col} from refdata_value where rdv_id = tipp_open_access_rv_fk) as openAccess"]
-                orderClause = " order by tipp_sort_name, name"
+                orderClause = " order by tipp_sort_name, tipp_name"
                 query = "select ${columns.join(',')} from title_instance_package_platform"
                 String subFilter = ""
                 if(configMap.sub) {
