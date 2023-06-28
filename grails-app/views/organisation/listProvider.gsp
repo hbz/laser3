@@ -1,9 +1,7 @@
 <%@ page import="de.laser.*" %>
-<laser:htmlStart message="menu.public.all_providers" />
+<laser:htmlStart message="menu.public.all_providers" serviceInjection="true" />
 
         <g:set var="entityName" value="${message(code: 'default.provider.label')}" />
-
-    <laser:serviceInjection />
 
         <ui:breadcrumbs>
             <ui:crumb message="menu.public.all_providers" class="active" />
@@ -44,7 +42,7 @@
             --%>
         </ui:exportDropdown>
 
-            <g:if test="${accessService.is_ORG_COM_EDITOR()}">
+            <g:if test="${contextService.is_ORG_COM_EDITOR()}">
                 <ui:actionsDropdown>
                     <ui:actionsDropdownItem controller="organisation" action="findProviderMatches" message="org.create_new_provider.label"/>
                 </ui:actionsDropdown>

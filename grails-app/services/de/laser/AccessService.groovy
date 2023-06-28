@@ -52,7 +52,7 @@ class AccessService {
         Org ctx = contextService.getOrg()
 
         // combo check @ formalOrg
-        boolean check1 = x_hasPermAndInstRole_withFakeRole_forCtxUser(orgPerms.split(','), instUserRole)
+        boolean check1 = contextService.x_hasPermAndInstRole_withFakeRole_forCtxUser(orgPerms.split(','), instUserRole)
         boolean check2 = (orgToCheck.id == ctx.id) || Combo.findByToOrgAndFromOrg(ctx, orgToCheck)
 
         // orgToCheck check @ otherOrg
@@ -97,41 +97,5 @@ class AccessService {
             check = true
         }
         check
-    }
-
-    /**
-     * Checks if the context institution has at least one of the given customer types attrbited and if the context user
-     * has the given rights attributed
-     * @param orgPerms customer type depending permissions to check against
-     * @param instUserRole the given institutional permissions to check
-     * @return true if the institution has the given customer type and the user the given institutional permissions, false otherwise
-     */
-    @ShouldBePrivate
-    boolean x_hasPermAndInstRole_withFakeRole_forCtxUser(String[] orgPerms, String instUserRole) {
-
-        if (contextService.getUser() && instUserRole) {
-            if (userService.hasAffiliation_or_ROLEADMIN(contextService.getUser(), contextService.getOrg(), instUserRole)) {
-                return x_hasPerm_forOrg_withFakeRole(orgPerms, contextService.getOrg())
-            }
-        }
-        return false
-    }
-
-    // ----- REFACTORING -----
-
-    /**
-     * Replacement call for the abandoned ROLE_ORG_COM_EDITOR
-     */
-    // TODO
-    boolean is_ORG_COM_EDITOR() {
-        x_hasPermAndInstRole_withFakeRole_forCtxUser(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC.split(','), 'INST_EDITOR')
-    }
-
-    // TODO
-    boolean is_INST_EDITOR_with_PERMS_BASIC(boolean inContextOrg) {
-        boolean a = x_hasPermAndInstRole_withFakeRole_forCtxUser(CustomerTypeService.ORG_INST_BASIC.split(','), 'INST_EDITOR') && inContextOrg
-        boolean b = x_hasPermAndInstRole_withFakeRole_forCtxUser(CustomerTypeService.ORG_CONSORTIUM_BASIC.split(','), 'INST_EDITOR')
-
-        return (a || b)
     }
 }

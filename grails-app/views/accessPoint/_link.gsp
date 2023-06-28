@@ -10,7 +10,7 @@
         </div>
     </div>
     <div class="content">
-        <g:if test="${accessService.is_INST_EDITOR_with_PERMS_BASIC(inContextOrg)}">
+        <g:if test="${contextService.is_INST_EDITOR_with_PERMS_BASIC(inContextOrg)}">
             <a class="ui icon right floated button"
                data-ui="modal"
                href="#linkPlatformModal">

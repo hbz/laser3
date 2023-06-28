@@ -354,7 +354,7 @@ class AccessPointController  {
                     linkedPlatforms                   : linkedPlatforms,
                     linkedPlatformSubscriptionPackages: linkedPlatformSubscriptionPackages,
                     ip                                : params.ip,
-                    editable                          : accessService.is_INST_EDITOR_with_PERMS_BASIC( inContextOrg ),
+                    editable                          : contextService.is_INST_EDITOR_with_PERMS_BASIC( inContextOrg ),
                     autofocus                         : autofocus,
                     orgInstance                       : orgAccessPoint.org,
                     inContextOrg                      : inContextOrg,
@@ -377,7 +377,7 @@ class AccessPointController  {
         Org organisation = contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) ? Org.get(params.id) : contextService.getOrg()
         boolean inContextOrg = organisation.id == contextService.getOrg().id
 
-        if (accessService.is_INST_EDITOR_with_PERMS_BASIC( inContextOrg )){
+        if (contextService.is_INST_EDITOR_with_PERMS_BASIC( inContextOrg )){
             accessPointService.deleteAccessPointData(AccessPointData.get(params.id))
         } else {
             flash.error = message(code: 'default.noPermissions') as String

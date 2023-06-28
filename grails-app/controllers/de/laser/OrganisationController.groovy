@@ -437,7 +437,7 @@ class OrganisationController  {
         Map<String, Object> result = [:]
         result.propList    = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
         result.user        = contextService.getUser()
-        result.editable    = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || accessService.is_ORG_COM_EDITOR()
+        result.editable    = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || contextService.is_ORG_COM_EDITOR()
 
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         Map queryCuratoryGroups = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/groups', [:])

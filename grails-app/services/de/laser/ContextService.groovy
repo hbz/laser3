@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.annotations.ShouldBePrivate
 import de.laser.auth.User
 import de.laser.cache.EhcacheWrapper
 import de.laser.cache.SessionCacheWrapper
@@ -167,6 +168,35 @@ class ContextService {
     }
 
     private boolean _hasPermAndInstRole(String orgPerms, String instUserRole) {
-        accessService.x_hasPermAndInstRole_withFakeRole_forCtxUser(orgPerms.split(','), instUserRole)
+        x_hasPermAndInstRole_withFakeRole_forCtxUser(orgPerms.split(','), instUserRole)
+    }
+
+    @ShouldBePrivate
+    boolean x_hasPermAndInstRole_withFakeRole_forCtxUser(String[] orgPerms, String instUserRole) {
+
+        if (getUser() && instUserRole) {
+            if (userService.hasAffiliation_or_ROLEADMIN(getUser(), getOrg(), instUserRole)) {
+                return accessService.x_hasPerm_forOrg_withFakeRole(orgPerms, getOrg())
+            }
+        }
+        return false
+    }
+
+    // ----- REFACTORING ?? -----
+
+    /**
+     * Replacement call for the abandoned ROLE_ORG_COM_EDITOR
+     */
+    // TODO
+    boolean is_ORG_COM_EDITOR() {
+        x_hasPermAndInstRole_withFakeRole_forCtxUser(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC.split(','), 'INST_EDITOR')
+    }
+
+    // TODO
+    boolean is_INST_EDITOR_with_PERMS_BASIC(boolean inContextOrg) {
+        boolean a = x_hasPermAndInstRole_withFakeRole_forCtxUser(CustomerTypeService.ORG_INST_BASIC.split(','), 'INST_EDITOR') && inContextOrg
+        boolean b = x_hasPermAndInstRole_withFakeRole_forCtxUser(CustomerTypeService.ORG_CONSORTIUM_BASIC.split(','), 'INST_EDITOR')
+
+        return (a || b)
     }
 }

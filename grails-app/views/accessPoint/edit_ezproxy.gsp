@@ -9,7 +9,7 @@
 
 <laser:render template="breadcrumb" model="${[accessPoint: accessPoint, params: params]}"/>
 
-<g:set var="is_INST_EDITOR_with_PERMS_BASIC" value="${accessService.is_INST_EDITOR_with_PERMS_BASIC(inContextOrg)}"/>
+<g:set var="is_INST_EDITOR_with_PERMS_BASIC" value="${contextService.is_INST_EDITOR_with_PERMS_BASIC(inContextOrg)}"/>
 
 <g:if test="${is_INST_EDITOR_with_PERMS_BASIC}">
     <ui:controlButtons>
