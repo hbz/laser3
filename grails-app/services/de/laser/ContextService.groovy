@@ -1,6 +1,6 @@
 package de.laser
 
-import de.laser.annotations.ShouldBePrivate
+import de.laser.annotations.ShouldBePrivate_DoNotUse
 import de.laser.auth.User
 import de.laser.cache.EhcacheWrapper
 import de.laser.cache.SessionCacheWrapper
@@ -110,13 +110,13 @@ class ContextService {
         _hasInstRole_or_ROLEADMIN('INST_ADM')
     }
 
-    // -- Formal checks @ user.formalOrg - all withFakeRole --
+    // -- Formal checks @ user.formalOrg.perm
 
     /**
      * Permission check (granted by customer type) for the current context org.
      */
     boolean hasPerm(String orgPerms) {
-        accessService.x_hasPerm_forOrg_withFakeRole(orgPerms.split(','), getOrg())
+        accessService._hasPerm_forOrg_withFakeRole(orgPerms.split(','), getOrg())
     }
     boolean hasPerm_or_ROLEADMIN(String orgPerms) {
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
@@ -125,25 +125,25 @@ class ContextService {
         hasPerm(orgPerms)
     }
 
-    // -- Formal checks @ user.formalOrg, user.formalRole + user.isFormal(role, formalOrg) - all withFakeRole --
+    // -- Formal checks @ user.formalOrg.perm + user.isFormal(role, formalOrg)
 
     boolean hasPermAsInstUser_or_ROLEADMIN(String orgPerms) {
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
             return true
         }
-        _hasPermAndInstRole(orgPerms, 'INST_USER')
+        _hasPermAndInstRole_withFakeRole(orgPerms, 'INST_USER')
     }
     boolean hasPermAsInstEditor_or_ROLEADMIN(String orgPerms) {
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
             return true
         }
-        _hasPermAndInstRole(orgPerms, 'INST_EDITOR')
+        _hasPermAndInstRole_withFakeRole(orgPerms, 'INST_EDITOR')
     }
     boolean hasPermAsInstAdm_or_ROLEADMIN(String orgPerms) {
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
             return true
         }
-        _hasPermAndInstRole(orgPerms, 'INST_ADM')
+        _hasPermAndInstRole_withFakeRole(orgPerms, 'INST_ADM')
     }
 
     boolean hasPermAsInstRoleAsConsortium_or_ROLEADMIN(String orgPerms, String instUserRole) {
@@ -152,7 +152,7 @@ class ContextService {
         }
         if (getUser() && getOrg() && instUserRole) {
             if (getOrg().getAllOrgTypeIds().contains( RDStore.OT_CONSORTIUM.id )) {
-                return _hasPermAndInstRole(orgPerms, instUserRole)
+                return _hasPermAndInstRole_withFakeRole(orgPerms, instUserRole)
             }
         }
         return false
@@ -167,16 +167,11 @@ class ContextService {
         userService.hasAffiliation_or_ROLEADMIN(getUser(), getOrg(), instUserRole)
     }
 
-    private boolean _hasPermAndInstRole(String orgPerms, String instUserRole) {
-        x_hasPermAndInstRole_withFakeRole_forCtxUser(orgPerms.split(','), instUserRole)
-    }
-
-    @ShouldBePrivate
-    boolean x_hasPermAndInstRole_withFakeRole_forCtxUser(String[] orgPerms, String instUserRole) {
-
+    @ShouldBePrivate_DoNotUse
+    boolean _hasPermAndInstRole_withFakeRole(String orgPerms, String instUserRole) {
         if (getUser() && instUserRole) {
-            if (userService.hasAffiliation_or_ROLEADMIN(getUser(), getOrg(), instUserRole)) {
-                return accessService.x_hasPerm_forOrg_withFakeRole(orgPerms, getOrg())
+            if (_hasInstRole_or_ROLEADMIN(instUserRole)) {
+                return hasPerm(orgPerms)
             }
         }
         return false
@@ -189,13 +184,13 @@ class ContextService {
      */
     // TODO
     boolean is_ORG_COM_EDITOR() {
-        x_hasPermAndInstRole_withFakeRole_forCtxUser(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC.split(','), 'INST_EDITOR')
+        _hasPermAndInstRole_withFakeRole(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')
     }
 
     // TODO
     boolean is_INST_EDITOR_with_PERMS_BASIC(boolean inContextOrg) {
-        boolean a = x_hasPermAndInstRole_withFakeRole_forCtxUser(CustomerTypeService.ORG_INST_BASIC.split(','), 'INST_EDITOR') && inContextOrg
-        boolean b = x_hasPermAndInstRole_withFakeRole_forCtxUser(CustomerTypeService.ORG_CONSORTIUM_BASIC.split(','), 'INST_EDITOR')
+        boolean a = _hasPermAndInstRole_withFakeRole(CustomerTypeService.ORG_INST_BASIC, 'INST_EDITOR') && inContextOrg
+        boolean b = _hasPermAndInstRole_withFakeRole(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR')
 
         return (a || b)
     }

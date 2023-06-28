@@ -10,5 +10,5 @@ import java.lang.annotation.Target
 @Target([ElementType.METHOD, ElementType.TYPE])
 @Retention(RetentionPolicy.RUNTIME)
 
-@interface ShouldBePrivate {
+@interface ShouldBePrivate_DoNotUse {
 }

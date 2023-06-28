@@ -1,6 +1,6 @@
 package de.laser
 
-import de.laser.annotations.ShouldBePrivate
+import de.laser.annotations.ShouldBePrivate_DoNotUse
 import de.laser.auth.*
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -27,7 +27,7 @@ class AccessService {
      * @return true if access is granted, false otherwise
      */
     boolean otherOrgPerm(Org orgToCheck, String orgPerms) {
-        x_hasPerm_forOrg_withFakeRole(orgPerms.split(','), orgToCheck)
+        _hasPerm_forOrg_withFakeRole(orgPerms.split(','), orgToCheck)
     }
 
     /**
@@ -51,8 +51,8 @@ class AccessService {
         }
         Org ctx = contextService.getOrg()
 
-        // combo check @ formalOrg
-        boolean check1 = contextService.x_hasPermAndInstRole_withFakeRole_forCtxUser(orgPerms.split(','), instUserRole)
+        // combo check @ contextUser/contextOrg
+        boolean check1 = contextService._hasPermAndInstRole_withFakeRole(orgPerms, instUserRole)
         boolean check2 = (orgToCheck.id == ctx.id) || Combo.findByToOrgAndFromOrg(ctx, orgToCheck)
 
         // orgToCheck check @ otherOrg
@@ -70,8 +70,8 @@ class AccessService {
      * @param orgPerms customer type depending permissions to check against
      * @return true if access is granted, false otherwise
      */
-    @ShouldBePrivate
-    boolean x_hasPerm_forOrg_withFakeRole(String[] orgPerms, Org orgToCheck) {
+    @ShouldBePrivate_DoNotUse
+    boolean _hasPerm_forOrg_withFakeRole(String[] orgPerms, Org orgToCheck) {
         boolean check = false
 
         if (orgPerms) {
