@@ -50,6 +50,7 @@
                                     <li><g:message code="myinst.subscriptionImport.startDate"/>: <g:formatDate format="${message(code:'default.date.format.notime')}" date="${sub.startDate}"/></li>
                                     <li><g:message code="myinst.subscriptionImport.endDate"/>: <g:formatDate format="${message(code:'default.date.format.notime')}" date="${sub.endDate}"/></li>
                                     <li><g:message code="myinst.subscriptionImport.manualCancellationDate"/>: <g:formatDate format="${message(code:'default.date.format.notime')}" date="${sub.manualCancellationDate}"/></li>
+                                    <li><g:message code="myinst.subscriptionImport.isAutomaticRenewAnnually"/>: ${sub.isAutomaticRenewAnnually ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}</li>
                                     <li><g:message code="myinst.subscriptionImport.hasPerpetualAccess"/>: ${sub.hasPerpetualAccess ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}</li>
                                     <li><g:message code="myinst.subscriptionImport.hasPublishComponent"/>: ${sub.hasPublishComponent ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}</li>
                                     <li><g:message code="myinst.subscriptionImport.isPublicForApi"/>: ${sub.isPublicForApi ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}</li>
