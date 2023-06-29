@@ -744,7 +744,7 @@ class SurveyController {
                         surveyInfo: surveyInfo,
                         subSurveyUseForTransfer: false,
                         pickAndChoose: true,
-                        pickAndChoosePerpetualAccess: (subscription.hasPerpetualAccess == RDStore.YN_YES),
+                        pickAndChoosePerpetualAccess: (subscription.hasPerpetualAccess ?: false),
                         issueEntitlementGroupName: params.issueEntitlementGroupNew
                 )
                 surveyConfig.save()
