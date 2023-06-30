@@ -28,6 +28,7 @@ import org.hibernate.Session
 import java.math.RoundingMode
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
+import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.time.Year
 
@@ -400,7 +401,11 @@ class ExportClickMeService {
                             'subscription.renewalSent'                   : [field: 'renewalSent', label: 'Renewal Sent', message: 'subscription.renewalSent.label', defaultChecked: 'true'],
                             'subscription.renewalSentDate'               : [field: 'renewalSentDate', label: 'Renewal Sent Date', message: 'subscription.renewalSentDate.label', defaultChecked: 'true'],
                             'subscription.participantTransferWithSurvey' : [field: 'participantTransferWithSurvey', label: 'Participant Transfe With Survey', message: 'subscription.participantTransferWithSurvey.label', defaultChecked: 'true'],
-                            'subscription.discountScale'                 : [field: 'discountScale', label: 'Discount Scale', message: 'subscription.discountScale.label', defaultChecked: 'true']
+                            'subscription.discountScale'                 : [field: 'discountScale', label: 'Discount Scale', message: 'subscription.discountScale.label', defaultChecked: 'true'],
+                            'subscription.survey'                        : [field: null, label: 'Survey', message: 'survey.label', defaultChecked: 'true'],
+                            'subscription.survey.evaluation'             : [field: null, label: 'Evaluation', message: 'subscription.survey.evaluation.label', defaultChecked: 'true'],
+                            'subscription.survey.cancellation'           : [field: null, label: 'Cancellation', message: 'subscription.survey.cancellation.label', defaultChecked: 'true']
+
                     ]
             ],
     ]
@@ -3331,6 +3336,45 @@ class ExportClickMeService {
                 else if (fieldKey == 'multiYearCount') {
                     int count = Subscription.countByInstanceOfAndIsMultiYear(subscription, true)
                     row.add(createTableCell(format, count))
+                }
+                else if (fieldKey == 'subscription.survey') {
+                    SurveyConfig surveyConfig = SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(subscription, true)
+                    String dateString = ''
+                    String style = ''
+
+                    if(surveyConfig) {
+                        dateString = sdf.format(surveyConfig.surveyInfo.startDate) + ' - ' + sdf.format(surveyConfig.surveyInfo.endDate)
+                        style = surveyConfig.surveyInfo.status == RDStore.SURVEY_SURVEY_STARTED ? 'positive' : ''
+                    }
+
+                    row.add(createTableCell(format, dateString, style))
+                }
+                else if (fieldKey == 'subscription.survey.evaluation') {
+                    SurveyConfig surveyConfig = SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(subscription, true)
+                    String finishProcess = ''
+                    String style = ''
+                    NumberFormat formatNumber = NumberFormat.getNumberInstance()
+                    formatNumber.maximumFractionDigits = 2
+
+                    if(surveyConfig) {
+                        int finish = SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig).size()
+                        int total  = SurveyOrg.findAllBySurveyConfig(surveyConfig).size()
+                        formatNumber.maximumFractionDigits = 2
+                        finishProcess  = formatNumber.format((finish != 0 && total != 0) ? (finish / total) * 100 : 0)
+                        style = finish == total ? 'positive' : ''
+                    }
+                    row.add(createTableCell(format, (surveyConfig ? ("${finishProcess}%") : ' '), style))
+                }
+                else if (fieldKey == 'subscription.survey.cancellation') {
+                    SurveyConfig surveyConfig = SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(subscription, true)
+                    int countOrgsWithTermination = 0
+                    String style = ''
+                    if(surveyConfig) {
+                        countOrgsWithTermination = surveyConfig.countOrgsWithTermination()
+                        style = countOrgsWithTermination > 10 ? 'negative' : ''
+                    }
+
+                    row.add(createTableCell(format, surveyConfig ? countOrgsWithTermination : ' ', style))
                 }
                 else if ((fieldKey == 'participantSubCostItem' || fieldKey == 'subCostItem')) {
                     if(costItemSums) {

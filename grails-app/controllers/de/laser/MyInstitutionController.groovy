@@ -4451,13 +4451,6 @@ join sub.orgRelations or_sub where
     def currentSubscriptionsTransfer() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
-        SimpleDateFormat sdfyear = DateUtils.getSDF_yyyy()
-        String currentYear = sdfyear.format(new Date())
-
-        //params.sort = params.sort ?: 'providerAgency'
-
-        params.referenceYears = params.referenceYears ?: currentYear
-
         result.putAll(subscriptionService.getMySubscriptionTransfer(params,result.user,result.institution))
 
         // Write the output to a file
