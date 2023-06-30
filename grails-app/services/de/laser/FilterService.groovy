@@ -2169,7 +2169,7 @@ class FilterService {
         if(params instanceof GrailsParameterMap)
             return params.list(key)
         //.respondsTo('size') is a substitute for instanceof Ljava.lang.String;
-        else if(params[key] instanceof List || params[key].respondsTo('size')) {
+        else if(params[key] instanceof List || (params[key].respondsTo('size') && !(params[key] instanceof String))) {
             return params[key]
         }
         else return [params[key]]

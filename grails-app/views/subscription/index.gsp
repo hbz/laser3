@@ -210,6 +210,7 @@
             </div>
         </div><!--.row-->
     </div><!--.grid-->
+<div id="downloadWrapper"></div>
 <%
     Map<String, String>
     sortFieldMap = ['tipp.sortname': message(code: 'title.label')]
@@ -829,8 +830,20 @@
                     }
                 }).modal('show');
             })
-        })
+        });
 
+    $('.kbartExport').click(function(e) {
+        e.preventDefault();
+        $('#globalLoadingIndicator').show();
+        $.ajax({
+            url: "<g:createLink action="index" params="${params + [exportKBart: true]}"/>",
+            type: 'POST',
+            contentType: false
+        }).done(function(response){
+            $("#downloadWrapper").html(response);
+            $('#globalLoadingIndicator').hide();
+        });
+    });
     <g:if test="${params.asAt && params.asAt.length() > 0}">$(function() { document.body.style.background = "#fcf8e3"; });</g:if>
 
     $("[data-ajaxTippId]").accordion().on('click', function(e) {

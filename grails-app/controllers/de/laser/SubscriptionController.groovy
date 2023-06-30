@@ -868,19 +868,24 @@ class SubscriptionController {
                 selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
             }
             if (params.exportKBart) {
-                response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
-                response.contentType = "text/tab-separated-values"
-                ServletOutputStream out = response.outputStream
-                Map<String, Object> configMap = [:]
-                configMap.putAll(params)
-                configMap.sub = ctrlResult.result.subscription
-                configMap.pkgIds = ctrlResult.result.subscription.packages?.pkg?.id //GORM sometimes does not initialise the sorted set
-                Map<String, List> tableData = exportService.generateTitleExportKBART(configMap, IssueEntitlement.class.name)
-                out.withWriter { writer ->
-                    writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
+                String dir = GlobalService.obtainFileStorageLocation()
+                File f = new File(dir+'/'+filename)
+                if(!f.exists()) {
+                    FileOutputStream fos = new FileOutputStream(f)
+                    Map<String, Object> configMap = [:]
+                    configMap.putAll(params)
+                    configMap.sub = ctrlResult.result.subscription
+                    configMap.pkgIds = ctrlResult.result.subscription.packages?.pkg?.id //GORM sometimes does not initialise the sorted set
+                    Map<String, List> tableData = exportService.generateTitleExportKBART(configMap, IssueEntitlement.class.name)
+                    fos.withWriter { writer ->
+                        writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
+                    }
+                    fos.flush()
+                    fos.close()
                 }
-                out.flush()
-                out.close()
+                Map fileResult = [token: filename]
+                render template: '/templates/bulkItemDownload', model: fileResult
+                return
             }
             /*else if(params.exportXLSX) {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")
@@ -979,15 +984,20 @@ class SubscriptionController {
                 selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
             }
             if(params.exportKBart) {
-                response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
-                response.contentType = "text/tsv"
-                ServletOutputStream out = response.outputStream
-                Map<String,List> tableData = exportService.generateTitleExportKBART(configMap, TitleInstancePackagePlatform.class.name)
-                out.withWriter { writer ->
-                    writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.columnData,'\t'))
+                String dir = GlobalService.obtainFileStorageLocation()
+                File f = new File(dir+'/'+filename)
+                if(!f.exists()) {
+                    FileOutputStream out = new FileOutputStream(f)
+                    Map<String,List> tableData = exportService.generateTitleExportKBART(configMap, TitleInstancePackagePlatform.class.name)
+                    out.withWriter { writer ->
+                        writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.columnData,'\t'))
+                    }
+                    out.flush()
+                    out.close()
                 }
-                out.flush()
-                out.close()
+                Map fileResult = [token: filename]
+                render template: '/templates/bulkItemDownload', model: fileResult
+                return
             }
             /*else if(params.exportXLSX) {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")
@@ -1526,15 +1536,20 @@ class SubscriptionController {
             }
 
             if (params.exportKBart) {
-                response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
-                response.contentType = "text/tsv"
-                ServletOutputStream out = response.outputStream
-                Map<String, List> tableData = exportService.generateTitleExportKBART(queryMap, IssueEntitlement.class.name)
-                out.withWriter { Writer writer ->
-                    writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
+                String dir = GlobalService.obtainFileStorageLocation()
+                File f = new File(dir+'/'+filename)
+                if(!f.exists()) {
+                    FileOutputStream out = new FileOutputStream(f)
+                    Map<String, List> tableData = exportService.generateTitleExportKBART(queryMap, IssueEntitlement.class.name)
+                    out.withWriter { Writer writer ->
+                        writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
+                    }
+                    out.flush()
+                    out.close()
                 }
-                out.flush()
-                out.close()
+                Map fileResult = [token: filename]
+                render template: '/templates/bulkItemDownload', model: fileResult
+                return
             }
             if (params.exportForImport) {
 
