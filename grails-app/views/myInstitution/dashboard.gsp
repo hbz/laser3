@@ -117,7 +117,7 @@
 
         <ui:messages data="${flash}" />
 
-        <laser:render template="wekbChanges" model="${[wekbChanges: wekbChanges]}"/>
+%{--        <laser:render template="wekbChanges" model="${[wekbChanges: wekbChanges]}"/>--}%
 
     <%
         RefdataValue us_dashboard_tab
