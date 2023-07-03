@@ -1259,43 +1259,6 @@ class SubscriptionController {
     }
 
     /**
-     * Call to add a new price item to the issue entitlement
-     * @return the issue entitlement holding view
-     */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
-    })
-    def addEmptyPriceItem() {
-        Map<String,Object> ctrlResult = subscriptionControllerService.addEmptyPriceItem(params)
-        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            flash.error = ctrlResult.result.error
-        }
-        redirect action: 'index', id: params.id
-    }
-
-    /**
-     * Call to remove a price item from the issue entitlement
-     * @return the issue entitlement holding view
-     */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
-    })
-    def removePriceItem() {
-        Map<String,Object> ctrlResult = subscriptionControllerService.removePriceItem(params)
-        Object[] args = [message(code:'tipp.price'), params.priceItem]
-        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            flash.error = message(code: 'default.not.found.message', args: args) as String
-        }
-        else
-        {
-            flash.message = message(code:'default.deleted.message', args: args) as String
-        }
-        redirect action: 'index', id: params.id
-    }
-
-    /**
      * Call to add a new coverage statement to the issue entitlement
      * @return the issue entitlement holding view
      */

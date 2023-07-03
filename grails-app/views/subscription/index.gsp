@@ -654,44 +654,16 @@
                                                                 </div>
                                                             </g:if>
 
-                                                            <g:each in="${ie.priceItems}" var="priceItem" status="i">
-                                                                <div class="item">
-                                                                    <i class="money grey icon la-popup-tooltip la-delay"></i>
-
-                                                                    <div class="content">
-                                                                        <div class="header"><g:message
-                                                                                code="tipp.price.localPrice"/>:</div>
-
-                                                                        <div class="description">
-                                                                            <ui:xEditable field="localPrice"
-                                                                                          owner="${priceItem}"/>
-                                                                            <ui:xEditableRefData
-                                                                                field="localCurrency"
-                                                                                owner="${priceItem}"
-                                                                                config="Currency"/>
-                                                                            <g:if test="${editable}">
-                                                                                <span class="right floated">
-                                                                                    <g:link controller="subscription"
-                                                                                            action="removePriceItem"
-                                                                                            params="${[priceItem: priceItem.id, id: subscription.id]}"
-                                                                                            class="ui compact icon button tiny"><i
-                                                                                            class="ui icon minus"
-                                                                                            data-content="Preis entfernen"></i></g:link>
-                                                                                </span>
-                                                                            </g:if>
-                                                                        </div>
-
-                                                                    </div>
-                                                                </div>
-
-                                                                <g:if test="${i < ie.priceItems.size() - 1}"><hr></g:if>
-                                                            </g:each>
-                                                            <g:if test="${editable && ie.priceItems.size() < 1}">
-                                                                <g:link action="addEmptyPriceItem"
-                                                                        class="ui tiny button"
-                                                                        params="${[ieid: ie.id, id: subscription.id]}">
+                                                            <div id="priceWrapper_${ie.id}">
+                                                                <g:each in="${ie.priceItems}" var="priceItem" status="i">
+                                                                    <g:render template="/templates/tipps/priceItem" model="[priceItem: priceItem, editable: editable]"/>
+                                                                </g:each>
+                                                            </div>
+                                                            <hr>
+                                                            <g:if test="${editable}">
+                                                                <button class="ui tiny button addObject" data-objType="priceItem" data-ie="${ie.id}">
                                                                     <i class="money icon"></i>${message(code: 'subscription.details.addEmptyPriceItem.info')}
-                                                                </g:link>
+                                                                </button>
                                                             </g:if>
 
                                                             <%-- GROUPS START--%>
@@ -866,6 +838,24 @@
                         dataAjaxTarget.prepend(result);
                     }
                 });
+    });
+
+    $(".addObject").on('click', function(e) {
+        e.preventDefault();
+        let objType = $(this).attr('data-objType');
+        let ie = $(this).attr('data-ie');
+        let wrapper = "#priceWrapper_"+ie;
+        $.ajax({
+            url: '<g:createLink controller="ajaxHtml" action="addObject"/>',
+            data: {
+                object: objType,
+                ieid: ie
+            }
+        }).done(function(result) {
+            $(wrapper).append(result);
+            r2d2.initDynamicUiStuff(wrapper);
+            r2d2.initDynamicXEditableStuff(wrapper);
+        });
     });
 </laser:script>
 <laser:htmlEnd/>

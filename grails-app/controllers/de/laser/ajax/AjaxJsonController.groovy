@@ -18,6 +18,7 @@ import de.laser.SubscriptionDiscountScale
 import de.laser.SubscriptionService
 import de.laser.auth.Role
 import de.laser.ctrl.SubscriptionControllerService
+import de.laser.finance.PriceItem
 import de.laser.utils.CodeUtils
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
@@ -833,16 +834,58 @@ class AjaxJsonController {
     @Secured(['ROLE_USER'])
     def removeObject() {
         int removed = 0
+        Map<String, Object> objId = [id: params.long("objId")]
         switch(params.object) {
-            case "altname": removed = AlternativeName.executeUpdate('delete from AlternativeName altname where altname.id = :id', [id: params.long("objId")])
+            case "altname": removed = AlternativeName.executeUpdate('delete from AlternativeName altname where altname.id = :id', objId)
                 break
-            case "coverage": //TODO
+            case "coverage": //TODO migrate SubscriptionController.removeCoverage()
+                break
+            //ex SubscriptionControllerService.removePriceItem()
+            case "priceItem": removed = PriceItem.executeUpdate('delete from PriceItem pi where pi.id = :id', objId)
                 break
         }
         Boolean success = removed > 0
         Map<String, Boolean> result = [success: success]
         render result as JSON
     }
+
+    /**
+     * Call to add a new price item to the issue entitlement
+     * @return the issue entitlement holding view
+     */
+    /*
+    @Secured(['ROLE_USER'])
+    def addEmptyPriceItem() {
+        Map<String,Object> ctrlResult = subscriptionControllerService.addEmptyPriceItem(params)
+        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
+            flash.error = ctrlResult.result.error
+        }
+        redirect action: 'index', id: params.id
+    }
+    */
+
+    /**
+     * Call to remove a price item from the issue entitlement
+     * @return the issue entitlement holding view
+     */
+    /*
+    @DebugInfo(isInstEditor_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
+    })
+    def removePriceItem() {
+        Map<String,Object> ctrlResult = subscriptionControllerService.removePriceItem(params)
+        Object[] args = [message(code:'tipp.price'), params.priceItem]
+        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
+            flash.error = message(code: 'default.not.found.message', args: args) as String
+        }
+        else
+        {
+            flash.message = message(code:'default.deleted.message', args: args) as String
+        }
+        redirect action: 'index', id: params.id
+    }
+    */
 
     /**
      * Searches for property definition alternatives based on the OID of the property definition which should be replaced
