@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.config.ConfigMapper
 import de.laser.storage.BeanStore
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -39,6 +40,15 @@ class GlobalService {
             params.get(key) != null
         }
         else params.get(key)?.trim()?.length() > 0
+    }
+
+    static String obtainFileStorageLocation() {
+        String dir = ConfigMapper.getStatsReportSaveLocation() ?: '/usage'
+        File folder = new File(dir)
+        if (!folder.exists()) {
+            folder.mkdir()
+        }
+        dir
     }
 
     /**

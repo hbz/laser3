@@ -128,12 +128,18 @@ class AjaxHtmlController {
             case "altname": owner= Org.get(params.owner)
                 resultObj = AlternativeName.construct([org: owner, name: 'Unknown'])
                 field = "name"
+                if(resultObj) {
+                    render view: '/templates/ajax/_newXEditable', model: [wrapper: params.object, ownObj: resultObj, field: field, overwriteEditable: true]
+                }
                 break
             case "coverage": //TODO
                 break
-        }
-        if(resultObj) {
-            render view: '/templates/ajax/_newXEditable', model: [wrapper: params.object, ownObj: resultObj, field: field, overwriteEditable: true]
+            case "priceItem":
+                Map<String, Object> ctrlResult = subscriptionControllerService.addEmptyPriceItem(params)
+                if(ctrlResult.status == SubscriptionControllerService.STATUS_OK) {
+                    render template: '/templates/tipps/priceItem', model: [priceItem: ctrlResult.result.newItem, editable: true] //editable check is implicitly done by call; the AJAX loading can be triggered iff editable == true
+                }
+                break
         }
     }
 
