@@ -11,7 +11,6 @@ import de.laser.system.SystemAnnouncement
 import de.laser.workflow.WfChecklist
 import de.laser.workflow.WfCheckpoint
 import grails.gorm.transactions.Transactional
-import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.web.servlet.mvc.GrailsParameterMap
 
 import java.text.SimpleDateFormat
@@ -22,13 +21,13 @@ import java.text.SimpleDateFormat
 @Transactional
 class MyInstitutionControllerService {
 
-    AccessService accessService
     ContextService contextService
     DashboardDueDatesService dashboardDueDatesService
     FilterService filterService
     SurveyService surveyService
     TaskService taskService
     UserService userService
+    WekbStatsService wekbStatsService
     WorkflowService workflowService
 
     static final int STATUS_OK = 0
@@ -141,6 +140,11 @@ class MyInstitutionControllerService {
         result.surveys = activeSurveyConfigs.groupBy {it?.id}
         result.countSurvey = result.surveys.size()
         */
+
+        //int days = result.user.getSetting(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14).getValue()
+        //result.wekbChanges = wekbStatsService.getCurrentChanges(days)
+        result.wekbChanges = wekbStatsService.getCurrentChanges()
+
         result.benchMark = prf.stopBenchmark()
         [status: STATUS_OK, result: result]
     }

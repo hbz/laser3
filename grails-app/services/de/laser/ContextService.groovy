@@ -98,7 +98,7 @@ class ContextService {
         return new SessionCacheWrapper()
     }
 
-    // -- Formal checks @ user.isFormal(user.formalRole, user.formalOrg)
+    // -- Formal checks @ user.isFormal(user.formalRole, user.formalOrg) --> no fake role
 
     boolean isInstUser_or_ROLEADMIN() {
         _hasInstRole_or_ROLEADMIN('INST_USER')
@@ -110,7 +110,7 @@ class ContextService {
         _hasInstRole_or_ROLEADMIN('INST_ADM')
     }
 
-    // -- Formal checks @ user.formalOrg.perm
+    // -- Formal checks @ user.formalOrg.perm --> with fake role
 
     /**
      * Permission check (granted by customer type) for the current context org.
@@ -125,7 +125,7 @@ class ContextService {
         hasPerm(orgPerms)
     }
 
-    // -- Formal checks @ user.formalOrg.perm + user.isFormal(role, formalOrg)
+    // -- Formal checks @ user.formalOrg.perm + user.isFormal(role, formalOrg) --> with fake role
 
     boolean hasPermAsInstUser_or_ROLEADMIN(String orgPerms) {
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {

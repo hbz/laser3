@@ -116,7 +116,9 @@
         </style>
 
         <ui:messages data="${flash}" />
-        <br />
+
+        <laser:render template="wekbChanges" model="${[wekbChanges: wekbChanges]}"/>
+
     <%
         RefdataValue us_dashboard_tab
         switch (params.view) {
