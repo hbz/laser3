@@ -141,7 +141,9 @@ class YodaController {
 
             for (JobKey key : quartzScheduler.getJobKeys(GroupMatcher.jobGroupEquals(groupName))) {
                 def clazz = Class.forName(key.getName())
-                List<List> cp  = clazz.getAt('configurationProperties')
+                boolean isLaserJob = groupName == 'GRAILS_JOBS'
+
+                List<List> cp  = isLaserJob ? clazz.getAt('configurationProperties') : []
 
                 def triggers = quartzScheduler.getTriggersOfJob(key)
                 List nft = triggers.collect{ it.nextFireTime ?: null }
@@ -156,13 +158,17 @@ class YodaController {
                         configurationProperties: cp,
                         services: services,
                         nextFireTime: nft ? nft.get(0)?.toTimestamp() : '',
-                        running: (applicationContext.getBean(key.getName()) as AbstractJob).isRunning(),
-                        available: (applicationContext.getBean(key.getName()) as AbstractJob).isAvailable()
+                        running: '',
+                        available: ''
                 ]
+                if (isLaserJob) {
+                    map.running     = (applicationContext.getBean(key.getName()) as AbstractJob).isRunning()
+                    map.available   = (applicationContext.getBean(key.getName()) as AbstractJob).isAvailable()
+                }
 
                 List crx = triggers.collect{ it.hasProperty('cronEx') ? it.cronEx : null }
 
-                if (crx) {
+                if (crx && isLaserJob) {
                     map << ['cronEx': crx.get(0).cronExpression]
                 }
                 group << map
