@@ -70,6 +70,9 @@
     <g:if test="${members}">
         <laser:render template="export/individuallyExportModalOrgs" model="[modalID: 'individuallyExportModal', orgType: 'institution', contactSwitch: true]" />
         <g:form action="manageMembers" controller="myInstitution" method="post" class="ui form la-clear-before" data-confirm-id="manageMembers_form">
+            <g:if test="${params.filterSet}">
+                <g:hiddenField name="filterSet" value="true"/>
+            </g:if>
             <laser:render template="/templates/filter/orgFilterTable"
                       model="[orgList: members,
                               tmplShowCheckbox: editable,

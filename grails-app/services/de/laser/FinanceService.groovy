@@ -237,8 +237,15 @@ class FinanceService {
         Map<String,Object> result = financeControllerService.getResultGenerics(params)
         result.putAll(financeControllerService.getEditVars(result.institution))
         List<Long> selectedCostItems = []
-        params.list("selectedCostItems").each { id ->
-            selectedCostItems << Long.parseLong(id)
+        if(params.containsKey('costItemListToggler')) {
+            if(result.subscription)
+                selectedCostItems = getCostItemsForSubscription(params, result).get(params.view).ids
+            else selectedCostItems = getCostItems(params, result).get(params.view).ids
+        }
+        else {
+            params.list("selectedCostItems").each { id ->
+                selectedCostItems << Long.parseLong(id)
+            }
         }
         if(selectedCostItems) {
             if(Boolean.valueOf(params.delete)) {
@@ -562,6 +569,7 @@ class FinanceService {
                         if(ownCostItems){
                             result.own.costItems = CostItem.findAllByIdInList(ownCostItems,[max:configMap.max,offset:configMap.offsets.ownOffset, sort: configMap.sortConfig.ownSort, order: configMap.sortConfig.ownOrder])
                             result.own.sums = calculateResults(ownCostItems)
+                            result.own.ids = ownCostItems.id
                         }
                         break
                     case "cons":
@@ -575,6 +583,7 @@ class FinanceService {
                         if(consCostItems) {
                             result.cons.costItems = consCostItems.drop(configMap.offsets.consOffset).take(configMap.max)
                             result.cons.sums = calculateResults(consCostItems.id)
+                            result.cons.ids = consCostItems.id
                         }
                         break
                     case "consAtSubscr":
@@ -588,6 +597,7 @@ class FinanceService {
                         if(consCostItems) {
                             result.cons.costItems = consCostItems
                             result.cons.sums = calculateResults(consCostItems.id)
+                            result.cons.ids = consCostItems.id
                         }
                         break
                     case "subscr":
@@ -600,6 +610,7 @@ class FinanceService {
                         if(subscrCostItems) {
                             result.subscr.costItems = subscrCostItems.drop(configMap.offsets.subscrOffset).take(configMap.max)
                             result.subscr.sums = calculateResults(subscrCostItems.id)
+                            result.subscr.ids = subscrCostItems.id
                         }
                         break
                 }
@@ -667,6 +678,7 @@ class FinanceService {
                     prf.setBenchmark("map assembly")
                     if(ownSubscriptionCostItems) {
                         result.own.costItems = ownSubscriptionCostItems.drop(configMap.offsets.ownOffset).take(configMap.max)
+                        result.own.ids = ownSubscriptionCostItems.id
                         result.own.sums = calculateResults(ownSubscriptionCostItems.id)
                     }
                         break
@@ -690,6 +702,7 @@ class FinanceService {
                     if(consortialCostRows) {
                         Set<CostItem> consortialCostItems = consortialCostRows
                         prf.setBenchmark("map assembly")
+                        result.cons.ids = consortialCostRows.id
                         //result.cons.costItems = CostItem.executeQuery('select ci from CostItem ci right join ci.sub sub join sub.orgRelations oo left join ci.costItemElementConfiguration ciec where ci.id in (:ids) order by '+configMap.sortConfig.consSort+' '+configMap.sortConfig.consOrder+', ciec.value desc',[ids:consortialCostRows],[max:configMap.max, offset:configMap.offsets.consOffset]).toSet()
                         result.cons.costItems = consortialCostItems.drop(configMap.offsets.consOffset).take(configMap.max)
                         //very ugly ... any ways to achieve this more elegantly are greatly appreciated!!
@@ -721,6 +734,7 @@ class FinanceService {
                     result.subscr = [count:consortialMemberSubscriptionCostItems.size()]
                     if(consortialMemberSubscriptionCostItems) {
                         result.subscr.sums = calculateResults(consortialMemberSubscriptionCostItems.id)
+                        result.subscr.ids = consortialMemberSubscriptionCostItems.id
                         result.subscr.costItems = consortialMemberSubscriptionCostItems.drop(configMap.offsets.subscrOffset).take(configMap.max)
                     }
                     break

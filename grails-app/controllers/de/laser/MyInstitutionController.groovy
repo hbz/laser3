@@ -3241,7 +3241,7 @@ class MyInstitutionController  {
 
         // new: filter preset
         result.comboType = RDStore.COMBO_TYPE_CONSORTIUM
-        if (params.selectedOrgs) {
+        if (params.selectedOrgs && !params.containsKey("orgListToggler")) {
             log.debug('remove orgs from consortia')
 
             Combo.withTransaction { TransactionStatus ts ->
@@ -3354,6 +3354,11 @@ join sub.orgRelations or_sub where
         }
 
         List totalMembers      = Org.executeQuery(fsq.query, fsq.queryParams)
+        if(params.orgListToggler) {
+            Combo.withTransaction {
+                Combo.executeUpdate('delete from Combo c where c.toOrg = :context and c.fromOrg.id in (:ids)', [context: result.institution, ids: memberIds])
+            }
+        }
         result.totalMembers    = totalMembers
         result.membersCount    = totalMembers.size()
         result.members         = totalMembers.drop((int) result.offset).take((int) result.max)
