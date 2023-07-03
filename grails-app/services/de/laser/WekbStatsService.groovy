@@ -15,18 +15,22 @@ class WekbStatsService {
     ContextService contextService
     GokbService gokbService
 
+    static final String CACHE_KEY = 'WekbStatsService/wekbChanges'
+
     def getCurrentChanges() {
-        Map<String, Object> result = [:]
-//        EhcacheWrapper cache = cacheService.getTTL1800Cache('WekbStatsService/getCurrentChanges')
-        EhcacheWrapper cache = cacheService.getSharedUserCache(contextService.getUser(), 'WekbStatsService/getCurrentChanges')
+        EhcacheWrapper cache = cacheService.getTTL1800Cache(CACHE_KEY)
 
         if (! cache.get('changes')) {
-            result = processData(14)
-            cache.put('changes', result)
-        } else {
-            result = cache.get('changes') as Map
+            updateCache()
         }
-        result
+        cache.get('changes') as Map
+    }
+
+    void updateCache() {
+        EhcacheWrapper cache = cacheService.getTTL1800Cache(CACHE_KEY)
+
+        Map<String, Object> result = processData(14)
+        cache.put('changes', result)
     }
 
     Map<String, Object> processData(int days) {
@@ -48,24 +52,24 @@ class WekbStatsService {
         ]
 
         Closure process = { Map map, String key ->
-            result[key].rawCount = map.result_count_total as Serializable
+            if (map.result) {
+                map.result.sort { it.lastUpdatedDisplay }.each {
+                    it.dateCreatedDisplay = DateUtils.getLocalizedSDF_noZ().format(DateUtils.parseDateGeneric(it.dateCreatedDisplay))
+                    it.lastUpdatedDisplay = DateUtils.getLocalizedSDF_noZ().format(DateUtils.parseDateGeneric(it.lastUpdatedDisplay))
+                    if (it.lastUpdatedDisplay == it.dateCreatedDisplay) {
+                        result[key].created << it.uuid
+                    }
+                    else {
+                        result[key].updated << it.uuid
+                    }
+                    if (key == 'org')       { it.globalUID = Org.findByGokbId(it.uuid)?.globalUID }
+                    if (key == 'platform')  { it.globalUID = Platform.findByGokbId(it.uuid)?.globalUID }
+                    if (key == 'package')   { it.globalUID = Package.findByGokbId(it.uuid)?.globalUID }
 
-            map.result.sort { it.lastUpdatedDisplay }.each {
-                it.dateCreatedDisplay = DateUtils.getLocalizedSDF_noZ().format(DateUtils.parseDateGeneric(it.dateCreatedDisplay))
-                it.lastUpdatedDisplay = DateUtils.getLocalizedSDF_noZ().format(DateUtils.parseDateGeneric(it.lastUpdatedDisplay))
-                if (it.lastUpdatedDisplay == it.dateCreatedDisplay) {
-                    result[key].created << it.uuid
+                    result[key].all << it
                 }
-                else {
-                    result[key].updated << it.uuid
-                }
-                if (key == 'org')       { it.globalUID = Org.findByGokbId(it.uuid)?.globalUID }
-                if (key == 'platform')  { it.globalUID = Platform.findByGokbId(it.uuid)?.globalUID }
-                if (key == 'package')   { it.globalUID = Package.findByGokbId(it.uuid)?.globalUID }
-
-                result[key].all << it
+                result[key].count = result[key].created.size() + result[key].updated.size()
             }
-            result[key].count = result[key].created.size() + result[key].updated.size()
         }
 
         Map orgMap = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + 'searchApi', base + [componentType: 'Org'])
