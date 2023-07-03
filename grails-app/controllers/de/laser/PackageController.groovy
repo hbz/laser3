@@ -73,7 +73,7 @@ class PackageController {
             return
         }
         Map<String, Object> result = [
-                flagContentGokb : true // gokbService.queryElasticsearch
+                flagContentGokb : true // gokbService.executeQuery
         ]
         result.user = contextService.getUser()
         SwissKnife.setPaginationParams(result, params, result.user)
@@ -121,7 +121,7 @@ class PackageController {
                 queryParams.curatoryGroupType = "other" //setting to this includes also missing ones, this is already implemented in we:kb
         }
 
-        Map queryCuratoryGroups = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/groups', [:])
+        Map queryCuratoryGroups = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + '/groups', [:])
         if(!params.sort)
             params.sort = 'name'
         if(queryCuratoryGroups.code == 404) {
@@ -304,7 +304,7 @@ class PackageController {
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         result.editUrl = apiSource.editUrl.endsWith('/') ? apiSource.editUrl : apiSource.editUrl+'/'
 
-        Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: packageInstance.gokbId])
+        Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: packageInstance.gokbId])
         if (queryResult.error && queryResult.error == 404) {
             flash.error = message(code:'wekb.error.404') as String
         }
@@ -315,7 +315,7 @@ class PackageController {
         if(packageInstance.nominalPlatform) {
             //record filled with LAS:eR and we:kb data
             Map<String, Object> platformInstanceRecord = [:]
-            queryResult = gokbService.queryElasticsearch(apiSource.baseUrl+apiSource.fixToken+"/searchApi", [uuid: packageInstance.nominalPlatform.gokbId])
+            queryResult = gokbService.executeQuery(apiSource.baseUrl+apiSource.fixToken+"/searchApi", [uuid: packageInstance.nominalPlatform.gokbId])
             if(queryResult.warning) {
                 List records = queryResult.warning.result
                 if(records)
@@ -330,7 +330,7 @@ class PackageController {
             result.platformInstance = packageInstance.nominalPlatform
         }
 
-        result.flagContentGokb = true // gokbService.queryElasticsearch
+        result.flagContentGokb = true // gokbService.executeQuery
         result
     }
 

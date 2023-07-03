@@ -131,7 +131,7 @@ class SubscriptionController {
         if(params.reportType)
             result.putAll(subscriptionControllerService.loadFilterList(params))
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
-        result.flagContentGokb = true // gokbService.queryElasticsearch
+        result.flagContentGokb = true // gokbService.executeQuery
         Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription", [subscription: result.subscription])
         if(!subscribedPlatforms) {
             subscribedPlatforms = Platform.executeQuery("select tipp.platform from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscription", [subscription: result.subscription])
@@ -141,7 +141,7 @@ class SubscriptionController {
         result.platforms = subscribedPlatforms
         result.platformsJSON = subscribedPlatforms.globalUID as JSON
         subscribedPlatforms.each { Platform platformInstance ->
-            Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: platformInstance.gokbId])
+            Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: platformInstance.gokbId])
             if (queryResult.error && queryResult.error == 404) {
                 result.wekbServerUnavailable = message(code: 'wekb.error.404')
             }

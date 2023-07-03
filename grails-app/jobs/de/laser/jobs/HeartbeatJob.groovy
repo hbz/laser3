@@ -1,6 +1,6 @@
 package de.laser.jobs
 
-import de.laser.SystemService
+import de.laser.WekbStatsService
 import de.laser.annotations.UnderDevelopment
 import de.laser.config.ConfigMapper
 import de.laser.system.SystemActivityProfiler
@@ -11,7 +11,8 @@ import groovy.util.logging.Slf4j
 @Slf4j
 class HeartbeatJob extends AbstractJob {
 
-    SystemService systemService
+//    SystemService systemService
+    WekbStatsService wekbStatsService
 //    SimpMessagingTemplate brokerMessagingTemplate
 
     static final int HEARTBEAT_IN_SECONDS = 5 * 60
@@ -47,6 +48,7 @@ class HeartbeatJob extends AbstractJob {
 
             ConfigMapper.setConfig( ConfigMapper.QUARTZ_HEARTBEAT, new Date() )
             SystemActivityProfiler.update()
+            // todo - TMP - wekbStatsService.updateCache()
 
             // org.springframework.messaging.simp.SimpMessageSendingOperations extends org.springframework.messaging.core.MessageSendingOperations
             // +-- org.springframework.messaging.simp.SimpMessagingTemplate

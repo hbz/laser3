@@ -880,7 +880,7 @@ class SubscriptionControllerService {
         SortedSet<String> allAvailableReports = new TreeSet<String>()
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         subscribedPlatforms.each { Platform platform ->
-            Map<String, Object> queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/sushiSources", [:])
+            Map<String, Object> queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/sushiSources", [:])
             Map platformRecord
             if (queryResult.warning) {
                 Map<String, Object> records = queryResult.warning
@@ -1624,7 +1624,7 @@ class SubscriptionControllerService {
                 result.platformsJSON = subscribedPlatforms.globalUID as JSON
                 ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
                 subscribedPlatforms.each { Platform platformInstance ->
-                    Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: platformInstance.gokbId])
+                    Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: platformInstance.gokbId])
                     if (queryResult.error && queryResult.error == 404) {
                         result.wekbServerUnavailable = message(code: 'wekb.error.404')
                     }
@@ -2036,9 +2036,9 @@ class SubscriptionControllerService {
             queryParams.max = params.max ?: result.max
             queryParams.offset = params.offset ?: result.offset
 
-            result.flagContentGokb = true // gokbService.queryElasticsearch
+            result.flagContentGokb = true // gokbService.executeQuery
 
-            Map queryCuratoryGroups = gokbService.queryElasticsearch(apiSource.baseUrl+apiSource.fixToken+'/groups', [:])
+            Map queryCuratoryGroups = gokbService.executeQuery(apiSource.baseUrl+apiSource.fixToken+'/groups', [:])
             if(queryCuratoryGroups.error && queryCuratoryGroups.error == 404) {
                 result.error = messageSource.getMessage('wekb.error.404', null, LocaleUtils.getCurrentLocale())
                 [result:result, status: STATUS_ERROR]
@@ -2051,7 +2051,7 @@ class SubscriptionControllerService {
                 result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
 
                 Set records = []
-                Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/searchApi' , queryParams)
+                Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + '/searchApi' , queryParams)
                 if (queryResult.containsKey("warning")) {
                     if(queryResult.warning.containsKey("result")) {
                         records.addAll(queryResult.warning.result)
