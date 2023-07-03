@@ -136,6 +136,7 @@
     </g:form>
 </ui:modal>
 
+<div id="downloadWrapper"></div>
 
 <ui:tabs actionName="${actionName}">
     <ui:tabsItem controller="subscription" action="addEntitlements"
@@ -561,7 +562,18 @@
         });
     });
 
-
+    $('.kbartExport').click(function(e) {
+        e.preventDefault();
+        $('#globalLoadingIndicator').show();
+        $.ajax({
+            url: "<g:createLink action="addEntitlements" params="${params + [exportKBart: true]}"/>",
+            type: 'POST',
+            contentType: false
+        }).done(function(response){
+            $("#downloadWrapper").html(response);
+            $('#globalLoadingIndicator').hide();
+        });
+    });
 </laser:script>
 
 <laser:htmlEnd />

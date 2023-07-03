@@ -52,6 +52,7 @@ class SubscriptionService {
     SubscriptionsQueryService subscriptionsQueryService
     SurveyService surveyService
     UserService userService
+    OrgTypeService orgTypeService
 
     /**
      * ex MyInstitutionController.currentSubscriptions()
@@ -179,9 +180,34 @@ class SubscriptionService {
      */
     Map<String,Object> getMySubscriptionTransfer(GrailsParameterMap params, User contextUser, Org contextOrg) {
         Map<String,Object> result = [:]
+        EhcacheWrapper cache = contextService.getUserCache("/subscriptionsTransfer/filter/")
+        if(cache && cache.get('subscriptionsTransferFilterCache')) {
+            if(!params.resetFilter && !params.isSiteReloaded)
+                params.putAll((GrailsParameterMap) cache.get('subscriptionsTransferFilterCache'))
+            else params.remove('resetFilter')
+            cache.remove('subscriptionsTransferFilterCache') //has to be executed in any case in order to enable cache updating
+        }
         SwissKnife.setPaginationParams(result, params, contextUser)
 
         result.editable = userService.hasFormalAffiliation(contextUser, contextOrg, 'INST_EDITOR')
+
+        SimpleDateFormat sdfyear = DateUtils.getSDF_yyyy()
+        String currentYear = sdfyear.format(new Date())
+
+        params.referenceYears = params.referenceYears ?: currentYear
+
+        String consortiaFilter = ''
+        if(contextOrg.isCustomerType_Consortium())
+            consortiaFilter = 'and s.instanceOf = null'
+
+        Set<Year> availableReferenceYears = Subscription.executeQuery('select s.referenceYear from OrgRole oo join oo.sub s where s.referenceYear != null and oo.org = :contextOrg '+consortiaFilter+' order by s.referenceYear', [contextOrg: contextOrg])
+        result.referenceYears = availableReferenceYears
+
+        if(params.isSiteReloaded == "yes") {
+            params.remove('isSiteReloaded')
+            cache.put('subscriptionFilterCache', params)
+        }
+
 
         def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextOrg)
         result.filterSet = tmpQ[2]
@@ -196,6 +222,13 @@ class SubscriptionService {
             result.num_sub_rows = subscriptions.size()
 
         result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
+
+        result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextOrg)
+
+        Set orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies( contextService.getOrg() )
+
+        result.providers = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds, [sort: 'name'])
+
         result
     }
 

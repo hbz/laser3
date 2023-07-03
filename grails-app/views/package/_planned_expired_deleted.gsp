@@ -95,6 +95,7 @@
 
     </div>
 </div>
+<div id="downloadWrapper"></div>
 <%
     Map<String, String>
     sortFieldMap = ['sortname': message(code: 'title.label')]
@@ -143,5 +144,18 @@
             return false ;
         }
       }
+
+    $('.kbartExport').click(function(e) {
+        e.preventDefault();
+        $('#globalLoadingIndicator').show();
+        $.ajax({
+            url: "<g:createLink action="current" params="${params + [exportKBart: true]}"/>",
+            type: 'POST',
+            contentType: false
+        }).done(function(response){
+            $("#downloadWrapper").html(response);
+            $('#globalLoadingIndicator').hide();
+        });
+    });
     </laser:script>
 

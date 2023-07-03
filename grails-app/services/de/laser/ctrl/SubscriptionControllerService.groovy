@@ -3484,6 +3484,7 @@ class SubscriptionControllerService {
                     result.error = messageSource.getMessage('subscription.details.addEmptyPriceItem.priceItemNotSaved',null,locale)
                     [result:result,status:STATUS_ERROR]
                 }
+                result.newItem = pi
             }
             else {
                 result.error = messageSource.getMessage('subscription.details.addEmptyPriceItem.issueEntitlementNotFound',null,locale)
@@ -3495,23 +3496,6 @@ class SubscriptionControllerService {
             [result:result,status:STATUS_ERROR]
         }
         [result:result,status:STATUS_OK]
-    }
-
-    /**
-     * Removes the given price item from the issue entitlement
-     * @param params the request parameter map
-     * @return OK if the removal was successful, ERROR otherwise
-     */
-    Map<String,Object> removePriceItem(GrailsParameterMap params) {
-        PriceItem priceItem = PriceItem.get(params.priceItem)
-        if(priceItem) {
-            priceItem.delete()
-            [result:null,status:STATUS_OK]
-        }
-        else {
-            log.error("Issue entitlement priceItem with ID ${params.priceItem} could not be found")
-            [result:null,status:STATUS_ERROR]
-        }
     }
 
     /**
