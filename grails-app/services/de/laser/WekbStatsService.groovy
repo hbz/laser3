@@ -72,13 +72,13 @@ class WekbStatsService {
             }
         }
 
-        Map orgMap = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + 'searchApi', base + [componentType: 'Org'])
+        Map orgMap = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + 'searchApi', base + [componentType: 'Org'])
         process(orgMap.warning as Map, 'org')
 
-        Map platformMap = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + 'searchApi', base + [componentType: 'Platform'])
+        Map platformMap = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + 'searchApi', base + [componentType: 'Platform'])
         process(platformMap.warning as Map, 'platform')
 
-        Map packageMap = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + 'searchApi', base + [componentType: 'Package'])
+        Map packageMap = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + 'searchApi', base + [componentType: 'Package'])
         process(packageMap.warning as Map, 'package')
 
         result
