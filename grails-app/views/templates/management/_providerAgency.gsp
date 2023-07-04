@@ -62,7 +62,7 @@
                     total="${filteredSubscriptions.size()}"/>
             </g:if><g:else>
                 ${message(code: 'subscriptionsManagement.subscriptions')} <ui:totalNumber
-                        total="${filteredSubscriptions.size()}/${num_sub_rows}"/>
+                        total="${num_sub_rows}"/>
             </g:else>
         </h3>
         <table class="ui celled la-js-responsive-table la-table table">

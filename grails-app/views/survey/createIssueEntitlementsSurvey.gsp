@@ -13,7 +13,7 @@
 <ui:messages data="${flash}"/>
 
 
-<div class="ui icon info message">
+<div class="ui icon message">
     <i class="info icon"></i>
     ${message(code: 'allSubscriptions.info2')}
 </div>
