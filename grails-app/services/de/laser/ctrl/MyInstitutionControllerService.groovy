@@ -143,7 +143,9 @@ class MyInstitutionControllerService {
 
         //int days = result.user.getSetting(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14).getValue()
         //result.wekbChanges = wekbStatsService.getCurrentChanges(days)
-        // todo - TMP - result.wekbChanges = wekbStatsService.getCurrentChanges()
+        if (params.demo) {
+            result.wekbChanges = wekbStatsService.getCurrentChanges()
+        }
 
         result.benchMark = prf.stopBenchmark()
         [status: STATUS_OK, result: result]

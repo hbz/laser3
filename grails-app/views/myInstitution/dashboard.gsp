@@ -117,8 +117,9 @@
 
         <ui:messages data="${flash}" />
 
-%{--        <laser:render template="wekbChanges" model="${[wekbChanges: wekbChanges]}"/>--}%
-
+        <g:if test="${params.demo}">
+            <laser:render template="wekbChanges" model="${[wekbChanges: wekbChanges, tmplView: 'info']}"/>
+        </g:if>
     <%
         RefdataValue us_dashboard_tab
         switch (params.view) {
