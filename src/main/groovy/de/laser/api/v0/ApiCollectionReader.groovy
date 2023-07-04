@@ -349,7 +349,7 @@ class ApiCollectionReader {
                 "tipp_last_updated, tipp_id, (select rdv_value from refdata_value where rdv_id = tipp_status_rv_fk) as tipp_status, " +
                 "case tipp_title_type when 'Journal' then 'serial' when 'Book' then 'monograph' when 'Database' then 'database' else 'other' end as title_type " +
                 "from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id " +
-                "where ie_subscription_fk = :sub and tipp_pkg_fk = :pkg and tipp_status_rv_fk != :statusTipp and ie_status_rv_fk != :removed order by ie_sortname",
+                "where ie_subscription_fk = :sub and tipp_pkg_fk = :pkg and tipp_status_rv_fk != :statusTipp and ie_status_rv_fk != :removed order by tipp_sortname",
                 [sub: subPkg.subscription.id, pkg: subPkg.pkg.id, statusTipp: RDStore.TIPP_STATUS_REMOVED.id, removed: RDStore.TIPP_STATUS_REMOVED.id])
         log.debug("now fetching additional params ...")
         Map<String, Object> subParams = [subId: subPkg.subscription.id], pkgParams = [pkgId: subPkg.pkg.id]

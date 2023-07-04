@@ -32,7 +32,7 @@
                     <g:elseif test="${event in PendingChangeConfiguration.COST_ITEM_CHANGES}">
                         <g:link controller="subscription" action="index" mapping="subfinance" params="${[sub:entry.subscription.id]}">${entry.subscription.name} (${entry.subscription.status.getI10n("value")})</g:link>
                     </g:elseif>
-                    <g:elseif test="${event == PendingChangeConfiguration.NEW_SUBSCRIPTION}">
+                    <g:elseif test="${event in [PendingChangeConfiguration.NEW_SUBSCRIPTION, PendingChangeConfiguration.SUBSCRIPTION_RENEWED]}">
                         <div class="right aligned wide column">
                             <g:link controller="subscription" action="show" id="${entry.subscription.id}">
                                 ${entry.subscription.name}
@@ -75,6 +75,30 @@
                                 </div>
                             </div>
                         </g:if>
+                        <g:elseif test="${event == PendingChangeConfiguration.SUBSCRIPTION_RENEWED}">
+                            <div class="right aligned wide column">
+                                <div class="ui grid">
+                                    <div class="right aligned wide column">
+                                        <g:link controller="pendingChange" action="accept" id="${entry.changeId}" class="ui icon positive button la-modern-button js-open-confirm-modal"
+                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.changes.accept")}"
+                                            data-confirm-term-how="ok"
+                                            role="button"
+                                            aria-label="${message(code: 'ariaLabel.check.universal')}">
+                                            <i class="checkmark icon"></i>
+                                        <!--${message(code: 'default.button.accept.label')}-->
+                                        </g:link>
+                                        <g:link controller="pendingChange" action="reject" id="${entry.changeId}" class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.changes.reject")}"
+                                                data-confirm-term-how="ok"
+                                                role="button"
+                                                aria-label="${message(code: 'ariaLabel.delete.universal')}">
+                                            <i class="times icon"></i>
+                                            <!--${message(code: 'default.button.reject.label')}-->
+                                        </g:link>
+                                    </div>
+                                </div>
+                            </div>
+                        </g:elseif>
                         <g:elseif test="${event in PendingChangeConfiguration.COST_ITEM_CHANGES}">
                             <div class="right aligned wide column">
                                 <g:link controller="finance" action="acknowledgeChange" id="${entry.changeId}" class="ui icon primary button la-modern-button js-open-confirm-modal"
