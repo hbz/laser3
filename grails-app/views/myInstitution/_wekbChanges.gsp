@@ -21,7 +21,7 @@
             </div>
             <div class="column">
                 <a href="#" class="wekbFlyoutTrigger" data-filter="created">Neu angelegte Objekte anzeigen</a> <br/>
-                <a href="#" class="wekbFlyoutTrigger" data-filter="updated">Nur geänderte Objekte anzeigen</a> <br/>
+                <a href="#" class="wekbFlyoutTrigger" data-filter="updated">Geänderte Objekte anzeigen</a> <br/>
                 <a href="#" class="wekbFlyoutTrigger" data-filter="all">Alle Änderungen anzeigen</a>
             </div>
         </div>
@@ -32,27 +32,37 @@
     <laser:script file="${this.getGroovyPageFileName()}">
 
         $('a.wekbFlyoutTrigger').on ('click', function(e) {
-            e.preventDefault();
-
+            e.preventDefault()
             let filter = $(this).attr ('data-filter')
-            $.ajax ({
-                url: "<g:createLink controller="ajaxHtml" action="wekbChangesFlyout"/>",
-                data: {
-                    filter: filter
-                }
-            }).done (function (response) {
-                $('#wekbFlyout').html (response)
 
-
-
-                $('#wekbFlyout').flyout ('show')
-                r2d2.initDynamicUiStuff ('#wekbFlyout')
-                r2d2.initDynamicXEditableStuff ('#wekbFlyout')
-
+            if ($('#wekbFlyout').children().length > 0) {
                 JSPC.app.dashboardWekbFlyout ('#wekbChanges-org', filter)
                 JSPC.app.dashboardWekbFlyout ('#wekbChanges-platform', filter)
                 JSPC.app.dashboardWekbFlyout ('#wekbChanges-package', filter)
-            })
+
+                $('#wekbFlyout').flyout ('show')
+            }
+            else {
+                $('#globalLoadingIndicator').show()
+
+                $.ajax ({
+                    url: "<g:createLink controller="ajaxHtml" action="wekbChangesFlyout"/>",
+                    data: {
+                        filter: filter
+                    }
+                }).done (function (response) {
+                    $('#globalLoadingIndicator').hide()
+
+                    $('#wekbFlyout').html (response)
+                    JSPC.app.dashboardWekbFlyout ('#wekbChanges-org', filter)
+                    JSPC.app.dashboardWekbFlyout ('#wekbChanges-platform', filter)
+                    JSPC.app.dashboardWekbFlyout ('#wekbChanges-package', filter)
+
+                    $('#wekbFlyout').flyout ('show')
+                    r2d2.initDynamicUiStuff ('#wekbFlyout')
+                    r2d2.initDynamicXEditableStuff ('#wekbFlyout')
+                })
+            }
         });
 
         JSPC.app.dashboardWekbFlyout = function(wrapper, filter) {
