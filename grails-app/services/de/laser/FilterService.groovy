@@ -59,8 +59,8 @@ class FilterService {
             queryParams.orgStatus = selectedStatus
         }
         else {
-            query << "o.status != :orgStatus"
-            queryParams.orgStatus = RDStore.ORG_STATUS_REMOVED
+            query << "o.status.id != :orgStatus"
+            queryParams.orgStatus = RDStore.ORG_STATUS_REMOVED.id
         }
         if (params.orgRole?.length() > 0) {
             query << " exists (select ogr from o.links as ogr where ogr.roleType.id = :orgRole )"

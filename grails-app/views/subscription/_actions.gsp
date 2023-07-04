@@ -143,6 +143,9 @@
                 <g:if test="${subscription._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE] && contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
                     <div class="divider"></div>
                     <ui:actionsDropdownItem controller="subscription" action="manageDiscountScale" params="${[id:params.id]}" message="subscription.details.manageDiscountScale.label" />
+                    <g:if test="${subscription.discountScales.size() > 0}">
+                        <ui:actionsDropdownItem controller="subscription" action="copyDiscountScales" params="${[id:params.id]}" message="subscription.details.copyDiscountScales.label" />
+                    </g:if>
                 </g:if>
                     <g:if test="${subscription._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE] && contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
                 <div class="divider"></div>
@@ -165,13 +168,20 @@
                                            params="${[id: params.id]}" message="subscription.details.renewals.label"/>
                 </g:else>
             </g:if>
-            <g:if test="${customerTypeService.isConsortium( contextCustomerType ) && showConsortiaFunctions && subscription.instanceOf == null }">
-                    <ui:actionsDropdownItem controller="survey" action="addSubtoSubscriptionSurvey"
+            <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_PRO) && showConsortiaFunctions && subscription.instanceOf == null }">
+                <ui:actionsDropdownItem controller="survey" action="addSubtoSubscriptionSurvey"
                                                params="${[sub:params.id]}" text="${message(code:'createSubscriptionSurvey.label')}" />
 
                 <ui:actionsDropdownItem controller="survey" action="addSubtoIssueEntitlementsSurvey"
                                            params="${[sub:params.id]}" text="${message(code:'createIssueEntitlementsSurvey.label')}" />
             </g:if>
+            <g:elseif test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && showConsortiaFunctions && subscription.instanceOf == null }">
+                <ui:actionsDropdownItemDisabled controller="survey" action="addSubtoSubscriptionSurvey" params="${[sub:params.id]}" text="${message(code:'createSubscriptionSurvey.label')}"
+                                                tooltip="${message(code: 'tooltip.onlyFullMembership')}" message="createSubscriptionSurvey.label"/>
+
+                <ui:actionsDropdownItemDisabled controller="survey" action="addSubtoIssueEntitlementsSurvey" params="${[sub:params.id]}" text="${message(code:'createIssueEntitlementsSurvey.label')}"
+                                                tooltip="${message(code: 'tooltip.onlyFullMembership')}" message="createIssueEntitlementsSurvey.label"/>
+            </g:elseif>
 
             <g:if test="${showConsortiaFunctions || subscription.administrative}">
                 <ui:actionsDropdownItem controller="subscription" action="addMembers" params="${[id:params.id]}" text="${message(code:'subscription.details.addMembers.label',args:menuArgs)}" />

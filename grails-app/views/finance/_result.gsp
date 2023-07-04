@@ -107,6 +107,10 @@
 
                                 <div class="field la-field-right-aligned">
                                     <input name="delete" type="hidden" value="false"/>
+                                    <g:if test="${fixedSubscription}">
+                                        <input name="sub" type="hidden" value="${fixedSubscription.id}"/>
+                                    </g:if>
+                                    <input name="view" type="hidden" value="${view}"/>
                                     <button type="submit" id="deleteButton" class="ui negative button js-open-confirm-modal" role="button"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.costItem.bulk")}"
                                             data-confirm-term-how="delete">${message(code: 'financials.bulkCostItems.delete')}</button>

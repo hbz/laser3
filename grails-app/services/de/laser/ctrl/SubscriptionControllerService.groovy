@@ -93,8 +93,10 @@ class SubscriptionControllerService {
     PackageService packageService
     PendingChangeService pendingChangeService
     PropertyService propertyService
+    OrgTypeService orgTypeService
     StatsSyncService statsSyncService
     SubscriptionService subscriptionService
+    SubscriptionsQueryService subscriptionsQueryService
     SurveyService surveyService
     TaskService taskService
     WorkflowService workflowService
@@ -3630,14 +3632,13 @@ class SubscriptionControllerService {
         else {
             if(result.editable) {
                 switch (params.cmd) {
-                    case 'edit': [result: result, status: STATUS_OK]
-                        break
                     case 'createDiscountScale':
                         SubscriptionDiscountScale subscriptionDiscountScale = new SubscriptionDiscountScale(
                                 subscription: result.subscription,
                                 name: params.name,
                                 discount: params.discount,
                                 note: params.note).save()
+                        params.remove('cmd')
 
                         break
                     case 'removeDiscountScale':
@@ -3647,13 +3648,103 @@ class SubscriptionControllerService {
                                 sbs.delete()
                             }
                         }
-                        params.remove('removeDiscountScale')
+                        params.remove('cmd')
                         break
                 }
             }
             params.remove('cmd')
             result.discountScales = result.subscription.discountScales
             [result:result,status:STATUS_OK]
+        }
+    }
+
+    Map<String, Object> copyDiscountScales(SubscriptionController controller, GrailsParameterMap params) {
+        Map<String, Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
+        if (!result)
+            [result: null, status: STATUS_ERROR]
+        else {
+            if (result.editable) {
+
+                if(params.processCopyButton == 'yes') {
+                    result.copyDiscountScales = params.copyDiscountScale ? SubscriptionDiscountScale.findAllByIdInList(params.list('copyDiscountScale').collect { it -> Long.parseLong(it) }) : null
+                    if (result.copyDiscountScales) {
+                        result.targetSubs = params.targetSubs ? Subscription.findAllByIdInList(params.list('targetSubs').collect { it -> Long.parseLong(it) }) : null
+
+                        if (result.targetSubs) {
+                            println(result.targetSubs)
+                            result.targetSubs.each { Subscription sub ->
+                                result.copyDiscountScales.each { SubscriptionDiscountScale subscriptionDiscountScale ->
+                                    SubscriptionDiscountScale subDisSc = new SubscriptionDiscountScale(name: subscriptionDiscountScale.name,
+                                            discount: subscriptionDiscountScale.discount,
+                                            note: subscriptionDiscountScale.note,
+                                            subscription: sub).save()
+                                }
+                            }
+                        } else {
+                            Locale locale = LocaleUtils.getCurrentLocale()
+                            result.error = messageSource.getMessage('subscription.details.copyDiscountScales.process.error2', null, locale)
+                        }
+
+                    } else {
+                        Locale locale = LocaleUtils.getCurrentLocale()
+                        result.error = messageSource.getMessage('subscription.details.copyDiscountScales.process.error', null, locale)
+                    }
+                }
+
+                SwissKnife.setPaginationParams(result, params, (User) result.user)
+                Date date_restriction = null
+                SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
+
+                if (params.validOn == null || params.validOn.trim() == '') {
+                    result.validOn = ""
+                } else {
+                    result.validOn = params.validOn
+                    date_restriction = sdf.parse(params.validOn)
+                }
+
+                result.editable = true
+
+                if (!params.status) {
+                    if (params.isSiteReloaded != "yes") {
+                        params.status = RDStore.SUBSCRIPTION_CURRENT.id
+                        result.defaultSet = true
+                    } else {
+                        params.status = 'FETCH_ALL'
+                    }
+                }
+
+                Set orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies(contextService.getOrg())
+
+                result.providers = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds, [sort: 'name'])
+
+                List tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.getOrg())
+                result.filterSet = tmpQ[2]
+                List subscriptions = Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1])
+
+                result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.getOrg())
+
+                if (params.sort && params.sort.indexOf("§") >= 0) {
+                    switch (params.sort) {
+                        case "orgRole§provider":
+                            subscriptions.sort { x, y ->
+                                String a = x.getProviders().size() > 0 ? x.getProviders().first().name : ''
+                                String b = y.getProviders().size() > 0 ? y.getProviders().first().name : ''
+                                a.compareToIgnoreCase b
+                            }
+                            if (params.order.equals("desc"))
+                                subscriptions.reverse(true)
+                            break
+                    }
+                }
+                result.num_sub_rows = subscriptions.size()
+                result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
+
+                if (subscriptions)
+                    result.allLinkedLicenses = Links.findAllByDestinationSubscriptionInListAndSourceLicenseIsNotNullAndLinkType(result.subscriptions, RDStore.LINKTYPE_LICENSE)
+            }
+
+            result.discountScales = result.subscription.discountScales
+            [result: result, status: STATUS_OK]
         }
     }
 

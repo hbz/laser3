@@ -46,9 +46,9 @@
                                 <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_INST_BASIC)}">
                                     <g:link controller="myInstitution" action="currentSurveys">${message(code:'menu.my.surveys')}</g:link>
                                 </g:if>
-                                <g:elseif test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
-                                    <g:link controller="survey" action="workflowsSurveysConsortia">${message(code:'menu.my.surveys')}</g:link>
-                                </g:elseif>
+                                <g:else>
+                                    <ui:securedMainNavItem orgPerm="${CustomerTypeService.ORG_CONSORTIUM_PRO}" controller="survey" action="workflowsSurveysConsortia" message="menu.my.surveys"/>
+                                </g:else>
                             </div>
                         </div>
                         <div class="item">
