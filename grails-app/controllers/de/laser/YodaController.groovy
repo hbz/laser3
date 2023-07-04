@@ -78,6 +78,7 @@ class YodaController {
     GokbService gokbService
     GlobalSourceSyncService globalSourceSyncService
     def quartzScheduler
+    RenewSubscriptionService renewSubscriptionService
     StatsSyncService statsSyncService
     StatusUpdateService statusUpdateService
     SubscriptionService subscriptionService
@@ -1194,6 +1195,16 @@ class YodaController {
     def dueDates_sendAllEmails() {
         flash.message = "Emails mit fälligen Terminen werden vesandt...<br/>"
         dashboardDueDatesService.takeCareOfDueDates(false, true, flash)
+        redirect(url: request.getHeader('referer'))
+    }
+
+    /**
+     * Manually triggers the automatic subscription renewal
+     */
+    @Secured(['ROLE_YODA'])
+    def subscriptionRenewCheck(){
+        flash.message = "Lizenzen werden automatisch verlängert"
+        renewSubscriptionService.subscriptionRenewCheck()
         redirect(url: request.getHeader('referer'))
     }
 
