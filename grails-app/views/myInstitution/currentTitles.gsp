@@ -37,7 +37,7 @@
         </g:else>
     </ui:exportDropdownItem>
     --%>
-        <g:if test="${num_ti_rows < 100000}">
+        <g:if test="${num_ti_rows < 1000000}">
             <ui:exportDropdownItem>
                 <a class="item" data-ui="modal" href="#individuallyExportTippsModal">Export</a>
             </ui:exportDropdownItem>

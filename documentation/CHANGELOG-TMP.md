@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5172    04.07.2023  dev     3.2         David   Bug         Anmerkungen: doppelter Titel
+
+5174    04.07.2023  dev     3.2         Andreas Bug         Menüeinträge für Konsortialmanager-Basic ausgegraut
+
 4959    04.07.2023  dev     3.2         Andreas Feature     Hinweis bei automatisch erfolgter Verlängerung
 
 5089    03.07.2023  dev     3.2         Andreas Bug         Checkbox der Gesamtauswahl berücksichtigte nur Auswahl der aktuellen Seite
