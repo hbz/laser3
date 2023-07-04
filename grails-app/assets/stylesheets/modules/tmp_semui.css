@@ -195,6 +195,7 @@ body.myInstitution_dashboard .ui.tab .item .header {
     color: rgba(0,0,0, 0.6);
     background-color: #d3dae3;
     display: none;
+    z-index: 99;
 }
 
 /* globalPageDimmer */
