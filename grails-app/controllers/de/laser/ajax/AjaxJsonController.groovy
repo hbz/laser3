@@ -342,7 +342,6 @@ class AjaxJsonController {
         List result = []
         if(params.sub) {
             Subscription subscription = Subscription.findById(params.sub)
-            println(subscription)
             if (subscription) {
                 List<SubscriptionDiscountScale> subscriptionDiscountScaleList = SubscriptionDiscountScale.findAllBySubscription(subscription)
                 subscriptionDiscountScaleList.each {
