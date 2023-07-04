@@ -7,6 +7,7 @@ import de.laser.GenericOIDService
 import de.laser.PendingChangeService
 import de.laser.AccessService
 import de.laser.AddressbookService
+import de.laser.WekbStatsService
 import de.laser.WorkflowService
 import de.laser.config.ConfigDefaults
 import de.laser.config.ConfigMapper
@@ -104,6 +105,7 @@ class AjaxHtmlController {
     SubscriptionService subscriptionService
     SubscriptionControllerService subscriptionControllerService
     TaskService taskService
+    WekbStatsService wekbStatsService
     WorkflowService workflowService
 
     /**
@@ -190,6 +192,17 @@ class AjaxHtmlController {
         result.surveysOffset = result.offset
 
         render template: '/myInstitution/surveys', model: result
+    }
+
+    @Secured(['ROLE_USER'])
+    def wekbChangesFlyout() {
+        log.debug('ajaxHtmlController.wekbChangesFlyout ' + params)
+
+        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(null, params)
+        result.wekbChanges = wekbStatsService.getCurrentChanges()
+        result.tmplView = 'details'
+
+        render template: '/myInstitution/wekbChanges', model: result
     }
 
     //-------------------------------------------------- subscription/show ---------------------------------------------
