@@ -24,9 +24,14 @@
                   </g:else>
               </ui:exportDropdownItem>
               --%>
-              <ui:exportDropdownItem>
-                  <a class="item" data-ui="modal" href="#individuallyExportTippsModal">Export</a>
-              </ui:exportDropdownItem>
+              <g:if test="${num_tipp_rows < 1000000}">
+                  <ui:exportDropdownItem>
+                      <a class="item" data-ui="modal" href="#individuallyExportTippsModal">Export</a>
+                  </ui:exportDropdownItem>
+              </g:if>
+              <g:else>
+                  <ui:actionsDropdownItemDisabled message="Export" tooltip="${message(code: 'export.titles.excelLimit')}"/>
+              </g:else>
               <%--
               <ui:exportDropdownItem>
                   <g:if test="${filterSet}">
@@ -59,7 +64,6 @@
                   </g:else>
               </ui:exportDropdownItem>
           </ui:exportDropdown>
-          <laser:render template="actions" />
       </ui:controlButtons>
 
 
