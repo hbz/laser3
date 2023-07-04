@@ -1,5 +1,5 @@
 <%@ page import="de.laser.CustomerTypeService; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Subscription; de.laser.finance.CostItem" %>
-<laser:htmlStart message="subscription.details.manageEntitlementGroup.label" />
+<laser:htmlStart message="subscription.details.manageDiscountScale.label" />
 
 <laser:serviceInjection/>
 
@@ -12,14 +12,14 @@
                  text="${message(code: 'subscription.details.manageDiscountScale.label')}"/>
 </ui:breadcrumbs>
 
-%{--<ui:controlButtons>
+<ui:controlButtons>
     <g:if test="${contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)}">
         <ui:actionsDropdown>
-            <ui:actionsDropdownItem controller="subscription" action="manageDiscountScale" params="${[id: params.id]}"
-                                    message="subscription.details.manageDiscountScale.label"/>
+            <ui:actionsDropdownItem controller="subscription" action="copyDiscountScales" params="${[id: params.id]}"
+                                    message="subscription.details.copyDiscountScales.label"/>
         </ui:actionsDropdown>
     </g:if>
-</ui:controlButtons>--}%
+</ui:controlButtons>
 
 <ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}">
     <ui:xEditable owner="${subscription}" field="name" />

@@ -2,7 +2,7 @@
 <laser:serviceInjection/>
 
 
-<g:if test="${contextService.getUser().hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')}">
+<g:if test="${userService.hasFormalAffiliation(user, institution, 'INST_EDITOR')}">
 <ui:actionsDropdown>
         <g:if test="${actionName == 'currentSurveysConsortia' || actionName == 'workflowsSurveysConsortia'}">
             <laser:render template="actionsCreate"/>
