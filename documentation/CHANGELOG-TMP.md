@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5113    04.07.2023  dev     3.2         Moe     Feature     Titelumfrage: Datei hochladen - Titel werden automatisch ausgewählt
+
+5175    04.07.2023  dev     3.2         Moe     Feature     Rabattstaffel für Elternlizenzen einführen
+
+5164    04.07.2023  dev     3.2         Moe     Feature     Übersicht über Lizenzübertrag
+
 5172    04.07.2023  dev     3.2         David   Bug         Anmerkungen: doppelter Titel
 
 5174    04.07.2023  dev     3.2         Andreas Bug         Menüeinträge für Konsortialmanager-Basic ausgegraut
