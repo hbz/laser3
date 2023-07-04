@@ -2,6 +2,7 @@
 <laser:serviceInjection/>
 
 
+
 <g:if test="${userService.hasFormalAffiliation(user, institution, 'INST_EDITOR')}">
 <ui:actionsDropdown>
         <g:if test="${actionName == 'currentSurveysConsortia' || actionName == 'workflowsSurveysConsortia'}">

@@ -224,14 +224,14 @@ class ApiEZB {
             log.debug("Begin generateTitleExportKBARTSQL")
             sql.withTransaction {
                 List<String> titleHeaders = getBaseTitleHeaders()
-                List<GroovyRowResult> entitlementRows = sql.rows("select ie_id, ie_name, ie_sortname, ie_access_start_date, ie_access_end_date, ie_medium_rv_fk, ie_status_rv_fk, " +
+                List<GroovyRowResult> entitlementRows = sql.rows("select ie_id, tipp_name, tipp_sortname, ie_access_start_date, ie_access_end_date, tipp_medium_rv_fk, ie_status_rv_fk, " +
                         "tipp_id, tipp_pkg_fk, tipp_host_platform_url, tipp_date_first_in_print, tipp_date_first_online, tipp_first_author, tipp_first_editor, " +
                         "tipp_publisher_name, tipp_volume, tipp_edition_number, tipp_last_updated, tipp_series_name, tipp_subject_reference, tipp_access_type_rv_fk, tipp_open_access_rv_fk, " +
                         "case tipp_title_type when 'Journal' then 'serial' when 'Book' then 'monograph' when 'Database' then 'database' else 'other' end as title_type, " +
                         "case ie_access_start_date when null then tipp_access_start_date else ie_access_start_date end as access_start_date, " +
                         "case ie_access_end_date when null then tipp_access_end_date else ie_access_end_date end as access_end_date " +
                         "from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id " +
-                        "where ie_subscription_fk = :subId and ie_status_rv_fk != :removed ${dateFilter} order by ie_sortname, ie_name", genericFilter+[removed: RDStore.TIPP_STATUS_REMOVED.id])
+                        "where ie_subscription_fk = :subId and ie_status_rv_fk != :removed ${dateFilter} order by tipp_sortname, tipp_name", genericFilter+[removed: RDStore.TIPP_STATUS_REMOVED.id])
                 List<GroovyRowResult> packageData = sql.rows('select pkg_id, pkg_name, pkg_nominal_platform_fk, plat_name from subscription_package join package on sp_pkg_fk = pkg_id join platform on pkg_nominal_platform_fk = plat_id where sp_sub_fk = :subId', [subId: sub.id])
                 List<GroovyRowResult> packageIDs = sql.rows('select id_pkg_fk, id_value, idns_ns from identifier join identifier_namespace on id_ns_fk = idns_id join subscription_package on id_pkg_fk = sp_pkg_fk where sp_sub_fk = :subId', [subId: sub.id])
                 //log.debug("select id_pkg_fk, id_value, idns_ns from identifier join identifier_namespace on id_ns_fk = idns_id join subscription_package on id_pkg_fk = sp_pkg_fk where sp_sub_fk = ${sub.id}")
@@ -384,7 +384,7 @@ class ApiEZB {
         //access_end_date
         outRow.add(row['access_end_date'] ? formatter.format(row['access_end_date']) : ' ')
         //medium
-        outRow.add(row['ie_medium_rv_fk'] ? RefdataValue.get(row['ie_medium_rv_fk'])?.value : ' ')
+        outRow.add(row['tipp_medium_rv_fk'] ? RefdataValue.get(row['tipp_medium_rv_fk'])?.value : ' ')
         //zdb_id
         outRow.add(joinIdentifiers(identifiers, IdentifierNamespace.ZDB, ','))
         //doi_identifier

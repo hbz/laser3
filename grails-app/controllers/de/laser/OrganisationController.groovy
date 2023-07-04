@@ -440,7 +440,7 @@ class OrganisationController  {
         result.editable    = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || contextService.is_ORG_COM_EDITOR()
 
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
-        Map queryCuratoryGroups = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/groups', [:])
+        Map queryCuratoryGroups = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + '/groups', [:])
         if(queryCuratoryGroups.error == 404) {
             result.error = message(code:'wekb.error.'+queryCuratoryGroups.error) as String
         }
@@ -452,7 +452,7 @@ class OrganisationController  {
         }
         /*
         we:kb implementation missing but currently not needed anyway; see _orgFilter
-        Map queryRoles = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/refdatas?category=Role') //await Moe's construction
+        Map queryRoles = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + '/refdatas?category=Role') //await Moe's construction
         if(queryRoles.error == 404) {
             result.error = message(code:'wekb.error.'+queryRoles.error) as String
         }

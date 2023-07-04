@@ -7,6 +7,14 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4959    04.07.2023  dev     3.2         Andreas Feature     Hinweis bei automatisch erfolgter Verlängerung
+
+5089    03.07.2023  dev     3.2         Andreas Bug         Checkbox der Gesamtauswahl berücksichtigte nur Auswahl der aktuellen Seite
+
+5004    03.07.2023  dev     3.2         Andreas Feature     Preise hinzufügen/entfernen ohne Neuladen der Seite
+
+5158    30.06.2023  dev     3.2         Andreas Feature     Umstellung der KBART-Exporte
+
 5165    28.06.2023  dev     3.2         Andreas Bug         lokale Verträge konnten mit Konsortiallizenzen verknüpft werden
 
 5158    28.06.2023  dev     3.2         Andreas Feature     KBART-Export großer Titelmengen umgestellt

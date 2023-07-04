@@ -78,6 +78,7 @@ class YodaController {
     GokbService gokbService
     GlobalSourceSyncService globalSourceSyncService
     def quartzScheduler
+    RenewSubscriptionService renewSubscriptionService
     StatsSyncService statsSyncService
     StatusUpdateService statusUpdateService
     SubscriptionService subscriptionService
@@ -141,7 +142,9 @@ class YodaController {
 
             for (JobKey key : quartzScheduler.getJobKeys(GroupMatcher.jobGroupEquals(groupName))) {
                 def clazz = Class.forName(key.getName())
-                List<List> cp  = clazz.getAt('configurationProperties')
+                boolean isLaserJob = groupName == 'GRAILS_JOBS'
+
+                List<List> cp  = isLaserJob ? clazz.getAt('configurationProperties') : []
 
                 def triggers = quartzScheduler.getTriggersOfJob(key)
                 List nft = triggers.collect{ it.nextFireTime ?: null }
@@ -156,13 +159,17 @@ class YodaController {
                         configurationProperties: cp,
                         services: services,
                         nextFireTime: nft ? nft.get(0)?.toTimestamp() : '',
-                        running: (applicationContext.getBean(key.getName()) as AbstractJob).isRunning(),
-                        available: (applicationContext.getBean(key.getName()) as AbstractJob).isAvailable()
+                        running: '',
+                        available: ''
                 ]
+                if (isLaserJob) {
+                    map.running     = (applicationContext.getBean(key.getName()) as AbstractJob).isRunning()
+                    map.available   = (applicationContext.getBean(key.getName()) as AbstractJob).isAvailable()
+                }
 
                 List crx = triggers.collect{ it.hasProperty('cronEx') ? it.cronEx : null }
 
-                if (crx) {
+                if (crx && isLaserJob) {
                     map << ['cronEx': crx.get(0).cronExpression]
                 }
                 group << map
@@ -658,10 +665,10 @@ class YodaController {
         Map<String, Object> result = [
                 platforms: [],
                 platformInstanceRecords: [:],
-                flagContentGokb : true // gokbService.queryElasticsearch
+                flagContentGokb : true // gokbService.executeQuery
         ]
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
-        Map allPlatforms = gokbService.queryElasticsearch(apiSource.baseUrl+apiSource.fixToken+"/sushiSources", [:])
+        Map allPlatforms = gokbService.executeQuery(apiSource.baseUrl+apiSource.fixToken+"/sushiSources", [:])
         if (allPlatforms.error && allPlatforms.error == 404) {
             result.wekbServerUnavailable = message(code: 'wekb.error.404')
         }
@@ -1188,6 +1195,16 @@ class YodaController {
     def dueDates_sendAllEmails() {
         flash.message = "Emails mit fälligen Terminen werden vesandt...<br/>"
         dashboardDueDatesService.takeCareOfDueDates(false, true, flash)
+        redirect(url: request.getHeader('referer'))
+    }
+
+    /**
+     * Manually triggers the automatic subscription renewal
+     */
+    @Secured(['ROLE_YODA'])
+    def subscriptionRenewCheck(){
+        flash.message = "Lizenzen werden automatisch verlängert"
+        renewSubscriptionService.subscriptionRenewCheck()
         redirect(url: request.getHeader('referer'))
     }
 

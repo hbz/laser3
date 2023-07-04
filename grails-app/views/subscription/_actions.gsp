@@ -62,7 +62,7 @@
             </ui:exportDropdownItem>
             --%>
             <ui:exportDropdownItem>
-                <g:if test="${filterSet}">
+                <%--<g:if test="${filterSet}">
                     <g:link class="item js-open-confirm-modal"
                              data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
                              data-confirm-term-how="ok"
@@ -71,9 +71,9 @@
                              params="${params + [exportKBart: true]}">KBART Export
                     </g:link>
                 </g:if>
-                <g:else>
-                    <g:link class="item" action="${actionName}" id="${params.id}" params="${params + [exportKBart: true]}">KBART Export</g:link>
-                </g:else>
+                <g:else>--%>
+                    <g:link class="item kbartExport" params="${params + [exportKBart: true]}">KBART Export</g:link>
+                <%--</g:else>--%>
             </ui:exportDropdownItem>
         <%--<ui:exportDropdownItem>
                 <g:link class="item" controller="subscription" action="index" id="${subscription.id}" params="${params + [format:'json']}">JSON</g:link>

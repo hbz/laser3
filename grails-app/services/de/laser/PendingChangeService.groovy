@@ -223,8 +223,8 @@ class PendingChangeService extends AbstractLockableService {
         }
         */
         //non title changes
-        PendingChange.executeQuery("select pc from PendingChange pc right join pc.costItem ci where pc.owner = :contextOrg and pc.status in (:status) and (pc.msgToken = :newSubscription or (pc.costItem != null and ci.costItemStatus != :deleted))",
-                [contextOrg: configMap.contextOrg, status: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED, RDStore.PENDING_CHANGE_PENDING], newSubscription: PendingChangeConfiguration.NEW_SUBSCRIPTION, deleted: RDStore.COST_ITEM_DELETED]).each { PendingChange pc ->
+        PendingChange.executeQuery("select pc from PendingChange pc full join pc.costItem ci where pc.owner = :contextOrg and pc.status in (:status) and (pc.msgToken in (:newSubscription) or (pc.costItem != null and ci.costItemStatus != :deleted))",
+                [contextOrg: configMap.contextOrg, status: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED, RDStore.PENDING_CHANGE_PENDING], newSubscription: [PendingChangeConfiguration.NEW_SUBSCRIPTION, PendingChangeConfiguration.SUBSCRIPTION_RENEWED], deleted: RDStore.COST_ITEM_DELETED]).each { PendingChange pc ->
             if(pc.costItem) {
                 /*Set<Map> changes
                 if(pc.status == RDStore.PENDING_CHANGE_ACCEPTED)

@@ -59,8 +59,8 @@ class FilterService {
             queryParams.orgStatus = selectedStatus
         }
         else {
-            query << "o.status != :orgStatus"
-            queryParams.orgStatus = RDStore.ORG_STATUS_REMOVED
+            query << "o.status.id != :orgStatus"
+            queryParams.orgStatus = RDStore.ORG_STATUS_REMOVED.id
         }
         if (params.orgRole?.length() > 0) {
             query << " exists (select ogr from o.links as ogr where ogr.roleType.id = :orgRole )"
@@ -2169,7 +2169,7 @@ class FilterService {
         if(params instanceof GrailsParameterMap)
             return params.list(key)
         //.respondsTo('size') is a substitute for instanceof Ljava.lang.String;
-        else if(params[key] instanceof List || params[key].respondsTo('size')) {
+        else if(params[key] instanceof List || (params[key].respondsTo('size') && !(params[key] instanceof String))) {
             return params[key]
         }
         else return [params[key]]

@@ -2077,7 +2077,7 @@ class ExportService {
 		Map<String, Object> result = [:]
 		ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
 		SimpleDateFormat monthFormatter = DateUtils.getSDF_yyyyMM()
-		Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/sushiSources", [:])
+		Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/sushiSources", [:])
 		Map platformRecord
 		if (queryResult.warning) {
 			Map<String, Object> records = queryResult.warning
@@ -2632,7 +2632,7 @@ class ExportService {
 		Map<String, Object> queryClauseParts = filterService.prepareTitleSQLQuery(configMap, entitlementInstance, sql)
 		String queryBase, countQuery
 		if(entitlementInstance == IssueEntitlement.class.name) {
-			queryBase = "select ${titleHeaders.values().join(', ')} from issue_entitlement left join issue_entitlement_coverage on ic_ie_fk = ie_id join title_instance_package_platform on ie_tipp_fk = tipp_id join package on tipp_pkg_fk = pkg_id join platform on pkg_nominal_platform_fk = plat_id where ${queryClauseParts.where}${queryClauseParts.order}"
+			queryBase = "select ${titleHeaders.values().join(', ')} from issue_entitlement left join issue_entitlement_coverage on ic_ie_fk = ie_id join subscription on ie_subscription_fk = sub_id join title_instance_package_platform on ie_tipp_fk = tipp_id join package on tipp_pkg_fk = pkg_id join platform on pkg_nominal_platform_fk = plat_id where ${queryClauseParts.where}${queryClauseParts.order}"
 			//countQuery = "select count(*) as countTotal from issue_entitlement left join issue_entitlement_coverage on ic_ie_fk = ie_id join title_instance_package_platform on ie_tipp_fk = tipp_id join package on tipp_pkg_fk = pkg_id join platform on pkg_nominal_platform_fk = plat_id where ${queryClauseParts.where}"
 		}
 		else {
@@ -3394,8 +3394,8 @@ class ExportService {
 	Map<String, String> getBaseTitleHeaders(String entitlementInstance) {
 		Locale locale = LocaleUtils.getCurrentLocale()
 		Map <String, String> mapping = [publication_title: 'tipp_name as publication_title',
-		 print_identifier: "(select id_value from identifier where id_tipp_fk = tipp_id and ((lower(tipp_title_type) in ('book','monograph') and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.ISBN).id}) or (lower(tipp_title_type) in ('journal','serial') and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.ISSN).id}))) as print_identifier",
-		 online_identifier: "(select id_value from identifier where id_tipp_fk = tipp_id and ((lower(tipp_title_type) in ('book','monograph') and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.EISBN).id}) or (lower(tipp_title_type) in ('journal','serial') and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.EISSN).id}))) as online_identifier",
+		 print_identifier: "(select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and ((lower(tipp_title_type) in ('book','monograph') and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.ISBN).id}) or (lower(tipp_title_type) in ('journal','serial') and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.ISSN).id}))) as print_identifier",
+		 online_identifier: "(select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and ((lower(tipp_title_type) in ('book','monograph') and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.EISBN).id}) or (lower(tipp_title_type) in ('journal','serial') and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.EISSN).id}))) as online_identifier",
 		 date_first_issue_online: '',
 		 num_first_vol_online: '',
 		 num_first_issue_online: '',
@@ -3404,7 +3404,7 @@ class ExportService {
 		 num_last_issue_online: '',
 		 title_url: 'tipp_host_platform_url as title_url',
 		 first_author: 'tipp_first_author as first_author',
-		 title_id: "(select id_value from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNs('title_id').id}) as title_id",
+		 title_id: "(select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNs('title_id').id}) as title_id",
 		 embargo_info: '',
 		 coverage_depth: '',
 		 notes: '',
@@ -3423,14 +3423,14 @@ class ExportService {
 		 access_start_date: "to_char(tipp_access_start_date, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}') as access_start_date",
 		 access_end_date: "to_char(tipp_access_end_date, '${messageSource.getMessage(DateUtils.DATE_FORMAT_NOTIME,null,locale)}') as access_end_date",
 		 medium: '(select rdv_value from refdata_value where rdv_id = tipp_medium_rv_fk) as medium',
-		 zdb_id: "(select id_value from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.ZDB).id}) as zdb_id",
-		 doi_identifier: "(select id_value from identifier where id_tipp_fk = tipp_id and id_ns_fk = '${IdentifierNamespace.findByNs(IdentifierNamespace.DOI).id}') as doi_identifier",
-		 ezb_id: "(select id_value from identifier where id_tipp_fk = tipp_id and id_ns_fk = '${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EZB, IdentifierNamespace.NS_TITLE).id}') as ezb_id",
+		 zdb_id: "(select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.ZDB).id}) as zdb_id",
+		 doi_identifier: "(select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = '${IdentifierNamespace.findByNs(IdentifierNamespace.DOI).id}') as doi_identifier",
+		 ezb_id: "(select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = '${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EZB, IdentifierNamespace.NS_TITLE).id}') as ezb_id",
 		 title_gokb_uuid: 'tipp_gokb_id as title_gokb_uuid',
 		 package_gokb_uuid: 'pkg_gokb_id as package_gokb_uuid',
-		 package_isci: "(select id_value from identifier where id_pkg_fk = pkg_id and id_ns_fk = '${IdentifierNamespace.findByNs(IdentifierNamespace.ISCI).id}') as package_isci",
-		 package_isil: "(select id_value from identifier where id_pkg_fk = pkg_id and id_ns_fk = '${IdentifierNamespace.findByNsAndNsType("isil", IdentifierNamespace.NS_PACKAGE).id}') as package_isil",
-		 package_ezb_anchor: "(select id_value from identifier where id_pkg_fk = pkg_id and id_ns_fk = '${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EZB, IdentifierNamespace.NS_PACKAGE).id}') as package_ezb_anchor",
+		 package_isci: "(select string_agg(id_value,',') from identifier where id_pkg_fk = pkg_id and id_ns_fk = '${IdentifierNamespace.findByNs(IdentifierNamespace.ISCI).id}') as package_isci",
+		 package_isil: "(select string_agg(id_value,',') from identifier where id_pkg_fk = pkg_id and id_ns_fk = '${IdentifierNamespace.findByNsAndNsType("isil", IdentifierNamespace.NS_PACKAGE).id}') as package_isil",
+		 package_ezb_anchor: "(select string_agg(id_value,',') from identifier where id_pkg_fk = pkg_id and id_ns_fk = '${IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EZB, IdentifierNamespace.NS_PACKAGE).id}') as package_ezb_anchor",
 		 ill_indicator: "null as ill_indicator",
 		 superceding_publication_title_id: "null as superceding_publication_title_id",
 		 monograph_parent_collection_title: "null as monograph_parent_collection_title",
@@ -3438,7 +3438,7 @@ class ExportService {
 		 status: '(select rdv_value from refdata_value where rdv_id = tipp_status_rv_fk) as status',
 		 access_type: '(select rdv_value from refdata_value where rdv_id = tipp_access_type_rv_fk) as access_type',
 		 oa_type: '(select rdv_value from refdata_value where rdv_id = tipp_open_access_rv_fk) as oa_type',
-		 zdb_ppn: "(select id_value from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.ZDB_PPN).id}) as zdb_ppn",
+		 zdb_ppn: "(select string_agg(id_value,',') from identifier where id_tipp_fk = tipp_id and id_ns_fk = ${IdentifierNamespace.findByNs(IdentifierNamespace.ZDB_PPN).id}) as zdb_ppn",
 		 listprice_eur: "(select trim(to_char(pi_list_price, '999999999D99')) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_EUR.id} order by pi_last_updated desc limit 1) as listprice_eur",
 		 listprice_gbp: "(select trim(to_char(pi_list_price, '999999999D99')) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_GBP.id} order by pi_last_updated desc limit 1) as listprice_gbp",
 		 listprice_usd: "(select trim(to_char(pi_list_price, '999999999D99')) from price_item where pi_tipp_fk = tipp_id and pi_list_currency_rv_fk = ${RDStore.CURRENCY_USD.id} order by pi_last_updated desc limit 1) as listprice_usd",

@@ -134,7 +134,7 @@ class SubscriptionController {
         if(params.reportType)
             result.putAll(subscriptionControllerService.loadFilterList(params))
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
-        result.flagContentGokb = true // gokbService.queryElasticsearch
+        result.flagContentGokb = true // gokbService.executeQuery
         Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription", [subscription: result.subscription])
         if(!subscribedPlatforms) {
             subscribedPlatforms = Platform.executeQuery("select tipp.platform from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscription", [subscription: result.subscription])
@@ -144,7 +144,7 @@ class SubscriptionController {
         result.platforms = subscribedPlatforms
         result.platformsJSON = subscribedPlatforms.globalUID as JSON
         subscribedPlatforms.each { Platform platformInstance ->
-            Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: platformInstance.gokbId])
+            Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: platformInstance.gokbId])
             if (queryResult.error && queryResult.error == 404) {
                 result.wekbServerUnavailable = message(code: 'wekb.error.404')
             }
@@ -871,19 +871,24 @@ class SubscriptionController {
                 selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
             }
             if (params.exportKBart) {
-                response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
-                response.contentType = "text/tab-separated-values"
-                ServletOutputStream out = response.outputStream
-                Map<String, Object> configMap = [:]
-                configMap.putAll(params)
-                configMap.sub = ctrlResult.result.subscription
-                configMap.pkgIds = ctrlResult.result.subscription.packages?.pkg?.id //GORM sometimes does not initialise the sorted set
-                Map<String, List> tableData = exportService.generateTitleExportKBART(configMap, IssueEntitlement.class.name)
-                out.withWriter { writer ->
-                    writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
+                String dir = GlobalService.obtainFileStorageLocation()
+                File f = new File(dir+'/'+filename)
+                if(!f.exists()) {
+                    FileOutputStream fos = new FileOutputStream(f)
+                    Map<String, Object> configMap = [:]
+                    configMap.putAll(params)
+                    configMap.sub = ctrlResult.result.subscription
+                    configMap.pkgIds = ctrlResult.result.subscription.packages?.pkg?.id //GORM sometimes does not initialise the sorted set
+                    Map<String, List> tableData = exportService.generateTitleExportKBART(configMap, IssueEntitlement.class.name)
+                    fos.withWriter { writer ->
+                        writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
+                    }
+                    fos.flush()
+                    fos.close()
                 }
-                out.flush()
-                out.close()
+                Map fileResult = [token: filename]
+                render template: '/templates/bulkItemDownload', model: fileResult
+                return
             }
             /*else if(params.exportXLSX) {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")
@@ -982,15 +987,20 @@ class SubscriptionController {
                 selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
             }
             if(params.exportKBart) {
-                response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
-                response.contentType = "text/tsv"
-                ServletOutputStream out = response.outputStream
-                Map<String,List> tableData = exportService.generateTitleExportKBART(configMap, TitleInstancePackagePlatform.class.name)
-                out.withWriter { writer ->
-                    writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.columnData,'\t'))
+                String dir = GlobalService.obtainFileStorageLocation()
+                File f = new File(dir+'/'+filename)
+                if(!f.exists()) {
+                    FileOutputStream out = new FileOutputStream(f)
+                    Map<String,List> tableData = exportService.generateTitleExportKBART(configMap, TitleInstancePackagePlatform.class.name)
+                    out.withWriter { writer ->
+                        writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.columnData,'\t'))
+                    }
+                    out.flush()
+                    out.close()
                 }
-                out.flush()
-                out.close()
+                Map fileResult = [token: filename]
+                render template: '/templates/bulkItemDownload', model: fileResult
+                return
             }
             /*else if(params.exportXLSX) {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")
@@ -1249,43 +1259,6 @@ class SubscriptionController {
             redirect action: 'index', params: [id: ctrlResult.result.subscription.id, sort: params.sort, order: params.order, offset: params.offset, max: params.max, status: params.list('status')]
             return
         }
-    }
-
-    /**
-     * Call to add a new price item to the issue entitlement
-     * @return the issue entitlement holding view
-     */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
-    })
-    def addEmptyPriceItem() {
-        Map<String,Object> ctrlResult = subscriptionControllerService.addEmptyPriceItem(params)
-        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            flash.error = ctrlResult.result.error
-        }
-        redirect action: 'index', id: params.id
-    }
-
-    /**
-     * Call to remove a price item from the issue entitlement
-     * @return the issue entitlement holding view
-     */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = {
-        ctx.contextService.isInstEditor_or_ROLEADMIN()
-    })
-    def removePriceItem() {
-        Map<String,Object> ctrlResult = subscriptionControllerService.removePriceItem(params)
-        Object[] args = [message(code:'tipp.price'), params.priceItem]
-        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            flash.error = message(code: 'default.not.found.message', args: args) as String
-        }
-        else
-        {
-            flash.message = message(code:'default.deleted.message', args: args) as String
-        }
-        redirect action: 'index', id: params.id
     }
 
     /**
@@ -1551,15 +1524,20 @@ class SubscriptionController {
             }
 
             if (params.exportKBart) {
-                response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
-                response.contentType = "text/tsv"
-                ServletOutputStream out = response.outputStream
-                Map<String, List> tableData = exportService.generateTitleExportKBART(queryMap, IssueEntitlement.class.name)
-                out.withWriter { Writer writer ->
-                    writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
+                String dir = GlobalService.obtainFileStorageLocation()
+                File f = new File(dir+'/'+filename)
+                if(!f.exists()) {
+                    FileOutputStream out = new FileOutputStream(f)
+                    Map<String, List> tableData = exportService.generateTitleExportKBART(queryMap, IssueEntitlement.class.name)
+                    out.withWriter { Writer writer ->
+                        writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
+                    }
+                    out.flush()
+                    out.close()
                 }
-                out.flush()
-                out.close()
+                Map fileResult = [token: filename]
+                render template: '/templates/bulkItemDownload', model: fileResult
+                return
             }
             if (params.exportForImport) {
 
