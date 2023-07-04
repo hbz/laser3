@@ -31,7 +31,7 @@
                                     ${docctx.owner.title ?: message(code:'license.notes.noTitle')}
                                 </a>
                                 <g:if test="${controllerName != 'organisation' && controllerName != 'survey'}">
-                                    <a onclick="JSPC.app.readNote(${docctx.owner.id});" class="la-js-toggle-hideThis">
+                                    <a onclick="JSPC.app.readNote(${docctx.owner.id});" class="la-js-toggle-hideThis hidden">%{-- ERMS-5172 - workaround --}%
                                         ${docctx.owner.title ?: message(code:'license.notes.noTitle')}
                                     </a>
                                 </g:if>
