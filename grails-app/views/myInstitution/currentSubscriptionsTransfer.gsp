@@ -33,8 +33,7 @@
 <ui:filter>
     <g:form action="${actionName}" controller="${controllerName}" method="get" class="ui small form clearing">
         <input type="hidden" name="isSiteReloaded" value="yes"/>
-        <div class="five fields">
-            %{--<div class="four fields">--}%
+        <div class="four fields">
             <% /* 1-1 */ %>
             <div class="field">
                 <label for="search-title">${message(code: 'default.search.text')}
@@ -68,18 +67,6 @@
                 <ui:datepicker label="default.valid_on.label" id="validOn" name="validOn" placeholder="filter.placeholder" value="${validOn}" />
             </div>
             <% /* 1-4 */ %>
-            <div class="field">
-                <label for="referenceYears">${message(code: 'subscription.referenceYear.label')}</label>
-                <select id="referenceYears" name="referenceYears" multiple="" class="ui search selection fluid dropdown">
-                    <option value="">${message(code: 'default.select.choose.label')}</option>
-                    <g:each in="${referenceYears}" var="referenceYear">
-                        <option <%=(params.list('referenceYears').contains(referenceYear.toString())) ? 'selected="selected"' : ''%>
-                                value="${referenceYear}">
-                            ${referenceYear}
-                        </option>
-                    </g:each>
-                </select>
-            </div>
             <div class="field">
                 <label>${message(code: 'menu.my.providers')}</label>
                 <g:select class="ui dropdown search" name="provider"
@@ -265,7 +252,8 @@
 
 <div class="subscription-results subscription-results la-clear-before">
     <g:if test="${subscriptions}">
-        <table class="ui celled sortable table la-table la-js-responsive-table">
+        <div class="ui very long scrolling container">
+            <table class="ui stuck unstackable celled sortable table">
             <thead>
             <tr>
                 <th scope="col" rowspan="2" class="center aligned">
@@ -651,6 +639,7 @@
             </g:each>
             </tbody>
         </table>
+        </div>
     </g:if>
     <g:else>
     %{-- <g:if test="${filterSet}">
