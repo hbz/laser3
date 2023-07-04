@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5172    04.07.2023  dev     3.2         David   Bug         Anmerkungen: doppelter Titel
+
 5004    03.07.2023  dev     3.2         Andreas Feature     Preise hinzufügen/entfernen ohne Neuladen der Seite
 
 5158    30.06.2023  dev     3.2         Andreas Feature     Umstellung der KBART-Exporte
