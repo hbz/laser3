@@ -1140,42 +1140,26 @@ class SubscriptionController {
         if (result.subscription) {
             if(result.editable && params.singleTitle) {
                 TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.get(params.singleTitle)
+                try {
 
-                boolean tippExistsInParentSub = false
+                    IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, result.subscription)
 
-/*                if(IssueEntitlement.findByTippAndSubscriptionAndStatus(tipp, result.surveyConfig.subscription, RDStore.TIPP_STATUS_CURRENT)) {
-                    tippExistsInParentSub = true
-                }else {
-                   List<TitleInstancePackagePlatform> titleInstancePackagePlatformList = TitleInstancePackagePlatform.findAllByHostPlatformURLAndStatus(tipp.hostPlatformURL, RDStore.TIPP_STATUS_CURRENT)
-                    titleInstancePackagePlatformList.each { TitleInstancePackagePlatform titleInstancePackagePlatform ->
-                        if(IssueEntitlement.findByTippAndSubscriptionAndStatus(titleInstancePackagePlatform, result.surveyConfig.subscription, RDStore.TIPP_STATUS_CURRENT)) {
-                            tippExistsInParentSub = true
-                            tipp = titleInstancePackagePlatform
+                    if (!issueEntitlementGroup) {
+                        IssueEntitlementGroup.withTransaction {
+                            issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: result.subscription, name: result.surveyConfig.issueEntitlementGroupName).save()
                         }
                     }
-                }*/
-                tippExistsInParentSub = true
-                if(tippExistsInParentSub) {
-                    try {
 
-                        IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, result.subscription)
-
-                        if(!issueEntitlementGroup) {
-                            IssueEntitlementGroup.withTransaction {
-                                issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: result.subscription, name: result.surveyConfig.issueEntitlementGroupName).save()
-                            }
-                        }
-
-                        if (issueEntitlementGroup && subscriptionService.addEntitlement(result.subscription, tipp.gokbId, null, (tipp.priceItems != null), result.surveyConfig.pickAndChoosePerpetualAccess, issueEntitlementGroup)) {
-                            flash.message = message(code: 'subscription.details.addEntitlements.titleAddToSub', args: [tipp.name]) as String
-                        }else {
-                            log.error("no issueEntitlementGroup found and no issueEntitlementGroup created, because it is not set a issueEntitlementGroupName in survey config!")
-                        }
-                    }
-                    catch (EntitlementCreationException e) {
-                        flash.error = e.getMessage()
+                    if (issueEntitlementGroup && subscriptionService.addEntitlement(result.subscription, tipp.gokbId, null, (tipp.priceItems != null), result.surveyConfig.pickAndChoosePerpetualAccess, issueEntitlementGroup)) {
+                        flash.message = message(code: 'subscription.details.addEntitlements.titleAddToSub', args: [tipp.name]) as String
+                    } else {
+                        log.error("no issueEntitlementGroup found and no issueEntitlementGroup created, because it is not set a issueEntitlementGroupName in survey config!")
                     }
                 }
+                catch (EntitlementCreationException e) {
+                    flash.error = e.getMessage()
+                }
+
             }
         } else {
             log.error("Unable to locate subscription instance")

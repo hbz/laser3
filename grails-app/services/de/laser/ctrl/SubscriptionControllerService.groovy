@@ -1899,43 +1899,27 @@ class SubscriptionControllerService {
                             result.selectProcess.selectedTipps.each {
                                     TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findById(it.key)
                                     if(tipp) {
-                                        boolean tippExistsInParentSub = false
+                                        try {
 
-                                        /*if (IssueEntitlement.findByTippAndSubscriptionAndStatus(tipp, result.surveyConfig.subscription, RDStore.TIPP_STATUS_CURRENT)) {
-                                            tippExistsInParentSub = true
-                                        } else {
-                                            List<TitleInstancePackagePlatform> titleInstancePackagePlatformList = TitleInstancePackagePlatform.findAllByHostPlatformURLAndStatus(tipp.hostPlatformURL, RDStore.TIPP_STATUS_CURRENT)
-                                            titleInstancePackagePlatformList.each { TitleInstancePackagePlatform titleInstancePackagePlatform ->
-                                                if (IssueEntitlement.findByTippAndSubscriptionAndStatus(titleInstancePackagePlatform, result.surveyConfig.subscription, RDStore.TIPP_STATUS_CURRENT)) {
-                                                    tippExistsInParentSub = true
-                                                    tipp = titleInstancePackagePlatform
+                                            IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, subscriberSub)
+
+                                            if (!issueEntitlementGroup) {
+                                                IssueEntitlementGroup.withTransaction {
+                                                    issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: subscriberSub, name: result.surveyConfig.issueEntitlementGroupName).save()
                                                 }
                                             }
-                                        }*/
-                                        tippExistsInParentSub = true
 
-                                        if (tippExistsInParentSub) {
-                                            try {
-
-                                                IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, subscriberSub)
-
-                                                if(!issueEntitlementGroup) {
-                                                    IssueEntitlementGroup.withTransaction {
-                                                        issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: subscriberSub, name: result.surveyConfig.issueEntitlementGroupName).save()
-                                                    }
-                                                }
-
-                                                if (issueEntitlementGroup && subscriptionService.addEntitlement(subscriberSub, tipp.gokbId, null, (tipp.priceItems != null), result.surveyConfig.pickAndChoosePerpetualAccess, issueEntitlementGroup)) {
-                                                    log.debug("Added tipp ${tipp.gokbId} to sub ${result.subscription.id}")
-                                                    ++countTippsToAdd
-                                                }
-                                            }
-                                            catch (EntitlementCreationException e) {
-                                                log.debug("Error: Adding tipp ${tipp} to sub ${subscriberSub.id}: " + e.getMessage())
-                                                result.error = messageSource.getMessage('renewEntitlementsWithSurvey.noSelectedTipps', null, LocaleUtils.getCurrentLocale())
-                                                [result: result, status: STATUS_ERROR]
+                                            if (issueEntitlementGroup && subscriptionService.addEntitlement(subscriberSub, tipp.gokbId, null, (tipp.priceItems != null), result.surveyConfig.pickAndChoosePerpetualAccess, issueEntitlementGroup)) {
+                                                log.debug("Added tipp ${tipp.gokbId} to sub ${result.subscription.id}")
+                                                ++countTippsToAdd
                                             }
                                         }
+                                        catch (EntitlementCreationException e) {
+                                            log.debug("Error: Adding tipp ${tipp} to sub ${subscriberSub.id}: " + e.getMessage())
+                                            result.error = messageSource.getMessage('renewEntitlementsWithSurvey.noSelectedTipps', null, LocaleUtils.getCurrentLocale())
+                                            [result: result, status: STATUS_ERROR]
+                                        }
+
                                     }
                                 }
                                 if(countTippsToAdd > 0){
@@ -3869,44 +3853,26 @@ class SubscriptionControllerService {
                 result.checked.each {
                     TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findById(it.key)
                     if(tipp) {
-                        boolean tippExistsInParentSub = false
+                        try {
 
-/*                        if (IssueEntitlement.findByTippAndSubscriptionAndStatus(tipp, result.surveyConfig.subscription, RDStore.TIPP_STATUS_CURRENT)) {
-                            tippExistsInParentSub = true
-                        } else {
-                            List<TitleInstancePackagePlatform> titleInstancePackagePlatformList = TitleInstancePackagePlatform.findAllByHostPlatformURLAndStatus(tipp.hostPlatformURL, RDStore.TIPP_STATUS_CURRENT)
-                            titleInstancePackagePlatformList.each { TitleInstancePackagePlatform titleInstancePackagePlatform ->
-                                if (IssueEntitlement.findByTippAndSubscriptionAndStatus(titleInstancePackagePlatform, result.surveyConfig.subscription, RDStore.TIPP_STATUS_CURRENT)) {
-                                    tippExistsInParentSub = true
-                                    tipp = titleInstancePackagePlatform
+                            IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, result.subscription)
+
+                            if (!issueEntitlementGroup) {
+                                IssueEntitlementGroup.withTransaction {
+                                    issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: result.subscription, name: result.surveyConfig.issueEntitlementGroupName).save()
                                 }
                             }
-                        }*/
 
-                        tippExistsInParentSub = true
-
-                        if (tippExistsInParentSub) {
-                            try {
-
-                                IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, result.subscription)
-
-                                if(!issueEntitlementGroup) {
-                                    IssueEntitlementGroup.withTransaction {
-                                        issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: result.subscription, name: result.surveyConfig.issueEntitlementGroupName).save()
-                                    }
-                                }
-
-                                if (issueEntitlementGroup && subscriptionService.addEntitlement(result.subscription, tipp.gokbId, null, (tipp.priceItems != null), result.surveyConfig.pickAndChoosePerpetualAccess, issueEntitlementGroup)) {
-                                    log.debug("Added tipp ${tipp.gokbId} to sub ${result.subscription.id}")
-                                    ++countTippsToAdd
-                                    removeFromCache << it.key
-                                }
+                            if (issueEntitlementGroup && subscriptionService.addEntitlement(result.subscription, tipp.gokbId, null, (tipp.priceItems != null), result.surveyConfig.pickAndChoosePerpetualAccess, issueEntitlementGroup)) {
+                                log.debug("Added tipp ${tipp.gokbId} to sub ${result.subscription.id}")
+                                ++countTippsToAdd
+                                removeFromCache << it.key
                             }
-                            catch (EntitlementCreationException e) {
-                                log.debug("Error: Adding tipp ${tipp} to sub ${result.subscription.id}: " + e.getMessage())
-                                result.error = messageSource.getMessage('renewEntitlementsWithSurvey.noSelectedTipps', null, locale)
-                                [result: result, status: STATUS_ERROR]
-                            }
+                        }
+                        catch (EntitlementCreationException e) {
+                            log.debug("Error: Adding tipp ${tipp} to sub ${result.subscription.id}: " + e.getMessage())
+                            result.error = messageSource.getMessage('renewEntitlementsWithSurvey.noSelectedTipps', null, locale)
+                            [result: result, status: STATUS_ERROR]
                         }
                     }
                 }
