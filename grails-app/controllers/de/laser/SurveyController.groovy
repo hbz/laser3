@@ -4028,6 +4028,25 @@ class SurveyController {
                         AbstractPropertyWithCalculatedLastUpdated copyProperty
                         if (params.tab == 'surveyProperties') {
                             copyProperty = SurveyResult.findBySurveyConfigAndTypeAndParticipant(result.surveyConfig, surveyProperty, org)
+
+                            if(copyProperty && params.copyToSubAttribut){
+                                Subscription.withTransaction {
+                                    if (surveyProperty == PropertyStore.SURVEY_PROPERTY_SUBSCRIPTION_FORM) {
+                                        if (copyProperty.refValue) {
+                                            sub.form = copyProperty.refValue
+                                        }
+                                    }
+
+                                    if (surveyProperty == PropertyStore.SURVEY_PROPERTY_PUBLISHING_COMPONENT) {
+                                        if (copyProperty.refValue == RDStore.YN_YES) {
+                                            sub.hasPublishComponent = true
+                                        }
+                                    }
+                                    sub.save()
+                                }
+
+                            }
+
                         } else {
                             if (params.tab == 'privateProperties') {
                                 copyProperty = oldSub ? oldSub.propertySet.find {
