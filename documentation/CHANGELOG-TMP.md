@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5171    04.07.2023  dev     3.2         Moe     Feature     Wildcard @* Maildomän
+
 5113    04.07.2023  dev     3.2         Moe     Feature     Titelumfrage: Datei hochladen - Titel werden automatisch ausgewählt
 
 5175    04.07.2023  dev     3.2         Moe     Feature     Rabattstaffel für Elternlizenzen einführen
