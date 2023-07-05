@@ -1487,7 +1487,7 @@ class SubscriptionController {
                 }
 
                 queryMap = [subscriptions: subscriptions, ieStatus: RDStore.TIPP_STATUS_CURRENT, pkgIds: packageIds, hasPerpetualAccess: RDStore.YN_YES.id.toString()]
-                println(queryMap)
+            
                 filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.currentTitles') + '_' + ctrlResult.result.subscriberSub.dropdownNamingConvention())
             }
 
