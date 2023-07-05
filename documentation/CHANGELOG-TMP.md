@@ -7,6 +7,7 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5173    05.07.2023  dev     3.2         Andreas Feature     diverse Verbesserungen bei der Lizenzverwaltung
 
 5113    04.07.2023  dev     3.2         Moe     Feature     Titelumfrage: Datei hochladen - Titel werden automatisch ausgewählt
 
