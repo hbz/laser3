@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5176    05.07.2023  dev     3.2         Andreas Bug         Konsortialmanager Basic fehlten in GASCO-Auflistung
+
 5172    04.07.2023  dev     3.2         David   Bug         Anmerkungen: doppelter Titel
 
 5174    04.07.2023  dev     3.2         Andreas Bug         Menüeinträge für Konsortialmanager-Basic ausgegraut
