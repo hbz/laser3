@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg; de.laser.AuditConfig" %>
+<%@ page import="de.laser.storage.PropertyStore; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg; de.laser.AuditConfig" %>
 <laser:htmlStart message="surveyInfo.copyProperties" serviceInjection="true" />
 
 <ui:breadcrumbs>
@@ -677,6 +677,17 @@
                     </div>
 
                     <div class="eight wide field" style="text-align: right;">
+                        <g:if test="${params.tab == 'surveyProperties' && surveyConfig.subSurveyUseForTransfer && selectedProperty &&
+                                (PropertyDefinition.get(selectedProperty) == PropertyStore.SURVEY_PROPERTY_PUBLISHING_COMPONENT || PropertyDefinition.get(selectedProperty) == PropertyStore.SURVEY_PROPERTY_SUBSCRIPTION_FORM)}">
+                            <div class="ui large toggle checkbox">
+                                <input type="checkbox" name="copyToSubAttribut">
+                                <label>${message(code: 'copyProperties.surveyProperties.copyToSubAttr')}</label>
+                            </div>
+
+                            <br>
+                            <br>
+                        </g:if>
+
                         <button class="ui button positive"
                                 type="submit">${message(code: 'copyProperties.copyProperties', args: [message(code: 'copyProperties.' + params.tab)])}</button>
                     </div>
