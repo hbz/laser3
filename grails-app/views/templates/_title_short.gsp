@@ -1,4 +1,5 @@
 <%@ page import="de.laser.storage.RDStore;" %>
+<laser:serviceInjection/>
 <div class="la-icon-list">
 
     <ui:listIcon type="${tipp.titleType}"/>
@@ -45,9 +46,15 @@
                 </g:if>
                 <g:else>
                     <%
-                        if (ie.perpetualAccessBySub) {
-                            println g.link([action: 'index', controller: 'subscription', id: ie.perpetualAccessBySub.id], "${RDStore.YN_YES.getI10n('value')}: ${ie.perpetualAccessBySub.dropdownNamingConvention()}")
-                        } else {
+                        if(contextOrg || surveyService.hasParticipantPerpetualAccessToTitle3(contextOrg, tipp)){
+                            if (ie.perpetualAccessBySub) {
+                                println g.link([action: 'index', controller: 'subscription', id: ie.perpetualAccessBySub.id], "${RDStore.YN_YES.getI10n('value')}: ${ie.perpetualAccessBySub.dropdownNamingConvention()}")
+                            }else {
+                                println RDStore.YN_YES.getI10n('value')
+
+                            }
+                        }
+                        else {
                             println RDStore.YN_NO.getI10n('value')
                         }
                     %>

@@ -7,9 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+
 5045    05.07.2023  dev     3.2         Moe     Feature     Neue Umfragemerkmale (Wunsch BSB)
 
-5171    05.07.2023  dev     3.2         Moe     Feature     Wildcard @* Maildomän
+5171    05.07.2023  dev     3.2         Moe     Feature     Wildcard @* Maildomä
+
+5173    05.07.2023  dev     3.2         Andreas Feature     diverse Verbesserungen bei der Lizenzverwaltung
 
 5113    04.07.2023  dev     3.2         Moe     Feature     Titelumfrage: Datei hochladen - Titel werden automatisch ausgewählt
 

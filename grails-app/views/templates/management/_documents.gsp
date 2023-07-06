@@ -17,6 +17,7 @@
     <g:form action="${actionName}" controller="${controllerName}" params="[tab: 'documents']" method="post"
             class="ui segment form newDocument" enctype="multipart/form-data">
         <g:hiddenField id="pspm_id_${params.id}" name="id" value="${params.id}"/>
+        <g:hiddenField id="allMembers" name="allMembers" value="false"/>
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
 
         <div class="field required">
@@ -97,7 +98,6 @@
                     <th>${message(code: 'default.subscription.label')}</th>
                 </g:if>
                 <th>${message(code: 'default.documents.label')}</th>
-                <th>${message(code:'default.actions.label')}</th>
             </tr>
             </thead>
             <tbody>
@@ -136,20 +136,15 @@
                         </td>
                     </g:if>
                     <g:if test="${controllerName == "myInstitution"}">
-                        <td>${sub.name} <span class="${sub.type == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL ? 'sc_blue' : ''}"> (${sub.type.getI10n('value')}) </span></td>
+                        <td>
+                            <g:link controller="subscription" action="show" id="${sub.id}">
+                                ${sub.name} (${sub.type.getI10n('value')})
+                            </g:link>
+                        </td>
                     </g:if>
                     <td>
                         <laser:render template="/templates/documents/table"
                                   model="${[instance: sub, context: 'documents', redirect: actionName, owntp: 'subscription']}"/>
-
-                    </td>
-                    <td class="x">
-                        <g:link controller="subscription" action="show" id="${sub.id}"
-                                class="ui icon button blue la-modern-button"
-                                role="button"
-                                aria-label="${message(code: 'ariaLabel.edit.universal')}">
-                            <i aria-hidden="true" class="write icon"></i>
-                        </g:link>
                     </td>
                 </tr>
             </g:each>
@@ -173,9 +168,11 @@
 
     $('#membersListToggler').click(function () {
         if ($(this).prop('checked')) {
-            $("tr[class!=disabled] input[name=selectedSubs]").prop('checked', true)
+            $("tr[class!=disabled] input[name=selectedSubs]").prop('checked', true);
+            $("#allMembers").val(true);
         } else {
-            $("tr[class!=disabled] input[name=selectedSubs]").prop('checked', false)
+            $("tr[class!=disabled] input[name=selectedSubs]").prop('checked', false);
+            $("#allMembers").val(false);
         }
         JSPC.app.setSelectedSubscriptionIds();
     });

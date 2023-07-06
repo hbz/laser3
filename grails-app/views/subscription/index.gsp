@@ -431,7 +431,7 @@
                                     <div class="ui raised segments la-accordion-segments">
                                         <div class="ui fluid segment title" data-ajaxTippId="${ie.tipp.id}" data-ajaxIeId="${ie ? ie.id : null}">
                                             <div class="ui stackable equal width grid">
-                                                <g:if test="${ie.perpetualAccessBySub}">
+                                                <g:if test="${surveyService.hasParticipantPerpetualAccessToTitle3(contextOrg, ie.tipp)}">
                                                     <g:if test="${ie.perpetualAccessBySub && ie.perpetualAccessBySub != subscription}">
                                                         <g:link controller="subscription" action="index" id="${ie.perpetualAccessBySub.id}">
                                                             <span class="ui mini left corner label la-perpetualAccess la-js-notOpenAccordion la-popup-tooltip la-delay"
