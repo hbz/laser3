@@ -90,7 +90,7 @@
                 <td>${accessPointData.ipCidr}</td>
                 <td class="center aligned">
                     <g:if test="${is_INST_EDITOR_with_PERMS_BASIC}">
-                        <g:link action="deleteAccessPointData" controller="accessPoint" id="${accessPointData.id}"
+                        <g:link action="deleteAccessPointData" controller="accessPoint" id="${accessPointData.id}" params="[orgInstance: orgInstance.id]"
                                 class="ui negative icon button"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
@@ -155,7 +155,7 @@
             <td>${accessPointData.ipCidr}</td>
             <td class="center aligned">
                 <g:if test="${is_INST_EDITOR_with_PERMS_BASIC}">
-                    <g:link action="deleteAccessPointData" controller="accessPoint" id="${accessPointData.id}"
+                    <g:link action="deleteAccessPointData" controller="accessPoint" id="${accessPointData.id}" params="[orgInstance: orgInstance.id]"
                             class="ui negative icon button"
                             role="button"
                             aria-label="${message(code: 'ariaLabel.delete.universal')}">

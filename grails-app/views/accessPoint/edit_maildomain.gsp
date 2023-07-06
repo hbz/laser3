@@ -76,7 +76,7 @@
                     <td>${accessPointData.mailDomain}</td>
                     <td class="center aligned">
                         <g:if test="${is_INST_EDITOR_with_PERMS_BASIC}">
-                            <g:link action="deleteAccessPointData" controller="accessPoint" id="${accessPointData.id}"
+                            <g:link action="deleteAccessPointData" controller="accessPoint" id="${accessPointData.id}" params="[orgInstance: orgInstance.id]"
                                     class="ui negative icon button js-open-confirm-modal"
                                     data-confirm-tokenMsg="${message(code: 'confirm.dialog.delete.generic', args: [accessPointData.mailDomain])}"
                                     data-confirm-term-how="delete"
