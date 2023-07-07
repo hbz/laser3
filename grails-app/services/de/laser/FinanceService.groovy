@@ -596,7 +596,7 @@ class FinanceService {
                         prf.setBenchmark("assembling map")
                         result.cons = [count:consCostItems.size()]
                         if(consCostItems) {
-                            result.cons.costItems = consCostItems.drop(configMap.max).take(configMap.offsets.consOffset)
+                            result.cons.costItems = consCostItems.drop(configMap.offsets.consOffset).take(configMap.max)
                             result.cons.sums = calculateResults(consCostItems.id)
                             result.cons.ids = consCostItems.id
                         }
