@@ -561,14 +561,15 @@ class FinanceService {
                         ownFilter.putAll(filterQuery.filterData)
                         ownFilter.remove('filterConsMembers')
                         Set<Long> ownCostItems = CostItem.executeQuery(
-                                'select ci.id from CostItem ci where ci.owner = :owner and ci.sub = :sub '+
+                                'select ci from CostItem ci where ci.owner = :owner and ci.sub = :sub '+
                                         genericExcludes + subFilter + filterQuery.ciFilter,
-                                [owner:org,sub:sub]+genericExcludeParams+ownFilter)
+                                [owner:org,sub:sub]+genericExcludeParams+ownFilter,
+                                [sort: configMap.sortConfig.ownSort, order: configMap.sortConfig.ownOrder])
                         prf.setBenchmark("assembling map")
                         result.own = [count:ownCostItems.size()]
                         if(ownCostItems){
-                            result.own.costItems = CostItem.findAllByIdInList(ownCostItems,[max:configMap.max,offset:configMap.offsets.ownOffset, sort: configMap.sortConfig.ownSort, order: configMap.sortConfig.ownOrder])
-                            result.own.sums = calculateResults(ownCostItems)
+                            result.own.costItems = ownCostItems.drop(configMap.offsets.ownOffset).take(configMap.max)
+                            result.own.sums = calculateResults(ownCostItems.id)
                             result.own.ids = ownCostItems.id
                         }
                         break
@@ -591,11 +592,11 @@ class FinanceService {
                         Set<CostItem> consCostItems = CostItem.executeQuery('select ci from CostItem as ci right join ci.sub sub join sub.orgRelations oo where ci.owner = :owner and sub = :sub and oo.roleType = :roleType'+
                             filterQuery.subFilter + genericExcludes + filterQuery.ciFilter,
                             [owner:org,sub:sub,roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA]+genericExcludeParams+filterQuery.filterData,
-                                [max:configMap.max,offset:configMap.offsets.consOffset, sort: configMap.sortConfig.consSort, order: configMap.sortConfig.consOrder])
+                                [sort: configMap.sortConfig.consSort, order: configMap.sortConfig.consOrder])
                         prf.setBenchmark("assembling map")
                         result.cons = [count:consCostItems.size()]
                         if(consCostItems) {
-                            result.cons.costItems = consCostItems
+                            result.cons.costItems = consCostItems.drop(configMap.max).take(configMap.offsets.consOffset)
                             result.cons.sums = calculateResults(consCostItems.id)
                             result.cons.ids = consCostItems.id
                         }

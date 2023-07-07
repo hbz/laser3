@@ -2141,7 +2141,7 @@ class SubscriptionControllerService {
                     Thread.currentThread().setName("PackageTransfer_"+result.subscription.id)
                     if(!Package.findByGokbId(pkgUUID)) {
                         try {
-                            Map<String,Object> queryResult = globalSourceSyncService.fetchRecordJSON(false,[componentType:'TitleInstancePackagePlatform',tippPackageUuid:pkgUUID,max:5000])
+                            Map<String,Object> queryResult = globalSourceSyncService.fetchRecordJSON(false,[componentType:'TitleInstancePackagePlatform',tippPackageUuid:pkgUUID,max:5000,sort:'lastUpdated'])
                             if(queryResult.error && queryResult.error == 404) {
                                 log.error("we:kb server currently unavailable")
                             }
