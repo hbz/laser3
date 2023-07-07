@@ -123,7 +123,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         break
                 }
                 //do prequest: are we needing the scroll api?
-                Map<String,Object> result = fetchRecordJSON(false,[componentType:componentType,changedSince:sdf.format(oldDate),max:MAX_TIPP_COUNT_PER_PAGE]) //changedBefore:'2022-09-27 00:00:00',
+                Map<String,Object> result = fetchRecordJSON(false,[componentType:componentType,changedSince:sdf.format(oldDate),max:MAX_TIPP_COUNT_PER_PAGE,sort:'lastUpdated']) //changedBefore:'2022-09-27 00:00:00',
                 if(result.error == 404) {
                     log.error("we:kb server is down")
                     SystemEvent.createEvent('GSSS_JSON_ERROR',['jobId':source.id])
@@ -232,7 +232,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     }
                 */
                 //do prequest: are we needing the scroll api?
-                Map<String,Object> result = fetchRecordJSON(false,[componentType:componentType,tippPackageUuid:packageUUID,max:MAX_TIPP_COUNT_PER_PAGE])
+                Map<String,Object> result = fetchRecordJSON(false,[componentType:componentType,tippPackageUuid:packageUUID,max:MAX_TIPP_COUNT_PER_PAGE,sort:'lastUpdated'])
                 if(result.error == 404) {
                     log.error("we:kb server is down")
                 }
@@ -316,7 +316,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             this.apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI,true)
             log.info("getting all records from job #${source.id} with uri ${source.uri}")
             try {
-                Map<String,Object> result = fetchRecordJSON(false,[componentType: componentType, max: MAX_TIPP_COUNT_PER_PAGE])
+                Map<String,Object> result = fetchRecordJSON(false,[componentType: componentType, max: MAX_TIPP_COUNT_PER_PAGE, sort:'lastUpdated'])
                 if(result) {
                     if(result.error == 404) {
                         log.error("we:kb server currently down")
@@ -381,7 +381,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 triggeredTypes.each { String componentType ->
                     GlobalRecordSource.withNewSession { Session sess ->
                         int offset = 0
-                        Map<String, Object> queryParams = [componentType: componentType, max: max, offset: offset]
+                        Map<String, Object> queryParams = [componentType: componentType, max: max, offset: offset, sort: 'lastUpdated']
                         Map<String,Object> result = fetchRecordJSON(false,queryParams)
                         if(result) {
                             if(result.error == 404) {
@@ -562,7 +562,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
     void processScrollPage(Map<String, Object> result, String componentType, String changedSince, String pkgFilter = null, Set<String> permanentlyDeletedTitles = []) throws SyncException {
         if(result.count >= MAX_TIPP_COUNT_PER_PAGE) {
             int offset = 0, max = MAX_TIPP_COUNT_PER_PAGE
-            Map<String, Object> queryParams = [componentType: componentType, offset: offset, max: max]
+            Map<String, Object> queryParams = [componentType: componentType, offset: offset, max: max, sort: 'lastUpdated']
             if(changedSince) {
                 queryParams.changedSince = changedSince
                 //queryParams.changedBefore = "2022-09-27 00:00:00" //debug only
@@ -2270,7 +2270,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
 
     Set<String> getPermanentlyDeletedTitles(String changedFrom = null) {
         Set<String> result = []
-        Map<String, Object> queryParams = [componentType: 'deletedkbcomponent', status: Constants.PERMANENTLY_DELETED, max: MAX_TIPP_COUNT_PER_PAGE]
+        Map<String, Object> queryParams = [componentType: 'deletedkbcomponent', status: Constants.PERMANENTLY_DELETED, max: MAX_TIPP_COUNT_PER_PAGE, sort: 'lastUpdated']
         if(changedFrom)
             queryParams.changedSince = changedFrom
         Map<String, Object> recordBatch = fetchRecordJSON(false, queryParams)

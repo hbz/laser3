@@ -7,6 +7,11 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      07.07.2023  rc-3.2  3.2         Andreas Bug         interne Sortierung der Werte geändert (zum besseren Debug)
+
+5181    07.07.2023  rc-3.2  3.2         Andreas Bug         diverse Aufruffehler in der API behoben (API Version 2.1)
+
+5180    07.07.2023  rc-3.2  3.2         Andreas Bug         Konsortien konnten von PRO-Nutzern nicht mehr aufgerufen werden
 
 5045    05.07.2023  dev     3.2         Moe     Feature     Neue Umfragemerkmale (Wunsch BSB)
 
