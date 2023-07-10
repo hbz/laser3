@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4660    10.07.2023  rc-3.2  3.2         Andreas Feature     neues Verfahrensverzeichnis eingecheckt
+
 --      07.07.2023  rc-3.2  3.2         Andreas Bug         interne Sortierung der Werte geändert (zum besseren Debug)
 
 5181    07.07.2023  rc-3.2  3.2         Andreas Bug         diverse Aufruffehler in der API behoben (API Version 2.1)
