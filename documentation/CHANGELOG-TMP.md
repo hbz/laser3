@@ -27,6 +27,10 @@
 
 5176    05.07.2023  dev     3.2         Andreas Bug         Konsortialmanager Basic fehlten in GASCO-Auflistung
 
+4921    04.07.2023  dev     3.2         David   Feature     Refactoring: Rechtemodell
+
+5101    04.07.2023  dev     3.2         David   Feature     Nutzer bearbeiten
+
 5172    04.07.2023  dev     3.2         David   Bug         Anmerkungen: doppelter Titel
 
 5174    04.07.2023  dev     3.2         Andreas Bug         Menüeinträge für Konsortialmanager-Basic ausgegraut
