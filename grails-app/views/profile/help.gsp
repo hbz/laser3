@@ -29,14 +29,51 @@
     </p>
 </div>
 
+<br />
+<br />
+
 <h2 class="ui icon header la-clear-before la-noMargin-top"><i class="icon question circle outline"></i> <g:message code="help.technicalHelp"/></h2>
 
 <div class="ui segment">
     <p>
-        <strong><g:message code="help.technicalHelp.browser.title"/></strong>
+        <strong><g:message code="help.technicalHelp.spellcheck.title"/></strong>
     </p>
-    <div class="ui relaxed divided list">
-        <p><g:message code="help.technicalHelp.browser.content"/>:</p>
+    <div class="ui relaxed list">
+        <p>
+            <g:message code="help.technicalHelp.spellcheck.content"/>:
+        </p>
+        <div class="item">
+            <i class="large internet explorer middle aligned icon"></i>
+            <div class="content">
+                <div class="description">Internet Explorer</div>
+                <p>?</p>
+            </div>
+        </div>
+        <div class="item">
+            <i class="large chrome middle aligned icon"></i>
+            <div class="content">
+                <div class="description">Google Chrome</div>
+                <a href="https://support.google.com/chrome/answer/12027911?hl=de" class="header" target="_blank">https://support.google.com/chrome/answer/12027911?hl=de</a>
+            </div>
+        </div>
+        <div class="item">
+            <i class="large firefox middle aligned icon"></i>
+            <div class="content">
+                <div class="description">Firefox</div>
+                <a href="https://support.mozilla.org/de/kb/Rechtschreibpruefung-nutzen" target="_blank" class="header">https://support.mozilla.org/de/kb/Rechtschreibpruefung-nutzen</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="ui segment">
+    <p>
+        <strong><g:message code="help.technicalHelp.browsercache.title"/></strong>
+    </p>
+    <div class="ui relaxed list">
+        <p>
+            <g:message code="help.technicalHelp.browsercache.content"/>:
+        </p>
         <div class="item">
             <i class="large internet explorer middle aligned icon"></i>
             <div class="content">
@@ -98,11 +135,11 @@
 
 %{--        <div class="title">--}%
 %{--            <i class="dropdown icon"></i>--}%
-%{--            <g:message code="help.technicalHelp.browser.title"/>--}%
+%{--            <g:message code="help.technicalHelp.browsercache.title"/>--}%
 %{--        </div>--}%
 %{--        <div class="content">--}%
 %{--            <div class="ui relaxed divided list">--}%
-%{--                <p><g:message code="help.technicalHelp.browser.content"/>:</p>--}%
+%{--                <p><g:message code="help.technicalHelp.browsercache.content"/>:</p>--}%
 %{--                <div class="item">--}%
 %{--                    <i class="large internet explorer middle aligned icon"></i>--}%
 %{--                    <div class="content">--}%
