@@ -20,7 +20,7 @@
             <div class="column">
             </div>
             <div class="column">
-                <a href="#" class="wekbFlyoutTrigger" data-filter="created">Neu angelegte Objekte anzeigen</a> <br/>
+                <a href="#" class="wekbFlyoutTrigger" data-filter="created">Neue Objekte anzeigen</a> <br/>
                 <a href="#" class="wekbFlyoutTrigger" data-filter="updated">Geänderte Objekte anzeigen</a> <br/>
                 <a href="#" class="wekbFlyoutTrigger" data-filter="all">Alle Änderungen anzeigen</a>
             </div>
@@ -31,15 +31,18 @@
 
     <laser:script file="${this.getGroovyPageFileName()}">
 
+        if (!JSPC.app.dashboard) { JSPC.app.dashboard = {} }
+
+        JSPC.app.dashboard.wekbChanges = {
+            filter: { filter: 'all', cat: 'all' }
+        }
+
         $('a.wekbFlyoutTrigger').on ('click', function(e) {
             e.preventDefault()
             let filter = $(this).attr ('data-filter')
 
             if ($('#wekbFlyout').children().length > 0) {
-                JSPC.app.dashboardWekbFlyout ('#wekbChanges-org', filter)
-                JSPC.app.dashboardWekbFlyout ('#wekbChanges-platform', filter)
-                JSPC.app.dashboardWekbFlyout ('#wekbChanges-package', filter)
-
+                JSPC.app.dashboard.wekbChanges.flyout (filter, 'all')
                 $('#wekbFlyout').flyout ('show')
             }
             else {
@@ -54,9 +57,7 @@
                     $('#globalLoadingIndicator').hide()
 
                     $('#wekbFlyout').html (response)
-                    JSPC.app.dashboardWekbFlyout ('#wekbChanges-org', filter)
-                    JSPC.app.dashboardWekbFlyout ('#wekbChanges-platform', filter)
-                    JSPC.app.dashboardWekbFlyout ('#wekbChanges-package', filter)
+                    JSPC.app.dashboard.wekbChanges.flyout (filter, 'all')
 
                     $('#wekbFlyout').flyout ('show')
                     r2d2.initDynamicUiStuff ('#wekbFlyout')
@@ -65,15 +66,24 @@
             }
         });
 
-        JSPC.app.dashboardWekbFlyout = function(wrapper, filter) {
-            $(wrapper + ' .filter .button[data-filter]').addClass ('secondary')
-            $(wrapper + ' .filter .button[data-filter=' + filter + ']').removeClass ('secondary')
+        JSPC.app.dashboard.wekbChanges.flyout  = function(filter, cat) {
+            if (! filter) { filter = JSPC.app.dashboard.wekbChanges.filter.filter } else { JSPC.app.dashboard.wekbChanges.filter.filter = filter }
+            if (! cat)    { cat    = JSPC.app.dashboard.wekbChanges.filter.cat }    else { JSPC.app.dashboard.wekbChanges.filter.cat = cat }
 
-            if (filter == 'all') {
-                $(wrapper + ' tr[data-filter]').show()
-            } else {
-                $(wrapper + ' tr[data-filter]').hide()
-                $(wrapper + ' tr[data-filter=' + filter + ']').show()
+            $('#wekbFlyout .filterWrapper .button').removeClass ('red')
+            $('#wekbFlyout .filterWrapper .button[data-filter=' + filter + ']').addClass ('red')
+            $('#wekbFlyout .filterWrapper .button[data-cat=' + cat + ']').addClass ('red')
+
+            let rows = '#wekbFlyout .dataWrapper .row'
+            if (filter == 'all' && cat == 'all') {
+                $(rows).show()
+            }
+            else {
+                $(rows).hide()
+
+                if (filter != 'all' && cat != 'all') { $(rows + '[data-fc=' + filter + '-' + cat + ']').show() }
+                if (filter != 'all' && cat == 'all') { $(rows + '[data-fc^=' + filter + '-]').show() }
+                if (filter == 'all' && cat != 'all') { $(rows + '[data-fc$=-' + cat + ']').show() }
             }
         }
     </laser:script>
@@ -83,40 +93,47 @@
 
     <%
         tmplConfig = [
-               ['wekbChanges-org',      wekbChanges.org,        'org',      'default.ProviderAgency.label', 'university'],
-               ['wekbChanges-platform', wekbChanges.platform,   'platform', 'platform.plural',              'cloud'],
-               ['wekbChanges-package',  wekbChanges.package,    'package',  'package.plural',               'gift']
+               ['org',      wekbChanges.org,        'default.ProviderAgency.label', 'university'],
+               ['platform', wekbChanges.platform,   'platform.plural',              'cloud'],
+               ['package',  wekbChanges.package,    'package.plural',               'gift']
         ]
     %>
 
-    <div style="display:inline-block; font-weight:bold; color:white; background-color:red; padding:1em 2em">DEMO</div>
+    <div style="display:inline-block; font-weight:bold; color:white; background-color:red; padding:1em 2em; float: right">DEMO</div>
+
+    <g:set var="wekb_count_all" value="${wekbChanges.org.count + wekbChanges.platform.count + wekbChanges.package.count}" />
+    <g:set var="wekb_count_created" value="${wekbChanges.org.created.size() + wekbChanges.platform.created.size() + wekbChanges.package.created.size()}" />
+    <g:set var="wekb_count_updated" value="${wekbChanges.org.updated.size() + wekbChanges.platform.updated.size() + wekbChanges.package.updated.size()}" />
+    <g:set var="wekb_count_laser" value="${wekbChanges.org.laserCount + wekbChanges.platform.laserCount + wekbChanges.package.laserCount}" />
+
+    <div class="filterWrapper" style="margin:2em 1em">
+        <p style="margin:0 2em 2em">
+            Änderungen der letzten <strong>${wekbChanges.query.days}</strong> Tage. Letzter Datenabgleich: <strong>${wekbChanges.query.call}</strong>
+        </p>
+        <div class="filter" style="margin:0 2em 0.5em;">
+            <span class="ui button mini" data-filter="created">Neue Objekte: ${wekb_count_created}</span>
+            <span class="ui button mini" data-filter="updated">Geänderte Objekte: ${wekb_count_updated}</span>
+            <span class="ui button mini" data-filter="all">Alle: ${wekb_count_all}</span>
+        </div>
+        <div class="filter" style="margin:0 2em 0.5em;">
+            <span class="ui button mini" data-cat="laser">In Laser vorhanden: ${wekb_count_laser}</span>
+            <span class="ui button mini" data-cat="nonlaser">Nicht in Laser vorhanden: ${wekb_count_all - wekb_count_laser}</span>
+            <span class="ui button mini" data-cat="all">Alle: ${wekb_count_all}</span>
+        </div>
+    </div>
 
     <g:each in="${tmplConfig}" var="cfg">
-        <div id="${cfg[0]}" style="margin:2em 1em">
-            <p class="ui header left floated">
-                <i class="icon ${cfg[4]}"></i> ${message(code: "${cfg[3]}")}
+        <div class="dataWrapper" style="margin:2em 1em">
+            <p class="ui header">
+                <i class="icon grey ${cfg[3]}" style="vertical-align:bottom"></i> ${message(code: "${cfg[2]}")}
             </p>
 
-            <div class="filter" style="float:right">
-                <div class="ui button mini" data-filter="created">Neu: ${cfg[1].created.size()}</div>
-                <div class="ui button mini" data-filter="updated">Geändert: ${cfg[1].updated.size()}</div>
-                <div class="ui button mini" data-filter="all">Alle: ${cfg[1].count}</div>
-            </div>
-
-            <table class="ui very basic table compact">
-                <thead>
-                <tr style="display: none">
-                    <th class="two wide"></th>
-                    <th class="eleven wide"></th>
-                    <th class="three wide"></th>
-                </tr>
-                </thead>
-                <tbody>
+            <div class="ui vertically divided very compact grid">
                 <g:each in="${cfg[1].all}" var="obj" status="i">
-                    <tr data-filter="${obj.uuid in cfg[1].created ? 'created' : 'updated'}">
-                        <td> ${i+1} </td>
-                        <td>
-                            <ui:wekbIconLink type="${cfg[2]}" gokbId="${obj.uuid}" />
+                    <div class="three column row" data-fc="${obj.uuid in cfg[1].created ? 'created' : 'updated'}-${obj.globalUID ? 'laser' : 'nonlaser'}">
+                         <div class="column one wide center aligned">${i+1}</div>
+                         <div class="column eleven wide">
+                            <ui:wekbIconLink type="${cfg[0]}" gokbId="${obj.uuid}" />
                             <g:if test="${obj.globalUID}">
                                 <g:link controller="${cfg[2]}" action="show" target="_blank" params="${[id:obj.globalUID]}">${obj.name}</g:link>
                             </g:if>
@@ -124,24 +141,17 @@
                                 ${obj.name}
                             </g:else>
                             <g:if test="${obj.uuid in cfg[1].created}"><span class="ui yellow mini label">NEU</span></g:if>
-                        </td>
-                        <td> ${obj.dateCreatedDisplay} </td>
-                    </tr>
+                        </div>
+                        <div class="column four wide center aligned">${obj.dateCreatedDisplay}</div>
+                    </div>
                 </g:each>
-                </tbody>
-            </table>
+            </div>
         </div>
     </g:each>
 
     <laser:script file="${this.getGroovyPageFileName()}">
-        $('#wekbChanges-org .filter .button[data-filter]').on ('click', function(e) {
-            JSPC.app.dashboardWekbFlyout('#wekbChanges-org', $(this).attr('data-filter'))
-        });
-        $('#wekbChanges-platform .filter .button[data-filter]').on ('click', function(e) {
-            JSPC.app.dashboardWekbFlyout('#wekbChanges-platform', $(this).attr('data-filter'))
-        });
-        $('#wekbChanges-package .filter .button[data-filter]').on ('click', function(e) {
-            JSPC.app.dashboardWekbFlyout('#wekbChanges-package', $(this).attr('data-filter'))
+        $('#wekbFlyout .filterWrapper .button').on ('click', function(e) {
+            JSPC.app.dashboard.wekbChanges.flyout ($(this).attr('data-filter'), $(this).attr('data-cat'))
         });
     </laser:script>
 </g:if>

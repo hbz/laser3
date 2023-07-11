@@ -524,9 +524,9 @@
 
     <laser:script file="${this.getGroovyPageFileName()}">
 
-        JSPC.app.dashboard = {
+        if (!JSPC.app.dashboard) { JSPC.app.dashboard = {} }
 
-            initWorkflows: function() {
+            JSPC.app.dashboard.initWorkflows = function() {
                 $('.wfModalLink').on('click', function(e) {
                     e.preventDefault();
                     var func = bb8.ajax4SimpleModalFunction("#wfModal", $(e.currentTarget).attr('href'));
@@ -560,9 +560,9 @@
                         })
                     }
                 });
-            },
+            };
 
-            loadChanges: function() {
+            JSPC.app.dashboard.loadChanges = function() {
                 $.ajax({
                     url: "<g:createLink controller="ajaxHtml" action="getChanges"/>",
                     data: {
@@ -575,22 +575,21 @@
                     $("#acceptedChanges").html($(response).filter("#acceptedChangesWrapper"));
                     r2d2.initDynamicUiStuff('#pendingChanges');
                 })
-            },
+            };
 
-            loadSurveys: function() {
+            JSPC.app.dashboard.loadSurveys = function() {
                 $.ajax({
                     url: "<g:createLink controller="ajaxHtml" action="getSurveys" params="${params}"/>"
                 }).done(function(response){
                     $("#surveyWrapper").html(response);
                     r2d2.initDynamicUiStuff('#surveyWrapper');
                 })
-            },
+            };
 
-            editTask: function (id) {
+            JSPC.app.dashboard.editTask = function (id) {
                 var func = bb8.ajax4SimpleModalFunction("#modalEditTask", "<g:createLink controller="ajaxHtml" action="editTask"/>?id=" + id, true);
                 func();
-            },
-        }
+            };
 
         JSPC.app.dashboard.loadChanges()
         JSPC.app.dashboard.loadSurveys()
