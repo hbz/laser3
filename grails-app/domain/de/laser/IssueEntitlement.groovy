@@ -48,8 +48,8 @@ class IssueEntitlement extends AbstractBase implements Comparable {
     Subscription perpetualAccessBySub
 
     //merged as the difference between an IssueEntitlement and a TIPP is mainly former's attachment to a subscription, otherwise, they are functionally identical, even dependent upon each other. So why keep different refdata categories?
-    @RefdataInfo(cat = RDConstants.TIPP_STATUS)
-    RefdataValue status
+    //@RefdataInfo(cat = RDConstants.TIPP_STATUS)
+    //RefdataValue status
 
     //@Deprecated
     //@RefdataInfo(cat = RDConstants.TIPP_ACCESS_TYPE)
@@ -98,7 +98,7 @@ class IssueEntitlement extends AbstractBase implements Comparable {
             //name column:'ie_name', type: 'text'
         //sortname column:'ie_sortname', type: 'text'
              notes column:'ie_notes', type: 'text'
-            status column:'ie_status_rv_fk', index: 'ie_status_idx, ie_sub_tipp_status_idx, ie_status_accept_status_idx, ie_tipp_status_accept_status_idx'
+          //status column:'ie_status_rv_fk', index: 'ie_status_idx, ie_sub_tipp_status_idx, ie_status_accept_status_idx, ie_tipp_status_accept_status_idx'
       //accessType column:'ie_access_type_rv_fk', index: 'ie_access_type_idx'
       //openAccess column:'ie_open_access_rv_fk', index: 'ie_open_access_idx'
       subscription column:'ie_subscription_fk', index: 'ie_sub_idx, ie_sub_tipp_idx, ie_sub_tipp_status_idx, ie_status_accept_status_idx, ie_tipp_status_accept_status_idx'
@@ -119,7 +119,7 @@ class IssueEntitlement extends AbstractBase implements Comparable {
       //name           (nullable:true)
       //sortname       (nullable:true)
         notes          (nullable:true)
-        status         (nullable:true)
+      //status         (nullable:true)
       //accessType     (nullable:true)
       //openAccess     (nullable:true)
       //medium         (nullable:true)
