@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5186    11.07.2023  rc-3.2  3.2         Andreas Bug         dauerhafte Titel wurden nicht gekennzeichnet
+
 4660    10.07.2023  rc-3.2  3.2         Andreas Feature     neues Verfahrensverzeichnis eingecheckt
 
 --      07.07.2023  rc-3.2  3.2         Andreas Bug         interne Sortierung der Werte geändert (zum besseren Debug)
