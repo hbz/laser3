@@ -24,20 +24,17 @@ if (targetObjectId) params << [targetObjectId: genericOIDService.getOID(targetOb
             controller="license" action="copyElementsIntoLicense"
             params="${params << [workFlowPart: CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS]}">
         <div class="content">
-            <div class="title">${message(code: 'copyElementsIntoObject.general_data.label')}</div>
-
+            <div class="title">
+                ${message(code: 'copyElementsIntoObject.general_data.label')}
+            </div>
             <div class="description">
-                <i class="calendar alternate outline icon"></i>${message(code: 'subscription.periodOfValidity.label')}
-                <i class="ellipsis vertical icon"></i>${message(code: 'license.status.label')}
-                <br />
-                <i class="cloud icon"></i>${message(code: 'default.url.label')}
-                <i class="clipboard list icon"></i>${message(code: 'license.licenseCategory.label')}
-                <br />
-                <i class="shipping fast icon"></i>${message(code: 'license.isPublicForApi.label')}
-                <br />
-                <i class="university icon"></i>${message(code: 'subscription.organisations.label')}
-                <i class="barcode icon"></i>${message(code: 'default.identifiers.label')}
-
+                <i class="calendar alternate outline icon"></i> ${message(code: 'subscription.periodOfValidity.label')} <br />
+                <i class="ellipsis vertical icon"></i>          ${message(code: 'license.status.label')} <br />
+                <i class="cloud icon"></i>                      ${message(code: 'default.url.label')} <br />
+                <i class="clipboard list icon"></i>             ${message(code: 'license.licenseCategory.label')} <br />
+                <i class="shipping fast icon"></i>              ${message(code: 'license.isPublicForApi.label')} <br />
+                <i class="university icon"></i>                 ${message(code: 'subscription.organisations.label')} <br />
+                <i class="barcode icon"></i>                    ${message(code: 'default.identifiers.label')}
             </div>
         </div>
     </ui:complexSubNavItem>
@@ -47,12 +44,14 @@ if (targetObjectId) params << [targetObjectId: genericOIDService.getOID(targetOb
             controller="license" action="copyElementsIntoLicense"
             params="${params << [workFlowPart: CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS]}">
         <div class="content">
-            <div class="title">${message(code: 'copyElementsIntoObject.attachements.label')}</div>
-
+            <div class="title">
+                ${message(code: 'copyElementsIntoObject.attachements.label')}
+            </div>
             <div class="description">
-                <i class="file outline icon"></i>${message(code: 'default.documents.label')}
-                <i class="sticky note outline icon"></i>${message(code: 'default.notes.label')}
-                <i class="calendar check outline icon"></i>${message(code: 'menu.institutions.tasks')}
+                <i class="sticky note outline icon"></i>    ${message(code: 'default.notes.label')} <br />
+                <i class="calendar check outline icon"></i> ${message(code: 'menu.institutions.tasks')} <br />
+                <i class="file outline icon"></i>           ${message(code: 'default.documents.label')} <br />
+                <i class="tasks icon"></i>                  ${message(code: 'workflow.plural')}
             </div>
         </div>
     </ui:complexSubNavItem>
@@ -65,9 +64,8 @@ if (targetObjectId) params << [targetObjectId: genericOIDService.getOID(targetOb
                 <div class="title">
                     ${message(code: 'consortium.subscriber')}
                 </div>
-
                 <div class="description">
-                    <i class="university icon"></i>${message(code: 'consortium.subscriber')}
+                    <i class="university icon"></i> ${message(code: 'consortium.subscriber')}
                 </div>
             </div>
         </ui:complexSubNavItem>
@@ -77,16 +75,17 @@ if (targetObjectId) params << [targetObjectId: genericOIDService.getOID(targetOb
                              controller="license" action="copyElementsIntoLicense"
                              params="${params << [workFlowPart: CopyElementsService.WORKFLOW_PROPERTIES]}">
         <div class="content">
-            <div class="title">${message(code: 'properties')}</div>
-
-            <div class="description">
-                <i class="tags icon"></i>${message(code: 'properties')}
+            <div class="title">
+                ${message(code: 'properties')}
             </div>
-
+            <div class="description">
+                <i class="tags icon"></i> ${message(code: 'properties')}
+            </div>
         </div>
     </ui:complexSubNavItem>
 </ui:subNav>
 
+<div class="ui bottom attached segment">
 <br />
 
 <div class="la-legend">
@@ -107,5 +106,7 @@ if (targetObjectId) params << [targetObjectId: genericOIDService.getOID(targetOb
     <laser:render template="/templates/copyElements/copyElements"/>
 </g:else>
 <laser:render template="/templates/copyElements/copyElementsJS"/>
+
+</div>
 
 <laser:htmlEnd />
