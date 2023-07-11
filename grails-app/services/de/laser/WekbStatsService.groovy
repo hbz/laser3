@@ -46,9 +46,9 @@ class WekbStatsService {
 
         result = [
                 query       : [ days: days, changedSince: DateUtils.getLocalizedSDF_noTime().format(frame), call: DateUtils.getLocalizedSDF_noZ().format(new Date()) ],
-                org         : [ count: 0, created: [], updated: [], all: [] ],
-                platform    : [ count: 0, created: [], updated: [], all: [] ],
-                package     : [ count: 0, created: [], updated: [], all: [] ]
+                org         : [ count: 0, laserCount: 0, created: [], updated: [], all: [] ],
+                platform    : [ count: 0, laserCount: 0, created: [], updated: [], all: [] ],
+                package     : [ count: 0, laserCount: 0, created: [], updated: [], all: [] ]
         ]
 
         Closure process = { Map map, String key ->
@@ -66,6 +66,7 @@ class WekbStatsService {
                     if (key == 'platform')  { it.globalUID = Platform.findByGokbId(it.uuid)?.globalUID }
                     if (key == 'package')   { it.globalUID = Package.findByGokbId(it.uuid)?.globalUID }
 
+                    if (it.globalUID) { result[key].laserCount++ }
                     result[key].all << it
                 }
                 result[key].count = result[key].created.size() + result[key].updated.size()
