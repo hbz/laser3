@@ -243,20 +243,22 @@ class ApiEZB {
                 titleHeaders.addAll(otherTitleIdentifierNamespaces.collect { GroovyRowResult ns -> "${ns['idns_ns']}_identifier"})
                 export = [titleRow:titleHeaders,columnData:[]]
                 long start = System.currentTimeMillis()
-                entitlementRows.eachWithIndex { GroovyRowResult row, int i ->
-                    log.debug("processing row ${i} at ${System.currentTimeMillis()-start} msecs")
-                    //this double-structure is needed because KBART standard foresees an extra row for each coverage statement
-                    List<GroovyRowResult> coverageRows = sql.rows('select ic_start_date, ic_start_issue, ic_start_volume, ic_end_date, ic_end_issue, ic_end_volume, ic_coverage_depth, ic_coverage_note, ic_embargo from issue_entitlement_coverage where ic_ie_fk = :entitlement order by ic_start_date, ic_start_volume, ic_start_issue', [entitlement: row['ie_id']])
-                    row.putAll(packageData.find { GroovyRowResult pkgRow -> pkgRow['pkg_id'] == row['tipp_pkg_fk'] })
-                    List<GroovyRowResult> currPkgIds = packageIDs.findAll { GroovyRowResult pkgIdRow -> pkgIdRow['id_pkg_fk'] == row['tipp_pkg_fk'] }
-                    if(coverageRows) {
-                        coverageRows.each { GroovyRowResult innerRow ->
-                            row.putAll(innerRow)
-                            export.columnData.add(buildRow(sql, row, currPkgIds, titleNS, otherTitleIdentifierNamespaces, priceItems))
+                if(packageData.size() > 0) {
+                    entitlementRows.eachWithIndex { GroovyRowResult row, int i ->
+                        log.debug("processing row ${i} at ${System.currentTimeMillis()-start} msecs")
+                        //this double-structure is needed because KBART standard foresees an extra row for each coverage statement
+                        List<GroovyRowResult> coverageRows = sql.rows('select ic_start_date, ic_start_issue, ic_start_volume, ic_end_date, ic_end_issue, ic_end_volume, ic_coverage_depth, ic_coverage_note, ic_embargo from issue_entitlement_coverage where ic_ie_fk = :entitlement order by ic_start_date, ic_start_volume, ic_start_issue', [entitlement: row['ie_id']])
+                        row.putAll(packageData.find { GroovyRowResult pkgRow -> pkgRow['pkg_id'] == row['tipp_pkg_fk'] })
+                        List<GroovyRowResult> currPkgIds = packageIDs.findAll { GroovyRowResult pkgIdRow -> pkgIdRow['id_pkg_fk'] == row['tipp_pkg_fk'] }
+                        if(coverageRows) {
+                            coverageRows.each { GroovyRowResult innerRow ->
+                                row.putAll(innerRow)
+                                export.columnData.add(buildRow(sql, row, currPkgIds, titleNS, otherTitleIdentifierNamespaces, priceItems))
+                            }
                         }
+                        else
+                            export.columnData.add(buildRow(sql, row, currPkgIds, titleNS, otherTitleIdentifierNamespaces, priceItems))
                     }
-                    else
-                        export.columnData.add(buildRow(sql, row, currPkgIds, titleNS, otherTitleIdentifierNamespaces, priceItems))
                 }
                 //export.columnData = export.columnData.take(1000) //for debug purposes
             }
