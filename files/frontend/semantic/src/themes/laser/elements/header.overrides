@@ -19,7 +19,7 @@ h1~h2.ui.header {
 .ui.icon.header .icon.la-object-journal,
 .ui.icon.header .icon.la-object-database,
 .ui.icon.header .icon.la-object-ebook {
-  margin-right: 0.5em;
+  margin-right: 0.2em;
   font-size: 0.88em !important;
   line-height: 1 !important;
   padding: 0.5em 0 !important;
@@ -32,7 +32,8 @@ h1~h2.ui.header {
   //background-image: linear-gradient(-45deg, #0000004d 0%, #ffffff00 70%);
 }
 
-.la-object-extended {
+.ui.icon.header>i.icon.la-object-extended {
+  margin-right: 0.2em;
   font-size: 0.88em!important;
   line-height: 1 !important;
   padding: 0.5em 0 !important;
