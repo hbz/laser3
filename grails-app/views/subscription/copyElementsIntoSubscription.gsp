@@ -4,7 +4,7 @@
         <g:set var="pageTitle" value="${message(code: 'subscription.details.renewals.renew_sub.label')}" />
     </g:if>
     <g:else>
-        <g:set var="pageTitle" value="${message(code: 'copyElementsIntoObject.label', args: [message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}" />
+        <g:set var="pageTitle" value="${message(code: 'copyElementsIntoObject.subscription')}" />
     </g:else>
 
 <laser:htmlStart text="${pageTitle}" serviceInjection="true" />
@@ -36,7 +36,7 @@
         ${message(code: 'subscription.details.renewals.renew_sub.label')}: <g:if test="${sourceObject}">${sourceObject.name}</g:if>
     </g:if>
     <g:else>
-        ${message(code: 'copyElementsIntoObject.label', args: [message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}
+        ${message(code: 'copyElementsIntoObject.subscription')}
     </g:else>
     </ui:h1HeaderWithIcon>
 

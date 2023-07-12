@@ -1,6 +1,6 @@
 <%@ page import="de.laser.RefdataValue; de.laser.CopyElementsService;de.laser.storage.RDStore;" %>
 
-<laser:htmlStart text="${message(code: 'copyElementsIntoObject.label', args: [message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}" serviceInjection="true"/>
+<laser:htmlStart message="copyElementsIntoObject.survey" serviceInjection="true"/>
 
 <ui:breadcrumbs>
     <ui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code:'menu.my.surveys')}" />
@@ -11,7 +11,7 @@
     </g:if>
 </ui:breadcrumbs>
 
-    <ui:h1HeaderWithIcon text="${message(code: 'copyElementsIntoObject.label', args: [message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}" />
+    <ui:h1HeaderWithIcon message="copyElementsIntoObject.survey" type="survey"/>
 
     <ui:messages data="${flash}"/>
 

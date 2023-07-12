@@ -1,6 +1,6 @@
 <%@ page import="de.laser.Person; de.laser.RefdataValue; de.laser.SubscriptionController; de.laser.CopyElementsService" %>
 
-<laser:htmlStart text="${message(code: 'copyElementsIntoObject.label', args: [message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}" serviceInjection="true"/>
+<laser:htmlStart message="copyElementsIntoObject.license" serviceInjection="true"/>
 
 <ui:breadcrumbs>
     <ui:crumb text="${message(code:'license.current')}" controller="myInstitution" action="currentLicenses" />
@@ -10,7 +10,7 @@
     </g:if>
 </ui:breadcrumbs>
 
-<ui:h1HeaderWithIcon text="${message(code: 'copyElementsIntoObject.label', args: [message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}" />
+<ui:h1HeaderWithIcon message="copyElementsIntoObject.license" />
 
 <ui:messages data="${flash}"/>
 
