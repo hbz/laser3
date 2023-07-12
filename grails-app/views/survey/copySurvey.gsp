@@ -234,18 +234,14 @@
 
                             <thead>
                             <tr>
-
                                 <th>${message(code: 'sidewide.number')}</th>
-
                                 <th>${message(code: 'org.sortname.label')}</th>
                                 <th>${message(code: 'org.fullName.label')}</th>
                                 <th>${message(code: 'org.libraryType.label')}</th>
                             </tr></thead><tbody>
                         <g:each in="${surveyConfig.orgs.sort { it.org.sortname }}" var="surveyOrg" status="i">
                             <tr>
-                                <td class="center aligned">
-                                    ${i + 1}
-                                </td>
+                                <td class="center aligned">${i + 1}</td>
                                 <td>${surveyOrg.org.sortname}</td>
                                 <td>${surveyOrg.org.name}</td>
                                 <td>${surveyOrg.org.libraryType?.getI10n('value')}</td>
@@ -401,9 +397,7 @@
                                 <i class="money bill large icon"></i>
                             </a>
                         </th>
-
                         <th rowspan="2" class="two wide"></th>
-
                     </tr>
 
                     <tr>

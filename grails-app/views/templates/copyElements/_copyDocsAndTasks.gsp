@@ -18,7 +18,7 @@
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
         <table class="ui celled table la-js-responsive-table la-table">
             <thead>
-            %{--DOCUMENTS:--}%
+
                 <tr>
                     <th class="six wide">
                         <g:if test="${sourceObject}"><g:link controller="${sourceObject.getClass().getSimpleName().toLowerCase()}" action="show" id="${sourceObject.id}">${sourceObject.dropdownNamingConvention()}</g:link></g:if>
@@ -44,6 +44,9 @@
                 </tr>
             </thead>
             <tbody class="top aligned">
+            <g:each in="${['notes', 'tasks', 'docs']}" var="tmpl_cfg_tr">
+                <g:if test="${tmpl_cfg_tr == 'docs'}">
+                %{--DOCUMENTS:--}%
                 <tr>
                     <td  name="copyObject.takeDocs.source">
                         <div class="la-min-height"><strong><i class="file outline icon"></i>&nbsp${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.takeDocs")}:</strong></div>
@@ -149,7 +152,8 @@
                         </td>
                     </g:if>
                 </tr>
-
+                </g:if>
+                <g:if test="${tmpl_cfg_tr == 'notes'}">
                 %{--ANNOUNCEMENTS:--}%
                 <tr>
                     <td name="copyObject.takeAnnouncements.source">
@@ -267,7 +271,8 @@
                                     </td>
                         </g:if>
                 </tr>
-
+                </g:if>
+                <g:if test="${tmpl_cfg_tr == 'tasks'}">
                 %{--TASKS:--}%
                 <tr>
                     <td name="copyObject.takeTasks.source">
@@ -321,6 +326,8 @@
                                 </td>
                     </g:if>
                 </tr>
+                </g:if>
+            </g:each>
             </tbody>
         </table>
         <g:set var="submitButtonText" value="${isRenewSub?
