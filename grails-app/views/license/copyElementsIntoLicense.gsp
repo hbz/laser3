@@ -28,11 +28,11 @@ if (targetObjectId) params << [targetObjectId: genericOIDService.getOID(targetOb
                 ${message(code: 'copyElementsIntoObject.general_data.label')}
             </div>
             <div class="description">
-                <i class="calendar alternate outline icon"></i> ${message(code: 'subscription.periodOfValidity.label')} <br />
-                <i class="ellipsis vertical icon"></i>          ${message(code: 'license.status.label')} <br />
+                <i class="calendar alternate outline icon"></i> ${message(code: 'subscription.periodOfValidity.label')}
+                <i class="ellipsis vertical icon"></i>          ${message(code: 'license.status.label')}
                 <i class="cloud icon"></i>                      ${message(code: 'default.url.label')} <br />
-                <i class="clipboard list icon"></i>             ${message(code: 'license.licenseCategory.label')} <br />
-                <i class="shipping fast icon"></i>              ${message(code: 'license.isPublicForApi.label')} <br />
+                <i class="clipboard list icon"></i>             ${message(code: 'license.licenseCategory.label')}
+                <i class="shipping fast icon"></i>              ${message(code: 'license.isPublicForApi.label')}
                 <i class="university icon"></i>                 ${message(code: 'subscription.organisations.label')} <br />
                 <i class="barcode icon"></i>                    ${message(code: 'default.identifiers.label')}
             </div>

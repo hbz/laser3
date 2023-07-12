@@ -57,17 +57,17 @@
                         </g:link>
                     </div>
                     <div class="description">
-                        <i class="image outline icon"></i>  ${message(code:'subscription.kind.label')} <br />
-                        <i class="dolly icon"></i>          ${message(code:'subscription.form.label')} <br />
+                        <i class="image outline icon"></i>  ${message(code:'subscription.kind.label')}
+                        <i class="dolly icon"></i>          ${message(code:'subscription.form.label')}
                         <i class="box icon"></i>            ${message(code:'subscription.resource.label')} <br />
-                        <i class="shipping fast icon"></i>  ${message(code:'subscription.isPublicForApi.label')} <br />
-                        <i class="flag outline icon"></i>   ${message(code:'subscription.hasPerpetualAccess.label')} <br />
+                        <i class="shipping fast icon"></i>  ${message(code:'subscription.isPublicForApi.label')}
+                        <i class="flag outline icon"></i>   ${message(code:'subscription.hasPerpetualAccess.label')}
                         <i class="comment icon"></i>        ${message(code:'subscription.hasPublishComponent.label')} <br />
-                        <i class="pizza slice icon"></i>    ${message(code:'subscription.holdingSelection.label')} <br />
-                        <i class="balance scale icon"></i>  ${message(code: 'license.label')} <br />
+                        <i class="pizza slice icon"></i>    ${message(code:'subscription.holdingSelection.label')}
+                        <i class="balance scale icon"></i>  ${message(code: 'license.label')}
                         <i class="university icon"></i>     ${message(code: 'subscription.organisations.label')} <br />
-                        <i class="address card icon"></i>   ${message(code: 'subscription.specificSubscriptionEditors')} <br />
-                        <i class="barcode icon"></i>        ${message(code: 'default.identifiers.label')} <br />
+                        <i class="address card icon"></i>   ${message(code: 'subscription.specificSubscriptionEditors')}
+                        <i class="barcode icon"></i>        ${message(code: 'default.identifiers.label')}
                         <i class="exchange icon"></i>       ${message(code: 'subscription.linkedObjects')}
                     </div>
                 </div>
@@ -140,19 +140,19 @@
                         ${message(code: 'copyElementsIntoObject.general_data.label')}
                     </div>
                     <div class="description">
-                        <i class="calendar alternate outline icon"></i>     ${message(code: 'subscription.periodOfValidity.label')} <br />
-                        <i class="ellipsis vertical icon"></i>              ${message(code:'subscription.status.label')} <br />
+                        <i class="calendar alternate outline icon"></i>     ${message(code: 'subscription.periodOfValidity.label')}
+                        <i class="ellipsis vertical icon"></i>              ${message(code:'subscription.status.label')}
                         <i class="image outline icon"></i>                  ${message(code:'subscription.kind.label')} <br />
-                        <i class="dolly icon"></i>                          ${message(code:'subscription.form.label')} <br />
-                        <i class="box icon"></i>                            ${message(code:'subscription.resource.label')} <br />
+                        <i class="dolly icon"></i>                          ${message(code:'subscription.form.label')}
+                        <i class="box icon"></i>                            ${message(code:'subscription.resource.label')}
                         <i class="shipping fast icon"></i>                  ${message(code:'subscription.isPublicForApi.label')} <br />
-                        <i class="flag outline icon"></i>                   ${message(code:'subscription.hasPerpetualAccess.label')} <br />
-                        <i class="comment icon"></i>                        ${message(code:'subscription.hasPublishComponent.label')} <br />
+                        <i class="flag outline icon"></i>                   ${message(code:'subscription.hasPerpetualAccess.label')}
+                        <i class="comment icon"></i>                        ${message(code:'subscription.hasPublishComponent.label')}
                         <g:if test="${sourceObject?.packages}">
                             <i class="pizza slice icon"></i>                ${message(code:'subscription.holdingSelection.label')} <br />
                         </g:if>
-                        <i class="balance scale icon"></i>                  ${message(code: 'license.label')} <br />
-                        <i class="university icon"></i>                     ${message(code: 'subscription.organisations.label')} <br />
+                        <i class="balance scale icon"></i>                  ${message(code: 'license.label')}
+                        <i class="university icon"></i>                     ${message(code: 'subscription.organisations.label')}
                         <i class="address card icon"></i>                   ${message(code: 'subscription.specificSubscriptionEditors')} <br />
                         <i class="barcode icon"></i>                        ${message(code: 'default.identifiers.label')}
                     </div>
