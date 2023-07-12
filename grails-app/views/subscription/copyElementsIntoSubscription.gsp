@@ -83,7 +83,7 @@
                         <i class="sticky note outline icon"></i>    ${message(code: 'default.notes.label')} <br />
                         <i class="calendar check outline icon"></i> ${message(code: 'menu.institutions.tasks')} <br />
                         <i class="file outline icon"></i>           ${message(code: 'default.documents.label')} <br />
-                        <i class="tasks icon"></i>                  ${message(code: 'workflow.plural')}
+%{--                        <i class="tasks icon"></i>                  ${message(code: 'workflow.plural')}--}%
                     </div>
                 </div>
             </div>
@@ -168,7 +168,7 @@
                         <i class="sticky note outline icon"></i>    ${message(code: 'default.notes.label')} <br />
                         <i class="calendar check outline icon"></i> ${message(code: 'menu.institutions.tasks')} <br />
                         <i class="file outline icon"></i>           ${message(code: 'default.documents.label')} <br />
-                        <i class="tasks icon"></i>                  ${message(code: 'workflow.plural')}
+%{--                        <i class="tasks icon"></i>                  ${message(code: 'workflow.plural')}--}%
                     </div>
                 </div>
             </ui:complexSubNavItem>
