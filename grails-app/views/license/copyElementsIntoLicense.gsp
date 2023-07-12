@@ -1,6 +1,6 @@
 <%@ page import="de.laser.Person; de.laser.RefdataValue; de.laser.SubscriptionController; de.laser.CopyElementsService" %>
 
-<laser:htmlStart text="${message(code: 'copyElementsIntoObject.label', args: [message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}" serviceInjection="true"/>
+<laser:htmlStart message="copyElementsIntoObject.license" serviceInjection="true"/>
 
 <ui:breadcrumbs>
     <ui:crumb text="${message(code:'license.current')}" controller="myInstitution" action="currentLicenses" />
@@ -10,7 +10,7 @@
     </g:if>
 </ui:breadcrumbs>
 
-<ui:h1HeaderWithIcon text="${message(code: 'copyElementsIntoObject.label', args: [message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}" />
+<ui:h1HeaderWithIcon message="copyElementsIntoObject.license" />
 
 <ui:messages data="${flash}"/>
 
@@ -28,11 +28,11 @@ if (targetObjectId) params << [targetObjectId: genericOIDService.getOID(targetOb
                 ${message(code: 'copyElementsIntoObject.general_data.label')}
             </div>
             <div class="description">
-                <i class="calendar alternate outline icon"></i> ${message(code: 'subscription.periodOfValidity.label')} <br />
-                <i class="ellipsis vertical icon"></i>          ${message(code: 'license.status.label')} <br />
+                <i class="calendar alternate outline icon"></i> ${message(code: 'subscription.periodOfValidity.label')}
+                <i class="ellipsis vertical icon"></i>          ${message(code: 'license.status.label')}
                 <i class="cloud icon"></i>                      ${message(code: 'default.url.label')} <br />
-                <i class="clipboard list icon"></i>             ${message(code: 'license.licenseCategory.label')} <br />
-                <i class="shipping fast icon"></i>              ${message(code: 'license.isPublicForApi.label')} <br />
+                <i class="clipboard list icon"></i>             ${message(code: 'license.licenseCategory.label')}
+                <i class="shipping fast icon"></i>              ${message(code: 'license.isPublicForApi.label')}
                 <i class="university icon"></i>                 ${message(code: 'subscription.organisations.label')} <br />
                 <i class="barcode icon"></i>                    ${message(code: 'default.identifiers.label')}
             </div>
@@ -88,20 +88,20 @@ if (targetObjectId) params << [targetObjectId: genericOIDService.getOID(targetOb
 <div class="ui bottom attached segment">
     <laser:render template="/templates/copyElements/legend"/>
 
-<g:if test="${workFlowPart == CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS}">
-    <laser:render template="/templates/copyElements/copyDocsAndTasks"/>
-</g:if>
-%{--<g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_SUBSCRIBER && isSubscriberVisible && contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
-    <laser:render template="/templates/copyElements/copySubscriber"/>
-</g:elseif>--}%
-<g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_PROPERTIES}">
-    <laser:render template="/templates/copyElements/copyPropertiesCompare"/>
-</g:elseif>
-<g:else>
-    <laser:render template="/templates/copyElements/copyElements"/>
-</g:else>
-<laser:render template="/templates/copyElements/copyElementsJS"/>
+    <g:if test="${workFlowPart == CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS}">
+        <laser:render template="/templates/copyElements/copyDocsAndTasks"/>
+    </g:if>
+    %{--<g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_SUBSCRIBER && isSubscriberVisible && contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
+        <laser:render template="/templates/copyElements/copySubscriber"/>
+    </g:elseif>--}%
+    <g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_PROPERTIES}">
+        <laser:render template="/templates/copyElements/copyPropertiesCompare"/>
+    </g:elseif>
+    <g:else>
+        <laser:render template="/templates/copyElements/copyElements"/>
+    </g:else>
 
+    <laser:render template="/templates/copyElements/copyElementsJS"/>
 </div>
 
 <laser:htmlEnd />
