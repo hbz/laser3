@@ -311,14 +311,19 @@ ul.la-simpleList {
 
 /* .menu.tabular hack */
 
+body.subscription_copyMyElements nav.tabular .item .content .title,
 body.subscription_copyElementsIntoSubscription nav.tabular .item .content .title,
-body.license_copyElementsIntoLicense nav.tabular .item .content .title
+body.license_copyElementsIntoLicense nav.tabular .item .content .title,
+body.survey_copyElementsIntoSurvey nav.tabular .item .content .title
 {
     font-weight: bold;
 }
+body.subscription_copyMyElements nav.tabular .item .content .description,
 body.subscription_copyElementsIntoSubscription nav.tabular .item .content .description,
-body.license_copyElementsIntoLicense nav.tabular .item .content .description
+body.license_copyElementsIntoLicense nav.tabular .item .content .description,
+body.survey_copyElementsIntoSurvey nav.tabular .item .content .description
 {
     font-weight: normal;
     line-height: 1.2em;
+    margin-top: 0.25em;
 }

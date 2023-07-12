@@ -22,20 +22,24 @@
         <ui:subNav showInTabular="true">
             <ui:complexSubNavItem class="${workFlowPart == CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS ? 'active' : ''}" controller="survey" action="copyElementsIntoSurvey" params="${params << [workFlowPart: CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS]}" >
                 <div class="content" >
-                    <div class="title">${message(code: 'copyElementsIntoObject.general_data.label')}</div>
+                    <div class="title">
+                        ${message(code: 'copyElementsIntoObject.general_data.label')}
+                    </div>
                     <div class="description">
-                        <i class="calendar alternate outline icon"></i>${message(code: 'subscription.periodOfValidity.label')}
+                        <i class="calendar alternate outline icon"></i> ${message(code: 'subscription.periodOfValidity.label')}
                     </div>
                 </div>
             </ui:complexSubNavItem>
 
             <ui:complexSubNavItem class="${workFlowPart == CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS ? 'active' : ''}" controller="survey" action="copyElementsIntoSurvey" params="${params << [workFlowPart: CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS]}" >
                 <div class="content">
-                    <div class="title">${message(code: 'copyElementsIntoObject.attachements.label')}</div>
+                    <div class="title">
+                        ${message(code: 'copyElementsIntoObject.attachements.label')}
+                    </div>
                     <div class="description">
-                        <i class="file outline icon"></i>${message(code: 'default.documents.label')}
-                        <i class="sticky note outline icon"></i>${message(code: 'default.notes.label')}
-                        <i class="calendar check outline icon"></i>${message(code: 'menu.institutions.tasks')}
+                        <i class="sticky note outline icon"></i>    ${message(code: 'default.notes.label')}<br />
+                        <i class="calendar check outline icon"></i> ${message(code: 'menu.institutions.tasks')}<br />
+                        <i class="file outline icon"></i>           ${message(code: 'default.documents.label')}
                     </div>
                 </div>
             </ui:complexSubNavItem>
@@ -46,27 +50,26 @@
                             ${message(code: 'consortium.subscriber')}
                         </div>
                         <div class="description">
-                            <i class="university icon"></i>${message(code: 'consortium.subscriber')}
+                            <i class="university icon"></i> ${message(code: 'consortium.subscriber')}
                         </div>
                     </div>
             </ui:complexSubNavItem>
 
             <ui:complexSubNavItem class="${workFlowPart == CopyElementsService.WORKFLOW_PROPERTIES ? 'active' : ''}" controller="survey" action="copyElementsIntoSurvey" params="${params << [workFlowPart: CopyElementsService.WORKFLOW_PROPERTIES]}" >
                 <div class="content">
-                    <div class="title">${message(code: 'properties')}</div>
-                    <div class="description">
-                        <i class="tags icon"></i>${message(code: 'properties')}
+                    <div class="title">
+                        ${message(code: 'properties')}
                     </div>
-
+                    <div class="description">
+                        <i class="tags icon"></i> ${message(code: 'properties')}
+                    </div>
                 </div>
             </ui:complexSubNavItem>
         </ui:subNav>
-    <br />
-    <div class="la-legend">
-        <span class="la-key"><strong>${message(code: 'copyElementsIntoObject.legend.key')}: </strong></span>
-        <span class="la-added">${message(code: 'copyElementsIntoObject.legend.willStay')}</span>
-        <span class="la-removed">${message(code: 'copyElementsIntoObject.legend.willBeReplaced')}</span>
-    </div>
+
+<div class="ui bottom attached segment">
+    <laser:render template="/templates/copyElements/legend"/>
+
     <g:if test="${workFlowPart == CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS}">
         <laser:render template="/templates/copyElements/copyDocsAndTasks" />
     </g:if>
@@ -80,5 +83,6 @@
         <laser:render template="/templates/copyElements/copyElements" />
     </g:else>
     <laser:render template="/templates/copyElements/copyElementsJS"/>
+</div>
 
 <laser:htmlEnd />
