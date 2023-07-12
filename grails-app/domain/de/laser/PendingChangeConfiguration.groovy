@@ -33,6 +33,7 @@ class PendingChangeConfiguration {
     static final String LOCAL_SUM_UPDATED = "pendingChange.message_CI02"
     static final String COST_ITEM_PACKAGE_UNLINKED = "pendingChange.message_CI03"
     static final String NEW_SUBSCRIPTION = "pendingChange.message_SU_NEW_01"
+    static final String SUBSCRIPTION_RENEWED = "pendingChange.message_SU_NEW_02"
     static final String NOTIFICATION_SUFFIX = "_N"
     static final Set<String> TITLE_CHANGES = [NEW_TITLE, TITLE_STATUS_CHANGED, TITLE_DELETED, TITLE_REMOVED, PACKAGE_PROP, PACKAGE_DELETED]
     static final Set<String> COST_ITEM_CHANGES = [BILLING_SUM_UPDATED, LOCAL_SUM_UPDATED, COST_ITEM_PACKAGE_UNLINKED]

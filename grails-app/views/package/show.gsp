@@ -10,9 +10,12 @@
     <ui:crumb class="active" text="${packageInstance.name}"/>
 </ui:breadcrumbs>
 
+<%--
+making obsolete package/actions
 <ui:controlButtons>
     <laser:render template="actions"/>
 </ui:controlButtons>
+--%>
 
 <ui:h1HeaderWithIcon>
     <g:if test="${editable}"><span id="packageNameEdit"

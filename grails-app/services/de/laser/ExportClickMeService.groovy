@@ -21,13 +21,13 @@ import de.laser.survey.SurveyResult
 import grails.gorm.transactions.Transactional
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
-import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.springframework.context.MessageSource
 import org.hibernate.Session
 
 import java.math.RoundingMode
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
+import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.time.Year
 
@@ -385,6 +385,28 @@ class ExportClickMeService {
                     */
                     ]
             ]
+    ]
+
+    static Map<String, Object> EXPORT_SUBSCRIPTION_TRANSFER_CONFIG = [
+            subscriptionTransfer: [
+                    label: 'Transfer',
+                    message: 'subscription.details.subTransfer.label',
+                    fields: [
+                            'subscription.offerRequested'                : [field: 'offerRequested', label: 'Offer Requested', message: 'subscription.offerRequested.label', defaultChecked: 'true'],
+                            'subscription.offerRequestedDate'            : [field: 'offerRequestedDate', label: 'Offer Requested Date', message: 'subscription.offerRequestedDate.label', defaultChecked: 'true'],
+                            'subscription.offerAccepted'                 : [field: 'offerAccepted', label: 'Offer Accepted', message: 'subscription.offerAccepted.label', defaultChecked: 'true'],
+                            'subscription.manualCancellationDate'        : [field: 'offerNote', label: 'Offer Note', message: 'subscription.offerNote.label', defaultChecked: 'true'],
+                            'subscription.offerNote'                     : [field: 'priceIncreaseInfo', label: 'Price Increase Info', message: 'subscription.priceIncreaseInfo.label', defaultChecked: 'true'],
+                            'subscription.renewalSent'                   : [field: 'renewalSent', label: 'Renewal Sent', message: 'subscription.renewalSent.label', defaultChecked: 'true'],
+                            'subscription.renewalSentDate'               : [field: 'renewalSentDate', label: 'Renewal Sent Date', message: 'subscription.renewalSentDate.label', defaultChecked: 'true'],
+                            'subscription.participantTransferWithSurvey' : [field: 'participantTransferWithSurvey', label: 'Participant Transfe With Survey', message: 'subscription.participantTransferWithSurvey.label', defaultChecked: 'true'],
+                            'subscription.discountScale'                 : [field: 'discountScale', label: 'Discount Scale', message: 'subscription.discountScale.label', defaultChecked: 'true'],
+                            'subscription.survey'                        : [field: null, label: 'Survey', message: 'survey.label', defaultChecked: 'true'],
+                            'subscription.survey.evaluation'             : [field: null, label: 'Evaluation', message: 'subscription.survey.evaluation.label', defaultChecked: 'true'],
+                            'subscription.survey.cancellation'           : [field: null, label: 'Cancellation', message: 'subscription.survey.cancellation.label', defaultChecked: 'true']
+
+                    ]
+            ],
     ]
 
     static Map<String, Object> EXPORT_LICENSE_CONFIG = [
@@ -1249,7 +1271,7 @@ class ExportClickMeService {
      * @param institution the context institution whose perspective should be taken for the export
      * @return the configuration map for the subscription export
      */
-    Map<String, Object> getExportSubscriptionFields(Org institution) {
+    Map<String, Object> getExportSubscriptionFields(Org institution,boolean showTransferFields = false) {
 
         Map<String, Object> exportFields = [:]
         Locale locale = LocaleUtils.getCurrentLocale()
@@ -1267,7 +1289,7 @@ class ExportClickMeService {
 
         EXPORT_SUBSCRIPTION_CONFIG.keySet().each { String key ->
             if(key == 'institutions') {
-                if(customerTypeService.isConsortium(institution.getCustomerType())) {
+                if (institution.isCustomerType_Consortium()) {
                     EXPORT_SUBSCRIPTION_CONFIG.get(key).fields.each {
                         exportFields.put(it.key, it.value)
                     }
@@ -1277,6 +1299,14 @@ class ExportClickMeService {
                 EXPORT_SUBSCRIPTION_CONFIG.get(key).fields.each {
                     exportFields.put(it.key, it.value)
                 }
+            }
+        }
+
+        if(showTransferFields){
+            EXPORT_SUBSCRIPTION_TRANSFER_CONFIG.keySet().each { String key ->
+                    EXPORT_SUBSCRIPTION_TRANSFER_CONFIG.get(key).fields.each {
+                        exportFields.put(it.key, it.value)
+                    }
             }
         }
 
@@ -1340,16 +1370,21 @@ class ExportClickMeService {
      * @param institution the context institution whose perspective should be taken for the export
      * @return the configuration map for the subscription export for the UI
      */
-    Map<String, Object> getExportSubscriptionFieldsForUI(Org institution) {
+    Map<String, Object> getExportSubscriptionFieldsForUI(Org institution, boolean showTransferFields = false) {
 
         Map<String, Object> fields = EXPORT_SUBSCRIPTION_CONFIG as Map
         if(institution.getCustomerType() == CustomerTypeService.ORG_INST_PRO)
             fields.subscription.fields.put('subscription.isAutomaticRenewAnnually', [field: 'isAutomaticRenewAnnually', label: 'Automatic Renew Annually', message: 'subscription.isAutomaticRenewAnnually.label'])
-        if(!customerTypeService.isConsortium(institution.getCustomerType())) {
+        if (!institution.isCustomerType_Consortium()) {
             fields.remove('institutions')
             fields.subscription.fields.put('subscription.consortium', [field: null, label: 'Consortium', message: 'consortium.label', defaultChecked: true])
             fields.licenses.fields.put('license.consortium', [field: null, label: 'Consortium', message: 'exportClickMe.license.consortium', defaultChecked: true])
         }
+
+        if(showTransferFields){
+            fields << EXPORT_SUBSCRIPTION_TRANSFER_CONFIG as Map
+        }
+
         Locale locale = LocaleUtils.getCurrentLocale()
         String localizedName
         String localizedValue
@@ -1443,7 +1478,7 @@ class ExportClickMeService {
 
         EXPORT_LICENSE_CONFIG.keySet().each { String key ->
             if(key == 'institutions') {
-                if(customerTypeService.isConsortium(institution.getCustomerType())) {
+                if (institution.isCustomerType_Consortium()) {
                     EXPORT_LICENSE_CONFIG.get(key).fields.each {
                         exportFields.put(it.key, it.value)
                     }
@@ -1484,7 +1519,7 @@ class ExportClickMeService {
     Map<String, Object> getExportLicenseFieldsForUI(Org institution) {
 
         Map<String, Object> fields = EXPORT_LICENSE_CONFIG as Map
-        if(!customerTypeService.isConsortium(institution.getCustomerType())) {
+        if (!institution.isCustomerType_Consortium()) {
             fields.remove('institutions')
             fields.licenses.fields.put('consortium', [field: null, label: 'Consortium', message: 'consortium.label', defaultChecked: true])
         }
@@ -2298,7 +2333,7 @@ class ExportClickMeService {
             case FORMAT.XLS:
                 return exportService.generateXLSXWorkbook(sheetData)
             case FORMAT.CSV:
-                return exportService.generateSeparatorTableString(sheetData.titleRow, sheetData.columnData, ',')
+                return exportService.generateSeparatorTableString(sheetData.titleRow, sheetData.columnData, '|')
             case FORMAT.TSV:
                 return exportService.generateSeparatorTableString(sheetData.titleRow, sheetData.columnData, '\t')
         }
@@ -2371,7 +2406,7 @@ class ExportClickMeService {
             case FORMAT.XLS:
                 return exportService.generateXLSXWorkbook(sheetData)
             case FORMAT.CSV:
-                return exportService.generateSeparatorTableString(titles, exportData, ',')
+                return exportService.generateSeparatorTableString(titles, exportData, '|')
             case FORMAT.TSV:
                 return exportService.generateSeparatorTableString(titles, exportData, '\t')
         }
@@ -2385,12 +2420,12 @@ class ExportClickMeService {
      * @param institution the institution as reference
      * @return an Excel worksheet containing the export
      */
-    def exportSubscriptions(ArrayList<Subscription> result, Map<String, Object> selectedFields, Org institution, FORMAT format) {
+    def exportSubscriptions(ArrayList<Subscription> result, Map<String, Object> selectedFields, Org institution, FORMAT format, boolean showTransferFields = false) {
         Locale locale = LocaleUtils.getCurrentLocale()
 
         Map<String, Object> selectedExportFields = [:]
 
-        Map<String, Object> configFields = getExportSubscriptionFields(institution)
+        Map<String, Object> configFields = getExportSubscriptionFields(institution, showTransferFields)
 
         configFields.keySet().each { String k ->
             if (k in selectedFields.keySet() ) {
@@ -2443,7 +2478,7 @@ class ExportClickMeService {
 
             return exportService.generateXLSXWorkbook(sheetData)
         case FORMAT.CSV:
-            return exportService.generateSeparatorTableString(titles, exportData, ',')
+            return exportService.generateSeparatorTableString(titles, exportData, '|')
         case FORMAT.TSV:
             return exportService.generateSeparatorTableString(titles, exportData, '\t')
         }
@@ -2485,7 +2520,7 @@ class ExportClickMeService {
 
             return exportService.generateXLSXWorkbook(sheetData)
         case FORMAT.CSV:
-            return exportService.generateSeparatorTableString(titles, exportData, ',')
+            return exportService.generateSeparatorTableString(titles, exportData, '|')
         case FORMAT.PDF:
             return [titleRow: titles, columnData: exportData]
         }
@@ -2564,7 +2599,7 @@ class ExportClickMeService {
             case 'provider':
                 sheetTitle = messageSource.getMessage('default.ProviderAgency.export.label', null, locale)
                 ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
-                Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [componentType: 'Org' , max: 10000])
+                Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [componentType: 'Org', max: 10000])
                 if (queryResult.warning) {
                     List records = queryResult.warning.result
                     records.each { Map providerRecord ->
@@ -2598,7 +2633,7 @@ class ExportClickMeService {
             case FORMAT.XLS:
                 return exportService.generateXLSXWorkbook(sheetData)
             case FORMAT.CSV:
-                return exportService.generateSeparatorTableString(titles, exportData, ',')
+                return exportService.generateSeparatorTableString(titles, exportData, '|')
             case FORMAT.TSV:
                 return exportService.generateSeparatorTableString(titles, exportData, '\t')
         }
@@ -2808,7 +2843,7 @@ class ExportClickMeService {
 
         switch(format) {
             case FORMAT.XLS: return exportService.generateXLSXWorkbook(sheetData)
-            case FORMAT.CSV: return exportService.generateSeparatorTableString(titles, exportData, ',')
+            case FORMAT.CSV: return exportService.generateSeparatorTableString(titles, exportData, '|')
             case FORMAT.TSV: return exportService.generateSeparatorTableString(titles, exportData, '\t')
         }
     }
@@ -2872,7 +2907,7 @@ class ExportClickMeService {
             case FORMAT.XLS:
                 return exportService.generateXLSXWorkbook(sheetData)
             case FORMAT.CSV:
-                return exportService.generateSeparatorTableString(titles, exportData, ',')
+                return exportService.generateSeparatorTableString(titles, exportData, '|')
             case FORMAT.TSV:
                 return exportService.generateSeparatorTableString(titles, exportData, '\t')
         }
@@ -3300,6 +3335,45 @@ class ExportClickMeService {
                 else if (fieldKey == 'multiYearCount') {
                     int count = Subscription.countByInstanceOfAndIsMultiYear(subscription, true)
                     row.add(createTableCell(format, count))
+                }
+                else if (fieldKey == 'subscription.survey') {
+                    SurveyConfig surveyConfig = SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(subscription, true)
+                    String dateString = ''
+                    String style = ''
+
+                    if(surveyConfig) {
+                        dateString = sdf.format(surveyConfig.surveyInfo.startDate) + ' - ' + sdf.format(surveyConfig.surveyInfo.endDate)
+                        style = surveyConfig.surveyInfo.status == RDStore.SURVEY_SURVEY_STARTED ? 'positive' : ''
+                    }
+
+                    row.add(createTableCell(format, dateString, style))
+                }
+                else if (fieldKey == 'subscription.survey.evaluation') {
+                    SurveyConfig surveyConfig = SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(subscription, true)
+                    String finishProcess = ''
+                    String style = ''
+                    NumberFormat formatNumber = NumberFormat.getNumberInstance()
+                    formatNumber.maximumFractionDigits = 2
+
+                    if(surveyConfig) {
+                        int finish = SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig).size()
+                        int total  = SurveyOrg.findAllBySurveyConfig(surveyConfig).size()
+                        formatNumber.maximumFractionDigits = 2
+                        finishProcess  = formatNumber.format((finish != 0 && total != 0) ? (finish / total) * 100 : 0)
+                        style = finish == total ? 'positive' : ''
+                    }
+                    row.add(createTableCell(format, (surveyConfig ? ("${finishProcess}%") : ' '), style))
+                }
+                else if (fieldKey == 'subscription.survey.cancellation') {
+                    SurveyConfig surveyConfig = SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(subscription, true)
+                    int countOrgsWithTermination = 0
+                    String style = ''
+                    if(surveyConfig) {
+                        countOrgsWithTermination = surveyConfig.countOrgsWithTermination()
+                        style = countOrgsWithTermination > 10 ? 'negative' : ''
+                    }
+
+                    row.add(createTableCell(format, surveyConfig ? countOrgsWithTermination : ' ', style))
                 }
                 else if ((fieldKey == 'participantSubCostItem' || fieldKey == 'subCostItem')) {
                     if(costItemSums) {

@@ -17,7 +17,7 @@
         }
     }
 
-    boolean editable2 = userService.checkAffiliationAndCtxOrg(contextService.getUser(), contextService.getOrg(), 'INST_EDITOR')
+    boolean editable2 = userService.hasFormalAffiliation(contextService.getUser(), contextService.getOrg(), 'INST_EDITOR')
 %>
 
     <ui:card message="license.notes" class="notes la-js-hideable ${css_class}" href="#modalCreateNote" editable="${editable || editable2}">
@@ -31,7 +31,7 @@
                                     ${docctx.owner.title ?: message(code:'license.notes.noTitle')}
                                 </a>
                                 <g:if test="${controllerName != 'organisation' && controllerName != 'survey'}">
-                                    <a onclick="JSPC.app.readNote(${docctx.owner.id});" class="la-js-toggle-hideThis">
+                                    <a onclick="JSPC.app.readNote(${docctx.owner.id});" class="la-js-toggle-hideThis hidden">%{-- ERMS-5172 - workaround --}%
                                         ${docctx.owner.title ?: message(code:'license.notes.noTitle')}
                                     </a>
                                 </g:if>

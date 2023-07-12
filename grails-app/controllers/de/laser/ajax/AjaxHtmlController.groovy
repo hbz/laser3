@@ -7,6 +7,7 @@ import de.laser.GenericOIDService
 import de.laser.PendingChangeService
 import de.laser.AccessService
 import de.laser.AddressbookService
+import de.laser.WekbStatsService
 import de.laser.WorkflowService
 import de.laser.config.ConfigDefaults
 import de.laser.config.ConfigMapper
@@ -104,6 +105,7 @@ class AjaxHtmlController {
     SubscriptionService subscriptionService
     SubscriptionControllerService subscriptionControllerService
     TaskService taskService
+    WekbStatsService wekbStatsService
     WorkflowService workflowService
 
     /**
@@ -128,12 +130,18 @@ class AjaxHtmlController {
             case "altname": owner= Org.get(params.owner)
                 resultObj = AlternativeName.construct([org: owner, name: 'Unknown'])
                 field = "name"
+                if(resultObj) {
+                    render view: '/templates/ajax/_newXEditable', model: [wrapper: params.object, ownObj: resultObj, field: field, overwriteEditable: true]
+                }
                 break
             case "coverage": //TODO
                 break
-        }
-        if(resultObj) {
-            render view: '/templates/ajax/_newXEditable', model: [wrapper: params.object, ownObj: resultObj, field: field, overwriteEditable: true]
+            case "priceItem":
+                Map<String, Object> ctrlResult = subscriptionControllerService.addEmptyPriceItem(params)
+                if(ctrlResult.status == SubscriptionControllerService.STATUS_OK) {
+                    render template: '/templates/tipps/priceItem', model: [priceItem: ctrlResult.result.newItem, editable: true] //editable check is implicitly done by call; the AJAX loading can be triggered iff editable == true
+                }
+                break
         }
     }
 
@@ -186,6 +194,17 @@ class AjaxHtmlController {
         render template: '/myInstitution/surveys', model: result
     }
 
+    @Secured(['ROLE_USER'])
+    def wekbChangesFlyout() {
+        log.debug('ajaxHtmlController.wekbChangesFlyout ' + params)
+
+        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(null, params)
+        result.wekbChanges = wekbStatsService.getCurrentChanges()
+        result.tmplView = 'details'
+
+        render template: '/myInstitution/wekbChanges', model: result
+    }
+
     //-------------------------------------------------- subscription/show ---------------------------------------------
 
     /**
@@ -233,7 +252,7 @@ class AjaxHtmlController {
         result.accessConfigEditable = contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_INST_BASIC) || (contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC) && result.subscription.getSubscriber().id == contextOrg.id)
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         result.subscription.packages.pkg.gokbId.each { String uuid ->
-            Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: uuid])
+            Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: uuid])
             if (queryResult.warning) {
                 List records = queryResult.warning.result
                 packageMetadata.put(uuid, records[0])
@@ -258,7 +277,7 @@ class AjaxHtmlController {
 
             packageInfos.packageInstance = subscriptionPackage.pkg
 
-            Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: subscriptionPackage.pkg.gokbId])
+            Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: subscriptionPackage.pkg.gokbId])
             if (queryResult.error && queryResult.error == 404) {
                 flash.error = message(code: 'wekb.error.404') as String
             } else if (queryResult.warning) {

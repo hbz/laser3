@@ -62,6 +62,8 @@
                                         break
                                     case 'hasPublishComponent': args.addAll(RDStore.YN_YES.getI10n('value'), RDStore.YN_NO.getI10n('value'))
                                         break
+                                    case 'isAutomaticRenewAnnually': args.addAll(RDStore.YN_YES.getI10n('value'), RDStore.YN_NO.getI10n('value'))
+                                        break
                                     case 'isPublicForApi': args.addAll(RDStore.YN_YES.getI10n('value'), RDStore.YN_NO.getI10n('value'))
                                         break
                                 }

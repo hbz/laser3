@@ -3,6 +3,8 @@ package de.laser.storage
 import de.laser.CustomerTypeService
 import de.laser.ESWrapperService
 import de.laser.GenericOIDService
+import de.laser.GlobalSourceSyncService
+import de.laser.GokbService
 import de.laser.MailSendService
 import de.laser.PendingChangeService
 import de.laser.AccessService
@@ -119,6 +121,12 @@ class BeanStore {
     static GenericOIDService getGenericOIDService() {
         Holders.grailsApplication.mainContext.getBean('genericOIDService') as GenericOIDService
     }
+    static GlobalSourceSyncService getGlobalSourceSyncService() {
+        Holders.grailsApplication.mainContext.getBean('globalSourceSyncService') as GlobalSourceSyncService
+    }
+    static GokbService getGokbService() {
+        Holders.grailsApplication.mainContext.getBean('gokbService') as GokbService
+    }
     static LicenseService getLicenseService() {
         Holders.grailsApplication.mainContext.getBean('licenseService') as LicenseService
     }
@@ -128,7 +136,6 @@ class BeanStore {
     static MailService getMailService() {
         Holders.grailsApplication.mainContext.getBean('mailService') as MailService
     }
-
     static MailSendService getMailSendService() {
         Holders.grailsApplication.mainContext.getBean('mailSendService') as MailSendService
     }

@@ -39,8 +39,8 @@ class User {
         display     blank: true, nullable: true
         email       blank: true, nullable: true
         image       blank: true, nullable: true
-        formalOrg   blank: false, nullable: true
-        formalRole  blank: false, nullable: true
+        formalOrg                nullable: true
+        formalRole               nullable: true
     }
 
     static mapping = {
@@ -191,25 +191,6 @@ class User {
     }
     boolean isYoda() {
         getAuthorities().authority.contains('ROLE_YODA')
-    }
-
-    /**
-     * Checks if the user has the given affiliation granted. To be used with one of the INST_ role constants
-     * @param instUserRole the INST_-role to check for
-     * @return does the user have the given INST_-role granted?
-     */
-    boolean hasCtxAffiliation_or_ROLEADMIN(String instUserRole) {
-        BeanStore.getUserService().checkAffiliation_or_ROLEADMIN(this, BeanStore.getContextService().getOrg(), instUserRole)
-    }
-
-    /**
-     * Checks if the user has the given affiliation for the foreign {@link Org} to check
-     * @param instUserRole the INST_-role to check for
-     * @param orgToCheck the {@link Org} to check whether the user is affiliated to
-     * @return does the user have the given INST_-role for the given org?
-     */
-    boolean hasOrgAffiliation_or_ROLEADMIN(Org orgToCheck, String instUserRole) {
-        BeanStore.getUserService().checkAffiliation_or_ROLEADMIN(this, orgToCheck, instUserRole)
     }
 
     /**

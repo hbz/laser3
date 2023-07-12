@@ -30,7 +30,7 @@
                 <ui:actionsDropdownItem data-ui="modal" href="#modalCreateWorkflow" message="workflow.instantiate"/>
             </g:if>
 
-            <g:if test="${contextService.getUser().hasCtxAffiliation_or_ROLEADMIN('INST_ADM')}">
+            <g:if test="${contextService.isInstAdm_or_ROLEADMIN()}">
                 <div class="divider"></div>
                 <ui:actionsDropdownItem controller="myInstitution" action="createUser" message="user.create_new.label" />
             </g:if>
@@ -46,7 +46,7 @@
 </g:elseif>
 <g:elseif test="${actionName == 'editUser'}">
     <g:if test="${controllerName == 'myInstitution'}">%{-- /myInstitution/editUser --}%
-        <g:if test="${contextService.getUser().hasCtxAffiliation_or_ROLEADMIN('INST_ADM')}">
+        <g:if test="${contextService.isInstAdm_or_ROLEADMIN()}">
             <ui:actionsDropdown>
                 <g:link class="item" action="deleteUser" params="${[uoid: params.uoid]}"><i class="trash alternate outline icon"></i> ${message(code:'deletion.user')}</g:link>
             </ui:actionsDropdown>

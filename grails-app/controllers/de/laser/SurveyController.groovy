@@ -698,7 +698,7 @@ class SurveyController {
                         surveyInfo: surveyInfo,
                         subSurveyUseForTransfer: false,
                         pickAndChoose: true,
-                        pickAndChoosePerpetualAccess: (subscription.hasPerpetualAccess == RDStore.YN_YES),
+                        pickAndChoosePerpetualAccess: (subscription.hasPerpetualAccess),
                         issueEntitlementGroupName: params.issueEntitlementGroupNew
                 )
                 surveyConfig.save()
@@ -2632,9 +2632,9 @@ class SurveyController {
      * Call to edit the given survey cost item
      * @return the cost item editing modal
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = true, wtc = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
      Map<String,Object> editSurveyCostItem() {
         println('editSurveyCostItem')
@@ -2668,9 +2668,9 @@ class SurveyController {
      * Call to add a new survey cost item to every participant
      * @return the new cost item modal
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = true, wtc = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
      Object addForAllSurveyCostItem() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -3301,9 +3301,9 @@ class SurveyController {
      * Exports the survey costs in an Excel worksheet
      * @return an Excel worksheet containing the survey cost data
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstUser_or_ROLEADMIN = true, wtc = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+        ctx.contextService.isInstUser_or_ROLEADMIN()
     })
      def exportSurCostItems() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
@@ -3339,9 +3339,9 @@ class SurveyController {
      * Call to copy the mail adresses of all participants
      * @return the modal containing the participant's mail addresses
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstUser_or_ROLEADMIN = true, wtc = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+        ctx.contextService.isInstUser_or_ROLEADMIN()
     })
      Map<String,Object> copyEmailaddresses() {
         Map<String, Object> result = [:]
@@ -3360,9 +3360,9 @@ class SurveyController {
      * Takes the submitted input and creates cost items based on the given parameters for every selected survey participant
      * @return a redirect to the referer
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = true, wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
      Map<String,Object> newSurveyCostItem() {
         SimpleDateFormat dateFormat = DateUtils.getLocalizedSDF_noTime()
@@ -3379,7 +3379,7 @@ class SurveyController {
             User user = contextService.getUser()
             result.error = [] as List
 
-            if (!userService.checkAffiliationAndCtxOrg(user, result.institution, 'INST_EDITOR')) {
+            if (!userService.hasFormalAffiliation(user, result.institution, 'INST_EDITOR')) {
                 result.error = message(code: 'financials.permission.unauthorised', args: [result.institution ? result.institution.name : 'N/A']) as String
                 response.sendError(HttpStatus.SC_FORBIDDEN)
                 return
@@ -4028,6 +4028,25 @@ class SurveyController {
                         AbstractPropertyWithCalculatedLastUpdated copyProperty
                         if (params.tab == 'surveyProperties') {
                             copyProperty = SurveyResult.findBySurveyConfigAndTypeAndParticipant(result.surveyConfig, surveyProperty, org)
+
+                            if(copyProperty && params.copyToSubAttribut){
+                                Subscription.withTransaction {
+                                    if (surveyProperty == PropertyStore.SURVEY_PROPERTY_SUBSCRIPTION_FORM) {
+                                        if (copyProperty.refValue) {
+                                            sub.form = copyProperty.refValue
+                                        }
+                                    }
+
+                                    if (surveyProperty == PropertyStore.SURVEY_PROPERTY_PUBLISHING_COMPONENT) {
+                                        if (copyProperty.refValue == RDStore.YN_YES) {
+                                            sub.hasPublishComponent = true
+                                        }
+                                    }
+                                    sub.save()
+                                }
+
+                            }
+
                         } else {
                             if (params.tab == 'privateProperties') {
                                 copyProperty = oldSub ? oldSub.propertySet.find {

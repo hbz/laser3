@@ -60,7 +60,7 @@
                         </g:if>
 
                         <g:if test="${! docctx.sharedFrom}">
-                        <g:if test="${userService.checkAffiliationAndCtxOrg(contextService.getUser(), contextService.getOrg(), 'INST_EDITOR')}">
+                        <g:if test="${userService.hasFormalAffiliation(contextService.getUser(), contextService.getOrg(), 'INST_EDITOR')}">
                             <a onclick="JSPC.app.editNote(${docctx.owner.id});" class="ui icon button blue la-modern-button" role="button"
                                aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                 <i aria-hidden="true" class="write icon"></i>

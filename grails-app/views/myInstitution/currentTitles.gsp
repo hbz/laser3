@@ -37,7 +37,7 @@
         </g:else>
     </ui:exportDropdownItem>
     --%>
-        <g:if test="${num_ti_rows < 100000}">
+        <g:if test="${num_ti_rows < 1000000}">
             <ui:exportDropdownItem>
                 <a class="item" data-ui="modal" href="#individuallyExportTippsModal">Export</a>
             </ui:exportDropdownItem>
@@ -46,7 +46,7 @@
             <ui:actionsDropdownItemDisabled message="Export" tooltip="${message(code: 'export.titles.excelLimit')}"/>
         </g:else>
         <ui:exportDropdownItem>
-            <g:if test="${filterSet}">
+            <%--<g:if test="${filterSet}">
                 <g:link class="item js-open-confirm-modal"
                         data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}"
                         data-confirm-term-how="ok" controller="myInstitution" action="currentTitles"
@@ -54,10 +54,9 @@
                     KBART Export
                 </g:link>
             </g:if>
-            <g:else>
-                <g:link class="item" action="currentTitles"
-                        params="${params + [exportKBart: true]}">KBART Export</g:link>
-            </g:else>
+            <g:else>--%>
+                <g:link class="item kbartExport" params="${params + [exportKBart: true]}">KBART Export</g:link>
+            <%--</g:else>--%>
         </ui:exportDropdownItem>
     <%--<ui:exportDropdownItem>
         <g:link class="item" action="currentTitles" params="${params + [format:'json']}">JSON Export</g:link>
@@ -211,6 +210,8 @@
 
     </g:form>
 </ui:filter>
+
+<div id="downloadWrapper"></div>
 
 <ui:tabs actionName="${actionName}">
     <ui:tabsItem controller="${controllerName}" action="${actionName}"
@@ -444,5 +445,20 @@
 
 <laser:render template="/templates/export/individuallyExportTippsModal"
               model="[modalID: 'individuallyExportTippsModal']"/>
+
+<laser:script>
+    $('.kbartExport').click(function(e) {
+        e.preventDefault();
+        $('#globalLoadingIndicator').show();
+        $.ajax({
+            url: "<g:createLink action="currentTitles" params="${params + [exportKBart: true]}"/>",
+            type: 'POST',
+            contentType: false
+        }).done(function(response){
+            $("#downloadWrapper").html(response);
+            $('#globalLoadingIndicator').hide();
+        });
+    });
+</laser:script>
 
 <laser:htmlEnd/>

@@ -20,6 +20,7 @@ class WorkflowOldService {
 
     ContextService contextService
     GenericOIDService genericOIDService
+    UserService userService
 
     public static final String OP_STATUS_DONE  = 'OP_STATUS_DONE'
     public static final String OP_STATUS_ERROR = 'OP_STATUS_ERROR'
@@ -746,7 +747,7 @@ class WorkflowOldService {
             return true
         }
         Org ctxOrg = contextService.getOrg()
-        if (instUserRole && ctxOrg.isCustomerType_Consortium_Basic() && contextService.getUser().hasOrgAffiliation_or_ROLEADMIN(ctxOrg, instUserRole)) {
+        if (instUserRole && ctxOrg.isCustomerType_Consortium_Basic() && userService.hasAffiliation_or_ROLEADMIN(contextService.getUser(), ctxOrg, instUserRole)) {
             return true
         }
         false

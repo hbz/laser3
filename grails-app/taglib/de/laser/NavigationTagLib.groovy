@@ -8,8 +8,8 @@ import org.springframework.web.servlet.support.RequestContextUtils
 
 class NavigationTagLib {
 
-    AccessService accessService
     ContextService contextService
+    UserService userService
 
     static namespace = 'ui'
 
@@ -287,7 +287,7 @@ class NavigationTagLib {
             )
         }
         else {
-            if (contextService.getUser().hasCtxAffiliation_or_ROLEADMIN(attrs.instRole)) {
+            if (userService.hasAffiliation_or_ROLEADMIN(contextService.getUser(), contextService.getOrg(), attrs.instRole as String)) {
                 out << '<div class="item disabled la-popup-tooltip la-delay" data-position="left center" data-content="' + message(code:'tooltip.onlyFullMembership') + '" role="menuitem">' + linkBody + '</div>'
             }
 //            else out << '<div class="item disabled la-popup-tooltip la-delay" data-position="left center" role="menuitem">' + linkBody + '</div>'

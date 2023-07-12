@@ -21,7 +21,7 @@
                 <tr>
                     <td>${i + 1}.</td>
                     <td>
-                        <g:link controller="issueEntitlement" action="show" id="${ie.id}" target="_blank">${ie.name}</g:link>
+                        <g:link controller="issueEntitlement" action="show" id="${ie.id}" target="_blank">${ie.tipp.name}</g:link>
                         %{-- <g:link controller="tipp" action="show" id="${ie.tipp.id}" target="_blank">${ie.name}</g:link> --}%
                     </td>
                     <td>

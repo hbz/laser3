@@ -58,7 +58,7 @@
                           statusString += "&status=${status}"
                       }
                   --%>
-                  <g:link uri="${source.uri + 'searchApi?componentType='+component+'&changedSince=' + formatDate(format: "yyyy-MM-dd HH:mm:ss", date: source.haveUpTo)}&username=${ConfigMapper.getWekbApiUsername()}&password=${ConfigMapper.getWekbApiPassword()}" target="_blank">Link</g:link>
+                  <g:link uri="${source.uri + 'searchApi?componentType='+component+'&changedSince=' + formatDate(format: "yyyy-MM-dd HH:mm:ss", date: source.haveUpTo)}&username=${ConfigMapper.getWekbApiUsername()}&password=${ConfigMapper.getWekbApiPassword()}&sort=lastUpdated" target="_blank">Link</g:link>
               </td>
               <td>${source.listPrefix}</td>
               <td>${source.fullPrefix}</td>

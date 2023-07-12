@@ -2,6 +2,7 @@ package de.laser
 
 import de.laser.annotations.Check404
 import de.laser.auth.User
+import de.laser.config.ConfigMapper
 import de.laser.properties.PropertyDefinition
 import de.laser.storage.PropertyStore
 import de.laser.utils.DateUtils
@@ -14,10 +15,12 @@ import de.laser.utils.SwissKnife
 import grails.converters.JSON
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
+import org.apache.http.HttpStatus
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.springframework.context.MessageSource
 
 import javax.servlet.ServletOutputStream
+import java.nio.charset.Charset
 import java.text.SimpleDateFormat
 import java.util.concurrent.ExecutorService
 
@@ -70,7 +73,7 @@ class PackageController {
             return
         }
         Map<String, Object> result = [
-                flagContentGokb : true // gokbService.queryElasticsearch
+                flagContentGokb : true // gokbService.executeQuery
         ]
         result.user = contextService.getUser()
         SwissKnife.setPaginationParams(result, params, result.user)
@@ -118,7 +121,7 @@ class PackageController {
                 queryParams.curatoryGroupType = "other" //setting to this includes also missing ones, this is already implemented in we:kb
         }
 
-        Map queryCuratoryGroups = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/groups', [:])
+        Map queryCuratoryGroups = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + '/groups', [:])
         if(!params.sort)
             params.sort = 'name'
         if(queryCuratoryGroups.code == 404) {
@@ -301,7 +304,7 @@ class PackageController {
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         result.editUrl = apiSource.editUrl.endsWith('/') ? apiSource.editUrl : apiSource.editUrl+'/'
 
-        Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: packageInstance.gokbId])
+        Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: packageInstance.gokbId])
         if (queryResult.error && queryResult.error == 404) {
             flash.error = message(code:'wekb.error.404') as String
         }
@@ -312,7 +315,7 @@ class PackageController {
         if(packageInstance.nominalPlatform) {
             //record filled with LAS:eR and we:kb data
             Map<String, Object> platformInstanceRecord = [:]
-            queryResult = gokbService.queryElasticsearch(apiSource.baseUrl+apiSource.fixToken+"/searchApi", [uuid: packageInstance.nominalPlatform.gokbId])
+            queryResult = gokbService.executeQuery(apiSource.baseUrl+apiSource.fixToken+"/searchApi", [uuid: packageInstance.nominalPlatform.gokbId])
             if(queryResult.warning) {
                 List records = queryResult.warning.result
                 if(records)
@@ -327,7 +330,7 @@ class PackageController {
             result.platformInstance = packageInstance.nominalPlatform
         }
 
-        result.flagContentGokb = true // gokbService.queryElasticsearch
+        result.flagContentGokb = true // gokbService.executeQuery
         result
     }
 
@@ -363,7 +366,6 @@ class PackageController {
         Map<String, Object> query = filterService.getTippQuery(params, [packageInstance])
         result.filterSet = query.filterSet
 
-        List<Long> titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
 
         String filename = "${escapeService.escapeString(packageInstance.name + '_' + message(code: 'package.show.nav.current'))}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
 
@@ -382,18 +384,24 @@ class PackageController {
         }
 
         if (params.exportKBart) {
-            response.setHeader( "Content-Disposition", "attachment; filename=${filename}.tsv")
-            response.contentType = "text/tsv"
-            ServletOutputStream out = response.outputStream
-            Map<String, Object> configMap = [:]
-            configMap.putAll(params)
-            configMap.pkgIds = [params.id]
-            Map<String, List> tableData = titlesList ? exportService.generateTitleExportKBART(configMap, TitleInstancePackagePlatform.class.name) : []
-            out.withWriter { writer ->
-                writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
+            String dir = GlobalService.obtainFileStorageLocation()
+            File f = new File(dir+'/'+filename)
+            if(!f.exists()) {
+                List<Long> titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
+                Map<String, Object> configMap = [:]
+                configMap.putAll(params)
+                configMap.pkgIds = [params.id]
+                Map<String, List> tableData = titlesList ? exportService.generateTitleExportKBART(configMap, TitleInstancePackagePlatform.class.name) : []
+                String tableOutput = exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t')
+                FileOutputStream fos = new FileOutputStream(f)
+                fos.withWriter { Writer w ->
+                    w.write(tableOutput)
+                }
+                fos.flush()
+                fos.close()
             }
-            out.flush()
-            out.close()
+            Map fileResult = [token: filename]
+            render template: '/templates/bulkItemDownload', model: fileResult
             return
         }
         /*else if (params.exportXLSX) {
@@ -413,6 +421,7 @@ class PackageController {
             return
         }else */
         if(params.fileformat == 'xlsx') {
+            List<Long> titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
             SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportTipps(titlesList, selectedFields, ExportClickMeService.FORMAT.XLS)
             response.setHeader "Content-disposition", "attachment; filename=${filename}.xlsx"
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -423,6 +432,7 @@ class PackageController {
             return
         }
         else if(params.fileformat == 'csv') {
+            List<Long> titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
             response.setHeader( "Content-Disposition", "attachment; filename=${filename}.csv")
             response.contentType = "text/csv"
 
@@ -435,6 +445,7 @@ class PackageController {
             return
         }
         else {
+            List<Long> titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
             result.currentTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_CURRENT])[0]
             result.plannedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_EXPECTED])[0]
             result.expiredTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_RETIRED])[0]
@@ -443,6 +454,24 @@ class PackageController {
             result.titlesList = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList.drop(result.offset).take(result.max), [sort: params.sort?: 'sortname', order: params.order]) : []
             result.num_tipp_rows = titlesList.size()
             result
+        }
+    }
+
+    @Secured(['ROLE_USER'])
+    def downloadKBART() {
+        byte[] output = []
+        try {
+            String dir = ConfigMapper.getStatsReportSaveLocation() ?: '/usage'
+            File f = new File(dir+'/'+params.token)
+            output = f.getBytes()
+            response.setHeader( "Content-Disposition", "attachment; filename=${params.token}.tsv")
+            response.setHeader("Content-Length", "${output.length}")
+            response.contentType = "text/tsv"
+            response.outputStream << output
+        }
+        catch (Exception e) {
+            log.error(e.getMessage())
+            response.sendError(HttpStatus.SC_NOT_FOUND)
         }
     }
 
@@ -537,18 +566,23 @@ class PackageController {
         }
 
         if (params.exportKBart) {
-            response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
-            response.contentType = "text/tsv"
-            ServletOutputStream out = response.outputStream
-            Map<String, Object> configMap = [:]
-            configMap.putAll(params)
-            configMap.pkgIds = [params.id]
-            Map<String, List> tableData = exportService.generateTitleExportKBART(configMap,TitleInstancePackagePlatform.class.name)
-            out.withWriter { writer ->
-                writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
+            String dir = GlobalService.obtainFileStorageLocation()
+            File f = new File(dir+'/'+filename)
+            if(!f.exists()) {
+                FileOutputStream fos = new FileOutputStream(f)
+                Map<String, Object> configMap = [:]
+                configMap.putAll(params)
+                configMap.pkgIds = [params.id]
+                Map<String, List> tableData = exportService.generateTitleExportKBART(configMap,TitleInstancePackagePlatform.class.name)
+                fos.withWriter { writer ->
+                    writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
+                }
+                fos.flush()
+                fos.close()
             }
-            out.flush()
-            out.close()
+            Map fileResult = [token: filename]
+            render template: '/templates/bulkItemDownload', model: fileResult
+            return
         }
         /* else if (params.exportXLSX) {
             response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
@@ -649,9 +683,9 @@ class PackageController {
      * the we:kb data will be fetched and data mirrored prior to linking the package
      * to the subscription
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'])
+    @DebugInfo(isInstEditor_or_ROLEADMIN = true)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     def processLinkToSub() {
         Map<String, Object> result = [:]

@@ -124,6 +124,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     boolean renewalSent = false
     Date renewalSentDate
     boolean participantTransferWithSurvey = false
+    SubscriptionDiscountScale discountScale
 
     Subscription instanceOf
     // If a subscription is administrative, subscription members will not see it resp. there is a toggle which en-/disables visibility
@@ -149,7 +150,8 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
           derivedSubscriptions: Subscription,
           propertySet         : SubscriptionProperty,
           costItems           : CostItem,
-          ieGroups            : IssueEntitlementGroup
+          ieGroups            : IssueEntitlementGroup,
+          discountScales      : SubscriptionDiscountScale
   ]
 
   static mappedBy = [
@@ -210,6 +212,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         renewalSent column:'sub_renewal_sent'
         renewalSentDate column:'sub_renewal_sent_date'
         participantTransferWithSurvey column:'sub_participant_transfer_with_survey'
+        discountScale column: 'sub_discount_scale_fk'
 
         noticePeriod    column:'sub_notice_period'
         isMultiYear column: 'sub_is_multi_year'
@@ -254,14 +257,11 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         lastUpdated(nullable: true)
         lastUpdatedCascading (nullable: true)
 
-        offerRequested (nullable: true)
-        offerRequestedDate (nullable:true, blank:true)
-        offerAccepted (nullable: true)
+        offerRequestedDate (nullable:true)
         offerNote (nullable:true, blank:true)
         priceIncreaseInfo (nullable:true, blank:true)
-        renewalSent (nullable: true)
-        renewalSentDate (nullable:true, blank:true)
-        participantTransferWithSurvey (nullable: true)
+        renewalSentDate (nullable:true)
+        discountScale (nullable: true)
     }
 
     @Override

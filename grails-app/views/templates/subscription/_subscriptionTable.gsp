@@ -319,17 +319,27 @@
                                 </g:if>--%>
                             </g:if>
                             <g:if test="${'showLinking' in tableConfig}">
-                            <%--<g:if test="${license in s.licenses}"></g:if>--%>
-                                <g:if test="${s in linkedSubscriptions}">
-                                    <g:link class="ui icon negative button la-modern-button" action="linkToSubscription" params="${params+[id:license.id,unlink:true,subscription:s.id]}">
-                                        <i class="ui minus icon"></i>
-                                    </g:link>
+                                <%
+                                    boolean linkPossible
+                                    if(institution.isCustomerType_Inst()) {
+                                        linkPossible = s._getCalculatedType() == CalculatedType.TYPE_LOCAL
+                                    }
+                                    else {
+                                        linkPossible = institution.isCustomerType_Consortium()
+                                    }
+                                %>
+                                <g:if test="${linkPossible}">
+                                    <g:if test="${s in linkedSubscriptions}">
+                                        <g:link class="ui icon negative button la-modern-button" action="linkToSubscription" params="${params+[id:license.id,unlink:true,subscription:s.id]}">
+                                            <i class="ui minus icon"></i>
+                                        </g:link>
+                                    </g:if>
+                                    <g:else>
+                                        <g:link class="ui icon positive button la-modern-button" action="linkToSubscription" params="${params+[id:license.id,subscription:s.id]}">
+                                            <i class="ui plus icon"></i>
+                                        </g:link>
+                                    </g:else>
                                 </g:if>
-                                <g:else>
-                                    <g:link class="ui icon positive button la-modern-button" action="linkToSubscription" params="${params+[id:license.id,subscription:s.id]}">
-                                        <i class="ui plus icon"></i>
-                                    </g:link>
-                                </g:else>
                             </g:if>
                         </td>
                     </tr>

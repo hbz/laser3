@@ -58,6 +58,8 @@ class PropertyStore {
     public final static PropertyDefinition SURVEY_PROPERTY_MULTI_YEAR_4    = getSurveyProperty('Multi-year term 4 years')
     public final static PropertyDefinition SURVEY_PROPERTY_MULTI_YEAR_3    = getSurveyProperty('Multi-year term 3 years')
     public final static PropertyDefinition SURVEY_PROPERTY_MULTI_YEAR_2    = getSurveyProperty('Multi-year term 2 years')
+    public final static PropertyDefinition SURVEY_PROPERTY_SUBSCRIPTION_FORM    = getSurveyProperty('Subscription Form')
+    public final static PropertyDefinition SURVEY_PROPERTY_PUBLISHING_COMPONENT    = getSurveyProperty('Publishing Component')
 
 
     static PropertyDefinition getSurveyProperty(String name) {

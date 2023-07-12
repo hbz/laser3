@@ -7,6 +7,66 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5186    11.07.2023  rc-3.2  3.2         Andreas Bug         dauerhafte Titel wurden nicht gekennzeichnet
+
+4660    10.07.2023  rc-3.2  3.2         Andreas Feature     neues Verfahrensverzeichnis eingecheckt
+
+--      07.07.2023  rc-3.2  3.2         Andreas Bug         interne Sortierung der Werte geändert (zum besseren Debug)
+
+5181    07.07.2023  rc-3.2  3.2         Andreas Bug         diverse Aufruffehler in der API behoben (API Version 2.1)
+
+5180    07.07.2023  rc-3.2  3.2         Andreas Bug         Konsortien konnten von PRO-Nutzern nicht mehr aufgerufen werden
+
+5045    05.07.2023  dev     3.2         Moe     Feature     Neue Umfragemerkmale (Wunsch BSB)
+
+5171    05.07.2023  dev     3.2         Moe     Feature     Wildcard @* Maildomä
+
+5173    05.07.2023  dev     3.2         Andreas Feature     diverse Verbesserungen bei der Lizenzverwaltung
+
+5113    04.07.2023  dev     3.2         Moe     Feature     Titelumfrage: Datei hochladen - Titel werden automatisch ausgewählt
+
+5175    04.07.2023  dev     3.2         Moe     Feature     Rabattstaffel für Elternlizenzen einführen
+
+5164    04.07.2023  dev     3.2         Moe     Feature     Übersicht über Lizenzübertrag
+
+5176    05.07.2023  dev     3.2         Andreas Bug         Konsortialmanager Basic fehlten in GASCO-Auflistung
+
+4921    04.07.2023  dev     3.2         David   Feature     Refactoring: Rechtemodell
+
+5101    04.07.2023  dev     3.2         David   Feature     Nutzer bearbeiten
+
+5172    04.07.2023  dev     3.2         David   Bug         Anmerkungen: doppelter Titel
+
+5174    04.07.2023  dev     3.2         Andreas Bug         Menüeinträge für Konsortialmanager-Basic ausgegraut
+
+4959    04.07.2023  dev     3.2         Andreas Feature     Hinweis bei automatisch erfolgter Verlängerung
+
+5089    03.07.2023  dev     3.2         Andreas Bug         Checkbox der Gesamtauswahl berücksichtigte nur Auswahl der aktuellen Seite
+
+5004    03.07.2023  dev     3.2         Andreas Feature     Preise hinzufügen/entfernen ohne Neuladen der Seite
+
+5158    30.06.2023  dev     3.2         Andreas Feature     Umstellung der KBART-Exporte
+
+5165    28.06.2023  dev     3.2         Andreas Bug         lokale Verträge konnten mit Konsortiallizenzen verknüpft werden
+
+5158    28.06.2023  dev     3.2         Andreas Feature     KBART-Export großer Titelmengen umgestellt
+
+5151    28.06.2023  dev     3.2         Andreas Bug         überflüssiges Menü abgeblendet
+
+5155    27.06.2023  dev     3.2         Andreas Feature     Trennzeichen im Einrichtungsexport umgestellt
+
+4943    27.06.2023  dev     3.2         Andreas Feature     Umstellungen und Erweiterungen im Lizenzimport
+
+5160    26.06.2023  rc-3.1  3.1.4       Moe     Bug         Lizenzumfrage für Nicht-Teilnehmer: "Lizenzname" in GASCO-Monitor ohne Anführungszeichen übernehmen
+
+--      26.06.2023  rc-3.1  3.1.4       Moe     Bug         Username vergessen Mail geht nicht raus
+
+5159    26.06.2023  rc-3.1  3.1.4       Moe     Bug         Lizenzumfrage: Informations-URL wird mit Codefetzen angezeigt
+
+4973    26.06.2023  dev     3.2         Andreas Feature     Abbau obsoleter Felder aus issueEntitlement
+
+5096    26.06.2023  dev     3.2         David   Feature     Refactoring: Affiliations
+
 4974    22.06.2023  dev     3.2         Andreas Feature     Verwaltung gelöschter Elemente umgestellt
 
 5153    22.06.2023  rc-3.1  3.1.4       Moe     Bug         Export einer Einrichtungsliste mit Zugangskonfigurationen
