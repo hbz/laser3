@@ -16,7 +16,7 @@ class SubNavTagLib {
 
     def subNav = { attrs, body ->
 
-        out << '<nav class="ui ' + (attrs.showInTabular ? 'tabular ' : 'secondary pointing ')
+        out << '<nav class="ui ' + (attrs.showInTabular ? 'tabular top attached ' : 'secondary pointing ')
         out << 'stackable menu la-clear-before" role="tablist">'
         out <<   body()
         out << '</nav>'
