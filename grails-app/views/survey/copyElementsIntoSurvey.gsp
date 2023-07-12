@@ -83,6 +83,7 @@
     <g:else>
         <laser:render template="/templates/copyElements/copyElements" />
     </g:else>
+
     <laser:render template="/templates/copyElements/copyElementsJS"/>
 </div>
 

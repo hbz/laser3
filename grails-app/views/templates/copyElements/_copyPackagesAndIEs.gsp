@@ -1,7 +1,6 @@
 <%@ page import="de.laser.CustomerTypeService; de.laser.PendingChangeConfiguration; de.laser.IssueEntitlement; de.laser.SubscriptionController; de.laser.storage.RDStore; de.laser.Person; de.laser.Subscription; de.laser.FormService; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.I10nTranslation" %>
 <laser:serviceInjection/>
 
-<ui:greySegment>
 
     <g:if test="${!fromSurvey && !isRenewSub && !copyObject}">
         <laser:render template="/templates/copyElements/selectSourceAndTargetObject" model="[
@@ -444,7 +443,7 @@
             </div>
         </g:else>
     </g:form>
-</ui:greySegment>
+
 <g:if test="${!copyObject}">
     <laser:script file="${this.getGroovyPageFileName()}">
 

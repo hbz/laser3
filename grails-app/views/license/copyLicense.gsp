@@ -65,15 +65,18 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
     </div>
 </div>
 
-<g:if test="${workFlowPart == CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS}">
-    <laser:render template="/templates/copyElements/copyDocsAndTasks" />
-</g:if>
-<g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_PROPERTIES}">
-    <laser:render template="/templates/copyElements/copyPropertiesCompare" />
-</g:elseif>
-<g:else>
-    <laser:render template="/templates/copyElements/copyElements" />
-</g:else>
-<laser:render template="/templates/copyElements/copyElementsJS"/>
+<ui:greySegment>
+    <g:if test="${workFlowPart == CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS}">
+        <laser:render template="/templates/copyElements/copyDocsAndTasks" />
+    </g:if>
+    <g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_PROPERTIES}">
+        <laser:render template="/templates/copyElements/copyPropertiesCompare" />
+    </g:elseif>
+    <g:else>
+        <laser:render template="/templates/copyElements/copyElements" />
+    </g:else>
+
+    <laser:render template="/templates/copyElements/copyElementsJS"/>
+</ui:greySegment>
 
 <laser:htmlEnd />
