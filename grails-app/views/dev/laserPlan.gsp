@@ -102,17 +102,17 @@
     </tr>
     </thead>
     <tbody>
-    <g:each in="${mappingColsBasic}" var="mpg">
+    <g:each in="${mappingColsBasic}" var="mpg1">
         <tr>
             <td class="four wide">
                 <div class="la-flexbox la-minor-object">
-                    <i class="icon la-list-icon mk-${mpg}"></i>
-                    ${message(code:"marketing.featureList.${mpg}")}
+                    <i class="icon la-list-icon mk-${mpg1}"></i>
+                    ${message(code:"marketing.featureList.${mpg1}")}
                 </div>
             </td>
 
             <td>
-            <g:if test="${mpg === 'licence'}">
+            <g:if test="${mpg1 == 'licence'}">
                     <button class="ui icon blue button la-modern-button la-modal" >
                         <i class="film icon"></i>
                     </button>
@@ -126,16 +126,16 @@
             </td>
         </tr>
     </g:each>
-    <g:each in="${mappingColsPro}" var="mpg">
+    <g:each in="${mappingColsPro}" var="mpg2">
         <tr>
             <td class="four wide">
                 <div class="la-flexbox la-minor-object">
-                    <i class="icon la-list-icon mk-${mpg}"></i>
-                    ${message(code:"marketing.featureList.${mpg}")}
+                    <i class="icon la-list-icon mk-${mpg2}"></i>
+                    ${message(code:"marketing.featureList.${mpg2}")}
                 </div>
             </td>
              <td>
-                 <g:if test="${mpg === 'propertiesUse'}">
+                 <g:if test="${mpg2 === 'propertiesUse'}">
                      <button class="ui icon blue button la-modern-button la-modal" >
                          <i class="film icon"></i>
                      </button>
@@ -184,12 +184,12 @@
     </thead>
     <tbody>
 
-    <g:each in="${mappingColsServiceBasic}" var="mpg">
+    <g:each in="${mappingColsServiceBasic}" var="mpg3">
         <tr>
             <td class="four wide">
                 <div class="la-flexbox la-minor-object">
-                    <i class="icon la-list-icon mk-${mpg}"></i>
-                    ${message(code:"marketing.featureList.${mpg}")}
+                    <i class="icon la-list-icon mk-${mpg3}"></i>
+                    ${message(code:"marketing.featureList.${mpg3}")}
                 </div>
             </td>
             <td>
@@ -205,12 +205,12 @@
             </td>
         </tr>
     </g:each>
-    <g:each in="${mappingColsServicePro}" var="mpg">
+    <g:each in="${mappingColsServicePro}" var="mpg4">
         <tr>
             <td class="four wide">
                 <div class="la-flexbox la-minor-object">
-                    <i class="icon la-list-icon mk-${mpg}"></i>
-                    ${message(code:"marketing.featureList.${mpg}")}
+                    <i class="icon la-list-icon mk-${mpg4}"></i>
+                    ${message(code:"marketing.featureList.${mpg4}")}
                 </div>
             </td>
             <td>%{--
@@ -245,19 +245,35 @@
 
     </tfooter>
 </table>
-<g:if test="(${mpg === 'licence'} || ${mpg === 'propertiesUse'})">
-    <g:each in="${mappingColsBasic}" var="mpg">
-        <div class="ui large modal">
-            <div class="content">${mpg}
-                <button class="ui right floated button la-animatedGif-redo ">Animation wiederholen</button>
-                <img width="100%" alt="" class="la-animatedGif-img la-padding-top-1em" src="${resource(dir: 'images', file: "${mpg}.gif")}"/>
+
+
+    <g:each in="${mappingColsBasic}" var="mpg5" >
+        <g:if test="${mpg5 in ['licence']}">
+            <div class="ui large modal">
+                <div class="content">${mpg5}
+                    <button class="ui right floated button la-animatedGif-redo ">Animation wiederholen</button>
+                    <img width="100%" alt="" class="la-animatedGif-img la-padding-top-1em" src="${resource(dir: 'images', file: "${mpg5}.gif")}"/>
+                </div>
+                <div class="actions">
+                    <a href="#" class="ui positive button" >Schließen</a>
+                </div>
             </div>
-            <div class="actions">
-                <a href="#" class="ui positive button" >Schließen</a>
-            </div>
-        </div>
+        </g:if>
     </g:each>
-</g:if>
+    <g:each in="${mappingColsPro}" var="mpg6" >
+        <g:if test="${mpg5 in ['propertiesUse']}">
+            <div class="ui large modal">
+                <div class="content">${mpg6}
+                    <button class="ui right floated button la-animatedGif-redo ">Animation wiederholen</button>
+                    <img width="100%" alt="" class="la-animatedGif-img la-padding-top-1em" src="${resource(dir: 'images', file: "${mpg6}.gif")}"/>
+                </div>
+                <div class="actions">
+                    <a href="#" class="ui positive button" >Schließen</a>
+                </div>
+            </div>
+        </g:if>
+    </g:each>
+
 <laser:script file="${this.getGroovyPageFileName()}">
     $('.la-modal').click(function(){
         $('.large.modal')
@@ -273,12 +289,12 @@
         $(this).attr("data-gif", gifSrc);
 
       });
-    } /* end img[src$="gif"] */
+    }
 
     $('.la-animatedGif-redo').on("click", function () {
       srcGif = $(this).next().attr("data-gif");
       $(this).next().attr("src", srcGif);
-    }); /* end $win.on('scroll.gifrun') */
+    }); 
 
 </laser:script>
 <laser:htmlEnd /> %{-- </body></html> --}%
