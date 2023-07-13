@@ -734,16 +734,16 @@
         JSPC.app.subCopyController = {
 
             checkboxes: {
-                $takeLicenses: $('input:checkbox[name="copyObject.takeLicenses"]'),
-                $deleteLicenses: $('input:checkbox[name="copyObject.deleteLicenses"]'),
-                $takeOrgRelations: $('input:checkbox[name="copyObject.takeOrgRelations"]'),
-                $deleteOrgRelations: $('input:checkbox[name="copyObject.deleteOrgRelations"]'),
-                $takeSpecificSubscriptionEditors: $('input:checkbox[name="subscription.takeSpecificSubscriptionEditors"]'),
+                $takeLicenses:                      $('input:checkbox[name="copyObject.takeLicenses"]'),
+                $deleteLicenses:                    $('input:checkbox[name="copyObject.deleteLicenses"]'),
+                $takeOrgRelations:                  $('input:checkbox[name="copyObject.takeOrgRelations"]'),
+                $deleteOrgRelations:                $('input:checkbox[name="copyObject.deleteOrgRelations"]'),
+                $takeSpecificSubscriptionEditors:   $('input:checkbox[name="subscription.takeSpecificSubscriptionEditors"]'),
                 $deleteSpecificSubscriptionEditors: $('input:checkbox[name="subscription.deleteSpecificSubscriptionEditors"]'),
-                $takeIdentifier: $('input:checkbox[name="copyObject.takeIdentifierIds"]'),
-                $deleteIdentifier: $('input:checkbox[name="copyObject.deleteIdentifierIds"]'),
-                $takeLinks: $('input:checkbox[name="copyObject.takeLinks"]'),
-                $deleteLinks: $('input:checkbox[name="copyObject.deleteLinks"]')
+                $takeIdentifier:                    $('input:checkbox[name="copyObject.takeIdentifierIds"]'),
+                $deleteIdentifier:                  $('input:checkbox[name="copyObject.deleteIdentifierIds"]'),
+                $takeLinks:                         $('input:checkbox[name="copyObject.takeLinks"]'),
+                $deleteLinks:                       $('input:checkbox[name="copyObject.deleteLinks"]')
             },
 
             init: function () {

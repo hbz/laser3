@@ -433,14 +433,14 @@
         JSPC.app.subCopyController = {
 
             checkboxes : {
-                $takeDocIds: $('input[name="copyObject.takeDocIds"]'),
-                $deleteDocIds: $('input[name="copyObject.deleteDocIds"]'),
-                $takeAnnouncementIds: $('input[name="copyObject.takeAnnouncementIds"]'),
+                $takeDocIds:            $('input[name="copyObject.takeDocIds"]'),
+                $deleteDocIds:          $('input[name="copyObject.deleteDocIds"]'),
+                $takeAnnouncementIds:   $('input[name="copyObject.takeAnnouncementIds"]'),
                 $deleteAnnouncementIds: $('input[name="copyObject.deleteAnnouncementIds"]'),
-                $takeTaskIds: $('input[name="copyObject.takeTaskIds"]'),
-                $deleteTaskIds: $('input[name="copyObject.deleteTaskIds"]'),
-                $takeWorkflowIds: $('input[name="copyObject.takeWorkflowIds"]'),
-                $deleteWorkflowIds: $('input[name="copyObject.deleteWorkflowIds"]')
+                $takeTaskIds:           $('input[name="copyObject.takeTaskIds"]'),
+                $deleteTaskIds:         $('input[name="copyObject.deleteTaskIds"]'),
+                $takeWorkflowIds:       $('input[name="copyObject.takeWorkflowIds"]'),
+                $deleteWorkflowIds:     $('input[name="copyObject.deleteWorkflowIds"]')
             },
 
             init: function (elem) {
@@ -482,7 +482,7 @@
             takeDocIds: function(elem) {
                 if (elem.checked) {
                     $('.table tr td[name="copyObject.takeDocs.source"] div[data-id="' + elem.value + '"]').addClass('willStay');
-                    $('.table tr td[name="copyObject.takeDocs.target"] div').addClass('willStay');
+                    $('.table tr td[name="copyObject.takeDocs.target"] div.la-element').addClass('willStay');
                 }
                 else {
                     $('.table tr td[name="copyObject.takeDocs.source"] div[data-id="' + elem.value + '"]').removeClass('willStay');
@@ -504,7 +504,7 @@
             takeAnnouncementIds: function(elem) {
                 if (elem.checked) {
                     $('.table tr td[name="copyObject.takeAnnouncements.source"] div[data-id="' + elem.value + '"]').addClass('willStay');
-                    $('.table tr td[name="copyObject.takeAnnouncements.target"] div').addClass('willStay');
+                    $('.table tr td[name="copyObject.takeAnnouncements.target"] div.la-element').addClass('willStay');
                 }
                 else {
                     $('.table tr td[name="copyObject.takeAnnouncements.source"] div[data-id="' + elem.value + '"]').removeClass('willStay');
@@ -526,7 +526,7 @@
             takeTaskIds: function(elem) {
                 if (elem.checked) {
                     $('.table tr td[name="copyObject.takeTasks.source"] div[data-id="' + elem.value + '"]').addClass('willStay');
-                    $('.table tr td[name="copyObject.takeTasks.target"] div').addClass('willStay');
+                    $('.table tr td[name="copyObject.takeTasks.target"] div.la-element').addClass('willStay');
                 }
                 else {
                     $('.table tr td[name="copyObject.takeTasks.source"] div[data-id="' + elem.value + '"]').removeClass('willStay');
@@ -548,7 +548,7 @@
             takeWorkflowIds: function(elem) {
                 if (elem.checked) {
                     $('.table tr td[name="copyObject.takeWorkflows.source"] div[data-id="' + elem.value + '"]').addClass('willStay');
-                    $('.table tr td[name="copyObject.takeWorkflows.target"] div').addClass('willStay');
+                    $('.table tr td[name="copyObject.takeWorkflows.target"] div.la-element').addClass('willStay');
                 }
                 else {
                     $('.table tr td[name="copyObject.takeWorkflows.source"] div[data-id="' + elem.value + '"]').removeClass('willStay');

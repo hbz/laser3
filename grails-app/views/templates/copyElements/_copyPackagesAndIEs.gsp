@@ -450,14 +450,14 @@
         JSPC.app.subCopyController = {
 
             checkboxes: {
-                $takePackageIds: $('input[name="subscription.takePackageIds"]'),
-                $takePackageSettings: $('input[name="subscription.takePackageSettings"]'),
-                $deletePackageIds: $('input[name="subscription.deletePackageIds"]'),
-                $deletePackageSettings: $('input[name="subscription.deletePackageSettings"]'),
-                $takeEntitlementIds: $('input[name="subscription.takeEntitlementIds"]'),
-                $deleteEntitlementIds: $('input[name="subscription.deleteEntitlementIds"]'),
-                $takeTitleGroups: $('input[name="subscription.takeTitleGroups"]'),
-                $deleteTitleGroups: $('input[name="subscription.deleteTitleGroups"]')
+                $takePackageIds:            $('input[name="subscription.takePackageIds"]'),
+                $takePackageSettings:       $('input[name="subscription.takePackageSettings"]'),
+                $deletePackageIds:          $('input[name="subscription.deletePackageIds"]'),
+                $deletePackageSettings:     $('input[name="subscription.deletePackageSettings"]'),
+                $takeEntitlementIds:        $('input[name="subscription.takeEntitlementIds"]'),
+                $deleteEntitlementIds:      $('input[name="subscription.deleteEntitlementIds"]'),
+                $takeTitleGroups:           $('input[name="subscription.takeTitleGroups"]'),
+                $deleteTitleGroups:         $('input[name="subscription.deleteTitleGroups"]')
             },
 
             init: function (elem) {
@@ -499,7 +499,7 @@
             takePackageIds: function (elem) {
                 if (elem.checked) {
                     $('.table tr td[name="subscription.takePackages.source"] div[data-pkgid="' + elem.value + '"]').addClass('willStay');
-                    $('.table tr td[name="subscription.takePackages.target"] div').addClass('willStay');
+                    $('.table tr td[name="subscription.takePackages.target"] div.la-element').addClass('willStay');
                 } else {
                     $('.table tr td[name="subscription.takePackages.source"] div[data-pkgid="' + elem.value + '"]').removeClass('willStay');
                     if (JSPC.app.subCopyController.getNumberOfCheckedCheckboxes('subscription.takePackageIds') < 1) {
@@ -546,7 +546,7 @@
             takeEntitlementIds: function (elem) {
                 if (elem.checked) {
                     $('.table tr td[name="subscription.takeEntitlements.source"] div[data-ieoid="' + elem.value + '"]').addClass('willStay');
-                    $('.table tr td[name="subscription.takeEntitlements.target"] div').addClass('willStay');
+                    $('.table tr td[name="subscription.takeEntitlements.target"] div.la-element').addClass('willStay');
                 } else {
                     $('.table tr td[name="subscription.takeEntitlements.source"] div[data-ieoid="' + elem.value + '"]').removeClass('willStay');
                     if (JSPC.app.subCopyController.getNumberOfCheckedCheckboxes('subscription.takeEntitlementIds') < 1) {
@@ -568,7 +568,7 @@
             takeTitleGroups: function (elem) {
                 if (elem.checked) {
                     $('.table tr td[name="subscription.takeTitleGroups.source"] div[data-oid="' + elem.value + '"]').addClass('willStay');
-                    $('.table tr td[name="subscription.takeTitleGroups.target"] div').addClass('willStay');
+                    $('.table tr td[name="subscription.takeTitleGroups.target"] div.la-element').addClass('willStay');
                 } else {
                     $('.table tr td[name="subscription.takeTitleGroups.source"] div[data-oid="' + elem.value + '"]').removeClass('willStay');
                     if (JSPC.app.subCopyController.getNumberOfCheckedCheckboxes('subscription.takeTitleGroups') < 1) {
