@@ -337,8 +337,9 @@
                             <g:each in="${sourceWorkflows}" var="wf">
                                 <div data-id="${wf.id}" class="la-element la-min-height">
                                     <label>
-                                        <strong>${wf.title}</strong> (${message(code: 'task.endDate.label')}
-                                    <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${wf.endDate}"/>)
+                                        <strong>${wf.title}</strong>
+                                        (${message(code:'default.lastUpdated.label')} <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${wf.lastUpdated}"/>,
+                                        ${message(code:'default.dateCreated.label')} <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${wf.dateCreated}"/>)
                                     </label>
                                 </div>
                             </g:each>
@@ -358,12 +359,13 @@
                         </td>
                         <td></td>
                         <g:if test="${!copyObject && targetObject}">
-                            <td  name="copyObject.takeWorkflows.target">
+                            <td name="copyObject.takeWorkflows.target">
                                 <div class="la-min-height"><strong><i class="tasks icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeWorkflows")}:</strong></div>
                                 <g:each in="${targetWorkflows}" var="wf">
                                     <div data-id="${wf.id}" class="la-element la-min-height">
-                                        <strong>${wf.title}</strong> (${message(code: 'task.endDate.label')}
-                                    <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${wf.endDate}"/>)
+                                        <strong>${wf.title}</strong>
+                                        (${message(code:'default.lastUpdated.label')} <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${wf.lastUpdated}"/>,
+                                        ${message(code:'default.dateCreated.label')} <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${wf.dateCreated}"/>)
                                     </div>
                                 </g:each>
                             </td>
@@ -371,10 +373,10 @@
                             <td>
                                 <div class="la-min-height"></div>
                                 <g:each in="${targetWorkflows}" var="wf">
-                                    <g:if test="${wf.creator.id == userId || isInstAdm}">
+                                    <g:if test="${wf.owner.id == contextService.getOrg().id || isInstAdm}">
                                     %{--<div class="ui checkbox">--}%
                                         <div class="ui checkbox la-toggle-radio la-noChange setDeletionConfirm la-min-height">
-                                            <g:checkBox name="copyObject.deleteWorkflowIds" value="${wf.id}" data-action="delete"  checked="${false}" />
+                                            <g:checkBox name="copyObject.deleteWorkflowIds" value="${wf.id}" data-action="delete" checked="${false}" />
                                         </div>
                                     %{--</div>--}%
                                     </g:if>

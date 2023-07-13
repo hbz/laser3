@@ -1795,7 +1795,7 @@ class SubscriptionController {
                     if(ctrlResult.result.targetObject) {
                         params.workFlowPart = CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
                     }
-                    ctrlResult.result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
+                    ctrlResult.result << copyElementsService.loadDataFor_DocsTasksWorkflows(params)
                     break
                 case CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS:
                     ctrlResult.result << copyElementsService.copyObjectElements_PackagesEntitlements(params)
@@ -1859,7 +1859,7 @@ class SubscriptionController {
                     ctrlResult.result << copyElementsService.copyObjectElements_DatesOwnerRelations(params)
                     if (params.isRenewSub){
                         params.workFlowPart = CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
-                        ctrlResult.result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
+                        ctrlResult.result << copyElementsService.loadDataFor_DocsTasksWorkflows(params)
                     } else {
                         ctrlResult.result << copyElementsService.loadDataFor_DatesOwnerRelations(params)
                     }
@@ -1884,7 +1884,7 @@ class SubscriptionController {
                             ctrlResult.result << copyElementsService.loadDataFor_PackagesEntitlements(params)
                         }
                     } else {
-                        ctrlResult.result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
+                        ctrlResult.result << copyElementsService.loadDataFor_DocsTasksWorkflows(params)
                     }
                     break
                 case CopyElementsService.WORKFLOW_SUBSCRIBER:
@@ -1907,7 +1907,7 @@ class SubscriptionController {
                     break
                 default:
                     if(ctrlResult.result.transferIntoMember)
-                        ctrlResult.result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
+                        ctrlResult.result << copyElementsService.loadDataFor_DocsTasksWorkflows(params)
                     else
                         ctrlResult.result << copyElementsService.loadDataFor_DatesOwnerRelations(params)
                     break
@@ -1952,7 +1952,7 @@ class SubscriptionController {
             switch (params.workFlowPart) {
                 case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
                     result << copyElementsService.copyObjectElements_DocsTasksWorkflows(params)
-                    result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
+                    result << copyElementsService.loadDataFor_DocsTasksWorkflows(params)
                     break
                 case CopyElementsService.WORKFLOW_PROPERTIES:
                     result << copyElementsService.copyObjectElements_Properties(params)
@@ -1968,7 +1968,7 @@ class SubscriptionController {
                     }
                     break
                 default:
-                    result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
+                    result << copyElementsService.loadDataFor_DocsTasksWorkflows(params)
                     break
             }
             if (params.targetObjectId) {

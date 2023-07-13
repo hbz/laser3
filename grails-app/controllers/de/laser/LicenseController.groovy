@@ -705,7 +705,7 @@ class LicenseController {
                 if(result.targetObject) {
                     params.workFlowPart = CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
                 }
-                result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
+                result << copyElementsService.loadDataFor_DocsTasksWorkflows(params)
                 break
             case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
                 result << copyElementsService.copyObjectElements_DocsTasksWorkflows(params)
@@ -781,7 +781,7 @@ class LicenseController {
                 break
             case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
                 result << copyElementsService.copyObjectElements_DocsTasksWorkflows(params)
-                result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
+                result << copyElementsService.loadDataFor_DocsTasksWorkflows(params)
                 break
             case CopyElementsService.WORKFLOW_SUBSCRIBER:
                 result << copyElementsService.copyObjectElements_Subscriber(params)
