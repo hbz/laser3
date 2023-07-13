@@ -708,7 +708,7 @@ class LicenseController {
                 result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
                 break
             case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
-                result << copyElementsService.copyObjectElements_DocsAnnouncementsTasks(params)
+                result << copyElementsService.copyObjectElements_DocsTasksWorkflows(params)
                 params.workFlowPart = CopyElementsService.WORKFLOW_PROPERTIES
                 result << copyElementsService.loadDataFor_Properties(params)
                 break
@@ -780,7 +780,7 @@ class LicenseController {
                 result << copyElementsService.loadDataFor_DatesOwnerRelations(params)
                 break
             case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
-                result << copyElementsService.copyObjectElements_DocsAnnouncementsTasks(params)
+                result << copyElementsService.copyObjectElements_DocsTasksWorkflows(params)
                 result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
                 break
             case CopyElementsService.WORKFLOW_SUBSCRIBER:

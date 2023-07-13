@@ -597,11 +597,11 @@ class CopyElementsService {
     }
 
     /**
-     * Processes the given documents / notes / tasks transfer
+     * Processes the given documents&notes / tasks / workflows transfer
      * @param params the request parameters
      * @return the source and target objects for the next copy step
      */
-    Map copyObjectElements_DocsAnnouncementsTasks(Map params) {
+    Map copyObjectElements_DocsTasksWorkflows(Map params) {
         Map<String, Object> result = [:]
         FlashScope flash = getCurrentFlashScope()
 

@@ -44,7 +44,7 @@
                 </tr>
             </thead>
             <tbody class="top aligned">
-            <g:each in="${['notes', 'tasks', 'docs']}" var="tmpl_cfg_tr">
+            <g:each in="${['notes', 'tasks', 'docs', 'workflows']}" var="tmpl_cfg_tr">
                 <g:if test="${tmpl_cfg_tr == 'docs'}">
                 %{--DOCUMENTS:--}%
                 <tr>
@@ -327,12 +327,72 @@
                     </g:if>
                 </tr>
                 </g:if>
+
+
+                <g:if test="${tmpl_cfg_tr == 'workflows'}">
+                %{--WORKFLOWS:--}%
+                    <tr>
+                        <td name="copyObject.takeWorkflows.source">
+                            <div class="la-min-height"><strong><i class="tasks icon"></i>&nbsp${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.takeWorkflows")}:</strong></div>
+                            <g:each in="${sourceWorkflows}" var="wf">
+                                <div data-id="${wf.id}" class="la-element la-min-height">
+                                    <label>
+                                        <strong>${wf.title}</strong> (${message(code: 'task.endDate.label')}
+                                    <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${wf.endDate}"/>)
+                                    </label>
+                                </div>
+                            </g:each>
+                        </td>
+                        %{--COPY:--}%
+                        <td class="center aligned">
+                            <div class="la-min-height"></div>
+                            <g:each in="${sourceWorkflows}" var="wf">
+                                <div data-id="${wf.id}" class="la-element">
+                                    %{--<div class="ui checkbox">--}%
+                                    <div class="ui checkbox la-toggle-radio la-replace la-min-height">
+                                        <g:checkBox name="copyObject.takeWorkflowIds" value="${wf.id}" data-action="copy"  />
+                                    </div>
+                                    %{--</div>--}%
+                                </div>
+                            </g:each>
+                        </td>
+                        <td></td>
+                        <g:if test="${!copyObject && targetObject}">
+                            <td  name="copyObject.takeWorkflows.target">
+                                <div class="la-min-height"><strong><i class="tasks icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeWorkflows")}:</strong></div>
+                                <g:each in="${targetWorkflows}" var="wf">
+                                    <div data-id="${wf.id}" class="la-element la-min-height">
+                                        <strong>${wf.title}</strong> (${message(code: 'task.endDate.label')}
+                                    <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${wf.endDate}"/>)
+                                    </div>
+                                </g:each>
+                            </td>
+                        %{--DELETE:--}%
+                            <td>
+                                <div class="la-min-height"></div>
+                                <g:each in="${targetWorkflows}" var="wf">
+                                    <g:if test="${wf.creator.id == userId || isInstAdm}">
+                                    %{--<div class="ui checkbox">--}%
+                                        <div class="ui checkbox la-toggle-radio la-noChange setDeletionConfirm la-min-height">
+                                            <g:checkBox name="copyObject.deleteWorkflowIds" value="${wf.id}" data-action="delete"  checked="${false}" />
+                                        </div>
+                                    %{--</div>--}%
+                                    </g:if>
+                                    <g:else><br /></g:else>
+                                </g:each>
+                            </td>
+                        </g:if>
+                    </tr>
+                </g:if>
+
+
+
             </g:each>
             </tbody>
         </table>
         <g:set var="submitButtonText" value="${isRenewSub?
                 message(code: 'subscription.renewSubscriptionConsortia.workFlowSteps.nextStep') :
-                message(code: 'copyElementsIntoObject.copyDocsAndTasks.button')}" />
+                message(code: 'copyElementsIntoObject.copyDocsAndTasksAndWorkflows.button')}" />
 
         <g:if test="${!fromSurvey && !copyObject}">
             <div class="sixteen wide field" style="text-align: right;">
@@ -376,7 +436,9 @@
                 $takeAnnouncementIds: $('input[name="copyObject.takeAnnouncementIds"]'),
                 $deleteAnnouncementIds: $('input[name="copyObject.deleteAnnouncementIds"]'),
                 $takeTaskIds: $('input[name="copyObject.takeTaskIds"]'),
-                $deleteTaskIds: $('input[name="copyObject.deleteTaskIds"]')
+                $deleteTaskIds: $('input[name="copyObject.deleteTaskIds"]'),
+                $takeWorkflowIds: $('input[name="copyObject.takeWorkflowIds"]'),
+                $deleteWorkflowIds: $('input[name="copyObject.deleteWorkflowIds"]')
             },
 
             init: function (elem) {
@@ -404,6 +466,14 @@
 
                 ref.$deleteTaskIds.change( function(event) {
                     JSPC.app.subCopyController.deleteTaskIds(this);
+                }).trigger('change')
+
+                ref.$takeWorkflowIds.change( function(event) {
+                    JSPC.app.subCopyController.takeWorkflowIds(this);
+                }).trigger('change')
+
+                ref.$deleteWorkflowIds.change( function(event) {
+                    JSPC.app.subCopyController.deleteWorkflowIds(this);
                 }).trigger('change')
             },
 
@@ -470,6 +540,28 @@
                 }
                 else {
                     $('.table tr td[name="copyObject.takeTasks.target"] div[data-id="' + elem.value + '"]').removeClass('willBeReplaced');
+                }
+            },
+
+            takeWorkflowIds: function(elem) {
+                if (elem.checked) {
+                    $('.table tr td[name="copyObject.takeWorkflows.source"] div[data-id="' + elem.value + '"]').addClass('willStay');
+                    $('.table tr td[name="copyObject.takeWorkflows.target"] div').addClass('willStay');
+                }
+                else {
+                    $('.table tr td[name="copyObject.takeWorkflows.source"] div[data-id="' + elem.value + '"]').removeClass('willStay');
+                    if (JSPC.app.subCopyController.getNumberOfCheckedCheckboxes('copyObject.takeWorkflowIds') < 1){
+                        $('.table tr td[name="copyObject.takeWorkflows.target"] div').removeClass('willStay');
+                    }
+                }
+            },
+
+            deleteWorkflowIds: function(elem) {
+                if (elem.checked) {
+                    $('.table tr td[name="copyObject.takeWorkflows.target"] div[data-id="' + elem.value + '"]').addClass('willBeReplaced');
+                }
+                else {
+                    $('.table tr td[name="copyObject.takeWorkflows.target"] div[data-id="' + elem.value + '"]').removeClass('willBeReplaced');
                 }
             },
 
