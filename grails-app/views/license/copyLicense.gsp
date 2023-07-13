@@ -23,22 +23,19 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
 <div class="ui tablet stackable steps la-clear-before">
     <div class="${workFlowPart == CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS ? 'active' : (workFlowPart in [CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS , CopyElementsService.WORKFLOW_PROPERTIES] ? 'completed' : '')} step">
         <i class=" icon"></i>
-        <div class="content" >
+        <div class="content">
             <div class="title">
                 ${message(code: 'copyElementsIntoObject.general_data.label')}
             </div>
             <div class="description">
-                <i class="calendar alternate outline icon"></i>${message(code: 'subscription.periodOfValidity.label')}
-                <i class="ellipsis vertical icon"></i>${message(code: 'license.status.label')}
-                <br />
-                <i class="cloud icon"></i>${message(code: 'default.url.label')}
-                <i class="clipboard list icon"></i>${message(code: 'license.licenseCategory.label')}
-                <br />
-                <i class="shipping fast icon"></i>${message(code: 'license.isPublicForApi.label')}
-                <br />
-                <i class="university icon"></i>${message(code: 'subscription.organisations.label')}
-                <i class="barcode icon"></i>${message(code: 'default.identifiers.label')}
-                <i class="exchange icon"></i>${message(code: 'license.linkedObjects')}
+                <i class="calendar alternate outline icon"></i> ${message(code: 'subscription.periodOfValidity.label')} <br />
+                <i class="ellipsis vertical icon"></i>          ${message(code: 'license.status.label')} <br />
+                <i class="cloud icon"></i>                      ${message(code: 'default.url.label')} <br />
+                <i class="clipboard list icon"></i>             ${message(code: 'license.licenseCategory.label')} <br />
+                <i class="shipping fast icon"></i>              ${message(code: 'license.isPublicForApi.label')} <br />
+                <i class="university icon"></i>                 ${message(code: 'subscription.organisations.label')} <br />
+                <i class="barcode icon"></i>                    ${message(code: 'default.identifiers.label')} <br />
+                <i class="exchange icon"></i>                   ${message(code: 'license.linkedObjects')}
             </div>
         </div>
     </div>
@@ -49,9 +46,10 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
                 ${message(code: 'copyElementsIntoObject.attachements.label')}
             </div>
             <div class="description">
-                <i class="file outline icon"></i>${message(code: 'default.documents.label')}
-                <i class="sticky note outline icon"></i>${message(code: 'default.notes.label')}
-                <i class="calendar check outline icon"></i>${message(code: 'menu.institutions.tasks')}
+                <i class="sticky note outline icon"></i>    ${message(code: 'default.notes.label')} <br />
+                <i class="calendar check outline icon"></i> ${message(code: 'menu.institutions.tasks')} <br />
+                <i class="file outline icon"></i>           ${message(code: 'default.documents.label')} <br />
+%{--                <i class="tasks icon"></i>                  ${message(code: 'workflow.plural')}--}%
             </div>
         </div>
     </div>
@@ -61,21 +59,24 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
                 ${message(code: 'properties')}
             </div>
             <div class="description">
-                <i class="tags icon"></i>${message(code: 'properties')}
+                <i class="tags icon"></i> ${message(code: 'properties')}
             </div>
         </div>
     </div>
 </div>
 
-<g:if test="${workFlowPart == CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS}">
-    <laser:render template="/templates/copyElements/copyDocsAndTasks" />
-</g:if>
-<g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_PROPERTIES}">
-    <laser:render template="/templates/copyElements/copyPropertiesCompare" />
-</g:elseif>
-<g:else>
-    <laser:render template="/templates/copyElements/copyElements" />
-</g:else>
-<laser:render template="/templates/copyElements/copyElementsJS"/>
+<ui:greySegment>
+    <g:if test="${workFlowPart == CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS}">
+        <laser:render template="/templates/copyElements/copyDocsAndTasks" />
+    </g:if>
+    <g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_PROPERTIES}">
+        <laser:render template="/templates/copyElements/copyPropertiesCompare" />
+    </g:elseif>
+    <g:else>
+        <laser:render template="/templates/copyElements/copyElements" />
+    </g:else>
+
+    <laser:render template="/templates/copyElements/copyElementsJS"/>
+</ui:greySegment>
 
 <laser:htmlEnd />
