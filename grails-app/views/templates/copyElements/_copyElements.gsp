@@ -195,7 +195,7 @@
                             <g:each in="${sourceLicenses}" var="license">
                                 <g:link controller="license" action="show" target="_blank" id="${license.id}">
                                     <div data-oid="${genericOIDService.getOID(license)}" class="la-multi-sources">
-                                        <strong><i class="balance scale icon"></i>&nbsp${license.licenseCategory?.getI10n("value")}:
+                                        <strong><i class="balance scale icon"></i>&nbsp;${license.licenseCategory?.getI10n("value")}:
                                         </strong>
                                         ${license.reference}
                                         <br />
@@ -224,7 +224,7 @@
                                 <strong><i class="balance scale icon"></i>${message(code: 'license.label')}:</strong>
                                 <g:each in="${targetLicenses}" var="license">
                                     <div data-oid="${genericOIDService.getOID(license)}">
-                                        <strong><i class="balance scale icon"></i>&nbsp${license.licenseCategory?.getI10n("value")}:
+                                        <strong><i class="balance scale icon"></i>&nbsp;${license.licenseCategory?.getI10n("value")}:
                                         </strong>
                                         <g:link controller="license" action="show" target="_blank" id="${license.id}">
                                             ${license.reference}
@@ -251,13 +251,13 @@
                     <td name="copyObject.takeOrgRelations.source">
                         <div>
                 <g:if test="${!source_visibleOrgRelations}">
-                    <strong><i class="university icon"></i>&nbsp${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.organisations.label")}:
+                    <strong><i class="university icon"></i>&nbsp;${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.organisations.label")}:
                     </strong>
                 </g:if>
                 <g:each in="${source_visibleOrgRelations}" var="source_role">
                     <g:if test="${source_role.org}">
                         <div data-oid="${genericOIDService.getOID(source_role)}" class="la-multi-sources">
-                            <strong><i class="university icon"></i>&nbsp${source_role.roleType.getI10n("value")}:</strong>
+                            <strong><i class="university icon"></i>&nbsp;${source_role.roleType.getI10n("value")}:</strong>
                             <g:link controller="organisation" action="show" target="_blank"
                                     id="${source_role.org.id}">
                                 ${source_role.org.name}
@@ -301,13 +301,13 @@
                     <td name="copyObject.takeOrgRelations.target">
                         <div>
                             <g:if test="${!target_visibleOrgRelations}">
-                                <strong><i class="university icon"></i>&nbsp${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.organisations.label")}:
+                                <strong><i class="university icon"></i>&nbsp;${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.organisations.label")}:
                                 </strong>
                             </g:if>
                             <g:each in="${target_visibleOrgRelations}" var="target_role">
                                 <g:if test="${target_role.org}">
                                     <div data-oid="${genericOIDService.getOID(target_role)}">
-                                        <strong><i class="university icon"></i>&nbsp${target_role.roleType.getI10n("value")}:
+                                        <strong><i class="university icon"></i>&nbsp;${target_role.roleType.getI10n("value")}:
                                         </strong>
                                         <g:link controller="organisation" action="show" target="_blank"
                                                 id="${target_role.org.id}">
@@ -378,7 +378,7 @@
                                                 </span>
                                                 ${resp}
                                                 (<strong><i
-                                                    class="university icon"></i>&nbsp${source_role.roleType.getI10n("value")}:
+                                                    class="university icon"></i>&nbsp;${source_role.roleType.getI10n("value")}:
                                             </strong>
                                                 <g:link controller="organisation" action="show" target="_blank"
                                                         id="${source_role.org.id}">${source_role.org.name}</g:link>)
@@ -398,7 +398,7 @@
                                                 </span>
                                                 ${resp}
                                                 (<strong><i
-                                                    class="university icon"></i>&nbsp${source_role.roleType.getI10n("value")}:
+                                                    class="university icon"></i>&nbsp;${source_role.roleType.getI10n("value")}:
                                             </strong>
                                                 <g:link controller="organisation" action="show" target="_blank"
                                                         id="${source_role.org.id}">${source_role.org.name}</g:link>)
@@ -473,7 +473,7 @@
                                                     </span>
                                                     ${resp}
                                                     (<strong><i
-                                                        class="university icon"></i>&nbsp${target_role.roleType.getI10n("value")}:
+                                                        class="university icon"></i>&nbsp;${target_role.roleType.getI10n("value")}:
                                                 </strong>
                                                     <g:link controller="organisation" action="show" target="_blank"
                                                             id="${target_role.org.id}">${target_role.org.name}</g:link>)
@@ -494,7 +494,7 @@
                                                     </span>
                                                     ${resp}
                                                     (<strong><i
-                                                        class="university icon"></i>&nbsp${target_role.roleType.getI10n("value")}:
+                                                        class="university icon"></i>&nbsp;${target_role.roleType.getI10n("value")}:
                                                 </strong>
                                                     <g:link controller="organisation" action="show" target="_blank"
                                                             id="${target_role.org.id}">${target_role.org.name}</g:link>)
@@ -549,10 +549,10 @@
                 <tr>
                     <td name="copyObject.takeIdentifier.source">
                         <div>
-                            <strong><i class="barcode icon"></i>&nbsp${message(code: 'default.identifiers.label')}:</strong><br />
+                            <strong><i class="barcode icon"></i>&nbsp;${message(code: 'default.identifiers.label')}:</strong><br />
                             <g:each in="${sourceIdentifiers}" var="ident">
                                 <div data-oid="${genericOIDService.getOID(ident)}">
-                                <strong>${ident.ns.ns}:</strong>&nbsp${ident.value}<br />
+                                <strong>${ident.ns.ns}:</strong>&nbsp;${ident.value}<br />
                                 </div>
                             </g:each>
                         </div>
@@ -583,10 +583,10 @@
                     <g:if test="${!copyObject}">
                         <td name="copyObject.takeIdentifier.target">
                             <div>
-                            <strong><i class="barcode icon"></i>&nbsp${message(code: 'default.identifiers.label')}:</strong><br />
+                            <strong><i class="barcode icon"></i>&nbsp;${message(code: 'default.identifiers.label')}:</strong><br />
                             <g:each in="${targetIdentifiers}" var="ident">
                                 <div data-oid="${genericOIDService.getOID(ident)}">
-                                    <strong>${ident.ns.ns}:</strong>&nbsp${ident.value}<br />
+                                    <strong>${ident.ns.ns}:</strong>&nbsp;${ident.value}<br />
                                 </div>
                                 <%
                                     if (AuditConfig.getConfig(ident)) {
@@ -628,7 +628,7 @@
                                         perspectiveIndex = 1
                                 %>
                                 <div data-oid="${genericOIDService.getOID(link)}">
-                                    <strong>${link.linkType.getI10n("value").split("\\|")[perspectiveIndex].replace('...','')}:</strong>&nbsp${link.getOther(sourceObject).dropdownNamingConvention()}<br />
+                                    <strong>${link.linkType.getI10n("value").split("\\|")[perspectiveIndex].replace('...','')}:</strong>&nbsp;${link.getOther(sourceObject).dropdownNamingConvention()}<br />
                                 </div>
                             </g:each>
                         </div>
@@ -666,7 +666,7 @@
                                             perspectiveIndex = 1
                                     %>
                                     <div data-oid="${genericOIDService.getOID(link)}">
-                                        <strong>${link.linkType.getI10n("value").split("\\|")[perspectiveIndex].replace('...','')}:</strong>&nbsp${link.getOther(targetObject).dropdownNamingConvention()}<br />
+                                        <strong>${link.linkType.getI10n("value").split("\\|")[perspectiveIndex].replace('...','')}:</strong>&nbsp;${link.getOther(targetObject).dropdownNamingConvention()}<br />
                                     </div>
                                 </g:each>
                             </div>
