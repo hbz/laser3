@@ -113,7 +113,7 @@
 
             <td>
             <g:if test="${mpg1 == 'licence'}">
-                    <button class="ui icon blue button la-modern-button la-modal" >
+                    <button id="${mpg1}" class="ui icon blue button la-modern-button la-modal" >
                         <i class="film icon"></i>
                     </button>
             </g:if>
@@ -136,7 +136,7 @@
             </td>
              <td>
                  <g:if test="${mpg2 === 'propertiesUse'}">
-                     <button class="ui icon blue button la-modern-button la-modal" >
+                     <button id="${mpg2}" class="ui icon blue button la-modern-button la-modal" >
                          <i class="film icon"></i>
                      </button>
                  </g:if>
@@ -249,52 +249,68 @@
 
     <g:each in="${mappingColsBasic}" var="mpg5" >
         <g:if test="${mpg5 in ['licence']}">
-            <div class="ui large modal">
-                <div class="content">${mpg5}
-                    <button class="ui right floated button la-animatedGif-redo ">Animation wiederholen</button>
-                    <img width="100%" alt="" class="la-animatedGif-img la-padding-top-1em" src="${resource(dir: 'images', file: "${mpg5}.gif")}"/>
-                </div>
-                <div class="actions">
-                    <a href="#" class="ui positive button" >Schließen</a>
-                </div>
-            </div>
+            <laser:script file="${this.getGroovyPageFileName()}">
+                $('#${mpg5}').click(function(){
+                    $.modal({
+                        title: '${message(code:"marketing.featureList.${mpg5}")}<button class="ui right floated button la-animatedGif-redo ">Animation wiederholen</button>',
+                        class: 'large',
+                        closeIcon: true,
+                        content: '<img width="100%" alt="" class="la-animatedGif-img la-padding-top-1em" src="${resource(dir: 'images', file: "${mpg5}.gif")}"/>',
+                        actions: [{
+                            text: '${message(code:"default.button.close.label")}',
+                            class: 'green'
+                        }]
+                    }).modal('show');
+                    if ($('.la-animatedGif-img').length) {
+                          var gifSrc, srcGif;
+
+                          $('.la-animatedGif-img').each(function () {
+                            gifSrc = $(this).attr("src");
+                            $(this).attr("data-gif", gifSrc);
+
+                          });
+                        }
+
+                        $('.la-animatedGif-redo').on("click", function () {
+
+                          srcGif = $(this).parent().next().find('.la-animatedGif-img ').attr("data-gif");
+                          $(this).parent().next().find('.la-animatedGif-img ').attr("src", srcGif);
+                    });
+            });
+            </laser:script>
         </g:if>
     </g:each>
     <g:each in="${mappingColsPro}" var="mpg6" >
-        <g:if test="${mpg5 in ['propertiesUse']}">
-            <div class="ui large modal">
-                <div class="content">${mpg6}
-                    <button class="ui right floated button la-animatedGif-redo ">Animation wiederholen</button>
-                    <img width="100%" alt="" class="la-animatedGif-img la-padding-top-1em" src="${resource(dir: 'images', file: "${mpg6}.gif")}"/>
-                </div>
-                <div class="actions">
-                    <a href="#" class="ui positive button" >Schließen</a>
-                </div>
-            </div>
+        <g:if test="${mpg6 in ['propertiesUse']}">
+            <laser:script file="${this.getGroovyPageFileName()}">
+                $('#${mpg6}').click(function(){
+                    $.modal({
+                        title: '${message(code:"marketing.featureList.${mpg6}")}<button class="ui right floated button la-animatedGif-redo ">Animation wiederholen</button>',
+                        class: 'large',
+                        closeIcon: true,
+                        content: '<button class="ui right floated button la-animatedGif-redo ">Animation wiederholen</button><img width="100%" alt="" class="la-animatedGif-img la-padding-top-1em" src="${resource(dir: 'images', file: "${mpg6}.gif")}"/>',
+                        actions: [{
+                            text: '${message(code:"default.button.close.label")}',
+                            class: 'green'
+                        }]
+                    }).modal('show');
+                    if ($('.la-animatedGif-img').length) {
+                          var gifSrc, srcGif;
+                          $('.la-animatedGif-img').each(function () {
+                            gifSrc = $(this).attr("src");
+                            $(this).attr("data-gif", gifSrc);
+                          });
+                        }
+
+                        $('.la-animatedGif-redo').on("click", function () {
+                          srcGif = $(this).parent().next().find('.la-animatedGif-img ').attr("data-gif");
+                          $(this).parent().next().find('.la-animatedGif-img ').attr("src", srcGif);
+                    });
+                });
+            </laser:script>
+
         </g:if>
     </g:each>
 
-<laser:script file="${this.getGroovyPageFileName()}">
-    $('.la-modal').click(function(){
-        $('.large.modal')
-            .modal('show')
-        ;
-    });
 
-    if ($('.la-animatedGif-img').length) {
-      var gifSrc, srcGif;
-
-      $('.la-animatedGif-img').each(function () {
-        gifSrc = $(this).attr("src");
-        $(this).attr("data-gif", gifSrc);
-
-      });
-    }
-
-    $('.la-animatedGif-redo').on("click", function () {
-      srcGif = $(this).next().attr("data-gif");
-      $(this).next().attr("src", srcGif);
-    }); 
-
-</laser:script>
 <laser:htmlEnd /> %{-- </body></html> --}%
