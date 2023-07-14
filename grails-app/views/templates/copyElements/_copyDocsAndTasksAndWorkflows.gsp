@@ -458,13 +458,13 @@
 
             takeDocIds: function(elem) {
                 if (elem.checked) {
-                    $('.table tr td[name="copyObject.takeDocs.source"] div[data-id="' + elem.value + '"]').addClass('willStay');
+                    $('.table tr td[name="copyObject.takeDocs.source"] div.la-element[data-id="' + elem.value + '"]').addClass('willStay');
                     $('.table tr td[name="copyObject.takeDocs.target"] div.la-element').addClass('willStay');
                 }
                 else {
-                    $('.table tr td[name="copyObject.takeDocs.source"] div[data-id="' + elem.value + '"]').removeClass('willStay');
+                    $('.table tr td[name="copyObject.takeDocs.source"] div.la-element[data-id="' + elem.value + '"]').removeClass('willStay');
                     if (JSPC.app.subCopyController.getNumberOfCheckedCheckboxes('copyObject.takeDocIds') < 1) {
-                        $('.table tr td[name="copyObject.takeDocs.target"] div').removeClass('willStay');
+                        $('.table tr td[name="copyObject.takeDocs.target"] div.la-element').removeClass('willStay');
                     }
                 }
             },
@@ -475,13 +475,13 @@
 
             takeAnnouncementIds: function(elem) {
                 if (elem.checked) {
-                    $('.table tr td[name="copyObject.takeAnnouncements.source"] div[data-id="' + elem.value + '"]').addClass('willStay');
+                    $('.table tr td[name="copyObject.takeAnnouncements.source"] div.la-element[data-id="' + elem.value + '"]').addClass('willStay');
                     $('.table tr td[name="copyObject.takeAnnouncements.target"] div.la-element').addClass('willStay');
                 }
                 else {
-                    $('.table tr td[name="copyObject.takeAnnouncements.source"] div[data-id="' + elem.value + '"]').removeClass('willStay');
+                    $('.table tr td[name="copyObject.takeAnnouncements.source"] div.la-element[data-id="' + elem.value + '"]').removeClass('willStay');
                     if (JSPC.app.subCopyController.getNumberOfCheckedCheckboxes('copyObject.takeAnnouncementIds') < 1) {
-                        $('.table tr td[name="copyObject.takeAnnouncements.target"] div').removeClass('willStay');
+                        $('.table tr td[name="copyObject.takeAnnouncements.target"] div.la-element').removeClass('willStay');
                     }
                 }
             },
@@ -492,13 +492,13 @@
 
             takeTaskIds: function(elem) {
                 if (elem.checked) {
-                    $('.table tr td[name="copyObject.takeTasks.source"] div[data-id="' + elem.value + '"]').addClass('willStay');
+                    $('.table tr td[name="copyObject.takeTasks.source"] div.la-element[data-id="' + elem.value + '"]').addClass('willStay');
                     $('.table tr td[name="copyObject.takeTasks.target"] div.la-element').addClass('willStay');
                 }
                 else {
-                    $('.table tr td[name="copyObject.takeTasks.source"] div[data-id="' + elem.value + '"]').removeClass('willStay');
+                    $('.table tr td[name="copyObject.takeTasks.source"] div.la-element[data-id="' + elem.value + '"]').removeClass('willStay');
                     if (JSPC.app.subCopyController.getNumberOfCheckedCheckboxes('copyObject.takeTaskIds') < 1){
-                        $('.table tr td[name="copyObject.takeTasks.target"] div').removeClass('willStay');
+                        $('.table tr td[name="copyObject.takeTasks.target"] div.la-element').removeClass('willStay');
                     }
                 }
             },
@@ -509,13 +509,13 @@
 
             takeWorkflowIds: function(elem) {
                 if (elem.checked) {
-                    $('.table tr td[name="copyObject.takeWorkflows.source"] div[data-id="' + elem.value + '"]').addClass('willStay');
+                    $('.table tr td[name="copyObject.takeWorkflows.source"] div.la-element[data-id="' + elem.value + '"]').addClass('willStay');
                     $('.table tr td[name="copyObject.takeWorkflows.target"] div.la-element').addClass('willStay');
                 }
                 else {
-                    $('.table tr td[name="copyObject.takeWorkflows.source"] div[data-id="' + elem.value + '"]').removeClass('willStay');
+                    $('.table tr td[name="copyObject.takeWorkflows.source"] div.la-element[data-id="' + elem.value + '"]').removeClass('willStay');
                     if (JSPC.app.subCopyController.getNumberOfCheckedCheckboxes('copyObject.takeWorkflowIds') < 1){
-                        $('.table tr td[name="copyObject.takeWorkflows.target"] div').removeClass('willStay');
+                        $('.table tr td[name="copyObject.takeWorkflows.target"] div.la-element').removeClass('willStay');
                     }
                 }
             },
@@ -526,10 +526,10 @@
 
             _handleDeleted: function(elem, identifier) {
                 if (elem.checked) {
-                    $('.table tr td[name="copyObject.' + identifier + '.target"] div[data-id="' + elem.value + '"]').addClass('willBeReplaced');
+                    $('.table tr td[name="copyObject.' + identifier + '.target"] div.la-element[data-id="' + elem.value + '"]').addClass('willBeReplaced');
                 }
                 else {
-                    $('.table tr td[name="copyObject.' + identifier + '.target"] div[data-id="' + elem.value + '"]').removeClass('willBeReplaced');
+                    $('.table tr td[name="copyObject.' + identifier + '.target"] div.la-element[data-id="' + elem.value + '"]').removeClass('willBeReplaced');
                 }
             },
 
