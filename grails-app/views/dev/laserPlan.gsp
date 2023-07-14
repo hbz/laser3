@@ -1,5 +1,5 @@
 <%@ page import="de.laser.License; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.UserSetting" %>
-<laser:htmlStart text="Plan "> %{-- <!doctype html><html><head>--}%
+<laser:htmlStart text="Plan ">
     <style>
         .mk-licence:before {
             content: "\f328";
@@ -246,9 +246,8 @@
     </tfooter>
 </table>
 
-
-    <g:each in="${mappingColsBasic}" var="mpg5" >
-        <g:if test="${mpg5 in ['licence']}">
+    <g:each in="${mappingColsPro+mappingColsBasic}" var="mpg5" >
+        <g:if test="${mpg5 in ['propertiesUse','licence']}">
             <laser:script file="${this.getGroovyPageFileName()}">
                 $('#${mpg5}').click(function(){
                     $.modal({
@@ -256,39 +255,6 @@
                         class: 'large',
                         closeIcon: true,
                         content: '<img width="100%" alt="" class="la-animatedGif-img la-padding-top-1em" src="${resource(dir: 'images', file: "${mpg5}.gif")}"/>',
-                        actions: [{
-                            text: '${message(code:"default.button.close.label")}',
-                            class: 'green'
-                        }]
-                    }).modal('show');
-                    if ($('.la-animatedGif-img').length) {
-                          var gifSrc, srcGif;
-
-                          $('.la-animatedGif-img').each(function () {
-                            gifSrc = $(this).attr("src");
-                            $(this).attr("data-gif", gifSrc);
-
-                          });
-                        }
-
-                        $('.la-animatedGif-redo').on("click", function () {
-
-                          srcGif = $(this).parent().next().find('.la-animatedGif-img ').attr("data-gif");
-                          $(this).parent().next().find('.la-animatedGif-img ').attr("src", srcGif);
-                    });
-            });
-            </laser:script>
-        </g:if>
-    </g:each>
-    <g:each in="${mappingColsPro}" var="mpg6" >
-        <g:if test="${mpg6 in ['propertiesUse']}">
-            <laser:script file="${this.getGroovyPageFileName()}">
-                $('#${mpg6}').click(function(){
-                    $.modal({
-                        title: '${message(code:"marketing.featureList.${mpg6}")}<button class="ui right floated button la-animatedGif-redo ">Animation wiederholen</button>',
-                        class: 'large',
-                        closeIcon: true,
-                        content: '<button class="ui right floated button la-animatedGif-redo ">Animation wiederholen</button><img width="100%" alt="" class="la-animatedGif-img la-padding-top-1em" src="${resource(dir: 'images', file: "${mpg6}.gif")}"/>',
                         actions: [{
                             text: '${message(code:"default.button.close.label")}',
                             class: 'green'
@@ -313,4 +279,4 @@
     </g:each>
 
 
-<laser:htmlEnd /> %{-- </body></html> --}%
+<laser:htmlEnd />
