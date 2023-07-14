@@ -195,7 +195,7 @@
                             <g:each in="${sourceLicenses}" var="license">
                                 <g:link controller="license" action="show" target="_blank" id="${license.id}">
                                     <div data-oid="${genericOIDService.getOID(license)}" class="la-multi-sources">
-                                        <strong><i class="balance scale icon"></i>&nbsp${license.licenseCategory?.getI10n("value")}:
+                                        <strong><i class="balance scale icon"></i>&nbsp;${license.licenseCategory?.getI10n("value")}:
                                         </strong>
                                         ${license.reference}
                                         <br />
@@ -224,7 +224,7 @@
                                 <strong><i class="balance scale icon"></i>${message(code: 'license.label')}:</strong>
                                 <g:each in="${targetLicenses}" var="license">
                                     <div data-oid="${genericOIDService.getOID(license)}">
-                                        <strong><i class="balance scale icon"></i>&nbsp${license.licenseCategory?.getI10n("value")}:
+                                        <strong><i class="balance scale icon"></i>&nbsp;${license.licenseCategory?.getI10n("value")}:
                                         </strong>
                                         <g:link controller="license" action="show" target="_blank" id="${license.id}">
                                             ${license.reference}
@@ -251,13 +251,13 @@
                     <td name="copyObject.takeOrgRelations.source">
                         <div>
                 <g:if test="${!source_visibleOrgRelations}">
-                    <strong><i class="university icon"></i>&nbsp${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.organisations.label")}:
+                    <strong><i class="university icon"></i>&nbsp;${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.organisations.label")}:
                     </strong>
                 </g:if>
                 <g:each in="${source_visibleOrgRelations}" var="source_role">
                     <g:if test="${source_role.org}">
                         <div data-oid="${genericOIDService.getOID(source_role)}" class="la-multi-sources">
-                            <strong><i class="university icon"></i>&nbsp${source_role.roleType.getI10n("value")}:</strong>
+                            <strong><i class="university icon"></i>&nbsp;${source_role.roleType.getI10n("value")}:</strong>
                             <g:link controller="organisation" action="show" target="_blank"
                                     id="${source_role.org.id}">
                                 ${source_role.org.name}
@@ -301,13 +301,13 @@
                     <td name="copyObject.takeOrgRelations.target">
                         <div>
                             <g:if test="${!target_visibleOrgRelations}">
-                                <strong><i class="university icon"></i>&nbsp${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.organisations.label")}:
+                                <strong><i class="university icon"></i>&nbsp;${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.organisations.label")}:
                                 </strong>
                             </g:if>
                             <g:each in="${target_visibleOrgRelations}" var="target_role">
                                 <g:if test="${target_role.org}">
                                     <div data-oid="${genericOIDService.getOID(target_role)}">
-                                        <strong><i class="university icon"></i>&nbsp${target_role.roleType.getI10n("value")}:
+                                        <strong><i class="university icon"></i>&nbsp;${target_role.roleType.getI10n("value")}:
                                         </strong>
                                         <g:link controller="organisation" action="show" target="_blank"
                                                 id="${target_role.org.id}">
@@ -378,7 +378,7 @@
                                                 </span>
                                                 ${resp}
                                                 (<strong><i
-                                                    class="university icon"></i>&nbsp${source_role.roleType.getI10n("value")}:
+                                                    class="university icon"></i>&nbsp;${source_role.roleType.getI10n("value")}:
                                             </strong>
                                                 <g:link controller="organisation" action="show" target="_blank"
                                                         id="${source_role.org.id}">${source_role.org.name}</g:link>)
@@ -398,7 +398,7 @@
                                                 </span>
                                                 ${resp}
                                                 (<strong><i
-                                                    class="university icon"></i>&nbsp${source_role.roleType.getI10n("value")}:
+                                                    class="university icon"></i>&nbsp;${source_role.roleType.getI10n("value")}:
                                             </strong>
                                                 <g:link controller="organisation" action="show" target="_blank"
                                                         id="${source_role.org.id}">${source_role.org.name}</g:link>)
@@ -473,7 +473,7 @@
                                                     </span>
                                                     ${resp}
                                                     (<strong><i
-                                                        class="university icon"></i>&nbsp${target_role.roleType.getI10n("value")}:
+                                                        class="university icon"></i>&nbsp;${target_role.roleType.getI10n("value")}:
                                                 </strong>
                                                     <g:link controller="organisation" action="show" target="_blank"
                                                             id="${target_role.org.id}">${target_role.org.name}</g:link>)
@@ -494,7 +494,7 @@
                                                     </span>
                                                     ${resp}
                                                     (<strong><i
-                                                        class="university icon"></i>&nbsp${target_role.roleType.getI10n("value")}:
+                                                        class="university icon"></i>&nbsp;${target_role.roleType.getI10n("value")}:
                                                 </strong>
                                                     <g:link controller="organisation" action="show" target="_blank"
                                                             id="${target_role.org.id}">${target_role.org.name}</g:link>)
@@ -549,10 +549,10 @@
                 <tr>
                     <td name="copyObject.takeIdentifier.source">
                         <div>
-                            <strong><i class="barcode icon"></i>&nbsp${message(code: 'default.identifiers.label')}:</strong><br />
+                            <strong><i class="barcode icon"></i>&nbsp;${message(code: 'default.identifiers.label')}:</strong><br />
                             <g:each in="${sourceIdentifiers}" var="ident">
                                 <div data-oid="${genericOIDService.getOID(ident)}">
-                                <strong>${ident.ns.ns}:</strong>&nbsp${ident.value}<br />
+                                <strong>${ident.ns.ns}:</strong>&nbsp;${ident.value}<br />
                                 </div>
                             </g:each>
                         </div>
@@ -583,10 +583,10 @@
                     <g:if test="${!copyObject}">
                         <td name="copyObject.takeIdentifier.target">
                             <div>
-                            <strong><i class="barcode icon"></i>&nbsp${message(code: 'default.identifiers.label')}:</strong><br />
+                            <strong><i class="barcode icon"></i>&nbsp;${message(code: 'default.identifiers.label')}:</strong><br />
                             <g:each in="${targetIdentifiers}" var="ident">
                                 <div data-oid="${genericOIDService.getOID(ident)}">
-                                    <strong>${ident.ns.ns}:</strong>&nbsp${ident.value}<br />
+                                    <strong>${ident.ns.ns}:</strong>&nbsp;${ident.value}<br />
                                 </div>
                                 <%
                                     if (AuditConfig.getConfig(ident)) {
@@ -628,7 +628,7 @@
                                         perspectiveIndex = 1
                                 %>
                                 <div data-oid="${genericOIDService.getOID(link)}">
-                                    <strong>${link.linkType.getI10n("value").split("\\|")[perspectiveIndex].replace('...','')}:</strong>&nbsp${link.getOther(sourceObject).dropdownNamingConvention()}<br />
+                                    <strong>${link.linkType.getI10n("value").split("\\|")[perspectiveIndex].replace('...','')}:</strong>&nbsp;${link.getOther(sourceObject).dropdownNamingConvention()}<br />
                                 </div>
                             </g:each>
                         </div>
@@ -666,7 +666,7 @@
                                             perspectiveIndex = 1
                                     %>
                                     <div data-oid="${genericOIDService.getOID(link)}">
-                                        <strong>${link.linkType.getI10n("value").split("\\|")[perspectiveIndex].replace('...','')}:</strong>&nbsp${link.getOther(targetObject).dropdownNamingConvention()}<br />
+                                        <strong>${link.linkType.getI10n("value").split("\\|")[perspectiveIndex].replace('...','')}:</strong>&nbsp;${link.getOther(targetObject).dropdownNamingConvention()}<br />
                                     </div>
                                 </g:each>
                             </div>
@@ -734,74 +734,37 @@
         JSPC.app.subCopyController = {
 
             checkboxes: {
-                $takeLicenses: $('input:checkbox[name="copyObject.takeLicenses"]'),
-                $deleteLicenses: $('input:checkbox[name="copyObject.deleteLicenses"]'),
-                $takeOrgRelations: $('input:checkbox[name="copyObject.takeOrgRelations"]'),
-                $deleteOrgRelations: $('input:checkbox[name="copyObject.deleteOrgRelations"]'),
-                $takeSpecificSubscriptionEditors: $('input:checkbox[name="subscription.takeSpecificSubscriptionEditors"]'),
+                $takeLicenses:                      $('input:checkbox[name="copyObject.takeLicenses"]'),
+                $deleteLicenses:                    $('input:checkbox[name="copyObject.deleteLicenses"]'),
+                $takeOrgRelations:                  $('input:checkbox[name="copyObject.takeOrgRelations"]'),
+                $deleteOrgRelations:                $('input:checkbox[name="copyObject.deleteOrgRelations"]'),
+                $takeSpecificSubscriptionEditors:   $('input:checkbox[name="subscription.takeSpecificSubscriptionEditors"]'),
                 $deleteSpecificSubscriptionEditors: $('input:checkbox[name="subscription.deleteSpecificSubscriptionEditors"]'),
-                $takeIdentifier: $('input:checkbox[name="copyObject.takeIdentifierIds"]'),
-                $deleteIdentifier: $('input:checkbox[name="copyObject.deleteIdentifierIds"]'),
-                $takeLinks: $('input:checkbox[name="copyObject.takeLinks"]'),
-                $deleteLinks: $('input:checkbox[name="copyObject.deleteLinks"]')
+                $takeIdentifier:                    $('input:checkbox[name="copyObject.takeIdentifierIds"]'),
+                $deleteIdentifier:                  $('input:checkbox[name="copyObject.deleteIdentifierIds"]'),
+                $takeLinks:                         $('input:checkbox[name="copyObject.takeLinks"]'),
+                $deleteLinks:                       $('input:checkbox[name="copyObject.deleteLinks"]')
             },
 
             init: function () {
-                var ref = JSPC.app.subCopyController.checkboxes
+                let scc = JSPC.app.subCopyController
 
-                ref.$takeLicenses.change(function (event) {
-                    JSPC.app.subCopyController.takeLicenses(this);
-                }).trigger('change');
+                scc.checkboxes.$takeLicenses.change(function (event) { scc.takeLicenses(this); } ).trigger('change');
+                scc.checkboxes.$deleteLicenses.change(function (event) { scc.deleteLicenses(this); } ).trigger('change');
+                scc.checkboxes.$takeOrgRelations.change(function (event) { scc.takeOrgRelations(this); } ).trigger('change');
+                scc.checkboxes.$deleteOrgRelations.change(function (event) { scc.deleteOrgRelations(this); } ).trigger('change');
+                scc.checkboxes.$takeSpecificSubscriptionEditors.change(function (event) { scc.takeSpecificSubscriptionEditors(this); } ).trigger('change');
+                scc.checkboxes.$deleteSpecificSubscriptionEditors.change(function (event) { scc.deleteSpecificSubscriptionEditors(this); } ).trigger('change');
+                scc.checkboxes.$takeSpecificSubscriptionEditors.change(function (event) { scc.takeSpecificSubscriptionEditors(this); } ).trigger('change');
+                scc.checkboxes.$deleteSpecificSubscriptionEditors.change(function (event) { scc.deleteSpecificSubscriptionEditors(this); } ).trigger('change');
+                scc.checkboxes.$takeIdentifier.change(function (event) { scc.takeIdentifier(this); } ).trigger('change');
+                scc.checkboxes.$deleteIdentifier.change(function (event) { scc.deleteIdentifier(this); } ).trigger('change');
+                scc.checkboxes.$takeLinks.change(function (event) { scc.takeLinks(this); } ).trigger('change');
+                scc.checkboxes.$deleteLinks.change(function (event) { scc.deleteLinks(this); } ).trigger('change');
 
-                ref.$deleteLicenses.change(function (event) {
-                    JSPC.app.subCopyController.deleteLicenses(this);
-                }).trigger('change');
+                $("input:checkbox[name^='copyObject']").change(function () { scc.checkCheckBoxesOfProperties(this); } ).trigger('change');
 
-                ref.$takeOrgRelations.change(function (event) {
-                    JSPC.app.subCopyController.takeOrgRelations(this);
-                }).trigger('change');
-
-                ref.$deleteOrgRelations.change(function (event) {
-                    JSPC.app.subCopyController.deleteOrgRelations(this);
-                }).trigger('change');
-
-                ref.$takeSpecificSubscriptionEditors.change(function (event) {
-                    JSPC.app.subCopyController.takeSpecificSubscriptionEditors(this);
-                }).trigger('change');
-
-                ref.$deleteSpecificSubscriptionEditors.change(function (event) {
-                    JSPC.app.subCopyController.deleteSpecificSubscriptionEditors(this);
-                }).trigger('change');
-
-                ref.$takeSpecificSubscriptionEditors.change(function (event) {
-                    JSPC.app.subCopyController.takeSpecificSubscriptionEditors(this);
-                }).trigger('change');
-
-                ref.$deleteSpecificSubscriptionEditors.change(function (event) {
-                    JSPC.app.subCopyController.deleteSpecificSubscriptionEditors(this);
-                }).trigger('change');
-
-                ref.$takeIdentifier.change(function (event) {
-                    JSPC.app.subCopyController.takeIdentifier(this);
-                }).trigger('change');
-
-                ref.$deleteIdentifier.change(function (event) {
-                    JSPC.app.subCopyController.deleteIdentifier(this);
-                }).trigger('change');
-
-                ref.$takeLinks.change(function (event) {
-                    JSPC.app.subCopyController.takeLinks(this);
-                }).trigger('change');
-
-                ref.$deleteLinks.change(function (event) {
-                    JSPC.app.subCopyController.deleteLinks(this);
-                }).trigger('change');
-
-                $("input:checkbox[name^='copyObject']").change(function () {
-                    JSPC.app.subCopyController.checkCheckBoxesOfProperties(this);
-                }).trigger('change');
-
-                console.log($('[data-action="delete"]:checked'));
+                //console.log($('[data-action="delete"]:checked'));
                 if($('[data-action="delete"]:checked').length > 0){
                     $("#copyElementsSubmit").addClass("js-open-confirm-modal");
                     r2d2.initDynamicUiStuff('form');
@@ -821,11 +784,7 @@
             },
 
             deleteLicenses: function (elem) {
-                if (elem.checked) {
-                    $('.table tr td[name="copyObject.takeLicenses.target"] div div[data-oid="' + elem.value + '"]').addClass('willBeReplacedStrong');
-                } else {
-                    $('.table tr td[name="copyObject.takeLicenses.target"] div div[data-oid="' + elem.value + '"]').removeClass('willBeReplacedStrong');
-                }
+                JSPC.app.subCopyController._handleDeleted(elem, 'takeLicenses')
             },
 
             takeOrgRelations: function (elem) {
@@ -841,11 +800,7 @@
             },
 
             deleteOrgRelations: function (elem) {
-                if (elem.checked) {
-                    $('.table tr td[name="copyObject.takeOrgRelations.target"] div div[data-oid="' + elem.value + '"]').addClass('willBeReplacedStrong');
-                } else {
-                    $('.table tr td[name="copyObject.takeOrgRelations.target"] div div[data-oid="' + elem.value + '"]').removeClass('willBeReplacedStrong');
-                }
+                JSPC.app.subCopyController._handleDeleted(elem, 'takeOrgRelations')
             },
 
             takeSpecificSubscriptionEditors: function (elem) {
@@ -861,11 +816,7 @@
             },
 
             deleteSpecificSubscriptionEditors: function (elem) {
-                if (elem.checked) {
-                    $('.table tr td[name="subscription.takeSpecificSubscriptionEditors.target"] div div[data-oid="' + elem.value + '"]').addClass('willBeReplacedStrong');
-                } else {
-                    $('.table tr td[name="subscription.takeSpecificSubscriptionEditors.target"] div div[data-oid="' + elem.value + '"]').removeClass('willBeReplacedStrong');
-                }
+                JSPC.app.subCopyController._handleDeleted(elem, 'takeSpecificSubscriptionEditors')
             },
 
             takeIdentifier: function (elem) {
@@ -881,11 +832,7 @@
             },
 
             deleteIdentifier: function (elem) {
-                if (elem.checked) {
-                    $('.table tr td[name="copyObject.takeIdentifier.target"] div div[data-oid="' + elem.value + '"]').addClass('willBeReplacedStrong');
-                } else {
-                    $('.table tr td[name="copyObject.takeIdentifier.target"] div div[data-oid="' + elem.value + '"]').removeClass('willBeReplacedStrong');
-                }
+                JSPC.app.subCopyController._handleDeleted(elem, 'takeIdentifier')
             },
 
             takeLinks: function (elem) {
@@ -901,13 +848,16 @@
             },
 
             deleteLinks: function (elem) {
-                if (elem.checked) {
-                    $('.table tr td[name="copyObject.takeLink.target"] div div[data-oid="' + elem.value + '"]').addClass('willBeReplacedStrong');
-                } else {
-                    $('.table tr td[name="copyObject.takeLink.target"] div div[data-oid="' + elem.value + '"]').removeClass('willBeReplacedStrong');
-                }
+                JSPC.app.subCopyController._handleDeleted(elem, 'takeLink')
             },
 
+            _handleDeleted: function(elem, identifier) {
+                if (elem.checked) {
+                    $('.table tr td[name="copyObject.' + identifier + '.target"] div div[data-oid="' + elem.value + '"]').addClass('willBeReplacedStrong');
+                } else {
+                    $('.table tr td[name="copyObject.' + identifier + '.target"] div div[data-oid="' + elem.value + '"]').removeClass('willBeReplacedStrong');
+                }
+            },
 
             checkCheckBoxesOfProperties: function (elem) {
                 var $input = $(elem);

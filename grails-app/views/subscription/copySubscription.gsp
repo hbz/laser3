@@ -51,7 +51,7 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
                 <i class="sticky note outline icon"></i>    ${message(code: 'default.notes.label')} <br />
                 <i class="calendar check outline icon"></i> ${message(code: 'menu.institutions.tasks')} <br />
                 <i class="file outline icon"></i>           ${message(code: 'default.documents.label')} <br />
-%{--                <i class="tasks icon"></i>                  ${message(code: 'workflow.plural')}--}%
+                <i class="tasks icon"></i>                  ${message(code: 'workflow.plural')}
             </div>
         </div>
     </div>
@@ -94,7 +94,7 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
 
 <ui:greySegment>
     <g:if test="${workFlowPart == CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS}">
-        <laser:render template="/templates/copyElements/copyDocsAndTasks" />
+        <laser:render template="/templates/copyElements/copyDocsAndTasksAndWorkflows" />
     </g:if>
     <g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_PROPERTIES}">
         <laser:render template="/templates/copyElements/copyPropertiesCompare" />

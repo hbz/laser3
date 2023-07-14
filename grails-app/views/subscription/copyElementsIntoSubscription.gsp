@@ -83,7 +83,7 @@
                         <i class="sticky note outline icon"></i>    ${message(code: 'default.notes.label')} <br />
                         <i class="calendar check outline icon"></i> ${message(code: 'menu.institutions.tasks')} <br />
                         <i class="file outline icon"></i>           ${message(code: 'default.documents.label')} <br />
-%{--                        <i class="tasks icon"></i>                  ${message(code: 'workflow.plural')}--}%
+                        <i class="tasks icon"></i>                  ${message(code: 'workflow.plural')}
                     </div>
                 </div>
             </div>
@@ -149,9 +149,9 @@
                         <i class="flag outline icon"></i>                   ${message(code:'subscription.hasPerpetualAccess.label')}
                         <i class="comment icon"></i>                        ${message(code:'subscription.hasPublishComponent.label')}
                         <g:if test="${sourceObject?.packages}">
-                            <i class="pizza slice icon"></i>                ${message(code:'subscription.holdingSelection.label')} <br />
+                            <i class="pizza slice icon"></i>                ${message(code:'subscription.holdingSelection.label')}
                         </g:if>
-                        <i class="balance scale icon"></i>                  ${message(code: 'license.label')}
+                        <i class="balance scale icon"></i>                  ${message(code: 'license.label')} <br />
                         <i class="university icon"></i>                     ${message(code: 'subscription.organisations.label')}
                         <i class="address card icon"></i>                   ${message(code: 'subscription.specificSubscriptionEditors')} <br />
                         <i class="barcode icon"></i>                        ${message(code: 'default.identifiers.label')}
@@ -168,7 +168,7 @@
                         <i class="sticky note outline icon"></i>    ${message(code: 'default.notes.label')} <br />
                         <i class="calendar check outline icon"></i> ${message(code: 'menu.institutions.tasks')} <br />
                         <i class="file outline icon"></i>           ${message(code: 'default.documents.label')} <br />
-%{--                        <i class="tasks icon"></i>                  ${message(code: 'workflow.plural')}--}%
+                        <i class="tasks icon"></i>                  ${message(code: 'workflow.plural')}
                     </div>
                 </div>
             </ui:complexSubNavItem>
@@ -216,7 +216,7 @@
     <laser:render template="/templates/copyElements/legend"/>
 
     <g:if test="${workFlowPart == CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS}">
-        <laser:render template="/templates/copyElements/copyDocsAndTasks" />
+        <laser:render template="/templates/copyElements/copyDocsAndTasksAndWorkflows" />
     </g:if>
     <g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_SUBSCRIBER && isSubscriberVisible && contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
         <laser:render template="/templates/copyElements/copySubscriber" />
