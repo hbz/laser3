@@ -89,7 +89,7 @@
 
 <h1 class="ui icon header la-clear-before left floated aligned la-positionRelative"><i class="icon blue icon la-laser la-object"></i> Die LAS:eR Vorteile</h1>
 
-<table class="ui striped structured la-table table">
+<table class="ui large striped structured la-table table">
     <thead>
     <tr>
         <th class="two wide" rowspan="2">Die LAS:eR Vorteile</th>
@@ -102,19 +102,21 @@
     </tr>
     </thead>
     <tbody>
-    <g:each in="${mappingColsBasic}" var="mpg">
+    <g:each in="${mappingColsBasic}" var="mpg1">
         <tr>
             <td class="four wide">
                 <div class="la-flexbox la-minor-object">
-                    <i class="icon la-list-icon mk-${mpg}"></i>
-                    ${message(code:"marketing.featureList.${mpg}")}
+                    <i class="icon la-list-icon mk-${mpg1}"></i>
+                    ${message(code:"marketing.featureList.${mpg1}")}
                 </div>
             </td>
 
             <td>
-                <button class="ui icon blue button la-modern-button la-modal" >
-                    <i class="film icon"></i>
-                </button>
+            <g:if test="${mpg1 == 'licence'}">
+                    <button class="ui icon blue button la-modern-button la-modal" >
+                        <i class="film icon"></i>
+                    </button>
+            </g:if>
             </td>
             <td class="four wide center aligned">
                 <i class="large green checkmark icon"></i>
@@ -124,22 +126,24 @@
             </td>
         </tr>
     </g:each>
-    <g:each in="${mappingColsPro}" var="mpg">
+    <g:each in="${mappingColsPro}" var="mpg2">
         <tr>
             <td class="four wide">
                 <div class="la-flexbox la-minor-object">
-                    <i class="icon la-list-icon mk-${mpg}"></i>
-                    ${message(code:"marketing.featureList.${mpg}")}
+                    <i class="icon la-list-icon mk-${mpg2}"></i>
+                    ${message(code:"marketing.featureList.${mpg2}")}
                 </div>
             </td>
-%{--            <td>
-                <button class="ui icon blue button la-modern-button la-modal" >
-                    <i class="film icon"></i>
-                </button>
-            </td>--}%
-            <td class="four wide center aligned">
+             <td>
+                 <g:if test="${mpg2 === 'propertiesUse'}">
+                     <button class="ui icon blue button la-modern-button la-modal" >
+                         <i class="film icon"></i>
+                     </button>
+                 </g:if>
+             </td>
+             <td class="four wide center aligned">
 
-            </td>
+             </td>
             <td class="four wide center aligned ">
                 <i class="large green checkmark icon"></i>
             </td>
@@ -151,7 +155,7 @@
             <td class="four wide">
 
             </td>
-
+            <td></td>
             <td class="center aligned">
 
             </td>
@@ -166,11 +170,11 @@
 </table>
 <h1 class="ui icon header la-clear-before left floated aligned la-positionRelative"><i class="icon blue icon la-laser la-object"></i>Der LAS:eR-Service</h1>
 
-<table class="ui striped structured la-table table">
+<table class="ui large striped structured la-table table">
     <thead>
     <tr>
         <th class="two wide" rowspan="2">Der LAS:eR-Service</th>
-        %{--        <th class="center aligned"  rowspan="2"></th>--}%
+        <th class="center aligned"  rowspan="2"></th>
         <th class="center aligned" colspan="2">Las:eR</th>
     </tr>
     <tr>
@@ -180,19 +184,19 @@
     </thead>
     <tbody>
 
-    <g:each in="${mappingColsServiceBasic}" var="mpg">
+    <g:each in="${mappingColsServiceBasic}" var="mpg3">
         <tr>
             <td class="four wide">
                 <div class="la-flexbox la-minor-object">
-                    <i class="icon la-list-icon mk-${mpg}"></i>
-                    ${message(code:"marketing.featureList.${mpg}")}
+                    <i class="icon la-list-icon mk-${mpg3}"></i>
+                    ${message(code:"marketing.featureList.${mpg3}")}
                 </div>
             </td>
-                %{--            <td>
-                                <button class="ui icon blue button la-modern-button la-modal" >
-                                    <i class="film icon"></i>
-                                </button>
-                            </td>--}%
+            <td>
+               %{--     <button class="ui icon blue button la-modern-button la-modal" >
+                   <i class="film icon"></i>
+               </button>--}%
+            </td>
             <td class="four wide center aligned">
                 <i class="large green checkmark icon"></i>
             </td>
@@ -201,19 +205,19 @@
             </td>
         </tr>
     </g:each>
-    <g:each in="${mappingColsServicePro}" var="mpg">
+    <g:each in="${mappingColsServicePro}" var="mpg4">
         <tr>
             <td class="four wide">
                 <div class="la-flexbox la-minor-object">
-                    <i class="icon la-list-icon mk-${mpg}"></i>
-                    ${message(code:"marketing.featureList.${mpg}")}
+                    <i class="icon la-list-icon mk-${mpg4}"></i>
+                    ${message(code:"marketing.featureList.${mpg4}")}
                 </div>
             </td>
-                %{--            <td>
-                                <button class="ui icon blue button la-modern-button la-modal" >
-                                    <i class="film icon"></i>
-                                </button>
-                            </td>--}%
+            <td>%{--
+                <button class="ui icon blue button la-modern-button la-modal" >
+                    <i class="film icon"></i>
+                </button>--}%
+            </td>
             <td class="four wide center aligned">
 
             </td>
@@ -228,7 +232,7 @@
             <td class="four wide">
 
             </td>
-
+            <td></td>
             <td class="center aligned">
 
             </td>
@@ -241,16 +245,35 @@
 
     </tfooter>
 </table>
-<div class="ui large modal">
 
-    <div class="content">
-        <button class="ui right floated button la-animatedGif-redo ">Animation wiederholen</button>
-        <img width="100%" alt="" class="la-animatedGif-img la-padding-top-1em" src="${resource(dir: 'images', file: 'licence.gif')}"/>
-    </div>
-    <div class="actions">
-        <a href="#" class="ui positive button" >Schließen</a>
-    </div>
-</div>
+
+    <g:each in="${mappingColsBasic}" var="mpg5" >
+        <g:if test="${mpg5 in ['licence']}">
+            <div class="ui large modal">
+                <div class="content">${mpg5}
+                    <button class="ui right floated button la-animatedGif-redo ">Animation wiederholen</button>
+                    <img width="100%" alt="" class="la-animatedGif-img la-padding-top-1em" src="${resource(dir: 'images', file: "${mpg5}.gif")}"/>
+                </div>
+                <div class="actions">
+                    <a href="#" class="ui positive button" >Schließen</a>
+                </div>
+            </div>
+        </g:if>
+    </g:each>
+    <g:each in="${mappingColsPro}" var="mpg6" >
+        <g:if test="${mpg5 in ['propertiesUse']}">
+            <div class="ui large modal">
+                <div class="content">${mpg6}
+                    <button class="ui right floated button la-animatedGif-redo ">Animation wiederholen</button>
+                    <img width="100%" alt="" class="la-animatedGif-img la-padding-top-1em" src="${resource(dir: 'images', file: "${mpg6}.gif")}"/>
+                </div>
+                <div class="actions">
+                    <a href="#" class="ui positive button" >Schließen</a>
+                </div>
+            </div>
+        </g:if>
+    </g:each>
+
 <laser:script file="${this.getGroovyPageFileName()}">
     $('.la-modal').click(function(){
         $('.large.modal')
@@ -266,12 +289,12 @@
         $(this).attr("data-gif", gifSrc);
 
       });
-    } /* end img[src$="gif"] */
+    }
 
     $('.la-animatedGif-redo').on("click", function () {
       srcGif = $(this).next().attr("data-gif");
       $(this).next().attr("src", srcGif);
-    }); /* end $win.on('scroll.gifrun') */
+    }); 
 
 </laser:script>
 <laser:htmlEnd /> %{-- </body></html> --}%

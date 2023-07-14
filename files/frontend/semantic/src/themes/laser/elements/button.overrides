@@ -59,7 +59,7 @@
   width: 100%;
   margin: @la-verticalGroupOffset;
   box-shadow: @verticalBoxShadow;
-  border-radius: 0em;
+  border-radius: @borderRadius;
 }
 #js-confirmation-button.positive.button {
   background-color: @red !important;
