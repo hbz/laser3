@@ -444,39 +444,16 @@
             },
 
             init: function (elem) {
-                var ref = JSPC.app.subCopyController.checkboxes
+                let scc = JSPC.app.subCopyController
 
-                ref.$takeDocIds.change( function(event) {
-                    JSPC.app.subCopyController.takeDocIds(this);
-                }).trigger('change')
-
-                ref.$deleteDocIds.change( function(event) {
-                    JSPC.app.subCopyController.deleteDocIds(this);
-                }).trigger('change')
-
-                ref.$takeAnnouncementIds.change( function(event) {
-                    JSPC.app.subCopyController.takeAnnouncementIds(this);
-                }).trigger('change')
-
-                ref.$deleteAnnouncementIds.change( function(event) {
-                    JSPC.app.subCopyController.deleteAnnouncementIds(this);
-                }).trigger('change')
-
-                ref.$takeTaskIds.change( function(event) {
-                    JSPC.app.subCopyController.takeTaskIds(this);
-                }).trigger('change')
-
-                ref.$deleteTaskIds.change( function(event) {
-                    JSPC.app.subCopyController.deleteTaskIds(this);
-                }).trigger('change')
-
-                ref.$takeWorkflowIds.change( function(event) {
-                    JSPC.app.subCopyController.takeWorkflowIds(this);
-                }).trigger('change')
-
-                ref.$deleteWorkflowIds.change( function(event) {
-                    JSPC.app.subCopyController.deleteWorkflowIds(this);
-                }).trigger('change')
+                scc.checkboxes.$takeDocIds.change( function(event) { scc.takeDocIds(this); } ).trigger('change')
+                scc.checkboxes.$deleteDocIds.change( function(event) { scc.deleteDocIds(this); } ).trigger('change')
+                scc.checkboxes.$takeAnnouncementIds.change( function(event) { scc.takeAnnouncementIds(this); } ).trigger('change')
+                scc.checkboxes.$deleteAnnouncementIds.change( function(event) { scc.deleteAnnouncementIds(this); } ).trigger('change')
+                scc.checkboxes.$takeTaskIds.change( function(event) { scc.takeTaskIds(this); } ).trigger('change')
+                scc.checkboxes.$deleteTaskIds.change( function(event) { scc.deleteTaskIds(this); } ).trigger('change')
+                scc.checkboxes.$takeWorkflowIds.change( function(event) { scc.takeWorkflowIds(this); } ).trigger('change')
+                scc.checkboxes.$deleteWorkflowIds.change( function(event) { scc.deleteWorkflowIds(this); } ).trigger('change')
             },
 
             takeDocIds: function(elem) {
@@ -493,12 +470,7 @@
             },
 
             deleteDocIds: function(elem) {
-                if (elem.checked) {
-                    $('.table tr td[name="copyObject.takeDocs.target"] div[data-id="' + elem.value + '"]').addClass('willBeReplaced');
-                }
-                else {
-                    $('.table tr td[name="copyObject.takeDocs.target"] div[data-id="' + elem.value + '"]').removeClass('willBeReplaced');
-                }
+                JSPC.app.subCopyController._handleDeleted(elem, 'takeDocs')
             },
 
             takeAnnouncementIds: function(elem) {
@@ -515,12 +487,7 @@
             },
 
             deleteAnnouncementIds: function(elem) {
-                if (elem.checked) {
-                    $('.table tr td[name="copyObject.takeAnnouncements.target"] div[data-id="' + elem.value + '"]').addClass('willBeReplaced');
-                }
-                else {
-                    $('.table tr td[name="copyObject.takeAnnouncements.target"] div[data-id="' + elem.value + '"]').removeClass('willBeReplaced');
-                }
+                JSPC.app.subCopyController._handleDeleted(elem, 'takeAnnouncements')
             },
 
             takeTaskIds: function(elem) {
@@ -537,12 +504,7 @@
             },
 
             deleteTaskIds: function(elem) {
-                if (elem.checked) {
-                    $('.table tr td[name="copyObject.takeTasks.target"] div[data-id="' + elem.value + '"]').addClass('willBeReplaced');
-                }
-                else {
-                    $('.table tr td[name="copyObject.takeTasks.target"] div[data-id="' + elem.value + '"]').removeClass('willBeReplaced');
-                }
+                JSPC.app.subCopyController._handleDeleted(elem, 'takeTasks')
             },
 
             takeWorkflowIds: function(elem) {
@@ -559,11 +521,15 @@
             },
 
             deleteWorkflowIds: function(elem) {
+                JSPC.app.subCopyController._handleDeleted(elem, 'takeWorkflows')
+            },
+
+            _handleDeleted: function(elem, identifier) {
                 if (elem.checked) {
-                    $('.table tr td[name="copyObject.takeWorkflows.target"] div[data-id="' + elem.value + '"]').addClass('willBeReplaced');
+                    $('.table tr td[name="copyObject.' + identifier + '.target"] div[data-id="' + elem.value + '"]').addClass('willBeReplaced');
                 }
                 else {
-                    $('.table tr td[name="copyObject.takeWorkflows.target"] div[data-id="' + elem.value + '"]').removeClass('willBeReplaced');
+                    $('.table tr td[name="copyObject.' + identifier + '.target"] div[data-id="' + elem.value + '"]').removeClass('willBeReplaced');
                 }
             },
 

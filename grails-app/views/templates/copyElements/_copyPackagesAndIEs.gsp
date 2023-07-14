@@ -461,39 +461,16 @@
             },
 
             init: function (elem) {
-                var ref = JSPC.app.subCopyController.checkboxes
+                let scc = JSPC.app.subCopyController
 
-                ref.$takePackageIds.change(function (event) {
-                    JSPC.app.subCopyController.takePackageIds(this);
-                }).trigger('change')
-
-                ref.$takePackageSettings.change(function (event) {
-                    JSPC.app.subCopyController.takePackageSettings(this);
-                }).trigger('change')
-
-                ref.$deletePackageIds.change(function (event) {
-                    JSPC.app.subCopyController.deletePackageIds(this);
-                }).trigger('change')
-
-                ref.$deletePackageSettings.change(function (event) {
-                    JSPC.app.subCopyController.deletePackageSettings(this);
-                }).trigger('change')
-
-                ref.$takeEntitlementIds.change(function (event) {
-                    JSPC.app.subCopyController.takeEntitlementIds(this);
-                }).trigger('change')
-
-                ref.$deleteEntitlementIds.change(function (event) {
-                    JSPC.app.subCopyController.deleteEntitlementIds(this);
-                }).trigger('change')
-
-                ref.$takeTitleGroups.change(function (event) {
-                    JSPC.app.subCopyController.takeTitleGroups(this);
-                }).trigger('change')
-
-                ref.$deleteTitleGroups.change(function (event) {
-                    JSPC.app.subCopyController.deleteTitleGroups(this);
-                }).trigger('change')
+                scc.checkboxes.$takePackageIds.change(function (event) { scc.takePackageIds(this); } ).trigger('change')
+                scc.checkboxes.$takePackageSettings.change(function (event) { scc.takePackageSettings(this); } ).trigger('change')
+                scc.checkboxes.$deletePackageIds.change(function (event) { scc.deletePackageIds(this); } ).trigger('change')
+                scc.checkboxes.$deletePackageSettings.change(function (event) { scc.deletePackageSettings(this); } ).trigger('change')
+                scc.checkboxes.$takeEntitlementIds.change(function (event) { scc.takeEntitlementIds(this); } ).trigger('change')
+                scc.checkboxes.$deleteEntitlementIds.change(function (event) { scc.deleteEntitlementIds(this); } ).trigger('change')
+                scc.checkboxes.$takeTitleGroups.change(function (event) { scc.takeTitleGroups(this); } ).trigger('change')
+                scc.checkboxes.$deleteTitleGroups.change(function (event) { scc.deleteTitleGroups(this); } ).trigger('change')
             },
 
             takePackageIds: function (elem) {
