@@ -1,14 +1,18 @@
 <laser:serviceInjection/>
 <table class="ui table la-js-responsive-table la-table">
     <colgroup>
-        <col style="width:  30px;">
-        <col style="width: 170px;">
+        <col style="width:  15px;">
         <col style="width: 236px;">
+        <col style="width: 118px;">
+        <col style="width:  82px;">
         <col style="width:  82px;">
     </colgroup>
     <thead>
     <tr>
-        <th></th>
+        <th>${message(code: 'sidewide.number')}</th>
+        <g:if test="${tmplShowOrgName}">
+            <g:sortableColumn params="${params}" property="pr.org.sortname" title="${message(code: 'person.organisation.label')}"/>
+        </g:if>
         <th>
             ${message(code: 'default.type.label')}
         </th>
@@ -22,8 +26,15 @@
     <g:each in="${addresses}" var="address" status="c">
         <tr>
             <td>
-                ${c + 1}
+                ${c + 1 + (offset ?: 0)}
             </td>
+            <g:if test="${tmplShowOrgName}">
+                <td>
+                    <i class="icon university la-list-icon"></i>
+                    <g:link controller="organisation" action="addressbook"
+                            id="${address.org.id}">${address.org.name} (${address.org.sortname})</g:link>
+                </td>
+            </g:if>
             <td>
                 <div class="ui divided middle aligned list la-flex-list ">
                 <g:each in="${address.type.sort{it?.getI10n('value')}}" var="type">

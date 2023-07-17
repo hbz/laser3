@@ -301,6 +301,7 @@ class OrganisationController  {
             Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
             contactSwitch.addAll(params.list("contactSwitch"))
+            contactSwitch.addAll(params.list("addressSwitch"))
         }
         if(params.fileformat == 'xlsx') {
             SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(availableOrgs, selectedFields, 'institution', ExportClickMeService.FORMAT.XLS, contactSwitch)
@@ -383,6 +384,7 @@ class OrganisationController  {
                 file = params.filename
             }
             contactSwitch.addAll(params.list("contactSwitch"))
+            contactSwitch.addAll(params.list("addressSwitch"))
             Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
         }
@@ -552,6 +554,7 @@ class OrganisationController  {
             Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
             contactSwitch.addAll(params.list("contactSwitch"))
+            contactSwitch.addAll(params.list("addressSwitch"))
         }
         if(params.fileformat == 'xlsx') {
             SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(orgListTotal, selectedFields, 'provider', ExportClickMeService.FORMAT.XLS, contactSwitch)
@@ -1913,8 +1916,12 @@ class OrganisationController  {
         }
 
         params.sort = params.sort ?: 'p.last_name, p.first_name'
+        Map adrParams = [:]
+        adrParams.putAll(params)
+        if(params.sort.contains('p.'))
+            adrParams.remove('sort')
 
-        List visiblePersons = addressbookService.getVisiblePersons("myPublicContacts",params)
+        List visiblePersons = addressbookService.getVisiblePersons("myPublicContacts", params)
         result.num_visiblePersons = visiblePersons.size()
         result.visiblePersons = visiblePersons.drop(result.offset).take(result.max)
 
@@ -1925,7 +1932,7 @@ class OrganisationController  {
 
         params.tab = params.tab ?: 'contacts'
 
-        result.addresses = Address.findAllByOrg(params.org)
+        result.addresses = addressbookService.getVisibleAddresses("myPublicContacts", adrParams)
 
         result
     }

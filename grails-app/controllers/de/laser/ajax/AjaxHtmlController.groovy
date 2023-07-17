@@ -406,11 +406,21 @@ class AjaxHtmlController {
     @Secured(['ROLE_USER'])
     def createAddress() {
         Map<String, Object> model = [:]
-        model.orgId = params.orgId
         model.prsId = params.prsId
         model.redirect = params.redirect
         model.typeId = params.typeId ? Long.valueOf(params.typeId) : null
         model.hideType = params.hideType
+
+        switch(params.addressFor) {
+            case 'addressForInstitution': model.orgList = Org.executeQuery("from Org o where exists (select roletype from o.orgType as roletype where roletype.id = :orgType ) and o.sector.id = :orgSector order by LOWER(o.sortname)", [orgSector: RDStore.O_SECTOR_HIGHER_EDU.id, orgType: RDStore.OT_INSTITUTION.id])
+                model.tenant = contextService.getOrg().id
+                break
+            case 'addressForProviderAgency': model.orgList = Org.executeQuery("from Org o where exists (select roletype from o.orgType as roletype where roletype.id in (:orgType) ) and o.sector.id = :orgSector order by LOWER(o.sortname)", [orgSector: RDStore.O_SECTOR_PUBLISHER.id, orgType: [RDStore.OT_PROVIDER.id, RDStore.OT_AGENCY.id]])
+                model.tenant = contextService.getOrg().id
+                break
+            default: model.orgId = params.orgId ?: contextService.getOrg().id
+                break
+        }
 
         if (model.orgId && model.typeId) {
             String messageCode = 'addressFormModalLibraryAddress'

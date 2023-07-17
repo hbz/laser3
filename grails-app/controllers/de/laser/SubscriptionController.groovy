@@ -512,6 +512,7 @@ class SubscriptionController {
                 Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
                 selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
                 contactSwitch.addAll(params.list("contactSwitch"))
+                contactSwitch.addAll(params.list("addressSwitch"))
             }
             if(params.exportShibboleths || params.exportEZProxys || params.exportProxys || params.exportIPs || params.fileformat == 'xlsx') {
                 SXSSFWorkbook wb
