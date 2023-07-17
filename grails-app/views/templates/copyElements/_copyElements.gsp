@@ -62,10 +62,9 @@
             </thead>
             <tbody>
 
-
             <g:each in="${copyElementsService.allowedProperties(sourceObject)}" var="objProperty">
-                <tr data-type="property">
-                    <td data-element="copyObject.take${objProperty}.source">
+                <tr data-type="property" data-element="copyObject.take${objProperty}">
+                    <td data-element="source">
                         <div class="la-element">
                             <strong>
                                 <ui:propertyIcon object="${sourceObject}" propertyName="${objProperty}" showToolTipp="true"/>
@@ -90,7 +89,7 @@
                         </g:if>
                     </td>
                     <g:if test="${!copyObject}">
-                        <td data-element="copyObject.take${objProperty}.target">
+                        <td data-element="target">
                             <g:if test="${targetObject}">
                                 <div class="la-element">
                                     <strong>
@@ -180,8 +179,8 @@
             </g:if>
 
             <g:if test="${sourceLicenses}">
-                <tr data-type="license">
-                    <td data-element="copyObject.takeLicenses.source">
+                <tr data-type="license" data-element="copyObject.takeLicenses">
+                    <td data-element="source">
                         <div>
                             <strong><i class="balance scale icon"></i>${message(code: 'license.label')}:</strong>
                             <g:each in="${sourceLicenses}" var="license">
@@ -208,7 +207,7 @@
                         </g:each>
                     </td>
                     <g:if test="${!copyObject}">
-                        <td data-element="copyObject.takeLicenses.target">
+                        <td data-element="target">
                             <div>
                                 <strong><i class="balance scale icon"></i>${message(code: 'license.label')}:</strong>
                                 <g:each in="${targetLicenses}" var="license">
@@ -233,8 +232,8 @@
                 </tr>
             </g:if>
             <g:if test="${sourceObject.hasProperty("orgRelations")}">
-                <tr data-type="takeOrgRelations">
-                    <td data-element="copyObject.takeOrgRelations.source">
+                <tr data-type="takeOrgRelations" data-element="copyObject.takeOrgRelations">
+                    <td data-element="source">
                         <div>
                 <g:if test="${!source_visibleOrgRelations}">
                     <strong><i class="university icon"></i>&nbsp;${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.organisations.label")}:
@@ -280,7 +279,7 @@
                     </g:each>
                 </td>
                 <g:if test="${!copyObject}">
-                    <td data-element="copyObject.takeOrgRelations.target">
+                    <td data-element="target">
                         <div>
                             <g:if test="${!target_visibleOrgRelations}">
                                 <strong><i class="university icon"></i>&nbsp;${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.organisations.label")}:
@@ -333,8 +332,8 @@
             </g:if>
 
             <g:if test="${sourceObject instanceof Subscription}">
-                <tr data-type="specificSubscriptionEditors">
-                    <td data-element="subscription.takeSpecificSubscriptionEditors.source">
+                <tr data-type="specificSubscriptionEditors" data-element="subscription.takeSpecificSubscriptionEditors">
+                    <td data-element="source">
                         <div>
                             <strong>
                                 <i class="address card icon"></i> ${message(code: 'subscription.specificSubscriptionEditors')}:
@@ -428,7 +427,7 @@
                         </g:each>
                     </td>
                     <g:if test="${!copyObject}">
-                        <td data-element="subscription.takeSpecificSubscriptionEditors.target">
+                        <td data-element="target">
                             <div>
                                 <strong>
                                     <i class="address card icon"></i> ${message(code: 'subscription.specificSubscriptionEditors')}:
@@ -523,8 +522,8 @@
             </g:if>
 
             <g:if test="${sourceObject.hasProperty("ids")}">
-                <tr data-type="identifiers">
-                    <td data-element="copyObject.takeIdentifier.source">
+                <tr data-type="identifiers" data-element="copyObject.takeIdentifier">
+                    <td data-element="source">
                         <div>
                             <strong><i class="barcode icon"></i>&nbsp;${message(code: 'default.identifiers.label')}:</strong><br />
                             <g:each in="${sourceIdentifiers}" var="ident">
@@ -557,7 +556,7 @@
                         </g:each>
                     </td>
                     <g:if test="${!copyObject}">
-                        <td data-element="copyObject.takeIdentifier.target">
+                        <td data-element="target">
                             <div>
                             <strong><i class="barcode icon"></i>&nbsp;${message(code: 'default.identifiers.label')}:</strong><br />
                             <g:each in="${targetIdentifiers}" var="ident">
@@ -587,8 +586,8 @@
                 </tr>
             </g:if>
             <g:if test="${sourceLinks}">
-                <tr data-type="links">
-                    <td data-element="copyObject.takeLink.source">
+                <tr data-type="links" data-element="copyObject.takeLink">
+                    <td data-element="source">
                         <div>
                             <strong><i class="exchange icon"></i>&nbsp
                                 <g:if test="${sourceObject instanceof Subscription}">${message(code: 'subscription.linkedObjects')}</g:if>
@@ -625,7 +624,7 @@
                         </g:each>
                     </td>
                     <g:if test="${!copyObject}">
-                        <td data-element="copyObject.takeLink.target">
+                        <td data-element="target">
                             <div>
                                 <strong><i class="exchange icon"></i>&nbsp
                                     <g:if test="${sourceObject instanceof Subscription}">${message(code: 'subscription.linkedObjects')}</g:if>
@@ -735,7 +734,6 @@
 
                 $("table tr[data-type=property] td input:checkbox[name^='copyObject']").change(function () { scc.checkCheckBoxesOfProperties(this); } ).trigger('change');
 
-                //console.log($('[data-action="delete"]:checked'));
                 if($('[data-action="delete"]:checked').length > 0){
                     $("#copyElementsSubmit").addClass("js-open-confirm-modal");
                     r2d2.initDynamicUiStuff('form');
@@ -791,44 +789,42 @@
 
             _handleTake: function(elem, identifier, counterId) {
                 if (elem.checked) {
-                    $('.table tr td[data-element="copyObject.' + identifier + '.source"] div div[data-oid="' + elem.value + '"]').addClass('willStay');
-                    $('.table tr td[data-element="copyObject.' + identifier + '.target"] div div').addClass('willStay');
+                    $('.table tr[data-element="copyObject.' + identifier + '"] td[data-element="source"] div div[data-oid="' + elem.value + '"]').addClass('willStay');
+                    $('.table tr[data-element="copyObject.' + identifier + '"] td[data-element="target"] div div').addClass('willStay');
                 } else {
-                    $('.table tr td[data-element="copyObject.' + identifier + '.source"] div div[data-oid="' + elem.value + '"]').removeClass('willStay');
+                    $('.table tr[data-element="copyObject.' + identifier + '"] td[data-element="source"] div div[data-oid="' + elem.value + '"]').removeClass('willStay');
                     if (JSPC.app.subCopyController.getNumberOfCheckedCheckboxes('copyObject.' + counterId) < 1) {
-                        $('.table tr td[data-element="copyObject.' + identifier + '.target"] div div').removeClass('willStay');
+                        $('.table tr[data-element="copyObject.' + identifier + '"] td[data-element="target"] div div').removeClass('willStay');
                     }
                 }
             },
             _handleDeleted: function(elem, identifier) {
                 if (elem.checked) {
-                    $('.table tr td[data-element="copyObject.' + identifier + '.target"] div div[data-oid="' + elem.value + '"]').addClass('willBeReplacedStrong');
+                    $('.table tr[data-element="copyObject.' + identifier + '"] td[data-element="target"] div div[data-oid="' + elem.value + '"]').addClass('willBeReplacedStrong');
                 } else {
-                    $('.table tr td[data-element="copyObject.' + identifier + '.target"] div div[data-oid="' + elem.value + '"]').removeClass('willBeReplacedStrong');
+                    $('.table tr[data-element="copyObject.' + identifier + '"] td[data-element="target"] div div[data-oid="' + elem.value + '"]').removeClass('willBeReplacedStrong');
                 }
             },
 
             checkCheckBoxesOfProperties: function (elem) {
-                console.log('--checkCheckBoxesOfProperties--');
-                console.log(elem);
                 var $input = $(elem);
-                var checkBoxID = $input.attr("id");
-                if (checkBoxID.includes("copyObject.take")) {
+                let $source = $('.table tr[data-element="copyObject.take' + $input.attr("value") + '"] td[data-element="source"] div')
+                let $target = $('.table tr[data-element="copyObject.take' + $input.attr("value") + '"] td[data-element="target"] div')
 
+                if ($input.attr("id").includes("copyObject.take")) {
                     if ($input.prop("checked") == true) {
-                        $(".table tr td[data-element='copyObject.take" + $input.attr("value") + ".source'] div").addClass("willStay");
-                        $(".table tr td[data-element='copyObject.take" + $input.attr("value") + ".target'] div").addClass("willBeReplaced");
+                        $source.addClass("willStay");
+                        $target.addClass("willBeReplaced");
                     } else {
-                        $(".table tr td[data-element='copyObject.take" + $input.attr("value") + ".source'] div").removeClass("willStay");
-                        $(".table tr td[data-element='copyObject.take" + $input.attr("value") + ".target'] div").removeClass("willBeReplaced");
+                        $source.removeClass("willStay");
+                        $target.removeClass("willBeReplaced");
                     }
                 }
-                if (checkBoxID.includes("copyObject.delete")) {
-
+                if ($input.attr("id").includes("copyObject.delete")) {
                     if ($input.prop("checked") == true) {
-                        $(".table tr td[data-element='copyObject.take" + $input.attr("value") + ".target'] div").addClass("willBeReplacedStrong");
+                        $target.addClass("willBeReplacedStrong");
                     } else {
-                        $(".table tr td[data-element='copyObject.take" + $input.attr("value") + ".target'] div").removeClass("willBeReplacedStrong");
+                        $target.removeClass("willBeReplacedStrong");
                     }
                 }
             },
