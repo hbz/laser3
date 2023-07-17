@@ -862,34 +862,6 @@ class CopyElementsService {
                             copyPackages(packagesToTake, targetObject, flash)
                         }
 
-                        if (params.subscription?.takePackageSettings) {
-                            List takePackageNotifications = params.list('subscription.takePackageNotifications'),
-                            takePackageSettingAudit = params.list('subscription.takePackageSettingAudit'),
-                            takePackageNotificationAudit = params.list('subscription.takePackageNotificationAudit')
-                            params.list('subscription.takePackageSettings').each { String val ->
-                                String[] setting = val.split('§')
-                                boolean withNotification = takePackageNotifications.findIndexOf { String notification -> notification.split('§')[1] == setting[1]} > -1,
-                                settingAudit = takePackageSettingAudit.findIndexOf { String settingAudit -> settingAudit.split('§')[1] == setting[1]} > -1,
-                                notificationAudit = takePackageNotificationAudit.findIndexOf { String notificationAudit -> notificationAudit.split('§')[1] == setting[1]} > -1
-                                SubscriptionPackage sourcePackage = genericOIDService.resolveOID(setting[0])
-                                SubscriptionPackage targetPackage = SubscriptionPackage.findBySubscriptionAndPkg(targetObject, sourcePackage.pkg)
-                                if(setting[2] != 'null' && targetPackage) {
-                                    Map<String, Object> configSettings = [subscriptionPackage: targetPackage, settingValue: RefdataValue.get(setting[2]), settingKey: setting[1], withNotification: withNotification]
-                                    PendingChangeConfiguration newPcc = PendingChangeConfiguration.construct(configSettings)
-                                    if (newPcc) {
-                                        if (settingAudit && !AuditConfig.getConfig(targetObject, setting[1]))
-                                            AuditConfig.addConfig(targetObject, setting[1])
-                                        else if (!settingAudit && AuditConfig.getConfig(targetObject, setting[1]))
-                                            AuditConfig.removeConfig(targetObject, setting[1])
-                                        if (notificationAudit && !AuditConfig.getConfig(targetObject, setting[1]+PendingChangeConfiguration.NOTIFICATION_SUFFIX))
-                                            AuditConfig.addConfig(targetObject, setting[1]+PendingChangeConfiguration.NOTIFICATION_SUFFIX)
-                                        else if (!notificationAudit && AuditConfig.getConfig(targetObject, setting[1]+PendingChangeConfiguration.NOTIFICATION_SUFFIX))
-                                            AuditConfig.removeConfig(targetObject, setting[1]+PendingChangeConfiguration.NOTIFICATION_SUFFIX)
-                                    }
-                                }
-                            }
-                        }
-
                         if (params.subscription?.takeTitleGroups) {
                             List<IssueEntitlementGroup> takeTitleGroups = params.list('subscription.takeTitleGroups').collect { genericOIDService.resolveOID(it) }
                             copyIssueEntitlementGroupItem(takeTitleGroups, targetObject)
@@ -1550,7 +1522,7 @@ class CopyElementsService {
         if (packagesToDelete) {
 
             packagesToDelete.each { subPkg ->
-                OrgAccessPointLink.executeUpdate("delete from OrgAccessPointLink oapl where oapl.subPkg=?", [subPkg])
+                OrgAccessPointLink.executeUpdate("delete from OrgAccessPointLink oapl where oapl.subPkg=:sp", [sp: subPkg])
                 PendingChangeConfiguration.executeUpdate("delete from PendingChangeConfiguration pcc where pcc.subscriptionPackage=:sp", [sp: subPkg])
 
                 CostItem.findAllBySubPkg(subPkg).each { costItem ->
@@ -1644,25 +1616,6 @@ class CopyElementsService {
                     }
                      */
                 }
-            }
-        }
-    }
-
-    /**
-     * Transfers the pending change configuration into the target subscription-package
-     * @param configs the configurations to take
-     * @param target the target subscription package to which the configurations should be applied
-     * @return true if the transfer was successful, false otherwise
-     */
-    boolean copyPendingChangeConfiguration(Collection<PendingChangeConfiguration> configs, SubscriptionPackage target) {
-        configs.each { PendingChangeConfiguration config ->
-            Map<String, Object> configSettings = [subscriptionPackage: target, settingValue: config.settingValue, settingKey: config.settingKey, withNotification: config.withNotification]
-            PendingChangeConfiguration newPcc = PendingChangeConfiguration.construct(configSettings)
-            if (newPcc) {
-                if (AuditConfig.getConfig(config.subscriptionPackage.subscription, config.settingKey) && !AuditConfig.getConfig(target.subscription, config.settingKey))
-                    AuditConfig.addConfig(target.subscription, config.settingKey)
-                else if (!AuditConfig.getConfig(config.subscriptionPackage.subscription, config.settingKey) && AuditConfig.getConfig(target.subscription, config.settingKey))
-                    AuditConfig.removeConfig(target.subscription, config.settingKey)
             }
         }
     }

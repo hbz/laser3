@@ -20,7 +20,7 @@
 
     <g:if test="${true}"> %{-- DEV-BLOCKER --}%
 
-    <g:form controller="${controllerName}" action="${actionName}" id="${target.id}" method="POST" class="ui form la-js-checkRequired">
+    <g:form controller="${controllerName}" action="${actionName}" id="${target.id}" method="POST" class="ui form">
         <div class="ui grid">
             <div class="four wide column">
                 <div id="modalTabMenu" class="ui pointing secondary vertical la-tab-with-js menu">
@@ -47,7 +47,7 @@
                     <div class="field">
                         <g:set var="fieldName" value="${WfChecklist.KEY}_numberOfPoints" />
                         <label for="${fieldName}">Anzahl der Einträge (kann später geändert werden)</label>
-                        <input type="text" name="${fieldName}" id="${fieldName}" value="3" />
+                        <input type="number" name="${fieldName}" id="${fieldName}" value="3" min="1" max="10" />
                     </div>
 
                     <input type="hidden" name="cmd" value="create:${WfChecklist.KEY}" />
@@ -83,6 +83,16 @@
 
                         <input type="hidden" name="cmd" value="instantiate:${WfChecklist.KEY}" />
                         <input type="hidden" name="target" value="${target.class.name}:${target.id}" />
+
+                        <div class="ui message info" style="margin-top:1.5em;text-align:left;font-size:14px;font-weight:normal;display:block">
+                            <div class="content">
+                                <i class="hand point right outline icon"></i>
+                                Bei einer Kopie werden Informationen aus den Feldern
+                                <strong>Kommentar</strong>, <strong>Vorlage</strong>, <strong>Aufgabe erledigt</strong> und <strong>Datumsangabe</strong>
+                                nicht übernommen.
+                            </div>
+                        </div>
+
                     </g:if>
                     <g:else>
                         <p>Es wurden (noch) keine Vorlagen gefunden.</p>
