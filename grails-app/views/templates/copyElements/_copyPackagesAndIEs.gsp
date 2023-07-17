@@ -275,21 +275,26 @@
             },
 
             _handleTake: function(elem, identifier, counterId) {
+                let $source = $('.table tr[data-element="subscription.' + identifier + '"] td[data-element="source"] div.la-copyPack-item[data-oid="' + elem.value + '"]')
+                let $target = $('.table tr[data-element="subscription.' + identifier + '"] td[data-element="target"] div.la-copyPack-item')
+
                 if (elem.checked) {
-                    $('.table tr[data-element="subscription.' + identifier + '"] td[data-element="source"] div.la-copyPack-item[data-oid="' + elem.value + '"]').addClass('willStay');
-                    $('.table tr[data-element="subscription.' + identifier + '"] td[data-element="target"] div.la-copyPack-item').addClass('willStay');
+                    $source.addClass('willStay');
+                    $target.addClass('willStay');
                 } else {
-                    $('.table tr[data-element="subscription.' + identifier + '"] td[data-element="source"] div.la-copyPack-item[data-oid="' + elem.value + '"]').removeClass('willStay');
+                    $source.removeClass('willStay');
                     if (JSPC.app.subCopyController.getNumberOfCheckedCheckboxes('subscription.' + counterId) < 1) {
-                        $('.table tr[data-element="subscription.' + identifier + '"] td[data-element="target"] div.la-copyPack-item').removeClass('willStay');
+                        $target.removeClass('willStay');
                     }
                 }
             },
             _handleDeleted: function(elem, identifier) {
+                let $target = $('.table tr[data-element="subscription.' + identifier + '"] td[data-element="target"] div.la-copyPack-item[data-oid="' + elem.value + '"]')
+
                 if (elem.checked) {
-                    $('.table tr[data-element="subscription.' + identifier + '"] td[data-element="target"] div.la-copyPack-item[data-oid="' + elem.value + '"]').addClass('willBeReplacedStrong');
+                    $target.addClass('willBeReplacedStrong');
                 } else {
-                    $('.table tr[data-element="subscription.' + identifier + '"] td[data-element="target"] div.la-copyPack-item[data-oid="' + elem.value + '"]').removeClass('willBeReplacedStrong');
+                    $target.removeClass('willBeReplacedStrong');
                 }
             },
 
