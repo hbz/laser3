@@ -2,17 +2,14 @@ package de.laser
 
 import de.laser.annotations.Check404
 import de.laser.annotations.DebugInfo
-import de.laser.auth.User
 import de.laser.config.ConfigMapper
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.interfaces.CalculatedType
-import de.laser.properties.PropertyDefinition
 import de.laser.remote.ApiSource
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
 import de.laser.utils.DateUtils
-import de.laser.utils.SwissKnife
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.time.TimeCategory
@@ -515,6 +512,7 @@ class SubscriptionController {
                 Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
                 selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
                 contactSwitch.addAll(params.list("contactSwitch"))
+                contactSwitch.addAll(params.list("addressSwitch"))
             }
             if(params.exportShibboleths || params.exportEZProxys || params.exportProxys || params.exportIPs || params.fileformat == 'xlsx') {
                 SXSSFWorkbook wb
@@ -1798,7 +1796,7 @@ class SubscriptionController {
                     if(ctrlResult.result.targetObject) {
                         params.workFlowPart = CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
                     }
-                    ctrlResult.result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
+                    ctrlResult.result << copyElementsService.loadDataFor_DocsTasksWorkflows(params)
                     break
                 case CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS:
                     ctrlResult.result << copyElementsService.copyObjectElements_PackagesEntitlements(params)
@@ -1806,7 +1804,7 @@ class SubscriptionController {
                     ctrlResult.result << copyElementsService.loadDataFor_Properties(params)
                     break
                 case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
-                    ctrlResult.result << copyElementsService.copyObjectElements_DocsAnnouncementsTasks(params)
+                    ctrlResult.result << copyElementsService.copyObjectElements_DocsTasksWorkflows(params)
                     if (ctrlResult.result.isConsortialObjects && contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC)){
                         params.workFlowPart = CopyElementsService.WORKFLOW_SUBSCRIBER
                         ctrlResult.result << copyElementsService.loadDataFor_Subscriber(params)
@@ -1862,7 +1860,7 @@ class SubscriptionController {
                     ctrlResult.result << copyElementsService.copyObjectElements_DatesOwnerRelations(params)
                     if (params.isRenewSub){
                         params.workFlowPart = CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
-                        ctrlResult.result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
+                        ctrlResult.result << copyElementsService.loadDataFor_DocsTasksWorkflows(params)
                     } else {
                         ctrlResult.result << copyElementsService.loadDataFor_DatesOwnerRelations(params)
                     }
@@ -1877,7 +1875,7 @@ class SubscriptionController {
                     }
                     break
                 case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
-                    ctrlResult.result << copyElementsService.copyObjectElements_DocsAnnouncementsTasks(params)
+                    ctrlResult.result << copyElementsService.copyObjectElements_DocsTasksWorkflows(params)
                     if (params.isRenewSub){
                         if (!params.fromSurvey && ctrlResult.result.isSubscriberVisible){
                             params.workFlowPart = CopyElementsService.WORKFLOW_SUBSCRIBER
@@ -1887,7 +1885,7 @@ class SubscriptionController {
                             ctrlResult.result << copyElementsService.loadDataFor_PackagesEntitlements(params)
                         }
                     } else {
-                        ctrlResult.result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
+                        ctrlResult.result << copyElementsService.loadDataFor_DocsTasksWorkflows(params)
                     }
                     break
                 case CopyElementsService.WORKFLOW_SUBSCRIBER:
@@ -1910,7 +1908,7 @@ class SubscriptionController {
                     break
                 default:
                     if(ctrlResult.result.transferIntoMember)
-                        ctrlResult.result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
+                        ctrlResult.result << copyElementsService.loadDataFor_DocsTasksWorkflows(params)
                     else
                         ctrlResult.result << copyElementsService.loadDataFor_DatesOwnerRelations(params)
                     break
@@ -1954,8 +1952,8 @@ class SubscriptionController {
             result.allObjects_writeRights = subscriptionService.getMySubscriptionsWithMyElements_writeRights([status: RDStore.SUBSCRIPTION_CURRENT.id])
             switch (params.workFlowPart) {
                 case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
-                    result << copyElementsService.copyObjectElements_DocsAnnouncementsTasks(params)
-                    result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
+                    result << copyElementsService.copyObjectElements_DocsTasksWorkflows(params)
+                    result << copyElementsService.loadDataFor_DocsTasksWorkflows(params)
                     break
                 case CopyElementsService.WORKFLOW_PROPERTIES:
                     result << copyElementsService.copyObjectElements_Properties(params)
@@ -1971,7 +1969,7 @@ class SubscriptionController {
                     }
                     break
                 default:
-                    result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
+                    result << copyElementsService.loadDataFor_DocsTasksWorkflows(params)
                     break
             }
             if (params.targetObjectId) {

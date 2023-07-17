@@ -1403,6 +1403,7 @@ class SurveyController {
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
 
             contactSwitch.addAll(params.list("contactSwitch"))
+            contactSwitch.addAll(params.list("addressSwitch"))
         }
         if (params.fileformat == 'xlsx') {
             try {
@@ -4682,8 +4683,8 @@ class SurveyController {
                 result << copyElementsService.loadDataFor_DatesOwnerRelations(params)
                 break
             case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
-                result << copyElementsService.copyObjectElements_DocsAnnouncementsTasks(params)
-                result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
+                result << copyElementsService.copyObjectElements_DocsTasksWorkflows(params)
+                result << copyElementsService.loadDataFor_DocsTasksWorkflows(params)
                 break
             case CopyElementsService.WORKFLOW_SUBSCRIBER:
                 result << copyElementsService.copyObjectElements_Subscriber(params)

@@ -72,7 +72,7 @@
     <laser:render template="/templates/copyElements/legend"/>
 
     <g:if test="${workFlowPart == CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS}">
-        <laser:render template="/templates/copyElements/copyDocsAndTasks" />
+        <laser:render template="/templates/copyElements/copyDocsAndTasksAndWorkflows" />
     </g:if>
     <g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_SUBSCRIBER && targetObject && targetObject.surveyInfo.status == RDStore.SURVEY_IN_PROCESSING}">
         <laser:render template="/templates/copyElements/copySurveyParticipants" />

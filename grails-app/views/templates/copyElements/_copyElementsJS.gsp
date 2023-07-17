@@ -1,6 +1,6 @@
 <laser:script file="${this.getGroovyPageFileName()}">
     $(".setDeletionConfirm").click( function() {
-        console.log($('[data-action="delete"]:checked'));
+        //console.log($('[data-action="delete"]:checked'));
         if($('[data-action="delete"]:checked').length === 0){
             $("#copyElementsSubmit").removeClass("js-open-confirm-modal");
             $("#copyElementsSubmit").off("click");

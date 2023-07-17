@@ -18,8 +18,10 @@ import de.laser.survey.SurveyConfigProperties
 import de.laser.survey.SurveyInfo
 import de.laser.survey.SurveyOrg
 import de.laser.utils.LocaleUtils
+import de.laser.workflow.WfChecklist
 import grails.gorm.transactions.Transactional
 import grails.web.mvc.FlashScope
+import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.sql.Sql
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.grails.web.servlet.mvc.GrailsWebRequest
@@ -38,18 +40,19 @@ import java.util.concurrent.ExecutorService
 @Transactional
 class CopyElementsService {
 
-    ExecutorService executorService
-    GenericOIDService genericOIDService
-    ComparisonService comparisonService
-    TaskService taskService
-    SubscriptionService subscriptionService
-    ContextService contextService
-    MessageSource messageSource
-    DocstoreService docstoreService
-    FormService formService
-    LicenseService licenseService
     CompareService compareService
+    ComparisonService comparisonService
+    ContextService contextService
+    DocstoreService docstoreService
+    ExecutorService executorService
+    FormService formService
+    GenericOIDService genericOIDService
+    LicenseService licenseService
+    MessageSource messageSource
     PackageService packageService
+    SubscriptionService subscriptionService
+    TaskService taskService
+    WorkflowService workflowService
 
     static final String WORKFLOW_DATES_OWNER_RELATIONS = '1'
     static final String WORKFLOW_PACKAGES_ENTITLEMENTS = '5'
@@ -151,11 +154,11 @@ class CopyElementsService {
     }
 
     /**
-     * Loads the data for the subscription documents, notes and tasks for the given subscriptions
+     * Loads the data for the subscription documents/notes, tasks and workflows for the given subscriptions
      * @param params the request parameter map
      * @return the related objects each for both source and target objects
      */
-    Map loadDataFor_DocsAnnouncementsTasks(Map params) {
+    Map loadDataFor_DocsTasksWorkflows(Map params) {
         Map<String, Object> result = [:]
         Object sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
         Object targetObject = null
@@ -169,6 +172,8 @@ class CopyElementsService {
         result.targetDocuments = targetObject?.documents?.sort { it.owner?.title?.toLowerCase()} //null check needed because targetObject may not necessarily exist at that point and GORM does not always initialises sets
         result.sourceTasks = taskService.getTasksByObject(result.sourceObject)
         result.targetTasks = taskService.getTasksByObject(result.targetObject)
+        result.sourceWorkflows = workflowService.getWorkflows(result.sourceObject, contextService.getOrg()) // todo: extended access for admins?
+        result.targetWorkflows = workflowService.getWorkflows(result.targetObject, contextService.getOrg()) // todo: extended access for admins?
         result
     }
 
@@ -597,11 +602,11 @@ class CopyElementsService {
     }
 
     /**
-     * Processes the given documents / notes / tasks transfer
+     * Processes the given documents&notes / tasks / workflows transfer
      * @param params the request parameters
      * @return the source and target objects for the next copy step
      */
-    Map copyObjectElements_DocsAnnouncementsTasks(Map params) {
+    Map copyObjectElements_DocsTasksWorkflows(Map params) {
         Map<String, Object> result = [:]
         FlashScope flash = getCurrentFlashScope()
 
@@ -654,6 +659,18 @@ class CopyElementsService {
                 def toCopyTasks = []
                 params.list('copyObject.takeTaskIds').each { tsk -> toCopyTasks << Long.valueOf(tsk) }
                 copyTasks(sourceObject, toCopyTasks, targetObject, flash)
+                isTargetSubChanged = true
+            }
+
+            if (params.list('copyObject.deleteWorkflowIds') && isBothObjectsSet(sourceObject, targetObject)) {
+                List<Long> toDeleteWorkflows = params.list('copyObject.deleteWorkflowIds').collect { it as Long }
+                deleteWorkflows(toDeleteWorkflows, targetObject, flash)
+                isTargetSubChanged = true
+            }
+
+            if (params.list('copyObject.takeWorkflowIds') && isBothObjectsSet(sourceObject, targetObject)) {
+                List<Long> toCopyWorkflows = params.list('copyObject.takeWorkflowIds').collect { it as Long }
+                copyWorkflows(sourceObject, toCopyWorkflows, targetObject, flash)
                 isTargetSubChanged = true
             }
 
@@ -938,6 +955,30 @@ class CopyElementsService {
         }
     }
 
+    boolean deleteWorkflows(List<Long> toDeleteWorkflows, Object targetObject, def flash) {
+        log.debug('toDeleteWorkflows: ' + toDeleteWorkflows)
+
+        Locale locale = LocaleUtils.getCurrentLocale()
+        boolean isInstAdm = contextService.isInstAdm_or_ROLEADMIN()
+        Long orgId = contextService.getOrg().id
+
+        toDeleteWorkflows.each { deleteWorkflowId ->
+            // todo: check
+            WfChecklist dWorkflow = WfChecklist.get(deleteWorkflowId)
+            if (dWorkflow) {
+                if (dWorkflow.owner.id == orgId || isInstAdm) {
+                    _delete(dWorkflow, flash)
+                } else {
+                    Object[] args = [messageSource.getMessage('workflow.label', null, locale), deleteWorkflowId]
+                    flash.error += messageSource.getMessage('default.not.deleted.notAutorized.message', args, locale)
+                }
+            } else {
+                Object[] args = [deleteWorkflowId]
+                flash.error += messageSource.getMessage('subscription.err.workflowDoesNotExist', args, locale)
+            }
+        }
+    }
+
     /**
      * Copies the given task list into the target object
      * @param sourceObject the object from which the tasks should be taken
@@ -965,6 +1006,31 @@ class CopyElementsService {
                 }
             }
         }
+    }
+
+    boolean copyWorkflows(Object sourceObject, List<Long> toCopyWorkflows, Object targetObject, def flash) {
+        log.debug('toCopyWorkflows: ' + toCopyWorkflows)
+        boolean succuess = true
+
+        GrailsParameterMap gpm = new GrailsParameterMap(WebUtils.retrieveGrailsWebRequest().getCurrentRequest())
+
+        toCopyWorkflows.each { wf ->
+            WfChecklist wfObj = WfChecklist.get(wf)
+            if (wfObj) {
+                gpm.clear()
+                gpm.putAll([
+                        WF_CHECKLIST_title      : wfObj.title + ' (KOPIE)',
+                        WF_CHECKLIST_description: wfObj.description,
+                        sourceId                : wf,
+                        cmd                     : 'instantiate:WF_CHECKLIST:' + wf,
+                        target                  : genericOIDService.getOID(targetObject)
+                ])
+                // todo: check
+                Map<String, Object> result = workflowService.instantiateChecklist(gpm)
+                succuess = succuess && (result.status == WorkflowService.OP_STATUS_DONE)
+            }
+        }
+        succuess
     }
 
     /**

@@ -58,7 +58,13 @@
                onclick="JSPC.app.personCreate('contactPersonForPublic');"><g:message
                     code="person.create_new.contactPersonForPublic.label"/></a>
 
-            <a href="#addressFormModal" class="item" onclick="JSPC.app.addresscreate_org('${institution.id}');"><g:message code="address.add.label"/></a>
+            <g:if test="${institution.isCustomerType_Consortium()}">
+                <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForInstitution');"><g:message code="address.add.addressForInstitution.label"/></a>
+            </g:if>
+
+            <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForProviderAgency');"><g:message code="address.add.addressForProviderAgency.label"/></a>
+
+            <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForPublic');"><g:message code="address.add.addressForPublic.label"/></a>
 
         </g:if>
 
@@ -156,16 +162,53 @@
     </g:form>
 </ui:filter>
 
-<laser:render template="/templates/cpa/person_table" model="${[
-        persons       : visiblePersons,
-        showContacts  : true,
-        showAddresses : true,
-        tmplConfigShow: ['lineNumber', 'organisation', 'function', 'position', 'name', 'showContacts', 'showAddresses']
-]}"/>
+<div class="ui top attached stackable tabular la-tab-with-js menu">
+    <a class="${params.tab == 'contacts' ? 'active' : ''} item" data-tab="contacts">
+        ${message(code: 'org.prsLinks.label')}
+    </a>
 
-<ui:paginate action="addressbook" controller="myInstitution" params="${params}"
-                max="${max}"
-                total="${num_visiblePersons}"/>
+    <%--<a class="${params.tab == 'personAddresses' ? 'active' : ''} item" data-tab="personAddresses">
+        ${message(code: 'org.prsLinks.adresses.label')}
+    </a>--%>
+
+    <a class="${params.tab == 'addresses' ? 'active' : ''} item" data-tab="addresses">
+        ${message(code: 'org.addresses.label')}
+    </a>
+</div>
+
+<div class="ui bottom attached tab segment ${params.tab == 'contacts' ? 'active' : ''}" data-tab="contacts">
+
+    <laser:render template="/templates/cpa/person_table" model="${[
+            persons       : visiblePersons,
+            offset        : personOffset,
+            showContacts  : true,
+            showAddresses : true,
+            tmplConfigShow: ['lineNumber', 'organisation', 'function', 'position', 'name', 'showContacts', 'showAddresses']
+    ]}"/>
+
+    <ui:paginate action="addressbook" controller="myInstitution" params="${params+[tab: 'contacts']}"
+                 max="${max}" offset="${personOffset}"
+                 total="${num_visiblePersons}"/>
+
+</div>
+
+<div class="ui bottom attached tab segment ${params.tab == 'addresses' ? 'active' : ''}" data-tab="addresses">
+
+    <laser:render template="/templates/cpa/address_table" model="${[
+            hideAddressType     : true,
+            addresses           : addresses,
+            offset              : addressOffset,
+            tmplShowDeleteButton: true,
+            tmplShowOrgName     : true,
+            controller          : 'org',
+            action              : 'show',
+            editable            : editable
+    ]}"/>
+
+    <ui:paginate action="addressbook" controller="myInstitution" params="${params+[tab: 'addresses']}"
+                 max="${max}" offset="${addressOffset}"
+                 total="${num_visibleAddresses}"/>
+</div>
 
 <laser:script file="${this.getGroovyPageFileName()}">
     JSPC.app.personCreate = function (contactFor) {
@@ -189,9 +232,9 @@
             }
         });
     }
-    JSPC.app.addresscreate_org = function (orgId) {
-        var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>?orgId=' + orgId;
-        var func = bb8.ajax4SimpleModalFunction("#addressFormModal", url);
+    JSPC.app.addressCreate = function (addressFor) {
+        let url = '<g:createLink controller="ajaxHtml" action="createAddress"/>?addressFor=' + addressFor;
+        let func = bb8.ajax4SimpleModalFunction("#addressFormModal", url);
         func();
     }
 </laser:script>
@@ -206,7 +249,7 @@
 
     <g:form action="addressbook" controller="myInstitution" params="${params+[exportClickMeExcel: true]}">
 
-        <laser:render template="/templates/export/individuallyExportForm" model="${[formFields: formFields, filterFields: filterFields, exportFileName: escapeService.escapeString("${message(code: 'menu.institutions.myAddressbook')}_${DateUtils.getSDF_yyyyMMdd().format(new Date())}"), orgSwitch: true]}"/>
+        <laser:render template="/templates/export/individuallyExportForm" model="${[modalID: 'individuallyExportModal', formFields: formFields, filterFields: filterFields, exportFileName: escapeService.escapeString("${message(code: 'menu.institutions.myAddressbook')}_${DateUtils.getSDF_yyyyMMdd().format(new Date())}"), orgSwitch: true]}"/>
 
     </g:form>
 
