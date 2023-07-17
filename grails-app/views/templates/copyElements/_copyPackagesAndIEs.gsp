@@ -49,7 +49,7 @@
             <tbody class="top aligned">
             <tr>
                 <g:set var="excludes" value="${[PendingChangeConfiguration.PACKAGE_PROP, PendingChangeConfiguration.PACKAGE_DELETED]}"/>
-                <td name="subscription.takePackages.source">
+                <td data-element="subscription.takePackages.source">
                     <strong>${message(code: 'subscription.packages.label')}: ${sourceObject.packages?.size()}</strong>
                     <g:each in="${sourceObject.packages?.sort { it.pkg.name.toLowerCase() }}" var="sp">
                         <div class="la-copyPack-container la-element">
@@ -80,7 +80,7 @@
 
 
             <g:if test="${!copyObject}">
-                <td name="subscription.takePackages.target">
+                <td data-element="subscription.takePackages.target">
                     <strong>${message(code: 'subscription.packages.label')}: ${targetObject?.packages?.size()}</strong>
 
                     <g:each in="${targetObject?.packages?.sort { it.pkg.name.toLowerCase() }}" var="sp">
@@ -113,7 +113,7 @@
             </g:if>
             </tr>
             <tr>
-                <td name="subscription.takeTitleGroups.source">
+                <td data-element="subscription.takeTitleGroups.source">
                     <strong>${message(code: 'subscription.details.ieGroups')}: ${sourceObject.ieGroups?.size()}</strong>
                     <g:if test="${sourceObject.ieGroups}">
                         <g:each in="${sourceObject.ieGroups.sort { it.name }}" var="titleGroup">
@@ -156,7 +156,7 @@
                     </g:if>
                 </td>
                 <g:if test="${!copyObject}">
-                <td name="subscription.takeTitleGroups.target">
+                <td data-element="subscription.takeTitleGroups.target">
                     <strong>${message(code: 'subscription.details.ieGroups')}: ${targetObject?.ieGroups?.size()}</strong>
 
                     <g:if test="${targetObject?.ieGroups}">
@@ -264,43 +264,40 @@
 
             takePackageIds: function (elem) {
                 if (elem.checked) {
-                    $('.table tr td[name="subscription.takePackages.source"] div.la-copyPack-item[data-pkgoid="' + elem.value + '"]').addClass('willStay');
-                    $('.table tr td[name="subscription.takePackages.target"] div.la-copyPack-item').addClass('willStay');
+                    $('.table tr td[data-element="subscription.takePackages.source"] div.la-copyPack-item[data-pkgoid="' + elem.value + '"]').addClass('willStay');
+                    $('.table tr td[data-element="subscription.takePackages.target"] div.la-copyPack-item').addClass('willStay');
                 } else {
-                    $('.table tr td[name="subscription.takePackages.source"] div.la-copyPack-item[data-pkgoid="' + elem.value + '"]').removeClass('willStay');
+                    $('.table tr td[data-element="subscription.takePackages.source"] div.la-copyPack-item[data-pkgoid="' + elem.value + '"]').removeClass('willStay');
                     if (JSPC.app.subCopyController.getNumberOfCheckedCheckboxes('subscription.takePackageIds') < 1) {
-                        $('.table tr td[name="subscription.takePackages.target"] div.la-copyPack-item').removeClass('willStay');
+                        $('.table tr td[data-element="subscription.takePackages.target"] div.la-copyPack-item').removeClass('willStay');
                     }
                 }
             },
-
             deletePackageIds: function (elem) {
                 let pkgOid = $(elem).attr('data-pkgoid');
-                $('[name="subscription.deletePackageSettings"]').filter('[data-pkgoid="' + pkgOid + '"]').change();
                 if (elem.checked) {
-                    $('.table tr td[name="subscription.takePackages.target"] div.la-copyPack-item[data-pkgoid="' + pkgOid + '"]').addClass('willBeReplacedStrong');
+                    $('.table tr td[data-element="subscription.takePackages.target"] div.la-copyPack-item[data-pkgoid="' + pkgOid + '"]').addClass('willBeReplacedStrong');
                 } else {
-                    $('.table tr td[name="subscription.takePackages.target"] div.la-copyPack-item[data-pkgoid="' + pkgOid + '"]').removeClass('willBeReplacedStrong');
+                    $('.table tr td[data-element="subscription.takePackages.target"] div.la-copyPack-item[data-pkgoid="' + pkgOid + '"]').removeClass('willBeReplacedStrong');
                 }
             },
 
             takeTitleGroups: function (elem) {
                 if (elem.checked) {
-                    $('.table tr td[name="subscription.takeTitleGroups.source"] div.la-copyPack-item[data-oid="' + elem.value + '"]').addClass('willStay');
-                    $('.table tr td[name="subscription.takeTitleGroups.target"] div.la-copyPack-item').addClass('willStay');
+                    $('.table tr td[data-element="subscription.takeTitleGroups.source"] div.la-copyPack-item[data-oid="' + elem.value + '"]').addClass('willStay');
+                    $('.table tr td[data-element="subscription.takeTitleGroups.target"] div.la-copyPack-item').addClass('willStay');
                 } else {
-                    $('.table tr td[name="subscription.takeTitleGroups.source"] div.la-copyPack-item[data-oid="' + elem.value + '"]').removeClass('willStay');
+                    $('.table tr td[data-element="subscription.takeTitleGroups.source"] div.la-copyPack-item[data-oid="' + elem.value + '"]').removeClass('willStay');
                     if (JSPC.app.subCopyController.getNumberOfCheckedCheckboxes('subscription.takeTitleGroups') < 1) {
-                        $('.table tr td[name="subscription.takeTitleGroups.target"] div.la-copyPack-item').removeClass('willStay');
+                        $('.table tr td[data-element="subscription.takeTitleGroups.target"] div.la-copyPack-item').removeClass('willStay');
                     }
                 }
             },
-
             deleteTitleGroups: function (elem) {
                 if (elem.checked) {
-                    $('.table tr td[name="subscription.takeTitleGroups.target"] div.la-copyPack-item[data-oid="' + elem.value + '"]').addClass('willBeReplacedStrong');
+                    $('.table tr td[data-element="subscription.takeTitleGroups.target"] div.la-copyPack-item[data-oid="' + elem.value + '"]').addClass('willBeReplacedStrong');
                 } else {
-                    $('.table tr td[name="subscription.takeTitleGroups.target"] div.la-copyPack-item[data-oid="' + elem.value + '"]').removeClass('willBeReplacedStrong');
+                    $('.table tr td[data-element="subscription.takeTitleGroups.target"] div.la-copyPack-item[data-oid="' + elem.value + '"]').removeClass('willBeReplacedStrong');
                 }
             },
 
