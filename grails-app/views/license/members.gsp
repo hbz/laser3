@@ -4,11 +4,11 @@
 
     <laser:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
-    <ui:controlButtons>
-        <g:if test="${userService.hasFormalAffiliation(user, institution, 'INST_EDITOR')}">
+    <g:if test="${userService.hasFormalAffiliation(user, institution, 'INST_EDITOR')}">
+        <ui:controlButtons>
             <laser:render template="actions" />
-        </g:if>
-    </ui:controlButtons>
+        </ui:controlButtons>
+    </g:if>
 
     <g:set var="visibleOrgRelationsJoin" value="${visibleOrgRelations.findAll{it.roleType != RDStore.OR_SUBSCRIPTION_CONSORTIA}.sort{it.org.sortname}.collect{it.org}.join(' – ')}"/>
     <ui:h1HeaderWithIcon visibleOrgRelationsJoin="${visibleOrgRelationsJoin}">
