@@ -21,6 +21,7 @@ import de.laser.utils.LocaleUtils
 import de.laser.workflow.WfChecklist
 import grails.gorm.transactions.Transactional
 import grails.web.mvc.FlashScope
+import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.sql.Sql
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.grails.web.servlet.mvc.GrailsWebRequest
@@ -1009,12 +1010,27 @@ class CopyElementsService {
 
     boolean copyWorkflows(Object sourceObject, List<Long> toCopyWorkflows, Object targetObject, def flash) {
         log.debug('toCopyWorkflows: ' + toCopyWorkflows)
+        boolean succuess = true
+
+        GrailsParameterMap gpm = new GrailsParameterMap(WebUtils.retrieveGrailsWebRequest().getCurrentRequest())
 
         toCopyWorkflows.each { wf ->
-            // todo: check
-            WfChecklist newWorkflow = WfChecklist.get(wf)?.instantiate(targetObject)
-            _save(newWorkflow, flash)
+            WfChecklist wfObj = WfChecklist.get(wf)
+            if (wfObj) {
+                gpm.clear()
+                gpm.putAll([
+                        WF_CHECKLIST_title      : wfObj.title + ' (KOPIE)',
+                        WF_CHECKLIST_description: wfObj.description,
+                        sourceId                : wf,
+                        cmd                     : 'instantiate:WF_CHECKLIST:' + wf,
+                        target                  : genericOIDService.getOID(targetObject)
+                ])
+                // todo: check
+                Map<String, Object> result = workflowService.instantiateChecklist(gpm)
+                succuess = succuess && (result.status == WorkflowService.OP_STATUS_DONE)
+            }
         }
+        succuess
     }
 
     /**
