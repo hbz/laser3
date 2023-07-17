@@ -42,10 +42,12 @@
                             <g:if test="${gc == 0 || gc == Math.floor((costItemFilterFields.size() / 2))}">
                                 <div class="wide eight field">
                             </g:if>
-                            <div class="ui checkbox">
-                                <input type="checkbox" name="ief:${costItemElements.key}"
-                                       id="ief:${costItemElements.key}" ${costItemElements.value.defaultChecked ? 'checked="checked"' : ''}>
-                                <label for="ief:${costItemElements.key}">${costItemElements.value.message ? message(code: costItemElements.value.message) : costItemElements.value.label}</label>
+                            <div class="field">
+                                <div class="ui checkbox">
+                                    <input type="checkbox" name="ief:${costItemElements.key}"
+                                           id="ief:${costItemElements.key}" ${costItemElements.value.defaultChecked ? 'checked="checked"' : ''}>
+                                    <label for="ief:${costItemElements.key}">${costItemElements.value.message ? message(code: costItemElements.value.message) : costItemElements.value.label}</label>
+                                </div>
                             </div>
                             <g:if test="${gc == Math.floor((costItemFields.size() / 2))-1 || gc == costItemFields.size()-1}">
                                 </div><!-- .wide eight gc -->
@@ -59,10 +61,12 @@
                         <g:if test="${fc == 0 || fc == Math.floor((otherFilterFields.size() / 2))}">
                             <div class="wide eight field">
                         </g:if>
-                        <div class="ui checkbox">
-                            <input type="checkbox" name="ief:${field.key}"
-                                   id="ief:${field.key}" ${field.value.defaultChecked ? 'checked="checked"' : ''}>
-                            <label for="ief:${field.key}">${field.value.message ? message(code: field.value.message) : field.value.label}</label>
+                        <div class="field">
+                            <div class="ui checkbox">
+                                <input type="checkbox" name="ief:${field.key}"
+                                       id="ief:${field.key}" ${field.value.defaultChecked ? 'checked="checked"' : ''}>
+                                <label for="ief:${field.key}">${field.value.message ? message(code: field.value.message) : field.value.label}</label>
+                            </div>
                         </div>
                         <g:if test="${fc == Math.floor((otherFilterFields.size() / 2))-1 || fc == otherFilterFields.size()-1}">
                             </div><!-- .wide eight fc -->
@@ -170,6 +174,25 @@
                             <div class="ui checkbox">
                                 <label for="private"><g:message code="org.privateContacts.label"/></label>
                                 <input type=checkbox name="contactSwitch" id="private" value="private"/>
+                            </div>
+                        </div>
+                    </div>
+
+                </g:if>
+
+                <g:if test="${fields.key.contains('Addresses') && contactSwitch == true}">
+
+                    <div class="inline fields" style="border-top:1px solid lightgrey; padding-top:1em;">%{-- tmp --}%
+                        <div class="field">
+                            <div class="ui checkbox">
+                                <label for="publicAddress"><g:message code="org.publicAddresses.label"/></label>
+                                <input type="checkbox" name="addressSwitch" id="publicAddress" value="public" checked="checked"/>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="ui checkbox">
+                                <label for="privateAddress"><g:message code="org.privateAddresses.label"/></label>
+                                <input type=checkbox name="addressSwitch" id="privateAddress" value="private"/>
                             </div>
                         </div>
                     </div>

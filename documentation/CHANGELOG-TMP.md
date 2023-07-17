@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5184    14.07.2023  rc-3.2  3.2         Andreas Bug         Adressen um "Meine"-Flag aufgerüstet, Daten wiederhergestellt
+
 5187    13.07.2023  rc-3.2  3.2         David   Feature     Aufräumen: Lizenzen/Verträge/Elemente kopieren
 
 5186    11.07.2023  rc-3.2  3.2         Andreas Bug         dauerhafte Titel wurden nicht gekennzeichnet

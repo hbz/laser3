@@ -1,20 +1,39 @@
-<%@ page import="de.laser.utils.LocaleUtils; de.laser.RefdataCategory; de.laser.Address; de.laser.FormService; de.laser.storage.RDStore; de.laser.RefdataValue;de.laser.storage.RDConstants; de.laser.I10nTranslation;" %>
+<%@ page import="de.laser.utils.LocaleUtils; de.laser.RefdataCategory; de.laser.Address; de.laser.Org; de.laser.FormService; de.laser.storage.RDStore; de.laser.RefdataValue;de.laser.storage.RDConstants; de.laser.I10nTranslation;" %>
 <laser:serviceInjection />
-<ui:modal id="addressFormModal" text="${modalText ?: message(code: 'address.add.label')}" msgClose="${message(code: 'default.button.cancel')}" msgSave="${modalMsgSave ?: message(code: 'default.button.create.label')}">
+<ui:modal id="addressFormModal" text="${modalText ?: message(code: 'address.add.addressForPublic.label')}" msgClose="${message(code: 'default.button.cancel')}" msgSave="${modalMsgSave ?: message(code: 'default.button.create.label')}">
     <g:form id="create_address" class="ui form" url="${url}" method="POST">
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
+        <input type="hidden" name="tab" value="addresses"/>
         <g:if test="${addressInstance}">
             <input type="hidden" name="id" value="${addressInstance.id}"/>
         </g:if>
         <g:if test="${orgId}">
             <input id="org" name="org" type="hidden" value="${orgId}"/>
+            <label for="org">
+                <g:message code="person.belongsTo"/>
+            </label>
+            <g:link controller="organisation" action="show" id="${orgId}">${Org.get(orgId).name}</g:link>
         </g:if>
+        <g:elseif test="${orgList}">
+            <div class="field ${hasErrors(bean: addressInstance, field: 'org', 'error')} ">
+                <label for="org">
+                    <g:message code="person.belongsTo"/> <g:message code="messageRequiredField" />
+                </label>
+                <g:select class="ui dropdown search selection"
+                          name="org"
+                          from="${orgList.sort { it.sortname }}"
+                          value=""
+                          optionKey="id"
+                          optionValue="${{ it.name + ' ' + (it.sortname ? '(' + it.sortname + ')' : '') }}"
+                          noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+            </div>
+        </g:elseif>
         <g:if test="${prsId}">
             <input id="prs" name="prs" type="hidden" value="${prsId}"/>
         </g:if>
-        %{--<g:if test="${typeId}">
-            <input id="type" name="type.id" type="hidden" value="${typeId}"/>
-        </g:if>--}%
+        <g:if test="${tenant}">
+            <input id="tenant" name="tenant" type="hidden" value="${tenant}"/>
+        </g:if>
 
         <div class="field ${hasErrors(bean: addressInstance, field: 'type', 'error')} ">
             <label for="type">

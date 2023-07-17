@@ -33,7 +33,7 @@
                                 </label>
                                 <g:select class="ui search dropdown"
                                           name="personRoleOrg"
-                                          from="${orgList.sort { it.name }}"
+                                          from="${orgList.sort { it.sortname }}"
                                           value="${org?.id}"
                                           optionKey="id"
                                           optionValue="${{ it.name + ' ' + (it.sortname ? '(' + it.sortname + ')' : '') }}"
