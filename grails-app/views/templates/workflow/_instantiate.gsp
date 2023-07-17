@@ -47,7 +47,7 @@
                     <div class="field required">
                         <g:set var="fieldName" value="${WfChecklist.KEY}_numberOfPoints" />
                         <label for="${fieldName}">Anzahl der Einträge (kann später geändert werden)</label>
-                        <input type="text" name="${fieldName}" id="${fieldName}" value="3" required="required" />
+                        <input type="number" name="${fieldName}" id="${fieldName}" value="3" min="1" max="10" required="required" />
                     </div>
 
                     <input type="hidden" name="cmd" value="create:${WfChecklist.KEY}" />
