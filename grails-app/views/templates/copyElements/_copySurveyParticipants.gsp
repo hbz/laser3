@@ -31,7 +31,7 @@
                                 <th><g:message code="sidewide.number"/></th>
                                 <th>${message(code: 'default.sortname.label')}</th>
                                 <th>${message(code: 'default.name.label')}</th>
-                                <th class=" center aligned">
+                                <th class="center aligned">
                                     <input type="checkbox" data-action="copy" onClick="JSPC.app.toggleAllCheckboxes(this)" checked/>
                                 </th>
                             </tr>

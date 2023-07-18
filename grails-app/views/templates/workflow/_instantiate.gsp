@@ -115,25 +115,23 @@
     } })
 
     JSPC.callbacks.modal.onShow.modalCreateWorkflow = function (trigger) {
-        $('#modalTabMenu .item').tab('change tab', 'copyWorkflow').tab('change tab', 'newWorkflow')
+        $('#modalTabMenu .item').tab ('change tab', 'copyWorkflow').tab ('change tab', 'newWorkflow')
     }
-    JSPC.app.checkRequired = function () {
 
+    JSPC.app.checkRequired = function () {
         $('.la-js-checkRequired').form({
             inline: true,
             fields: {
-            ${WfChecklist.KEY}_title: {
+                ${WfChecklist.KEY}_title: {
                     identifier: '${WfChecklist.KEY}_title',
                     rules: [
                         {
-                            type: 'empty',
-                            prompt: '{name} <g:message code="validation.needsToBeFilledOut" />'
+                            type: 'empty', prompt: '{name} <g:message code="validation.needsToBeFilledOut" />'
                         }
                     ]
                 },
             }
         });
-
     }
     JSPC.app.checkRequired();
 </laser:script>
