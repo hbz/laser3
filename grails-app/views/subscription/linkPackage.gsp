@@ -397,6 +397,7 @@
 
     <laser:script file="${this.getGroovyPageFileName()}">
         JSPC.callbacks.modal.onShow.linkPackageModal = function(trigger) {
+            tooltip.init("#linkPackageModal");
             $('#linkPackageModal #pkgName').attr('value', $(trigger).attr('data-packageName'))
             $('#linkPackageModal input[name=addUUID]').attr('value', $(trigger).attr('data-addUUID'))
         }
