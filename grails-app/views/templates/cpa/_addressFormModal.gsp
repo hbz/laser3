@@ -21,10 +21,10 @@
                 </label>
                 <g:select class="ui dropdown search selection"
                           name="org"
-                          from="${orgList.sort { it.sortname }}"
+                          from="${orgList}"
                           value=""
                           optionKey="id"
-                          optionValue="${{ it.name + ' ' + (it.sortname ? '(' + it.sortname + ')' : '') }}"
+                          optionValue="${{ it.sortname ?: it.name }}"
                           noSelection="${['': message(code: 'default.select.choose.label')]}"/>
             </div>
         </g:elseif>

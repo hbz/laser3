@@ -73,7 +73,17 @@
     </g:form>
 </ui:filter>
 
-<g:if test="${visiblePersons}">
+<div class="ui top attached stackable tabular la-tab-with-js menu">
+    <a class="${params.tab == 'contacts' ? 'active' : ''} item" data-tab="contacts">
+        ${message(code: 'org.prsLinks.label')}
+    </a>
+
+    <a class="${params.tab == 'addresses' ? 'active' : ''} item" data-tab="addresses">
+        ${message(code: 'org.addresses.label')}
+    </a>
+</div>
+
+<div class="ui bottom attached tab segment ${params.tab == 'contacts' ? 'active' : ''}" data-tab="contacts">
     <laser:render template="/templates/cpa/person_table" model="${[
             persons       : visiblePersons,
             restrictToOrg : orgInstance,
@@ -82,11 +92,27 @@
             tmplConfigShow: ['lineNumber', 'name', 'function', 'position',  'showContacts', 'showAddresses']
     ]}"/>
 
-    <ui:paginate action="addressbook" controller="myInstitution" params="${params}"
-                    max="${max}"
+    <ui:paginate action="addressbook" controller="myInstitution" params="${params+[tab: 'contacts']}"
+                    max="${max}" offset="${personOffset}"
                     total="${num_visiblePersons}"/>
+</div>
 
-</g:if>
+<div class="ui bottom attached tab segment ${params.tab == 'addresses' ? 'active' : ''}" data-tab="addresses">
+
+    <laser:render template="/templates/cpa/address_table" model="${[
+            hideAddressType     : true,
+            addresses           : addresses,
+            offset              : addressOffset,
+            tmplShowDeleteButton: true,
+            controller          : 'org',
+            action              : 'show',
+            editable            : editable
+    ]}"/>
+
+    <ui:paginate action="addressbook" controller="myInstitution" params="${params+[tab: 'addresses']}"
+                 max="${max}" offset="${addressOffset}"
+                 total="${num_visibleAddresses}"/>
+</div>
 
 <laser:script file="${this.getGroovyPageFileName()}">
     JSPC.app.personCreate = function (contactFor, org) {
@@ -109,6 +135,11 @@
                 }).modal('show');
             }
         });
+    }
+    JSPC.app.addressCreate = function (addressFor, orgId) {
+        let url = '<g:createLink controller="ajaxHtml" action="createAddress"/>?addressFor=' + addressFor+'&orgId='+orgId;
+        let func = bb8.ajax4SimpleModalFunction("#addressFormModal", url);
+        func();
     }
 </laser:script>
 <laser:htmlEnd />

@@ -43,26 +43,23 @@
     </ui:exportDropdown>
     <ui:actionsDropdown>
         <g:if test="${editable}">
-            <g:if test="${institution.isCustomerType_Consortium()}">
-
-                <a href="#createPersonModal" class="item" data-ui="modal"
-                   onclick="JSPC.app.personCreate('contactPersonForInstitution');"><g:message
-                        code="person.create_new.contactPersonForInstitution.label"/></a>
-            </g:if>
 
             <a href="#createPersonModal" class="item" data-ui="modal"
                onclick="JSPC.app.personCreate('contactPersonForProviderAgency');"><g:message
                     code="person.create_new.contactPersonForProviderAgency.label"/></a>
 
-            <a href="#createPersonModal" class="item" data-ui="modal"
-               onclick="JSPC.app.personCreate('contactPersonForPublic');"><g:message
-                    code="person.create_new.contactPersonForPublic.label"/></a>
-
+            <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForProviderAgency');"><g:message code="address.add.addressForProviderAgency.label"/></a>
             <g:if test="${institution.isCustomerType_Consortium()}">
+                <a href="#createPersonModal" class="item" data-ui="modal"
+                   onclick="JSPC.app.personCreate('contactPersonForInstitution');"><g:message
+                        code="person.create_new.contactPersonForInstitution.label"/></a>
+
                 <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForInstitution');"><g:message code="address.add.addressForInstitution.label"/></a>
             </g:if>
 
-            <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForProviderAgency');"><g:message code="address.add.addressForProviderAgency.label"/></a>
+            <a href="#createPersonModal" class="item" data-ui="modal"
+               onclick="JSPC.app.personCreate('contactPersonForPublic');"><g:message
+                    code="person.create_new.contactPersonForPublic.label"/></a>
 
             <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForPublic');"><g:message code="address.add.addressForPublic.label"/></a>
 
