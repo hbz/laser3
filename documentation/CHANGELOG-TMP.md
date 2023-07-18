@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5045    18.07.2023  rc-3.2  3.2         Andreas Feature     Wording angepasst
+
+5191    18.07.2023  rc-3.2  3.2         Andreas Feature     Erweiterungen bei der Paketverknüpfung
+
 5184    14.07.2023  rc-3.2  3.2         Andreas Bug         Adressen um "Meine"-Flag aufgerüstet, Daten wiederhergestellt
 
 5187    13.07.2023  rc-3.2  3.2         David   Feature     Aufräumen: Lizenzen/Verträge/Elemente kopieren

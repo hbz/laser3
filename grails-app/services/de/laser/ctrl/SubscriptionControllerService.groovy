@@ -3061,9 +3061,23 @@ class SubscriptionControllerService {
             if(!params.singleTitle) {
                 Map checked = cache.get('checked')
                 if(checked) {
-                    //executorService.execute({
-                        //Thread.currentThread().setName("EntitlementEnrichment_${result.subscription.id}")
-                        subscriptionService.bulkAddEntitlements(result.subscription, issueEntitlementCandidates, checked, Boolean.valueOf(params.uploadPriceInfo), false)
+                    Set<Long> childSubIds = [], pkgIds = []
+                    if(params.withChildren == 'on') {
+                        childSubIds.addAll(result.subscription.getDerivedSubscriptions().id)
+                    }
+                    //continue here with test!
+                    pkgIds.addAll(Package.executeQuery('select tipp.pkg.id from TitleInstancePackagePlatform tipp where tipp.gokbId in (:wekbIds)', [wekbIds: checked.keySet()]))
+                    executorService.execute({
+                        Thread.currentThread().setName("EntitlementEnrichment_${result.subscription.id}")
+                        Sql sql = GlobalService.obtainSqlConnection()
+                        subscriptionService.bulkAddEntitlements(result.subscription, issueEntitlementCandidates, checked, Boolean.valueOf(params.uploadPriceInfo), false, sql)
+                        if(params.withChildren == 'on') {
+                            childSubIds.each { Long childSubId ->
+                                pkgIds.each { Long pkgId ->
+                                    packageService.bulkAddHolding(sql, childSubId, pkgId, result.subscription.hasPerpetualAccess, result.subscription.id)
+                                }
+                            }
+                        }
                         //IssueEntitlement.withNewTransaction { TransactionStatus ts ->
                         /*
                         checked.each { k, v ->
@@ -3085,8 +3099,7 @@ class SubscriptionControllerService {
                             }
                         }
                         */
-                        //}
-                    //})
+                    })
 
                     if(params.process && params.process	== "withTitleGroup") {
                         IssueEntitlementGroup issueEntitlementGroup
