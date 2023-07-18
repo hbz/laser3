@@ -1,10 +1,17 @@
+<%@ page import="de.laser.remote.ApiSource" %>
 <laser:serviceInjection />
 
-<g:if test="${tmplView == 'info'}">
+<g:if test="${tmplView == 'info' && (wekbChanges.org.count + wekbChanges.platform.count + wekbChanges.package.count) > 0}">
+
+    <div class="ui accordion" style="margin: 1em 0">
+        <div class="title" style="padding:0 1em;">
+            <a href="#" class="ui label"><i class="icon blue la-gokb"></i>&nbsp;Es gibt Änderungen in der We:kb</a>
+        </div>
+        <div class="content">
 
     <ui:msg class="info" noClose="true">
         Folgende Ressourcen wurden in den vergangenen <strong>${wekbChanges.query.days}</strong> Tagen
-        (seit dem <strong>${wekbChanges.query.changedSince}</strong>) in der <strong>we:kb</strong> geändert, bzw. neu angelegt.
+        (seit dem <strong>${wekbChanges.query.changedSince}</strong>) geändert, bzw. neu angelegt.
 
         <div class="ui four column compact grid">
             <div class="column">
@@ -18,21 +25,23 @@
                 Neu: ${wekbChanges.package.created.size()}, Geändert: ${wekbChanges.package.updated.size()}
             </div>
             <div class="column">
-            </div>
-            <div class="column">
                 <a href="#" class="wekbFlyoutTrigger" data-filter="created">Neue Objekte anzeigen</a> <br/>
                 <a href="#" class="wekbFlyoutTrigger" data-filter="updated">Geänderte Objekte anzeigen</a> <br/>
                 <a href="#" class="wekbFlyoutTrigger" data-filter="all">Alle Änderungen anzeigen</a>
             </div>
+            <div class="column">
+            </div>
         </div>
     </ui:msg>
+
+        </div>
+    </div>
 
     <div id="wekbFlyout" class="ui ten wide flyout" style="padding:50px 0 10px 0;overflow:scroll"></div>
 
     <laser:script file="${this.getGroovyPageFileName()}">
 
         if (!JSPC.app.dashboard) { JSPC.app.dashboard = {} }
-
         JSPC.app.dashboard.wekbChanges = {
             filter: { filter: 'all', cat: 'all' }
         }
@@ -70,9 +79,9 @@
             if (! filter) { filter = JSPC.app.dashboard.wekbChanges.filter.filter } else { JSPC.app.dashboard.wekbChanges.filter.filter = filter }
             if (! cat)    { cat    = JSPC.app.dashboard.wekbChanges.filter.cat }    else { JSPC.app.dashboard.wekbChanges.filter.cat = cat }
 
-            $('#wekbFlyout .filterWrapper .button').removeClass ('red')
-            $('#wekbFlyout .filterWrapper .button[data-filter=' + filter + ']').addClass ('red')
-            $('#wekbFlyout .filterWrapper .button[data-cat=' + cat + ']').addClass ('red')
+            $('#wekbFlyout .filterWrapper .button').removeClass ('active')
+            $('#wekbFlyout .filterWrapper .button[data-filter=' + filter + ']').addClass ('active')
+            $('#wekbFlyout .filterWrapper .button[data-cat=' + cat + ']').addClass ('active')
 
             let rows = '#wekbFlyout .dataWrapper .row'
             if (filter == 'all' && cat == 'all') {
@@ -92,14 +101,14 @@
 <g:if test="${tmplView == 'details'}">
 
     <%
+        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+
         tmplConfig = [
                ['org',      wekbChanges.org,        'default.ProviderAgency.label', 'university'],
                ['platform', wekbChanges.platform,   'platform.plural',              'cloud'],
                ['package',  wekbChanges.package,    'package.plural',               'gift']
         ]
     %>
-
-    <div style="display:inline-block; font-weight:bold; color:white; background-color:red; padding:1em 2em; float: right">DEMO</div>
 
     <g:set var="wekb_count_all" value="${wekbChanges.org.count + wekbChanges.platform.count + wekbChanges.package.count}" />
     <g:set var="wekb_count_created" value="${wekbChanges.org.created.size() + wekbChanges.platform.created.size() + wekbChanges.package.created.size()}" />
@@ -108,7 +117,11 @@
 
     <div class="filterWrapper" style="margin:2em 1em">
         <p style="margin:0 2em 2em">
-            Änderungen der letzten <strong>${wekbChanges.query.days}</strong> Tage. Letzter Datenabgleich: <strong>${wekbChanges.query.call}</strong>
+            Änderungen der letzten <strong>${wekbChanges.query.days}</strong> Tage.<br />
+            Letzter Datenabgleich: <strong>${wekbChanges.query.call}</strong>
+            <span style="float:right">
+                <a href="${apiSource.baseUrl}" target="_blank"><i class="icon large la-gokb"></i></a>
+            </span>
         </p>
         <div class="filter" style="margin:0 2em 0.5em;">
             <span class="ui button mini" data-filter="created">Neue Objekte: ${wekb_count_created}</span>
@@ -135,7 +148,7 @@
                          <div class="column eleven wide">
                             <ui:wekbIconLink type="${cfg[0]}" gokbId="${obj.uuid}" />
                             <g:if test="${obj.globalUID}">
-                                <g:link controller="${cfg[2]}" action="show" target="_blank" params="${[id:obj.globalUID]}">${obj.name}</g:link>
+                                <g:link controller="${cfg[0]}" action="show" target="_blank" params="${[id:obj.globalUID]}">${obj.name}</g:link>
                             </g:if>
                             <g:else>
                                 ${obj.name}
