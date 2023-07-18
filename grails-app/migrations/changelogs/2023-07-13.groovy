@@ -1,7 +1,5 @@
 package changelogs
 
-import de.laser.utils.AppUtils
-
 databaseChangeLog = {
 
     changeSet(author: "galffy (generated)", id: "1689231582345-1") {
