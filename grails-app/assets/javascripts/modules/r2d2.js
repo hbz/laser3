@@ -584,6 +584,7 @@ r2d2 = {
             }
             $(href + '.ui.modal').modal({
                 onVisible: function() {
+                    tooltip.go();
                     $(this).find('.datepicker').calendar(r2d2.configs.datepicker);
                     $(this).find('.yearpicker').calendar(r2d2.configs.yearpicker);
 
