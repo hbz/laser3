@@ -208,14 +208,14 @@
             <input type="text" id="pkgName" name="pkgName" value="" readonly/>
         </div>
         <g:if test="${pkgs}">
-            ${message(code: 'subscription.holdingSelection.label')} <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code: "subscription.holdingSelection.explanation")}"><i class="question circle icon la-popup"></i></span>${subscription.holdingSelection.getI10n('value')}
+            <label for="holdingSelection">${message(code: 'subscription.holdingSelection.label')} <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code: "subscription.holdingSelection.explanation")}"><i class="question circle icon"></i></span>: ${subscription.holdingSelection.getI10n('value')}</label>
             <g:if test="${institution.isCustomerType_Consortium() && auditService.getAuditConfig(subscription, 'holdingSelection')}">
                 <i class="ui thumbtack icon la-popup-tooltip"></i>
             </g:if>
         </g:if>
         <g:else>
             <div class="field">
-                <label for="holdingSelection">${message(code: 'subscription.holdingSelection.label')} <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code: "subscription.holdingSelection.explanation")}"><i class="question circle icon la-popup"></i></span></label>
+                <label for="holdingSelection">${message(code: 'subscription.holdingSelection.label')} <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code: "subscription.holdingSelection.explanation")}"><i class="question circle icon"></i></span></label>
             </div>
             <div class="two fields">
                 <div class="field">

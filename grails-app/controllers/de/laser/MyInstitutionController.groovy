@@ -2648,17 +2648,19 @@ class MyInstitutionController  {
         SwissKnife.setPaginationParams(result, params, (User) result.user)
         params.sort = params.sort ?: 'pr.org.sortname'
         params.tab = params.tab ?: 'contacts'
+        EhcacheWrapper cache = contextService.getUserCache("/myInstitution/addressbook/")
         switch(params.tab) {
             case 'contacts':
                 result.personOffset = result.offset
-                result.addressOffset = params.int('addressOffset') ?: 0
+                result.addressOffset = cache.get('addressOffset') ?: 0
                 break
             case 'addresses':
                 result.addressOffset = result.offset
-                result.personOffset = params.int('personOffset') ?: 0
+                result.personOffset = cache.get('personOffset') ?: 0
                 break
         }
-
+        cache.put('personOffset', result.personOffset)
+        cache.put('addressOffset', result.addressOffset)
         List visiblePersons = [], visibleAddresses = []
         Map<String, Object> selectedFields = [:], configMap = params.clone()
         String filename = escapeService.escapeString("${message(code: 'menu.institutions.myAddressbook')}_${DateUtils.getSDF_yyyyMMdd().format(new Date())}")

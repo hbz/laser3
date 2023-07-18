@@ -44,10 +44,10 @@
                         <input type="text" name="${fieldName}" id="${fieldName}" value="${wfcl?.description}" />
                     </div>
 
-                    <div class="field required">
+                    <div class="field">
                         <g:set var="fieldName" value="${WfChecklist.KEY}_numberOfPoints" />
                         <label for="${fieldName}">Anzahl der Einträge (kann später geändert werden)</label>
-                        <input type="number" name="${fieldName}" id="${fieldName}" value="3" min="1" max="10" required="required" />
+                        <input type="number" name="${fieldName}" id="${fieldName}" value="3" min="1" max="10" />
                     </div>
 
                     <input type="hidden" name="cmd" value="create:${WfChecklist.KEY}" />
@@ -117,4 +117,23 @@
     JSPC.callbacks.modal.onShow.modalCreateWorkflow = function (trigger) {
         $('#modalTabMenu .item').tab('change tab', 'copyWorkflow').tab('change tab', 'newWorkflow')
     }
+    JSPC.app.checkRequired = function () {
+
+        $('.la-js-checkRequired').form({
+            inline: true,
+            fields: {
+            ${WfChecklist.KEY}_title: {
+                    identifier: '${WfChecklist.KEY}_title',
+                    rules: [
+                        {
+                            type: 'empty',
+                            prompt: '{name} <g:message code="validation.needsToBeFilledOut" />'
+                        }
+                    ]
+                },
+            }
+        });
+
+    }
+    JSPC.app.checkRequired();
 </laser:script>
