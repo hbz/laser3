@@ -43,9 +43,8 @@
                         </g:else>
                     </th>
                 </g:if>
-            <th class="one wide center aligned" data-label="${message(code:'responsive.table.selectElement')}"><input type="checkbox"
-                                                       data-action="copy" onClick="JSPC.app.toggleAllCheckboxes(this)"
-                                                       checked/>
+            <th class="one wide center aligned" data-label="${message(code:'responsive.table.selectElement')}">
+            <input type="checkbox" data-action="copy" onClick="JSPC.app.toggleAllCheckboxes(this)" checked/>
                 <g:if test="${!copyObject}">
                     <th class="six wide">
                         <g:if test="${targetObject}"><g:link

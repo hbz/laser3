@@ -31,9 +31,8 @@
                                 <th><g:message code="sidewide.number"/></th>
                                 <th>${message(code: 'default.sortname.label')}</th>
                                 <th>${message(code: 'default.name.label')}</th>
-                                <th class=" center aligned">
-                                    <input type="checkbox" data-action="copy"
-                                           onClick="JSPC.app.toggleAllCheckboxes(this)" checked/>
+                                <th class="center aligned">
+                                    <input type="checkbox" data-action="copy" onClick="JSPC.app.toggleAllCheckboxes(this)" checked/>
                                 </th>
                             </tr>
                             </thead>
@@ -42,16 +41,12 @@
                                 <tr>
                                     <td>${i + 1}</td>
                                     <td>
-                                        <g:link controller="organisation"
-                                                action="show"
-                                                id="${surveyOrg.org.id}">${surveyOrg.org.sortname}</g:link>
+                                        <g:link controller="organisation" action="show" id="${surveyOrg.org.id}">${surveyOrg.org.sortname}</g:link>
 
                                         <ui:customerTypeIcon org="${surveyOrg.org}" />
                                     </td>
                                     <td class="titleCell">
-                                        <g:link controller="organisation"
-                                                action="show"
-                                                id="${surveyOrg.org.id}">${surveyOrg.org.name}</g:link>
+                                        <g:link controller="organisation" action="show" id="${surveyOrg.org.id}">${surveyOrg.org.name}</g:link>
 
                                         <g:if test="${sourceObject.subscription}">
                                             <g:set var="existSubforOrg"
@@ -65,16 +60,12 @@
                                                 <g:if test="${existSubforOrg[0].isCurrentMultiYearSubscriptionNew()}">
                                                     <g:message code="surveyOrg.perennialTerm.available"/>
                                                     <br />
-                                                    <g:link controller="subscription" action="show"
-                                                            class="ui icon button"
-                                                            id="${existSubforOrg[0].id}">
+                                                    <g:link controller="subscription" action="show" class="ui icon button" id="${existSubforOrg[0].id}">
                                                         <i class="icon clipboard la-list-icon"></i>
                                                     </g:link>
                                                 </g:if>
                                                 <g:else>
-                                                    <g:link controller="subscription" action="show"
-                                                            class="ui icon button"
-                                                            id="${existSubforOrg[0].id}">
+                                                    <g:link controller="subscription" action="show" class="ui icon button" id="${existSubforOrg[0].id}">
                                                         <i class="icon clipboard la-list-icon"></i>
                                                     </g:link>
                                                 </g:else>
@@ -121,16 +112,12 @@
                                 <tr>
                                     <td>${i+1}</td>
                                     <td>
-                                        <g:link controller="organisation"
-                                                action="show"
-                                                id="${surveyOrg.org.id}">${surveyOrg.org.sortname}</g:link>
+                                        <g:link controller="organisation" action="show" id="${surveyOrg.org.id}">${surveyOrg.org.sortname}</g:link>
 
                                         <ui:customerTypeIcon org="${surveyOrg.org}" />
                                     </td>
                                     <td class="titleCell">
-                                        <g:link controller="organisation"
-                                                action="show"
-                                                id="${surveyOrg.org.id}">${surveyOrg.org.name}</g:link>
+                                        <g:link controller="organisation" action="show" id="${surveyOrg.org.id}">${surveyOrg.org.name}</g:link>
 
                                         <g:if test="${targetObject.subscription}">
                                             <g:set var="existSubforOrg"
@@ -150,16 +137,12 @@
                                                 <g:if test="${existSubforOrg[0].isCurrentMultiYearSubscriptionNew()}">
                                                     <g:message code="surveyOrg.perennialTerm.available"/>
                                                     <br />
-                                                    <g:link controller="subscription" action="show"
-                                                            class="ui icon button"
-                                                            id="${existSubforOrg[0].id}">
+                                                    <g:link controller="subscription" action="show" class="ui icon button" id="${existSubforOrg[0].id}">
                                                         <i class="icon clipboard la-list-icon"></i>
                                                     </g:link>
                                                 </g:if>
                                                 <g:else>
-                                                    <g:link controller="subscription" action="show"
-                                                            class="ui icon button"
-                                                            id="${existSubforOrg[0].id}">
+                                                    <g:link controller="subscription" action="show" class="ui icon button" id="${existSubforOrg[0].id}">
                                                         <i class="icon clipboard la-list-icon"></i>
                                                     </g:link>
                                                 </g:else>

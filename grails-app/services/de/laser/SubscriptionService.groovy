@@ -1390,14 +1390,13 @@ join sub.orgRelations or_sub where
 
     /**
      * Adds the given set of issue entitlements to the given subscription. The entitlement data may come directly from the package or be overwritten by individually negotiated content
-     * @param sub the {@link Subscription} to which the entitlements should be attached
+     * @param target the {@link Subscription} to which the entitlements should be attached
      * @param issueEntitlementOverwrites the {@link Map} containing the data to submit for each issue entitlement
      * @param checkMap the {@link Map} containing identifiers of titles which have been selected for the enrichment
      * @param withPriceData should price data be added as well?
      * @param pickAndChoosePerpetualAccess are the given titles purchased perpetually?
      */
-    void bulkAddEntitlements(Subscription sub, Map<String, Object> issueEntitlementOverwrites, Map<String, String> checkMap, withPriceData, pickAndChoosePerpetualAccess) {
-        Sql sql = GlobalService.obtainSqlConnection()
+    void bulkAddEntitlements(Subscription sub, Map<String, Object> issueEntitlementOverwrites, Map<String, String> checkMap, withPriceData, pickAndChoosePerpetualAccess, Sql sql) {
         Object[] keys = checkMap.keySet().toArray()
         Map<String, Object> fallbackMap = [:]
         sql.withTransaction {
@@ -1507,8 +1506,8 @@ join sub.orgRelations or_sub where
                     accessStartDate = "'${ configMap.accessStartDate }'"
                 if(configMap.accessEndDate)
                     accessEndDate = "'${ configMap.accessEndDate }'"
-                sql.withBatch("insert into issue_entitlement (ie_version, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_name, ie_status_rv_fk, ie_access_start_date, ie_access_end_date, ie_perpetual_access_by_sub_fk) " +
-                        "select 0, now(), now(), ${sub.id}, tipp_id, tipp_name, tipp_status_rv_fk, ${accessStartDate}, ${accessEndDate}, ${configMap.perpetualAccessBySub} from title_instance_package_platform where tipp_gokb_id = :wekbId") { BatchingStatementWrapper stmt ->
+                sql.withBatch("insert into issue_entitlement (ie_version, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_status_rv_fk, ie_access_start_date, ie_access_end_date, ie_perpetual_access_by_sub_fk) " +
+                        "select 0, now(), now(), ${sub.id}, tipp_id, tipp_status_rv_fk, ${accessStartDate}, ${accessEndDate}, ${configMap.perpetualAccessBySub} from title_instance_package_platform where tipp_gokb_id = :wekbId") { BatchingStatementWrapper stmt ->
                     stmt.addBatch([wekbId: configMap.wekbId])
                 }
             }
@@ -1533,8 +1532,8 @@ join sub.orgRelations or_sub where
                 }
             }
             ieDirectMapSet.each { Map<String, Object> configMap ->
-                sql.withBatch("insert into issue_entitlement (ie_version, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_name, ie_status_rv_fk, ie_access_start_date, ie_access_end_date, ie_perpetual_access_by_sub_fk) " +
-                        "select 0, now(), now(), ${sub.id}, tipp_id, tipp_name, tipp_status_rv_fk, tipp_access_start_date, tipp_access_end_date, ${configMap.perpetualAccessBySub} from title_instance_package_platform where tipp_gokb_id = :wekbId") { BatchingStatementWrapper stmt ->
+                sql.withBatch("insert into issue_entitlement (ie_version, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_status_rv_fk, ie_access_start_date, ie_access_end_date, ie_perpetual_access_by_sub_fk) " +
+                        "select 0, now(), now(), ${sub.id}, tipp_id, tipp_status_rv_fk, tipp_access_start_date, tipp_access_end_date, ${configMap.perpetualAccessBySub} from title_instance_package_platform where tipp_gokb_id = :wekbId") { BatchingStatementWrapper stmt ->
                     stmt.addBatch([wekbId: configMap.wekbId])
                 }
             }
