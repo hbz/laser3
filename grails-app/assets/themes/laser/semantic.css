@@ -6571,6 +6571,20 @@ a i.circular.la-gokb:hover {
   text-decoration: none;
   background-color: #004678;
 }
+
+/*------------------------------------
+         Buttons for Actionmenue
+  ------------------------------------*/
+
+.ui.buttons.la-ctrls button.la-actionButtons:first-of-type {
+  border-top-left-radius: 0.28571429rem;
+  border-bottom-left-radius: 0.28571429rem;
+}
+
+.ui.buttons.la-ctrls button.la-actionButtons:last-of-type {
+  border-top-right-radius: 0.28571429rem;
+  border-bottom-right-radius: 0.28571429rem;
+}
 /*!
  * # Fomantic-UI ^2.9.2 - Container
  * https://github.com/fomantic/Fomantic-UI/

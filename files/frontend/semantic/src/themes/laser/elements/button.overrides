@@ -210,3 +210,16 @@ a i.circular.la-gokb:hover {
   text-decoration: none;
   background-color: @blue;
 }
+
+/*------------------------------------
+         Buttons for Actionmenue
+  ------------------------------------*/
+.ui.buttons.la-ctrls button.la-actionButtons:first-of-type {
+    border-top-left-radius: @borderRadius;
+    border-bottom-left-radius: @borderRadius;
+}
+
+.ui.buttons.la-ctrls button.la-actionButtons:last-of-type {
+    border-top-right-radius: @borderRadius;
+    border-bottom-right-radius: @borderRadius;
+}
