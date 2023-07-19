@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5196    19.07.2023  rc-3.2  3.2         David   Feature     Benutzernamenprüfung bei Login derzeit case-sensitive
+
 5195    19.07.2023  rc-3.2  3.2         Andreas Bug         Fällige Termine setzten sich immer wieder zurück
 
 5191    18.07.2023  rc-3.2  3.2         Andreas Feature     Erweiterungen bei der Paketverknüpfung
