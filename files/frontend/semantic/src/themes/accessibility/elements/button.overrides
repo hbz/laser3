@@ -157,3 +157,12 @@ a i.circular.la-gokb:hover {
   text-decoration: none;
   background-color: @blue;
 }
+/*------------------------------------
+         Buttons for Actionmenue
+  ------------------------------------*/
+/* single && last of two */
+
+.ui.buttons.la-ctrls > .button:not(:has(~ .button)) {
+    border-top-right-radius: @borderRadius;
+    border-bottom-right-radius: @borderRadius;
+}
