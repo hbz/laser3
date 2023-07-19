@@ -1,4 +1,4 @@
-<%@ page import="de.laser.TitleInstancePackagePlatform; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.OrgSubjectGroup; de.laser.OrgRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Org; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting;de.laser.Combo; de.laser.Contact; de.laser.remote.ApiSource" %>
+<%@ page import="de.laser.TitleInstancePackagePlatform; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.CustomerTypeService; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.OrgSubjectGroup; de.laser.OrgRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Address; de.laser.Org; de.laser.Subscription; de.laser.License; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting;de.laser.Combo; de.laser.Contact; de.laser.remote.ApiSource" %>
 
 <g:set var="wekbAPI" value="${ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"/>
 
@@ -892,6 +892,12 @@
     </div>
     <aside class="five wide column la-sidekick">
         <div class="ui one cards">
+            <%
+                Map<String, List> publicTypeAddressMap = [:], privateTypeAddressMap = [:]
+                Set<String> typeNames = new TreeSet<String>()
+                typeNames.add(RDStore.ADDRESS_TYPE_BILLING.getI10n('value'))
+                typeNames.add(RDStore.ADDRESS_TYPE_POSTAL.getI10n('value'))
+            %>
             <div id="container-provider">
                 <div class="ui card">
                     <div class="content">
@@ -921,7 +927,8 @@
                                         class="ui button">${message('code': 'org.edit.contactsAndAddresses')}</g:link>
                             </g:if>
                             --%>
-                        <g:if test="${PersonRole.executeQuery('select pr from Person p join p.roleLinks pr where pr.org = :org and ((p.isPublic = false and p.tenant = :ctx) or p.isPublic = true)', [org: orgInstance, ctx: institution])}">
+                        <g:if test="${PersonRole.executeQuery('select pr from Person p join p.roleLinks pr where pr.org = :org and ((p.isPublic = false and p.tenant = :ctx) or p.isPublic = true)', [org: orgInstance, ctx: institution]) ||
+                                Address.executeQuery('select a from Address a where a.org = :org and (a.tenant = :ctx or a.tenant = null)', [org: orgInstance, ctx: institution])}">
                             <table class="ui compact table">
                                 <g:if test="${!isProviderOrAgency}">
                                     <tr>
@@ -1018,49 +1025,54 @@
                                         </td>
                                     </tr>
                                     <%
-                                        Set<String> typeNames = new TreeSet<String>()
-                                        typeNames.add(RDStore.ADDRESS_TYPE_BILLING.getI10n('value'))
-                                        typeNames.add(RDStore.ADDRESS_TYPE_POSTAL.getI10n('value'))
-                                        Map<String, List> typeAddressMap = [:]
-                                        orgInstance.addresses.each {
-                                            it.type.each { type ->
+                                        orgInstance.addresses.each { Address a ->
+                                            a.type.each { type ->
                                                 String typeName = type.getI10n('value')
                                                 typeNames.add(typeName)
-                                                List addresses = typeAddressMap.get(typeName) ?: []
-                                                addresses.add(it)
-                                                typeAddressMap.put(typeName, addresses)
+                                                if(!a.tenant) {
+                                                    List addresses = publicTypeAddressMap.get(typeName) ?: []
+                                                    addresses.add(a)
+                                                    publicTypeAddressMap.put(typeName, addresses)
+                                                }
+                                                else if(a.tenant.id == institution.id) {
+                                                    List addresses = privateTypeAddressMap.get(typeName) ?: []
+                                                    addresses.add(a)
+                                                    privateTypeAddressMap.put(typeName, addresses)
+                                                }
                                             }
                                         }
                                     %>
-                                    <g:if test="${typeAddressMap}">
+                                    <g:if test="${publicTypeAddressMap}">
                                         <tr>
                                             <td>
                                                 <div class="ui segment la-timeLineSegment-contact">
                                                     <div class="la-timeLineGrid">
                                                         <div class="ui grid">
                                                             <g:each in="${typeNames}" var="typeName">
-                                                                <div class="row">
-                                                                    <div class="two wide column">
+                                                                <% List publicAddresses = publicTypeAddressMap.get(typeName) %>
+                                                                <g:if test="${publicAddresses}">
+                                                                    <div class="row">
+                                                                        <div class="two wide column">
 
+                                                                        </div>
+                                                                        <div class="fourteen wide column">
+                                                                            <div class="ui label">${typeName}</div>
+                                                                            <g:each in="${publicAddresses}" var="a">
+                                                                                <g:if test="${a.org}">
+                                                                                    <laser:render template="/templates/cpa/address" model="${[
+                                                                                            hideAddressType     : true,
+                                                                                            address             : a,
+                                                                                            tmplShowDeleteButton: false,
+                                                                                            controller          : 'org',
+                                                                                            action              : 'show',
+                                                                                            id                  : orgInstance.id,
+                                                                                            editable            : false
+                                                                                    ]}"/>
+                                                                                </g:if>
+                                                                            </g:each>
+                                                                        </div>
                                                                     </div>
-                                                                    <div class="fourteen wide column">
-                                                                        <div class="ui label">${typeName}</div>
-                                                                        <% List addresses = typeAddressMap.get(typeName) %>
-                                                                        <g:each in="${addresses}" var="a">
-                                                                            <g:if test="${a.org}">
-                                                                                <laser:render template="/templates/cpa/address" model="${[
-                                                                                        hideAddressType     : true,
-                                                                                        address             : a,
-                                                                                        tmplShowDeleteButton: false,
-                                                                                        controller          : 'org',
-                                                                                        action              : 'show',
-                                                                                        id                  : orgInstance.id,
-                                                                                        editable            : false
-                                                                                ]}"/>
-                                                                            </g:if>
-                                                                        </g:each>
-                                                                    </div>
-                                                                </div>
+                                                                </g:if>
                                                             </g:each>
                                                         </div>
                                                     </div>
@@ -1162,7 +1174,7 @@
                                 List visiblePersons = addressbookService.getVisiblePersons("addressbook",[org: orgInstance, sort: 'p.last_name, p.first_name', function: [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS.id]])
                                 List otherPersons = addressbookService.getVisiblePersons("addressbook",[org: orgInstance, sort: 'p.last_name, p.first_name'])
                             %>
-                            <g:if test="${visiblePersons || otherPersons}">
+                            <g:if test="${visiblePersons || otherPersons || privateTypeAddressMap}">
                                 <table class="ui compact table">
                                     <tr>
                                         <td>
@@ -1315,6 +1327,44 @@
                                             </div>
                                         </td>
                                     </tr>
+                                    <g:if test="${privateTypeAddressMap}">
+                                        <tr>
+                                            <td>
+                                                <div class="ui segment la-timeLineSegment-contact">
+                                                    <div class="la-timeLineGrid">
+                                                        <div class="ui grid">
+                                                            <g:each in="${typeNames}" var="typeName">
+                                                                <% List privateAddresses = privateTypeAddressMap.get(typeName) %>
+                                                                <g:if test="${privateAddresses}">
+                                                                    <div class="row">
+                                                                        <div class="two wide column">
+
+                                                                        </div>
+                                                                        <div class="fourteen wide column">
+                                                                            <div class="ui label">${typeName}</div>
+                                                                            <g:each in="${privateAddresses}" var="a">
+                                                                                <g:if test="${a.org}">
+                                                                                    <laser:render template="/templates/cpa/address" model="${[
+                                                                                            hideAddressType     : true,
+                                                                                            address             : a,
+                                                                                            tmplShowDeleteButton: false,
+                                                                                            controller          : 'org',
+                                                                                            action              : 'show',
+                                                                                            id                  : orgInstance.id,
+                                                                                            editable            : false
+                                                                                    ]}"/>
+                                                                                </g:if>
+                                                                            </g:each>
+                                                                        </div>
+                                                                    </div>
+                                                                </g:if>
+                                                            </g:each>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </g:if>
                                 </table>
                             </g:if>
                         </div>
