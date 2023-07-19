@@ -12,6 +12,12 @@
                 allObjects_writeRights: allObjects_writeRights]"/>
     </g:if>
 
+%{--<pre>--}%
+%{--copyObject          : ${copyObject}--}%
+%{--targetObject        : ${targetObject}--}%
+%{--isConsortialObjects : ${isConsortialObjects}--}%
+%{--</pre>--}%
+
     <g:form action="${actionName}" controller="${controllerName}" id="${params.id ?: params.sourceObjectId}" data-confirm-id="copyElements_form"
             params="[workFlowPart: workFlowPart, sourceObjectId: genericOIDService.getOID(sourceObject), targetObjectId: genericOIDService.getOID(targetObject), isRenewSub: isRenewSub, fromSurvey: fromSurvey, copyObject: copyObject]"
             method="post" class="ui form newLicence">
@@ -150,6 +156,10 @@
                             </g:each>
                         </td>
                     </g:if>
+                    <g:if test="${!copyObject && !targetObject}">%{-- tmp fixed markup --}%
+                        <td></td>
+                        <td></td>
+                    </g:if>
                 </tr>
                 </g:if>
                 <g:if test="${tmpl_cfg_tr == 'notes'}">
@@ -271,6 +281,7 @@
                         </g:if>
                 </tr>
                 </g:if>
+
                 <g:if test="${tmpl_cfg_tr == 'tasks'}">
                 %{--TASKS:--}%
                 <tr data-element="copyObject.takeTasks">
@@ -285,6 +296,9 @@
                             </div>
                         </g:each>
                     </td>
+                    <g:if test="${copyObject}">%{-- tmp fixed markup --}%
+                        <td></td>
+                    </g:if>
                     %{--COPY:--}%
                     <td class="center aligned">
                         <div class="la-min-height"></div>
@@ -298,7 +312,9 @@
                             </div>
                         </g:each>
                     </td>
-                    <td></td>
+                    <g:if test="${!copyObject && !(actionName == 'copyMyElements' && targetObject)}">%{-- todo: fix markup --}%
+                        <td></td>
+                    </g:if>
                     <g:if test="${!copyObject && targetObject}">
                                 <td data-element="target">
                                     <div class="la-min-height"><strong><i class="calendar check outline icon"></i>&nbsp;${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeTasks")}:</strong></div>
@@ -324,6 +340,9 @@
                                     </g:each>
                                 </td>
                     </g:if>
+                    <g:if test="${!copyObject && !targetObject}">%{-- tmp fixed markup --}%
+                        <td></td>
+                    </g:if>
                 </tr>
                 </g:if>
 
@@ -343,6 +362,9 @@
                                 </div>
                             </g:each>
                         </td>
+                        <g:if test="${copyObject}">%{-- tmp fixed markup --}%
+                            <td></td>
+                        </g:if>
                         %{--COPY:--}%
                         <td class="center aligned">
                             <div class="la-min-height"></div>
@@ -356,7 +378,9 @@
                                 </div>
                             </g:each>
                         </td>
-                        <td></td>
+                        <g:if test="${!copyObject && !(actionName == 'copyMyElements' && targetObject)}">%{-- todo: fix markup --}%
+                            <td></td>
+                        </g:if>
                         <g:if test="${!copyObject && targetObject}">
                             <td data-element="target">
                                 <div class="la-min-height"><strong><i class="tasks icon"></i>&nbsp;${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeWorkflows")}:</strong></div>
@@ -382,6 +406,9 @@
                                     <g:else><br /></g:else>
                                 </g:each>
                             </td>
+                        </g:if>
+                        <g:if test="${!copyObject && !targetObject}">%{-- tmp fixed markup --}%
+                            <td></td>
                         </g:if>
                     </tr>
                 </g:if>
