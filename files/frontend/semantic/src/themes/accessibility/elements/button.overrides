@@ -160,12 +160,9 @@ a i.circular.la-gokb:hover {
 /*------------------------------------
          Buttons for Actionmenue
   ------------------------------------*/
-.ui.buttons.la-ctrls button.la-actionButtons:first-of-type {
-    border-top-left-radius: @borderRadius;
-    border-bottom-left-radius: @borderRadius;
-}
+/* single && last of two */
 
-.ui.buttons.la-ctrls button.la-actionButtons:last-of-type {
+.ui.buttons.la-ctrls > .button:not(:has(~ .button)) {
     border-top-right-radius: @borderRadius;
     border-bottom-right-radius: @borderRadius;
 }
