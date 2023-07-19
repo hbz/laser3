@@ -412,10 +412,18 @@ class AjaxHtmlController {
         model.hideType = params.hideType
 
         switch(params.addressFor) {
-            case 'addressForInstitution': model.orgList = Org.executeQuery("from Org o where exists (select roletype from o.orgType as roletype where roletype.id = :orgType ) and o.sector.id = :orgSector order by LOWER(o.sortname)", [orgSector: RDStore.O_SECTOR_HIGHER_EDU.id, orgType: RDStore.OT_INSTITUTION.id])
+            case 'addressForInstitution':
+                if(params.orgId)
+                    model.orgId = params.orgId
+                else
+                    model.orgList = Org.executeQuery("from Org o where exists (select roletype from o.orgType as roletype where roletype.id = :orgType ) and o.sector.id = :orgSector order by LOWER(o.sortname) nulls last", [orgSector: RDStore.O_SECTOR_HIGHER_EDU.id, orgType: RDStore.OT_INSTITUTION.id])
                 model.tenant = contextService.getOrg().id
                 break
-            case 'addressForProviderAgency': model.orgList = Org.executeQuery("from Org o where exists (select roletype from o.orgType as roletype where roletype.id in (:orgType) ) and o.sector.id = :orgSector order by LOWER(o.sortname)", [orgSector: RDStore.O_SECTOR_PUBLISHER.id, orgType: [RDStore.OT_PROVIDER.id, RDStore.OT_AGENCY.id]])
+            case 'addressForProviderAgency':
+                if(params.orgId)
+                    model.orgId = params.orgId
+                else
+                    model.orgList = Org.executeQuery("from Org o where exists (select roletype from o.orgType as roletype where roletype.id in (:orgType) ) and o.sector.id = :orgSector order by LOWER(o.sortname) nulls last", [orgSector: RDStore.O_SECTOR_PUBLISHER.id, orgType: [RDStore.OT_PROVIDER.id, RDStore.OT_AGENCY.id]])
                 model.tenant = contextService.getOrg().id
                 break
             default: model.orgId = params.orgId ?: contextService.getOrg().id

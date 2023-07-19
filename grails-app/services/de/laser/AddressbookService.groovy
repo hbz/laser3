@@ -45,7 +45,7 @@ class AddressbookService {
      * @return true if the user is affiliated at least as INST_EDITOR with the given tenant or institution or is a global admin, false otherwise
      */
     boolean isAddressEditable(Address address, User user) {
-        userService.hasFormalAffiliation_or_ROLEADMIN(user, address.org, 'INST_EDITOR')
+        userService.hasFormalAffiliation_or_ROLEADMIN(user, address.tenant ?: address.org, 'INST_EDITOR')
     }
 
     /**
@@ -163,6 +163,8 @@ class AddressbookService {
             sort = 'a.org.sortname'
         else if(params.sort.contains('pr.org'))
             sort = params.sort.replaceAll('pr.org', 'a.org')
+        else if(params.sort == 'p.last_name, p.first_name')
+            sort = 'a.name'
         switch(fromSite) {
             case "addressbook":
                 qParts << 'a.tenant = :tenant'

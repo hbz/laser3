@@ -33,10 +33,10 @@
                                 </label>
                                 <g:select class="ui search dropdown"
                                           name="personRoleOrg"
-                                          from="${orgList.sort { it.sortname }}"
+                                          from="${orgList}"
                                           value="${org?.id}"
                                           optionKey="id"
-                                          optionValue="${{ it.name + ' ' + (it.sortname ? '(' + it.sortname + ')' : '') }}"
+                                          optionValue="${{ it.sortname ?: it.name }}"
                                           noSelection="${['': message(code: 'default.select.choose.label')]}"/>
                             </g:if>
                             <g:if test="${org}">

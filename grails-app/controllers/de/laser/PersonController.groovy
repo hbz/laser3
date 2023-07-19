@@ -57,6 +57,14 @@ class PersonController  {
                     [personInstance: personInstance, userMemberships: userMemberships]
                     break
                 case 'POST':
+                    String referer = request.getHeader('referer')
+                    if(!referer.contains('tab')) {
+                        if(referer.contains('?'))
+                            referer += '&tab=contacts'
+                        else
+                            referer += '?tab=contacts'
+                    }
+                    else referer = referer.replaceAll('tab=addresses', 'tab=contacts')
                     if (formService.validateToken(params)) {
                         if(params.functionType || params.positionType)  {
                             Person personInstance = new Person(params)
@@ -161,7 +169,7 @@ class PersonController  {
                                         if (!addressInstance.save()) {
                                             flash.error = message(code: 'default.save.error.general.message') as String
                                             log.error('Adresse konnte nicht gespeichert werden. ' + addressInstance.errors)
-                                            redirect(url: request.getHeader('referer'), params: params)
+                                            redirect(url: referer)
                                             return
                                         }
                                     }
@@ -172,7 +180,7 @@ class PersonController  {
                         }
                         else flash.error = message(code: 'person.create.missing_function') as String
                     }
-                    redirect(url: request.getHeader('referer'))
+                    redirect(url: referer)
                     break
             }
         }
@@ -239,6 +247,14 @@ class PersonController  {
         Person.withTransaction {
             Org contextOrg = contextService.getOrg()
             Person personInstance = Person.get(params.id)
+            String referer = request.getHeader('referer')
+            if(!referer.contains('tab')) {
+                if(referer.contains('?'))
+                    referer += '&tab=contacts'
+                else
+                    referer += '?tab=contacts'
+            }
+            else referer = referer.replaceAll('tab=addresses', 'tab=contacts')
 
             if (!personInstance) {
                 flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label'), params.id]) as String
@@ -384,7 +400,7 @@ class PersonController  {
                         if (!addressInstance.save()) {
                             flash.error = message(code: 'default.save.error.general.message') as String
                             log.error('Adresse konnte nicht gespeichert werden. ' + addressInstance.errors)
-                            redirect(url: request.getHeader('referer'), params: params)
+                            redirect(url: referer)
                             return
                         }
                     }
@@ -392,7 +408,7 @@ class PersonController  {
             }
 
             flash.message = message(code: 'default.updated.message', args: [message(code: 'person.label'), personInstance.toString()]) as String
-            redirect(url: request.getHeader('referer'))
+            redirect(url: referer)
         }
     }
 

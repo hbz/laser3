@@ -209,6 +209,9 @@
                           <td>${ (params.int('offset') ?: 0)  + jj + 1 }</td>
                           <th scope="row" class="la-th-column">
                               <g:link action="show" class="la-main-object" controller="license" id="${l.id}">
+                                  <g:if test="${l._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION}">
+                                      <i class="icon users la-list-icon la-popup-tooltip la-delay" data-content="${message(code: 'license.member')}"></i>
+                                  </g:if>
                                   ${l.reference ?: message(code:'missingLicenseReference')}
                               </g:link>
                               <g:each in="${allLinkedSubscriptions.get(l)}" var="sub">
@@ -222,7 +225,7 @@
                               <td>
                                   <g:each in="${l.derivedLicenses}" var="lChild">
                                       <g:link controller="license" action="show" id="${lChild.id}">
-                                          <p>${lChild}</p>
+                                          <p><i class="icon users la-list-icon la-popup-tooltip la-delay" data-content="${message(code: 'license.member')}"></i> ${lChild}</p>
                                       </g:link>
                                   </g:each>
                               </td>
