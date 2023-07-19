@@ -189,6 +189,7 @@ grails:
             userLookup:
                 userDomainClassName: 'de.laser.auth.User'
                 usernamePropertyName: 'username'
+                usernameIgnoreCase: true
                 authorityJoinClassName: 'de.laser.auth.UserRole'
             successHandler:
                 alwaysUseDefault: false
