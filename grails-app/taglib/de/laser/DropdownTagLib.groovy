@@ -15,12 +15,12 @@ class DropdownTagLib {
 
     def exportDropdown = { attrs, body ->
 
-        out << '<button class="ui simple dropdown button la-js-dont-hide-button la-actionButtons">'
+        out << '<div class="ui simple dropdown button la-js-dont-hide-button">'
         out <<     '<i class="download icon"></i>'
         out <<     '<div class="menu">'
         out <<         body()
         out <<     '</div>'
-        out << '</button>'
+        out << '</div>'
     }
 
     // <ui:exportDropdownItem> LINK </ui:exportDropdownItem>
@@ -34,12 +34,12 @@ class DropdownTagLib {
 
     def actionsDropdown = { attrs, body ->
 
-        out << '<button class="ui simple dropdown button la-js-dont-hide-button la-actionButtons">'
+        out << '<div class="ui simple dropdown button la-js-dont-hide-button">'
         out <<     '<i class="magic icon"></i>'
         out <<     '<div class="menu" style="left:auto; right:0">'
         out <<         body()
         out <<     '</div>'
-        out << '</button>'
+        out << '</div>'
     }
 
     def actionsDropdownItem = { attrs, body ->
