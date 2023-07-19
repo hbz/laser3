@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      19.07.2023  rc-3.2  3.2         Andreas Feature     Mailtemplatetext angepasst
+
 5197    19.07.2023  rc-3.2  3.2         Andreas Bug         Sortierung der Merkmale nach Typ auf case-insensitive umgestellt 
 
 5196    19.07.2023  rc-3.2  3.2         David   Feature     Benutzernamenprüfung bei Login derzeit case-sensitive

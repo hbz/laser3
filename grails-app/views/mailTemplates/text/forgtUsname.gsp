@@ -4,7 +4,7 @@ für Sie wurde ein Account für die Nutzung der vom hbz-betriebenen ERM-Dienstle
 
 Ihr Benutzername lautet: ${raw(user.username)}
 
-Mit separater E-Mail erhalten Sie zeitnah das Initialpasswort.
+Falls Sie bisher noch nicht für die Nutzung von LAS:eR registriert waren, erhalten Sie zusätzlich mit separater E-Mail zeitnah das Initialpasswort.
 
 Bitte loggen Sie sich unter ${serverURL}/login/auth mit Benutzername und dem Initialpasswort ein und ändern Sie das Passwort umgehend in Ihrem Benutzerprofil.
 
