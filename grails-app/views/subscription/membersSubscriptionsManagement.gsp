@@ -27,7 +27,7 @@
 %{--    <g:message code="subscription"/>:--}%
 %{--    <g:link controller="subscription" action="show" id="${subscription.id}">${subscription.name}</g:link>--}%
 %{--    <br /><br />--}%
-%{--parentLicense is unkown!--}%
+
 %{--    <g:if test="${params.tab == 'linkLicense' && parentLicense}">--}%
 %{--        <g:message code="subscriptionsManagement.license" args="${args.superOrgType}"/>:--}%
 %{--        <g:link controller="license" action="show" id="${parentLicense.id}">${parentLicense.reference}</g:link>--}%
