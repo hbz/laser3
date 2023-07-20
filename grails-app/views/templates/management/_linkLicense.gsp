@@ -5,15 +5,13 @@
 
     <g:if test="${controllerName == 'subscription'}">
         <div class="ui segment">
-            <h3 class="ui header"><g:message code="subscriptionsManagement.license.label"/>
-            </h3>
+            <h3 class="ui header"><g:message code="subscriptionsManagement.license.label"/></h3>
 
             <g:if test="${validLicenses}">
                 <div class="ui middle aligned selection list">
                     <g:each in="${validLicenses}" var="license">
                         <div class="item">
-                            <g:link controller="license" action="show"
-                                    id="${license.id}">${license.reference}</g:link>
+                            <g:link controller="license" action="show" id="${license.id}">${license.reference}</g:link>
                         </div>
                     </g:each>
                 </div>
@@ -26,17 +24,15 @@
         </div>
     </g:if>
 
-    <div class="divider"></div>
+    <h3 class="ui header">${message(code: 'subscriptionsManagement.info.license')}</h3>
 
-    <div class="ui segment">
-        <g:form action="${actionName}" controller="${controllerName}" params="[tab: 'linkLicense']" method="post"
-                class="ui form licenseForm" data-confirm-id="deleteLicenses_form">
-            <g:hiddenField id="pllm_id_${params.id}" name="id" value="${params.id}"/>
-            <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
+    <g:form action="${actionName}" controller="${controllerName}" params="[tab: 'linkLicense']" method="post"
+            class="ui form licenseForm" data-confirm-id="deleteLicenses_form">
+        <g:hiddenField id="pllm_id_${params.id}" name="id" value="${params.id}"/>
+        <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
 
+        <div class="ui segment">
             <div class="field required">
-                <h4 class="ui header">${message(code: 'subscriptionsManagement.info.license')}</h4>
-
                 <label>${message(code: 'subscription.linktoLicense')} ${message(code: 'messageRequiredField')}</label>
                 <g:if test="${validLicenses}">
                     <g:select class="ui search multiple dropdown"
@@ -53,7 +49,6 @@
                     </g:else>
                 </g:else>
             </div>
-
 
             <div class="two fields">
                 <div class="eight wide field" style="text-align: left;">
@@ -76,8 +71,9 @@
 
                 </div>
             </div>
+        </div><!-- .segment -->
 
-
+        <div class="ui segment">
             <h3 class="ui header">
                 <g:if test="${controllerName == "subscription"}">
                     ${message(code: 'subscriptionsManagement.subscriber')} <ui:totalNumber
@@ -185,13 +181,13 @@
                 </g:each>
                 </tbody>
             </table>
-        </g:form>
-    </div>
+        </div><!-- .segment -->
+    </g:form>
+
 </g:if>
 <g:else>
     <g:if test="${filterSet}">
-        <br/><strong><g:message code="filter.result.empty.object"
-                                args="${[message(code: "subscription.plural")]}"/></strong>
+        <br/><strong><g:message code="filter.result.empty.object" args="${[message(code: "subscription.plural")]}"/></strong>
     </g:if>
     <g:else>
         <br/><strong><g:message code="result.empty.object" args="${[message(code: "subscription.plural")]}"/></strong>
