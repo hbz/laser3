@@ -7,6 +7,7 @@ import de.laser.GenericOIDService
 import de.laser.PendingChangeService
 import de.laser.AccessService
 import de.laser.AddressbookService
+import de.laser.WekbStatsService
 import de.laser.WorkflowService
 import de.laser.config.ConfigDefaults
 import de.laser.config.ConfigMapper
@@ -104,6 +105,7 @@ class AjaxHtmlController {
     SubscriptionService subscriptionService
     SubscriptionControllerService subscriptionControllerService
     TaskService taskService
+    WekbStatsService wekbStatsService
     WorkflowService workflowService
 
     /**
@@ -128,12 +130,18 @@ class AjaxHtmlController {
             case "altname": owner= Org.get(params.owner)
                 resultObj = AlternativeName.construct([org: owner, name: 'Unknown'])
                 field = "name"
+                if(resultObj) {
+                    render view: '/templates/ajax/_newXEditable', model: [wrapper: params.object, ownObj: resultObj, field: field, overwriteEditable: true]
+                }
                 break
             case "coverage": //TODO
                 break
-        }
-        if(resultObj) {
-            render view: '/templates/ajax/_newXEditable', model: [wrapper: params.object, ownObj: resultObj, field: field, overwriteEditable: true]
+            case "priceItem":
+                Map<String, Object> ctrlResult = subscriptionControllerService.addEmptyPriceItem(params)
+                if(ctrlResult.status == SubscriptionControllerService.STATUS_OK) {
+                    render template: '/templates/tipps/priceItem', model: [priceItem: ctrlResult.result.newItem, editable: true] //editable check is implicitly done by call; the AJAX loading can be triggered iff editable == true
+                }
+                break
         }
     }
 
@@ -170,7 +178,7 @@ class AjaxHtmlController {
                 [org: result.institution,
                  status: RDStore.SURVEY_SURVEY_STARTED])
 
-        if (accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)){
+        if (contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)){
             activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where surConfig.surveyInfo.status = :status  and surConfig.surveyInfo.owner = :org " +
                     " order by surConfig.surveyInfo.endDate",
                     [org: result.institution,
@@ -184,6 +192,17 @@ class AjaxHtmlController {
         result.surveysOffset = result.offset
 
         render template: '/myInstitution/surveys', model: result
+    }
+
+    @Secured(['ROLE_USER'])
+    def wekbChangesFlyout() {
+        log.debug('ajaxHtmlController.wekbChangesFlyout ' + params)
+
+        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(null, params)
+        result.wekbChanges = wekbStatsService.getCurrentChanges()
+        result.tmplView = 'details'
+
+        render template: '/myInstitution/wekbChanges', model: result
     }
 
     //-------------------------------------------------- subscription/show ---------------------------------------------
@@ -230,10 +249,10 @@ class AjaxHtmlController {
         result.roleObject = result.subscription
         result.roleRespValue = 'Specific subscription editor'
         result.editmode = result.subscription.isEditableBy(contextService.getUser())
-        result.accessConfigEditable = accessService.ctxPermAffiliation(CustomerTypeService.ORG_INST_BASIC, 'INST_EDITOR') || (accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR') && result.subscription.getSubscriber().id == contextOrg.id)
+        result.accessConfigEditable = contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_INST_BASIC) || (contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC) && result.subscription.getSubscriber().id == contextOrg.id)
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         result.subscription.packages.pkg.gokbId.each { String uuid ->
-            Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: uuid])
+            Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: uuid])
             if (queryResult.warning) {
                 List records = queryResult.warning.result
                 packageMetadata.put(uuid, records[0])
@@ -258,7 +277,7 @@ class AjaxHtmlController {
 
             packageInfos.packageInstance = subscriptionPackage.pkg
 
-            Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: subscriptionPackage.pkg.gokbId])
+            Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: subscriptionPackage.pkg.gokbId])
             if (queryResult.error && queryResult.error == 404) {
                 flash.error = message(code: 'wekb.error.404') as String
             } else if (queryResult.warning) {
@@ -387,11 +406,29 @@ class AjaxHtmlController {
     @Secured(['ROLE_USER'])
     def createAddress() {
         Map<String, Object> model = [:]
-        model.orgId = params.orgId
         model.prsId = params.prsId
         model.redirect = params.redirect
         model.typeId = params.typeId ? Long.valueOf(params.typeId) : null
         model.hideType = params.hideType
+
+        switch(params.addressFor) {
+            case 'addressForInstitution':
+                if(params.orgId)
+                    model.orgId = params.orgId
+                else
+                    model.orgList = Org.executeQuery("from Org o where exists (select roletype from o.orgType as roletype where roletype.id = :orgType ) and o.sector.id = :orgSector order by LOWER(o.sortname) nulls last", [orgSector: RDStore.O_SECTOR_HIGHER_EDU.id, orgType: RDStore.OT_INSTITUTION.id])
+                model.tenant = contextService.getOrg().id
+                break
+            case 'addressForProviderAgency':
+                if(params.orgId)
+                    model.orgId = params.orgId
+                else
+                    model.orgList = Org.executeQuery("from Org o where exists (select roletype from o.orgType as roletype where roletype.id in (:orgType) ) and o.sector.id = :orgSector order by LOWER(o.sortname) nulls last", [orgSector: RDStore.O_SECTOR_PUBLISHER.id, orgType: [RDStore.OT_PROVIDER.id, RDStore.OT_AGENCY.id]])
+                model.tenant = contextService.getOrg().id
+                break
+            default: model.orgId = params.orgId ?: contextService.getOrg().id
+                break
+        }
 
         if (model.orgId && model.typeId) {
             String messageCode = 'addressFormModalLibraryAddress'
@@ -625,9 +662,9 @@ class AjaxHtmlController {
      * Retrieves the filter history and bookmarks for the given reporting view.
      * If a command is being submitted, the cache is being updated. The updated view is being rendered afterwards
      */
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_PRO, 'INST_USER'])
+    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_USER')
+        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
     })
     def reporting() {
         Map<String, Object> result = [
@@ -676,9 +713,9 @@ class AjaxHtmlController {
     /**
      * Retrieves the details for the given charts
      */
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_PRO, 'INST_USER'])
+    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_USER')
+        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
     })
     def chartDetails() {
         // TODO - SESSION TIMEOUTS
@@ -713,9 +750,9 @@ class AjaxHtmlController {
      *     <li>PDF</li>
      * </ul>
      */
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_PRO, 'INST_USER'])
+    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_USER')
+        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
     })
     def chartDetailsExport() {
 
@@ -879,9 +916,9 @@ class AjaxHtmlController {
      *     <li>PDF</li>
      * </ul>
      */
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_PRO, 'INST_USER'])
+    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_USER')
+        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
     })
     def chartQueryExport() {
 

@@ -78,6 +78,7 @@ class YodaController {
     GokbService gokbService
     GlobalSourceSyncService globalSourceSyncService
     def quartzScheduler
+    RenewSubscriptionService renewSubscriptionService
     StatsSyncService statsSyncService
     StatusUpdateService statusUpdateService
     SubscriptionService subscriptionService
@@ -141,7 +142,9 @@ class YodaController {
 
             for (JobKey key : quartzScheduler.getJobKeys(GroupMatcher.jobGroupEquals(groupName))) {
                 def clazz = Class.forName(key.getName())
-                List<List> cp  = clazz.getAt('configurationProperties')
+                boolean isLaserJob = groupName == 'GRAILS_JOBS'
+
+                List<List> cp  = isLaserJob ? clazz.getAt('configurationProperties') : []
 
                 def triggers = quartzScheduler.getTriggersOfJob(key)
                 List nft = triggers.collect{ it.nextFireTime ?: null }
@@ -156,13 +159,17 @@ class YodaController {
                         configurationProperties: cp,
                         services: services,
                         nextFireTime: nft ? nft.get(0)?.toTimestamp() : '',
-                        running: (applicationContext.getBean(key.getName()) as AbstractJob).isRunning(),
-                        available: (applicationContext.getBean(key.getName()) as AbstractJob).isAvailable()
+                        running: '',
+                        available: ''
                 ]
+                if (isLaserJob) {
+                    map.running     = (applicationContext.getBean(key.getName()) as AbstractJob).isRunning()
+                    map.available   = (applicationContext.getBean(key.getName()) as AbstractJob).isAvailable()
+                }
 
                 List crx = triggers.collect{ it.hasProperty('cronEx') ? it.cronEx : null }
 
-                if (crx) {
+                if (crx && isLaserJob) {
                     map << ['cronEx': crx.get(0).cronExpression]
                 }
                 group << map
@@ -457,40 +464,45 @@ class YodaController {
                                     test     : ''
                             ]
 
-                            if (da.ctxPermAffiliation()) {
-                                mInfo.debug.test        = 'ctxPermAffiliation()' //  + da.ctxPermAffiliation().toList()
-                                mInfo.debug.perm        = da.ctxPermAffiliation().toList()[0]
-                                mInfo.debug.affil       = da.ctxPermAffiliation().toList()[1]
-                            }
-                            if (da.ctxInstUserCheckPerm_or_ROLEADMIN()) {
-                                mInfo.debug.test        = 'ctxInstUserCheckPerm_or_ROLEADMIN()' //  + da.ctxInstUserCheckPerm_or_ROLEADMIN().toList()
-                                mInfo.debug.perm        = da.ctxInstUserCheckPerm_or_ROLEADMIN().toList()[0]
+                            if (da.isInstUser_or_ROLEADMIN()) {
+                                mInfo.debug.test        = 'isInstUser_or_ROLEADMIN()'
                                 mInfo.debug.affil       = 'INST_USER'
                                 mInfo.debug.specRole    = 'ROLE_ADMIN'
                             }
-                            if (da.ctxInstEditorCheckPerm_or_ROLEADMIN()) {
-                                mInfo.debug.test        = 'ctxInstEditorCheckPerm_or_ROLEADMIN()' //  + da.ctxInstEditorCheckPerm_or_ROLEADMIN().toList()
-                                mInfo.debug.perm        = da.ctxInstEditorCheckPerm_or_ROLEADMIN().toList()[0]
+                            if (da.isInstEditor_or_ROLEADMIN()) {
+                                mInfo.debug.test        = 'isInstEditor_or_ROLEADMIN()'
                                 mInfo.debug.affil       = 'INST_EDITOR'
                                 mInfo.debug.specRole    = 'ROLE_ADMIN'
                             }
-                            if (da.ctxInstAdmCheckPerm_or_ROLEADMIN()) {
-                                mInfo.debug.test        = 'ctxInstAdmCheckPerm_or_ROLEADMIN()' //  + da.ctxInstAdmCheckPerm_or_ROLEADMIN().toList()
-                                mInfo.debug.perm        = da.ctxInstAdmCheckPerm_or_ROLEADMIN().toList()[0]
+                            if (da.isInstAdm_or_ROLEADMIN()) {
+                                mInfo.debug.test        = 'isInstAdm_or_ROLEADMIN()'
                                 mInfo.debug.affil       = 'INST_ADM'
                                 mInfo.debug.specRole    = 'ROLE_ADMIN'
                             }
-                            if (da.ctxConsortiumCheckPermAffiliation_or_ROLEADMIN()) {
-                                mInfo.debug.test        = 'ctxConsortiumCheckPermAffiliation_or_ROLEADMIN()' //  + da.ctxConsortiumCheckPermAffiliation_or_ROLEADMIN().toList()
-                                mInfo.debug.perm        = da.ctxConsortiumCheckPermAffiliation_or_ROLEADMIN().toList()[0]
-                                mInfo.debug.affil       = da.ctxConsortiumCheckPermAffiliation_or_ROLEADMIN().toList()[1]
-                                mInfo.debug.type        = 'Consortium'
+
+                            if (da.hasPermAsInstUser_or_ROLEADMIN()) {
+                                mInfo.debug.test        = 'hasPermAsInstUser_or_ROLEADMIN()' //  + da.hasPermAsInstUser_or_ROLEADMIN().toList()
+                                mInfo.debug.perm        = da.hasPermAsInstUser_or_ROLEADMIN().toList()[0]
+                                mInfo.debug.affil       = 'INST_USER'
                                 mInfo.debug.specRole    = 'ROLE_ADMIN'
                             }
-
-                            if (da.hasCtxAffiliation_or_ROLEADMIN()) {
-                                mInfo.debug.test        = 'hasCtxAffiliation_or_ROLEADMIN()' //  + da.hasCtxAffiliation_or_ROLEADMIN().toList()
-                                mInfo.debug.affil       = da.hasCtxAffiliation_or_ROLEADMIN().toList()[0]
+                            if (da.hasPermAsInstEditor_or_ROLEADMIN()) {
+                                mInfo.debug.test        = 'hasPermAsInstEditor_or_ROLEADMIN()' //  + da.hasPermAsInstEditor_or_ROLEADMIN().toList()
+                                mInfo.debug.perm        = da.hasPermAsInstEditor_or_ROLEADMIN().toList()[0]
+                                mInfo.debug.affil       = 'INST_EDITOR'
+                                mInfo.debug.specRole    = 'ROLE_ADMIN'
+                            }
+                            if (da.hasPermAsInstAdm_or_ROLEADMIN()) {
+                                mInfo.debug.test        = 'hasPermAsInstAdm_or_ROLEADMIN()' //  + da.hasPermAsInstAdm_or_ROLEADMIN().toList()
+                                mInfo.debug.perm        = da.hasPermAsInstAdm_or_ROLEADMIN().toList()[0]
+                                mInfo.debug.affil       = 'INST_ADM'
+                                mInfo.debug.specRole    = 'ROLE_ADMIN'
+                            }
+                            if (da.hasPermAsInstRoleAsConsortium_or_ROLEADMIN()) {
+                                mInfo.debug.test        = 'hasPermAsInstRoleAsConsortium_or_ROLEADMIN()' //  + da.hasPermAsInstRoleAsConsortium_or_ROLEADMIN().toList()
+                                mInfo.debug.perm        = da.hasPermAsInstRoleAsConsortium_or_ROLEADMIN().toList()[0]
+                                mInfo.debug.affil       = da.hasPermAsInstRoleAsConsortium_or_ROLEADMIN().toList()[1]
+                                mInfo.debug.type        = 'Consortium'
                                 mInfo.debug.specRole    = 'ROLE_ADMIN'
                             }
 
@@ -653,10 +665,10 @@ class YodaController {
         Map<String, Object> result = [
                 platforms: [],
                 platformInstanceRecords: [:],
-                flagContentGokb : true // gokbService.queryElasticsearch
+                flagContentGokb : true // gokbService.executeQuery
         ]
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
-        Map allPlatforms = gokbService.queryElasticsearch(apiSource.baseUrl+apiSource.fixToken+"/sushiSources", [:])
+        Map allPlatforms = gokbService.executeQuery(apiSource.baseUrl+apiSource.fixToken+"/sushiSources", [:])
         if (allPlatforms.error && allPlatforms.error == 404) {
             result.wekbServerUnavailable = message(code: 'wekb.error.404')
         }
@@ -1183,6 +1195,16 @@ class YodaController {
     def dueDates_sendAllEmails() {
         flash.message = "Emails mit fälligen Terminen werden vesandt...<br/>"
         dashboardDueDatesService.takeCareOfDueDates(false, true, flash)
+        redirect(url: request.getHeader('referer'))
+    }
+
+    /**
+     * Manually triggers the automatic subscription renewal
+     */
+    @Secured(['ROLE_YODA'])
+    def subscriptionRenewCheck(){
+        flash.message = "Lizenzen werden automatisch verlängert"
+        renewSubscriptionService.subscriptionRenewCheck()
         redirect(url: request.getHeader('referer'))
     }
 

@@ -6,6 +6,7 @@ import de.laser.Org
 import de.laser.api.v0.*
 import de.laser.storage.Constants
 import de.laser.storage.RDStore
+import de.laser.traces.DeletedObject
 import grails.converters.JSON
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
@@ -28,10 +29,20 @@ class ApiCostItem {
 
         switch(query) {
             case 'id':
-                result.obj = CostItem.findAllWhere(id: Long.parseLong(value))
+                result.obj = CostItem.findAllById(Long.parseLong(value))
+                if(!result.obj) {
+                    DeletedObject.withTransaction {
+                        result.obj = DeletedObject.findAllByOldDatabaseIDAndOldObjectType(Long.parseLong(value), CostItem.class.name)
+                    }
+                }
                 break
             case 'globalUID':
-                result.obj = CostItem.findAllWhere(globalUID: value)
+                result.obj = CostItem.findAllByGlobalUID(value)
+                if(!result.obj) {
+                    DeletedObject.withTransaction {
+                        result.obj = DeletedObject.findAllByOldGlobalUID(value)
+                    }
+                }
                 break
             default:
                 result.status = Constants.HTTP_BAD_REQUEST
@@ -96,11 +107,9 @@ class ApiCostItem {
 
         boolean hasAccess = isInvoiceTool || (owner.id == context.id)
         if (hasAccess) {
-            // TODO
-            if(isInvoiceTool){
-                result = CostItem.findAllByOwner(owner).globalUID
-            }else {
-                result = CostItem.findAllByOwnerAndCostItemStatusNotEqual(owner, RDStore.COST_ITEM_DELETED).globalUID
+            result = CostItem.findAllByOwner(owner).globalUID
+            DeletedObject.withTransaction {
+                result.addAll(DeletedObject.executeQuery('select do.oldGlobalUID from DeletedObject do join do.combos dc where dc.accessibleOrg = :owner and do.oldObjectType = :costItem', [owner: owner.globalUID, costItem: CostItem.class.name]))
             }
             result = ApiToolkit.cleanUp(result, true, true)
         }
@@ -123,14 +132,12 @@ class ApiCostItem {
 
         boolean hasAccess = isInvoiceTool || (owner.id == context.id)
         if (hasAccess) {
-            // TODO
             Timestamp ts= new Timestamp(Long.parseLong(timestamp))
             Date apiDate= new Date(ts.getTime());
             Date today = new Date()
-            if(isInvoiceTool) {
-                result = CostItem.findAllByOwnerAndLastUpdatedBetween(owner, apiDate, today).globalUID
-            }else{
-                result = CostItem.findAllByOwnerAndLastUpdatedBetweenAndCostItemStatusNotEqual(owner, apiDate, today, RDStore.COST_ITEM_DELETED).globalUID
+            result = CostItem.findAllByOwnerAndLastUpdatedBetween(owner, apiDate, today).globalUID
+            DeletedObject.withTransaction {
+                result.addAll(DeletedObject.executeQuery('select do.oldGlobalUID from DeletedObject do join do.combos dc where dc.accessibleOrg = :owner and do.lastUpdated <= :apiDate and do.lastUpdated >= :today and do.oldObjectType = :costItem', [owner: owner.globalUID, apiDate: apiDate, today: today, costItem: CostItem.class.name]))
             }
             result = ApiToolkit.cleanUp(result, true, true)
         }

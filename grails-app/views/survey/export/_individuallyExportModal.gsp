@@ -9,7 +9,7 @@
     <g:form controller="survey" action="surveyEvaluation" refreshModal="true" id="${surveyInfo.id}"
             params="[surveyConfigID: surveyConfig.id]">
 
-        <laser:render template="/templates/export/individuallyExportForm" model="${[formFields: formFields, exportFileName: escapeService.escapeString(surveyConfig.getSurveyName()) + "_" + message(code:'surveyResult.label'), contactSwitch: true, csvFieldSeparator: ',']}"/>
+        <laser:render template="/templates/export/individuallyExportForm" model="${[formFields: formFields, exportFileName: escapeService.escapeString(surveyConfig.getSurveyName()) + "_" + message(code:'surveyResult.label'), contactSwitch: true, csvFieldSeparator: '|']}"/>
 
     </g:form>
 

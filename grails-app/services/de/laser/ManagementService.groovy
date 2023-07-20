@@ -212,11 +212,11 @@ class ManagementService {
                 String base_qry
                 Map qry_params
 
-                if (accessService.ctxPerm(CustomerTypeService.ORG_INST_PRO)) {
+                if (contextService.hasPerm(CustomerTypeService.ORG_INST_PRO)) {
                     base_qry = "from License as l where ( exists ( select o from l.orgRelations as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :lic_org ) ) )"
                     qry_params = [roleType1:RDStore.OR_LICENSEE, roleType2:RDStore.OR_LICENSEE_CONS, lic_org:result.institution]
                 }
-                else if (accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+                else if (contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
                     base_qry = "from License as l where exists ( select o from l.orgRelations as o where ( o.roleType = :roleTypeC AND o.org = :lic_org AND l.instanceOf is null AND NOT exists ( select o2 from l.orgRelations as o2 where o2.roleType = :roleTypeL ) ) )"
                     qry_params = [roleTypeC:RDStore.OR_LICENSING_CONSORTIUM, roleTypeL:RDStore.OR_LICENSEE_CONS, lic_org:result.institution]
                 }
@@ -243,12 +243,21 @@ class ManagementService {
         if(result.editable && formService.validateToken(params)) {
             Locale locale = LocaleUtils.getCurrentLocale()
             FlashScope flash = getCurrentFlashScope()
-            List selectedSubs = params.list("selectedSubs"), selectedLicenseIDs = params.list("selectedLicense")
-            if(selectedSubs && selectedLicenseIDs[0]) {
+            List selectedLicenseIDs = params.list("selectedLicense")
+            Set<Subscription> subscriptions
+            if(params.containsKey("membersListToggler")) {
+                if(controller instanceof SubscriptionController) {
+                    subscriptions = subscriptionControllerService.getFilteredSubscribers(params,result.subscription).sub
+                }
+                else if(controller instanceof MyInstitutionController) {
+                    subscriptions = subscriptionService.getMySubscriptions(params,result.user,result.institution).allSubscriptions
+                }
+            }
+            else subscriptions = Subscription.findAllByIdInList(params.list("selectedSubs"))
+            if(subscriptions && selectedLicenseIDs[0]) {
                 List<License> selectedLicenses = License.findAllByIdInList(selectedLicenseIDs.collect { String key -> Long.parseLong(key) })
                 selectedLicenses.each { License newLicense ->
                     if (params.processOption == 'linkLicense' || params.processOption == 'unlinkLicense') {
-                        Set<Subscription> subscriptions = Subscription.findAllByIdInList(selectedSubs)
                         List<GString> changeAccepted = []
                         subscriptions.each { Subscription subscription ->
                             if (subscription.isEditableBy(result.user)) {
@@ -263,7 +272,7 @@ class ManagementService {
                 }
             }
             else{
-                if (selectedSubs.size() < 1) {
+                if (subscriptions.size() < 1) {
                     flash.error = messageSource.getMessage('subscriptionsManagement.noSelectedSubscriptions', null, locale)
                 }
                 if (!selectedLicenseIDs[0]) {
@@ -330,7 +339,16 @@ class ManagementService {
         if (result.editable && formService.validateToken(params)) {
             FlashScope flash = getCurrentFlashScope()
             Locale locale = LocaleUtils.getCurrentLocale()
-            List selectedSubs = params.list("selectedSubs")
+            Set<Subscription> subscriptions
+            if(params.containsKey("membersListToggler")) {
+                if(controller instanceof SubscriptionController) {
+                    subscriptions = subscriptionControllerService.getFilteredSubscribers(params,result.subscription).sub
+                }
+                else if(controller instanceof MyInstitutionController) {
+                    subscriptions = subscriptionService.getMySubscriptions(params,result.user,result.institution).allSubscriptions
+                }
+            }
+            else subscriptions = Subscription.findAllByIdInList(params.list("selectedSubs"))
             List selectedPackageKeys = params.list("selectedPackages")
             Set<Package> pkgsToProcess = []
             result.message = []
@@ -344,8 +362,7 @@ class ManagementService {
                 }
             }
             pkgsToProcess.each { Package pkg ->
-                selectedSubs.each { String subKey ->
-                    Subscription selectedSub = Subscription.get(subKey)
+                subscriptions.each { Subscription selectedSub ->
                     if(selectedSub.isEditableBy(result.user)) {
                         SubscriptionPackage sp = SubscriptionPackage.findBySubscriptionAndPkg(selectedSub, pkg)
                         if(params.processOption =~ /^link/) {
@@ -905,9 +922,17 @@ class ManagementService {
         if(result.editable && formService.validateToken(params)) {
             Locale locale = LocaleUtils.getCurrentLocale()
             FlashScope flash = getCurrentFlashScope()
-            List selectedSubs = params.list("selectedSubs")
-            if (selectedSubs) {
-                Set<Subscription> subscriptions = Subscription.findAllByIdInList(selectedSubs)
+            Set<Subscription> subscriptions
+            if(params.containsKey("membersListToggler")) {
+                if(controller instanceof SubscriptionController) {
+                    subscriptions = subscriptionControllerService.getFilteredSubscribers(params,result.subscription).sub
+                }
+                else if(controller instanceof MyInstitutionController) {
+                    subscriptions = subscriptionService.getMySubscriptions(params,result.user,result.institution).allSubscriptions
+                }
+            }
+            else subscriptions = Subscription.findAllByIdInList(params.list("selectedSubs"))
+            if (subscriptions) {
                 if(params.noteTitle && params.noteContent) {
                     if(params.processOption == 'newNote') {
                         subscriptions.each { Subscription subscription ->
@@ -953,9 +978,17 @@ class ManagementService {
         if(result.editable && formService.validateToken(params)) {
             Locale locale = LocaleUtils.getCurrentLocale()
             FlashScope flash = getCurrentFlashScope()
-            List selectedSubs = params.selectedSubscriptionIds ? params.selectedSubscriptionIds.split(',') : []
-            if (selectedSubs) {
-                Set<Subscription> subscriptions = Subscription.findAllByIdInList(selectedSubs)
+            Set<Subscription> subscriptions
+            if(Boolean.valueOf(params.allMembers)) {
+                if(controller instanceof SubscriptionController) {
+                    subscriptions = subscriptionControllerService.getFilteredSubscribers(params,result.subscription).sub
+                }
+                else if(controller instanceof MyInstitutionController) {
+                    subscriptions = subscriptionService.getMySubscriptions(params,result.user,result.institution).allSubscriptions
+                }
+            }
+            else subscriptions = Subscription.findAllByIdInList(params.list("selectedSubscriptionIds"))
+            if (subscriptions) {
                     if(params.processOption == 'newDoc') {
                         subscriptions.eachWithIndex { Subscription subscription, int status ->
                             if (subscription.isEditableBy(result.user) || (subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && result.institution.isCustomerType_Inst_Pro())) {

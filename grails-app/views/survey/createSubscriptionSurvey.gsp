@@ -12,7 +12,7 @@
 <ui:messages data="${flash}"/>
 
 
-<div class="ui icon info message">
+<div class="ui icon message">
     <i class="info icon"></i>
     ${message(code: 'allSubscriptions.info')}
 </div>
@@ -234,7 +234,7 @@
 
 
                         <td class="x">
-                            <g:if test="${editable && accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )}">
+                            <g:if test="${editable && contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )}">
                                     <g:link class="ui icon blue la-modern-button button la-popup-tooltip la-delay"
                                             data-content="${message(code: 'survey.toggleSurveySub.add.label', args:[SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransferIsNotNull(s).size(), SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransferIsNull(s).size()])}"
                                             controller="survey" action="addSubtoSubscriptionSurvey"

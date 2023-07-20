@@ -8,8 +8,8 @@ import org.springframework.web.servlet.support.RequestContextUtils
 
 class NavigationTagLib {
 
-    AccessService accessService
     ContextService contextService
+    UserService userService
 
     static namespace = 'ui'
 
@@ -76,10 +76,10 @@ class NavigationTagLib {
 
         String action = (attrs.action ? attrs.action : (params.action ? params.action : "list"))
 
-        int total    = Integer.valueOf( (attrs.total ?: 0) as String )
-        int offset   = Integer.valueOf( (attrs.offset ?: params.offset ?: 0) as String )
-        int max      = Integer.valueOf( (attrs.max ?: params.max ?: 10) as String )
-        int maxsteps = Integer.valueOf( (attrs.maxsteps ?: 6) as String )
+        int total    = Integer.valueOf( (attrs.total != null ? attrs.total : 0) as String )
+        int offset   = Integer.valueOf( (attrs.offset != null ? attrs.offset : params.offset ?: 0) as String )
+        int max      = Integer.valueOf( (attrs.max != null ? attrs.max : params.max ?: 10) as String )
+        int maxsteps = Integer.valueOf( (attrs.maxsteps != null ? attrs.maxsteps : 6) as String )
 
         if (total <= max) {
             return
@@ -265,8 +265,8 @@ class NavigationTagLib {
         def (lbText, lbMessage) = SwissKnife.getTextAndMessage(attrs)
         String linkBody  = (lbText && lbMessage) ? lbText + " - " + lbMessage : lbText + lbMessage
 
-        if (!attrs.affiliation) {
-            attrs.affiliation = Role.INST_USER // new default
+        if (!attrs.instRole) {
+            attrs.instRole = Role.INST_USER // new default
         }
 
         boolean check = SwissKnife.checkAndCacheNavPermsForCurrentRequest(attrs, request)
@@ -287,7 +287,7 @@ class NavigationTagLib {
             )
         }
         else {
-            if (contextService.getUser().hasCtxAffiliation_or_ROLEADMIN(attrs.affiliation)) {
+            if (userService.hasAffiliation_or_ROLEADMIN(contextService.getUser(), contextService.getOrg(), attrs.instRole as String)) {
                 out << '<div class="item disabled la-popup-tooltip la-delay" data-position="left center" data-content="' + message(code:'tooltip.onlyFullMembership') + '" role="menuitem">' + linkBody + '</div>'
             }
 //            else out << '<div class="item disabled la-popup-tooltip la-delay" data-position="left center" role="menuitem">' + linkBody + '</div>'

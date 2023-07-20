@@ -11,6 +11,7 @@ import de.laser.utils.DateUtils
 import de.laser.annotations.DebugInfo
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
+import de.laser.utils.LocaleUtils
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.http.HttpStatus
@@ -33,6 +34,7 @@ import java.text.SimpleDateFormat
 class FinanceController  {
 
     AccessService accessService
+    DeletionService deletionService
     EscapeService escapeService
     ExportClickMeService exportClickMeService
     ExportService exportService
@@ -48,9 +50,9 @@ class FinanceController  {
      * the cost items listed in them depends on the perspective taken and specified in the parameter map.
      * To see the decision tree, view {@link FinanceControllerService#getResultGenerics(grails.web.servlet.mvc.GrailsParameterMap)}
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'], ctrlService = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstUser_or_ROLEADMIN = true, ctrlService = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+        ctx.contextService.isInstUser_or_ROLEADMIN()
     })
     def index() {
         log.debug("FinanceController::index() ${params}")
@@ -78,9 +80,9 @@ class FinanceController  {
      * and specified in the parameter map, see {@link FinanceControllerService#getResultGenerics(grails.web.servlet.mvc.GrailsParameterMap)} for
      * the decision tree
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'], ctrlService = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstUser_or_ROLEADMIN = true, ctrlService = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+        ctx.contextService.isInstUser_or_ROLEADMIN()
     })
     def subFinancialData() {
         log.debug("FinanceController::subFinancialData() ${params}")
@@ -140,14 +142,14 @@ class FinanceController  {
      * can only display the currently visible (= active) tab!
      * @return the financial data tab(s), as Excel worksheet or CSV export file
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'], ctrlService = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstUser_or_ROLEADMIN = true, ctrlService = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+        ctx.contextService.isInstUser_or_ROLEADMIN()
     })
     def financialsExport()  {
         log.debug("Financial Export :: ${params}")
         Map<String, Object> result = financeControllerService.getResultGenerics(params+[forExport:true])
-        if (!userService.checkAffiliationAndCtxOrg(result.user, result.institution, 'INST_USER')) {
+        if (!userService.hasFormalAffiliation(result.user, result.institution, 'INST_USER')) {
             flash.error = message(code: 'financials.permission.unauthorised', args: [result.institution? result.institution.name : 'N/A']) as String
             response.sendError(HttpStatus.SC_FORBIDDEN)
             return
@@ -456,9 +458,9 @@ class FinanceController  {
     /**
      * Calls the cost item creation modal and sets the edit parameters
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], ctrlService = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = true, ctrlService = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     Object newCostItem() {
         Map<String, Object> result = financeControllerService.getResultGenerics(params)
@@ -478,9 +480,9 @@ class FinanceController  {
     /**
      * Calls the cost item creation modal, sets the edit parameters and prefills the form values with the existing cost item data
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], ctrlService = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = true, ctrlService = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     Object editCostItem() {
         Map<String, Object> result = financeControllerService.getResultGenerics(params)
@@ -499,9 +501,9 @@ class FinanceController  {
      * After submitting the form, a new cost item will be created which has the current one as base, taking those values
      * submitted in the modal
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], ctrlService = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = true, ctrlService = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     Object copyCostItem() {
         Map<String, Object> result = financeControllerService.getResultGenerics(params)
@@ -521,23 +523,23 @@ class FinanceController  {
     /**
      * Call to delete a given cost item
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     def deleteCostItem() {
-        Map<String,Object> ctrlResult = financeService.deleteCostItem(params)
-        if(ctrlResult.error == FinanceService.STATUS_ERROR)
-            flash.error = ctrlResult.result.error
-        redirect(uri: request.getHeader('referer').replaceAll('(#|\\?).*', ''), params: [showView: ctrlResult.result.showView, offset: params.offset])
+        CostItem ci = CostItem.get(params.id)
+        if(!deletionService.deleteCostItem(ci))
+            flash.error = message(code: 'default.delete.error.general.message')
+        redirect(uri: request.getHeader('referer').replaceAll('(#|\\?).*', ''), params: [showView: params.showView, offset: params.offset])
     }
 
     /**
      * Call to process the submitted form values in order to create or update a cost item
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     def createOrUpdateCostItem() {
         Map<String,Object> ctrlResult = financeService.createOrUpdateCostItem(params)
@@ -553,9 +555,9 @@ class FinanceController  {
     /**
      * Call to import cost items submitted from the import post processing view
      */
-    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def importCostItems() {
         Map<String,Object> ctrlResult = financeService.importCostItems(params)
@@ -572,9 +574,9 @@ class FinanceController  {
     /**
      * Marks a change done by the consortium as acknowledged by the single user who copied the given cost item
      */
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     })
     def acknowledgeChange() {
         PendingChange changeAccepted = PendingChange.get(params.id)
@@ -586,9 +588,9 @@ class FinanceController  {
     /**
      * Call to process the data in the bulk editing form and to apply the changes to the picked cost items
      */
-    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
     def processCostItemsBulk() {
         Map<String,Object> ctrlResult = financeService.processCostItemsBulk(params)

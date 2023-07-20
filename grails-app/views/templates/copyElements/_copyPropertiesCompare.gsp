@@ -1,7 +1,6 @@
 <%@ page import="de.laser.survey.SurveyConfig; de.laser.Subscription; de.laser.License; de.laser.SubscriptionController; de.laser.CopyElementsService;" %>
 <laser:serviceInjection/>
 
-<ui:greySegment>
     <g:if test="${!fromSurvey && !isRenewSub}">
         <laser:render template="/templates/copyElements/selectSourceAndTargetObject" model="[
                 sourceObject          : sourceObject,
@@ -148,5 +147,5 @@
                    data-confirm-term-how="delete"/>
         </div>
     </g:form>
-</ui:greySegment>
 
+    <laser:render template="/templates/copyElements/copyElementsJS" model="${[tmplConfig_propertiesCompare: true]}"/>

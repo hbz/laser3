@@ -5,8 +5,8 @@ import de.laser.utils.SwissKnife
 
 class SubNavTagLib {
 
-    AccessService accessService
     ContextService contextService
+    UserService userService
 
     static namespace = 'ui'
 
@@ -16,7 +16,7 @@ class SubNavTagLib {
 
     def subNav = { attrs, body ->
 
-        out << '<nav class="ui ' + (attrs.showInTabular ? 'tabular ' : 'secondary pointing ')
+        out << '<nav class="ui ' + (attrs.showInTabular ? 'tabular top attached ' : 'secondary pointing ')
         out << 'stackable menu la-clear-before" role="tablist">'
         out <<   body()
         out << '</nav>'
@@ -86,8 +86,8 @@ class SubNavTagLib {
         String cssClass = ((this.pageScope.variables?.actionName == attrs.action) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
         String tooltip = attrs.tooltip ?: ""
 
-        if (!attrs.affiliation) {
-            attrs.affiliation = Role.INST_USER // new default
+        if (!attrs.instRole) {
+            attrs.instRole = Role.INST_USER // new default
         }
 
         boolean check = SwissKnife.checkAndCacheNavPermsForCurrentRequest(attrs, request)
@@ -115,7 +115,7 @@ class SubNavTagLib {
             }
         }
         else {
-            if (attrs.affiliation && contextService.getUser().hasCtxAffiliation_or_ROLEADMIN(attrs.affiliation)) {
+            if (attrs.instRole && userService.hasAffiliation_or_ROLEADMIN(contextService.getUser(), contextService.getOrg(), attrs.instRole as String)) {
                 out << '<div class="item disabled la-popup-tooltip la-delay" data-position="left center" data-content="' + message(code:'tooltip.onlyFullMembership') + '" role="tab">' + linkBody + '</div>'
             }
 //            else out << '<div class="item disabled la-popup-tooltip la-delay" data-position="left center" role="tab">' + linkBody + '</div>'

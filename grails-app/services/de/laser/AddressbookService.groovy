@@ -45,7 +45,7 @@ class AddressbookService {
      * @return true if the user is affiliated at least as INST_EDITOR with the given tenant or institution or is a global admin, false otherwise
      */
     boolean isAddressEditable(Address address, User user) {
-        userService.checkAffiliationAndCtxOrg_or_ROLEADMIN(user, address.org, 'INST_EDITOR')
+        userService.hasFormalAffiliation_or_ROLEADMIN(user, address.tenant ?: address.org, 'INST_EDITOR')
     }
 
     /**
@@ -56,7 +56,7 @@ class AddressbookService {
      */
     boolean isContactEditable(Contact contact, User user) {
         Org org = contact.getPrs()?.tenant ?: contact.org
-        userService.checkAffiliationAndCtxOrg_or_ROLEADMIN(user, org, 'INST_EDITOR')
+        userService.hasFormalAffiliation_or_ROLEADMIN(user, org, 'INST_EDITOR')
     }
 
     /**
@@ -66,7 +66,7 @@ class AddressbookService {
      * @return true if the user is affiliated at least as INST_EDITOR with the given tenant or is a global admin, false otherwise
      */
     boolean isPersonEditable(Person person, User user) {
-        userService.checkAffiliationAndCtxOrg_or_ROLEADMIN(user, person.tenant , 'INST_EDITOR')
+        userService.hasFormalAffiliation_or_ROLEADMIN(user, person.tenant , 'INST_EDITOR')
     }
 
     /**
@@ -148,6 +148,78 @@ class AddressbookService {
 
         query = query + " ORDER BY ${params.sort} ${order}, p.last_name"
         List result = Person.executeQuery(query, qParams)
+
+        if(result) {
+            result = result.collect { row -> row[0] }
+        }
+        result
+    }
+
+    List getVisibleAddresses(String fromSite, Map params) {
+        List qParts = []
+        Map qParams = [:]
+        String sort = params.sort
+        if(!params.containsKey('sort'))
+            sort = 'a.org.sortname'
+        else if(params.sort.contains('pr.org'))
+            sort = params.sort.replaceAll('pr.org', 'a.org')
+        else if(params.sort == 'p.last_name, p.first_name')
+            sort = 'a.name'
+        switch(fromSite) {
+            case "addressbook":
+                qParts << 'a.tenant = :tenant'
+                qParams.tenant = contextService.getOrg()
+                break
+            case "myPublicContacts":
+                qParts << 'a.tenant is null'
+                break
+        }
+
+        /*
+        if (params.prs) {
+            qParts << "( genfunc_filter_matcher(p.last_name, :prsName) = true OR genfunc_filter_matcher(p.middle_name, :prsName) = true OR genfunc_filter_matcher(p.first_name, :prsName) = true )"
+            qParams << [prsName: "${params.prs}"]
+        }
+        */
+        if (params.org && params.org instanceof Org) {
+            qParts << "a.org = :org"
+            qParams << [org: params.org]
+        }
+        else if(params.org && params.org instanceof String) {
+            qParts << "( genfunc_filter_matcher(a.org.name, :name) = true or genfunc_filter_matcher(a.org.sortname, :name) = true )"
+            qParams << [name: "${params.org}"]
+        }
+
+        if (params.type) {
+            qParts << "(exists (select at from a.type as at where at.id in (:selectedTypes))) "
+            qParams << [selectedTypes: filterService.listReaderWrapper(params, 'type').collect{ it -> it instanceof String ? Long.parseLong(it) : it }]
+        }
+
+        if (params.showOnlyContactPersonForInstitution || params.exportOnlyContactPersonForInstitution){
+            qParts << "(exists (select roletype from a.org.orgType as roletype where roletype.id = :instType ) and a.org.sector.id = :instSector )"
+            qParams << [instSector: RDStore.O_SECTOR_HIGHER_EDU.id, instType: RDStore.OT_INSTITUTION.id]
+        }
+
+        if (params.showOnlyContactPersonForProviderAgency || params.exportOnlyContactPersonForProviderAgency){
+            qParts << "(exists (select roletype from a.org.orgType as roletype where roletype.id in (:orgType)) and a.org.sector.id = :orgSector )"
+            qParams << [orgSector: RDStore.O_SECTOR_PUBLISHER.id, orgType: [RDStore.OT_PROVIDER.id, RDStore.OT_AGENCY.id]]
+        }
+
+        String query = "SELECT distinct(a), ${sort} FROM Address AS a WHERE " + qParts.join(" AND ")
+
+        if (params.filterPropDef) {
+            Map<String, Object> psq = propertyService.evalFilterQuery(params, query, 'a', qParams)
+            query = psq.query
+            qParams = psq.queryParams
+        }
+
+        String order = "ASC"
+        if (params?.order != null && params?.order != 'null'){
+            order = params.order
+        }
+
+        query = query + " ORDER BY ${sort} ${order}"
+        List result = Address.executeQuery(query, qParams)
 
         if(result) {
             result = result.collect { row -> row[0] }

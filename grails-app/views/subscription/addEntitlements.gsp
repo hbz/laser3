@@ -136,6 +136,7 @@
     </g:form>
 </ui:modal>
 
+<div id="downloadWrapper"></div>
 
 <ui:tabs actionName="${actionName}">
     <ui:tabsItem controller="subscription" action="addEntitlements"
@@ -167,6 +168,15 @@
     </div>
 
     <div class="field"></div>
+
+    <g:if test="${institution.isCustomerType_Consortium()}">
+        <div class="field">
+            <div class="ui right floated checkbox toggle">
+                <g:checkBox name="withChildren" value="${withChildren}" checked="true"/>
+                <label><g:message code="subscription.details.addEntitlements.withChildren"/></label>
+            </div>
+        </div>
+    </g:if>
 
     <div class="ui blue large label"><g:message code="title.plural"/>: <div class="detail">${num_tipp_rows}</div>
     </div>
@@ -561,7 +571,18 @@
         });
     });
 
-
+    $('.kbartExport').click(function(e) {
+        e.preventDefault();
+        $('#globalLoadingIndicator').show();
+        $.ajax({
+            url: "<g:createLink action="addEntitlements" params="${params + [exportKBart: true]}"/>",
+            type: 'POST',
+            contentType: false
+        }).done(function(response){
+            $("#downloadWrapper").html(response);
+            $('#globalLoadingIndicator').hide();
+        });
+    });
 </laser:script>
 
 <laser:htmlEnd />

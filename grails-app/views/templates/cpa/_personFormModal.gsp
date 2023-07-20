@@ -33,10 +33,10 @@
                                 </label>
                                 <g:select class="ui search dropdown"
                                           name="personRoleOrg"
-                                          from="${orgList.sort { it.name }}"
+                                          from="${orgList}"
                                           value="${org?.id}"
                                           optionKey="id"
-                                          optionValue="${{ it.name + ' ' + (it.sortname ? '(' + it.sortname + ')' : '') }}"
+                                          optionValue="${{ it.sortname ?: it.name }}"
                                           noSelection="${['': message(code: 'default.select.choose.label')]}"/>
                             </g:if>
                             <g:if test="${org}">
@@ -230,7 +230,7 @@
 
                             <div class="field wide four">
                                 <ui:select class="ui search dropdown" name="contactLang${contact.id}"
-                                              from="${RefdataCategory.getAllRefdataValues(RDConstants.LANGUAGE_ISO)}"
+                                              from="${RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.LANGUAGE_ISO)}"
                                               optionKey="id"
                                               optionValue="value"
                                               value="${contact.language?.id}"
@@ -274,7 +274,7 @@
                     <div class="field wide four">
                         <label></label>
                         <ui:select class="ui search dropdown" name="contactLang.id"
-                                      from="${RefdataCategory.getAllRefdataValues(RDConstants.LANGUAGE_ISO)}"
+                                      from="${RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.LANGUAGE_ISO)}"
                                       optionKey="id"
                                       optionValue="value"
                                       value="${contactInstance?.language?.id}"

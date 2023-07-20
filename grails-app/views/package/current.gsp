@@ -25,9 +25,14 @@
             </g:else>
         </ui:exportDropdownItem>
         --%>
-        <ui:exportDropdownItem>
-            <a class="item" data-ui="modal" href="#individuallyExportTippsModal">Export</a>
-        </ui:exportDropdownItem>
+        <g:if test="${num_tipp_rows < 1000000}">
+            <ui:exportDropdownItem>
+                <a class="item" data-ui="modal" href="#individuallyExportTippsModal">Export</a>
+            </ui:exportDropdownItem>
+        </g:if>
+        <g:else>
+            <ui:actionsDropdownItemDisabled message="Export" tooltip="${message(code: 'export.titles.excelLimit')}"/>
+        </g:else>
         <%--
         <ui:exportDropdownItem>
             <g:if test="${filterSet}">
@@ -46,18 +51,21 @@
         </ui:exportDropdownItem>
         --%>
         <ui:exportDropdownItem>
+            <%--
             <g:if test="${filterSet}">
-                <g:link class="item js-open-confirm-modal"
+                <g:link class="item kbartExport js-open-confirm-modal"
                         data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}"
-                        data-confirm-term-how="ok" controller="package" action="current"
+                        data-confirm-term-how="ok"
                         params="${params + [exportKBart: true]}">
                     KBART Export
                 </g:link>
             </g:if>
             <g:else>
-                <g:link class="item" action="current"
+                --%>
+            <%-- enabling LAS:eR confirms for AJAX links requires additional engineering --%>
+                <g:link class="item kbartExport"
                         params="${params + [exportKBart: true]}">KBART Export</g:link>
-            </g:else>
+            <%--</g:else>--%>
         </ui:exportDropdownItem>
     <%--<ui:exportDropdownItem>
         <g:link class="item" action="show" params="${params+[format:'json']}">JSON</g:link>
@@ -66,7 +74,6 @@
         <g:link class="item" action="show" params="${params+[format:'xml']}">XML</g:link>
     </ui:exportDropdownItem>--%>
     </ui:exportDropdown>
-    <laser:render template="actions"/>
 </ui:controlButtons>
 
 <ui:h1HeaderWithIcon text="${packageInstance.name}" />
@@ -98,6 +105,7 @@
 
     </div>
 </div>
+<div id="downloadWrapper"></div>
 <%
     Map<String, String>
     sortFieldMap = ['sortname': message(code: 'title.label')]
@@ -149,6 +157,19 @@
             return false ;
         }
       }
+
+    $('.kbartExport').click(function(e) {
+        e.preventDefault();
+        $('#globalLoadingIndicator').show();
+        $.ajax({
+            url: "<g:createLink action="current" params="${params + [exportKBart: true]}"/>",
+            type: 'POST',
+            contentType: false
+        }).done(function(response){
+            $("#downloadWrapper").html(response);
+            $('#globalLoadingIndicator').hide();
+        });
+    });
 </laser:script>
 
 <laser:htmlEnd />

@@ -32,12 +32,13 @@ import java.util.regex.Pattern
 @Transactional
 class FinanceService {
 
-    ContextService contextService
-    GenericOIDService genericOIDService
-    MessageSource messageSource
     AccessService accessService
+    ContextService contextService
+    DeletionService deletionService
     EscapeService escapeService
     FinanceControllerService financeControllerService
+    GenericOIDService genericOIDService
+    MessageSource messageSource
 
     String genericExcludes = ' and ci.surveyOrg = null and ci.costItemStatus != :deleted '
 
@@ -236,12 +237,21 @@ class FinanceService {
         Map<String,Object> result = financeControllerService.getResultGenerics(params)
         result.putAll(financeControllerService.getEditVars(result.institution))
         List<Long> selectedCostItems = []
-        params.list("selectedCostItems").each { id ->
-            selectedCostItems << Long.parseLong(id)
+        if(params.containsKey('costItemListToggler')) {
+            if(result.subscription)
+                selectedCostItems = getCostItemsForSubscription(params, result).get(params.view).ids
+            else selectedCostItems = getCostItems(params, result).get(params.view).ids
+        }
+        else {
+            params.list("selectedCostItems").each { id ->
+                selectedCostItems << Long.parseLong(id)
+            }
         }
         if(selectedCostItems) {
             if(Boolean.valueOf(params.delete)) {
-                CostItem.executeUpdate('update CostItem ci set ci.costItemStatus = :deleted where ci.id in (:ids)',[deleted:RDStore.COST_ITEM_DELETED,ids:selectedCostItems])
+                CostItem.findAllByIdInList(selectedCostItems).each { CostItem ci ->
+                    deletionService.deleteCostItem(ci)
+                }
             }
             else if(params.percentOnOldPrice) {
                 Double percentage = 1 + params.double('percentOnOldPrice') / 100
@@ -359,48 +369,6 @@ class FinanceService {
             }
         }
         [result:result,status:STATUS_OK]
-    }
-
-    /**
-     * Deletes the given cost item and unsets eventual links. If it is the last item in a cost item group,
-     * the group will be deleted as well for that it will not appear in dropdowns any more
-     * @param params the parameter map containing the cost item id to delete and the tab which should be displayed after deletion
-     * @return result status map: OK if succeeded, error otherwise
-     */
-    Map<String,Object> deleteCostItem(GrailsParameterMap params) {
-        Map<String, Object> result = [showView:params.showView]
-        CostItem ci = CostItem.get(params.id)
-        if (ci) {
-            List<CostItemGroup> cigs = CostItemGroup.findAllByCostItem(ci)
-            Order order = ci.order
-            Invoice invoice = ci.invoice
-            log.debug("deleting CostItem: " + ci)
-            ci.costItemStatus = RDStore.COST_ITEM_DELETED
-            ci.invoice = null
-            ci.order = null
-            ci.sub = null
-            ci.subPkg = null
-            ci.issueEntitlement = null
-            ci.issueEntitlementGroup = null
-            if(ci.save()) {
-                if (!CostItem.findByOrderAndIdNotEqualAndCostItemStatusNotEqual(order, ci.id, RDStore.COST_ITEM_DELETED))
-                    order.delete()
-                if (!CostItem.findByInvoiceAndIdNotEqualAndCostItemStatusNotEqual(invoice, ci.id, RDStore.COST_ITEM_DELETED))
-                    invoice.delete()
-                PendingChange.executeUpdate('delete from PendingChange pc where pc.costItem = :ci', [ci: ci])
-                cigs.each { CostItemGroup item ->
-                    item.delete()
-                    log.debug("deleting CostItemGroup: " + item)
-                }
-            }
-            else {
-                log.error(ci.errors.toString())
-                result.error = messageSource.getMessage('default.delete.error.general.message',null, LocaleUtils.getCurrentLocale())
-                [result:result,status:STATUS_ERROR]
-            }
-            [result:result,status:STATUS_OK]
-        }
-        else [result:result,status:STATUS_ERROR]
     }
 
     /**
@@ -593,14 +561,16 @@ class FinanceService {
                         ownFilter.putAll(filterQuery.filterData)
                         ownFilter.remove('filterConsMembers')
                         Set<Long> ownCostItems = CostItem.executeQuery(
-                                'select ci.id from CostItem ci where ci.owner = :owner and ci.sub = :sub '+
+                                'select ci from CostItem ci where ci.owner = :owner and ci.sub = :sub '+
                                         genericExcludes + subFilter + filterQuery.ciFilter,
-                                [owner:org,sub:sub]+genericExcludeParams+ownFilter)
+                                [owner:org,sub:sub]+genericExcludeParams+ownFilter,
+                                [sort: configMap.sortConfig.ownSort, order: configMap.sortConfig.ownOrder])
                         prf.setBenchmark("assembling map")
                         result.own = [count:ownCostItems.size()]
                         if(ownCostItems){
-                            result.own.costItems = CostItem.findAllByIdInList(ownCostItems,[max:configMap.max,offset:configMap.offsets.ownOffset, sort: configMap.sortConfig.ownSort, order: configMap.sortConfig.ownOrder])
-                            result.own.sums = calculateResults(ownCostItems)
+                            result.own.costItems = ownCostItems.drop(configMap.offsets.ownOffset).take(configMap.max)
+                            result.own.sums = calculateResults(ownCostItems.id)
+                            result.own.ids = ownCostItems.id
                         }
                         break
                     case "cons":
@@ -614,6 +584,7 @@ class FinanceService {
                         if(consCostItems) {
                             result.cons.costItems = consCostItems.drop(configMap.offsets.consOffset).take(configMap.max)
                             result.cons.sums = calculateResults(consCostItems.id)
+                            result.cons.ids = consCostItems.id
                         }
                         break
                     case "consAtSubscr":
@@ -621,12 +592,13 @@ class FinanceService {
                         Set<CostItem> consCostItems = CostItem.executeQuery('select ci from CostItem as ci right join ci.sub sub join sub.orgRelations oo where ci.owner = :owner and sub = :sub and oo.roleType = :roleType'+
                             filterQuery.subFilter + genericExcludes + filterQuery.ciFilter,
                             [owner:org,sub:sub,roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA]+genericExcludeParams+filterQuery.filterData,
-                                [max:configMap.max,offset:configMap.offsets.consOffset, sort: configMap.sortConfig.consSort, order: configMap.sortConfig.consOrder])
+                                [sort: configMap.sortConfig.consSort, order: configMap.sortConfig.consOrder])
                         prf.setBenchmark("assembling map")
                         result.cons = [count:consCostItems.size()]
                         if(consCostItems) {
-                            result.cons.costItems = consCostItems
+                            result.cons.costItems = consCostItems.drop(configMap.offsets.consOffset).take(configMap.max)
                             result.cons.sums = calculateResults(consCostItems.id)
+                            result.cons.ids = consCostItems.id
                         }
                         break
                     case "subscr":
@@ -639,6 +611,7 @@ class FinanceService {
                         if(subscrCostItems) {
                             result.subscr.costItems = subscrCostItems.drop(configMap.offsets.subscrOffset).take(configMap.max)
                             result.subscr.sums = calculateResults(subscrCostItems.id)
+                            result.subscr.ids = subscrCostItems.id
                         }
                         break
                 }
@@ -706,6 +679,7 @@ class FinanceService {
                     prf.setBenchmark("map assembly")
                     if(ownSubscriptionCostItems) {
                         result.own.costItems = ownSubscriptionCostItems.drop(configMap.offsets.ownOffset).take(configMap.max)
+                        result.own.ids = ownSubscriptionCostItems.id
                         result.own.sums = calculateResults(ownSubscriptionCostItems.id)
                     }
                         break
@@ -729,6 +703,7 @@ class FinanceService {
                     if(consortialCostRows) {
                         Set<CostItem> consortialCostItems = consortialCostRows
                         prf.setBenchmark("map assembly")
+                        result.cons.ids = consortialCostRows.id
                         //result.cons.costItems = CostItem.executeQuery('select ci from CostItem ci right join ci.sub sub join sub.orgRelations oo left join ci.costItemElementConfiguration ciec where ci.id in (:ids) order by '+configMap.sortConfig.consSort+' '+configMap.sortConfig.consOrder+', ciec.value desc',[ids:consortialCostRows],[max:configMap.max, offset:configMap.offsets.consOffset]).toSet()
                         result.cons.costItems = consortialCostItems.drop(configMap.offsets.consOffset).take(configMap.max)
                         //very ugly ... any ways to achieve this more elegantly are greatly appreciated!!
@@ -760,6 +735,7 @@ class FinanceService {
                     result.subscr = [count:consortialMemberSubscriptionCostItems.size()]
                     if(consortialMemberSubscriptionCostItems) {
                         result.subscr.sums = calculateResults(consortialMemberSubscriptionCostItems.id)
+                        result.subscr.ids = consortialMemberSubscriptionCostItems.id
                         result.subscr.costItems = consortialMemberSubscriptionCostItems.drop(configMap.offsets.subscrOffset).take(configMap.max)
                     }
                     break
@@ -1204,9 +1180,9 @@ class FinanceService {
                 if(subIdentifier) {
                     //fetch possible identifier namespaces
                     List<Subscription> subMatches
-                    if(accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC))
+                    if(contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC))
                         subMatches = Subscription.executeQuery("select oo.sub from OrgRole oo where (cast(oo.sub.id as string) = :idCandidate or oo.sub.globalUID = :idCandidate) and oo.org = :org and oo.roleType in :roleType",[idCandidate:subIdentifier,org:costItem.owner,roleType:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER]])
-                    else if(accessService.ctxPerm(CustomerTypeService.ORG_INST_PRO))
+                    else if(contextService.hasPerm(CustomerTypeService.ORG_INST_PRO))
                         subMatches = Subscription.executeQuery("select oo.sub from OrgRole oo where (cast(oo.sub.id as string) = :idCandidate or oo.sub.globalUID = :idCandidate) and oo.org = :org and oo.roleType in :roleType",[idCandidate:subIdentifier,org:costItem.owner,roleType:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER]])
                     if(!subMatches)
                         mappingErrorBag.noValidSubscription = subIdentifier

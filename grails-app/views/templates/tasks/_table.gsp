@@ -28,7 +28,7 @@
             </thead>
             <tbody>
             <g:each in="${taskInstanceList}" var="taskInstance">
-                <!-- OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${userService.checkAffiliationAndCtxOrg(user, contextService.getOrg(), 'INST_EDITOR')} -->
+                <!-- OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${userService.hasFormalAffiliation(user, contextService.getOrg(), 'INST_EDITOR')} -->
                 <g:set var="overwriteEditable" value="${editable || taskService.isTaskEditableBy(taskInstance, contextService.getUser(), contextService.getOrg())}" />
                 <tr>
                     <td>
@@ -87,7 +87,8 @@
                                 <i aria-hidden="true" class="write icon"></i>
                             </a>
                         </g:if>
-                        <g:if test="${(user == taskInstance.creator && user.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')) || contextService.getUser().hasCtxAffiliation_or_ROLEADMIN('INST_ADM')}">
+                        <g:if test="${(user == taskInstance.creator && userService.hasAffiliation_or_ROLEADMIN(user, contextService.getOrg(), 'INST_EDITOR')) || contextService.isInstAdm_or_ROLEADMIN()}">
+%{-- todo: orig.                       <g:if test="${(user == taskInstance.creator && user.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')) || contextService.isInstAdm_or_ROLEADMIN()}">--}%
                             <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.task")}"
                                     data-confirm-term-how="delete"

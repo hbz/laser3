@@ -7,8 +7,6 @@ import de.laser.cache.SessionCacheWrapper
 import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.ctrl.UserControllerService
 import de.laser.custom.CustomWkhtmltoxService
-import de.laser.finance.PriceItem
-import de.laser.reporting.export.base.BaseExportHelper
 import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.auth.Role
@@ -109,9 +107,9 @@ class MyInstitutionController  {
      * The landing page after login; this is also the call when the home button is clicked
      * @return the {@link #dashboard()} view
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'])
+    @DebugInfo(isInstUser_or_ROLEADMIN = true)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+        ctx.contextService.isInstUser_or_ROLEADMIN()
     })
     def index() {
         redirect(action:'dashboard')
@@ -121,9 +119,9 @@ class MyInstitutionController  {
      * Call for the reporting module
      * @return the reporting entry view
      */
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_PRO, 'INST_USER'])
+    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_USER')
+        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
     })
     def reporting() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -332,9 +330,9 @@ class MyInstitutionController  {
      * query; licenses without a subscription may get lost if there is no subscription linked to it!
      * @return the license list view
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'])
+    @DebugInfo(isInstUser_or_ROLEADMIN = true)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+        ctx.contextService.isInstUser_or_ROLEADMIN()
     })
     def currentLicenses() {
 
@@ -349,7 +347,7 @@ class MyInstitutionController  {
 		Profiler prf = new Profiler()
 		prf.setBenchmark('init')
 
-        result.is_inst_admin = userService.checkAffiliationAndCtxOrg(result.user, result.institution, 'INST_ADM')
+        result.is_inst_admin = userService.hasFormalAffiliation(result.user, result.institution, 'INST_ADM')
 
         Date date_restriction = null
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
@@ -378,7 +376,7 @@ class MyInstitutionController  {
 
         Set<String> licenseFilterTable = []
 
-        if (accessService.ctxPerm(CustomerTypeService.ORG_INST_PRO)) {
+        if (contextService.hasPerm(CustomerTypeService.ORG_INST_PRO)) {
             Set<RefdataValue> roleTypes = []
             if(params.licTypes) {
                 Set<String> licTypes = params.list('licTypes')
@@ -393,7 +391,7 @@ class MyInstitutionController  {
                 licenseFilterTable << "action"
             licenseFilterTable << "licensingConsortium"
         }
-        else if (accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+        else if (contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
             base_qry = "from License as l where exists ( select o from l.orgRelations as o where ( o.roleType = :roleTypeC AND o.org = :lic_org AND l.instanceOf is null AND NOT exists ( select o2 from l.orgRelations as o2 where o2.roleType = :roleTypeL ) ) )"
             qry_params = [roleTypeC:RDStore.OR_LICENSING_CONSORTIUM, roleTypeL:RDStore.OR_LICENSEE_CONS, lic_org:result.institution]
             licenseFilterTable << "memberLicenses"
@@ -502,7 +500,7 @@ class MyInstitutionController  {
                 qry_params.subKinds = subKinds
             }
 
-            if (accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+            if (contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
                 subscrQueryFilter << "s.instanceOf is null"
             }
 
@@ -721,16 +719,16 @@ class MyInstitutionController  {
      * Call to create a new license
      * @return the form view to enter the new license parameters
      */
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR'])
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     })
     def emptyLicense() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        if (! (result.user as User).isMemberOf(result.institution as Org)) {
+        if (! (result.user as User).isFormal(result.institution as Org)) {
             flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]) as String
             response.sendError(HttpStatus.SC_FORBIDDEN)
             return;
@@ -750,7 +748,7 @@ class MyInstitutionController  {
 
         result.defaultEndYear = sdf.format(cal.getTime())
 
-        result.is_inst_admin = userService.checkAffiliationAndCtxOrg(result.user, result.institution, 'INST_EDITOR')
+        result.is_inst_admin = userService.hasFormalAffiliation(result.user, result.institution, 'INST_EDITOR')
 
         result.licenses = [] // ERMS-2431
         result.numLicenses = 0
@@ -767,9 +765,9 @@ class MyInstitutionController  {
      * Creates a new license based on the parameters submitted
      * @return the license details view ({@link LicenseController#show()}) of the new license record
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'], wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstUser_or_ROLEADMIN = true, wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+        ctx.contextService.isInstUser_or_ROLEADMIN()
     })
     def processEmptyLicense() {
         License.withTransaction { TransactionStatus ts ->
@@ -777,14 +775,14 @@ class MyInstitutionController  {
             Org org = contextService.getOrg()
 
             Set<RefdataValue> defaultOrgRoleType = []
-            if (accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC))
+            if (contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC))
                 defaultOrgRoleType << RDStore.OT_CONSORTIUM.id.toString()
             else defaultOrgRoleType << RDStore.OT_INSTITUTION.id.toString()
 
             params.asOrgType = params.asOrgType ? [params.asOrgType] : defaultOrgRoleType
 
 
-            if (! userService.checkAffiliationAndCtxOrg(user, org, 'INST_EDITOR')) {
+            if (! userService.hasFormalAffiliation(user, org, 'INST_EDITOR')) {
                 flash.error = message(code:'myinst.error.noAdmin', args:[org.name]) as String
                 response.sendError(HttpStatus.SC_FORBIDDEN)
                 // render(status: '403', text:"You do not have permission to access ${org.name}. Please request access on the profile page");
@@ -867,9 +865,9 @@ class MyInstitutionController  {
      * The list results may be filtered with filter parameters
      * @return a list of matching {@link Org} records, as html or as export pipe (Excel / CSV)
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'])
+    @DebugInfo(isInstUser_or_ROLEADMIN = true)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+        ctx.contextService.isInstUser_or_ROLEADMIN()
     })
     def currentProviders() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -964,6 +962,7 @@ class MyInstitutionController  {
             Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
             contactSwitch.addAll(params.list("contactSwitch"))
+            contactSwitch.addAll(params.list("addressSwitch"))
         }
 
         if(params.fileformat == 'xlsx') {
@@ -994,9 +993,9 @@ class MyInstitutionController  {
      * Default filter setting is status: current or with perpetual access
      * @return a (filtered) list of subscriptions, either as direct html output or as export stream (CSV, Excel)
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'])
+    @DebugInfo(isInstUser_or_ROLEADMIN = true)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+        ctx.contextService.isInstUser_or_ROLEADMIN()
     })
     def currentSubscriptions() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -1073,7 +1072,7 @@ class MyInstitutionController  {
      */
     private def _exportcurrentSubscription(List<Subscription> subscriptions, String format, Org contextOrg) {
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
-        boolean asCons = accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)
+        boolean asCons = contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)
         List titles = ['Name',
                        g.message(code: 'globalUID.label'),
                        g.message(code: 'license.label'),
@@ -1270,9 +1269,9 @@ class MyInstitutionController  {
      *     <li>customerIdentifiers</li>
      * </ol>
      */
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER'])
+    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER')
+        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     })
     def subscriptionsManagement() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -1281,7 +1280,7 @@ class MyInstitutionController  {
 
         if(!(params.tab in ['notes', 'documents', 'properties'])){
             //Important
-            if (!accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+            if (!contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
                 if(params.subTypes == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id.toString()){
                     flash.error = message(code: 'subscriptionsManagement.noPermission.forSubsWithTypeConsortial') as String
                 }
@@ -1319,9 +1318,9 @@ class MyInstitutionController  {
      * Connects the context subscription with the given pair
      * @return void, redirects to referer
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'])
+    @DebugInfo(isInstEditor_or_ROLEADMIN = true)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     def linkObjects() {
         Map<String,Object> ctrlResult = linksGenerationService.createOrUpdateLink(params)
@@ -1334,9 +1333,9 @@ class MyInstitutionController  {
      * Removes the given link
      * @return void, redirects to referer
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'])
+    @DebugInfo(isInstEditor_or_ROLEADMIN = true)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     def unlinkObjects() {
         linksGenerationService.deleteLink(params.oid)
@@ -1349,9 +1348,9 @@ class MyInstitutionController  {
      * @see Doc
      * @see DocContext
      */
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER'])
+    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER')
+        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     })
     Map documents() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -1367,9 +1366,9 @@ class MyInstitutionController  {
      * @return the document table view ({@link #documents()})
      * @see DocstoreService#unifiedDeleteDocuments()
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'])
+    @DebugInfo(isInstEditor_or_ROLEADMIN = true)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     def deleteDocuments() {
         log.debug("deleteDocuments ${params}");
@@ -1392,9 +1391,9 @@ class MyInstitutionController  {
      * @see Platform
      * @see IssueEntitlement
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'])
+    @DebugInfo(isInstUser_or_ROLEADMIN = true)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+        ctx.contextService.isInstUser_or_ROLEADMIN()
     })
     def currentTitles() {
 
@@ -1438,7 +1437,7 @@ class MyInstitutionController  {
         String instanceFilter = ""
         List<String> queryFilter = []
 
-        if (accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+        if (contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
             orgRoles << RDStore.OR_SUBSCRIPTION_CONSORTIA
             queryFilter << " sub.instanceOf is null "
             instanceFilter += "and sub.instanceOf is null"
@@ -1540,17 +1539,32 @@ class MyInstitutionController  {
             }
         }
 
-        String qryString = "from IssueEntitlement ie join ie.tipp tipp join ie.subscription sub join sub.orgRelations oo where sub.status = :current and oo.roleType in (:orgRoles) and oo.org = :institution "
+        String qryString = "from IssueEntitlement ie join ie.tipp tipp join ie.subscription sub join sub.orgRelations oo join ie.status status where sub.status = :current and oo.roleType in (:orgRoles) and oo.org = :institution "
         if(queryFilter)
             qryString += ' and '+queryFilter.join(' and ')
 
         Map<String,Object> qryParamsClone = qryParams.clone()
-        if(!params.containsKey('fileformat')) {
-            result.currentIECounts = IssueEntitlement.executeQuery('select count(ie) '+ qryString+ ' and ie.tipp.status = :status and ie.status != :ieStatus', qryParamsClone + [status: RDStore.TIPP_STATUS_CURRENT, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+        if(!params.containsKey('fileformat') && !params.containsKey('exportKBart')) {
+            List counts = IssueEntitlement.executeQuery('select new map(count(ie) as count, status as status) '+ qryString+ ' and status != :ieStatus group by status', qryParamsClone+[ieStatus: RDStore.TIPP_STATUS_REMOVED])
+            result.allIECounts = 0
+            counts.each { row ->
+                switch (row['status']) {
+                    case RDStore.TIPP_STATUS_CURRENT: result.currentIECounts = row['count']
+                        break
+                    case RDStore.TIPP_STATUS_EXPECTED: result.plannedIECounts = row['count']
+                        break
+                    case RDStore.TIPP_STATUS_RETIRED: result.expiredIECounts = row['count']
+                        break
+                    case RDStore.TIPP_STATUS_DELETED: result.deletedIECounts = row['count']
+                        break
+                }
+                result.allIECounts += row['count']
+            }
+            /*result.currentIECounts = IssueEntitlement.executeQuery('select count(ie) '+ qryString+ ' and ie.tipp.status = :status and ie.status != :ieStatus', qryParamsClone + [status: RDStore.TIPP_STATUS_CURRENT, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
             result.plannedIECounts = IssueEntitlement.executeQuery('select count(ie) '+ qryString+ ' and ie.tipp.status = :status and ie.status != :ieStatus', qryParamsClone + [status: RDStore.TIPP_STATUS_EXPECTED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
             result.expiredIECounts = IssueEntitlement.executeQuery('select count(ie) '+ qryString+ ' and ie.tipp.status = :status and ie.status != :ieStatus', qryParamsClone + [status: RDStore.TIPP_STATUS_RETIRED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
             result.deletedIECounts = IssueEntitlement.executeQuery('select count(ie) '+ qryString+ ' and ie.tipp.status = :status and ie.status != :ieStatus', qryParamsClone + [status: RDStore.TIPP_STATUS_DELETED, ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
-            result.allIECounts = IssueEntitlement.executeQuery('select count(ie) '+ qryString+ ' and ie.tipp.status in (:status) and ie.status != :ieStatus', qryParamsClone + [status: [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_EXPECTED, RDStore.TIPP_STATUS_RETIRED, RDStore.TIPP_STATUS_DELETED], ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
+            result.allIECounts = IssueEntitlement.executeQuery('select count(ie) '+ qryString+ ' and ie.tipp.status in (:status) and ie.status != :ieStatus', qryParamsClone + [status: [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_EXPECTED, RDStore.TIPP_STATUS_RETIRED, RDStore.TIPP_STATUS_DELETED], ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]*/
         }
 
         if(params.status != '' && params.status != null && params.list('status')) {
@@ -1580,7 +1594,7 @@ class MyInstitutionController  {
             Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
         }
-        else if(!params.containsKey('fileformat')) {
+        else if(!params.containsKey('fileformat') && !params.containsKey('exportKBart')) {
 
             String query = ''
             Map queryMap = [:]
@@ -1617,20 +1631,25 @@ class MyInstitutionController  {
 		List bm = prf.stopBenchmark()
 		result.benchMark = bm
         if(params.exportKBart) {
-            response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
-            response.contentType = "text/tsv"
-            Map<String, Object> configMap = [:]
-            configMap.putAll(params)
-            configMap.validOn = checkedDate.getTime()
-            String consFilter = result.institution.isCustomerType_Consortium() ? ' and s.instanceOf is null' : ''
-            configMap.pkgIds = SubscriptionPackage.executeQuery('select sp.pkg.id from SubscriptionPackage sp join sp.subscription s join s.orgRelations oo where oo.org = :context and oo.roleType in (:subscrTypes)'+consFilter, [context: result.institution, subscrTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS]])
-            ServletOutputStream out = response.outputStream
-            Map<String,List> tableData = exportService.generateTitleExportKBART(configMap, IssueEntitlement.class.name)
-            out.withWriter { writer ->
-                writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.columnData,'\t'))
+            String dir = GlobalService.obtainFileStorageLocation()
+            File f = new File(dir+'/'+filename)
+            if(!f.exists()) {
+                Map<String, Object> configMap = [:]
+                configMap.putAll(params)
+                configMap.validOn = checkedDate.getTime()
+                String consFilter = result.institution.isCustomerType_Consortium() ? ' and s.instanceOf is null' : ''
+                configMap.pkgIds = SubscriptionPackage.executeQuery('select sp.pkg.id from SubscriptionPackage sp join sp.subscription s join s.orgRelations oo where oo.org = :context and oo.roleType in (:subscrTypes)'+consFilter, [context: result.institution, subscrTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS]])
+                FileOutputStream out = new FileOutputStream(f)
+                Map<String,List> tableData = exportService.generateTitleExportKBART(configMap, IssueEntitlement.class.name)
+                out.withWriter { writer ->
+                    writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.columnData,'\t'))
+                }
+                out.flush()
+                out.close()
             }
-            out.flush()
-            out.close()
+            Map fileResult = [token: filename]
+            render template: '/templates/bulkItemDownload', model: fileResult
+            return
         }
         else if(params.fileformat == 'xlsx') {
             SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportTipps(tippIDs, selectedFields, ExportClickMeService.FORMAT.XLS)
@@ -1669,9 +1688,9 @@ class MyInstitutionController  {
             result
     }
 
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'])
+    @DebugInfo(isInstUser_or_ROLEADMIN = true)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+        ctx.contextService.isInstUser_or_ROLEADMIN()
     })
     def currentPermanentTitles() {
 
@@ -1749,9 +1768,9 @@ class MyInstitutionController  {
      * @see SubscriptionPackage
      * @see Package
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'])
+    @DebugInfo(isInstUser_or_ROLEADMIN = true)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+        ctx.contextService.isInstUser_or_ROLEADMIN()
     })
     def currentPackages() {
 
@@ -1759,7 +1778,7 @@ class MyInstitutionController  {
         result.user = contextService.getUser()
         result.contextOrg = contextService.getOrg()
         result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
-        result.languages = RefdataCategory.getAllRefdataValues(RDConstants.LANGUAGE_ISO)
+        result.languages = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.LANGUAGE_ISO)
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         List currentSubIds = []
@@ -1857,9 +1876,9 @@ class MyInstitutionController  {
      * The information is grouped in tabs where information is being preloaded (except changes, notifications and surveys)
      * @return the dashboard view with the prefilled tabs
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstUser_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+        ctx.contextService.isInstUser_or_ROLEADMIN()
     })
     def dashboard() {
 
@@ -1878,14 +1897,14 @@ class MyInstitutionController  {
      * Opens the modal to create a new task
      * @return the task creation modal
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'])
+    @DebugInfo(isInstUser_or_ROLEADMIN = true)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+        ctx.contextService.isInstUser_or_ROLEADMIN()
     })
     def modal_create() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
-        if (! (result.user as User).isMemberOf(result.institution as Org)) {
+        if (! (result.user as User).isFormal(result.institution as Org)) {
             flash.error = "You do not have permission to access ${result.institution.name} pages. Please request access on the profile page";
             response.sendError(HttpStatus.SC_FORBIDDEN)
             return;
@@ -1902,9 +1921,9 @@ class MyInstitutionController  {
      * @return a list of changes to be accepted or rejected
      * @see PendingChange
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'])
+    @DebugInfo(isInstUser_or_ROLEADMIN = true)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+        ctx.contextService.isInstUser_or_ROLEADMIN()
     })
     def changes() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -1923,9 +1942,9 @@ class MyInstitutionController  {
      * Call for the finance import starting page; the mappings are being explained here and an example sheet for submitting data to import
      * @return the finance import entry view
      */
-    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
     @Secured(closure = {
-        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def financeImport() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -1940,9 +1959,9 @@ class MyInstitutionController  {
      * @see Subscription
      * @see CostItem
      */
-    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
     @Secured(closure = {
-        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def generateFinanceImportWorksheet() {
         Subscription subscription = Subscription.get(params.id)
@@ -1978,9 +1997,9 @@ class MyInstitutionController  {
      * processing whether the imported data is read correctly or not
      * @return the control view with the import preparation result
      */
-    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def processFinanceImport() {
         CostItem.withTransaction { TransactionStatus ts ->
@@ -2015,15 +2034,19 @@ class MyInstitutionController  {
      * Call for the subscription import starting page; the mappings are being explained here and an example sheet for submitting data to import
      * @return the subscription import entry view
      */
-    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
     @Secured(closure = {
-        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def subscriptionImport() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
-        result.mappingCols = ["name", "owner", "status", "type", "form", "resource", "provider", "agency", "startDate", "endDate",
+        List<String> mappingCols = ["name", "owner", "status", "type", "form", "resource", "provider", "agency", "startDate", "endDate",
                               "manualCancellationDate", "hasPerpetualAccess", "hasPublishComponent", "isPublicForApi",
                               "customProperties", "privateProperties", "notes"]
+        if(result.institution.isCustomerType_Inst_Pro()) {
+            mappingCols.add(mappingCols.indexOf("manualCancellationDate"), "isAutomaticRenewAnnually")
+        }
+        result.mappingCols = mappingCols
         result
     }
 
@@ -2032,9 +2055,9 @@ class MyInstitutionController  {
      * processing whether the imported data is read correctly or not
      * @return the control view with the import preparation result
      */
-    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def processSubscriptionImport() {
             Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -2070,9 +2093,9 @@ class MyInstitutionController  {
      * Default filter setting is current year
      * @return a (filtered) list of surveys, either displayed as html or returned as Excel worksheet
      */
-    @DebugInfo(ctxInstUserCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_INST_BASIC])
+    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.ORG_INST_BASIC])
     @Secured(closure = {
-        ctx.accessService.ctxInstUserCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )
+        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )
     })
     def currentSurveys() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -2163,9 +2186,9 @@ class MyInstitutionController  {
      * The view may be rendered as html or as Excel worksheet to download
      * @return the details view of the given survey
      */
-    @DebugInfo(ctxInstUserCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_INST_BASIC])
+    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.ORG_INST_BASIC])
     @Secured(closure = {
-        ctx.accessService.ctxInstUserCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )
+        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )
     })
     def surveyInfos() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -2184,7 +2207,7 @@ class MyInstitutionController  {
 
         if(result.surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]) {
             result.subscription = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.institution)
-            result.authorizedOrgs = result.user.getAffiliationOrgs()
+            result.formalOrg = result.user.formalOrg as Org
             // restrict visible for templates/links/orgLinksAsList
             result.costItemSums = [:]
             result.visibleOrgRelations = []
@@ -2287,9 +2310,9 @@ class MyInstitutionController  {
      * pass definitively into the holding of the next year's subscription
      * @return void, returns to the survey details page ({@link #surveyInfos()})
      */
-    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_INST_BASIC])
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_INST_BASIC])
     @Secured(closure = {
-        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )
     })
     def surveyInfoFinish() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -2355,9 +2378,9 @@ class MyInstitutionController  {
         redirect(url: request.getHeader('referer'))
     }
 
-    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_INST_BASIC])
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_INST_BASIC])
     @Secured(closure = {
-        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )
     })
     def surveyLinkOpenNewSurvey() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -2448,11 +2471,10 @@ class MyInstitutionController  {
      * Lists the users of the context institution
      * @return a list of users affiliated to the context institution
      * @see User
-     * @see de.laser.auth.UserOrgRole
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_ADM'])
+    @DebugInfo(isInstAdm_or_ROLEADMIN = true)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
+        ctx.contextService.isInstAdm_or_ROLEADMIN()
     })
     def users() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -2490,9 +2512,9 @@ class MyInstitutionController  {
      * Call to delete a given user
      * @return the user deletion page where the details of the given user are being enumerated
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_ADM'])
+    @DebugInfo(isInstAdm_or_ROLEADMIN = true)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
+        ctx.contextService.isInstAdm_or_ROLEADMIN()
     })
     def deleteUser() {
         Map<String, Object> result = userControllerService.getResultGenericsERMS3067(params)
@@ -2503,15 +2525,7 @@ class MyInstitutionController  {
         }
 
         if (result.user) {
-            List<Org> affils = Org.executeQuery('select distinct uo.org from UserOrgRole uo where uo.user = :user',
-                    [user: result.user])
-
-            if (affils.size() > 1) {
-                flash.error = message(code: 'user.delete.error.multiAffils') as String
-                redirect action: 'editUser', params: [uoid: params.uoid]
-                return
-            }
-            else if (affils.size() == 1 && (affils.get(0).id != contextService.getOrg().id)) {
+            if (result.user.formalOrg && (! (result.user as User).isFormal(contextService.getOrg()))) {
                 flash.error = message(code: 'user.delete.error.foreignOrg') as String
                 redirect action: 'editUser', params: [uoid: params.uoid]
                 return
@@ -2520,14 +2534,14 @@ class MyInstitutionController  {
             if (params.process && result.editable) {
                 User userReplacement = (User) genericOIDService.resolveOID(params.userReplacement)
 
-                result.delResult = deletionService.deleteUser(result.user, userReplacement, false)
+                result.delResult = deletionService.deleteUser(result.user as User, userReplacement, false)
             }
             else {
-                result.delResult = deletionService.deleteUser(result.user, null, DeletionService.DRY_RUN)
+                result.delResult = deletionService.deleteUser(result.user as User, null, DeletionService.DRY_RUN)
             }
 
             result.substituteList = User.executeQuery(
-                    'select distinct u from User u join u.affiliations ua where ua.org = :ctxOrg and u != :self and ua.formalRole = :instAdm order by u.username',
+                    'select distinct u from User u where u.formalOrg = :ctxOrg and u != :self and u.formalRole = :instAdm order by u.username',
                     [ctxOrg: result.orgInstance, self: result.user, instAdm: Role.findByAuthority('INST_ADM')]
             )
         }
@@ -2539,9 +2553,9 @@ class MyInstitutionController  {
      * Call to edit the given user
      * @return the user details view for editing the profile
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_ADM'])
+    @DebugInfo(isInstAdm_or_ROLEADMIN = true)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
+        ctx.contextService.isInstAdm_or_ROLEADMIN()
     })
     def editUser() {
         Map<String, Object> result = userControllerService.getResultGenericsERMS3067(params)
@@ -2563,9 +2577,9 @@ class MyInstitutionController  {
      * Call to create a new user for the context institution
      * @return the form to enter the new user's parameters
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_ADM'])
+    @DebugInfo(isInstAdm_or_ROLEADMIN = true)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
+        ctx.contextService.isInstAdm_or_ROLEADMIN()
     })
     def createUser() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -2581,9 +2595,9 @@ class MyInstitutionController  {
      * Processes the submitted parameters and creates a new user for the context institution
      * @return a redirect to the profile edit page on success, back to the user creation page otherwise
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_ADM'])
+    @DebugInfo(isInstAdm_or_ROLEADMIN = true)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
+        ctx.contextService.isInstAdm_or_ROLEADMIN()
     })
     def processCreateUser() {
         def success = userService.addNewUser(params,flash)
@@ -2603,20 +2617,20 @@ class MyInstitutionController  {
     /**
      * Attaches a given user to the given institution
      * @return the user editing view
-     * @see de.laser.auth.UserOrgRole
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_ADM'])
+    @DebugInfo(isInstAdm_or_ROLEADMIN = true)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
+        ctx.contextService.isInstAdm_or_ROLEADMIN()
     })
-    def addAffiliation() {
+    def setAffiliation() {
         Map<String, Object> result = userControllerService.getResultGenericsERMS3067(params)
         if (! result.editable) {
             flash.error = message(code: 'default.noPermissions') as String
             redirect action: 'editUser', params: [uoid: params.uoid]
             return
         }
-        userService.addAffiliation(result.user,params.org,params.formalRole,flash)
+
+        userService.setAffiliation(result.user as User, params.org, params.formalRole, flash)
         redirect action: 'editUser', params: [uoid: params.uoid]
     }
 
@@ -2624,24 +2638,37 @@ class MyInstitutionController  {
      * Opens the internal address book for the context institution
      * @return a list view of the institution-internal contacts
      */
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER'])
+    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER')
+        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     })
     def addressbook() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
-        params.sort = params.sort ?: 'pr.org.name'
-
-        List visiblePersons = []
-        Map<String, Object> selectedFields = [:]
+        params.sort = params.sort ?: 'pr.org.sortname'
+        params.tab = params.tab ?: 'contacts'
+        EhcacheWrapper cache = contextService.getUserCache("/myInstitution/addressbook/")
+        switch(params.tab) {
+            case 'contacts':
+                result.personOffset = result.offset
+                result.addressOffset = cache.get('addressOffset') ?: 0
+                break
+            case 'addresses':
+                result.addressOffset = result.offset
+                result.personOffset = cache.get('personOffset') ?: 0
+                break
+        }
+        cache.put('personOffset', result.personOffset)
+        cache.put('addressOffset', result.addressOffset)
+        List visiblePersons = [], visibleAddresses = []
+        Map<String, Object> selectedFields = [:], configMap = params.clone()
         String filename = escapeService.escapeString("${message(code: 'menu.institutions.myAddressbook')}_${DateUtils.getSDF_yyyyMMdd().format(new Date())}")
         if(params.fileformat) {
             if (params.filename) {
                 filename = params.filename
             }
-            Map<String, Object> configMap = [function:[], position: [], sort: 'pr.org.name']
+            configMap = [function:[], position: [], type: [], sort: 'pr.org.sortname']
             Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('ief:') }
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('ief:', ''), it.value ) }
             selectedFields.each { String key, value ->
@@ -2653,16 +2680,22 @@ class MyInstitutionController  {
                     else if(field[0] == 'position') {
                         configMap.position << field[1]
                     }
+                    else if(field[0] == 'type') {
+                        configMap.type << field[1]
+                    }
                 }
             }
             visiblePersons.addAll(addressbookService.getVisiblePersons("addressbook", configMap))
+            visibleAddresses.addAll(addressbookService.getVisibleAddresses("addressbook", configMap))
             selectedFieldsRaw.clear()
             selectedFields.clear()
             selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
         }
-        else
-            visiblePersons.addAll(addressbookService.getVisiblePersons("addressbook",params))
+        else {
+            visiblePersons.addAll(addressbookService.getVisiblePersons("addressbook", configMap+[offset: result.personOffset]))
+            visibleAddresses.addAll(addressbookService.getVisibleAddresses("addressbook", configMap+[offset: result.addressOffset]))
+        }
 
         Set<String> filterFields = ['org', 'prs', 'filterPropDef', 'filterProp', 'function', 'position', 'showOnlyContactPersonForInstitution', 'showOnlyContactPersonForProviderAgency']
         result.filterSet = params.keySet().any { String selField -> selField in filterFields }
@@ -2674,7 +2707,9 @@ class MyInstitutionController  {
                 )
 
         result.num_visiblePersons = visiblePersons.size()
-        result.visiblePersons = visiblePersons.drop(result.offset).take(result.max)
+        result.visiblePersons = visiblePersons.drop(result.personOffset).take(result.max)
+        result.num_visibleAddresses = visibleAddresses.size()
+        result.addresses = visibleAddresses.drop(result.addressOffset).take(result.max)
 
         if (visiblePersons){
             result.emailAddresses = Contact.executeQuery("select c.content from Contact c where c.prs in (:persons) and c.contentType = :contentType",
@@ -2696,7 +2731,7 @@ class MyInstitutionController  {
         else */
         if(params.fileformat == 'xlsx') {
 
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportAddresses(visiblePersons, selectedFields, params.exportOnlyContactPersonForInstitution == 'true', params.exportOnlyContactPersonForProviderAgency == 'true', ExportClickMeService.FORMAT.XLS)
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportAddresses(visiblePersons, visibleAddresses, selectedFields, params.exportOnlyContactPersonForInstitution == 'true', params.exportOnlyContactPersonForProviderAgency == 'true', ExportClickMeService.FORMAT.XLS)
 
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -2726,9 +2761,9 @@ class MyInstitutionController  {
      * @see BudgetCode
      * @see CostItemGroup
      */
-    @DebugInfo(ctxInstUserCheckPerm_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.ctxInstUserCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     Map<String, Object> budgetCodes() {
         BudgetCode.withTransaction {
@@ -2784,9 +2819,9 @@ class MyInstitutionController  {
      * @return a table view of tasks
      * @see Task
      */
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_PRO, 'INST_USER'], wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO], wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_USER')
+        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
     })
     def tasks() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -2821,9 +2856,9 @@ class MyInstitutionController  {
      * Call for listing institutions eligible to be attached to or detached from the context consortium
      * @return a list of institutions
      */
-    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC], wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC], wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
     def addMembers() {
         Combo.withTransaction {
@@ -2865,9 +2900,9 @@ class MyInstitutionController  {
         }
     }
 
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_PRO, 'INST_USER'], ctrlService = DebugInfo.IN_BETWEEN)
+    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO], ctrlService = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_USER')
+        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
     })
     def currentWorkflows() {
 
@@ -2982,9 +3017,9 @@ class MyInstitutionController  {
      * Call for the overview of current workflows for the context institution
      * @return the entry view for the workflows, loading current cache settings
      */
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.ORG_CONSORTIUM_PRO, 'INST_USER'], ctrlService = DebugInfo.IN_BETWEEN)
+    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_PRO, 'INST_USER')
+        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)
     })
     @Deprecated
     def currentWorkflowsOld() {
@@ -3169,6 +3204,7 @@ class MyInstitutionController  {
                 file = params.filename
             }
             contactSwitch.addAll(params.list("contactSwitch"))
+            contactSwitch.addAll(params.list("addressSwitch"))
             Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
         }
@@ -3216,9 +3252,9 @@ class MyInstitutionController  {
      * The result may be filtered by organisational and subscription parameters
      * @return the list of consortial member institutions
      */
-    @DebugInfo(ctxInstUserCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC], wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC], wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.accessService.ctxInstUserCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
+        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
     def manageMembers() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params), configMap = params.clone()
@@ -3228,7 +3264,7 @@ class MyInstitutionController  {
 
         // new: filter preset
         result.comboType = RDStore.COMBO_TYPE_CONSORTIUM
-        if (params.selectedOrgs) {
+        if (params.selectedOrgs && !params.containsKey("orgListToggler")) {
             log.debug('remove orgs from consortia')
 
             Combo.withTransaction { TransactionStatus ts ->
@@ -3341,6 +3377,11 @@ join sub.orgRelations or_sub where
         }
 
         List totalMembers      = Org.executeQuery(fsq.query, fsq.queryParams)
+        if(params.orgListToggler) {
+            Combo.withTransaction {
+                Combo.executeUpdate('delete from Combo c where c.toOrg = :context and c.fromOrg.id in (:ids)', [context: result.institution, ids: memberIds])
+            }
+        }
         result.totalMembers    = totalMembers
         result.membersCount    = totalMembers.size()
         result.members         = totalMembers.drop((int) result.offset).take((int) result.max)
@@ -3362,6 +3403,7 @@ join sub.orgRelations or_sub where
             Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
             contactSwitch.addAll(params.list("contactSwitch"))
+            contactSwitch.addAll(params.list("addressSwitch"))
         }
 
         /*if ( params.exportXLS ) {
@@ -3408,9 +3450,9 @@ join sub.orgRelations or_sub where
      * @see Subscription
      * @see Org
      */
-    @DebugInfo(ctxInstUserCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC])
+    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC])
     @Secured(closure = {
-        ctx.accessService.ctxInstUserCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
+        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
     def manageConsortiaSubscriptions() {
 
@@ -3814,9 +3856,9 @@ join sub.orgRelations or_sub where
      * The result may be displayed as HTML or exported as Excel worksheet
      * @return a list of surveys the context consortium set up and the given institution is participating at
      */
-    @DebugInfo(ctxInstUserCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO])
+    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO])
     @Secured(closure = {
-        ctx.accessService.ctxInstUserCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     def manageParticipantSurveys() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -3879,9 +3921,9 @@ join sub.orgRelations or_sub where
      * editing may be done on the given property group
      * @return in every case, the list of property groups; the list may be exported as Excel with the usage data as well, then, an Excel worksheet is being returned
      */
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER'], wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER')
+        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     })
     def managePropertyGroups() {
         Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -3995,9 +4037,9 @@ join sub.orgRelations or_sub where
      * Call to display the current usage for the given property in the system
      * @return a form view of the given property definition with their usage in the context institution's objects
      */
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR'])
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     })
     def manageProperties() {
         Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -4096,9 +4138,9 @@ join sub.orgRelations or_sub where
      * Call to process a bulk assign of a property definition to a given set of objects
      * @return the updated view with the assigned property definitions
      */
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR'], wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     })
     def processManageProperties() {
         PropertyDefinition.withTransaction {
@@ -4209,9 +4251,9 @@ join sub.orgRelations or_sub where
      * To add a custom property definition (which is usable for every institution), the route is {@link de.laser.ajax.AjaxController#addCustomPropertyType()}
      * (but consider the annotation there!)
      */
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER'], wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER')
+        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     })
     def managePrivatePropertyDefinitions() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -4297,9 +4339,9 @@ join sub.orgRelations or_sub where
      * @return a read-only list of public / general property definitions with the usages of objects owned by the context institution
      * @see AdminController#managePropertyDefinitions()
      */
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER'], wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER')
+        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     })
     Object managePropertyDefinitions() {
         Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -4378,23 +4420,6 @@ join sub.orgRelations or_sub where
     }
 
     /**
-     * If a user is affiliated to several institutions, this call changes the context institution to the given one and redirects
-     * the user to the dashboard page
-     * @return the dashboard view of the picked context institution
-     */
-    @Secured(['ROLE_USER'])
-    def switchContext() {
-        User user = contextService.getUser()
-        Org org = (Org) genericOIDService.resolveOID(params.oid)
-
-        if (user && org && org.id in user.getAffiliationOrgsIdList()) {
-            log.debug('switched context to: ' + org)
-            contextService.setOrg(org)
-        }
-        redirect action:'dashboard', params:params.remove('oid')
-    }
-
-    /**
      * Deletes the given private property definition for this institution
      * @param params the parameter map containing the property definition parameters
      * @return success or error messages
@@ -4439,9 +4464,9 @@ join sub.orgRelations or_sub where
      * Call to open the license copy view
      * @return the entry point view of the license copy process
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'])
+    @DebugInfo(isInstUser_or_ROLEADMIN = true)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+        ctx.contextService.isInstUser_or_ROLEADMIN()
     })
     def copyLicense() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -4451,7 +4476,7 @@ join sub.orgRelations or_sub where
             License license = License.get(params.id)
             boolean isEditable = license.isEditableBy(result.user)
 
-            if (! (userService.checkAffiliationAndCtxOrg(result.user, result.institution, 'INST_EDITOR'))) {
+            if (! (userService.hasFormalAffiliation(result.user, result.institution, 'INST_EDITOR'))) {
                 flash.error = message(code:'license.permissionInfo.noPerms') as String
                 response.sendError(HttpStatus.SC_FORBIDDEN)
                 return;
@@ -4466,6 +4491,54 @@ join sub.orgRelations or_sub where
                 return;
             }
         }
+    }
+
+    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @Secured(closure = {
+        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+    })
+    def currentSubscriptionsTransfer() {
+        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
+
+        result.putAll(subscriptionService.getMySubscriptionTransfer(params,result.user,result.institution))
+
+        // Write the output to a file
+        SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
+        String datetoday = sdf.format(new Date())
+        String filename = "${datetoday}_" + g.message(code: "export.my.currentSubscriptionsTransfer")
+
+        Map<String, Object> selectedFields = [:]
+
+        if(params.fileformat) {
+            if (params.filename) {
+                filename =params.filename
+            }
+            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+        }
+
+        if(params.fileformat == 'xlsx') {
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportSubscriptions(result.allSubscriptions, selectedFields, result.institution, ExportClickMeService.FORMAT.XLS, true)
+            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
+            return
+        }
+        else if(params.fileformat == 'csv') {
+            response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
+            response.contentType = "text/csv"
+            ServletOutputStream out = response.outputStream
+            out.withWriter { writer ->
+                //writer.write((String) _exportcurrentSubscription(result.allSubscriptions,"csv", result.institution))
+                writer.write((String) exportClickMeService.exportSubscriptions(result.allSubscriptions, selectedFields, result.institution, ExportClickMeService.FORMAT.CSV,  true))
+            }
+            out.close()
+        }
+
+        result
     }
 
 

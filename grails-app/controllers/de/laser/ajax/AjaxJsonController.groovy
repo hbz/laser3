@@ -14,9 +14,11 @@ import de.laser.LicenseService
 import de.laser.LinksGenerationService
 import de.laser.ReportingGlobalService
 import de.laser.ReportingLocalService
+import de.laser.SubscriptionDiscountScale
 import de.laser.SubscriptionService
 import de.laser.auth.Role
 import de.laser.ctrl.SubscriptionControllerService
+import de.laser.finance.PriceItem
 import de.laser.utils.CodeUtils
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
@@ -201,7 +203,7 @@ class AjaxJsonController {
         queryParams.showConnectedObjs = showConnectedObjs
 
         data = compareService.getMySubscriptions(queryParams)
-        if (accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+        if (contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
             if (showSubscriber) {
                 List parents = data.clone()
                 Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]
@@ -242,7 +244,7 @@ class AjaxJsonController {
         queryParams.showConnectedLics = showConnectedLics
 
         data = compareService.getMyLicenses(queryParams)
-        if (accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+        if (contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
             if (showSubscriber) {
                 List parents = data.clone()
                 Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_LICENSEE_CONS, RDStore.OR_LICENSEE]
@@ -332,6 +334,21 @@ class AjaxJsonController {
                 [value: 50, text: '50'],
                 [value: 100, text: '100'],
         ]
+        render result as JSON
+    }
+
+    @Secured(['ROLE_USER'])
+    def getSubscriptionDiscountScaleList() {
+        List result = []
+        if(params.sub) {
+            Subscription subscription = Subscription.findById(params.sub)
+            if (subscription) {
+                List<SubscriptionDiscountScale> subscriptionDiscountScaleList = SubscriptionDiscountScale.findAllBySubscription(subscription)
+                subscriptionDiscountScaleList.each {
+                    result << [value: it.id, text: it.name +': '+it.discount ]
+                }
+            }
+        }
         render result as JSON
     }
 
@@ -816,16 +833,58 @@ class AjaxJsonController {
     @Secured(['ROLE_USER'])
     def removeObject() {
         int removed = 0
+        Map<String, Object> objId = [id: params.long("objId")]
         switch(params.object) {
-            case "altname": removed = AlternativeName.executeUpdate('delete from AlternativeName altname where altname.id = :id', [id: params.long("objId")])
+            case "altname": removed = AlternativeName.executeUpdate('delete from AlternativeName altname where altname.id = :id', objId)
                 break
-            case "coverage": //TODO
+            case "coverage": //TODO migrate SubscriptionController.removeCoverage()
+                break
+            //ex SubscriptionControllerService.removePriceItem()
+            case "priceItem": removed = PriceItem.executeUpdate('delete from PriceItem pi where pi.id = :id', objId)
                 break
         }
         Boolean success = removed > 0
         Map<String, Boolean> result = [success: success]
         render result as JSON
     }
+
+    /**
+     * Call to add a new price item to the issue entitlement
+     * @return the issue entitlement holding view
+     */
+    /*
+    @Secured(['ROLE_USER'])
+    def addEmptyPriceItem() {
+        Map<String,Object> ctrlResult = subscriptionControllerService.addEmptyPriceItem(params)
+        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
+            flash.error = ctrlResult.result.error
+        }
+        redirect action: 'index', id: params.id
+    }
+    */
+
+    /**
+     * Call to remove a price item from the issue entitlement
+     * @return the issue entitlement holding view
+     */
+    /*
+    @DebugInfo(isInstEditor_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
+    })
+    def removePriceItem() {
+        Map<String,Object> ctrlResult = subscriptionControllerService.removePriceItem(params)
+        Object[] args = [message(code:'tipp.price'), params.priceItem]
+        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
+            flash.error = message(code: 'default.not.found.message', args: args) as String
+        }
+        else
+        {
+            flash.message = message(code:'default.deleted.message', args: args) as String
+        }
+        redirect action: 'index', id: params.id
+    }
+    */
 
     /**
      * Searches for property definition alternatives based on the OID of the property definition which should be replaced
@@ -878,9 +937,9 @@ class AjaxJsonController {
      * Validation query; checks if the user with the given username exists
      * @return true if there is a {@link User} matching the given input query, false otherwise
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_ADM'])
+    @DebugInfo(isInstAdm_or_ROLEADMIN = true)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
+        ctx.contextService.isInstAdm_or_ROLEADMIN()
     })
     def checkExistingUser() {
         Map<String, Object> result = [result: false]
@@ -980,9 +1039,9 @@ class AjaxJsonController {
      * Outputs a chart from the given report parameters
      * @return the template to output and the one of the results {@link de.laser.ReportingGlobalService#doChart(java.util.Map, grails.web.servlet.mvc.GrailsParameterMap)} or {@link de.laser.ReportingLocalService#doChart(java.util.Map, grails.web.servlet.mvc.GrailsParameterMap)}
      */
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_PRO, 'INST_USER'])
+    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_USER')
+        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
     })
     def chart() {
         Map<String, Object> result = [:]

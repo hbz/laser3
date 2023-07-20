@@ -11,7 +11,6 @@ import de.laser.system.SystemAnnouncement
 import de.laser.workflow.WfChecklist
 import de.laser.workflow.WfCheckpoint
 import grails.gorm.transactions.Transactional
-import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.web.servlet.mvc.GrailsParameterMap
 
 import java.text.SimpleDateFormat
@@ -22,13 +21,13 @@ import java.text.SimpleDateFormat
 @Transactional
 class MyInstitutionControllerService {
 
-    AccessService accessService
     ContextService contextService
     DashboardDueDatesService dashboardDueDatesService
     FilterService filterService
     SurveyService surveyService
     TaskService taskService
     UserService userService
+    WekbStatsService wekbStatsService
     WorkflowService workflowService
 
     static final int STATUS_OK = 0
@@ -46,11 +45,11 @@ class MyInstitutionControllerService {
         prf.setBenchmark('init')
         Map<String, Object> result = getResultGenerics(controller, params)
 
-        if (! (result.user as User).isMemberOf(result.institution as Org)) {
+        if (! (result.user as User).isFormal(result.institution as Org)) {
             return [status: STATUS_ERROR, result: result]
         }
 
-        result.is_inst_admin = userService.checkAffiliationAndCtxOrg(result.user, result.institution, 'INST_ADM')
+        result.is_inst_admin = userService.hasFormalAffiliation(result.user, result.institution, 'INST_ADM')
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
         result.acceptedOffset = 0
@@ -141,6 +140,13 @@ class MyInstitutionControllerService {
         result.surveys = activeSurveyConfigs.groupBy {it?.id}
         result.countSurvey = result.surveys.size()
         */
+
+        //int days = result.user.getSetting(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14).getValue()
+        //result.wekbChanges = wekbStatsService.getCurrentChanges(days)
+        if (params.demo) {
+            result.wekbChanges = wekbStatsService.getCurrentChanges()
+        }
+
         result.benchMark = prf.stopBenchmark()
         [status: STATUS_OK, result: result]
     }
@@ -160,16 +166,6 @@ class MyInstitutionControllerService {
         User user = contextService.getUser()
         Org org = contextService.getOrg()
 
-//        switch (params.action){
-//            case 'currentSurveys':
-//            case 'surveyInfos':
-//            case 'surveyInfoFinish':
-//                result.user = user
-//                break
-//            default:
-//                result.user = user
-//        }
-
         result.user = user
         result.institution = org
         result.contextOrg = org
@@ -177,23 +173,23 @@ class MyInstitutionControllerService {
         result.showConsortiaFunctions = org.isCustomerType_Consortium()
         switch (params.action) {
             case [ 'processEmptyLicense', 'currentLicenses', 'currentSurveys', 'dashboard', 'getChanges', 'getSurveys', 'emptyLicense', 'surveyInfoFinish' ]:
-                result.editable = userService.checkAffiliationAndCtxOrg(user, org, 'INST_EDITOR')
+                result.editable = userService.hasFormalAffiliation(user, org, 'INST_EDITOR')
                 break
             case [ 'addressbook', 'budgetCodes', 'tasks' ]:
-                result.editable = userService.checkAffiliationAndCtxOrg_or_ROLEADMIN(user, org, 'INST_EDITOR')
+                result.editable = userService.hasFormalAffiliation_or_ROLEADMIN(user, org, 'INST_EDITOR')
                 break
             case 'surveyInfos':
                 result.editable = surveyService.isEditableSurvey(org, SurveyInfo.get(params.id) ?: null)
                 break
             case 'users':
-                result.editable = user.hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
+                result.editable = contextService.isInstAdm_or_ROLEADMIN()
                 break
             case 'managePropertyDefinitions':
                 result.editable = false
-                result.changeProperties = user.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+                result.changeProperties = contextService.isInstEditor_or_ROLEADMIN()
                 break
             default:
-                result.editable = userService.checkAffiliationAndCtxOrg_or_ROLEADMIN(user, org, 'INST_EDITOR')
+                result.editable = userService.hasFormalAffiliation_or_ROLEADMIN(user, org, 'INST_EDITOR')
         }
 
         result

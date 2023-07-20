@@ -102,23 +102,38 @@
         <i class="icon large user lock"></i> user roles
     </p>
     <p>
-    <pre>
-        Roles                 : ${Role.executeQuery("select r from Role r where r.roleType not in ('org', 'fake') order by r.id").collect{ it.id + ':' + it.authority }}
+        <g:set var="contextUser" value="${contextService.getUser()}" />
+        <g:set var="contextOrg" value="${contextService.getOrg()}" />
+<pre>
+    contextUser: ${contextUser}
+    contextOrg: ${contextOrg}
 
-        UserRoles             : ${UserRole.findAllByUser(contextService.getUser())}
+    md5: ${contextUser.id.encodeAsMD5()}
 
-        UserOrgRoles          : ${UserOrgRole.findAllByUser(contextService.getUser()).collect{ '(' + it.user.id + ',' + it.org.id + ',' + it.formalRole.id + ')'}}
+    SpringSecurityUtils.ifAnyGranted([])      : ${SpringSecurityUtils.ifAnyGranted([])}
 
-        contextService.getUser().isYoda()  : ${contextService.getUser().isYoda()}
+    Roles                 : ${Role.executeQuery("select r from Role r where r.roleType not in ('org', 'fake') order by r.id").collect{ it.id + ':' + it.authority }}
 
-        User.get(77).isYoda()  : ${User.get(77).isYoda()}
-        User.get(88).isYoda()  : ${User.get(88).isYoda()}
-        User.get(99).isYoda()  : ${User.get(99).isYoda()}
+    UserRoles             : ${UserRole.findAllByUser(contextUser)}
 
-        SpringSecurityUtils.ifAnyGranted('ROLE_YODA')  : ${SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}
-        SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') : ${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}
-        SpringSecurityUtils.ifAnyGranted('ROLE_USER')  : ${SpringSecurityUtils.ifAnyGranted('ROLE_USER')}
-    </pre>
+    contextUser.isYoda()  : ${contextUser.isYoda()}
+
+    contextUser.isFormal(contextOrg)  : ${contextUser.isFormal(contextOrg)}
+    contextUser.isComboInstAdminOf(contextOrg)  : ${contextUser.isComboInstAdminOf(contextOrg)}
+
+    contextUser.isLastInstAdminOf(contextUser.formalOrg) : ${contextUser.isLastInstAdminOf(contextUser.formalOrg)}
+
+    SpringSecurityUtils.ifAnyGranted('ROLE_YODA')  : ${SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}
+    SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') : ${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}
+    SpringSecurityUtils.ifAnyGranted('ROLE_USER')  : ${SpringSecurityUtils.ifAnyGranted('ROLE_USER')}
+
+    contextUser.getAuthorities().authority.contains('ROLE_ADMIN') : ${contextUser.getAuthorities().authority.contains('ROLE_ADMIN')}
+    contextUser.isAdmin() : ${contextUser.isAdmin()}
+
+    contextUser.getAuthorities().authority.contains('ROLE_YODA') : ${contextUser.getAuthorities().authority.contains('ROLE_YODA')}
+    contextUser.isYoda() : ${contextUser.isYoda()}
+</pre>
+
 </div>
 
 <div class="ui segment">

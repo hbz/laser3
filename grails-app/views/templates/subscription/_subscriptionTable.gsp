@@ -34,7 +34,7 @@
                             ${message(code: 'myinst.currentSubscriptions.subscription_type', default: RDConstants.SUBSCRIPTION_TYPE)}
                         </th>
                         */ %>
-                        <g:if test="${params.orgRole in ['Subscriber'] && accessService.ctxPerm(CustomerTypeService.ORG_INST_BASIC)}">
+                        <g:if test="${params.orgRole in ['Subscriber'] && contextService.hasPerm(CustomerTypeService.ORG_INST_BASIC)}">
                             <th scope="col" rowspan="2" >${message(code: 'consortium')}</th>
                         </g:if>
                         <g:elseif test="${params.orgRole == 'Subscriber'}">
@@ -124,7 +124,12 @@
                                         <g:set var="license" value="${row.sourceLicense}"/>
                                         <div class="la-flexbox la-minor-object">
                                             <i class="icon balance scale la-list-icon"></i>
-                                            <g:link controller="license" action="show" id="${license.id}">${license.reference}</g:link><br />
+                                            <g:link controller="license" action="show" id="${license.id}">
+                                                <g:if test="${license._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION}">
+                                                    <i class="icon users la-list-icon la-popup-tooltip la-delay" data-content="${message(code: 'license.member')}"></i>
+                                                </g:if>
+                                                ${license.reference}
+                                            </g:link><br />
                                         </div>
                                     </g:if>
                                 </g:each>
@@ -148,7 +153,7 @@
                             </g:if>
                             <g:if test="${s.isEditableBy(user) && (s.packages == null || s.packages.size() == 0)}">
                                 <i>
-                                    <g:if test="${accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )}">
+                                    <g:if test="${contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )}">
                                         <g:message code="myinst.currentSubscriptions.no_links" />
                                         <g:link controller="subscription" action="linkPackage"
                                                 id="${s.id}">${message(code: 'subscription.details.linkPackage.label')}</g:link>
@@ -165,7 +170,7 @@
                         </td>--%>
                         <g:if test="${params.orgRole == 'Subscriber'}">
                             <td>
-                                <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_INST_BASIC)}">
+                                <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_INST_BASIC)}">
                                     ${s.getConsortia()?.name}
                                 </g:if>
                             </td>
@@ -319,17 +324,27 @@
                                 </g:if>--%>
                             </g:if>
                             <g:if test="${'showLinking' in tableConfig}">
-                            <%--<g:if test="${license in s.licenses}"></g:if>--%>
-                                <g:if test="${s in linkedSubscriptions}">
-                                    <g:link class="ui icon negative button la-modern-button" action="linkToSubscription" params="${params+[id:license.id,unlink:true,subscription:s.id]}">
-                                        <i class="ui minus icon"></i>
-                                    </g:link>
+                                <%
+                                    boolean linkPossible
+                                    if(institution.isCustomerType_Inst()) {
+                                        linkPossible = s._getCalculatedType() == CalculatedType.TYPE_LOCAL
+                                    }
+                                    else {
+                                        linkPossible = institution.isCustomerType_Consortium()
+                                    }
+                                %>
+                                <g:if test="${linkPossible}">
+                                    <g:if test="${s in linkedSubscriptions}">
+                                        <g:link class="ui icon negative button la-modern-button" action="linkToSubscription" params="${params+[id:license.id,unlink:true,subscription:s.id]}">
+                                            <i class="ui minus icon"></i>
+                                        </g:link>
+                                    </g:if>
+                                    <g:else>
+                                        <g:link class="ui icon positive button la-modern-button" action="linkToSubscription" params="${params+[id:license.id,subscription:s.id]}">
+                                            <i class="ui plus icon"></i>
+                                        </g:link>
+                                    </g:else>
                                 </g:if>
-                                <g:else>
-                                    <g:link class="ui icon positive button la-modern-button" action="linkToSubscription" params="${params+[id:license.id,subscription:s.id]}">
-                                        <i class="ui plus icon"></i>
-                                    </g:link>
-                                </g:else>
                             </g:if>
                         </td>
                     </tr>

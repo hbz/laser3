@@ -11,7 +11,6 @@ import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
 import de.laser.utils.DateUtils
 import grails.converters.JSON
-import grails.gsp.PageRenderer
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.time.TimeCategory
 import org.apache.http.HttpStatus
@@ -58,9 +57,9 @@ class SubscriptionController {
      * Call to show the details of the given subscription
      * @return the subscription details view
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstUser_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+        ctx.contextService.isInstUser_or_ROLEADMIN()
     })
     @Check404()
     def show() {
@@ -74,13 +73,29 @@ class SubscriptionController {
         else ctrlResult.result
     }
 
+    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)
+    })
+    @Check404()
+    def subTransfer() {
+        Map<String,Object> ctrlResult = subscriptionControllerService.subTransfer(params)
+        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+                return
+            }
+        }
+        else ctrlResult.result
+    }
+
     /**
      * Call to list the tasks related to this subscription
      * @return the task listing for this subscription
      */
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_PRO, 'INST_USER'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_USER')
+        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
     })
     @Check404()
     def tasks() {
@@ -104,9 +119,9 @@ class SubscriptionController {
      * Call to prepare the usage data form for the given subscription
      * @return the filter for the given subscription
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'], wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(isInstUser_or_ROLEADMIN = true, wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+        ctx.contextService.isInstUser_or_ROLEADMIN()
     })
     @Check404()
     def stats() {
@@ -116,7 +131,7 @@ class SubscriptionController {
         if(params.reportType)
             result.putAll(subscriptionControllerService.loadFilterList(params))
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
-        result.flagContentGokb = true // gokbService.queryElasticsearch
+        result.flagContentGokb = true // gokbService.executeQuery
         Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription", [subscription: result.subscription])
         if(!subscribedPlatforms) {
             subscribedPlatforms = Platform.executeQuery("select tipp.platform from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscription", [subscription: result.subscription])
@@ -126,7 +141,7 @@ class SubscriptionController {
         result.platforms = subscribedPlatforms
         result.platformsJSON = subscribedPlatforms.globalUID as JSON
         subscribedPlatforms.each { Platform platformInstance ->
-            Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: platformInstance.gokbId])
+            Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: platformInstance.gokbId])
             if (queryResult.error && queryResult.error == 404) {
                 result.wekbServerUnavailable = message(code: 'wekb.error.404')
             }
@@ -217,9 +232,9 @@ class SubscriptionController {
      * Call to fetch the usage data for the given subscription
      * @return the (filtered) usage data view for the given subscription, rendered as Excel worksheet
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstUser_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+        ctx.contextService.isInstUser_or_ROLEADMIN()
     })
     def generateReport() {
         if(!params.reportType) {
@@ -275,9 +290,9 @@ class SubscriptionController {
      * Call to fetch the usage data for the given subscription
      * @return the (filtered) usage data view for the given subscription, rendered as Excel worksheet
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstUser_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+        ctx.contextService.isInstUser_or_ROLEADMIN()
     })
     def downloadReport() {
         /*
@@ -304,9 +319,9 @@ class SubscriptionController {
      * Call to unlink the given subscription from the given license
      * @return a redirect back to the referer
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     def unlinkLicense() {
         Map<String,Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
@@ -326,9 +341,9 @@ class SubscriptionController {
      * Call to create a new subscription
      * @return the empty subscription form or the list of subscriptions in case of an error
      */
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     })
     def emptySubscription() {
         Map<String,Object> ctrlResult = subscriptionControllerService.emptySubscription(this,params)
@@ -345,9 +360,9 @@ class SubscriptionController {
      * Call to process the given input and to create a new subscription instance
      * @return the new subscription's details view in case of success, the subscription list view otherwise
      */
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     })
     def processEmptySubscription() {
         Map<String,Object> ctrlResult = subscriptionControllerService.processEmptySubscription(this,params)
@@ -365,9 +380,9 @@ class SubscriptionController {
      * Call to delete the given subscription instance. If confirmed, the deletion is executed
      * @return the result of {@link DeletionService#deleteSubscription(de.laser.Subscription, boolean)}
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     def delete() {
         Map<String,Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_EDIT)
@@ -395,9 +410,9 @@ class SubscriptionController {
      * Call to list the notes attached to the given subscription
      * @return the table view of notes for the given subscription
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstUser_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+        ctx.contextService.isInstUser_or_ROLEADMIN()
     })
     @Check404()
     def notes() {
@@ -413,9 +428,9 @@ class SubscriptionController {
      * Call to list the documents attached to the given subscription
      * @return the table view of documents for the given subscription
      */
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_USER')
+        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     })
     @Check404()
     def documents() {
@@ -437,9 +452,9 @@ class SubscriptionController {
      * Call to edit the metadata of the given document
      * @return opens the document editing modal
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     def editDocument() {
         Map<String,Object> result = [user: contextService.getUser(), institution: contextService.getOrg()]
@@ -457,9 +472,9 @@ class SubscriptionController {
      * Call to delete the given document attached to a subscription
      * @return a redirect, specified in the request parameters
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstUser_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+        ctx.contextService.isInstUser_or_ROLEADMIN()
     })
     def deleteDocuments() {
         docstoreService.unifiedDeleteDocuments(params)
@@ -473,9 +488,9 @@ class SubscriptionController {
      * or exported as (configurable) Excel worksheet
      * @return a (filtered) view of the consortium members, either as HTML output or as Excel worksheet
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstUser_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+        ctx.contextService.isInstUser_or_ROLEADMIN()
     })
     @Check404()
     def members() {
@@ -497,6 +512,7 @@ class SubscriptionController {
                 Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
                 selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
                 contactSwitch.addAll(params.list("contactSwitch"))
+                contactSwitch.addAll(params.list("addressSwitch"))
             }
             if(params.exportShibboleths || params.exportEZProxys || params.exportProxys || params.exportIPs || params.fileformat == 'xlsx') {
                 SXSSFWorkbook wb
@@ -553,9 +569,9 @@ class SubscriptionController {
      * Call to list potential member institutions to add to this subscription
      * @return a list view of member institutions
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     @Check404()
     def addMembers() {
@@ -575,9 +591,9 @@ class SubscriptionController {
      * Call to process the given input data and create member subscription instances for the given consortial subscription
      * @return a redirect to the subscription members view in case of success or details view or to the member adding form otherwise
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     def processAddMembers() {
         Map<String,Object> ctrlResult = subscriptionControllerService.processAddMembers(this,params)
@@ -600,9 +616,9 @@ class SubscriptionController {
      * Call to insert a succession link between two member subscriptions
      * @return the members view
      */
-    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
     def linkNextPrevMemberSub() {
         Map<String,Object> ctrlResult = subscriptionControllerService.linkNextPrevMemberSub(this,params)
@@ -622,9 +638,9 @@ class SubscriptionController {
      * Call to a bulk operation view on member instances
      * @return the requested tab view
      */
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR')
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC)
     })
     def membersSubscriptionsManagement() {
         def input_file
@@ -661,9 +677,9 @@ class SubscriptionController {
      * Call to unset the given customer identifier
      * @return the customer identifier tabs view
      */
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR')
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC)
     })
     def deleteCustomerIdentifier() {
         managementService.deleteCustomerIdentifier(params.long("deleteCI"))
@@ -676,9 +692,9 @@ class SubscriptionController {
      * Call to list surveys linked to a member subscription
      * @return a table view of surveys from the member's point of view
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstUser_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+        ctx.contextService.isInstUser_or_ROLEADMIN()
     })
     @Check404()
     def surveys() {
@@ -694,9 +710,9 @@ class SubscriptionController {
      * Call to list surveys linked to a consortial subscription
      * @return a table view of surveys from the consortium's point of view
      */
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.ORG_CONSORTIUM_PRO, 'INST_USER'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_PRO, 'INST_USER')
+        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)
     })
     @Check404()
     def surveysConsortia() {
@@ -715,9 +731,9 @@ class SubscriptionController {
      * @return a list view of the packages in the we:kb ElasticSearch index or a redirect to an title list view
      * if a package UUID has been submitted with the call
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     def linkPackage() {
         Map<String,Object> ctrlResult = subscriptionControllerService.linkPackage(this,params)
@@ -755,9 +771,9 @@ class SubscriptionController {
      * Call to process the submitted input and to link the given package to the given package(s)
      * @return a redirect, either to the title selection view or to the issue entitlement holding view
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     def processLinkPackage() {
         Map<String,Object> ctrlResult = subscriptionControllerService.processLinkPackage(this,params)
@@ -788,9 +804,9 @@ class SubscriptionController {
      * Call to unlink the given package from the given subscription
      * @return the list of conflicts, if no confirm has been submitted; the redirect to the subscription details page if confirm has been sent
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     def unlinkPackage() {
         Map<String, Object> ctrlResult = subscriptionControllerService.unlinkPackage(this,params)
@@ -823,9 +839,9 @@ class SubscriptionController {
      * or be exported as KBART or Excel worksheet
      * @return a list of the current subscription stock; either as HTML output or as KBART / Excel table
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstUser_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+        ctx.contextService.isInstUser_or_ROLEADMIN()
     })
     @Check404()
     def index() {
@@ -853,19 +869,24 @@ class SubscriptionController {
                 selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
             }
             if (params.exportKBart) {
-                response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
-                response.contentType = "text/tab-separated-values"
-                ServletOutputStream out = response.outputStream
-                Map<String, Object> configMap = [:]
-                configMap.putAll(params)
-                configMap.sub = ctrlResult.result.subscription
-                configMap.pkgIds = ctrlResult.result.subscription.packages?.pkg?.id //GORM sometimes does not initialise the sorted set
-                Map<String, List> tableData = exportService.generateTitleExportKBART(configMap, IssueEntitlement.class.name)
-                out.withWriter { writer ->
-                    writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
+                String dir = GlobalService.obtainFileStorageLocation()
+                File f = new File(dir+'/'+filename)
+                if(!f.exists()) {
+                    FileOutputStream fos = new FileOutputStream(f)
+                    Map<String, Object> configMap = [:]
+                    configMap.putAll(params)
+                    configMap.sub = ctrlResult.result.subscription
+                    configMap.pkgIds = ctrlResult.result.subscription.packages?.pkg?.id //GORM sometimes does not initialise the sorted set
+                    Map<String, List> tableData = exportService.generateTitleExportKBART(configMap, IssueEntitlement.class.name)
+                    fos.withWriter { writer ->
+                        writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
+                    }
+                    fos.flush()
+                    fos.close()
                 }
-                out.flush()
-                out.close()
+                Map fileResult = [token: filename]
+                render template: '/templates/bulkItemDownload', model: fileResult
+                return
             }
             /*else if(params.exportXLSX) {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")
@@ -914,9 +935,9 @@ class SubscriptionController {
      * Call to load the applied or pending changes to the given subscription
      * @return the called tab with the changes of the given event type
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstUser_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+        ctx.contextService.isInstUser_or_ROLEADMIN()
     })
     @Check404()
     def entitlementChanges() {
@@ -938,9 +959,9 @@ class SubscriptionController {
      * such as preselection of titles based on identifiers or adding locally negotiated prices or coverage statements
      * @return the list view of entitlements, either as HTML table or KBART / Excel worksheet export
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstUser_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+        ctx.contextService.isInstUser_or_ROLEADMIN()
     })
     def addEntitlements() {
         Map<String,Object> ctrlResult = subscriptionControllerService.addEntitlements(this,params)
@@ -964,15 +985,20 @@ class SubscriptionController {
                 selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
             }
             if(params.exportKBart) {
-                response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
-                response.contentType = "text/tsv"
-                ServletOutputStream out = response.outputStream
-                Map<String,List> tableData = exportService.generateTitleExportKBART(configMap, TitleInstancePackagePlatform.class.name)
-                out.withWriter { writer ->
-                    writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.columnData,'\t'))
+                String dir = GlobalService.obtainFileStorageLocation()
+                File f = new File(dir+'/'+filename)
+                if(!f.exists()) {
+                    FileOutputStream out = new FileOutputStream(f)
+                    Map<String,List> tableData = exportService.generateTitleExportKBART(configMap, TitleInstancePackagePlatform.class.name)
+                    out.withWriter { writer ->
+                        writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.columnData,'\t'))
+                    }
+                    out.flush()
+                    out.close()
                 }
-                out.flush()
-                out.close()
+                Map fileResult = [token: filename]
+                render template: '/templates/bulkItemDownload', model: fileResult
+                return
             }
             /*else if(params.exportXLSX) {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")
@@ -1019,9 +1045,9 @@ class SubscriptionController {
      * Call to remove the given issue entitlement from the subscription's holding
      * @return the issue entitlement holding view
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     def removeEntitlement() {
         Map<String,Object> ctrlResult = subscriptionControllerService.removeEntitlement(params)
@@ -1038,9 +1064,9 @@ class SubscriptionController {
      * Call to remove an issue entitlement along with his title group record
      * @return the issue entitlement holding view
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     def removeEntitlementWithIEGroups() {
         Map<String,Object> ctrlResult = subscriptionControllerService.removeEntitlementWithIEGroups(params)
@@ -1057,9 +1083,9 @@ class SubscriptionController {
      * Call to persist the cached data and create the issue entitlement holding based on that data
      * @return the issue entitlement holding view
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     def processAddEntitlements() {
 
@@ -1081,9 +1107,9 @@ class SubscriptionController {
      * Call to delete the given entitlement record from the given renewal
      * @return the entitlement renewal view
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     def processRemoveEntitlements() {
         Map<String,Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_EDIT)
@@ -1101,9 +1127,9 @@ class SubscriptionController {
      * subscription's holding, but it is not fixed as the holding is under negotiation
      * @return a redirect to the referer
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     def processAddIssueEntitlementsSurvey() {
         Map<String, Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
@@ -1112,42 +1138,26 @@ class SubscriptionController {
         if (result.subscription) {
             if(result.editable && params.singleTitle) {
                 TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.get(params.singleTitle)
+                try {
 
-                boolean tippExistsInParentSub = false
+                    IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, result.subscription)
 
-/*                if(IssueEntitlement.findByTippAndSubscriptionAndStatus(tipp, result.surveyConfig.subscription, RDStore.TIPP_STATUS_CURRENT)) {
-                    tippExistsInParentSub = true
-                }else {
-                   List<TitleInstancePackagePlatform> titleInstancePackagePlatformList = TitleInstancePackagePlatform.findAllByHostPlatformURLAndStatus(tipp.hostPlatformURL, RDStore.TIPP_STATUS_CURRENT)
-                    titleInstancePackagePlatformList.each { TitleInstancePackagePlatform titleInstancePackagePlatform ->
-                        if(IssueEntitlement.findByTippAndSubscriptionAndStatus(titleInstancePackagePlatform, result.surveyConfig.subscription, RDStore.TIPP_STATUS_CURRENT)) {
-                            tippExistsInParentSub = true
-                            tipp = titleInstancePackagePlatform
+                    if (!issueEntitlementGroup) {
+                        IssueEntitlementGroup.withTransaction {
+                            issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: result.subscription, name: result.surveyConfig.issueEntitlementGroupName).save()
                         }
                     }
-                }*/
-                tippExistsInParentSub = true
-                if(tippExistsInParentSub) {
-                    try {
 
-                        IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, result.subscription)
-
-                        if(!issueEntitlementGroup) {
-                            IssueEntitlementGroup.withTransaction {
-                                issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: result.subscription, name: result.surveyConfig.issueEntitlementGroupName).save()
-                            }
-                        }
-
-                        if (issueEntitlementGroup && subscriptionService.addEntitlement(result.subscription, tipp.gokbId, null, (tipp.priceItems != null), result.surveyConfig.pickAndChoosePerpetualAccess, issueEntitlementGroup)) {
-                            flash.message = message(code: 'subscription.details.addEntitlements.titleAddToSub', args: [tipp.name]) as String
-                        }else {
-                            log.error("no issueEntitlementGroup found and no issueEntitlementGroup created, because it is not set a issueEntitlementGroupName in survey config!")
-                        }
-                    }
-                    catch (EntitlementCreationException e) {
-                        flash.error = e.getMessage()
+                    if (issueEntitlementGroup && subscriptionService.addEntitlement(result.subscription, tipp.gokbId, null, (tipp.priceItems != null), result.surveyConfig.pickAndChoosePerpetualAccess, issueEntitlementGroup)) {
+                        flash.message = message(code: 'subscription.details.addEntitlements.titleAddToSub', args: [tipp.name]) as String
+                    } else {
+                        log.error("no issueEntitlementGroup found and no issueEntitlementGroup created, because it is not set a issueEntitlementGroupName in survey config!")
                     }
                 }
+                catch (EntitlementCreationException e) {
+                    flash.error = e.getMessage()
+                }
+
             }
         } else {
             log.error("Unable to locate subscription instance")
@@ -1161,9 +1171,9 @@ class SubscriptionController {
      * Call to remove the given title from the picked titles
      * @return a redirect to the referer
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     def processRemoveIssueEntitlementsSurvey() {
         Map<String, Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
@@ -1195,9 +1205,9 @@ class SubscriptionController {
      * Call to trigger the revertion of holding status to the end of the subscription's year ring
      * @return a redirect to the referer
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     def resetHoldingToSubEnd() {
         Map<String, Object> ctrlResult = subscriptionControllerService.resetHoldingToSubEnd(params)
@@ -1210,9 +1220,9 @@ class SubscriptionController {
      * Call for a batch update on the given subscription's holding
      * @return the issue entitlement holding view
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstUser_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+        ctx.contextService.isInstUser_or_ROLEADMIN()
     })
     def subscriptionBatchUpdate() {
         Map<String,Object> ctrlResult = subscriptionControllerService.subscriptionBatchUpdate(this,params)
@@ -1234,49 +1244,12 @@ class SubscriptionController {
     }
 
     /**
-     * Call to add a new price item to the issue entitlement
-     * @return the issue entitlement holding view
-     */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
-    })
-    def addEmptyPriceItem() {
-        Map<String,Object> ctrlResult = subscriptionControllerService.addEmptyPriceItem(params)
-        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            flash.error = ctrlResult.result.error
-        }
-        redirect action: 'index', id: params.id
-    }
-
-    /**
-     * Call to remove a price item from the issue entitlement
-     * @return the issue entitlement holding view
-     */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
-    })
-    def removePriceItem() {
-        Map<String,Object> ctrlResult = subscriptionControllerService.removePriceItem(params)
-        Object[] args = [message(code:'tipp.price'), params.priceItem]
-        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            flash.error = message(code: 'default.not.found.message', args: args) as String
-        }
-        else
-        {
-            flash.message = message(code:'default.deleted.message', args: args) as String
-        }
-        redirect action: 'index', id: params.id
-    }
-
-    /**
      * Call to add a new coverage statement to the issue entitlement
      * @return the issue entitlement holding view
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     def addCoverage() {
         Map<String,Object> ctrlResult = subscriptionControllerService.addCoverage(params)
@@ -1290,9 +1263,9 @@ class SubscriptionController {
      * Call to remove a coverage statement from the issue entitlement
      * @return the issue entitlement holding view
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     def removeCoverage() {
         Map<String,Object> ctrlResult = subscriptionControllerService.removeCoverage(params)
@@ -1311,9 +1284,9 @@ class SubscriptionController {
      * Call to list the current title groups of the subscription
      * @return the list of title groups for the given subscription
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     def manageEntitlementGroup() {
         Map<String, Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
@@ -1321,13 +1294,55 @@ class SubscriptionController {
         result
     }
 
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @Secured(closure = {
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+    })
+    Map<String,Object> copyDiscountScales() {
+        Map<String, Object> ctrlResult = subscriptionControllerService.copyDiscountScales(this, params)
+        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+                return
+            }
+        }
+        else {
+            if(ctrlResult.result.error) {
+                flash.error = ctrlResult.result.error
+            }
+
+            ctrlResult.result
+        }
+
+    }
+
+    /**
+     * Call to list the current discount scales of the subscription
+     * @return the list of discount scales for the given subscription
+     */
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+    })
+    def manageDiscountScale() {
+        Map<String, Object> ctrlResult = subscriptionControllerService.manageDiscountScale(this, params)
+        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
+            if (!ctrlResult.result) {
+                response.sendError(401)
+                return
+            }
+        }
+        else ctrlResult.result
+    }
+
+
     /**
      * Call to edit the given title group
      * @return either the edit view or the index view, when form data has been submitted
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     def editEntitlementGroupItem() {
         Map<String,Object> ctrlResult = subscriptionControllerService.editEntitlementGroupItem(this,params)
@@ -1350,9 +1365,9 @@ class SubscriptionController {
      * Call to create the given title group for the given subscription
      * @return the title group view for the given subscription
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     def processCreateEntitlementGroup() {
         Map<String, Object> ctrlResult = subscriptionControllerService.processCreateEntitlementGroup(this,params)
@@ -1366,9 +1381,9 @@ class SubscriptionController {
      * Call to remove the given title group from the given subscription
      * @return the title group view for the given subscription
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     def removeEntitlementGroup() {
         Map<String, Object> ctrlResult = subscriptionControllerService.removeEntitlementGroup(params)
@@ -1394,9 +1409,9 @@ class SubscriptionController {
     }
 
     @Deprecated
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     def processRenewEntitlements() {
         Map<String, Object> ctrlResult = subscriptionControllerService.processRenewEntitlements(this,params)
@@ -1419,9 +1434,9 @@ class SubscriptionController {
      * Call to load the selection list for the title renewal. The list may be exported as a (configurable) Excel table with usage data for each title
      * @return the title list for selection; either as HTML table or as Excel export, configured with the given parameters
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstUser_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+        ctx.contextService.isInstUser_or_ROLEADMIN()
     })
     def renewEntitlementsWithSurvey() {
         Map<String,Object> ctrlResult, exportResult
@@ -1486,20 +1501,26 @@ class SubscriptionController {
                     packageIds.addAll(ctrlResult.result.subscriberSub.packages?.pkg?.id)
                 }
 
-                queryMap = [subscriptions: subscriptions, ieStatus: RDStore.TIPP_STATUS_CURRENT, pkgIds: packageIds, hasPerpetualAccess: true]
+                queryMap = [subscriptions: subscriptions, ieStatus: RDStore.TIPP_STATUS_CURRENT, pkgIds: packageIds, hasPerpetualAccess: RDStore.YN_YES.id.toString()]
+            
                 filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.currentTitles') + '_' + ctrlResult.result.subscriberSub.dropdownNamingConvention())
             }
 
             if (params.exportKBart) {
-                response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
-                response.contentType = "text/tsv"
-                ServletOutputStream out = response.outputStream
-                Map<String, List> tableData = exportService.generateTitleExportKBART(queryMap, IssueEntitlement.class.name)
-                out.withWriter { Writer writer ->
-                    writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
+                String dir = GlobalService.obtainFileStorageLocation()
+                File f = new File(dir+'/'+filename)
+                if(!f.exists()) {
+                    FileOutputStream out = new FileOutputStream(f)
+                    Map<String, List> tableData = exportService.generateTitleExportKBART(queryMap, IssueEntitlement.class.name)
+                    out.withWriter { Writer writer ->
+                        writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
+                    }
+                    out.flush()
+                    out.close()
                 }
-                out.flush()
-                out.close()
+                Map fileResult = [token: filename]
+                render template: '/templates/bulkItemDownload', model: fileResult
+                return
             }
             if (params.exportForImport) {
 
@@ -1585,9 +1606,9 @@ class SubscriptionController {
      * Call to process the title selection with the given input parameters
      * @return a redirect to the referer
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     def processRenewEntitlementsWithSurvey() {
         Map<String, Object> ctrlResult = subscriptionControllerService.processRenewEntitlementsWithSurvey(this,params)
@@ -1608,9 +1629,9 @@ class SubscriptionController {
      * Takes the given configuration map and updates the pending change behavior for the given subscription package
      * @return the (updated) subscription details view
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     @Check404()
     def setupPendingChangeConfiguration() {
@@ -1625,9 +1646,9 @@ class SubscriptionController {
     }
 
     /* TODO Cost per use tab, still needed?
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_USER'])
+    @DebugInfo(isInstUser_or_ROLEADMIN = true)
     @Secured(closure = {
-    ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_USER')
+    ctx.contextService.isInstUser_or_ROLEADMIN()
     })
     def costPerUse() {
         Map<String,Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
@@ -1692,9 +1713,9 @@ class SubscriptionController {
      * Call for manual renewal of a given subscription, i.e. without performing a renewal survey before
      * @return the starting page of the subscription renewal process
      */
-    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def renewSubscription() {
         Map<String,Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
@@ -1723,9 +1744,9 @@ class SubscriptionController {
      * copying process
      * @return the first page of the element copy processing
      */
-    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def processRenewSubscription() {
         Map<String,Object> ctrlResult = subscriptionControllerService.processRenewSubscription(this,params)
@@ -1755,9 +1776,9 @@ class SubscriptionController {
      * Call to load the given section of subscription copying procedure
      * @return the view with the given copy parameters, depending on the tab queried
      */
-    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def copySubscription() {
         Map<String,Object> ctrlResult = subscriptionControllerService.copySubscription(params)
@@ -1775,7 +1796,7 @@ class SubscriptionController {
                     if(ctrlResult.result.targetObject) {
                         params.workFlowPart = CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
                     }
-                    ctrlResult.result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
+                    ctrlResult.result << copyElementsService.loadDataFor_DocsTasksWorkflows(params)
                     break
                 case CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS:
                     ctrlResult.result << copyElementsService.copyObjectElements_PackagesEntitlements(params)
@@ -1783,8 +1804,8 @@ class SubscriptionController {
                     ctrlResult.result << copyElementsService.loadDataFor_Properties(params)
                     break
                 case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
-                    ctrlResult.result << copyElementsService.copyObjectElements_DocsAnnouncementsTasks(params)
-                    if (ctrlResult.result.isConsortialObjects && accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_USER')){
+                    ctrlResult.result << copyElementsService.copyObjectElements_DocsTasksWorkflows(params)
+                    if (ctrlResult.result.isConsortialObjects && contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC)){
                         params.workFlowPart = CopyElementsService.WORKFLOW_SUBSCRIBER
                         ctrlResult.result << copyElementsService.loadDataFor_Subscriber(params)
                     } else {
@@ -1818,9 +1839,9 @@ class SubscriptionController {
      * turning to the next page); if data has been submitted, it will be processed
      * @return the copy parameters for the given (or its following) procedure section
      */
-    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def copyElementsIntoSubscription() {
         Map<String,Object> ctrlResult = subscriptionControllerService.copyElementsIntoSubscription(params)
@@ -1839,7 +1860,7 @@ class SubscriptionController {
                     ctrlResult.result << copyElementsService.copyObjectElements_DatesOwnerRelations(params)
                     if (params.isRenewSub){
                         params.workFlowPart = CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
-                        ctrlResult.result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
+                        ctrlResult.result << copyElementsService.loadDataFor_DocsTasksWorkflows(params)
                     } else {
                         ctrlResult.result << copyElementsService.loadDataFor_DatesOwnerRelations(params)
                     }
@@ -1854,7 +1875,7 @@ class SubscriptionController {
                     }
                     break
                 case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
-                    ctrlResult.result << copyElementsService.copyObjectElements_DocsAnnouncementsTasks(params)
+                    ctrlResult.result << copyElementsService.copyObjectElements_DocsTasksWorkflows(params)
                     if (params.isRenewSub){
                         if (!params.fromSurvey && ctrlResult.result.isSubscriberVisible){
                             params.workFlowPart = CopyElementsService.WORKFLOW_SUBSCRIBER
@@ -1864,7 +1885,7 @@ class SubscriptionController {
                             ctrlResult.result << copyElementsService.loadDataFor_PackagesEntitlements(params)
                         }
                     } else {
-                        ctrlResult.result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
+                        ctrlResult.result << copyElementsService.loadDataFor_DocsTasksWorkflows(params)
                     }
                     break
                 case CopyElementsService.WORKFLOW_SUBSCRIBER:
@@ -1887,7 +1908,7 @@ class SubscriptionController {
                     break
                 default:
                     if(ctrlResult.result.transferIntoMember)
-                        ctrlResult.result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
+                        ctrlResult.result << copyElementsService.loadDataFor_DocsTasksWorkflows(params)
                     else
                         ctrlResult.result << copyElementsService.loadDataFor_DatesOwnerRelations(params)
                     break
@@ -1916,9 +1937,9 @@ class SubscriptionController {
      * Call for a single user to copy private properties from a consortial member subscription into its successor instance
      * @return the reduced subscription element copy view
      */
-    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.ORG_INST_PRO], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_INST_PRO], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_INST_PRO )
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_INST_PRO )
     })
     def copyMyElements() {
         Map<String, Object> result = subscriptionControllerService.setCopyResultGenerics(params+[copyMyElements: true])
@@ -1931,8 +1952,8 @@ class SubscriptionController {
             result.allObjects_writeRights = subscriptionService.getMySubscriptionsWithMyElements_writeRights([status: RDStore.SUBSCRIPTION_CURRENT.id])
             switch (params.workFlowPart) {
                 case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
-                    result << copyElementsService.copyObjectElements_DocsAnnouncementsTasks(params)
-                    result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
+                    result << copyElementsService.copyObjectElements_DocsTasksWorkflows(params)
+                    result << copyElementsService.loadDataFor_DocsTasksWorkflows(params)
                     break
                 case CopyElementsService.WORKFLOW_PROPERTIES:
                     result << copyElementsService.copyObjectElements_Properties(params)
@@ -1948,7 +1969,7 @@ class SubscriptionController {
                     }
                     break
                 default:
-                    result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
+                    result << copyElementsService.loadDataFor_DocsTasksWorkflows(params)
                     break
             }
             if (params.targetObjectId) {
@@ -1966,9 +1987,9 @@ class SubscriptionController {
      * Processes the given subscription candidates and creates subscription instances based on the submitted data
      * @return the subscription list view in case of success, the import starting page otherwise
      */
-    @DebugInfo(ctxInstEditorCheckPerm_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def addSubscriptions() {
         def candidates = JSON.parse(params.candidates)
@@ -1990,9 +2011,9 @@ class SubscriptionController {
      * Call for the reporting view for the given subscription
      * @return the reporting index for the subscription
      */
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_PRO, 'INST_USER'])
+    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_USER')
+        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
     })
     @Check404()
     def reporting() {
@@ -2016,9 +2037,9 @@ class SubscriptionController {
      * Call for the workflows related to this subscription
      * @return the workflow landing page for the given subscription
      */
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_PRO, 'INST_USER'])
+    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_PRO, 'INST_USER')
+        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
     })
     @Check404()
     def workflows() {

@@ -1,13 +1,13 @@
 <%@ page import="de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.storage.RDStore" %>
 <laser:serviceInjection/>
 
-<g:if test="${accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )}">
+<g:if test="${contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )}">
     <ui:actionsDropdown>
         <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionDropdownItems: true]]}" />
 
 %{--                <ui:actionsDropdownItem data-ui="modal" href="#propDefGroupBindings" message="menu.institutions.configure_prop_groups" />--}% %{-- erms-4798 --}%
 
-        <g:if test="${editable || accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')}">
+        <g:if test="${editable || contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
             <g:if test="${actionName == 'show'}">
 %{--                <ui:actionsDropdownItem data-ui="modal" href="#propDefGroupBindings" message="menu.institutions.configure_prop_groups" />--}%%{-- --}%%{-- erms-4798 --}%
             </g:if>
@@ -46,12 +46,12 @@
                 <div class="divider"></div>
                 <g:if test="${editable}">
                     <g:if test="${(institution.isCustomerType_Consortium()) && !isProviderOrAgency}">
-                        <a href="#createPersonModal" class="item" data-ui="modal"
-                           onclick="JSPC.app.personCreate('contactPersonForInstitution', ${orgInstance.id});"><g:message code="person.create_new.contactPersonForInstitution.label"/></a>
+                        <a href="#createPersonModal" class="item" data-ui="modal" onclick="JSPC.app.personCreate('contactPersonForInstitution', ${orgInstance.id});"><g:message code="person.create_new.contactPersonForInstitution.label"/></a>
+                        <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForInstitution', ${orgInstance.id});"><g:message code="address.add.addressForInstitution.label"/></a>
                     </g:if>
                     <g:if test="${isProviderOrAgency}">
-                        <a href="#createPersonModal" class="item" data-ui="modal"
-                           onclick="JSPC.app.personCreate('contactPersonForProviderAgency', ${orgInstance.id});"><g:message code="person.create_new.contactPersonForProviderAgency.label"/></a>
+                        <a href="#createPersonModal" class="item" data-ui="modal" onclick="JSPC.app.personCreate('contactPersonForProviderAgency', ${orgInstance.id});"><g:message code="person.create_new.contactPersonForProviderAgency.label"/></a>
+                        <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForProviderAgency', ${orgInstance.id});"><g:message code="address.add.addressForProviderAgency.label"/></a>
                     </g:if>
                 </g:if>
                 <ui:actionsDropdownItem notActive="true" data-ui="modal" href="#copyFilteredEmailAddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
@@ -62,7 +62,7 @@
                     <a href="#createPersonModal" class="item" onclick="JSPC.app.personCreate('contactPersonForPublic');"><g:message code="person.create_new.contactPerson.label"/></a>
                 </g:if>
                 <g:if test="${editable}">
-                    <a href="#addressFormModal" class="item" onclick="JSPC.app.addresscreate_org('${orgInstance.id}');"><g:message code="address.add.label"/></a>
+                    <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForPublic');"><g:message code="address.add.addressForPublic.label"/></a>
                 </g:if>
                 <ui:actionsDropdownItem notActive="true" data-ui="modal" href="#copyFilteredEmailAddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
             </g:elseif>
@@ -76,7 +76,7 @@
         </g:if>
     </ui:actionsDropdown>
 </g:if>
-<g:elseif test="${accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )}">
+<g:elseif test="${contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )}">
     <ui:actionsDropdown>
         <ui:actionsDropdownItem message="template.notes.add" data-ui="modal" href="#modalCreateNote"/>
 
@@ -133,7 +133,7 @@
                 <a href="#createPersonModal" class="item" onclick="JSPC.app.personCreate('contactPersonForPublic');"><g:message code="person.create_new.contactPerson.label"/></a>
             </g:if>
             <g:if test="${editable}">
-                <a href="#addressFormModal" class="item" onclick="JSPC.app.addresscreate_org('${orgInstance.id}');"><g:message code="address.add.label"/></a>
+                <a href="#addressFormModal" class="item" onclick="JSPC.app.addressCreate('addressForPublic');"><g:message code="address.add.addressForPublic.label"/></a>
             </g:if>
             <ui:actionsDropdownItem notActive="true" data-ui="modal" href="#copyFilteredEmailAddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
         </g:elseif>
@@ -158,7 +158,7 @@
 %{--    institution (context org) : ${institution}--}%
 %{----!>--}%
 
-<g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.PERMS_BASIC, 'INST_EDITOR')}">
+<g:if test="${contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_BASIC)}">
     <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionModals: true, ownobj: orgInstance, owntp: 'org', institution: institution]]}" />
 </g:if>
 

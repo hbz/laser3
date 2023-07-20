@@ -234,9 +234,9 @@ class PlatformController  {
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         result.editUrl = apiSource.editUrl.endsWith('/') ? apiSource.editUrl : apiSource.editUrl+'/'
 
-        result.flagContentGokb = true // gokbService.queryElasticsearch
+        result.flagContentGokb = true // gokbService.executeQuery
         result.platformInstanceRecord = [:]
-        Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: platformInstance.gokbId])
+        Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: platformInstance.gokbId])
         if (queryResult.error && queryResult.error == 404) {
             flash.error = message(code:'wekb.error.404') as String
         }
@@ -245,7 +245,7 @@ class PlatformController  {
             result.platformInstanceRecord = records ? records[0] : [:]
             result.platformInstanceRecord.id = params.id
         }
-        result.editable = accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_BASIC )
+        result.editable = contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_BASIC )
 
         String hql = "select oapl from OrgAccessPointLink oapl join oapl.oap as ap " +
                     "where ap.org =:institution and oapl.active=true and oapl.platform.id=${platformInstance.id} " +
@@ -305,9 +305,9 @@ class PlatformController  {
      * @deprecated use {@link #dynamicApLink} instead
      */
     @Deprecated
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'])
+    @DebugInfo(isInstEditor_or_ROLEADMIN = true)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     @Check404()
     def link() {
@@ -315,7 +315,6 @@ class PlatformController  {
         Platform platformInstance = Platform.get(params.id)
 
         Org selectedInstitution = contextService.getOrg()
-        List<Org> authorizedOrgs = contextService.getUser().getAffiliationOrgs()
 
         String hql = "select oapl from OrgAccessPointLink oapl join oapl.oap as ap "
             hql += "where ap.org =:institution and oapl.active=true and oapl.platform.id=${platformInstance.id}"
@@ -330,7 +329,7 @@ class PlatformController  {
 
         result.accessPointLinks = results
         result.platformInstance = platformInstance
-        result.institution = authorizedOrgs
+        result.institution = contextService.getUser().formalOrg ? [contextService.getUser().formalOrg] : []
         result.accessPointList = accessPointList
         result.selectedInstitution = selectedInstitution.id
         result
@@ -340,9 +339,9 @@ class PlatformController  {
      * Call to link a platform to another access point
      * @return renders the available options in a modal
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'])
+    @DebugInfo(isInstEditor_or_ROLEADMIN = true)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     def dynamicApLink(){
         Map<String, Object> result = [:]
@@ -353,7 +352,6 @@ class PlatformController  {
             redirect action: 'list'
             return
         }
-        List<Org> authorizedOrgs = contextService.getUser().getAffiliationOrgs()
         Org selectedInstitution =  contextService.getOrg()
         if (params.institution_id){
             selectedInstitution = Org.get(params.institution_id)
@@ -371,7 +369,7 @@ class PlatformController  {
 
         result.accessPointLinks = results
         result.platformInstance = platformInstance
-        result.institution = authorizedOrgs
+        result.institution = contextService.getUser().formalOrg ? [contextService.getUser().formalOrg] : []
         result.accessPointList = accessPointList
         result.selectedInstitution = selectedInstitution.id
         render(view: "_apLinkContent", model: result)
@@ -381,9 +379,9 @@ class PlatformController  {
      * Call to add a new derivation to the given platform
      * @return redirect to the referer
      */
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_BASIC, 'INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_BASIC, 'INST_EDITOR')
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_BASIC)
     })
     def addDerivation() {
         Map<String,Object> ctrlResult = platformControllerService.addDerivation(params)
@@ -397,9 +395,9 @@ class PlatformController  {
      * Call to remove a new derivation to the given platform
      * @return redirect to the referer
      */
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_BASIC, 'INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_BASIC, 'INST_EDITOR')
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_BASIC)
     })
     def removeDerivation() {
         Map<String,Object> ctrlResult = platformControllerService.removeDerivation(params)
@@ -410,9 +408,9 @@ class PlatformController  {
     }
 
     @Deprecated
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_BASIC, 'INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_BASIC, 'INST_EDITOR')
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_BASIC)
     })
     def linkAccessPoint() {
         OrgAccessPoint apInstance
@@ -435,9 +433,9 @@ class PlatformController  {
     }
 
     @Deprecated
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_BASIC, 'INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_BASIC, 'INST_EDITOR')
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_BASIC)
     })
     def removeAccessPoint() {
         Map<String,Object> ctrlResult = platformControllerService.removeAccessPoint(params)

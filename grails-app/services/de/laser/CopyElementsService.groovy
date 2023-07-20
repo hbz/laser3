@@ -18,8 +18,10 @@ import de.laser.survey.SurveyConfigProperties
 import de.laser.survey.SurveyInfo
 import de.laser.survey.SurveyOrg
 import de.laser.utils.LocaleUtils
+import de.laser.workflow.WfChecklist
 import grails.gorm.transactions.Transactional
 import grails.web.mvc.FlashScope
+import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.sql.Sql
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.grails.web.servlet.mvc.GrailsWebRequest
@@ -38,18 +40,19 @@ import java.util.concurrent.ExecutorService
 @Transactional
 class CopyElementsService {
 
-    ExecutorService executorService
-    GenericOIDService genericOIDService
-    ComparisonService comparisonService
-    TaskService taskService
-    SubscriptionService subscriptionService
-    ContextService contextService
-    MessageSource messageSource
-    DocstoreService docstoreService
-    FormService formService
-    LicenseService licenseService
     CompareService compareService
+    ComparisonService comparisonService
+    ContextService contextService
+    DocstoreService docstoreService
+    ExecutorService executorService
+    FormService formService
+    GenericOIDService genericOIDService
+    LicenseService licenseService
+    MessageSource messageSource
     PackageService packageService
+    SubscriptionService subscriptionService
+    TaskService taskService
+    WorkflowService workflowService
 
     static final String WORKFLOW_DATES_OWNER_RELATIONS = '1'
     static final String WORKFLOW_PACKAGES_ENTITLEMENTS = '5'
@@ -151,11 +154,11 @@ class CopyElementsService {
     }
 
     /**
-     * Loads the data for the subscription documents, notes and tasks for the given subscriptions
+     * Loads the data for the subscription documents/notes, tasks and workflows for the given subscriptions
      * @param params the request parameter map
      * @return the related objects each for both source and target objects
      */
-    Map loadDataFor_DocsAnnouncementsTasks(Map params) {
+    Map loadDataFor_DocsTasksWorkflows(Map params) {
         Map<String, Object> result = [:]
         Object sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
         Object targetObject = null
@@ -169,6 +172,8 @@ class CopyElementsService {
         result.targetDocuments = targetObject?.documents?.sort { it.owner?.title?.toLowerCase()} //null check needed because targetObject may not necessarily exist at that point and GORM does not always initialises sets
         result.sourceTasks = taskService.getTasksByObject(result.sourceObject)
         result.targetTasks = taskService.getTasksByObject(result.targetObject)
+        result.sourceWorkflows = workflowService.getWorkflows(result.sourceObject, contextService.getOrg()) // todo: extended access for admins?
+        result.targetWorkflows = workflowService.getWorkflows(result.targetObject, contextService.getOrg()) // todo: extended access for admins?
         result
     }
 
@@ -597,11 +602,11 @@ class CopyElementsService {
     }
 
     /**
-     * Processes the given documents / notes / tasks transfer
+     * Processes the given documents&notes / tasks / workflows transfer
      * @param params the request parameters
      * @return the source and target objects for the next copy step
      */
-    Map copyObjectElements_DocsAnnouncementsTasks(Map params) {
+    Map copyObjectElements_DocsTasksWorkflows(Map params) {
         Map<String, Object> result = [:]
         FlashScope flash = getCurrentFlashScope()
 
@@ -654,6 +659,18 @@ class CopyElementsService {
                 def toCopyTasks = []
                 params.list('copyObject.takeTaskIds').each { tsk -> toCopyTasks << Long.valueOf(tsk) }
                 copyTasks(sourceObject, toCopyTasks, targetObject, flash)
+                isTargetSubChanged = true
+            }
+
+            if (params.list('copyObject.deleteWorkflowIds') && isBothObjectsSet(sourceObject, targetObject)) {
+                List<Long> toDeleteWorkflows = params.list('copyObject.deleteWorkflowIds').collect { it as Long }
+                deleteWorkflows(toDeleteWorkflows, targetObject, flash)
+                isTargetSubChanged = true
+            }
+
+            if (params.list('copyObject.takeWorkflowIds') && isBothObjectsSet(sourceObject, targetObject)) {
+                List<Long> toCopyWorkflows = params.list('copyObject.takeWorkflowIds').collect { it as Long }
+                copyWorkflows(sourceObject, toCopyWorkflows, targetObject, flash)
                 isTargetSubChanged = true
             }
 
@@ -845,34 +862,6 @@ class CopyElementsService {
                             copyPackages(packagesToTake, targetObject, flash)
                         }
 
-                        if (params.subscription?.takePackageSettings) {
-                            List takePackageNotifications = params.list('subscription.takePackageNotifications'),
-                            takePackageSettingAudit = params.list('subscription.takePackageSettingAudit'),
-                            takePackageNotificationAudit = params.list('subscription.takePackageNotificationAudit')
-                            params.list('subscription.takePackageSettings').each { String val ->
-                                String[] setting = val.split('§')
-                                boolean withNotification = takePackageNotifications.findIndexOf { String notification -> notification.split('§')[1] == setting[1]} > -1,
-                                settingAudit = takePackageSettingAudit.findIndexOf { String settingAudit -> settingAudit.split('§')[1] == setting[1]} > -1,
-                                notificationAudit = takePackageNotificationAudit.findIndexOf { String notificationAudit -> notificationAudit.split('§')[1] == setting[1]} > -1
-                                SubscriptionPackage sourcePackage = genericOIDService.resolveOID(setting[0])
-                                SubscriptionPackage targetPackage = SubscriptionPackage.findBySubscriptionAndPkg(targetObject, sourcePackage.pkg)
-                                if(setting[2] != 'null' && targetPackage) {
-                                    Map<String, Object> configSettings = [subscriptionPackage: targetPackage, settingValue: RefdataValue.get(setting[2]), settingKey: setting[1], withNotification: withNotification]
-                                    PendingChangeConfiguration newPcc = PendingChangeConfiguration.construct(configSettings)
-                                    if (newPcc) {
-                                        if (settingAudit && !AuditConfig.getConfig(targetObject, setting[1]))
-                                            AuditConfig.addConfig(targetObject, setting[1])
-                                        else if (!settingAudit && AuditConfig.getConfig(targetObject, setting[1]))
-                                            AuditConfig.removeConfig(targetObject, setting[1])
-                                        if (notificationAudit && !AuditConfig.getConfig(targetObject, setting[1]+PendingChangeConfiguration.NOTIFICATION_SUFFIX))
-                                            AuditConfig.addConfig(targetObject, setting[1]+PendingChangeConfiguration.NOTIFICATION_SUFFIX)
-                                        else if (!notificationAudit && AuditConfig.getConfig(targetObject, setting[1]+PendingChangeConfiguration.NOTIFICATION_SUFFIX))
-                                            AuditConfig.removeConfig(targetObject, setting[1]+PendingChangeConfiguration.NOTIFICATION_SUFFIX)
-                                    }
-                                }
-                            }
-                        }
-
                         if (params.subscription?.takeTitleGroups) {
                             List<IssueEntitlementGroup> takeTitleGroups = params.list('subscription.takeTitleGroups').collect { genericOIDService.resolveOID(it) }
                             copyIssueEntitlementGroupItem(takeTitleGroups, targetObject)
@@ -920,7 +909,7 @@ class CopyElementsService {
      */
     boolean deleteTasks(List<Long> toDeleteTasks, Object targetObject, def flash) {
         Locale locale = LocaleUtils.getCurrentLocale()
-        boolean isInstAdm = contextService.getUser().hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
+        boolean isInstAdm = contextService.isInstAdm_or_ROLEADMIN()
         def userId = contextService.getUser().id
         toDeleteTasks.each { deleteTaskId ->
             Task dTask = Task.get(deleteTaskId)
@@ -934,6 +923,30 @@ class CopyElementsService {
             } else {
                 Object[] args = [deleteTaskId]
                 flash.error += messageSource.getMessage('subscription.err.taskDoesNotExist', args, locale)
+            }
+        }
+    }
+
+    boolean deleteWorkflows(List<Long> toDeleteWorkflows, Object targetObject, def flash) {
+        log.debug('toDeleteWorkflows: ' + toDeleteWorkflows)
+
+        Locale locale = LocaleUtils.getCurrentLocale()
+        boolean isInstAdm = contextService.isInstAdm_or_ROLEADMIN()
+        Long orgId = contextService.getOrg().id
+
+        toDeleteWorkflows.each { deleteWorkflowId ->
+            // todo: check
+            WfChecklist dWorkflow = WfChecklist.get(deleteWorkflowId)
+            if (dWorkflow) {
+                if (dWorkflow.owner.id == orgId || isInstAdm) {
+                    _delete(dWorkflow, flash)
+                } else {
+                    Object[] args = [messageSource.getMessage('workflow.label', null, locale), deleteWorkflowId]
+                    flash.error += messageSource.getMessage('default.not.deleted.notAutorized.message', args, locale)
+                }
+            } else {
+                Object[] args = [deleteWorkflowId]
+                flash.error += messageSource.getMessage('subscription.err.workflowDoesNotExist', args, locale)
             }
         }
     }
@@ -965,6 +978,31 @@ class CopyElementsService {
                 }
             }
         }
+    }
+
+    boolean copyWorkflows(Object sourceObject, List<Long> toCopyWorkflows, Object targetObject, def flash) {
+        log.debug('toCopyWorkflows: ' + toCopyWorkflows)
+        boolean succuess = true
+
+        GrailsParameterMap gpm = new GrailsParameterMap(WebUtils.retrieveGrailsWebRequest().getCurrentRequest())
+
+        toCopyWorkflows.each { wf ->
+            WfChecklist wfObj = WfChecklist.get(wf)
+            if (wfObj) {
+                gpm.clear()
+                gpm.putAll([
+                        WF_CHECKLIST_title      : wfObj.title + ' (KOPIE)',
+                        WF_CHECKLIST_description: wfObj.description,
+                        sourceId                : wf,
+                        cmd                     : 'instantiate:WF_CHECKLIST:' + wf,
+                        target                  : genericOIDService.getOID(targetObject)
+                ])
+                // todo: check
+                Map<String, Object> result = workflowService.instantiateChecklist(gpm)
+                succuess = succuess && (result.status == WorkflowService.OP_STATUS_DONE)
+            }
+        }
+        succuess
     }
 
     /**
@@ -1484,7 +1522,7 @@ class CopyElementsService {
         if (packagesToDelete) {
 
             packagesToDelete.each { subPkg ->
-                OrgAccessPointLink.executeUpdate("delete from OrgAccessPointLink oapl where oapl.subPkg=?", [subPkg])
+                OrgAccessPointLink.executeUpdate("delete from OrgAccessPointLink oapl where oapl.subPkg=:sp", [sp: subPkg])
                 PendingChangeConfiguration.executeUpdate("delete from PendingChangeConfiguration pcc where pcc.subscriptionPackage=:sp", [sp: subPkg])
 
                 CostItem.findAllBySubPkg(subPkg).each { costItem ->
@@ -1545,7 +1583,7 @@ class CopyElementsService {
                             boolean check = targetIEs.find { IssueEntitlement targetIE -> targetIE.tipp.id == ie.tipp.id && targetIE.status != RDStore.TIPP_STATUS_REMOVED }
                             if (check) {
                                 // mich gibts schon! Da aber der Prozeß asynchron läuft, kann keine Fehlermeldung (mehr) ausgegeben werden!
-                                Object[] args = [ie.name]
+                                Object[] args = [ie.tipp.name]
                                 //flash.error += messageSource.getMessage('subscription.err.titleAlreadyExistsInTargetSub', args, locale)
                             } else {
                                 def properties = ie.properties
@@ -1578,25 +1616,6 @@ class CopyElementsService {
                     }
                      */
                 }
-            }
-        }
-    }
-
-    /**
-     * Transfers the pending change configuration into the target subscription-package
-     * @param configs the configurations to take
-     * @param target the target subscription package to which the configurations should be applied
-     * @return true if the transfer was successful, false otherwise
-     */
-    boolean copyPendingChangeConfiguration(Collection<PendingChangeConfiguration> configs, SubscriptionPackage target) {
-        configs.each { PendingChangeConfiguration config ->
-            Map<String, Object> configSettings = [subscriptionPackage: target, settingValue: config.settingValue, settingKey: config.settingKey, withNotification: config.withNotification]
-            PendingChangeConfiguration newPcc = PendingChangeConfiguration.construct(configSettings)
-            if (newPcc) {
-                if (AuditConfig.getConfig(config.subscriptionPackage.subscription, config.settingKey) && !AuditConfig.getConfig(target.subscription, config.settingKey))
-                    AuditConfig.addConfig(target.subscription, config.settingKey)
-                else if (!AuditConfig.getConfig(config.subscriptionPackage.subscription, config.settingKey) && AuditConfig.getConfig(target.subscription, config.settingKey))
-                    AuditConfig.removeConfig(target.subscription, config.settingKey)
             }
         }
     }

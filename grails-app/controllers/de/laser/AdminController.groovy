@@ -10,11 +10,7 @@ import de.laser.utils.SwissKnife
 import de.laser.remote.FTControl
 import de.laser.auth.Role
 import de.laser.auth.User
-import de.laser.auth.UserOrgRole
-import de.laser.auth.UserRole
 import de.laser.properties.PropertyDefinition
-import de.laser.properties.PropertyDefinitionGroup
-import de.laser.properties.PropertyDefinitionGroupItem
 import de.laser.api.v0.ApiToolkit
 
 import de.laser.storage.RDStore
@@ -349,117 +345,6 @@ class AdminController  {
         redirect controller: 'admin', action:'hardDeletePkgs'
 
     }
-
-    @Deprecated
-    @Secured(['ROLE_ADMIN'])
-    @Transactional
-    def userMerge(){
-        log.debug("AdminController :: userMerge :: ${params}")
-        def usrMrgId = params.userToMerge == "null"?null:params.userToMerge
-        def usrKeepId = params.userToKeep == "null"?null:params.userToKeep
-        Map<String, Object> result = [:]
-
-        try {
-            log.debug("Determine user merge operation : ${request.method}")
-            switch (request.method) {
-                case 'GET':
-                    if(usrMrgId && usrKeepId ){
-                        User usrMrg = User.get(usrMrgId)
-                        User usrKeep =  User.get(usrKeepId)
-                        log.debug("Selected users : ${usrMrg}, ${usrKeep}")
-
-                        result.userRoles = usrMrg.getAuthorities()
-                        result.userAffiliations =  usrMrg.affiliations
-                        result.userMerge = usrMrg
-                        result.userKeep = usrKeep
-                    }
-                    else{
-                        log.error("Missing keep/merge userid ${params}")
-                        flash.error = "Please select'user to keep' and 'user to merge' from the dropdown."
-                    }
-                    log.debug("Get processing completed")
-                    break;
-                case 'POST':
-                    log.debug("Post...")
-                    if(usrMrgId && usrKeepId){
-                        User usrMrg = User.get(usrMrgId)
-                        User usrKeep =  User.get(usrKeepId)
-                        boolean success = false
-                        try{
-                            log.debug("Copying user roles... from ${usrMrg} to ${usrKeep}")
-                            success = copyUserRoles(usrMrg, usrKeep)
-                            log.debug("Result of copyUserRoles : ${success}")
-                        }
-                        catch(Exception e){
-                            log.error("Exception while copying user roles.",e)
-                        }
-                        if(success){
-                            log.debug("Success")
-                            usrMrg.enabled = false
-                            log.debug("Save disable and save merged user")
-                            usrMrg.save(failOnError:true)
-                            flash.message = "Rights copying successful. User '${usrMrg.displayName}' is now disabled."
-                        }else{
-                            flash.error = "An error occured before rights transfer was complete."
-                        }
-                    }else{
-                        flash.error = "Please select 'user to keep' and 'user to merge' from the dropdown."
-                    }
-                    break
-                default:
-                    break;
-            }
-
-            log.debug("Get all users");
-            result.usersAll = User.list(sort:"display", order:"asc")
-
-            log.debug("Get active users");
-            String activeHQL = " from User as usr where usr.enabled=true or usr.enabled=null order by display asc"
-            result.usersActive = User.executeQuery(activeHQL)
-        }
-        catch ( Exception e ) {
-            log.error("Problem in user merge", e)
-        }
-
-        log.debug("Returning ${result}")
-        result
-    }
-
-    @Deprecated
-    @Secured(['ROLE_ADMIN'])
-    @Transactional
-    def copyUserRoles(User usrMrg, User usrKeep){
-        Set<Role> mergeRoles = usrMrg.getAuthorities()
-        Set<UserOrgRole> mergeAffil = usrMrg.affiliations
-        Set<Role> currentRoles = usrKeep.getAuthorities()
-        Set<UserOrgRole> currentAffil = usrKeep.affiliations
-
-        mergeRoles.each{ role ->
-            if (!currentRoles.contains(role) && role.authority != 'ROLE_YODA') {
-                UserRole.create(usrKeep,role)
-            }
-        }
-        mergeAffil.each{affil ->
-            if(!currentAffil.contains(affil)){
-                // We should check that the new role does not already exist
-                UserOrgRole existing_affil_check = UserOrgRole.findByOrgAndUserAndFormalRole(affil.org, usrKeep, affil.formalRole)
-
-        if ( existing_affil_check == null ) {
-            log.debug("No existing affiliation")
-            UserOrgRole newAffil = new UserOrgRole(org:affil.org, user:usrKeep, formalRole:affil.formalRole)
-            if(!newAffil.save(failOnError:true)){
-                log.error("Probem saving user roles")
-                newAffil.errors.each { e ->
-                    log.error( e.toString() )
-                }
-                return false
-            }
-        }
-      }
-    }
-    log.debug("copyUserRoles returning true");
-    return true
-  }
 
     /**
      * Gets the current workflows and returns a dashboard-like overview of the outstanding tasks
@@ -884,6 +769,7 @@ class AdminController  {
     @Transactional
     def manageOrganisations() {
         Map<String, Object> result = [:]
+        SwissKnife.setPaginationParams(result, params, contextService.getUser())
 
         if (params.cmd == 'changeApiLevel') {
             Org target = (Org) genericOIDService.resolveOID(params.target)
@@ -963,8 +849,9 @@ class AdminController  {
         }
 
         Map<String, Object> fsq = filterService.getOrgQuery(params)
-        result.orgList = Org.executeQuery(fsq.query, fsq.queryParams, params)
-        result.orgListTotal = result.orgList.size()
+        List<Org> orgList = Org.executeQuery(fsq.query, fsq.queryParams)
+        result.orgList = orgList.drop(result.offset).take(result.max)
+        result.orgListTotal = orgList.size()
 
         result.allConsortia = Org.executeQuery(
                 "select o from OrgSetting os join os.org o where os.key = 'CUSTOMER_TYPE' and (os.roleValue.authority  = 'ORG_CONSORTIUM_BASIC' or os.roleValue.authority  = 'ORG_CONSORTIUM_PRO') order by o.sortname, o.name"

@@ -33,10 +33,10 @@
     <ui:securedSubNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="organisation" action="tasks" params="${breadcrumbParams}" counts="${tasksCount}" message="menu.institutions.tasks"/>
     <ui:securedSubNavItem orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="organisation" action="documents" params="${breadcrumbParams}" message="default.documents.label" />
 
-    <g:if test="${accessService.ctxPerm(CustomerTypeService.PERMS_PRO)}"><!-- TODO: workflows-permissions -->
+    <g:if test="${contextService.hasPerm(CustomerTypeService.PERMS_PRO)}"><!-- TODO: workflows-permissions -->
         <ui:subNavItem controller="organisation" action="workflows" counts="${checklistCount}" params="${breadcrumbParams}" message="workflow.plural"/>
     </g:if>
-    <g:elseif test="${accessService.ctxPerm(CustomerTypeService.PERMS_BASIC)}">
+    <g:elseif test="${contextService.hasPerm(CustomerTypeService.PERMS_BASIC)}">
         <ui:subNavItem controller="organisation" action="workflows" counts="${checklistCount}" params="${breadcrumbParams}" message="workflow.plural" disabled="disabled"/>
     </g:elseif>
 
@@ -45,7 +45,7 @@
     </g:if>
     <g:if test="${!isProviderOrAgency}">
         <g:if test="${inContextOrg}">
-            <ui:securedSubNavItem affiliation="INST_ADM" controller="myInstitution" action="users" message="org.nav.users" />
+            <ui:securedSubNavItem instRole="INST_ADM" controller="myInstitution" action="users" message="org.nav.users" />
         </g:if>
         <g:else>
             <%-- this kind of check is necessary because it should not be displayed at all if user has no specRole --%>
@@ -54,7 +54,7 @@
             </sec:ifAnyGranted>
         </g:else>
         <g:if test="${inContextOrg}">
-            <ui:securedSubNavItem affiliation="INST_ADM" affiliationOrg="${orgInstance}"
+            <ui:securedSubNavItem instRole="INST_ADM" affiliationOrg="${orgInstance}"
                                   controller="organisation" action="settings" params="${breadcrumbParams}" message="org.nav.dataTransfer" />
         </g:if>
         <g:elseif test="${accessService.otherOrgAndComboCheckPermAffiliation_or_ROLEADMIN(orgInstance, CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_ADM')}">

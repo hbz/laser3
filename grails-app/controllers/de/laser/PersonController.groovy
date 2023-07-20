@@ -39,14 +39,14 @@ class PersonController  {
      * @return redirect back to the referer -> an updated list of person contacts
      * @see Person
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = true, wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     def create() {
         Person.withTransaction {
             Org contextOrg = contextService.getOrg()
-            List userMemberships = contextService.getUser().getAffiliationOrgs()
+            List userMemberships = contextService.getUser().formalOrg ? [contextService.getUser().formalOrg] : []
 
             switch (request.method) {
                 case 'GET':
@@ -57,6 +57,14 @@ class PersonController  {
                     [personInstance: personInstance, userMemberships: userMemberships]
                     break
                 case 'POST':
+                    String referer = request.getHeader('referer')
+                    if(!referer.contains('tab')) {
+                        if(referer.contains('?'))
+                            referer += '&tab=contacts'
+                        else
+                            referer += '?tab=contacts'
+                    }
+                    else referer = referer.replaceAll('tab=addresses', 'tab=contacts')
                     if (formService.validateToken(params)) {
                         if(params.functionType || params.positionType)  {
                             Person personInstance = new Person(params)
@@ -64,7 +72,6 @@ class PersonController  {
                                 flash.error = message(code: 'default.not.created.message', args: [message(code: 'person.label')]) as String
                                 log.debug("Person could not be created: " + personInstance.errors)
                                 redirect(url: request.getHeader('referer'))
-                                //render view: 'create', model: [personInstance: personInstance, userMemberships: userMemberships]
                                 return
                             }
                             // processing dynamic form data
@@ -162,7 +169,7 @@ class PersonController  {
                                         if (!addressInstance.save()) {
                                             flash.error = message(code: 'default.save.error.general.message') as String
                                             log.error('Adresse konnte nicht gespeichert werden. ' + addressInstance.errors)
-                                            redirect(url: request.getHeader('referer'), params: params)
+                                            redirect(url: referer)
                                             return
                                         }
                                     }
@@ -173,7 +180,7 @@ class PersonController  {
                         }
                         else flash.error = message(code: 'person.create.missing_function') as String
                     }
-                    redirect(url: request.getHeader('referer'))
+                    redirect(url: referer)
                     break
             }
         }
@@ -229,9 +236,9 @@ class PersonController  {
      * Takes the submitted parameters and updates the person contact based on the given parameter map
      * @return redirect to the referer -> the updated view of the person contact
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = true, wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     def edit() {
         //redirect controller: 'person', action: 'show', params: params
@@ -240,6 +247,14 @@ class PersonController  {
         Person.withTransaction {
             Org contextOrg = contextService.getOrg()
             Person personInstance = Person.get(params.id)
+            String referer = request.getHeader('referer')
+            if(!referer.contains('tab')) {
+                if(referer.contains('?'))
+                    referer += '&tab=contacts'
+                else
+                    referer += '?tab=contacts'
+            }
+            else referer = referer.replaceAll('tab=addresses', 'tab=contacts')
 
             if (!personInstance) {
                 flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label'), params.id]) as String
@@ -385,7 +400,7 @@ class PersonController  {
                         if (!addressInstance.save()) {
                             flash.error = message(code: 'default.save.error.general.message') as String
                             log.error('Adresse konnte nicht gespeichert werden. ' + addressInstance.errors)
-                            redirect(url: request.getHeader('referer'), params: params)
+                            redirect(url: referer)
                             return
                         }
                     }
@@ -393,7 +408,7 @@ class PersonController  {
             }
 
             flash.message = message(code: 'default.updated.message', args: [message(code: 'person.label'), personInstance.toString()]) as String
-            redirect(url: request.getHeader('referer'))
+            redirect(url: referer)
         }
     }
 
@@ -401,9 +416,9 @@ class PersonController  {
      * Deletes the given person contact
      * @return redirects to one of the list views from which the person contact to be deleted has been called
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = true, wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     def delete() {
         Person.withTransaction {

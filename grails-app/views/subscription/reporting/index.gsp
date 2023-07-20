@@ -1,4 +1,4 @@
-<%@ page import="de.laser.reporting.report.ReportingCache; de.laser.reporting.report.myInstitution.base.BaseConfig" %>
+<%@ page import="de.laser.reporting.report.ReportingCache; de.laser.reporting.report.myInstitution.base.BaseConfig; de.laser.storage.RDStore;" %>
 <laser:htmlStart message="myinst.reporting" serviceInjection="true">
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
 </laser:htmlStart>
@@ -8,8 +8,8 @@
         <ui:controlButtons>
             <laser:render template="actions" />
         </ui:controlButtons>
-
-        <ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}">
+<g:set var="visibleOrgRelationsJoin" value="${visibleOrgRelations.findAll{it.roleType != RDStore.OR_SUBSCRIPTION_CONSORTIA}.sort{it.org.sortname}.collect{it.org}.join(' – ')}"/>
+        <ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}" visibleOrgRelationsJoin="${visibleOrgRelationsJoin}">
             <laser:render template="iconSubscriptionIsChild"/>
             <ui:xEditable owner="${subscription}" field="name" />
         </ui:h1HeaderWithIcon>

@@ -1,6 +1,5 @@
 package de.laser.utils
 
-import de.laser.AccessService
 import de.laser.ContextService
 import de.laser.Org
 import de.laser.auth.User
@@ -117,7 +116,6 @@ class SwissKnife {
 
     static boolean checkAndCacheNavPermsForCurrentRequest(GroovyPageAttributes attrs, HttpServletRequest request) {
         ContextService contextService = BeanStore.getContextService()
-        AccessService accessService   = BeanStore.getAccessService()
 
         boolean check = false
 
@@ -137,7 +135,7 @@ class SwissKnife {
         User user = (User) checkMap.get('laser_secured_nav_user')
         Org org = (Org) checkMap.get('laser_secured_nav_org')
 
-        String lsmnic = org?.id + ':' + attrs.specRole + ':' + attrs.affiliation + ':' + attrs.orgPerm + ':' + attrs.affiliationOrg
+        String lsmnic = org?.id + ':' + attrs.specRole + ':' + attrs.instRole + ':' + attrs.orgPerm + ':' + attrs.affiliationOrg
 
         if (checkMap.containsKey(lsmnic)) {
             check = (boolean) checkMap.get(lsmnic)
@@ -147,13 +145,14 @@ class SwissKnife {
 
             if (!check) {
 
-                boolean affiliationCheck = attrs.affiliation ? user.hasCtxAffiliation_or_ROLEADMIN(attrs.affiliation) : true
-                boolean orgPermCheck     = attrs.orgPerm ? accessService.ctxPerm(attrs.orgPerm) : true
+                boolean instRoleCheck = attrs.instRole ? BeanStore.getUserService().hasAffiliation_or_ROLEADMIN(user, BeanStore.getContextService().getOrg(), attrs.instRole) : true
+                boolean orgPermCheck  = attrs.orgPerm ? contextService.hasPerm(attrs.orgPerm) : true
 
-                check = affiliationCheck && orgPermCheck
+                check = instRoleCheck && orgPermCheck
 
-                if (attrs.affiliation && attrs.affiliationOrg && check) {
-                    check = user.hasOrgAffiliation_or_ROLEADMIN(attrs.affiliationOrg, attrs.affiliation)
+                if (attrs.instRole && attrs.affiliationOrg && check) { // ???
+                    check = BeanStore.getUserService().hasAffiliation_or_ROLEADMIN(user, attrs.affiliationOrg, attrs.instRole)
+                    // check = user.hasOrgAffiliation_or_ROLEADMIN(attrs.affiliationOrg, attrs.instRole)
                 }
             }
             checkMap.put(lsmnic, check)

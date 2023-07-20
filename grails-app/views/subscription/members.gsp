@@ -1,6 +1,6 @@
 <%@ page import="de.laser.CustomerTypeService; de.laser.storage.BeanStore; de.laser.finance.CostItem; de.laser.Links; de.laser.Person; de.laser.interfaces.CalculatedType; de.laser.storage.RDStore; de.laser.Subscription" %>
 
-<laser:htmlStart text="${BeanStore.getAccessService().ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) ? message(code:'subscription.details.consortiaMembers.label') : ''}" serviceInjection="true" />
+<laser:htmlStart text="${BeanStore.getContextService().hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) ? message(code:'subscription.details.consortiaMembers.label') : ''}" serviceInjection="true" />
 
     <laser:render template="breadcrumb" model="${[ params:params ]}"/>
 
@@ -87,7 +87,8 @@
         <laser:render template="actions" />
     </ui:controlButtons>
 
-    <ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}">
+    <g:set var="visibleOrgRelationsJoin" value="${visibleOrgRelations.findAll{it.roleType != RDStore.OR_SUBSCRIPTION_CONSORTIA}.sort{it.org.sortname}.collect{it.org}.join(' – ')}"/>
+    <ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}" visibleOrgRelationsJoin="${visibleOrgRelationsJoin}">
         <ui:xEditable owner="${subscription}" field="name" />
     </ui:h1HeaderWithIcon>
     <ui:totalNumber class="la-numberHeader" total="${filteredSubChilds.size() ?: 0}"/>
@@ -238,7 +239,7 @@
                                     params="[next: true, memberOrg: subscr.id, memberSubID: sub.id]"><i class="arrow right icon grey"></i></g:link>
                         </g:elseif>
                     </td>
-                    <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
+                    <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
                         <td class="center aligned">
                             <g:set var="license" value="${Links.executeQuery('select li.id from Links li where li.destinationSubscription = :destination and li.linkType = :linktype',[destination:sub,linktype:RDStore.LINKTYPE_LICENSE])}"/>
                             <g:if test="${!license}">
@@ -253,7 +254,7 @@
                             </g:else>
                         </td>
                     </g:if>
-                    <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
+                    <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
                         <td class="center aligned">
                             <g:if test="${!sub.packages}">
                                 <g:link controller="subscription" action="membersSubscriptionsManagement" params="[tab: 'linkPackages']" id="${subscription.id}" class="ui icon ">

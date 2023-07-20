@@ -1,4 +1,5 @@
 <%@ page import="de.laser.IssueEntitlementCoverage; de.laser.titles.JournalInstance; de.laser.titles.BookInstance; de.laser.remote.ApiSource; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Package; de.laser.RefdataCategory; de.laser.storage.RDConstants" %>
+
 <laser:htmlStart message="subscription.details.current_ent" serviceInjection="true"/>
 
 <laser:render template="breadcrumb" model="${[params: params]}"/>
@@ -16,7 +17,8 @@
     </h1>
 </g:if>
 
-<ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}">
+<g:set var="visibleOrgRelationsJoin" value="${visibleOrgRelations.findAll{it.roleType != RDStore.OR_SUBSCRIPTION_CONSORTIA}.sort{it.org.sortname}.collect{it.org}.join(' – ')}"/>
+<ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}" visibleOrgRelationsJoin="${visibleOrgRelationsJoin}">
     <g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
         <laser:render template="iconSubscriptionIsChild"/>
     </g:if>
@@ -208,6 +210,7 @@
             </div>
         </div><!--.row-->
     </div><!--.grid-->
+<div id="downloadWrapper"></div>
 <%
     Map<String, String>
     sortFieldMap = ['tipp.sortname': message(code: 'title.label')]
@@ -428,7 +431,7 @@
                                     <div class="ui raised segments la-accordion-segments">
                                         <div class="ui fluid segment title" data-ajaxTippId="${ie.tipp.id}" data-ajaxIeId="${ie ? ie.id : null}">
                                             <div class="ui stackable equal width grid">
-                                                <g:if test="${ie.perpetualAccessBySub}">
+                                                <g:if test="${surveyService.hasParticipantPerpetualAccessToTitle3(contextOrg, ie.tipp)}">
                                                     <g:if test="${ie.perpetualAccessBySub && ie.perpetualAccessBySub != subscription}">
                                                         <g:link controller="subscription" action="index" id="${ie.perpetualAccessBySub.id}">
                                                             <span class="ui mini left corner label la-perpetualAccess la-js-notOpenAccordion la-popup-tooltip la-delay"
@@ -517,7 +520,7 @@
                                                                         class="ui icon negative button la-modern-button js-open-confirm-modal"
                                                                         params="${[ieid: ie.id, sub: subscription.id]}"
                                                                         role="button"
-                                                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.entitlementWithIEGroups", args: [ie.name])}"
+                                                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.entitlementWithIEGroups", args: [ie.tipp.name])}"
                                                                         data-confirm-term-how="delete"
                                                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                                                     <i class="trash alternate outline icon"></i>
@@ -528,7 +531,7 @@
                                                                         class="ui icon negative button la-modern-button js-open-confirm-modal"
                                                                         params="${[ieid: ie.id, sub: subscription.id]}"
                                                                         role="button"
-                                                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.entitlement", args: [ie.name])}"
+                                                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.entitlement", args: [ie.tipp.name])}"
                                                                         data-confirm-term-how="delete"
                                                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                                                     <i class="trash alternate outline icon"></i>
@@ -651,44 +654,16 @@
                                                                 </div>
                                                             </g:if>
 
-                                                            <g:each in="${ie.priceItems}" var="priceItem" status="i">
-                                                                <div class="item">
-                                                                    <i class="money grey icon la-popup-tooltip la-delay"></i>
-
-                                                                    <div class="content">
-                                                                        <div class="header"><g:message
-                                                                                code="tipp.price.localPrice"/>:</div>
-
-                                                                        <div class="description">
-                                                                            <ui:xEditable field="localPrice"
-                                                                                          owner="${priceItem}"/>
-                                                                            <ui:xEditableRefData
-                                                                                field="localCurrency"
-                                                                                owner="${priceItem}"
-                                                                                config="Currency"/>
-                                                                            <g:if test="${editable}">
-                                                                                <span class="right floated">
-                                                                                    <g:link controller="subscription"
-                                                                                            action="removePriceItem"
-                                                                                            params="${[priceItem: priceItem.id, id: subscription.id]}"
-                                                                                            class="ui compact icon button tiny"><i
-                                                                                            class="ui icon minus"
-                                                                                            data-content="Preis entfernen"></i></g:link>
-                                                                                </span>
-                                                                            </g:if>
-                                                                        </div>
-
-                                                                    </div>
-                                                                </div>
-
-                                                                <g:if test="${i < ie.priceItems.size() - 1}"><hr></g:if>
-                                                            </g:each>
-                                                            <g:if test="${editable && ie.priceItems.size() < 1}">
-                                                                <g:link action="addEmptyPriceItem"
-                                                                        class="ui tiny button"
-                                                                        params="${[ieid: ie.id, id: subscription.id]}">
+                                                            <div id="priceWrapper_${ie.id}">
+                                                                <g:each in="${ie.priceItems}" var="priceItem" status="i">
+                                                                    <g:render template="/templates/tipps/priceItem" model="[priceItem: priceItem, editable: editable]"/>
+                                                                </g:each>
+                                                            </div>
+                                                            <hr>
+                                                            <g:if test="${editable}">
+                                                                <button class="ui tiny button addObject" data-objType="priceItem" data-ie="${ie.id}">
                                                                     <i class="money icon"></i>${message(code: 'subscription.details.addEmptyPriceItem.info')}
-                                                                </g:link>
+                                                                </button>
                                                             </g:if>
 
                                                             <%-- GROUPS START--%>
@@ -827,8 +802,20 @@
                     }
                 }).modal('show');
             })
-        })
+        });
 
+    $('.kbartExport').click(function(e) {
+        e.preventDefault();
+        $('#globalLoadingIndicator').show();
+        $.ajax({
+            url: "<g:createLink action="index" params="${params + [exportKBart: true]}"/>",
+            type: 'POST',
+            contentType: false
+        }).done(function(response){
+            $("#downloadWrapper").html(response);
+            $('#globalLoadingIndicator').hide();
+        });
+    });
     <g:if test="${params.asAt && params.asAt.length() > 0}">$(function() { document.body.style.background = "#fcf8e3"; });</g:if>
 
     $("[data-ajaxTippId]").accordion().on('click', function(e) {
@@ -851,6 +838,24 @@
                         dataAjaxTarget.prepend(result);
                     }
                 });
+    });
+
+    $(".addObject").on('click', function(e) {
+        e.preventDefault();
+        let objType = $(this).attr('data-objType');
+        let ie = $(this).attr('data-ie');
+        let wrapper = "#priceWrapper_"+ie;
+        $.ajax({
+            url: '<g:createLink controller="ajaxHtml" action="addObject"/>',
+            data: {
+                object: objType,
+                ieid: ie
+            }
+        }).done(function(result) {
+            $(wrapper).append(result);
+            r2d2.initDynamicUiStuff(wrapper);
+            r2d2.initDynamicXEditableStuff(wrapper);
+        });
     });
 </laser:script>
 <laser:htmlEnd/>

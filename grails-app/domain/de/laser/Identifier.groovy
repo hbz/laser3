@@ -4,6 +4,7 @@ import de.laser.helper.FactoryResult
 import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.storage.BeanStore
 import de.laser.titles.TitleInstance
+
 import grails.plugins.orm.auditable.Auditable
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.util.logging.Slf4j
@@ -263,7 +264,7 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
         int refCount = 0
         def ref
 
-        List<String> fks = ['lic', 'org', 'pkg', 'sub', 'ti', 'tipp']
+        List<String> fks = ['lic', 'org', 'pkg', 'sub', 'tipp']
         fks.each { fk ->
             if (this."${fk}") {
                 refCount++

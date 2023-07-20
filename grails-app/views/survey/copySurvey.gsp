@@ -234,18 +234,14 @@
 
                             <thead>
                             <tr>
-
                                 <th>${message(code: 'sidewide.number')}</th>
-
                                 <th>${message(code: 'org.sortname.label')}</th>
                                 <th>${message(code: 'org.fullName.label')}</th>
                                 <th>${message(code: 'org.libraryType.label')}</th>
                             </tr></thead><tbody>
                         <g:each in="${surveyConfig.orgs.sort { it.org.sortname }}" var="surveyOrg" status="i">
                             <tr>
-                                <td class="center aligned">
-                                    ${i + 1}
-                                </td>
+                                <td class="center aligned">${i + 1}</td>
                                 <td>${surveyOrg.org.sortname}</td>
                                 <td>${surveyOrg.org.name}</td>
                                 <td>${surveyOrg.org.libraryType?.getI10n('value')}</td>
@@ -266,7 +262,7 @@
 </g:if>
 
 <g:if test="${workFlow == "1"}">
-    <div class="ui icon info message">
+    <div class="ui icon message">
         <i class="info icon"></i>
         ${message(code: 'copySurvey.subscription.info')}
     </div>
@@ -401,9 +397,7 @@
                                 <i class="money bill large icon"></i>
                             </a>
                         </th>
-
                         <th rowspan="2" class="two wide"></th>
-
                     </tr>
 
                     <tr>
@@ -504,7 +498,7 @@
                                 </td>
 
                                 <td class="x">
-                                    <g:if test="${editable && accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )}">
+                                    <g:if test="${editable && contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )}">
                                         <g:link class="ui icon positive button la-popup-tooltip la-delay"
                                                 data-content="${message(code: 'survey.toggleSurveySub.add.label', args: [SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransferIsNotNull(s).size(), SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransferIsNull(s).size()])}"
                                                 controller="survey" action="copySurvey"

@@ -1,6 +1,7 @@
 package de.laser.api.v0.entities
 
 import de.laser.Combo
+import de.laser.DeletionService
 import de.laser.Identifier
 import de.laser.IdentifierNamespace
 import de.laser.Org
@@ -8,6 +9,7 @@ import de.laser.OrgSubjectGroup
 import de.laser.api.v0.*
 import de.laser.storage.Constants
 import de.laser.storage.RDStore
+import de.laser.traces.DeletedObject
 import grails.converters.JSON
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
@@ -31,13 +33,28 @@ class ApiOrg {
                 result.obj = Org.executeQuery('select id.org from Identifier id where id.value = :id and id.ns.ns = :ezb', [id: value, ezb: IdentifierNamespace.EZB_ORG_ID])
                 break
             case 'id':
-                result.obj = Org.findAllWhere(id: Long.parseLong(value))
+                result.obj = Org.findAllById(Long.parseLong(value))
+                if(!result.obj) {
+                    DeletedObject.withTransaction {
+                        result.obj = DeletedObject.findAllByOldDatabaseIDAndOldObjectType(Long.parseLong(value), Org.class.name)
+                    }
+                }
                 break
             case 'globalUID':
-                result.obj = Org.findAllWhere(globalUID: value)
+                result.obj = Org.findAllByGlobalUID(value)
+                if(!result.obj) {
+                    DeletedObject.withTransaction {
+                        result.obj = DeletedObject.findAllByOldGlobalUID(value)
+                    }
+                }
                 break
             case 'gokbId':
-                result.obj = Org.findAllWhere(gokbId: value)
+                result.obj = Org.findAllByGokbId(value)
+                if(!result.obj) {
+                    DeletedObject.withTransaction {
+                        result.obj = DeletedObject.findAllByOldGokbID(value)
+                    }
+                }
                 break
             case 'ns:identifier':
                 result.obj = Identifier.lookupObjectsByIdentifierString(new Org(), value)
@@ -90,8 +107,8 @@ class ApiOrg {
         result.gokbId              = org.gokbId
         result.name                = org.name
         result.altNames            = ApiCollectionReader.getAlternativeNameCollection(org.altnames)
-        result.shortname           = org.sortname //deprecated and to be removed for 3.2
-        result.sortname            = org.sortname
+        //result.shortname           = org.sortname //deprecated and to be removed for 3.2
+        //result.sortname            = org.sortname
         result.lastUpdated         = ApiToolkit.formatInternalDate(org._getCalculatedLastUpdated())
         result.eInvoice            = org.eInvoice ? RDStore.YN_YES.value : RDStore.YN_NO.value
         result.url                 = org.url
@@ -142,7 +159,6 @@ class ApiOrg {
 
         // Ignored
 
-        //result.affiliations         = org.affiliations // com.k_int.kblpus.UserOrgRole
         //result.incomingCombos       = org.incomingCombos // de.laser.Combo
         //result.links                = exportHelperService.resolveOrgLinks(org.links) // de.laser.OrgRole
         //result.membership           = org.membership?.value // RefdataValue

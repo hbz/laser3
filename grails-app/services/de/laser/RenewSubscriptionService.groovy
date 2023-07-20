@@ -75,6 +75,7 @@ class RenewSubscriptionService extends AbstractLockableService {
                             copySub.propertySet = null
                             copySub.costItems = null
                             copySub.ieGroups = null
+                            copySub.discountScales = null
 
                             use(TimeCategory) {
                                 copySub.startDate = subscription.endDate + 1.day
@@ -253,6 +254,22 @@ class RenewSubscriptionService extends AbstractLockableService {
                                     }
                                 }
 
+                                //DiscountScales
+                                subscription.discountScales.each { SubscriptionDiscountScale sds ->
+
+                                    def discountScaleProperties = sds.properties
+
+                                    SubscriptionDiscountScale newSubscriptionDiscountScale = new SubscriptionDiscountScale()
+                                    InvokerHelper.setProperties(newSubscriptionDiscountScale, discountScaleProperties)
+                                    newSubscriptionDiscountScale.subscription = copySub
+
+
+                                    if (!newSubscriptionDiscountScale.save()) {
+                                        log.error("Problem saving SubscriptionDiscountScale ${newSubscriptionDiscountScale.errors}")
+                                        fail = true
+                                    }
+                                }
+
                                 //Documents
                                 subscription.documents.each { DocContext dctx ->
                                     if (dctx.owner.title != AUTOMATIC_RENEW_ANNUALLY_DOC_TITLE) {
@@ -355,6 +372,7 @@ class RenewSubscriptionService extends AbstractLockableService {
                             if (fail) {
                                 renewFailSubIds << copySub.id
                             } else {
+                                PendingChange.construct([target: copySub, oid: "${copySub.getClass().getName()}:${copySub.id}", msgToken: "pendingChange.message_SU_NEW_02", status: RDStore.PENDING_CHANGE_PENDING, owner: org])
                                 renewSuccessSubIds << copySub.id
                             }
                         }

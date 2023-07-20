@@ -93,8 +93,10 @@ class SubscriptionControllerService {
     PackageService packageService
     PendingChangeService pendingChangeService
     PropertyService propertyService
+    OrgTypeService orgTypeService
     StatsSyncService statsSyncService
     SubscriptionService subscriptionService
+    SubscriptionsQueryService subscriptionsQueryService
     SurveyService surveyService
     TaskService taskService
     WorkflowService workflowService
@@ -155,12 +157,6 @@ class SubscriptionControllerService {
             // tasks
             result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.contextOrg, result.subscription)
 
-            Set<Long> excludes = [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id]
-            if(result.institution.isCustomerType_Consortium())
-                excludes << RDStore.OR_SUBSCRIPTION_CONSORTIA.id
-            // restrict visible for templates/links/orgLinksAsList
-            result.visibleOrgRelations = result.subscription.orgRelations.findAll { OrgRole oo -> !(oo.roleType.id in excludes) }
-            //}
             prf.setBenchmark('properties')
             // TODO: experimental asynchronous task
             //def task_properties = task {
@@ -234,7 +230,7 @@ class SubscriptionControllerService {
                         }
                         result.statsWibid = result.institution.getIdentifierByType('wibid')?.value
                         if (result.statsWibid && result.natStatSupplierId) {
-                            result.usageMode = accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) ? 'package' : 'institution'
+                            result.usageMode = contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) ? 'package' : 'institution'
                             result.usage = fsresult?.usage
                             result.missingMonths = fsresult?.missingMonths
                             result.missingSubscriptionMonths = fsLicenseResult?.missingMonths
@@ -310,6 +306,21 @@ class SubscriptionControllerService {
             List bm = prf.stopBenchmark()
             result.benchMark = bm
 
+            [result:result,status:STATUS_OK]
+        }
+    }
+
+    /**
+     * Loads the given subscription details and returns them to the details view. If mandatory properties are missing,
+     * they will be created; that is why this method needs to be transactional
+     * @param params the request parameter map
+     * @return the given subscription's details
+     */
+    Map<String,Object> subTransfer(GrailsParameterMap params) {
+        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
+        if(!result)
+            [result:null,status:STATUS_ERROR]
+        else {
             [result:result,status:STATUS_OK]
         }
     }
@@ -871,7 +882,7 @@ class SubscriptionControllerService {
         SortedSet<String> allAvailableReports = new TreeSet<String>()
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         subscribedPlatforms.each { Platform platform ->
-            Map<String, Object> queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/sushiSources", [:])
+            Map<String, Object> queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/sushiSources", [:])
             Map platformRecord
             if (queryResult.warning) {
                 Map<String, Object> records = queryResult.warning
@@ -968,7 +979,7 @@ class SubscriptionControllerService {
             cal.set(Calendar.MONTH, Calendar.DECEMBER)
             cal.set(Calendar.DAY_OF_MONTH, 31)
             result.defaultEndYear = sdf.format(cal.getTime())
-            if(accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+            if(contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
                 params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
                 Map<String,Object> fsq = filterService.getOrgComboQuery(params, result.institution)
                 result.members = Org.executeQuery(fsq.query, fsq.queryParams, params)
@@ -1615,7 +1626,7 @@ class SubscriptionControllerService {
                 result.platformsJSON = subscribedPlatforms.globalUID as JSON
                 ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
                 subscribedPlatforms.each { Platform platformInstance ->
-                    Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: platformInstance.gokbId])
+                    Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + "/searchApi", [uuid: platformInstance.gokbId])
                     if (queryResult.error && queryResult.error == 404) {
                         result.wekbServerUnavailable = message(code: 'wekb.error.404')
                     }
@@ -1883,7 +1894,38 @@ class SubscriptionControllerService {
                     result.selectProcess = subscriptionService.tippSelectForSurvey(stream, result.subscription, result.surveyConfig, subscriberSub)
 
                         if (result.selectProcess.selectedTipps) {
-                            checkedCache.put('checked', result.selectProcess.selectedTipps)
+
+                                Integer countTippsToAdd = 0
+                            result.selectProcess.selectedTipps.each {
+                                    TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findById(it.key)
+                                    if(tipp) {
+                                        try {
+
+                                            IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, subscriberSub)
+
+                                            if (!issueEntitlementGroup) {
+                                                IssueEntitlementGroup.withTransaction {
+                                                    issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: subscriberSub, name: result.surveyConfig.issueEntitlementGroupName).save()
+                                                }
+                                            }
+
+                                            if (issueEntitlementGroup && subscriptionService.addEntitlement(subscriberSub, tipp.gokbId, null, (tipp.priceItems != null), result.surveyConfig.pickAndChoosePerpetualAccess, issueEntitlementGroup)) {
+                                                log.debug("Added tipp ${tipp.gokbId} to sub ${result.subscription.id}")
+                                                ++countTippsToAdd
+                                            }
+                                        }
+                                        catch (EntitlementCreationException e) {
+                                            log.debug("Error: Adding tipp ${tipp} to sub ${subscriberSub.id}: " + e.getMessage())
+                                            result.error = messageSource.getMessage('renewEntitlementsWithSurvey.noSelectedTipps', null, LocaleUtils.getCurrentLocale())
+                                            [result: result, status: STATUS_ERROR]
+                                        }
+
+                                    }
+                                }
+                                if(countTippsToAdd > 0){
+                                    Object[] args = [countTippsToAdd]
+                                    result.message = messageSource.getMessage('renewEntitlementsWithSurvey.tippsToAdd',args,LocaleUtils.getCurrentLocale())
+                                }
                         }
 
                     params.remove("kbartPreselect")
@@ -2027,9 +2069,9 @@ class SubscriptionControllerService {
             queryParams.max = params.max ?: result.max
             queryParams.offset = params.offset ?: result.offset
 
-            result.flagContentGokb = true // gokbService.queryElasticsearch
+            result.flagContentGokb = true // gokbService.executeQuery
 
-            Map queryCuratoryGroups = gokbService.queryElasticsearch(apiSource.baseUrl+apiSource.fixToken+'/groups', [:])
+            Map queryCuratoryGroups = gokbService.executeQuery(apiSource.baseUrl+apiSource.fixToken+'/groups', [:])
             if(queryCuratoryGroups.error && queryCuratoryGroups.error == 404) {
                 result.error = messageSource.getMessage('wekb.error.404', null, LocaleUtils.getCurrentLocale())
                 [result:result, status: STATUS_ERROR]
@@ -2042,7 +2084,7 @@ class SubscriptionControllerService {
                 result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
 
                 Set records = []
-                Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/searchApi' , queryParams)
+                Map queryResult = gokbService.executeQuery(apiSource.baseUrl + apiSource.fixToken + '/searchApi' , queryParams)
                 if (queryResult.containsKey("warning")) {
                     if(queryResult.warning.containsKey("result")) {
                         records.addAll(queryResult.warning.result)
@@ -2099,7 +2141,7 @@ class SubscriptionControllerService {
                     Thread.currentThread().setName("PackageTransfer_"+result.subscription.id)
                     if(!Package.findByGokbId(pkgUUID)) {
                         try {
-                            Map<String,Object> queryResult = globalSourceSyncService.fetchRecordJSON(false,[componentType:'TitleInstancePackagePlatform',tippPackageUuid:pkgUUID,max:5000])
+                            Map<String,Object> queryResult = globalSourceSyncService.fetchRecordJSON(false,[componentType:'TitleInstancePackagePlatform',tippPackageUuid:pkgUUID,max:5000,sort:'lastUpdated'])
                             if(queryResult.error && queryResult.error == 404) {
                                 log.error("we:kb server currently unavailable")
                             }
@@ -3019,9 +3061,23 @@ class SubscriptionControllerService {
             if(!params.singleTitle) {
                 Map checked = cache.get('checked')
                 if(checked) {
-                    //executorService.execute({
-                        //Thread.currentThread().setName("EntitlementEnrichment_${result.subscription.id}")
-                        subscriptionService.bulkAddEntitlements(result.subscription, issueEntitlementCandidates, checked, Boolean.valueOf(params.uploadPriceInfo), false)
+                    Set<Long> childSubIds = [], pkgIds = []
+                    if(params.withChildren == 'on') {
+                        childSubIds.addAll(result.subscription.getDerivedSubscriptions().id)
+                    }
+                    //continue here with test!
+                    pkgIds.addAll(Package.executeQuery('select tipp.pkg.id from TitleInstancePackagePlatform tipp where tipp.gokbId in (:wekbIds)', [wekbIds: checked.keySet()]))
+                    executorService.execute({
+                        Thread.currentThread().setName("EntitlementEnrichment_${result.subscription.id}")
+                        Sql sql = GlobalService.obtainSqlConnection()
+                        subscriptionService.bulkAddEntitlements(result.subscription, issueEntitlementCandidates, checked, Boolean.valueOf(params.uploadPriceInfo), false, sql)
+                        if(params.withChildren == 'on') {
+                            childSubIds.each { Long childSubId ->
+                                pkgIds.each { Long pkgId ->
+                                    packageService.bulkAddHolding(sql, childSubId, pkgId, result.subscription.hasPerpetualAccess, result.subscription.id)
+                                }
+                            }
+                        }
                         //IssueEntitlement.withNewTransaction { TransactionStatus ts ->
                         /*
                         checked.each { k, v ->
@@ -3043,8 +3099,7 @@ class SubscriptionControllerService {
                             }
                         }
                         */
-                        //}
-                    //})
+                    })
 
                     if(params.process && params.process	== "withTitleGroup") {
                         IssueEntitlementGroup issueEntitlementGroup
@@ -3475,6 +3530,7 @@ class SubscriptionControllerService {
                     result.error = messageSource.getMessage('subscription.details.addEmptyPriceItem.priceItemNotSaved',null,locale)
                     [result:result,status:STATUS_ERROR]
                 }
+                result.newItem = pi
             }
             else {
                 result.error = messageSource.getMessage('subscription.details.addEmptyPriceItem.issueEntitlementNotFound',null,locale)
@@ -3486,23 +3542,6 @@ class SubscriptionControllerService {
             [result:result,status:STATUS_ERROR]
         }
         [result:result,status:STATUS_OK]
-    }
-
-    /**
-     * Removes the given price item from the issue entitlement
-     * @param params the request parameter map
-     * @return OK if the removal was successful, ERROR otherwise
-     */
-    Map<String,Object> removePriceItem(GrailsParameterMap params) {
-        PriceItem priceItem = PriceItem.get(params.priceItem)
-        if(priceItem) {
-            priceItem.delete()
-            [result:null,status:STATUS_OK]
-        }
-        else {
-            log.error("Issue entitlement priceItem with ID ${params.priceItem} could not be found")
-            [result:null,status:STATUS_ERROR]
-        }
     }
 
     /**
@@ -3630,6 +3669,129 @@ class SubscriptionControllerService {
         else [result:null,status:STATUS_ERROR]
     }
 
+    Map<String,Object> manageDiscountScale(SubscriptionController controller, GrailsParameterMap params) {
+        Map<String, Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
+        if(!result)
+            [result:null,status:STATUS_ERROR]
+        else {
+            if(result.editable) {
+                switch (params.cmd) {
+                    case 'createDiscountScale':
+                        SubscriptionDiscountScale subscriptionDiscountScale = new SubscriptionDiscountScale(
+                                subscription: result.subscription,
+                                name: params.name,
+                                discount: params.discount,
+                                note: params.note).save()
+                        params.remove('cmd')
+
+                        break
+                    case 'removeDiscountScale':
+                        if(params.discountScaleId){
+                            SubscriptionDiscountScale sbs = SubscriptionDiscountScale.findById(Long.parseLong(params.discountScaleId))
+                            if(sbs) {
+                                sbs.delete()
+                            }
+                        }
+                        params.remove('cmd')
+                        break
+                }
+            }
+            params.remove('cmd')
+            result.discountScales = result.subscription.discountScales
+            [result:result,status:STATUS_OK]
+        }
+    }
+
+    Map<String, Object> copyDiscountScales(SubscriptionController controller, GrailsParameterMap params) {
+        Map<String, Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
+        if (!result)
+            [result: null, status: STATUS_ERROR]
+        else {
+            if (result.editable) {
+
+                if(params.processCopyButton == 'yes') {
+                    result.copyDiscountScales = params.copyDiscountScale ? SubscriptionDiscountScale.findAllByIdInList(params.list('copyDiscountScale').collect { it -> Long.parseLong(it) }) : null
+                    if (result.copyDiscountScales) {
+                        result.targetSubs = params.targetSubs ? Subscription.findAllByIdInList(params.list('targetSubs').collect { it -> Long.parseLong(it) }) : null
+
+                        if (result.targetSubs) {
+                            println(result.targetSubs)
+                            result.targetSubs.each { Subscription sub ->
+                                result.copyDiscountScales.each { SubscriptionDiscountScale subscriptionDiscountScale ->
+                                    SubscriptionDiscountScale subDisSc = new SubscriptionDiscountScale(name: subscriptionDiscountScale.name,
+                                            discount: subscriptionDiscountScale.discount,
+                                            note: subscriptionDiscountScale.note,
+                                            subscription: sub).save()
+                                }
+                            }
+                        } else {
+                            Locale locale = LocaleUtils.getCurrentLocale()
+                            result.error = messageSource.getMessage('subscription.details.copyDiscountScales.process.error2', null, locale)
+                        }
+
+                    } else {
+                        Locale locale = LocaleUtils.getCurrentLocale()
+                        result.error = messageSource.getMessage('subscription.details.copyDiscountScales.process.error', null, locale)
+                    }
+                }
+
+                SwissKnife.setPaginationParams(result, params, (User) result.user)
+                Date date_restriction = null
+                SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
+
+                if (params.validOn == null || params.validOn.trim() == '') {
+                    result.validOn = ""
+                } else {
+                    result.validOn = params.validOn
+                    date_restriction = sdf.parse(params.validOn)
+                }
+
+                result.editable = true
+
+                if (!params.status) {
+                    if (params.isSiteReloaded != "yes") {
+                        params.status = RDStore.SUBSCRIPTION_CURRENT.id
+                        result.defaultSet = true
+                    } else {
+                        params.status = 'FETCH_ALL'
+                    }
+                }
+
+                Set orgIds = orgTypeService.getCurrentOrgIdsOfProvidersAndAgencies(contextService.getOrg())
+
+                result.providers = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds, [sort: 'name'])
+
+                List tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.getOrg())
+                result.filterSet = tmpQ[2]
+                List subscriptions = Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1])
+
+                result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.getOrg())
+
+                if (params.sort && params.sort.indexOf("§") >= 0) {
+                    switch (params.sort) {
+                        case "orgRole§provider":
+                            subscriptions.sort { x, y ->
+                                String a = x.getProviders().size() > 0 ? x.getProviders().first().name : ''
+                                String b = y.getProviders().size() > 0 ? y.getProviders().first().name : ''
+                                a.compareToIgnoreCase b
+                            }
+                            if (params.order.equals("desc"))
+                                subscriptions.reverse(true)
+                            break
+                    }
+                }
+                result.num_sub_rows = subscriptions.size()
+                result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
+
+                if (subscriptions)
+                    result.allLinkedLicenses = Links.findAllByDestinationSubscriptionInListAndSourceLicenseIsNotNullAndLinkType(result.subscriptions, RDStore.LINKTYPE_LICENSE)
+            }
+
+            result.discountScales = result.subscription.discountScales
+            [result: result, status: STATUS_OK]
+        }
+    }
+
     @Deprecated
     Map<String,Object> processRenewEntitlements(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_EDIT)
@@ -3702,45 +3864,28 @@ class SubscriptionControllerService {
             }else if(params.process == "preliminary" && result.checked.size() > 0) {
                 Integer countTippsToAdd = 0
                 result.checked.each {
-                    println(it)
                     TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findById(it.key)
                     if(tipp) {
-                        boolean tippExistsInParentSub = false
+                        try {
 
-                        if (IssueEntitlement.findByTippAndSubscriptionAndStatus(tipp, result.surveyConfig.subscription, RDStore.TIPP_STATUS_CURRENT)) {
-                            tippExistsInParentSub = true
-                        } else {
-                            List<TitleInstancePackagePlatform> titleInstancePackagePlatformList = TitleInstancePackagePlatform.findAllByHostPlatformURLAndStatus(tipp.hostPlatformURL, RDStore.TIPP_STATUS_CURRENT)
-                            titleInstancePackagePlatformList.each { TitleInstancePackagePlatform titleInstancePackagePlatform ->
-                                if (IssueEntitlement.findByTippAndSubscriptionAndStatus(titleInstancePackagePlatform, result.surveyConfig.subscription, RDStore.TIPP_STATUS_CURRENT)) {
-                                    tippExistsInParentSub = true
-                                    tipp = titleInstancePackagePlatform
+                            IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, result.subscription)
+
+                            if (!issueEntitlementGroup) {
+                                IssueEntitlementGroup.withTransaction {
+                                    issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: result.subscription, name: result.surveyConfig.issueEntitlementGroupName).save()
                                 }
+                            }
+
+                            if (issueEntitlementGroup && subscriptionService.addEntitlement(result.subscription, tipp.gokbId, null, (tipp.priceItems != null), result.surveyConfig.pickAndChoosePerpetualAccess, issueEntitlementGroup)) {
+                                log.debug("Added tipp ${tipp.gokbId} to sub ${result.subscription.id}")
+                                ++countTippsToAdd
+                                removeFromCache << it.key
                             }
                         }
-
-                        if (tippExistsInParentSub) {
-                            try {
-
-                                IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.findBySurveyConfigAndSub(result.surveyConfig, result.subscription)
-
-                                if(!issueEntitlementGroup) {
-                                    IssueEntitlementGroup.withTransaction {
-                                        issueEntitlementGroup = new IssueEntitlementGroup(surveyConfig: result.surveyConfig, sub: result.subscription, name: result.surveyConfig.issueEntitlementGroupName).save()
-                                    }
-                                }
-
-                                if (issueEntitlementGroup && subscriptionService.addEntitlement(result.subscription, tipp.gokbId, null, (tipp.priceItems != null), result.surveyConfig.pickAndChoosePerpetualAccess, issueEntitlementGroup)) {
-                                    log.debug("Added tipp ${tipp.gokbId} to sub ${result.subscription.id}")
-                                    ++countTippsToAdd
-                                    removeFromCache << it.key
-                                }
-                            }
-                            catch (EntitlementCreationException e) {
-                                log.debug("Error: Adding tipp ${tipp} to sub ${result.subscription.id}: " + e.getMessage())
-                                result.error = messageSource.getMessage('renewEntitlementsWithSurvey.noSelectedTipps', null, locale)
-                                [result: result, status: STATUS_ERROR]
-                            }
+                        catch (EntitlementCreationException e) {
+                            log.debug("Error: Adding tipp ${tipp} to sub ${result.subscription.id}: " + e.getMessage())
+                            result.error = messageSource.getMessage('renewEntitlementsWithSurvey.noSelectedTipps', null, locale)
+                            [result: result, status: STATUS_ERROR]
                         }
                     }
                 }
@@ -3854,7 +3999,7 @@ class SubscriptionControllerService {
                 }
                 else {
                     log.debug("Save ok")
-                    if(accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+                    if(contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
                         if (params.list('auditList')) {
                             //copy audit
                             params.list('auditList').each { auditField ->
@@ -4045,7 +4190,7 @@ class SubscriptionControllerService {
         if (!result.editable) {
             //the explicit comparison against bool(true) should ensure that not only the existence of the parameter is checked but also its proper value
             if(params.copyMyElements == true) {
-                if(accessService.ctxPermAffiliation(CustomerTypeService.ORG_INST_PRO, 'INST_EDITOR'))
+                if(contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_INST_PRO))
                     result
             }
             else null
@@ -4152,10 +4297,15 @@ class SubscriptionControllerService {
                     return null
                 }
             }
+            Set<Long> excludes = [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id]
+            if(result.institution.isCustomerType_Consortium())
+                excludes << RDStore.OR_SUBSCRIPTION_CONSORTIA.id
+            // restrict visible for templates/links/orgLinksAsList; done by Andreas Gálffy
+            result.visibleOrgRelations = result.subscription.orgRelations.findAll { OrgRole oo -> !(oo.roleType.id in excludes) }
         }
         else {
             if (checkOption in [AccessService.CHECK_EDIT, AccessService.CHECK_VIEW_AND_EDIT]) {
-                result.editable = accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')
+                result.editable = contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
             }
         }
         result.consortialView = result.showConsortiaFunctions ?: result.contextOrg.isCustomerType_Consortium()

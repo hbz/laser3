@@ -2,7 +2,7 @@ package de.laser.ctrl
 
 import de.laser.GenericOIDService
 import de.laser.ContextService
-import de.laser.InstAdmService
+import de.laser.UserService
 import de.laser.auth.User
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -19,7 +19,7 @@ class UserControllerService {
 
     ContextService contextService
     GenericOIDService genericOIDService
-    InstAdmService instAdmService
+    UserService userService
 
     //--------------------------------------------- helper section -------------------------------------------------
 
@@ -37,10 +37,10 @@ class UserControllerService {
 
         if (params.get('id')) {
             result.user = User.get(params.id)
-            result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || instAdmService.isUserEditableForInstAdm(result.user, result.editor)
+            result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || userService.isUserEditableForInstAdm(result.user as User, result.editor as User)
         }
         else {
-            result.editable = result.editor.hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
+            result.editable = contextService.isInstAdm_or_ROLEADMIN() // @ result.editor
         }
         result
     }
@@ -59,10 +59,10 @@ class UserControllerService {
 
         if (params.get('uoid')) {
             result.user = genericOIDService.resolveOID(params.uoid)
-            result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || instAdmService.isUserEditableForInstAdm(result.user, result.editor)
+            result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || userService.isUserEditableForInstAdm(result.user as User, result.editor as User)
         }
         else {
-            result.editable = result.editor.hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
+            result.editable = contextService.isInstAdm_or_ROLEADMIN() // @ result.editor
         }
         result
     }

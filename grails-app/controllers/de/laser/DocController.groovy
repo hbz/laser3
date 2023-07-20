@@ -65,9 +65,9 @@ class DocController  {
 	/**
 	 * Edits an already existing note. The note to edit is given by params.id
 	 */
-	@DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], wtc = DebugInfo.WITH_TRANSACTION)
+	@DebugInfo(isInstEditor_or_ROLEADMIN = true, wtc = DebugInfo.WITH_TRANSACTION)
 	@Secured(closure = {
-		ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+		ctx.contextService.isInstEditor_or_ROLEADMIN()
 	})
 	def editNote() {
 		Doc.withTransaction {
@@ -114,9 +114,9 @@ class DocController  {
 	/**
 	 * Deletes the {@link Doc} given by params.id
 	 */
-	@DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], wtc = DebugInfo.WITH_TRANSACTION)
+	@DebugInfo(isInstEditor_or_ROLEADMIN = true, wtc = DebugInfo.WITH_TRANSACTION)
 	@Secured(closure = {
-		ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+		ctx.contextService.isInstEditor_or_ROLEADMIN()
 	})
     def delete() {
 		Doc.withTransaction {

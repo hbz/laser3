@@ -20,7 +20,6 @@ class UserController {
     ContextService contextService
     DeletionService deletionService
     GenericOIDService genericOIDService
-    InstAdmService instAdmService
     UserControllerService userControllerService
     UserService userService
     MailSendService mailSendService
@@ -45,21 +44,13 @@ class UserController {
      * Call to delete the given user, listing eventual substitutes for personal belongings.
      * If confirmed, the deletion will be executed and objects reassigned to the given substitute
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_ADM'])
+    @DebugInfo(isInstAdm_or_ROLEADMIN = true)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
+        ctx.contextService.isInstAdm_or_ROLEADMIN()
     })
     @Check404()
     def delete() {
         Map<String, Object> result = userControllerService.getResultGenerics(params)
-
-            List<Org> affils = Org.executeQuery('select distinct uo.org from UserOrgRole uo where uo.user = :user', [user: result.user])
-
-            if (affils.size() > 1) {
-                flash.error = message(code: 'user.delete.error.multiAffils') as String
-                redirect action: 'edit', params: [id: params.id]
-                return
-            }
 
             if (params.process && result.editable) {
                 User userReplacement = (User) genericOIDService.resolveOID(params.userReplacement)
@@ -70,10 +61,9 @@ class UserController {
                 result.delResult = deletionService.deleteUser(result.user as User, null, DeletionService.DRY_RUN)
             }
 
-            List<Org> orgList = Org.executeQuery('select distinct uo.org from UserOrgRole uo where uo.user = :self', [self: result.user])
-            result.substituteList = orgList ? User.executeQuery(
-                    'select distinct u from User u join u.affiliations ua where ua.org in :orgList and u != :self and ua.formalRole = :instAdm order by u.username',
-                    [orgList: orgList, self: result.user, instAdm: Role.findByAuthority('INST_ADM')]
+            result.substituteList = result.user.formalOrg ? User.executeQuery(
+                    'select u from User u where u.formalOrg = :org and u != :self and u.formalRole = :instAdm order by u.username',
+                    [org: result.user.formalOrg, self: result.user, instAdm: Role.findByAuthority('INST_ADM')]
             ) : []
 
         render view: '/user/global/delete', model: result
@@ -91,7 +81,10 @@ class UserController {
         result.total = result.users.size()
 
         result.titleMessage = message(code:'user.show_all.label') as String
-        Set<Org> availableComboOrgs = Org.executeQuery('select c.fromOrg from Combo c where c.toOrg = :ctxOrg order by c.fromOrg.name asc', [ctxOrg:contextService.getOrg()])
+        Set<Org> availableComboOrgs = Org.executeQuery(
+                'select c.fromOrg from Combo c where c.toOrg = :ctxOrg and c.type = :type order by c.fromOrg.name asc',
+                [ctxOrg: contextService.getOrg(), type: RDStore.COMBO_TYPE_CONSORTIUM]
+        )
         availableComboOrgs.add(contextService.getOrg())
         result.filterConfig = [filterableRoles:Role.findAllByRoleTypeInList(['user']), orgField: true, availableComboOrgs: availableComboOrgs]
 
@@ -135,9 +128,9 @@ class UserController {
      * Shows the affiliations and global roles given user
      * @return a list of the user's affiliations and roles
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_ADM'])
+    @DebugInfo(isInstAdm_or_ROLEADMIN = true)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
+        ctx.contextService.isInstAdm_or_ROLEADMIN()
     })
     @Check404()
     def show() {
@@ -149,9 +142,9 @@ class UserController {
      * Creates a new random password to the given user and sends that via mail to the address registered to the account
      * @return a redirect to the referer
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_ADM'], wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstAdm_or_ROLEADMIN = true, wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
+        ctx.contextService.isInstAdm_or_ROLEADMIN()
     })
     def newPassword() {
         User.withTransaction {
@@ -186,9 +179,9 @@ class UserController {
      * get username and sends that via mail to the address registered to the account
      * @return a redirect to the referer
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_ADM'], wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstAdm_or_ROLEADMIN = true, wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_ADM')
+        ctx.contextService.isInstAdm_or_ROLEADMIN()
     })
     def sendUsername() {
         User.withTransaction {
@@ -204,7 +197,6 @@ class UserController {
                 if (user) {
                     flash.message = message(code: 'menu.user.forgottenUsername.success') as String
                     mailSendService.sendMailToUser(user, message(code: 'email.subject.forgottenUsername'), '/mailTemplates/text/forgtUsname', [user: user])
-
                     redirect url: request.getHeader('referer'), id: params.id
                     return
                 }
@@ -222,7 +214,7 @@ class UserController {
      */
     @Secured(['ROLE_ADMIN'])
     @Transactional
-    def addAffiliation(){
+    def setAffiliation(){
         Map<String, Object> result = userControllerService.getResultGenerics(params)
 
         if (! result.editable) {
@@ -231,12 +223,7 @@ class UserController {
             return
         }
 
-        Org org = Org.get(params.org)
-        Role formalRole = Role.get(params.formalRole)
-
-        if (result.user && org && formalRole) {
-            instAdmService.createAffiliation(result.user as User, org, formalRole, flash)
-        }
+        userService.setAffiliation(result.user as User, params.org, params.formalRole, flash)
 
         redirect controller: 'user', action: 'edit', id: params.id
     }

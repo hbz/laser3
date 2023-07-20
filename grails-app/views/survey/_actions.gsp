@@ -1,15 +1,14 @@
 <%@ page import="de.laser.CustomerTypeService; de.laser.storage.RDStore; de.laser.Org" %>
 <laser:serviceInjection/>
 
-<g:if test="${contextService.getUser().hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')}">
-    <ui:actionsDropdown>
-            <g:if test="${actionName == 'currentSurveysConsortia' || actionName == 'workflowsSurveysConsortia'}">
 
-                <laser:render template="actionsCreate"/>
 
-            </g:if>
-            <g:else>
-
+<g:if test="${userService.hasFormalAffiliation(user, institution, 'INST_EDITOR')}">
+<ui:actionsDropdown>
+        <g:if test="${actionName == 'currentSurveysConsortia' || actionName == 'workflowsSurveysConsortia'}">
+            <laser:render template="actionsCreate"/>
+        </g:if>
+        <g:else>
                 <ui:actionsDropdownItem message="template.addNote" data-ui="modal" href="#modalCreateNote" />
                 <ui:actionsDropdownItem message="task.create.new" data-ui="modal" href="#modalCreateTask" />
                 <ui:actionsDropdownItem message="template.documents.add" data-ui="modal" href="#modalCreateDocument" />
@@ -145,7 +144,6 @@
                             aria-label="${message(code: 'ariaLabel.delete.universal')}">
                         <i class="trash alternate outline icon"></i> ${message(code:'deletion.survey')}
                     </g:link>
-
                 </g:if>
             </g:else>
     </ui:actionsDropdown>
@@ -164,7 +162,7 @@
     </ui:modal>
 </g:if>
 
-<g:if test="${accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_PRO, 'INST_EDITOR') && (actionName != 'currentSurveysConsortia' && actionName != 'workflowsSurveysConsortia')}">
+<g:if test="${contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO) && (actionName != 'currentSurveysConsortia' && actionName != 'workflowsSurveysConsortia')}">
     <laser:render template="/templates/notes/modal_create" model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
     <laser:render template="/templates/tasks/modal_create" model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
     <laser:render template="/templates/documents/modal" model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>

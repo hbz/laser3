@@ -1,7 +1,6 @@
 package de.laser
 
 import de.laser.auth.User
-import de.laser.auth.UserOrgRole
 import de.laser.config.ConfigMapper
 import de.laser.mail.MailReport
 import de.laser.properties.PropertyDefinition
@@ -132,26 +131,26 @@ class MailSendService {
 
             emailAddressesToSend.each { String email ->
 
-                Org orgOfEmail
-                List<User> userList = User.findAllByEmail(email)
+                // not used yet ..
+//                Org orgOfEmail
+//                List<User> userList = User.findAllByEmail(email)
+//
+//                if(userList.size() == 1){
+//                    List<UserOrgRole> userOrgRoleList = UserOrgRole.findAllByUser(userList[0])
+//                    if(userOrgRoleList.size() == 1){
+//                        orgOfEmail = userOrgRoleList[0].org
+//                    }else if (userOrgRoleList.size() > 1){
+//                        userOrgRoleList.each {}
+//                    }
+//                }
 
-                if(userList.size() == 1){
-                    List<UserOrgRole> userOrgRoleList = UserOrgRole.findAllByUser(userList[0])
-                    if(userOrgRoleList.size() == 1){
-                        orgOfEmail = userOrgRoleList[0].org
-                    }else if (userOrgRoleList.size() > 1){
-                        userOrgRoleList.each {}
-                    }
-                }
-
-                List<UserOrgRole> userOrgs = UserOrgRole.findAllByOrgInList(result.orgList)
-
+                List<User> formalUserList = result.orgList ? User.findAllByFormalOrgInList(result.orgList) : []
                 List<String> userSurveyNotification = []
 
-                userOrgs.each { userOrg ->
-                    if (userOrg.user.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_FOR_SURVEYS_START) == RDStore.YN_YES &&
-                            userOrg.user.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES) {
-                        userSurveyNotification << userOrg.user.email
+                formalUserList.each { fu ->
+                    if (fu.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_FOR_SURVEYS_START) == RDStore.YN_YES &&
+                            fu.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES) {
+                        userSurveyNotification << fu.email
                     }
                 }
 
@@ -303,14 +302,14 @@ class MailSendService {
 
         if (surveyInfo.owner) {
             //Only User that approved
-            List<UserOrgRole> userOrgs = UserOrgRole.findAllByOrg(participationFinish)
+            List<User> formalUserList = participationFinish ? User.findAllByFormalOrg(participationFinish) : []
 
             //Only User with Notification by Email and for Surveys Start
-            userOrgs.each { userOrg ->
-                if (userOrg.user.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_FOR_SURVEYS_PARTICIPATION_FINISH) == RDStore.YN_YES &&
-                        userOrg.user.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES) {
+            formalUserList.each { fu ->
+                if (fu.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_FOR_SURVEYS_PARTICIPATION_FINISH) == RDStore.YN_YES &&
+                        fu.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES) {
 
-                    User user = userOrg.user
+                    User user = fu
                     Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RDStore.LANGUAGE_DE).value.toString())
                     String emailReceiver = user.getEmail()
 
@@ -396,14 +395,14 @@ class MailSendService {
 
         if (surveyInfo.owner) {
             //Only User that approved
-            List<UserOrgRole> userOrgs = UserOrgRole.findAllByOrg(surveyInfo.owner)
+            List<User> formalUserList = surveyInfo.owner ? User.findAllByFormalOrg(surveyInfo.owner) : []
 
             //Only User with Notification by Email and for Surveys Start
-            userOrgs.each { userOrg ->
-                if (userOrg.user.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_FOR_SURVEYS_PARTICIPATION_FINISH) == RDStore.YN_YES &&
-                        userOrg.user.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES) {
+            formalUserList.each { fu ->
+                if (fu.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_FOR_SURVEYS_PARTICIPATION_FINISH) == RDStore.YN_YES &&
+                        fu.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES) {
 
-                    User user = userOrg.user
+                    User user = fu
                     Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RDStore.LANGUAGE_DE).value.toString())
                     String emailReceiver = user.getEmail()
                     String mailSubject = subjectSystemPraefix
@@ -534,7 +533,7 @@ class MailSendService {
                 from ConfigMapper.getNotificationsEmailFrom()
                 replyTo ConfigMapper.getNotificationsEmailReplyTo()
                 subject ConfigMapper.getLaserSystemId() + ' - ' + subj
-                body view: view, model: model
+                body(view: view, model: model)
             }
         }
         catch (Exception e) {

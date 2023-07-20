@@ -1,8 +1,6 @@
 <%@ page import="de.laser.survey.SurveyConfig; de.laser.Subscription; de.laser.Person; de.laser.SubscriptionsQueryService; java.text.SimpleDateFormat; de.laser.storage.RDStore; de.laser.FormService" %>
 <laser:serviceInjection/>
 
-<ui:greySegment>
-
     <g:if test="${!copyObject}">
         <laser:render template="/templates/copyElements/selectSourceAndTargetObject" model="[
                 sourceObject          : sourceObject,
@@ -28,9 +26,9 @@
                             <thead>
                             <tr>
                                 <th colspan="6">
-                                    <g:if test="${sourceObject}"><g:link controller="subscription"
-                                                                         action="members"
-                                                                         id="${sourceObject.id}">${sourceObject.dropdownNamingConvention()}</g:link></g:if>
+                                    <g:if test="${sourceObject}">
+                                        <g:link controller="subscription" action="members" id="${sourceObject.id}">${sourceObject.dropdownNamingConvention()}</g:link>
+                                    </g:if>
                                 </th>
                             </tr>
                             <tr>
@@ -40,8 +38,7 @@
                                 <th>${message(code: 'default.endDate.label')}</th>
                                 <th>${message(code: 'default.status.label')}</th>
                                 <th class=" center aligned">
-                                    <input type="checkbox" data-action="copy"
-                                           onClick="JSPC.app.toggleAllCheckboxes(this)" checked/>
+                                    <input type="checkbox" data-action="copy" onClick="JSPC.app.toggleAllCheckboxes(this)" checked/>
                                 </th>
                             </tr>
                             </thead>
@@ -51,16 +48,12 @@
                                     <td>${i+1}</td>
                                     <g:each in="${sub.getAllSubscribers()}" var="subscriberOrg">
                                         <td class="titleCell">
-                                            <g:link controller="subscription"
-                                                    action="show"
-                                                    id="${sub.id}">${subscriberOrg.sortname}</g:link>
+                                            <g:link controller="subscription" action="show" id="${sub.id}">${subscriberOrg.sortname}</g:link>
 
                                             <ui:customerTypeIcon org="${subscriberOrg}" />
                                         </td>
-                                        <td><g:formatDate formatName="default.date.format.notime"
-                                                          date="${sub.startDate}"/></td>
-                                        <td><g:formatDate formatName="default.date.format.notime"
-                                                          date="${sub.endDate}"/></td>
+                                        <td><g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/></td>
+                                        <td><g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/></td>
                                         <td>${sub.status.getI10n('value')}</td>
                                         <td class=" center aligned">
                                             <g:set var="orgInSurveyRenewal" value="${sub.isOrgInSurveyRenewal()}"/>
@@ -85,10 +78,10 @@
                         <table class="ui celled la-js-responsive-table la-table table" id="secondTable">
                             <thead>
                             <tr>
-                                <th colspan="6">
-                                    <g:if test="${targetObject}"><g:link controller="subscription"
-                                                                         action="members"
-                                                                         id="${targetObject.id}">${targetObject.dropdownNamingConvention()}</g:link></g:if>
+                                <th colspan="5">
+                                    <g:if test="${targetObject}">
+                                        <g:link controller="subscription" action="members" id="${targetObject.id}">${targetObject.dropdownNamingConvention()}</g:link>
+                                    </g:if>
                                 </th>
                             </tr>
                             <tr>
@@ -97,10 +90,6 @@
                                 <th>${message(code: 'default.startDate.label')}</th>
                                 <th>${message(code: 'default.endDate.label')}</th>
                                 <th>${message(code: 'default.status.label')}</th>
-                                <th class=" center aligned">
-                                    <input type="checkbox" data-action="copy"
-                                           onClick="JSPC.app.toggleAllCheckboxes(this)" checked/>
-                                </th>
                             </tr>
                             </thead>
                             <tbody>
@@ -109,14 +98,10 @@
                                     <td>${i+1}</td>
                                     <g:each in="${sub.refresh().getAllSubscribers()}" var="subscriberOrg">
                                         <td class="titleCell">
-                                            <g:link controller="subscription"
-                                                    action="show"
-                                                    id="${sub.id}">${subscriberOrg.sortname}</g:link>
+                                            <g:link controller="subscription" action="show" id="${sub.id}">${subscriberOrg.sortname}</g:link>
                                         </td>
-                                        <td><g:formatDate formatName="default.date.format.notime"
-                                                          date="${sub.startDate}"/></td>
-                                        <td><g:formatDate formatName="default.date.format.notime"
-                                                          date="${sub.endDate}"/></td>
+                                        <td><g:formatDate formatName="default.date.format.notime" date="${sub.startDate}"/></td>
+                                        <td><g:formatDate formatName="default.date.format.notime" date="${sub.endDate}"/></td>
                                         <td>${sub.status.getI10n('value')}</td>
                                     </g:each>
                                 </tr>
@@ -135,7 +120,6 @@
                    value="${message(code: 'copyElementsIntoObject.copySubscriber.button')}" ${submitDisabled}/>
         </div>
     </g:form>
-</ui:greySegment>
 
 <laser:script file="${this.getGroovyPageFileName()}">
         $("#firstTable .titleCell").each(function (k) {

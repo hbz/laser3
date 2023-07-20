@@ -34,7 +34,7 @@ class ApiMapReader {
 
             // References
             result.contacts     = ApiCollectionReader.getContactCollection(prs.contacts, allowedContactTypes) // de.laser.Contact
-            result.addresses    = [:]//ApiCollectionReader.getAddressCollection(prs.addresses, allowedAddressTypes) // de.laser.Address - obsolete for 3.2
+            //result.addresses    = [:]//ApiCollectionReader.getAddressCollection(prs.addresses, allowedAddressTypes) // de.laser.Address - obsolete for 3.2
             result.properties   = ApiCollectionReader.getPrivatePropertyCollection(prs.propertySet, context) // de.laser.PersonPrivateProperty
         }
         return ApiToolkit.cleanUp(result, true, true)
@@ -57,6 +57,11 @@ class ApiMapReader {
 
         result.globalUID         = tipp.globalUID
         result.gokbId            = tipp.gokbId
+        result.name             = tipp.name
+        result.medium           = tipp.medium?.value
+        result.status           = tipp.status?.value
+        result.coverages        = ApiCollectionReader.getCoverageCollection(tipp.coverages) //de.laser.TIPPCoverage
+        result.priceItems       = ApiCollectionReader.getPriceItemCollection(tipp.priceItems) //de.laser.finance.PriceItem with pi.tipp != null
         result.altnames          = ApiCollectionReader.getAlternativeNameCollection(tipp.altnames)
         result.firstAuthor       = tipp.firstAuthor
         result.firstEditor       = tipp.firstEditor
@@ -77,7 +82,7 @@ class ApiMapReader {
 
         // References
         result.identifiers          = ApiCollectionReader.getIdentifierCollection(tipp.ids)       // de.laser.Identifier
-        result.platform             = ApiUnsecuredMapReader.getPlatformStubMap(tipp.platform) // de.laser.Platform
+        //result.platform             = ApiUnsecuredMapReader.getPlatformStubMap(tipp.platform) // de.laser.Platform
         result.ddcs                 = ApiCollectionReader.getDeweyDecimalCollection(tipp.ddcs)  //de.laser.DeweyDecimalClassification
         result.languages            = ApiCollectionReader.getLanguageCollection(tipp.languages) //de.laser.Language
         //unsure construction; remains open u.f.n.
@@ -91,13 +96,8 @@ class ApiMapReader {
         }
         if (!(ignoreRelation in [ApiReader.IGNORE_SUBSCRIPTION, ApiReader.IGNORE_SUBSCRIPTION_AND_PACKAGE])) {
             //list here every property which may differ on entitlement level (= GlobalSourceSyncService's controlled properties, see getTippDiff() for the properties to be excluded here)
-            result.name             = tipp.name
-            result.medium           = tipp.medium?.value
             result.accessStartDate  = tipp.accessStartDate ? ApiToolkit.formatInternalDate(tipp.accessStartDate) : null
             result.accessEndDate    = tipp.accessEndDate ? ApiToolkit.formatInternalDate(tipp.accessEndDate) : null
-            result.status           = tipp.status?.value
-            result.coverages        = ApiCollectionReader.getCoverageCollection(tipp.coverages) //de.laser.TIPPCoverage
-            result.priceItems       = ApiCollectionReader.getPriceItemCollection(tipp.priceItems) //de.laser.finance.PriceItem with pi.tipp != null
         }
 
 
@@ -126,6 +126,7 @@ class ApiMapReader {
 
         result.globalUID         = row['tipp_guid']
         result.gokbId            = row['tipp_gokb_id']
+        result.name              = row['tipp_name']
         result.altnames          = altnames
         result.firstAuthor       = row['tipp_first_author']
         result.firstEditor       = row['tipp_first_editor']
@@ -154,7 +155,7 @@ class ApiMapReader {
         }
         result.ddcs             = ddcs
         result.languages        = languages
-        result.medium           = row['ie_medium'] //fallback and distinction done already in query
+        result.medium           = row['tipp_medium']
 
         // References
         List<Map<String, Object>> identifiers = []
@@ -162,7 +163,7 @@ class ApiMapReader {
             identifiers << [namespace: idRow['idns_ns'], value: idRow['id_value']]
         }
         result.identifiers          = identifiers       // de.laser.Identifier
-        result.platform             = ApiUnsecuredMapReader.getPlatformStubMapWithSQL(row['platform']) // de.laser.Platform
+        //result.platform             = ApiUnsecuredMapReader.getPlatformStubMapWithSQL(row['platform']) // de.laser.Platform
         List<Map<String, Object>> publishers = []
         row['publishers'].each { pubRow ->
             Map<String, Object> pubMap = [roleType: pubRow['rdv_value'],

@@ -2,7 +2,6 @@ package de.laser
 
 import de.laser.annotations.DebugInfo
 import de.laser.auth.User
-import de.laser.auth.UserOrgRole
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyInfo
@@ -17,9 +16,9 @@ class MailController {
     MailSendService mailSendService
     AccessService accessService
 
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.ORG_CONSORTIUM_PRO, 'INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_PRO, "INST_EDITOR")
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)
     })
     def createOwnMail() {
         log.debug("createOwnMail: " + params)
@@ -48,7 +47,7 @@ class MailController {
             switch (result.objectType) {
                 case SurveyInfo.class.name:
 
-                    result.editable = accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+                    result.editable = contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
 
                     if (!result.editable) {
                         flash.error = g.message(code: "default.notAutorized.message")
@@ -77,14 +76,13 @@ class MailController {
                         if(result.reminderMail || result.openAndSendMail) {
                             result << mailSendService.mailSendConfigBySurvey(result.surveyInfo, result.reminderMail)
 
-                            List<UserOrgRole> userOrgs = UserOrgRole.findAllByOrgInList(result.orgList)
-
+                            List<User> formalUserList = result.orgList ? User.findAllByFormalOrgInList(result.orgList) : []
                             List<String> userSurveyNotification = []
 
-                            userOrgs.each { userOrg ->
-                                if (userOrg.user.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_FOR_SURVEYS_START) == RDStore.YN_YES &&
-                                        userOrg.user.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES) {
-                                    userSurveyNotification << userOrg.user.email
+                            formalUserList.each { fu ->
+                                if (fu.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_FOR_SURVEYS_START) == RDStore.YN_YES &&
+                                        fu.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES) {
+                                    userSurveyNotification << fu.email
                                 }
                             }
 
@@ -125,9 +123,9 @@ class MailController {
         result
     }
 
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.ORG_CONSORTIUM_PRO, 'INST_EDITOR'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_PRO, "INST_EDITOR")
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)
     })
     def processSendMail() {
         log.debug("processSendMail: " + params)
@@ -156,7 +154,7 @@ class MailController {
 
             switch (params.objectType) {
                 case SurveyInfo.class.name:
-                    result.editable = accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+                    result.editable = contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
 
                     if (!result.editable) {
                         flash.error = g.message(code: "default.notAutorized.message")

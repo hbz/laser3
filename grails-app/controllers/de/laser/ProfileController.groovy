@@ -3,7 +3,6 @@ package de.laser
 
 import de.laser.auth.Role
 import de.laser.auth.User
-import de.laser.auth.UserOrgRole
 import de.laser.UserSetting.KEYS
 import de.laser.utils.LocaleUtils
 import de.laser.utils.PasswordUtils
@@ -25,11 +24,11 @@ class ProfileController {
     DeletionService deletionService
     FormService formService
     GenericOIDService genericOIDService
-    InstAdmService instAdmService
     MessageSource messageSource
     def passwordEncoder
     PropertyService propertyService
     RefdataService refdataService
+    UserService userService
 
     /**
      * Call to the current session user's profile
@@ -39,7 +38,6 @@ class ProfileController {
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
         result.editable = true
-        result.isOrgBasicMember = contextService.getOrg().isCustomerType_Inst_Basic()
         result.availableOrgs  = Org.executeQuery('from Org o where o.sector = :sector order by o.sortname', [sector: RDStore.O_SECTOR_HIGHER_EDU])
         result.availableOrgRoles = Role.findAllByRoleType('user')
 
@@ -111,32 +109,11 @@ class ProfileController {
      * @return the profile page
      */
     @Secured(['ROLE_USER'])
-    def addAffiliation() {
-        log.debug("addAffiliation() org: ${params.org} role: ${params.formalRole}")
-        User user       = contextService.getUser()
-        Org org         = Org.get(params.org)
-        Role formalRole = Role.get(params.formalRole)
+    def setAffiliation() {
+        log.debug("setAffiliation() org: ${params.formalOrg} role: ${params.formalRole}")
 
-        if (user && org && formalRole) {
-            instAdmService.createAffiliation(user, org, formalRole, flash)
-        }
-        redirect(action: "index")
-    }
+        userService.setAffiliation(contextService.getUser(), params.formalOrg, params.formalRole, flash)
 
-    /**
-     * Removes the given user from the given institution
-     * @return the profile page
-     */
-    @Secured(['ROLE_USER'])
-    @Transactional
-    def deleteAffiliation() {
-        log.debug("deleteAffiliation() userOrg: ${params.assoc}")
-        User user        = contextService.getUser()
-        UserOrgRole userOrg  = UserOrgRole.findByUserAndId(user, params.assoc)
-
-        if (userOrg) {
-            userOrg.delete()
-        }
         redirect(action: "index")
     }
 
@@ -165,10 +142,9 @@ class ProfileController {
             result.delResult = deletionService.deleteUser(result.user, null, DeletionService.DRY_RUN)
         }
 
-        List<Org> orgList = Org.executeQuery('select distinct uo.org from UserOrgRole uo where uo.user = :self', [self: result.user])
-        result.substituteList = orgList ? User.executeQuery(
-                'select distinct u from User u join u.affiliations ua where ua.org in :orgList and u != :self and ua.formalRole = :instAdm order by u.username',
-                [orgList: orgList, self: result.user, instAdm: Role.findByAuthority('INST_ADM')]
+        result.substituteList = result.user.formalOrg ? User.executeQuery(
+                'select u from User u where u.formalOrg = :org and u != :self and u.formalRole = :instAdm order by u.username',
+                [org: result.user.formalOrg, self: result.user, instAdm: Role.findByAuthority('INST_ADM')]
         ) : []
 
         render view: 'delete', model: result
@@ -201,16 +177,6 @@ class ProfileController {
         }
 
         user.save()
-
-        if (params.profile_dashboard) {
-            Org org = (Org) genericOIDService.resolveOID(params.profile_dashboard)
-            UserSetting us = user.getSetting(KEYS.DASHBOARD, null)
-
-            if (org?.id != us.getValue()?.id) {
-                us.setValue(org)
-                flash.message += message(code: 'profile.updateProfile.updated.dash')
-            }
-        }
 
         redirect(action: "index")
     }

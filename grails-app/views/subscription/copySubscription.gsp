@@ -24,30 +24,20 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
         <i class=" icon"></i>
             <div class="content" >
                 <div class="title">
-                        ${message(code: 'copyElementsIntoObject.general_data.label')}
+                    ${message(code: 'copyElementsIntoObject.general_data.label')}
                 </div>
                 <div class="description">
-                    <i class="image outline icon"></i>${message(code:'subscription.kind.label')}
-                    <br />
-                    <i class="dolly icon"></i>${message(code:'subscription.form.label')}
-                    <br />
-                    <i class="box icon"></i>${message(code:'subscription.resource.label')}
-                    <br />
-                    <i class="shipping fast icon"></i>${message(code:'subscription.isPublicForApi.label')}
-                    <br />
-                    <i class="flag outline icon"></i>${message(code:'subscription.hasPerpetualAccess.label')}
-                    <br />
-                    <i class="comment icon"></i>${message(code:'subscription.hasPublishComponent.label')}
-                    <br />
-                    <i class="balance scale icon"></i>${message(code: 'license.label')}
-                    <br />
-                    <i class="university icon"></i>${message(code: 'subscription.organisations.label')}
-                    <br />
-                    <i class="address card icon"></i>${message(code: 'subscription.specificSubscriptionEditors')}
-                    <br />
-                    <i class="barcode icon"></i>${message(code: 'default.identifiers.label')}
-                    <br />
-                    <i class="exchange icon"></i>${message(code: 'subscription.linkedObjects')}
+                    <i class="image outline icon"></i>  ${message(code:'subscription.kind.label')} <br />
+                    <i class="dolly icon"></i>          ${message(code:'subscription.form.label')} <br />
+                    <i class="box icon"></i>            ${message(code:'subscription.resource.label')} <br />
+                    <i class="shipping fast icon"></i>  ${message(code:'subscription.isPublicForApi.label')} <br />
+                    <i class="flag outline icon"></i>   ${message(code:'subscription.hasPerpetualAccess.label')} <br />
+                    <i class="comment icon"></i>        ${message(code:'subscription.hasPublishComponent.label')} <br />
+                    <i class="balance scale icon"></i>  ${message(code: 'license.label')} <br />
+                    <i class="university icon"></i>     ${message(code: 'subscription.organisations.label')} <br />
+                    <i class="address card icon"></i>   ${message(code: 'subscription.specificSubscriptionEditors')} <br />
+                    <i class="barcode icon"></i>        ${message(code: 'default.identifiers.label')} <br />
+                    <i class="exchange icon"></i>       ${message(code: 'subscription.linkedObjects')}
                 </div>
         </div>
     </div>
@@ -55,26 +45,25 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
         <i class=" icon"></i>
         <div class="content">
             <div class="title">
-                    ${message(code: 'copyElementsIntoObject.attachements.label')}
+                ${message(code: 'copyElementsIntoObject.attachements.label')}
             </div>
             <div class="description">
-                <i class="file outline icon"></i>${message(code: 'default.documents.label')}
-                <br />
-                <i class="sticky note outline icon"></i>${message(code: 'default.notes.label')}
-                <br />
-                <i class="calendar check outline icon"></i>${message(code: 'menu.institutions.tasks')}
+                <i class="sticky note outline icon"></i>    ${message(code: 'default.notes.label')} <br />
+                <i class="calendar check outline icon"></i> ${message(code: 'menu.institutions.tasks')} <br />
+                <i class="file outline icon"></i>           ${message(code: 'default.documents.label')} <br />
+                <i class="tasks icon"></i>                  ${message(code: 'workflow.plural')}
             </div>
         </div>
     </div>
-    <g:if test="${isConsortialObjects && accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_USER')}">
+    <g:if test="${isConsortialObjects && contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
         <div class="${workFlowPart == CopyElementsService.WORKFLOW_SUBSCRIBER ? 'active' : (workFlowPart in [CopyElementsService.WORKFLOW_PROPERTIES, CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS] ? 'completed' : '')} step">
             <i class=" icon"></i>
             <div class="content">
                 <div class="title">
-                        ${message(code: 'consortium.subscriber')}
+                    ${message(code: 'consortium.subscriber')}
                 </div>
                 <div class="description">
-                    <i class="university icon"></i>${message(code: 'consortium.subscriber')}
+                    <i class="university icon"></i> ${message(code: 'consortium.subscriber')}
                 </div>
             </div>
         </div>
@@ -84,11 +73,9 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
         <div class="content" >
             <div class="title">${message(code: 'copyElementsIntoObject.inventory.label')}</div>
             <div class="description">
-                <i class="gift icon"></i>${message(code: 'package.label')}
-                <br />
-                <i class="book icon"></i>${message(code: 'title')}
-                <br />
-                <i class="icon object group"></i>${message(code: 'subscription.details.ieGroups')}
+                <i class="gift icon"></i>           ${message(code: 'package.label')} <br />
+                <i class="book icon"></i>           ${message(code: 'title')} <br />
+                <i class="icon object group"></i>   ${message(code: 'subscription.details.ieGroups')}
             </div>
         </div>
     </div>
@@ -96,30 +83,33 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
         <i class=" icon"></i>
         <div class="content">
             <div class="title">
-                    ${message(code: 'properties')}
+                ${message(code: 'properties')}
             </div>
             <div class="description">
-                <i class="tags icon"></i>${message(code: 'properties')}
+                <i class="tags icon"></i> ${message(code: 'properties')}
             </div>
         </div>
     </div>
 </div>
 
-<g:if test="${workFlowPart == CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS}">
-    <laser:render template="/templates/copyElements/copyDocsAndTasks" />
-</g:if>
-<g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_PROPERTIES}">
-    <laser:render template="/templates/copyElements/copyPropertiesCompare" />
-</g:elseif>
-<g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS}">
-    <laser:render template="/templates/copyElements/copyPackagesAndIEs" />
-</g:elseif>
-<g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_SUBSCRIBER && isConsortialObjects && accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR')}">
-    <laser:render template="/templates/copyElements/copySubscriber" />
-</g:elseif>
-<g:else>
-    <laser:render template="/templates/copyElements/copyElements" />
-</g:else>
-<laser:render template="/templates/copyElements/copyElementsJS"/>
+<ui:greySegment>
+    <g:if test="${workFlowPart == CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS}">
+        <laser:render template="/templates/copyElements/copyDocsAndTasksAndWorkflows" />
+    </g:if>
+    <g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_PROPERTIES}">
+        <laser:render template="/templates/copyElements/copyPropertiesCompare" />
+    </g:elseif>
+    <g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS}">
+        <laser:render template="/templates/copyElements/copyPackagesAndIEs" />
+    </g:elseif>
+    <g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_SUBSCRIBER && isConsortialObjects && contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
+        <laser:render template="/templates/copyElements/copySubscriber" />
+    </g:elseif>
+    <g:else>
+        <laser:render template="/templates/copyElements/copyElements" />
+    </g:else>
+
+    <laser:render template="/templates/copyElements/copyElementsJS"/>
+</ui:greySegment>
 
 <laser:htmlEnd />

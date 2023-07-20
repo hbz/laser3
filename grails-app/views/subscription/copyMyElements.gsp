@@ -12,18 +12,19 @@ if (sourceObjectId) params << [sourceObjectId: genericOIDService.getOID(sourceOb
 if (targetObjectId) params << [targetObjectId: genericOIDService.getOID(targetObject)];
 %>
 
-<ui:subNav>
-
+<ui:subNav showInTabular="true">
     <ui:complexSubNavItem class="${workFlowPart == CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS ? 'active' : ''}"
                              controller="subscription" action="copyMyElements"
                              params="${params << [workFlowPart: CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS]}">
         <div class="content">
-            <div class="title">${message(code: 'copyElementsIntoObject.attachements.label')}</div>
-
+            <div class="title">
+                ${message(code: 'copyElementsIntoObject.attachements.label')}
+            </div>
             <div class="description">
-                <i class="file outline icon"></i>${message(code: 'default.documents.label')}
-                <i class="sticky note outline icon"></i>${message(code: 'default.notes.label')}
-                <i class="calendar check outline icon"></i>${message(code: 'menu.institutions.tasks')}
+                <i class="sticky note outline icon"></i>    ${message(code: 'default.notes.label')} <br />
+                <i class="calendar check outline icon"></i> ${message(code: 'menu.institutions.tasks')} <br />
+                <i class="file outline icon"></i>           ${message(code: 'default.documents.label')} <br />
+                <i class="tasks icon"></i>                  ${message(code: 'workflow.plural')}
             </div>
         </div>
     </ui:complexSubNavItem>
@@ -31,30 +32,28 @@ if (targetObjectId) params << [targetObjectId: genericOIDService.getOID(targetOb
     <ui:complexSubNavItem class="${workFlowPart == CopyElementsService.WORKFLOW_PROPERTIES ? 'active' : ''}" controller="subscription"
                              action="copyMyElements" params="${params << [workFlowPart: CopyElementsService.WORKFLOW_PROPERTIES]}">
         <div class="content">
-            <div class="title">${message(code: 'properties')}</div>
-
-            <div class="description">
-                <i class="tags icon"></i>${message(code: 'properties')}
+            <div class="title">
+                ${message(code: 'properties')}
             </div>
-
+            <div class="description">
+                <i class="tags icon"></i> ${message(code: 'properties')}
+            </div>
         </div>
     </ui:complexSubNavItem>
 </ui:subNav>
 
-<br />
 
-<div class="la-legend">
-    <span class="la-key"><strong>${message(code: 'copyElementsIntoObject.legend.key')}:</strong>
-    </span>
-    <span class="la-added">${message(code: 'copyElementsIntoObject.legend.willStay')}</span>
-    <span class="la-removed">${message(code: 'copyElementsIntoObject.legend.willBeReplaced')}</span>
+<div class="ui bottom attached segment">
+    <laser:render template="/templates/copyElements/legend"/>
+
+    <g:if test="${workFlowPart == CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS}">
+        <laser:render template="/templates/copyElements/copyDocsAndTasksAndWorkflows"/>
+    </g:if>
+    <g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_PROPERTIES}">
+        <laser:render template="/templates/copyElements/copyPropertiesCompare"/>
+    </g:elseif>
+
+    <laser:render template="/templates/copyElements/copyElementsJS"/>
 </div>
-<g:if test="${workFlowPart == CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS}">
-    <laser:render template="/templates/copyElements/copyDocsAndTasks"/>
-</g:if>
-<g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_PROPERTIES}">
-    <laser:render template="/templates/copyElements/copyPropertiesCompare"/>
-</g:elseif>
-<laser:render template="/templates/copyElements/copyElementsJS"/>
 
 <laser:htmlEnd />

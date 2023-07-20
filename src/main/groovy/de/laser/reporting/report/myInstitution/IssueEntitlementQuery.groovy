@@ -42,8 +42,8 @@ class IssueEntitlementQuery extends BaseQuery {
             // TODO
             handleGenericAllQuery(
                     params.query,
-                    'select ie.name, ie.name, count(ie.name) from IssueEntitlement ie where ie.id in (:idList) group by ie.name order by ie.name',
-                    'select ie.id from IssueEntitlement ie where ie.id in (:idList) and ie.name = :d order by ie.id',
+                    'select ie.tipp.name, ie.tipp.name, count(ie.tipp.name) from IssueEntitlement ie where ie.id in (:idList) group by ie.tipp.name order by ie.tipp.name',
+                    'select ie.id from IssueEntitlement ie where ie.id in (:idList) and ie.tipp.name = :d order by ie.id',
                     idList,
                     result
             )
@@ -180,7 +180,7 @@ class IssueEntitlementQuery extends BaseQuery {
         handleGenericRefdataQuery(
                 query,
                 PROPERTY_QUERY[0] + 'from IssueEntitlement ie join ie.' + refdata + ' p where ie.id in (:idList)' + PROPERTY_QUERY[1],
-                'select ie.id from IssueEntitlement ie join ie.' + refdata + ' p where ie.id in (:idList) and p.id = :d order by ie.name',
+                'select ie.id from IssueEntitlement ie join ie.' + refdata + ' p where ie.id in (:idList) and p.id = :d order by ie.tipp.name',
                 'select distinct ie.id from IssueEntitlement ie where ie.id in (:idList) and ie.'+ refdata + ' is null',
                 idList,
                 result

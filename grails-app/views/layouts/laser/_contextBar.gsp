@@ -1,4 +1,4 @@
-<%@ page import="de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.storage.RDStore; de.laser.UserSetting; de.laser.auth.User; de.laser.auth.UserOrgRole; de.laser.Org" %>
+<%@ page import="de.laser.CustomerTypeService; de.laser.utils.AppUtils; de.laser.storage.RDStore; de.laser.UserSetting; de.laser.auth.User; de.laser.Org" %>
 <laser:serviceInjection />
 
 <g:set var="visibilityContextOrgMenu" value="la-show-context-orgMenu" />
@@ -7,10 +7,12 @@
     <div class="ui container">
         <button class="ui button big la-menue-button la-modern-button" style="display:none"><i class="bars icon"></i></button>
         <div class="ui sub header item la-context-org">
-            ${contextOrg.name}
-            <g:if test="${currentServer == AppUtils.LOCAL}">
-                - ${contextOrg.getCustomerTypeI10n()}
-                - ${UserOrgRole.findByUserAndOrg(contextUser as User, contextOrg as Org)?.formalRole?.getI10n('authority')}
+            <g:if test="${contextOrg}">
+                ${contextOrg.name}
+                <g:if test="${currentServer == AppUtils.LOCAL}">
+                    - ${contextOrg.getCustomerTypeI10n()}
+                    - ${contextUser.formalRole?.getI10n('authority')}
+                </g:if>
             </g:if>
         </div>
 
@@ -32,7 +34,7 @@
 
             %{-- edit mode switcher  --}%
 
-            <g:if test="${(controllerName=='dev' && actionName=='frontend' ) || (controllerName=='subscription' || controllerName=='license') && actionName=='show' && (editable || accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC ))}">
+            <g:if test="${(controllerName=='dev' && actionName=='frontend' ) || (controllerName=='subscription' || controllerName=='license') && actionName=='show' && (editable || contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC ))}">
                 <div class="item">
                     <g:if test="${contextUser?.getSettingsValue(UserSetting.KEYS.SHOW_EDIT_MODE, RDStore.YN_YES)?.value=='Yes'}">
                         <button class="ui icon toggle active blue button la-modern-button la-toggle-controls la-popup-tooltip la-delay" data-content="${message(code:'statusbar.showButtons.tooltip')}" data-position="bottom right">

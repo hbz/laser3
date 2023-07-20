@@ -8,6 +8,7 @@ import de.laser.finance.PriceItem
 import de.laser.http.BasicHttpClient
 import de.laser.remote.ApiSource
 import de.laser.remote.GlobalRecordSource
+import de.laser.storage.Constants
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.system.SystemEvent
@@ -43,7 +44,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
     static final long RECTYPE_PLATFORM = 1
     static final long RECTYPE_ORG = 2
     static final long RECTYPE_TIPP = 3
-    static final String PERMANENTLY_DELETED = "Permanently Deleted"
     static final int MAX_CONTENT_LENGTH = 1024 * 1024 * 100
     static final int MAX_TIPP_COUNT_PER_PAGE = 20000
 
@@ -123,7 +123,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         break
                 }
                 //do prequest: are we needing the scroll api?
-                Map<String,Object> result = fetchRecordJSON(false,[componentType:componentType,changedSince:sdf.format(oldDate),max:MAX_TIPP_COUNT_PER_PAGE]) //changedBefore:'2022-09-27 00:00:00',
+                Map<String,Object> result = fetchRecordJSON(false,[componentType:componentType,changedSince:sdf.format(oldDate),max:MAX_TIPP_COUNT_PER_PAGE,sort:'lastUpdated']) //changedBefore:'2022-09-27 00:00:00',
                 if(result.error == 404) {
                     log.error("we:kb server is down")
                     SystemEvent.createEvent('GSSS_JSON_ERROR',['jobId':source.id])
@@ -232,7 +232,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     }
                 */
                 //do prequest: are we needing the scroll api?
-                Map<String,Object> result = fetchRecordJSON(false,[componentType:componentType,tippPackageUuid:packageUUID,max:MAX_TIPP_COUNT_PER_PAGE])
+                Map<String,Object> result = fetchRecordJSON(false,[componentType:componentType,tippPackageUuid:packageUUID,max:MAX_TIPP_COUNT_PER_PAGE,sort:'lastUpdated'])
                 if(result.error == 404) {
                     log.error("we:kb server is down")
                 }
@@ -316,7 +316,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             this.apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI,true)
             log.info("getting all records from job #${source.id} with uri ${source.uri}")
             try {
-                Map<String,Object> result = fetchRecordJSON(false,[componentType: componentType, max: MAX_TIPP_COUNT_PER_PAGE])
+                Map<String,Object> result = fetchRecordJSON(false,[componentType: componentType, max: MAX_TIPP_COUNT_PER_PAGE, sort:'lastUpdated'])
                 if(result) {
                     if(result.error == 404) {
                         log.error("we:kb server currently down")
@@ -381,7 +381,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 triggeredTypes.each { String componentType ->
                     GlobalRecordSource.withNewSession { Session sess ->
                         int offset = 0
-                        Map<String, Object> queryParams = [componentType: componentType, max: max, offset: offset]
+                        Map<String, Object> queryParams = [componentType: componentType, max: max, offset: offset, sort: 'lastUpdated']
                         Map<String,Object> result = fetchRecordJSON(false,queryParams)
                         if(result) {
                             if(result.error == 404) {
@@ -562,7 +562,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
     void processScrollPage(Map<String, Object> result, String componentType, String changedSince, String pkgFilter = null, Set<String> permanentlyDeletedTitles = []) throws SyncException {
         if(result.count >= MAX_TIPP_COUNT_PER_PAGE) {
             int offset = 0, max = MAX_TIPP_COUNT_PER_PAGE
-            Map<String, Object> queryParams = [componentType: componentType, offset: offset, max: max]
+            Map<String, Object> queryParams = [componentType: componentType, offset: offset, max: max, sort: 'lastUpdated']
             if(changedSince) {
                 queryParams.changedSince = changedSince
                 //queryParams.changedBefore = "2022-09-27 00:00:00" //debug only
@@ -866,7 +866,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     packagesToNotify.put(updatedTIPP.packageUUID,diffsOfPackage)
                     */
                 }
-                else if(updatedTIPP.status == PERMANENTLY_DELETED) {
+                else if(updatedTIPP.status == Constants.PERMANENTLY_DELETED) {
                     TitleInstancePackagePlatform tippA = TitleInstancePackagePlatform.findByGokbIdAndStatusNotEqual(updatedTIPP.uuid, RDStore.TIPP_STATUS_REMOVED)
                     if(tippA) {
                         log.info("TIPP with UUID ${tippA.gokbId} has been permanently deleted")
@@ -883,7 +883,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         */
                     }
                 }
-                else if(!(updatedTIPP.status in [RDStore.TIPP_STATUS_REMOVED.value, PERMANENTLY_DELETED])) {
+                else if(!(updatedTIPP.status in [RDStore.TIPP_STATUS_REMOVED.value, Constants.PERMANENTLY_DELETED])) {
                     Package pkg = packagesOnPage.get(updatedTIPP.packageUUID)
                     if(pkg)
                         newTitles << addNewTIPP(pkg, updatedTIPP, platformsOnPage)
@@ -1027,7 +1027,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             else {
                 Package pkg = newPackages.get(tippB.packageUUID)
                 //Unbelievable! But package may miss at this point!
-                if(pkg && pkg?.packageStatus != RDStore.PACKAGE_STATUS_REMOVED && !(tippB.status in [PERMANENTLY_DELETED, RDStore.TIPP_STATUS_REMOVED.value])) {
+                if(pkg && pkg?.packageStatus != RDStore.PACKAGE_STATUS_REMOVED && !(tippB.status in [Constants.PERMANENTLY_DELETED, RDStore.TIPP_STATUS_REMOVED.value])) {
                     //new TIPP
                     addNewTIPP(pkg, tippB, newPlatforms)
                     //result.event = 'add'
@@ -1242,7 +1242,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         }
         //second attempt failed - create new org if record is not deleted
         if(!provider) {
-            if(!(providerRecord.status in [PERMANENTLY_DELETED, 'Removed']))
+            if(!(providerRecord.status in [Constants.PERMANENTLY_DELETED, 'Removed']))
                 provider = new Org(
                         name: providerRecord.name,
                         gokbId: providerRecord.uuid
@@ -1459,12 +1459,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
             if(platform) {
                 platform.name = platformRecord.name
             }
-            else if(!(platformRecord.status in [PERMANENTLY_DELETED, 'Removed'])){
+            else if(!(platformRecord.status in [Constants.PERMANENTLY_DELETED, 'Removed'])){
                 platform = new Platform(name: platformRecord.name, gokbId: platformRecord.uuid)
             }
             //trigger if both records exist or if we:kb record is deleted but LAS:eR is not
             if(platform) {
-                platform.status = platformRecord.status == PERMANENTLY_DELETED ? RDStore.PLATFORM_STATUS_REMOVED : RefdataValue.getByValueAndCategory(platformRecord.status, RDConstants.PLATFORM_STATUS)
+                platform.status = platformRecord.status == Constants.PERMANENTLY_DELETED ? RDStore.PLATFORM_STATUS_REMOVED : RefdataValue.getByValueAndCategory(platformRecord.status, RDConstants.PLATFORM_STATUS)
                 platform.normname = platformRecord.name.toLowerCase()
                 if(platformRecord.primaryUrl)
                     platform.primaryUrl = new URL(platformRecord.primaryUrl)
@@ -2242,7 +2242,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         //setting default status
         /*
         if(!queryParams.status) {
-            queryParams.status = ["Current","Expected","Retired","Deleted",PERMANENTLY_DELETED,"Removed"]
+            queryParams.status = ["Current","Expected","Retired","Deleted",Constants.PERMANENTLY_DELETED,"Removed"]
             //queryParams.status = ["Removed"] //debug only
         }
         */
@@ -2270,7 +2270,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
 
     Set<String> getPermanentlyDeletedTitles(String changedFrom = null) {
         Set<String> result = []
-        Map<String, Object> queryParams = [componentType: 'deletedkbcomponent', status: PERMANENTLY_DELETED, max: MAX_TIPP_COUNT_PER_PAGE]
+        Map<String, Object> queryParams = [componentType: 'deletedkbcomponent', status: Constants.PERMANENTLY_DELETED, max: MAX_TIPP_COUNT_PER_PAGE, sort: 'lastUpdated']
         if(changedFrom)
             queryParams.changedSince = changedFrom
         Map<String, Object> recordBatch = fetchRecordJSON(false, queryParams)
@@ -2294,7 +2294,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         //define map fields
         tippStatus.put(RDStore.TIPP_STATUS_CURRENT.value,RDStore.TIPP_STATUS_CURRENT)
         tippStatus.put(RDStore.TIPP_STATUS_DELETED.value,RDStore.TIPP_STATUS_DELETED)
-        tippStatus.put(PERMANENTLY_DELETED,RDStore.TIPP_STATUS_REMOVED)
+        tippStatus.put(Constants.PERMANENTLY_DELETED,RDStore.TIPP_STATUS_REMOVED)
         tippStatus.put(RDStore.TIPP_STATUS_RETIRED.value,RDStore.TIPP_STATUS_RETIRED)
         tippStatus.put(RDStore.TIPP_STATUS_EXPECTED.value,RDStore.TIPP_STATUS_EXPECTED)
         tippStatus.put(RDStore.TIPP_STATUS_REMOVED.value,RDStore.TIPP_STATUS_REMOVED)
@@ -2312,10 +2312,10 @@ class GlobalSourceSyncService extends AbstractLockableService {
         RefdataValue.findAllByIdNotInListAndOwner(packageStatus.values().collect { RefdataValue rdv -> rdv.id }, RefdataCategory.findByDesc(RDConstants.PACKAGE_STATUS)).each { RefdataValue rdv ->
             packageStatus.put(rdv.value, rdv)
         }
-        packageStatus.put(PERMANENTLY_DELETED, RDStore.PACKAGE_STATUS_REMOVED)
+        packageStatus.put(Constants.PERMANENTLY_DELETED, RDStore.PACKAGE_STATUS_REMOVED)
         orgStatus.put(RDStore.ORG_STATUS_CURRENT.value,RDStore.ORG_STATUS_CURRENT)
         orgStatus.put(RDStore.ORG_STATUS_DELETED.value,RDStore.ORG_STATUS_DELETED)
-        orgStatus.put(PERMANENTLY_DELETED,RDStore.ORG_STATUS_REMOVED)
+        orgStatus.put(Constants.PERMANENTLY_DELETED,RDStore.ORG_STATUS_REMOVED)
         orgStatus.put(RDStore.ORG_STATUS_REMOVED.value,RDStore.ORG_STATUS_REMOVED)
         orgStatus.put(RDStore.ORG_STATUS_RETIRED.value,RDStore.ORG_STATUS_RETIRED)
         RefdataCategory.getAllRefdataValues(RDConstants.CURRENCY).each { RefdataValue rdv ->

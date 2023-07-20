@@ -9,7 +9,7 @@
 
 <laser:render template="breadcrumb" model="${[accessPoint: accessPoint, params: params]}"/>
 
-<g:set var="is_INST_EDITOR_with_PERMS_BASIC" value="${accessService.is_INST_EDITOR_with_PERMS_BASIC(inContextOrg)}"/>
+<g:set var="is_INST_EDITOR_with_PERMS_BASIC" value="${contextService.is_INST_EDITOR_with_PERMS_BASIC(inContextOrg)}"/>
 
 <g:if test="${is_INST_EDITOR_with_PERMS_BASIC}">
     <ui:controlButtons>
@@ -102,7 +102,7 @@
                     <td class="center aligned">
                         <g:if test="${is_INST_EDITOR_with_PERMS_BASIC}">
                             <g:link action="deleteAccessPointData" controller="accessPoint" id="${accessPointData.id}"
-                                    params="[tab: 'IPv4']"
+                                    params="[tab: 'IPv4', orgInstance: orgInstance.id]"
                                     class="ui negative icon button js-open-confirm-modal"
                                     data-confirm-tokenMsg="${message(code: 'confirm.dialog.delete.accessPoint.ip', args: [accessPointData.ipInput])}"
                                     data-confirm-term-how="delete"
@@ -186,7 +186,7 @@
                 <td class="center aligned">
                     <g:if test="${is_INST_EDITOR_with_PERMS_BASIC}">
                         <g:link action="deleteAccessPointData" controller="accessPoint" id="${accessPointData.id}"
-                                params="[tab: 'IPv6']"
+                                params="[orgInstance: orgInstance.id, tab: 'IPv6']"
                                 class="ui negative icon button js-open-confirm-modal"
                                 data-confirm-tokenMsg="${message(code: 'confirm.dialog.delete.accessPoint.ip', args: [accessPointData.ipInput])}"
                                 data-confirm-term-how="delete"

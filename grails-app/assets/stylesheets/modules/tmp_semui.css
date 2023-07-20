@@ -195,6 +195,7 @@ body.myInstitution_dashboard .ui.tab .item .header {
     color: rgba(0,0,0, 0.6);
     background-color: #d3dae3;
     display: none;
+    z-index: 99;
 }
 
 /* globalPageDimmer */
@@ -306,4 +307,23 @@ h1.header.icon > i.trophy {
 
 ul.la-simpleList {
     padding-left: 20px;
+}
+
+/* .menu.tabular hack */
+
+body.subscription_copyMyElements nav.tabular .item .content .title,
+body.subscription_copyElementsIntoSubscription nav.tabular .item .content .title,
+body.license_copyElementsIntoLicense nav.tabular .item .content .title,
+body.survey_copyElementsIntoSurvey nav.tabular .item .content .title
+{
+    font-weight: bold;
+}
+body.subscription_copyMyElements nav.tabular .item .content .description,
+body.subscription_copyElementsIntoSubscription nav.tabular .item .content .description,
+body.license_copyElementsIntoLicense nav.tabular .item .content .description,
+body.survey_copyElementsIntoSurvey nav.tabular .item .content .description
+{
+    font-weight: normal;
+    line-height: 1.2em;
+    margin-top: 0.25em;
 }

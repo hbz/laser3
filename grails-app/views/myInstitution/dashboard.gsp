@@ -43,12 +43,12 @@
                         <div class="item">
                             <i class="chart pie icon la-list-icon"></i>
                             <div class="content">
-                                <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_INST_BASIC)}">
+                                <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_INST_BASIC)}">
                                     <g:link controller="myInstitution" action="currentSurveys">${message(code:'menu.my.surveys')}</g:link>
                                 </g:if>
-                                <g:elseif test="${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
-                                    <g:link controller="survey" action="workflowsSurveysConsortia">${message(code:'menu.my.surveys')}</g:link>
-                                </g:elseif>
+                                <g:else>
+                                    <ui:securedMainNavItem orgPerm="${CustomerTypeService.ORG_CONSORTIUM_PRO}" controller="survey" action="workflowsSurveysConsortia" message="menu.my.surveys"/>
+                                </g:else>
                             </div>
                         </div>
                         <div class="item">
@@ -86,10 +86,10 @@
                         <div class="item">
                             <i class="university icon la-list-icon"></i>
                             <div class="content">
-                                <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
+                                <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
                                     <ui:securedMainNavItem addItemAttributes="true" specRole="ROLE_ADMIN" controller="myInstitution" action="manageMembers" message="menu.my.insts" />
                                 </g:if>
-                                <g:elseif test="${accessService.ctxPerm(CustomerTypeService.ORG_INST_BASIC)}">
+                                <g:elseif test="${contextService.hasPerm(CustomerTypeService.ORG_INST_BASIC)}">
                                     <ui:securedMainNavItem addItemAttributes="true" controller="myInstitution" action="currentConsortia" message="menu.my.consortia" />
                                 </g:elseif>
                             </div>
@@ -116,7 +116,10 @@
         </style>
 
         <ui:messages data="${flash}" />
-        <br />
+
+        <g:if test="${params.demo}">
+            <laser:render template="wekbChanges" model="${[wekbChanges: wekbChanges, tmplView: 'info']}"/>
+        </g:if>
     <%
         RefdataValue us_dashboard_tab
         switch (params.view) {
@@ -155,14 +158,14 @@
             ${systemAnnouncements.size()} ${message(code:'announcement.plural')}
         </a>
 
-        <g:if test="${accessService.ctxPerm(CustomerTypeService.PERMS_INST_BASIC_CONSORTIUM_PRO)}">
+        <g:if test="${contextService.hasPerm(CustomerTypeService.PERMS_INST_BASIC_CONSORTIUM_PRO)}">
             <a class="${us_dashboard_tab.value == 'Surveys' ? 'active item' : 'item'}" data-tab="surveys">
                 <i class="chart pie icon large"></i>
                 <span id="surveyCount">${message(code: 'myinst.dash.survey.label', args: [message(code: 'myinst.loadPending')])}</span>
             </a>
         </g:if>
 
-        <g:if test="${accessService.ctxPerm(CustomerTypeService.PERMS_PRO)}">
+        <g:if test="${contextService.hasPerm(CustomerTypeService.PERMS_PRO)}">
             <a class="${us_dashboard_tab.value == 'Tasks' ? 'active item':'item'}" data-tab="tasks">
                 <i class="calendar check outline icon large"></i>
                 ${tasksCount} ${message(code:'myinst.dash.task.label')}
@@ -230,7 +233,7 @@
             </g:if>
         </div>
 
-        <g:if test="${accessService.ctxPerm(CustomerTypeService.PERMS_PRO)}">
+        <g:if test="${contextService.hasPerm(CustomerTypeService.PERMS_PRO)}">
         <div class="ui bottom attached tab ${us_dashboard_tab.value == 'Tasks' ? 'active':''}" data-tab="tasks">
 
 %{--            <g:if test="${editable}">--}%
@@ -306,11 +309,11 @@
 
         </g:if>
 
-        <g:if test="${accessService.ctxPerm(CustomerTypeService.PERMS_INST_BASIC_CONSORTIUM_PRO)}">
+        <g:if test="${contextService.hasPerm(CustomerTypeService.PERMS_INST_BASIC_CONSORTIUM_PRO)}">
             <div class="ui bottom attached tab segment ${us_dashboard_tab.value == 'Surveys' ? 'active' : ''}"
                  data-tab="surveys" style="border-top: 1px solid #d4d4d5; ">
                 <div class="la-float-right">
-                    <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
+                    <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
                         <g:link controller="survey" action="workflowsSurveysConsortia"
                                 class="ui button">${message(code: 'menu.my.surveys')}</g:link>
                     </g:if>
@@ -521,9 +524,9 @@
 
     <laser:script file="${this.getGroovyPageFileName()}">
 
-        JSPC.app.dashboard = {
+        if (!JSPC.app.dashboard) { JSPC.app.dashboard = {} }
 
-            initWorkflows: function() {
+            JSPC.app.dashboard.initWorkflows = function() {
                 $('.wfModalLink').on('click', function(e) {
                     e.preventDefault();
                     var func = bb8.ajax4SimpleModalFunction("#wfModal", $(e.currentTarget).attr('href'));
@@ -557,9 +560,9 @@
                         })
                     }
                 });
-            },
+            };
 
-            loadChanges: function() {
+            JSPC.app.dashboard.loadChanges = function() {
                 $.ajax({
                     url: "<g:createLink controller="ajaxHtml" action="getChanges"/>",
                     data: {
@@ -572,22 +575,21 @@
                     $("#acceptedChanges").html($(response).filter("#acceptedChangesWrapper"));
                     r2d2.initDynamicUiStuff('#pendingChanges');
                 })
-            },
+            };
 
-            loadSurveys: function() {
+            JSPC.app.dashboard.loadSurveys = function() {
                 $.ajax({
                     url: "<g:createLink controller="ajaxHtml" action="getSurveys" params="${params}"/>"
                 }).done(function(response){
                     $("#surveyWrapper").html(response);
                     r2d2.initDynamicUiStuff('#surveyWrapper');
                 })
-            },
+            };
 
-            editTask: function (id) {
+            JSPC.app.dashboard.editTask = function (id) {
                 var func = bb8.ajax4SimpleModalFunction("#modalEditTask", "<g:createLink controller="ajaxHtml" action="editTask"/>?id=" + id, true);
                 func();
-            },
-        }
+            };
 
         JSPC.app.dashboard.loadChanges()
         JSPC.app.dashboard.loadSurveys()

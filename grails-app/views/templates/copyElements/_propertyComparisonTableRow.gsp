@@ -68,14 +68,14 @@
     <%
 
         boolean showProp = false
-        if (accessService.ctxPerm(CustomerTypeService.ORG_INST_PRO)) {
+        if (contextService.hasPerm(CustomerTypeService.ORG_INST_PRO)) {
             if (((propValuesForSourceSub?.size() > 0) && (propValuesForSourceSub[0].tenant?.id == contextOrg.id || (sourceObject._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_LOCAL && (!propValuesForSourceSub[0].tenant || propValuesForSourceSub[0].isPublic)))) ||
                     ((propValuesForTargetSub?.size() > 0) && (propValuesForTargetSub[0].tenant?.id == contextOrg.id || (targetObject._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_LOCAL && (!propValuesForTargetSub[0].tenant || propValuesForTargetSub[0].isPublic))))) {
                 showProp = true
             }
         }
 
-        if (accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+        if (contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
             if (((propValuesForSourceSub?.size() > 0) && (propValuesForSourceSub[0].tenant?.id == contextOrg.id || !propValuesForSourceSub[0].tenant || propValuesForSourceSub[0].isPublic || (propValuesForSourceSub[0].hasProperty('instanceOf') && propValuesForSourceSub[0].instanceOf && AuditConfig.getConfig(propValuesForSourceSub[0].instanceOf)))) ||
                     ((propValuesForTargetSub?.size() > 0) && (propValuesForTargetSub[0].tenant?.id == contextOrg.id || !propValuesForTargetSub[0].tenant) || propValuesForTargetSub[0].isPublic || (propValuesForTargetSub[0].hasProperty('instanceOf') && propValuesForTargetSub[0].instanceOf && AuditConfig.getConfig(propValuesForTargetSub[0].instanceOf)))) {
                 showProp = true
@@ -116,20 +116,16 @@
                                 <div class="la-copyElements-flex-item">
                                     <g:if test="${propValue.getValue() != "" && propValue.getValue() != null}">
                                         <g:if test="${propValue.type.isIntegerType()}">
-                                            <ui:xEditable owner="${propValue}" type="text" field="intValue"
-                                                             overwriteEditable="${overwriteEditable}"/>
+                                            <ui:xEditable owner="${propValue}" type="text" field="intValue" overwriteEditable="${overwriteEditable}"/>
                                         </g:if>
                                         <g:elseif test="${propValue.type.isStringType()}">
-                                            <ui:xEditable owner="${propValue}" type="text" field="stringValue"
-                                                             overwriteEditable="${overwriteEditable}"/>
+                                            <ui:xEditable owner="${propValue}" type="text" field="stringValue" overwriteEditable="${overwriteEditable}"/>
                                         </g:elseif>
                                         <g:elseif test="${propValue.type.isBigDecimalType()}">
-                                            <ui:xEditable owner="${propValue}" type="text" field="decValue"
-                                                             overwriteEditable="${overwriteEditable}"/>
+                                            <ui:xEditable owner="${propValue}" type="text" field="decValue" overwriteEditable="${overwriteEditable}"/>
                                         </g:elseif>
                                         <g:elseif test="${propValue.type.isDateType()}">
-                                            <ui:xEditable owner="${propValue}" type="date" field="dateValue"
-                                                             overwriteEditable="${overwriteEditable}"/>
+                                            <ui:xEditable owner="${propValue}" type="date" field="dateValue" overwriteEditable="${overwriteEditable}"/>
                                         </g:elseif>
                                         <g:elseif test="${propValue.type.isURLType()}">
                                             <ui:xEditable owner="${propValue}" type="url" field="urlValue"
@@ -164,8 +160,8 @@
                                     </g:if>
                                     <g:else>
                                         <span data-position="top left" class="la-popup-tooltip la-delay"
-                                              data-content="${message(code: "default.compare.propertyValueNotSet")}"><i
-                                            class="close icon"></i></span>
+                                              data-content="${message(code: "default.compare.propertyValueNotSet")}">
+                                            <i class="close icon"></i></span>
                                     </g:else>
                                 </div>
                             </div>
@@ -204,11 +200,9 @@
                                     ${PropertyDefinition.getLocalizedValue(propValue.type)}
                                     <g:if test="${propValue.isRefdataValueType()}">
                                         <g:set var="refdataValues" value="${[]}"/>
-                                        <g:each in="${RefdataCategory.getAllRefdataValues(propValue.refdataCategory)}"
-                                                var="refdataValue">
+                                        <g:each in="${RefdataCategory.getAllRefdataValues(propValue.refdataCategory)}" var="refdataValue">
                                             <g:if test="${refdataValue.getI10n('value')}">
-                                                <g:set var="refdataValues"
-                                                       value="${refdataValues + refdataValue.getI10n('value')}"/>
+                                                <g:set var="refdataValues" value="${refdataValues + refdataValue.getI10n('value')}"/>
                                             </g:if>
                                         </g:each>
                                         <br />
@@ -252,21 +246,16 @@
                                     <div class="la-copyElements-flex-item">
                                         <g:if test="${propValue.getValue() != "" && propValue.getValue() != null}">
                                         <g:if test="${propValue.type.isIntegerType()}">
-                                            <ui:xEditable owner="${propValue}" type="text" field="intValue"
-                                                             overwriteEditable="${overwriteEditable}"/>
+                                            <ui:xEditable owner="${propValue}" type="text" field="intValue" overwriteEditable="${overwriteEditable}"/>
                                         </g:if>
-
                                         <g:elseif test="${propValue.type.isStringType()}">
-                                            <ui:xEditable owner="${propValue}" type="text" field="stringValue"
-                                                             overwriteEditable="${overwriteEditable}"/>
+                                            <ui:xEditable owner="${propValue}" type="text" field="stringValue" overwriteEditable="${overwriteEditable}"/>
                                         </g:elseif>
                                         <g:elseif test="${propValue.type.isBigDecimalType()}">
-                                            <ui:xEditable owner="${propValue}" type="text" field="decValue"
-                                                             overwriteEditable="${overwriteEditable}"/>
+                                            <ui:xEditable owner="${propValue}" type="text" field="decValue" overwriteEditable="${overwriteEditable}"/>
                                         </g:elseif>
                                         <g:elseif test="${propValue.type.isDateType()}">
-                                            <ui:xEditable owner="${propValue}" type="date" field="dateValue"
-                                                             overwriteEditable="${overwriteEditable}"/>
+                                            <ui:xEditable owner="${propValue}" type="date" field="dateValue" overwriteEditable="${overwriteEditable}"/>
                                         </g:elseif>
                                         <g:elseif test="${propValue.type.isURLType()}">
                                             <ui:xEditable owner="${propValue}" type="url" field="urlValue"
@@ -300,8 +289,8 @@
                                         </g:if>
                                         <g:else>
                                             <span data-position="top left" class="la-popup-tooltip la-delay"
-                                                  data-content="${message(code: "default.compare.propertyValueNotSet")}"><i
-                                                class="close icon"></i></span>
+                                                  data-content="${message(code: "default.compare.propertyValueNotSet")}">
+                                                <i class="close icon"></i></span>
                                         </g:else>
                                     </div>
 
@@ -309,8 +298,7 @@
                                     <g:if test="${isConsortialObjects}">
                                         <g:if test="${propValue instanceof SubscriptionProperty || propValue instanceof LicenseProperty}">
                                             <g:if test="${targetObject instanceof License}">
-                                                <g:set var="consortium"
-                                                       value="${targetObject.getLicensingConsortium()}"/>
+                                                <g:set var="consortium" value="${targetObject.getLicensingConsortium()}"/>
                                             </g:if>
                                             <g:elseif test="${targetObject instanceof Subscription}">
                                                 <g:set var="consortium" value="${targetObject.getConsortia()}"/>
@@ -362,11 +350,9 @@
                                         ${PropertyDefinition.getLocalizedValue(propValue.type)}
                                         <g:if test="${propValue.isRefdataValueType()}">
                                             <g:set var="refdataValues" value="${[]}"/>
-                                            <g:each in="${RefdataCategory.getAllRefdataValues(propValue.refdataCategory)}"
-                                                    var="refdataValue">
+                                            <g:each in="${RefdataCategory.getAllRefdataValues(propValue.refdataCategory)}" var="refdataValue">
                                                 <g:if test="${refdataValue.getI10n('value')}">
-                                                    <g:set var="refdataValues"
-                                                           value="${refdataValues + refdataValue.getI10n('value')}"/>
+                                                    <g:set var="refdataValues" value="${refdataValues + refdataValue.getI10n('value')}"/>
                                                 </g:if>
                                             </g:each>
                                             <br />

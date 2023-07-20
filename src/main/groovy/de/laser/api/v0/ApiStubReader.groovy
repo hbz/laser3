@@ -11,6 +11,7 @@ import de.laser.api.v0.entities.ApiLicense
 import de.laser.api.v0.entities.ApiOrgAccessPoint
 import de.laser.api.v0.entities.ApiSubscription
 import de.laser.storage.Constants
+import de.laser.traces.DeletedObject
 
 /**
  * This class is responsible for delivering stubs, i.e. object fragments with just the essential details
@@ -141,5 +142,21 @@ class ApiStubReader {
             }
         }
         return null
+    }
+
+    static requestDeletedObjectStub(DeletedObject deletedObject, Org context) {
+        requestDeletedObjectStub(deletedObject, context, false)
+    }
+
+    static requestDeletedObjectStub(DeletedObject delObj, Org context, boolean isInvoiceTool) {
+        Map<String, Object> result = [:]
+        if(!delObj) {
+            return null
+        }
+        boolean hasAccess = isInvoiceTool || ApiDeletedObject.calculateAccess(delObj, context)
+        if (hasAccess) {
+            result = ApiUnsecuredMapReader.getDeletedObjectStubMap(delObj)
+        }
+        return (hasAccess ? result : Constants.HTTP_FORBIDDEN)
     }
 }

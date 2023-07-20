@@ -1,7 +1,6 @@
 package de.laser
 
-
-import de.laser.auth.UserOrgRole
+import de.laser.auth.User
 import de.laser.finance.CostItem
 import de.laser.config.ConfigDefaults
 import de.laser.properties.PropertyDefinition
@@ -73,7 +72,7 @@ class SurveyService {
      */
     boolean isEditableSurvey(Org org, SurveyInfo surveyInfo) {
 
-        if (accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO ) && surveyInfo.owner?.id == contextService.getOrg().id) {
+        if (contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO ) && surveyInfo.owner?.id == contextService.getOrg().id) {
             return true
         }
 
@@ -81,7 +80,7 @@ class SurveyService {
             return false
         }
 
-        if (accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )) {
+        if (contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )) {
             SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfigInList(org, surveyInfo.surveyConfigs)
 
             if (surveyOrg.finishDate) {
@@ -97,7 +96,7 @@ class SurveyService {
     @Deprecated
     boolean isEditableIssueEntitlementsSurvey(Org org, SurveyConfig surveyConfig) {
 
-        if (accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO ) && surveyConfig.surveyInfo.owner?.id == contextService.getOrg().id) {
+        if (contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO ) && surveyConfig.surveyInfo.owner?.id == contextService.getOrg().id) {
             return true
         }
 
@@ -109,7 +108,7 @@ class SurveyService {
             return false
         }
 
-        if (accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )) {
+        if (contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )) {
 
             if (SurveyOrg.findByOrgAndSurveyConfig(org, surveyConfig)?.finishDate) {
                 return false
@@ -800,21 +799,20 @@ class SurveyService {
         if(orgs)
         {
             //Only User that approved
-            List<UserOrgRole> userOrgs = UserOrgRole.findAllByOrgInList(orgs)
+            List<User> formalUserList = orgs ? User.findAllByFormalOrgInList(orgs) : []
 
             //Only User with Notification by Email and for Surveys Start
-            userOrgs.each { userOrg ->
-                if(userOrg.user.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_FOR_SURVEYS_START) == RDStore.YN_YES &&
-                        userOrg.user.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES)
+            formalUserList.each { fu ->
+                if (fu.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_FOR_SURVEYS_START) == RDStore.YN_YES &&
+                        fu.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES)
                 {
-
                     List<SurveyInfo> orgSurveys = SurveyInfo.executeQuery("SELECT s FROM SurveyInfo s " +
                             "LEFT JOIN s.surveyConfigs surConf " +
                             "LEFT JOIN surConf.orgs surOrg  " +
                             "WHERE surOrg.org IN (:org) " +
-                            "AND s.id IN (:survey)", [org: userOrg.org, survey: surveys?.id])
+                            "AND s.id IN (:survey)", [org: fu.formalOrg, survey: surveys?.id])
 
-                    mailSendService.sendSurveyEmail(userOrg.user, userOrg.org, orgSurveys, false)
+                    mailSendService.sendSurveyEmail(fu, fu.formalOrg, orgSurveys, false)
                 }
             }
         }
@@ -829,19 +827,17 @@ class SurveyService {
     void emailsToSurveyUsersOfOrg(SurveyInfo surveyInfo, Org org, boolean reminderMail){
 
         //Only User that approved
-        List<UserOrgRole> userOrgs = UserOrgRole.findAllByOrg(org)
+        List<User> formalUserList = org ? User.findAllByFormalOrg(org) : []
 
         //Only User with Notification by Email and for Surveys Start
-        userOrgs.each { userOrg ->
-            if(userOrg.user.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_FOR_SURVEYS_START) == RDStore.YN_YES &&
-                    userOrg.user.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES)
+        formalUserList.each { fu ->
+            if (fu.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_FOR_SURVEYS_START) == RDStore.YN_YES &&
+                    fu.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES)
             {
-                mailSendService.sendSurveyEmail(userOrg.user, userOrg.org, [surveyInfo], reminderMail)
+                mailSendService.sendSurveyEmail(fu, fu.formalOrg, [surveyInfo], reminderMail)
             }
         }
     }
-
-
 
     /**
      * Limits the given institution query to the set of institution IDs
@@ -1623,8 +1619,8 @@ class SurveyService {
         Sql sql = GlobalService.obtainSqlConnection()
         Connection connection = sql.dataSource.getConnection()
 
-        List newIes = sql.executeInsert("insert into issue_entitlement (ie_version, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_medium_rv_fk, ie_status_rv_fk, ie_name, ie_sortname, ie_perpetual_access_by_sub_fk) " +
-                "select 0, now(), now(), ${participantSub.id},  ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_medium_rv_fk, ie_status_rv_fk, ie_name, ie_sortname, ie_perpetual_access_by_sub_fk from issue_entitlement where ie_tipp_fk not in (select ie_tipp_fk from issue_entitlement where ie_subscription_fk = ${participantSub.id}) and ie_id = any(:ieIds)", [ieIds: connection.createArrayOf('bigint', entitlementsToTake.toArray())])
+        List newIes = sql.executeInsert("insert into issue_entitlement (ie_version, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_status_rv_fk, ie_name, ie_perpetual_access_by_sub_fk) " +
+                "select 0, now(), now(), ${participantSub.id},  ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_status_rv_fk, ie_name, ie_perpetual_access_by_sub_fk from issue_entitlement where ie_tipp_fk not in (select ie_tipp_fk from issue_entitlement where ie_subscription_fk = ${participantSub.id}) and ie_id = any(:ieIds)", [ieIds: connection.createArrayOf('bigint', entitlementsToTake.toArray())])
 
         if(newIes.size() > 0){
 

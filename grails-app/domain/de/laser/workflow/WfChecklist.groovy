@@ -52,42 +52,7 @@ class WfChecklist {
         license          (nullable: true)
         org              (nullable: true)
     }
-
-    WfChecklist instantiate(Object target) throws Exception {
-
-        WfChecklist checklist   = new WfChecklist()
-        checklist.title         = this.title
-        checklist.description   = this.description
-        checklist.owner         = this.owner
-
-        if (target instanceof Org) {
-            checklist.org = target
-        }
-        else if (target instanceof License) {
-            checklist.license = target
-        }
-        else if (target instanceof Subscription) {
-            checklist.subscription = target
-        }
-
-        this.getSequence().each{ cpoint ->
-            WfCheckpoint checkpoint = new WfCheckpoint()
-            checkpoint.title        = cpoint.title
-            checkpoint.description  = cpoint.description
-            checkpoint.checklist    = cpoint.checklist
-            checkpoint.position     = cpoint.position
-
-            if (! checkpoint.validate()) {
-                log.debug( '[ ' + this.id + ' ].instantiate() : ' + checkpoint.getErrors().toString() )
-            }
-        }
-
-        if (! checklist.validate()) {
-            log.debug( '[ ' + this.id + ' ].instantiate(' + target + ') : ' + checklist.getErrors().toString() )
-        }
-        checklist
-    }
-
+    
     Set<WfCheckpoint> getSequence() {
         WfCheckpoint.executeQuery('select cp from WfCheckpoint cp where cp.checklist = :cl order by cp.position', [cl: this]) as Set<WfCheckpoint>
     }

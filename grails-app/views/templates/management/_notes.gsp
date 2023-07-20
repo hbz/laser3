@@ -3,51 +3,50 @@
 <g:if test="${filteredSubscriptions}">
 
     <g:if test="${controllerName == "subscription"}">
-        <div class="ui segment ">
-            <h3 class="ui header"><g:message code="subscriptionsManagement.subscription"
-                                             args="${args.superOrgType}"/></h3>
+        <div class="ui segment">
+            <h3 class="ui header"><g:message code="subscriptionsManagement.subscription" args="${args.superOrgType}"/></h3>
 
-            <laser:render template="/templates/notes/table"
-                      model="${[instance: subscription, redirect: actionName]}"/>
+            <laser:render template="/templates/notes/table" model="${[instance: subscription, redirect: actionName]}"/>
         </div>
     </g:if>
 
-    <div class="ui segment">
+    <h3 class="ui header">${message(code: 'subscriptionsManagement.note.info.newNote')}</h3>
+
     <g:form action="${actionName}" controller="${controllerName}" params="[tab: 'notes']" method="post"
             class="ui form notes">
         <g:hiddenField id="pspm_id_${params.id}" name="id" value="${params.id}"/>
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
 
-        <h4 class="ui header">${message(code: 'subscriptionsManagement.note.info.newNote')}</h4>
+        <div class="ui segments">
+        <div class="ui segment">
 
         <div class="field">
             <label for="noteTitle">${message(code:'default.title.label')}:</label>
-
             <input type="text" id="noteTitle" name="noteTitle" />
         </div>
         <div class="field">
             <label for="noteContent">${message(code:'default.note.label')}:</label>
-
             <textarea class="la-textarea-resize-vertical" id="noteContent" name="noteContent"></textarea>
         </div>
 
         <button class="ui button" ${!editable ? 'disabled="disabled"' : ''} type="submit" name="processOption"
                 value="newNote">${message(code: 'default.button.create.label')}</button>
 
+        </div><!-- .segment -->
+        <div class="ui segment">
+
         <h3 class="ui header">
             <g:if test="${controllerName == "subscription"}">
-                ${message(code: 'subscriptionsManagement.subscriber')} <ui:totalNumber
-                    total="${filteredSubscriptions.size()}"/>
+                ${message(code: 'subscriptionsManagement.subscriber')} <ui:totalNumber total="${filteredSubscriptions.size()}"/>
             </g:if><g:else>
-                ${message(code: 'subscriptionsManagement.subscriptions')} <ui:totalNumber
-                        total="${filteredSubscriptions.size()}/${num_sub_rows}"/>
+                ${message(code: 'subscriptionsManagement.subscriptions')} <ui:totalNumber total="${num_sub_rows}"/>
             </g:else>
         </h3>
         <table class="ui celled la-js-responsive-table la-table table">
             <thead>
             <tr>
                 <g:if test="${editable}">
-                    <th>
+                    <th class="center aligned">
                         <g:checkBox name="membersListToggler" id="membersListToggler" checked="false"/>
                     </th>
                 </g:if>
@@ -73,8 +72,7 @@
                             <%-- This whole construct is necessary for that the form validation works!!! --%>
                             <div class="field">
                                 <div class="ui checkbox">
-                                    <g:checkBox id="selectedSubs_${sub.id}" name="selectedSubs" value="${sub.id}"
-                                                checked="false"/>
+                                    <g:checkBox id="selectedSubs_${sub.id}" name="selectedSubs" value="${sub.id}" checked="false"/>
                                 </div>
                             </div>
                         </td>
@@ -102,9 +100,7 @@
                         <td>${sub.name} <span class="${sub.type == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL ? 'sc_blue' : ''}"> (${sub.type.getI10n('value')}) </span></td>
                     </g:if>
                     <td>
-                        <laser:render template="/templates/notes/table"
-                                  model="${[instance: sub, redirect: actionName]}"/>
-
+                        <laser:render template="/templates/notes/table" model="${[instance: sub, redirect: actionName]}"/>
                     </td>
                     <td class="x">
                         <g:link controller="subscription" action="show" id="${sub.id}"
@@ -118,13 +114,14 @@
             </g:each>
             </tbody>
         </table>
+        </div><!-- .segment -->
+        </div><!-- .segments -->
     </g:form>
-    </div>
+
 </g:if>
 <g:else>
     <g:if test="${filterSet}">
-        <br/><strong><g:message code="filter.result.empty.object"
-                                args="${[message(code: "subscription.plural")]}"/></strong>
+        <br/><strong><g:message code="filter.result.empty.object" args="${[message(code: "subscription.plural")]}"/></strong>
     </g:if>
     <g:else>
         <br/><strong><g:message code="result.empty.object" args="${[message(code: "subscription.plural")]}"/></strong>

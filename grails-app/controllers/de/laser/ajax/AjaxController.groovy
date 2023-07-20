@@ -350,7 +350,7 @@ class AjaxController {
               log.debug('ignored value "' + it + '" from result because of constraint: '+ params.constraint)
           }
           //value is correct incorrectly translated!
-          if (it.value.equalsIgnoreCase('local subscription') && accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && params.constraint?.contains('removeValue_localSubscription')) {
+          if (it.value.equalsIgnoreCase('local subscription') && contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && params.constraint?.contains('removeValue_localSubscription')) {
               log.debug('ignored value "' + it + '" from result because of constraint: '+ params.constraint)
           }
           // default ..
@@ -1543,7 +1543,7 @@ class AjaxController {
         result.institution = contextService.getOrg()
         flash.error = ''
 
-        if (! (result.user as User).isMemberOf(result.institution as Org)) {
+        if (! (result.user as User).isFormal(result.institution as Org)) {
             flash.error = "You do not have permission to access ${contextService.getOrg().name} pages. Please request access on the profile page"
             response.sendError(HttpStatus.SC_FORBIDDEN)
             return
@@ -1563,8 +1563,8 @@ class AjaxController {
             else            flash.error += message(code:'dashboardDueDate.err.toShow.doesNotExist')
         }
 
-        result.is_inst_admin = userService.checkAffiliationAndCtxOrg(result.user, result.institution, 'INST_ADM')
-        result.editable = userService.checkAffiliationAndCtxOrg(result.user, result.institution, 'INST_EDITOR')
+        result.is_inst_admin = userService.hasFormalAffiliation(result.user, result.institution, 'INST_ADM')
+        result.editable = userService.hasFormalAffiliation(result.user, result.institution, 'INST_EDITOR')
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
         result.dashboardDueDatesOffset = result.offset
@@ -1605,7 +1605,7 @@ class AjaxController {
         result.institution = contextService.getOrg()
         flash.error = ''
 
-        if (! (result.user as User).isMemberOf(result.institution as Org)) {
+        if (! (result.user as User).isFormal(result.institution as Org)) {
             flash.error = "You do not have permission to access ${contextService.getOrg().name} pages. Please request access on the profile page"
             response.sendError(HttpStatus.SC_FORBIDDEN)
             return
@@ -1632,8 +1632,8 @@ class AjaxController {
             else          flash.error += message(code:'dashboardDueDate.err.toSetUndone.doesNotExist')
         }
 
-        result.is_inst_admin = userService.checkAffiliationAndCtxOrg(result.user, result.institution, 'INST_ADM')
-        result.editable = userService.checkAffiliationAndCtxOrg(result.user, result.institution, 'INST_EDITOR')
+        result.is_inst_admin = userService.hasFormalAffiliation(result.user, result.institution, 'INST_ADM')
+        result.editable = userService.hasFormalAffiliation(result.user, result.institution, 'INST_EDITOR')
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
         result.dashboardDueDatesOffset = result.offset
@@ -1835,23 +1835,25 @@ class AjaxController {
     result
   }
 
-    /**
-     * Removes a given object from the given owner and refreshes the owner's collection
-     */
     @Transactional
     @Secured(['ROLE_USER'])
-  def deleteThrough() {
-    // log.debug("deleteThrough(${params})");
-    def context_object = resolveOID2(params.contextOid)
-    def target_object = resolveOID2(params.targetOid)
-    if ( context_object."${params.contextProperty}".contains(target_object) ) {
-      def otr = context_object."${params.contextProperty}".remove(target_object)
-      target_object.delete()
-      context_object.save()
-    }
-    redirect(url: request.getHeader('referer'))
+    def unsetAffiliation() {
+        String[] keys = params.key.split(':')
+        if (keys.size() == 3) {
+            User u = User.get(keys[0])
+            Org fo = Org.get(keys[1])
+            Role fr = Role.get(keys[2])
 
-  }
+            if (u && fo && fr) {
+                if (u.formalOrg?.id == fo.id && u.formalRole?.id == fr.id) {
+                    u.formalOrg = null
+                    u.formalRole = null
+                    u.save()
+                }
+            }
+        }
+        redirect(url: request.getHeader('referer'))
+    }
 
     /**
      * This is the call route for processing an xEditable change other than reference data or role
@@ -2053,9 +2055,9 @@ class AjaxController {
     /**
      * Deletes the given task
      */
-    @DebugInfo(ctxPermAffiliation = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR'])
+    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
     @Secured(closure = {
-        ctx.accessService.ctxPermAffiliation(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')
+        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     })
     def deleteTask() {
 
@@ -2113,7 +2115,7 @@ class AjaxController {
         result.institution = contextService.getOrg()
         flash.error = ''
 
-        if (! (result.user as User).isMemberOf(result.institution as Org)) {
+        if (! (result.user as User).isFormal(result.institution as Org)) {
             flash.error = "You do not have permission to access ${contextService.getOrg().name} pages. Please request access on the profile page"
             response.sendError(HttpStatus.SC_FORBIDDEN)
             return

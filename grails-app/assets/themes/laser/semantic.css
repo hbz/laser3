@@ -6571,6 +6571,17 @@ a i.circular.la-gokb:hover {
   text-decoration: none;
   background-color: #004678;
 }
+
+/*------------------------------------
+         Buttons for Actionmenue
+  ------------------------------------*/
+
+/* single && last of two */
+
+.ui.buttons.la-ctrls > .button:not(:has(~ .button)) {
+  border-top-right-radius: 0.28571429rem;
+  border-bottom-right-radius: 0.28571429rem;
+}
 /*!
  * # Fomantic-UI ^2.9.2 - Container
  * https://github.com/fomantic/Fomantic-UI/
@@ -27380,6 +27391,7 @@ h1 ~ h2.ui.header {
 .ui.icon.header .icon.la-object-journal,
 .ui.icon.header .icon.la-object-database,
 .ui.icon.header .icon.la-object-ebook {
+  margin-right: 0.5em;
   font-size: 0.88em !important;
   line-height: 1 !important;
   padding: 0.5em 0 !important;
@@ -27530,7 +27542,8 @@ body[class*="platform"] .ui.icon.header .icon.la-object:before {
 }
 
 .ui.header.la-noMargin-top {
-  margin-top: 1rem;
+  margin-top: 0;
+  margin-bottom: 1.3rem;
   text-align: left;
   position: relative;
 }
@@ -27559,6 +27572,10 @@ body[class*="platform"] .ui.icon.header .icon.la-object:before {
 
 .la-subPlusYear-year {
   font-size: 1rem;
+}
+
+.la-orgRelations {
+  font-weight: normal;
 }
 /*!
  * # Fomantic-UI ^2.9.2 - Icon
@@ -47336,6 +47353,8 @@ a.ui.ui.ui.inverted.basic.black.label:hover {
   position: relative;
   padding-left: 0.2em;
   padding-right: 0.2em;
+  padding-top: 0.9em;
+  padding-bottom: 0.9em;
   margin-bottom: 1.2em;
   background-color: #fffaf5;
   border: 1px solid #d3dae3;
@@ -71616,6 +71635,11 @@ table tr td div.willBeReplacedStrong {
   padding: 5px;
   background-color: #EDC0BA;
   text-decoration: line-through;
+}
+
+.la-min-height {
+  min-height: 3.5em !important;
+  display: block!important;
 }
 
 .la-multi-sources:nth-child(n+2) {

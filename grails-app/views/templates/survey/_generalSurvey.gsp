@@ -23,7 +23,7 @@
         <div class="ui card ">
             <div class="content">
 
-                <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_PRO) && surveyOrg}">
+                <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_PRO) && surveyOrg}">
                     <dl>
                         <dt class="control-label">
                             ${message(code: 'surveyOrg.ownerComment.label', args: [institution.sortname])}
@@ -218,7 +218,7 @@
 
                 <div id="container-notes">
                     <laser:render template="/templates/notes/card"
-                              model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '', editable: accessService.ctxPermAffiliation(CustomerTypeService.ORG_CONSORTIUM_PRO, 'INST_EDITOR')]}"/>
+                              model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '', editable: contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)]}"/>
                 </div>
             </g:if>
 

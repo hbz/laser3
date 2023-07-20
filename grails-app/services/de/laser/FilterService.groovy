@@ -59,8 +59,8 @@ class FilterService {
             queryParams.orgStatus = selectedStatus
         }
         else {
-            query << "o.status != :orgStatus"
-            queryParams.orgStatus = RDStore.ORG_STATUS_REMOVED
+            query << "o.status.id != :orgStatus"
+            queryParams.orgStatus = RDStore.ORG_STATUS_REMOVED.id
         }
         if (params.orgRole?.length() > 0) {
             query << " exists (select ogr from o.links as ogr where ogr.roleType.id = :orgRole )"
@@ -1236,7 +1236,7 @@ class FilterService {
                 qry_params.startDate = date_filter
                 qry_params.endDate = date_filter
             }
-            base_qry += "and ( ( lower(ie.name) like :title ) or ( exists ( from Identifier ident where ident.tipp.id = ie.tipp.id and ident.value like :identifier ) ) or ((lower(ie.tipp.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(ie.tipp.firstEditor) like :ebookFirstAutorOrFirstEditor)) ) "
+            base_qry += "and ( ( lower(ie.tipp.name) like :title ) or ( exists ( from Identifier ident where ident.tipp.id = ie.tipp.id and ident.value like :identifier ) ) or ((lower(ie.tipp.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(ie.tipp.firstEditor) like :ebookFirstAutorOrFirstEditor)) ) "
             qry_params.title = "%${params.filter.trim().toLowerCase()}%"
             qry_params.identifier = "%${params.filter}%"
             qry_params.ebookFirstAutorOrFirstEditor = "%${params.filter.trim().toLowerCase()}%"
@@ -1459,7 +1459,7 @@ class FilterService {
                 qry_params.startDate = date_filter
                 qry_params.endDate = date_filter
             }
-            base_qry += "and ( ( lower(ie.name) like :title ) or ( exists ( from Identifier ident where ident.tipp.id = ie.tipp.id and ident.value like :identifier ) ) or ((lower(ie.tipp.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(ie.tipp.firstEditor) like :ebookFirstAutorOrFirstEditor)) ) "
+            base_qry += "and ( ( lower(ie.tipp.name) like :title ) or ( exists ( from Identifier ident where ident.tipp.id = ie.tipp.id and ident.value like :identifier ) ) or ((lower(ie.tipp.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(ie.tipp.firstEditor) like :ebookFirstAutorOrFirstEditor)) ) "
             qry_params.title = "%${params.filter.trim().toLowerCase()}%"
             qry_params.identifier = "%${params.filter}%"
             qry_params.ebookFirstAutorOrFirstEditor = "%${params.filter.trim().toLowerCase()}%"
@@ -1877,7 +1877,7 @@ class FilterService {
                                         "(select ${refdata_value_col} from refdata_value where rdv_id = tipp_status_rv_fk) as status",
                                         "(select ${refdata_value_col} from refdata_value where rdv_id = tipp_access_type_rv_fk) as accessType",
                                         "(select ${refdata_value_col} from refdata_value where rdv_id = tipp_open_access_rv_fk) as openAccess"]
-                orderClause = " order by tipp_sort_name, name"
+                orderClause = " order by tipp_sort_name, tipp_name"
                 query = "select ${columns.join(',')} from title_instance_package_platform"
                 String subFilter = ""
                 if(configMap.sub) {
@@ -1937,7 +1937,7 @@ class FilterService {
                                    '(select plat_title_namespace from platform where plat_id = tipp_plat_fk) as tipp_plat_namespace',
                                    "case tipp_title_type when 'Journal' then 'serial' when 'Book' then 'monograph' when 'Database' then 'database' else 'other' end as title_type",
                                    'tipp_name as name', 'coalesce(ie_access_start_date, tipp_access_start_date) as accessStartDate', 'coalesce(ie_access_end_date, tipp_access_end_date) as accessEndDate',
-                                   'tipp_publisher_name', "(select ${refdata_value_col} from refdata_value where rdv_id = ie_medium_rv_fk) as tipp_medium", 'tipp_host_platform_url', 'tipp_date_first_in_print',
+                                   'tipp_publisher_name', "(select ${refdata_value_col} from refdata_value where rdv_id = tipp_medium_rv_fk) as tipp_medium", 'tipp_host_platform_url', 'tipp_date_first_in_print',
                                    'tipp_date_first_online', 'tipp_gokb_id', '(select pkg_gokb_id from package where pkg_id = tipp_pkg_fk) as tipp_pkg_uuid', 'tipp_date_created', 'tipp_last_updated', 'tipp_first_author', 'tipp_first_editor', 'tipp_volume', 'tipp_edition_number', 'tipp_series_name', 'tipp_subject_reference',
                                    "(select ${refdata_value_col} from refdata_value where rdv_id = ie_status_rv_fk) as status",
                                    "(select ${refdata_value_col} from refdata_value where rdv_id = tipp_access_type_rv_fk) as accessType",
@@ -2169,7 +2169,7 @@ class FilterService {
         if(params instanceof GrailsParameterMap)
             return params.list(key)
         //.respondsTo('size') is a substitute for instanceof Ljava.lang.String;
-        else if(params[key] instanceof List || params[key].respondsTo('size')) {
+        else if(params[key] instanceof List || (params[key].respondsTo('size') && !(params[key] instanceof String))) {
             return params[key]
         }
         else return [params[key]]

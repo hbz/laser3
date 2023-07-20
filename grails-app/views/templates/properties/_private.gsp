@@ -7,8 +7,8 @@
 <laser:serviceInjection />
 
 
-<%-- OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${userService.checkAffiliationAndCtxOrg(user, contextService.getOrg(), 'INST_EDITOR')} --%>
-<g:set var="overwriteEditable" value="${editable || accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.ORG_INST_PRO )}" />
+<%-- OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${userService.hasFormalAffiliation(user, contextService.getOrg(), 'INST_EDITOR')} --%>
+<g:set var="overwriteEditable" value="${editable || contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_INST_PRO )}" />
 
 <g:if test="${newProp}">
     <ui:errors bean="${newProp}" />
@@ -39,7 +39,7 @@
         </thead>
     </g:if>
     <tbody>
-        <g:each in="${privateProperties.sort{a, b -> a.type.getI10n('name') <=> b.type.getI10n('name') ?: a.getValue() <=> b.getValue() ?: a.id <=> b.id }}" var="prop">
+        <g:each in="${privateProperties.sort{a, b -> a.type.getI10n('name').toLowerCase() <=> b.type.getI10n('name').toLowerCase() ?: a.getValue() <=> b.getValue() ?: a.id <=> b.id }}" var="prop">
             <g:if test="${prop.type.tenant?.id == tenant?.id}">
                 <tr>
                     <td>

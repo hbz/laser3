@@ -26,7 +26,7 @@ class IssueEntitlementExport extends BaseDetailsExport {
                                     'globalUID'                           : [ type: BaseDetailsExport.FIELD_TYPE_PROPERTY ],
                                     '@-entitlement-tippName'              : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
                                     '@-entitlement-tippTitleType'         : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
-                                    'medium'                              : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
+                                    '@-entitlement-tippMedium'            : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
                                     'status'                              : [ type: BaseDetailsExport.FIELD_TYPE_REFDATA ],
                                     '@-entitlement-tippFirstAuthor'       : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
                                     '@-entitlement-tippEditionStatement'  : [ type: BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL ],
@@ -108,7 +108,10 @@ class IssueEntitlementExport extends BaseDetailsExport {
                     content.add( piList ? piList.join( BaseDetailsExport.CSV_VALUE_SEPARATOR ) : '' )
                 }
                 else if (key == '@-entitlement-tippName') {
-                    content.add( ie.name ?: '' )
+                    content.add( ie.tipp.name ?: '' )
+                }
+                else if (key == '@-entitlement-tippMedium') {
+                    content.add( ie.tipp.medium?.getI10n("value") ?: '' )
                 }
                 else if (key == '@-entitlement-tippDeweyDecimalClassification') {
                     List<String> ddcList = ie.tipp.ddcs.collect { ddc ->

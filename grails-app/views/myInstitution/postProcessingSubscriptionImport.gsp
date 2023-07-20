@@ -37,7 +37,7 @@
                                             ${license.reference}
                                         </g:each>
                                     </li>
-                                    <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && sub.instanceOf && sub.member}">
+                                    <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && sub.instanceOf && sub.member}">
                                         <li><g:message code="myinst.subscriptionImport.instanceOf" args="${parentSubType}"/>: ${genericOIDService.resolveOID(sub.instanceOf)}</li>
                                         <li><g:message code="myinst.subscriptionImport.member"/>: ${genericOIDService.resolveOID(sub.member)}</li>
                                     </g:if>
@@ -50,6 +50,7 @@
                                     <li><g:message code="myinst.subscriptionImport.startDate"/>: <g:formatDate format="${message(code:'default.date.format.notime')}" date="${sub.startDate}"/></li>
                                     <li><g:message code="myinst.subscriptionImport.endDate"/>: <g:formatDate format="${message(code:'default.date.format.notime')}" date="${sub.endDate}"/></li>
                                     <li><g:message code="myinst.subscriptionImport.manualCancellationDate"/>: <g:formatDate format="${message(code:'default.date.format.notime')}" date="${sub.manualCancellationDate}"/></li>
+                                    <li><g:message code="myinst.subscriptionImport.isAutomaticRenewAnnually"/>: ${sub.isAutomaticRenewAnnually ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}</li>
                                     <li><g:message code="myinst.subscriptionImport.hasPerpetualAccess"/>: ${sub.hasPerpetualAccess ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}</li>
                                     <li><g:message code="myinst.subscriptionImport.hasPublishComponent"/>: ${sub.hasPublishComponent ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}</li>
                                     <li><g:message code="myinst.subscriptionImport.isPublicForApi"/>: ${sub.isPublicForApi ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}</li>

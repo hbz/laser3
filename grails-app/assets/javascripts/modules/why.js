@@ -43,7 +43,7 @@ why = {
                 $.toast({message: 'Warning: Duplicate event listeners found', displayTime: 6000, class: 'orange', showIcon: 'bug'});
             }
             if (why.id_result.length > 0) {
-                $.toast({message: 'Warning: Duplicate ID attributes found', displayTime: 6000, class: 'red', showIcon: 'code'});
+                $.toast({message: 'Warning: Duplicate ID attributes found: ' + why.id_result, displayTime: 8000, class: 'red', showIcon: 'code'});
             }
         }
     },

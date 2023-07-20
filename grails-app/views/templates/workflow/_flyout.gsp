@@ -30,8 +30,15 @@
             </g:elseif>
             <g:else>
                 <div class="ui message info" style="margin-top:1em;text-align:left;font-size:14px;font-weight:normal;">
-                    <i class="hand point right outline icon"></i>
-                    <div class="content">Bitte beachten Sie: Ihre Änderungen werden direkt/ohne explizites Speichern wirksam.</div>
+                    <div class="content">
+                        <i class="hand point right outline icon"></i>
+                        Ihre Änderungen werden direkt/ohne explizites Speichern wirksam.
+                        <br />
+                        <i class="hand point right outline icon"></i>
+                        Bei einer Kopie werden Informationen aus den Feldern
+                        <strong>Kommentar</strong>, <strong>Vorlage</strong>, <strong>Aufgabe erledigt</strong> und <strong>Datumsangabe</strong>
+                        nicht übernommen.
+                    </div>
                 </div>
             </g:else>
         </g:if>

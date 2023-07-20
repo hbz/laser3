@@ -41,7 +41,7 @@ class UiTagLib {
         } else {
             out << '<h1 class="ui icon header la-clear-before la-noMargin-top">'
         }
-        if (attrs.referenceYear){
+        if ( (attrs.referenceYear) || (attrs.visibleOrgRelationsJoin) ){
             out << '<div class="la-subPlusYear">'
         }
         if (attrs.type) {
@@ -49,7 +49,7 @@ class UiTagLib {
         } else {
             out << ui.headerIcon()
         }
-        if (attrs.referenceYear){
+        if ( (attrs.referenceYear)|| (attrs.visibleOrgRelationsJoin) ) {
             out << '<div class="la-subPlusYear-texts">'
         }
         if (attrs.text) {
@@ -67,9 +67,15 @@ class UiTagLib {
         if ( body ) {
             out << body()
         }
-        if (attrs.referenceYear) {
-            out << '<span class="la-subPlusYear-year" >'
+        if ( (attrs.referenceYear)|| (attrs.visibleOrgRelationsJoin) ) {
+            out << '<span class="la-subPlusYear-year">'
             out << attrs.referenceYear
+            if (attrs.referenceYear) {
+                out << ' – '
+            }
+            out << '<span class="la-orgRelations">'
+            out << attrs.visibleOrgRelationsJoin
+            out << '</span>'
             out << '</span>'
             out << '</div>'
             out << '</div>'
@@ -644,11 +650,11 @@ class UiTagLib {
                 }
                 out << '</div> </div>'
             }
-        } else {
-            out << '<i aria-hidden="true" class="arrow left icon disabled"></i>'
+        } else if (object.hasProperty('retirementDate')){}
+        else out << '<i aria-hidden="true" class="arrow left icon disabled"></i>'
+        if ( (startDate) || (endDate) ) {
+            out << '<span class="la-annual-rings-text">' + startDate + dash + endDate + '</span>'
         }
-        out << '<span class="la-annual-rings-text">' + startDate + dash + endDate + '</span>'
-
         out << "<a class='ui ${color} circular tiny label la-popup-tooltip la-delay'  data-variation='tiny' data-content='Status: ${tooltip}'>"
         out << '       &nbsp;'
         out << '</a>'
@@ -683,9 +689,9 @@ class UiTagLib {
                 }
                 out << '</div> </div>'
             }
-        } else {
-            out << '<i aria-hidden="true" class="arrow right icon disabled"></i>'
-        }
+
+        } else if (object.hasProperty('retirementDate')){}
+        else out << '<i aria-hidden="true" class="arrow right icon disabled"></i>'
         out << '</div>'
     }
 

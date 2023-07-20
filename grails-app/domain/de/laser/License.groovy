@@ -435,31 +435,22 @@ class License extends AbstractBaseWithCalculatedLastUpdated
      * @return true if the grant for the user is given, false otherwise
      */
     boolean hasPerm(String perm, User user) {
-        ContextService contextService = BeanStore.getContextService()
-        Role adm = Role.findByAuthority('ROLE_ADMIN')
-        Role yda = Role.findByAuthority('ROLE_YODA')
-
-        if (user.getAuthorities().contains(adm) || user.getAuthorities().contains(yda)) {
+        if (user.isAdmin() || user.isYoda()) {
             return true
         }
+        ContextService contextService = BeanStore.getContextService()
+        Org contextOrg = contextService.getOrg()
 
-        if (user.getAffiliationOrgsIdList().contains(contextService.getOrg().id)) {
-
-            OrgRole cons = OrgRole.findByLicAndOrgAndRoleType(
-                    this, contextService.getOrg(), RDStore.OR_LICENSING_CONSORTIUM
-            )
-            OrgRole licseeCons = OrgRole.findByLicAndOrgAndRoleType(
-                    this, contextService.getOrg(), RDStore.OR_LICENSEE_CONS
-            )
-            OrgRole licsee = OrgRole.findByLicAndOrgAndRoleType(
-                    this, contextService.getOrg(), RDStore.OR_LICENSEE
-            )
+        if (user.isFormal(contextOrg)) {
+            OrgRole cons       = OrgRole.findByLicAndOrgAndRoleType( this, contextOrg, RDStore.OR_LICENSING_CONSORTIUM )
+            OrgRole licseeCons = OrgRole.findByLicAndOrgAndRoleType( this, contextOrg, RDStore.OR_LICENSEE_CONS )
+            OrgRole licsee     = OrgRole.findByLicAndOrgAndRoleType( this, contextOrg, RDStore.OR_LICENSEE )
 
             if (perm == 'view') {
                 return cons || licseeCons || licsee
             }
             if (perm == 'edit') {
-                if(BeanStore.getAccessService().ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC ))
+                if(BeanStore.getContextService().hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC ))
                     return cons || licsee
             }
         }

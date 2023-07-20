@@ -115,6 +115,17 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     //Only for Consortia: ERMS-2098
     String comment
 
+    //Only for Consortia and instanceOf = true
+    boolean offerRequested = false
+    Date offerRequestedDate
+    boolean offerAccepted = false
+    String offerNote
+    String priceIncreaseInfo
+    boolean renewalSent = false
+    Date renewalSentDate
+    boolean participantTransferWithSurvey = false
+    SubscriptionDiscountScale discountScale
+
     Subscription instanceOf
     // If a subscription is administrative, subscription members will not see it resp. there is a toggle which en-/disables visibility
     boolean administrative = false
@@ -139,7 +150,8 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
           derivedSubscriptions: Subscription,
           propertySet         : SubscriptionProperty,
           costItems           : CostItem,
-          ieGroups            : IssueEntitlementGroup
+          ieGroups            : IssueEntitlementGroup,
+          discountScales      : SubscriptionDiscountScale
   ]
 
   static mappedBy = [
@@ -192,6 +204,16 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         lastUpdated          column: 'sub_last_updated'
         lastUpdatedCascading column: 'sub_last_updated_cascading'
 
+        offerRequested column:'sub_offer_requested'
+        offerRequestedDate column:'sub_offer_requested_date'
+        offerAccepted column:'sub_offer_accepted'
+        offerNote column:'sub_offer_note'
+        priceIncreaseInfo column:'sub_price_increase_info'
+        renewalSent column:'sub_renewal_sent'
+        renewalSentDate column:'sub_renewal_sent_date'
+        participantTransferWithSurvey column:'sub_participant_transfer_with_survey'
+        discountScale column: 'sub_discount_scale_fk'
+
         noticePeriod    column:'sub_notice_period'
         isMultiYear column: 'sub_is_multi_year'
         isAutomaticRenewAnnually column: 'sub_is_automatic_renew_annually'
@@ -234,6 +256,12 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         cancellationAllowances(nullable:true, blank:true)
         lastUpdated(nullable: true)
         lastUpdatedCascading (nullable: true)
+
+        offerRequestedDate (nullable:true)
+        offerNote (nullable:true, blank:true)
+        priceIncreaseInfo (nullable:true, blank:true)
+        renewalSentDate (nullable:true)
+        discountScale (nullable: true)
     }
 
     @Override
@@ -719,31 +747,22 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
      * @return true if the given permission has been granted to the given user for this subscription, false otherwise
      */
     boolean hasPerm(String perm, User user) {
-        Role adm = Role.findByAuthority('ROLE_ADMIN')
-        Role yda = Role.findByAuthority('ROLE_YODA')
-
-        if (user.getAuthorities().contains(adm) || user.getAuthorities().contains(yda)) {
+        if (user.isAdmin() || user.isYoda()) {
             return true
         }
+        ContextService contextService = BeanStore.getContextService()
+        Org contextOrg = contextService.getOrg()
 
-        Org contextOrg = BeanStore.getContextService().getOrg()
-        if (user.getAffiliationOrgsIdList().contains(contextOrg?.id)) {
-
-            OrgRole cons = OrgRole.findBySubAndOrgAndRoleType(
-                    this, contextOrg, RDStore.OR_SUBSCRIPTION_CONSORTIA
-            )
-            OrgRole subscrCons = OrgRole.findBySubAndOrgAndRoleType(
-                    this, contextOrg, RDStore.OR_SUBSCRIBER_CONS
-            )
-            OrgRole subscr = OrgRole.findBySubAndOrgAndRoleType(
-                    this, contextOrg, RDStore.OR_SUBSCRIBER
-            )
+        if (user.isFormal(contextOrg)) {
+            OrgRole cons       = OrgRole.findBySubAndOrgAndRoleType( this, contextOrg, RDStore.OR_SUBSCRIPTION_CONSORTIA )
+            OrgRole subscrCons = OrgRole.findBySubAndOrgAndRoleType( this, contextOrg, RDStore.OR_SUBSCRIBER_CONS )
+            OrgRole subscr     = OrgRole.findBySubAndOrgAndRoleType( this, contextOrg, RDStore.OR_SUBSCRIBER )
 
             if (perm == 'view') {
                 return cons || subscrCons || subscr
             }
             if (perm == 'edit') {
-                if (BeanStore.getAccessService().ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC ))
+                if (BeanStore.getContextService().hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC ))
                     return cons || subscr
             }
         }

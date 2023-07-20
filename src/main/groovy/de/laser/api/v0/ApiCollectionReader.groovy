@@ -343,14 +343,13 @@ class ApiCollectionReader {
                 [sub: subPkg.subscription, pkg: subPkg.pkg, statusTipp: RDStore.TIPP_STATUS_REMOVED, statusIe: RDStore.TIPP_STATUS_REMOVED]
         )
         */
-        //missing are names etc., verify output - continue here!
-        List ieRows = sql.rows("select ie_id, ie_name, ie_guid, ie_access_start_date, ie_access_end_date, ie_last_updated, (select rdv_value from refdata_value where rdv_id = ie_status_rv_fk) as ie_status, (select rdv_value from refdata_value where (rdv_id = ie_medium_rv_fk and ie_medium_rv_fk is not null) or (ie_medium_rv_fk is null and rdv_id = tipp_medium_rv_fk)) as ie_medium, ie_perpetual_access_by_sub_fk, " +
-                "tipp_guid, tipp_name, tipp_host_platform_url, tipp_gokb_id, tipp_pkg_fk, tipp_plat_fk, tipp_date_first_in_print, tipp_date_first_online, tipp_first_author, tipp_first_editor, " +
+        List ieRows = sql.rows("select ie_id, ie_guid, ie_access_start_date, ie_access_end_date, ie_last_updated, (select rdv_value from refdata_value where rdv_id = tipp_medium_rv_fk) as tipp_medium, ie_perpetual_access_by_sub_fk, " +
+                "tipp_guid, tipp_name, tipp_host_platform_url, tipp_gokb_id, tipp_pkg_fk, tipp_date_first_in_print, tipp_date_first_online, tipp_first_author, tipp_first_editor, " +
                 "tipp_publisher_name, tipp_imprint, tipp_volume, tipp_edition_number, tipp_last_updated, tipp_series_name, tipp_subject_reference, (select rdv_value from refdata_value where rdv_id = tipp_access_type_rv_fk) as tipp_access_type, (select rdv_value from refdata_value where rdv_id = tipp_open_access_rv_fk) as tipp_open_access, " +
                 "tipp_last_updated, tipp_id, (select rdv_value from refdata_value where rdv_id = tipp_status_rv_fk) as tipp_status, " +
                 "case tipp_title_type when 'Journal' then 'serial' when 'Book' then 'monograph' when 'Database' then 'database' else 'other' end as title_type " +
                 "from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id " +
-                "where ie_subscription_fk = :sub and tipp_pkg_fk = :pkg and tipp_status_rv_fk != :statusTipp and ie_status_rv_fk != :removed order by ie_sortname",
+                "where ie_subscription_fk = :sub and tipp_pkg_fk = :pkg and tipp_status_rv_fk != :statusTipp and ie_status_rv_fk != :removed order by tipp_sort_name",
                 [sub: subPkg.subscription.id, pkg: subPkg.pkg.id, statusTipp: RDStore.TIPP_STATUS_REMOVED.id, removed: RDStore.TIPP_STATUS_REMOVED.id])
         log.debug("now fetching additional params ...")
         Map<String, Object> subParams = [subId: subPkg.subscription.id], pkgParams = [pkgId: subPkg.pkg.id]
@@ -360,7 +359,7 @@ class ApiCollectionReader {
         ddcRows = sql.rows('select rdv_value, rdv_value_de, rdv_value_en, ddc_tipp_fk from dewey_decimal_classification join refdata_value on ddc_rv_fk = rdv_id join title_instance_package_platform on ddc_tipp_fk = tipp_id where tipp_pkg_fk = :pkgId', pkgParams),
         langRows = sql.rows('select rdv_value, rdv_value_de, rdv_value_en, lang_tipp_fk from language join refdata_value on lang_rv_fk = rdv_id join title_instance_package_platform on lang_tipp_fk = tipp_id where tipp_pkg_fk = :pkgId', pkgParams),
         altNameRows = sql.rows('select altname_name, altname_tipp_fk from alternative_name join title_instance_package_platform on altname_tipp_fk = tipp_id where tipp_pkg_fk = :pkgId', pkgParams),
-        platformsOfSubscription = sql.rows('select plat_id, plat_gokb_id, plat_name, plat_guid, plat_primary_url, (select rdv_value from refdata_value where rdv_id = plat_status_rv_fk) as plat_status from platform join title_instance_package_platform on tipp_plat_fk = plat_id join issue_entitlement on ie_tipp_fk = tipp_id where ie_subscription_fk = :subId', subParams),
+        //platformsOfSubscription = sql.rows('select plat_id, plat_gokb_id, plat_name, plat_guid, plat_primary_url, (select rdv_value from refdata_value where rdv_id = plat_status_rv_fk) as plat_status from platform join title_instance_package_platform on tipp_plat_fk = plat_id join issue_entitlement on ie_tipp_fk = tipp_id where ie_subscription_fk = :subId', subParams),
         packageOfSubscription = sql.rows('select pkg_guid, pkg_gokb_id, pkg_name, (select rdv_value from refdata_value where rdv_id = pkg_status_rv_fk) as pkg_status from package where pkg_id = :pkgId', pkgParams),
         packageIDs = sql.rows('select idns_ns, id_value from identifier join identifier_namespace on id_ns_fk = idns_id join package on pkg_id = id_pkg_fk where pkg_id = :pkgId', pkgParams),
         packageAltNames = sql.rows('select altname_name from alternative_name where altname_pkg_fk = :pkgId', pkgParams),
@@ -371,8 +370,8 @@ class ApiCollectionReader {
         ddcMap = ExportService.preprocessRows(ddcRows, 'ddc_tipp_fk'),
         languageMap = ExportService.preprocessRows(langRows, 'lang_tipp_fk'),
         altNameMap = ExportService.preprocessRows(altNameRows, 'altname_tipp_fk'),
-        publisherMap = ExportService.preprocessRows(titlePublishers, 'or_tipp_fk'),
-        platformMap = ExportService.preprocessRows(platformsOfSubscription, 'plat_id')
+        //platformMap = ExportService.preprocessRows(platformsOfSubscription, 'plat_id'),
+        publisherMap = ExportService.preprocessRows(titlePublishers, 'or_tipp_fk')
         Map<String, Object> pkgData = packageOfSubscription.get(0)
         pkgData.ids = packageIDs
         pkgData.altnames = packageAltNames
@@ -380,13 +379,13 @@ class ApiCollectionReader {
             //println "now processing row ${i}"
             //result << ApiIssueEntitlement.getIssueEntitlementMap(ie, ignoreRelation, context) // de.laser.IssueEntitlement
             Map<String, Object> ie = [globalUID: row['ie_guid']]
-            ie.name = row['ie_name']
+            //ie.name = row['ie_name']
             ie.accessStartDate = row['ie_access_start_date'] ? ApiToolkit.formatInternalDate(row['ie_access_start_date']) : null
             ie.accessEndDate = row['ie_access_end_date'] ? ApiToolkit.formatInternalDate(row['ie_access_end_date']) : null
             ie.lastUpdated = row['ie_last_updated'] ? ApiToolkit.formatInternalDate(row['ie_last_updated']) : null
-            //RefdataValues
-            ie.medium = row['ie_medium'] //fallback tipp_medium already in query
-            ie.status = row['ie_status']
+            //RefdataValues - both removed as of API version 2.0
+            //ie.medium = row['ie_medium']
+            //ie.status = row['tipp_status']
             ie.perpetualAccessBySub = ApiStubReader.requestSubscriptionStub(Subscription.get(row['ie_perpetual_access_by_sub_fk']), context, false)
             List coverages = [], priceItems = []
             coverageMap.get(row['ie_id']).eachWithIndex { GroovyRowResult covRow, int j ->
@@ -424,13 +423,13 @@ class ApiCollectionReader {
             if(ignoreRelation != ApiReader.IGNORE_ALL) {
                 //println "processing references"
                 if(ignoreRelation == ApiReader.IGNORE_SUBSCRIPTION_AND_PACKAGE) {
-                    row.platform = platformMap.get(row['tipp_plat_fk'])[0]
+                    //row.platform = platformMap.get(row['tipp_plat_fk'])[0]
                     row.pkg = pkgData
                     ie.tipp = ApiMapReader.getTippMapWithSQL(row, ApiReader.IGNORE_ALL, context) // de.laser.TitleInstancePackagePlatform
                 }
                 else {
                     if(ignoreRelation != ApiReader.IGNORE_TIPP) {
-                        row.platform = platformMap.get(row['tipp_plat_fk'])[0]
+                        //row.platform = platformMap.get(row['tipp_plat_fk'])[0]
                         row.pkg = pkgData
                         ie.tipp = ApiMapReader.getTippMapWithSQL(row, ApiReader.IGNORE_SUBSCRIPTION, context) // de.laser.TitleInstancePackagePlatform
                     }

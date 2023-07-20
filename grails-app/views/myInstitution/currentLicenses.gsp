@@ -127,7 +127,7 @@
           </div>
           <div class="three fields">
           <%-- TODO [ticket=2276] provisoric, name check is in order to prevent id mismatch --%>
-              <g:if test="${accessService.ctxPerm(CustomerTypeService.ORG_INST_PRO) || institution.globalUID == Org.findByName('LAS:eR Backoffice').globalUID}">
+              <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_INST_PRO) || institution.globalUID == Org.findByName('LAS:eR Backoffice').globalUID}">
                   <div class="field">
                       <fieldset id="licenseType">
                           <div class="inline fields la-filter-inline">
@@ -209,6 +209,9 @@
                           <td>${ (params.int('offset') ?: 0)  + jj + 1 }</td>
                           <th scope="row" class="la-th-column">
                               <g:link action="show" class="la-main-object" controller="license" id="${l.id}">
+                                  <g:if test="${l._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION}">
+                                      <i class="icon users la-list-icon la-popup-tooltip la-delay" data-content="${message(code: 'license.member')}"></i>
+                                  </g:if>
                                   ${l.reference ?: message(code:'missingLicenseReference')}
                               </g:link>
                               <g:each in="${allLinkedSubscriptions.get(l)}" var="sub">
@@ -222,7 +225,7 @@
                               <td>
                                   <g:each in="${l.derivedLicenses}" var="lChild">
                                       <g:link controller="license" action="show" id="${lChild.id}">
-                                          <p>${lChild}</p>
+                                          <p><i class="icon users la-list-icon la-popup-tooltip la-delay" data-content="${message(code: 'license.member')}"></i> ${lChild}</p>
                                       </g:link>
                                   </g:each>
                               </td>

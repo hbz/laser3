@@ -105,6 +105,12 @@ class FinanceControllerService {
             Map navigation = linksGenerationService.generateNavigation(result.subscription)
             result.navNextSubscription = navigation.nextLink
             result.navPrevSubscription = navigation.prevLink
+
+            Set<Long> excludes = [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id]
+            if(result.institution.isCustomerType_Consortium())
+                excludes << RDStore.OR_SUBSCRIPTION_CONSORTIA.id
+            // restrict visible for templates/links/orgLinksAsList; done by Andreas Gálffy
+            result.visibleOrgRelations = result.subscription.orgRelations.findAll { OrgRole oo -> !(oo.roleType.id in excludes) }
         }
         Locale locale = LocaleUtils.getCurrentLocale()
 
@@ -197,7 +203,7 @@ class FinanceControllerService {
                 break
         }
         if (editable)
-            result.editable = accessService.ctxInstEditorCheckPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+            result.editable = contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
         result.dataToDisplay = dataToDisplay
         //override default view to show if checked by pagination or from elsewhere
         if (params.showView){

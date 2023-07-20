@@ -21,7 +21,7 @@
         <div class="header">KBART Exports</div>
 
         <ui:exportDropdownItem>
-            <g:link class="item" action="renewEntitlementsWithSurvey"
+            <g:link class="item kbartExport" action="renewEntitlementsWithSurvey"
                     id="${subscriberSub.id}"
                     params="${[surveyConfigID: surveyConfig.id,
                                exportKBart   : true,
@@ -31,7 +31,7 @@
         <g:if test="${countCurrentPermanentTitles > 0}">
 
             <ui:exportDropdownItem>
-                <g:link class="item" action="renewEntitlementsWithSurvey"
+                <g:link class="item kbartExport" action="renewEntitlementsWithSurvey"
                         id="${subscriberSub.id}"
                         params="${[surveyConfigID: surveyConfig.id,
                                    exportKBart   : true,
@@ -247,6 +247,8 @@
 
     </div>
 </div><!--.row-->
+
+<div id="downloadWrapper"></div>
 
 <br />
 <ui:tabs actionName="${actionName}">
@@ -511,6 +513,19 @@
         //do not forget to communicate that to the users!
         if($("#reportType").dropdown('get value') !== '' && $("#reportType").dropdown('get value').length > 0)
             window.location.href = url;
+    });
+
+    $('.kbartExport').click(function(e) {
+        e.preventDefault();
+        $('#globalLoadingIndicator').show();
+        $.ajax({
+            url: $(this).attr('href'),
+            type: 'POST',
+            contentType: false
+        }).done(function(response){
+            $("#downloadWrapper").html(response);
+            $('#globalLoadingIndicator').hide();
+        });
     });
 </laser:script>
 <laser:htmlEnd />

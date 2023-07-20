@@ -32,9 +32,9 @@ class AddressController  {
     /**
      * Creates a new address with the given parameters
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = true, wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     def create() {
         Address.withTransaction {
@@ -43,6 +43,14 @@ class AddressController  {
                     [addressInstance: new Address(params)]
                     break
                 case 'POST':
+                    String referer = request.getHeader('referer')
+                    if(!referer.contains('tab')) {
+                        if(referer.contains('?'))
+                            referer += '&tab=addresses'
+                        else
+                            referer += '?tab=addresses'
+                    }
+                    else referer = referer.replaceAll('tab=contacts', 'tab=addresses')
                     if (formService.validateToken(params)) {
                         Address addressInstance = new Address()
 
@@ -55,18 +63,16 @@ class AddressController  {
                         params.remove('type.id')
 
                         addressInstance.properties = params
-
                         if (!addressInstance.save()) {
                             flash.error = message(code: 'default.save.error.general.message') as String
                             log.error('Adresse konnte nicht gespeichert werden. ' + addressInstance.errors)
-                            redirect(url: request.getHeader('referer'), params: params)
+                            redirect(url: referer)
                             return
                         }
 
                         flash.message = message(code: 'default.created.message', args: [message(code: 'address.label'), addressInstance.name]) as String
                     }
-
-                    redirect(url: request.getHeader('referer'), params: params)
+                    redirect(url: referer)
                     break
             }
         }
@@ -120,9 +126,9 @@ class AddressController  {
     /**
      * Updates the given address with the given updated data
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = true, wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     def edit() {
         Address.withTransaction {
@@ -166,22 +172,30 @@ class AddressController  {
                 }
             }
 
+            String referer = request.getHeader('referer')
+            if(!referer.contains('tab')) {
+                if(referer.contains('?'))
+                    referer += '&tab=addresses'
+                else
+                    referer += '?tab=addresses'
+            }
+            else referer = referer.replaceAll('tab=contacts', 'tab=addresses')
             if (!addressInstance.save()) {
-                redirect(url: request.getHeader('referer'))
+                redirect(url: referer)
                 return
             }
 
             flash.message = message(code: 'default.updated.message', args: [message(code: 'address.label'), (addressInstance.name ?: '')]) as String
-            redirect(url: request.getHeader('referer'))
+            redirect(url: referer)
         }
     }
 
     /**
      * Deletes the given address
      */
-    @DebugInfo(hasCtxAffiliation_or_ROLEADMIN = ['INST_EDITOR'], wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = true, wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN('INST_EDITOR')
+        ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
     def delete() {
         Address.withTransaction {
@@ -199,7 +213,7 @@ class AddressController  {
             try {
                 addressInstance.delete()
                 flash.message = message(code: 'default.deleted.message', args: [message(code: 'address.label'), params.id]) as String
-                redirect action: 'list'
+                redirect(url: request.getHeader('referer'))
                 return
             }
             catch (DataIntegrityViolationException e) {
