@@ -1,11 +1,11 @@
 
-## Upgrade to Grails 5.3.3
+## Upgrade to Grails 6.0.0-RC1
 
 #### Updated core and dependencies
 
-- Spring Framework 5.3.25
-- Spring Boot 2.7.8
-- Micronaut 3.8.5 / for Spring 4.5.0
+- Spring Framework 5.3.27
+- Spring Boot 2.7.12
+- Micronaut 3.9.2 / for Spring 4.5.1
 - Hibernate 5.6.15.Final / GORM 7.3.2
 - Logback 1.2.11
 - Gradle 7.6.1
