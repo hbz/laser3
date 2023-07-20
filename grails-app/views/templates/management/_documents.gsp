@@ -54,7 +54,7 @@
                       value=""/>
         </div>
 
-        <g:if test="${showConsortiaFunctions}">
+        <g:if test="${showConsortiaFunctions && controllerName != "subscription"}">
             <div class="field">
                 <label for="setSharing">${message(code: 'template.addDocument.setSharing')}</label>
                 <g:checkBox name="setSharing" class="ui checkbox"/>
