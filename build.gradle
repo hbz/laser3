@@ -102,8 +102,8 @@ dependencies {
 
     // --------------------------------------------------
 
-    implementation 'org.elasticsearch:elasticsearch:7.16.3'                                 // 2022
-    implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.16.3'   // 2022
+    implementation 'org.elasticsearch:elasticsearch:7.17.10'                                // 2023
+    implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.17.10'  // 2023
 
     implementation 'org.grails.plugins:spring-security-core:5.2.1'          // 2023
     implementation 'org.grails.plugins:audit-logging:4.0.3'                 // 2021
