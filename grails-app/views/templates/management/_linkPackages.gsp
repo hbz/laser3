@@ -49,6 +49,7 @@
         <%--<g:hiddenField id="plpm_id_${params.id}" name="id" value="${params.id}"/>--%>
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
 
+        <div class="ui segments">
         <div class="ui segment">
             <div class="field required">
 
@@ -129,7 +130,7 @@
                 <thead>
                 <tr>
                     <g:if test="${editable}">
-                        <th>
+                        <th class="center aligned">
                             <g:checkBox name="membersListToggler" id="membersListToggler" checked="false"/>
                         </th>
                     </g:if>
@@ -235,6 +236,7 @@
                 </tbody>
             </table>
         </div><!-- .segment -->
+        </div><!-- .segments -->
     </g:form>
 </g:if>
 <g:else>

@@ -19,7 +19,6 @@
                 <tbody>
                 <tr>
                     <td>${subscription.name}</td>
-
                     <td>
                         <g:formatDate formatName="default.date.format.notime" date="${subscription.startDate}"/>
                         <ui:auditButton auditable="[subscription, 'startDate']"/>
@@ -52,6 +51,7 @@
         <g:hiddenField id="pspm_id_${params.id}" name="id" value="${params.id}"/>
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
 
+        <div class="ui segments">
         <div class="ui segment">
 
         <div class="two fields">
@@ -99,7 +99,7 @@
             <thead>
             <tr>
                 <g:if test="${editable}">
-                    <th>
+                    <th class="center aligned">
                         <g:checkBox name="membersListToggler" id="membersListToggler" checked="false"/>
                     </th>
                 </g:if>
@@ -186,6 +186,7 @@
         </table>
 
         </div><!-- .segment -->
+        </div><!-- .segments -->
     </g:form>
 
 </g:if>

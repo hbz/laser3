@@ -13,6 +13,7 @@
 
     <h2 class="ui header">${message(code: 'subscriptionsManagement.document.info.newDocument')}</h2>
 
+    <div class="ui segments">
     <g:form action="${actionName}" controller="${controllerName}" params="[tab: 'documents']" method="post"
             class="ui segment form newDocument" enctype="multipart/form-data">
         <g:hiddenField id="pspm_id_${params.id}" name="id" value="${params.id}"/>
@@ -80,7 +81,7 @@
             <thead>
             <tr>
                 <g:if test="${editable}">
-                    <th>
+                    <th class="center aligned">
                         <g:checkBox name="membersListToggler" id="membersListToggler" checked="false"/>
                     </th>
                 </g:if>
@@ -146,6 +147,7 @@
             </tbody>
         </table>
     </div>
+    </div><!-- .segments -->
 </g:if>
 <g:else>
     <g:if test="${filterSet}">

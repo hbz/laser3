@@ -59,10 +59,8 @@
 
 
     <g:if test="${memberProperties}">%{-- check for content --}%
-        <div class="ui one stackable cards">
-            <div class="ui card la-dl-no-table">
-                <div class="content">
-                    <h3 class="ui header">${message(code: 'subscription.properties.consortium')}</h3>
+                <div class="ui segment">
+                    <h3 class="ui small header">${message(code: 'subscription.properties.consortium')}</h3>
 
                     <div id="member_props_div">
                         <laser:render template="/templates/properties/members" model="${[
@@ -71,11 +69,7 @@
                                 custom_props_div: "member_props_div"]}"/>
                     </div>
                 </div>
-            </div>
-        </div>
     </g:if>
-
-
 
 
 <g:if test="${filteredSubscriptions && propertiesFilterPropDef}">
@@ -111,8 +105,6 @@
                     params="[processOption: 'deleteAllProperties', propertiesFilterPropDef: propertiesFilterPropDef, tab: params.tab]">${message(code: 'subscriptionsManagement.deleteProperty.button', args: [propertiesFilterPropDef.getI10n('name')])}</g:link>
 
         </div>--}%
-
-        <div class="divider"></div>
 
         <div class="ui segment">
             <h3 class="ui header"><g:message code="subscriptionsManagement.subscription" args="${args.superOrgType}"/></h3>
@@ -336,10 +328,10 @@
 
     <h3 class="ui header">${message(code: 'subscriptionsManagement.info.property')}</h3>
 
-    <g:form action="${actionName}" method="post" class="ui form propertiesForm"
-            params="[tab: params.tab]">
+    <g:form action="${actionName}" method="post" class="ui form propertiesForm" params="[tab: params.tab]">
         <g:hiddenField id="ppm_id_${params.id}" name="id" value="${params.id}"/>
 
+        <div class="ui segments">
         <div class="ui segment">
             <div class="field required">
                 <div class="inline field">
@@ -418,7 +410,7 @@
                 <thead>
                 <tr>
                     <g:if test="${editable}">
-                        <th>
+                        <th class="center aligned">
                             <g:checkBox name="membersListToggler" id="membersListToggler" checked="false"/>
                         </th>
                     </g:if>
@@ -686,6 +678,7 @@
                 </tbody>
             </table>
         </div><!-- .segment -->
+        </div><!-- .segments -->
     </g:form>
 
     <g:if test="${controllerName == "myInstitution"}">

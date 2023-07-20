@@ -100,6 +100,7 @@
         <g:hiddenField id="pspm_id_${params.id}" name="id" value="${params.id}"/>
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
 
+        <div class="ui segments">
         <div class="ui segment">
             <div class="ui divided compact grid">
                 <div class="row">
@@ -336,6 +337,7 @@
                             total="${num_sub_rows}"/>
                 </g:else>
             </h3>
+
             <table class="ui compact  monitor stackable la-js-responsive-table la-table table">
                 <thead>
                 <tr>
@@ -506,6 +508,7 @@
                 </tbody>
             </table>
         </div><!-- .segment -->
+        </div><!-- .segments -->
     </g:form>
 </g:if>
 <g:else>
