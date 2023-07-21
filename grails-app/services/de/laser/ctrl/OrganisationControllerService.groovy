@@ -205,6 +205,7 @@ class OrganisationControllerService {
                                       institution:org,
                                       contextOrg: org,
                                       inContextOrg:true,
+                                      isMyOrg:false,
                                       institutionalView:false,
                                       isGrantedOrgRoleAdminOrOrgEditor: SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'),
                                       isGrantedOrgRoleAdmin: SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'),
@@ -237,11 +238,14 @@ class OrganisationControllerService {
             Combo checkCombo = Combo.findByFromOrgAndToOrg(result.orgInstance,org)
             if (checkCombo && checkCombo.type == RDStore.COMBO_TYPE_CONSORTIUM) {
                 result.institutionalView = true
+                result.isMyOrg = true //we make the existence of a combo relation condition to "my"
             }
             else if(!checkCombo) {
                 checkCombo = Combo.findByToOrgAndFromOrgAndType(result.orgInstance, org, RDStore.COMBO_TYPE_CONSORTIUM)
-                if(checkCombo)
+                if(checkCombo) {
                     result.consortialView = true
+                    result.isMyOrg = true
+                }
             }
             //restrictions hold if viewed org is not the context org
             if (!result.inContextOrg && !contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && !SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
@@ -249,6 +253,11 @@ class OrganisationControllerService {
                 if (!contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && result.orgInstance.isCustomerType_Inst()) {
                     return null
                 }
+            }
+            //set isMyOrg-flag for relations context -> provider
+            if(OrgSetting.get(result.orgInstance, OrgSetting.KEYS.CUSTOMER_TYPE) == OrgSetting.SETTING_NOT_FOUND) {
+                int relationCheck = OrgRole.executeQuery('select count(oo) from OrgRole oo join oo.sub sub where oo.org = :context and sub in (select os.sub from OrgRole os where os.roleType in (:providerRoles)) and (sub.status = :current or (sub.status = :expired and sub.hasPerpetualAccess = true))', [context: result.institution, providerRoles: [RDStore.OR_PROVIDER, RDStore.OR_AGENCY], current: RDStore.SUBSCRIPTION_CURRENT, expired: RDStore.SUBSCRIPTION_EXPIRED])[0]
+                result.isMyOrg = relationCheck > 0
             }
         }
         else {
