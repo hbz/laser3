@@ -75,26 +75,6 @@
 <g:if test="${filteredSubscriptions && propertiesFilterPropDef}">
 
     <g:if test="${controllerName == "subscription"}">
-        <div class="ui icon message">
-            <i class="info icon"></i>
-
-            <div class="content">
-                <div class="header">Info</div>
-
-                <div class="ui bulleted list">
-                    <div class="item">
-                        <g:message code="subscriptionsManagement.info2" args="${args.memberTypeSingle}"/>
-                    </div>
-                    <div class="item">
-                        <g:message code="subscriptionsManagement.info3" args="${[args.superOrgType[0], args.memberType[0]]}"/>
-                    </div>
-                    <div class="item">
-                        <g:message code="subscriptionsManagement.info4" args="${args.memberTypeSingle}"/>
-                    </div>
-                </div>
-            </div>
-        </div>
-
 
     %{--    <div class="ui segment">
             <h4 class="ui header">${message(code: 'subscriptionsManagement.deletePropertyInfo')}</h4>
@@ -317,6 +297,17 @@
                 </tr>
                 </tbody>
             </table>
+        </div>
+
+        <div class="ui icon info message">
+            <i class="info icon"></i>
+            <div class="content">
+                <g:message code="subscriptionsManagement.info2" args="${args.memberTypeSingle}"/> <br />
+
+                <g:message code="subscriptionsManagement.info3" args="${[args.superOrgType[0], args.memberType[0]]}"/> <br />
+
+                <g:message code="subscriptionsManagement.info4" args="${args.memberTypeSingle}"/> <br />
+            </div>
         </div>
     </g:if>
 

@@ -945,11 +945,16 @@ class ManagementService {
                                         owner: contextService.getOrg(),
                                         user: result.user).save()
 
-
                                 DocContext doc_context = new DocContext(
                                         subscription: subscription,
-                                        owner: doc_content)
+                                        owner: doc_content,
+                                        isShared: params.setSharing == 'on'
+                                )
+
                                 doc_context.save()
+                                if (doc_context.isShared) {
+                                    ((ShareSupport) subscription).updateShare(doc_context)
+                                }
                             }
                         }
                     }
@@ -987,7 +992,13 @@ class ManagementService {
                     subscriptions = subscriptionService.getMySubscriptions(params,result.user,result.institution).allSubscriptions
                 }
             }
-            else subscriptions = Subscription.findAllByIdInList(params.list("selectedSubscriptionIds"))
+            else {
+                if(params.selectedSubscriptionIds) {
+                    Set<Long> ids = params.selectedSubscriptionIds.split(',').collect { String idKey -> Long.parseLong(idKey) }
+                    subscriptions = Subscription.findAllByIdInList(ids)
+                }
+                else subscriptions = []
+            }
             if (subscriptions) {
                     if(params.processOption == 'newDoc') {
                         subscriptions.eachWithIndex { Subscription subscription, int status ->
