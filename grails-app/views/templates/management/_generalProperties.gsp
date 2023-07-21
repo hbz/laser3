@@ -7,7 +7,7 @@
 
     <g:if test="${controllerName == "subscription"}">
         <div class="ui segment">
-            <h3 class="ui header"><g:message code="consortium.superSubscriptionType"/></h3>
+%{--            <h3 class="ui header"><g:message code="consortium.superSubscriptionType"/></h3>--}%
             <table class="ui compact monitor stackable la-js-responsive-table la-table table">
                 <thead>
                 <tr>

@@ -5,8 +5,7 @@
 
     <g:if test="${controllerName == 'subscription'}">
         <div class="ui segment">
-            <h3 class="ui header"><g:message code="subscriptionsManagement.license.label"/></h3>
-
+%{--            <h3 class="ui header"><g:message code="subscriptionsManagement.license.label"/></h3>--}%
             <g:if test="${validLicenses}">
                 <div class="ui middle aligned selection list">
                     <g:each in="${validLicenses}" var="license">
@@ -15,7 +14,6 @@
                         </div>
                     </g:each>
                 </div>
-
             </g:if>
             <g:else>
                 <g:message code="subscriptionsManagement.noValidLicenses"/>
