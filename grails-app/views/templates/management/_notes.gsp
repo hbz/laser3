@@ -4,8 +4,7 @@
 
     <g:if test="${controllerName == "subscription"}">
         <div class="ui segment">
-            <h3 class="ui header"><g:message code="subscriptionsManagement.subscription" args="${args.superOrgType}"/></h3>
-
+%{--            <h3 class="ui header"><g:message code="subscriptionsManagement.subscription" args="${args.superOrgType}"/></h3>--}%
             <laser:render template="/templates/notes/table" model="${[instance: subscription, redirect: actionName]}"/>
         </div>
     </g:if>
@@ -28,6 +27,13 @@
             <label for="noteContent">${message(code:'default.note.label')}:</label>
             <textarea class="la-textarea-resize-vertical" id="noteContent" name="noteContent"></textarea>
         </div>
+
+        <g:if test="${showConsortiaFunctions && controllerName != "subscription"}">
+            <div class="field">
+                <label for="setSharing">${message(code: 'template.notes.setSharing')}</label>
+                <g:checkBox name="setSharing" class="ui checkbox"/>
+            </div>
+        </g:if>
 
         <button class="ui button" ${!editable ? 'disabled="disabled"' : ''} type="submit" name="processOption"
                 value="newNote">${message(code: 'default.button.create.label')}</button>
@@ -97,7 +103,10 @@
                         </td>
                     </g:if>
                     <g:if test="${controllerName == "myInstitution"}">
-                        <td>${sub.name} <span class="${sub.type == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL ? 'sc_blue' : ''}"> (${sub.type.getI10n('value')}) </span></td>
+                        <td>
+                            ${sub.name} <br/>
+                            <span class="${sub.type == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL ? 'sc_blue' : ''}"> (${sub.type.getI10n('value')}) </span>
+                        </td>
                     </g:if>
                     <td>
                         <laser:render template="/templates/notes/table" model="${[instance: sub, redirect: actionName]}"/>

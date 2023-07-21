@@ -4,8 +4,7 @@
 <g:if test="${filteredSubscriptions}">
     <g:if test="${controllerName == "subscription"}">
         <div class="ui segment">
-            <h3 class="ui header"><g:message code="subscriptionsManagement.package.label" args="${args.superOrgType}"/></h3>
-
+%{--            <h3 class="ui header"><g:message code="subscriptionsManagement.package.label" args="${args.superOrgType}"/></h3>--}%
             <g:if test="${validPackages}">
                 <div class="ui middle aligned selection list">
                     <g:each in="${validPackages}" var="subPkg">
@@ -21,7 +20,6 @@
                         </div>
                     </g:each>
                 </div>
-
             </g:if>
             <g:else>
                 <g:message code="subscriptionsManagement.noValidPackages" args="${args.superOrgType}"/>
