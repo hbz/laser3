@@ -42698,6 +42698,34 @@ i.orange.icon.la-subscriptionIsChild.fixed {
   }
 }
 
+.la-objectIsMine {
+  position: absolute;
+  left: 24px;
+  top: -15px;
+  background-color: white;
+  font-size: 0.6em !important;
+  box-shadow: 0 0 0 0.1em #fa820a inset !important;
+  padding: 0em;
+  transition: all 0.5s ease;
+}
+
+/* change style when page scrolled down*/
+
+i.icon.la-objectIsMine.fixed {
+  position: fixed;
+  margin-left: 150px!important;
+  background-color: transparent!important;
+  color: gray!important;
+  box-shadow: none!important;
+  transition: all 1s ease;
+}
+
+@media only screen and (max-width: 992px) {
+  i.icon.la-objectIsMine.fixed {
+    display: none;
+  }
+}
+
 .la-icon-absolute {
   position: absolute;
   z-index: 100;

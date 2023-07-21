@@ -90,6 +90,9 @@ class IconTagLib {
     def childSubscriptionIcon = { attrs, body ->
         out << '<i class="icon circular orange child la-subscriptionIsChild"></i> '
     }
+    def objectMineIcon = { attrs, body ->
+        out << '<div><i class="icon circular star la-objectIsMine"></i></div> '
+    }
 
     def propertyIcon = { attrs, body ->
         def object = attrs.object
