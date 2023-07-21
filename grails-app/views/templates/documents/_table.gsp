@@ -16,7 +16,11 @@
         }
     }
 
-    List<String> colWide = (controllerName == 'myInstitution' && actionName != 'subscriptionsManagement') ? ['one', /*'one',*/ 'five', 'two', 'three', 'three', 'two'] : ['one',  'seven', 'three', 'three', 'two']
+    List<String> colWide = (controllerName == 'myInstitution' && actionName != 'subscriptionsManagement') ?  ['one', /*'one',*/ 'five', 'two', 'three', 'three', 'two'] : ['one',  'seven', 'three', 'three', 'two']
+    if (controllerName == 'subscription' && actionName == 'membersSubscriptionsManagement') {
+        colWide = ['nine', 'three', 'three', 'two']
+    }
+
     int cwCounter = 0
     int trCounter = 1
 
@@ -27,7 +31,9 @@
     <table class="ui celled la-js-responsive-table la-table table documents-table-${randomId}">
         <thead>
             <tr>
-                <th scope="col" class="${colWide[cwCounter++]} center aligned wide" rowspan="2">#</th>
+                <g:if test="${!(controllerName == 'subscription' && actionName == 'membersSubscriptionsManagement')}">
+                    <th scope="col" class="${colWide[cwCounter++]} center aligned wide" rowspan="2">#</th>
+                </g:if>
                 <th scope="col" class="${colWide[cwCounter++]} wide la-smaller-table-head">${message(code:'template.addDocument.name')}</th>
                 <th scope="col" class="${colWide[cwCounter++]} wide" rowspan="2">${message(code:'license.docs.table.type')}</th>
                 <th scope="col" class="${colWide[cwCounter++]} wide" rowspan="2">${message(code:'template.addDocument.confidentiality')}</th>
@@ -100,12 +106,15 @@
                 %>
                 <g:if test="${docctx.isDocAFile() && visible && (docctx.status != RDStore.DOC_CTX_STATUS_DELETED)}">
                     <tr>
-                        <td class="center aligned">
-                            <g:if test="${docctx.owner.owner.id == contextService.getOrg().id && !docctx.sharedFrom}">
-                                <g:if test="${editable}">
-                                    <g:checkBox id="bulk_doc_${docctx.owner.id}" name="bulk_doc" value="${docctx.owner.id}" checked="false"/>
+                        <g:if test="${!(controllerName == 'subscription' && actionName == 'membersSubscriptionsManagement')}">
+                            <td class="center aligned">
+                                <g:if test="${docctx.owner.owner.id == contextService.getOrg().id && !docctx.sharedFrom}">
+                                    <g:if test="${editable}">
+                                        <g:checkBox id="bulk_doc_${docctx.owner.id}" name="bulk_doc" value="${docctx.owner.id}" checked="false"/>
+                                    </g:if>
                                 </g:if>
-                            </g:if>
+                            </td>
+                        </g:if>
                         <td>
                             <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}" />
                             <strong>
@@ -213,6 +222,7 @@
                 </g:if>
             </g:each>
         </tbody>
+        <g:if test="${!(controllerName == 'subscription' && actionName == 'membersSubscriptionsManagement')}">
         <g:if test="${editable && documentSet}">
             <tfoot>
                 <tr>
@@ -243,6 +253,7 @@
                     </td>
                 </tr>
             </tfoot>
+        </g:if>
         </g:if>
     </table>
 

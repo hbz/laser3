@@ -1,11 +1,9 @@
 <div class="ui segment">
     <h3 class="ui header">
         <g:if test="${controllerName == "subscription"}">
-            ${message(code: 'subscriptionsManagement.subscriber')} <ui:totalNumber
-                total="${keyPairs.size()}"/>
+            ${message(code: 'subscriptionsManagement.subscriber')} <ui:totalNumber total="${keyPairs.size()}"/>
         </g:if><g:else>
-            ${message(code: 'subscriptionsManagement.subscriptions')} <ui:totalNumber
-                    total="${keyPairs.size()}/${num_sub_rows}"/>
+            ${message(code: 'subscriptionsManagement.subscriptions')} <ui:totalNumber total="${keyPairs.size()}/${num_sub_rows}"/>
         </g:else>
     </h3>
     <ui:tabs>

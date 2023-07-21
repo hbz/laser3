@@ -230,7 +230,7 @@
 
                             <div class="field wide four">
                                 <ui:select class="ui search dropdown" name="contactLang${contact.id}"
-                                              from="${RefdataCategory.getAllRefdataValues(RDConstants.LANGUAGE_ISO)}"
+                                              from="${RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.LANGUAGE_ISO)}"
                                               optionKey="id"
                                               optionValue="value"
                                               value="${contact.language?.id}"
@@ -274,7 +274,7 @@
                     <div class="field wide four">
                         <label></label>
                         <ui:select class="ui search dropdown" name="contactLang.id"
-                                      from="${RefdataCategory.getAllRefdataValues(RDConstants.LANGUAGE_ISO)}"
+                                      from="${RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.LANGUAGE_ISO)}"
                                       optionKey="id"
                                       optionValue="value"
                                       value="${contactInstance?.language?.id}"

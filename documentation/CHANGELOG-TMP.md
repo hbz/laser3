@@ -7,11 +7,21 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5199    20.07.2023  rc-3.2  3.2         Andreas Feature     Auswahloptionen nach vorne gesetzt
+
+5162    20.07.2023  rc-3.2  3.2         Andreas Feature     Export von Anmerkungen jetzt möglich
+
+--      19.07.2023  rc-3.2  3.2         Andreas Feature     Mailtemplatetext angepasst
+
 5197    19.07.2023  rc-3.2  3.2         Andreas Bug         Sortierung der Merkmale nach Typ auf case-insensitive umgestellt 
 
 5196    19.07.2023  rc-3.2  3.2         David   Feature     Benutzernamenprüfung bei Login derzeit case-sensitive
 
 5195    19.07.2023  rc-3.2  3.2         Andreas Bug         Fällige Termine setzten sich immer wieder zurück
+
+5190    18.07.2023  rc-3.2  3.2         Ingrid Bug          Modal "Workflow für 'xyz' anlegen: Modal wird jetzt nicht abgeschickt, wenn Titel nicht ausgefüllt
+
+5192    18.07.2023  rc-3.2  3.2         Ingrid Bug          Mouseover bei Tooltip innerhalb des Modals wird jetzt ausgelöst
 
 5191    18.07.2023  rc-3.2  3.2         Andreas Feature     Erweiterungen bei der Paketverknüpfung
 
@@ -24,6 +34,8 @@
 5184    14.07.2023  rc-3.2  3.2         Andreas Bug         Adressen um "Meine"-Flag aufgerüstet, Daten wiederhergestellt
 
 5187    13.07.2023  rc-3.2  3.2         David   Feature     Aufräumen: Lizenzen/Verträge/Elemente kopieren
+
+4545    11.07.2023  rc-3.2  3.2         Ingrid  Feature     Anbieter in die Überschrift aufnehmen für Views, in denen es Sinn macht
 
 5186    11.07.2023  rc-3.2  3.2         Andreas Bug         dauerhafte Titel wurden nicht gekennzeichnet
 
@@ -99,6 +111,8 @@
 
 5142    19.06.2023  rc-3.1  3.1.3       Moe     Bug         Übertrag Teilnehmer
 
+4545    16.06.2023  rc-3.2  3.2         Ingrid  Feature     Bestands-View: Filterergebnis "Stichtag" verbessern
+
 5139    16.06.2023  rc-3.1  3.1.3       Moe     Bug         Titel hinzufügen: Nur 1 oder alle Titel möglich
 
 5143    16.06.2023  rc-3.1  3.1.3       Andreas Bug         Paketzuschnittvererbung: prüfen und Skript erstellen
@@ -109,7 +123,11 @@
 
 5134    16.06.2023  rc-3.1  3.1.3       Andreas Bug         falsche Konfiguration bei der Erstellung der Modale
 
+4725    15.06.2023  dev     3.2         Ingrid  Feature     Überbreite Tabelle in Teilnehmerverwaltung passt jetzt in den View
+
 5137    15.06.2023  rc-3.1  3.1.3       Andreas Bug         Bereinigungsmethoden korrigiert
+
+5125    15.06.2023  dev     3.2         Ingrid Bug          Tooltip taucht im Kosteneingabemodul jetzt an richtiger Stelle auf
 
 5135    15.06.2023  rc-3.1  3.1.3       Andreas Bug         Links mit we:kb-Icon an diversen Stellen angelegt
 
