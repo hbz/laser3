@@ -28,6 +28,13 @@
             <textarea class="la-textarea-resize-vertical" id="noteContent" name="noteContent"></textarea>
         </div>
 
+        <g:if test="${showConsortiaFunctions && controllerName != "subscription"}">
+            <div class="field">
+                <label for="setSharing">${message(code: 'template.notes.setSharing')}</label>
+                <g:checkBox name="setSharing" class="ui checkbox"/>
+            </div>
+        </g:if>
+
         <button class="ui button" ${!editable ? 'disabled="disabled"' : ''} type="submit" name="processOption"
                 value="newNote">${message(code: 'default.button.create.label')}</button>
 

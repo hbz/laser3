@@ -945,11 +945,16 @@ class ManagementService {
                                         owner: contextService.getOrg(),
                                         user: result.user).save()
 
-
                                 DocContext doc_context = new DocContext(
                                         subscription: subscription,
-                                        owner: doc_content)
+                                        owner: doc_content,
+                                        isShared: params.setSharing == 'on'
+                                )
+
                                 doc_context.save()
+                                if (doc_context.isShared) {
+                                    ((ShareSupport) subscription).updateShare(doc_context)
+                                }
                             }
                         }
                     }
