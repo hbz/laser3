@@ -914,9 +914,9 @@ class ExportClickMeService {
                     label: 'IssueEntitlement',
                     message: 'issueEntitlement.label',
                     fields: [
-                            'issueEntitlement.name'                 : [field: 'name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
+                            'issueEntitlement.tipp.name'            : [field: 'tipp.name', label: 'Name', message: 'default.name.label', defaultChecked: 'true' ],
                             'issueEntitlement.status'               : [field: 'status', label: 'Status', message: 'default.status.label', defaultChecked: 'true'],
-                            'issueEntitlement.medium'               : [field: 'medium', label: 'Status', message: 'tipp.medium', defaultChecked: 'true'],
+                            'issueEntitlement.tipp.medium'          : [field: 'tipp.medium', label: 'Status', message: 'tipp.medium', defaultChecked: 'true'],
                             'issueEntitlement.accessStartDate'      : [field: 'accessStartDate', label: 'Access Start Date', message: 'subscription.details.access_start', defaultChecked: 'true'],
                             'issueEntitlement.accessEndDate'        : [field: 'accessEndDate', label: 'Access End Date', message: 'subscription.details.access_end', defaultChecked: 'true'],
                             'issueEntitlement.tipp.titleType'       : [field: 'tipp.titleType', label: 'Cost After Tax', message: 'tipp.titleType', defaultChecked: 'true'],
