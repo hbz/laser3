@@ -4,8 +4,7 @@
 
     <g:if test="${controllerName == "subscription"}">
         <div class="ui segment">
-            <h3 class="ui header"><g:message code="subscriptionsManagement.subscription" args="${args.superOrgType}"/></h3>
-
+%{--            <h3 class="ui header"><g:message code="subscriptionsManagement.subscription" args="${args.superOrgType}"/></h3>--}%
             <laser:render template="/templates/documents/table"
                       model="${[instance: subscription, context: 'documents', redirect: actionName, owntp: 'subscription']}"/>
         </div>
@@ -95,6 +94,7 @@
                     <th>${message(code: 'default.subscription.label')}</th>
                 </g:if>
                 <th>${message(code: 'default.documents.label')}</th>
+                <th>${message(code:'default.actions.label')}</th>
             </tr>
             </thead>
             <tbody>
@@ -131,16 +131,23 @@
                             <ui:customerTypeIcon org="${subscr}" />
                         </td>
                     </g:if>
-                    <g:if test="${controllerName == "myInstitution"}">
+                    <g:elseif test="${controllerName == "myInstitution"}">
                         <td>
-                            <g:link controller="subscription" action="show" id="${sub.id}">
-                                ${sub.name} (${sub.type.getI10n('value')})
-                            </g:link>
+                            ${sub.name} <br/>
+                            <span class="${sub.type == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL ? 'sc_blue' : ''}"> (${sub.type.getI10n('value')}) </span>
                         </td>
-                    </g:if>
+                    </g:elseif>
                     <td>
                         <laser:render template="/templates/documents/table"
                                   model="${[instance: sub, context: 'documents', redirect: actionName, owntp: 'subscription']}"/>
+                    </td>
+                    <td class="x">
+                        <g:link controller="subscription" action="show" id="${sub.id}"
+                                class="ui icon button blue la-modern-button"
+                                role="button"
+                                aria-label="${message(code: 'ariaLabel.edit.universal')}">
+                            <i aria-hidden="true" class="write icon"></i>
+                        </g:link>
                     </td>
                 </tr>
             </g:each>
