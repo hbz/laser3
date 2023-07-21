@@ -4,16 +4,13 @@
 <g:if test="${filteredSubscriptions}">
     <g:if test="${controllerName == "subscription"}">
         <div class="ui segment">
-            <h3 class="ui header"><g:message code="subscriptionsManagement.package.label"
-                                             args="${args.superOrgType}"/>
-            </h3>
+            <h3 class="ui header"><g:message code="subscriptionsManagement.package.label" args="${args.superOrgType}"/></h3>
 
             <g:if test="${validPackages}">
                 <div class="ui middle aligned selection list">
                     <g:each in="${validPackages}" var="subPkg">
                         <div class="item">
-                            <g:link controller="package" action="show"
-                                    id="${subPkg.pkg.id}">${subPkg.pkg.name} ${raw(subPkg.getIEandPackageSize())}</g:link>
+                            <g:link controller="package" action="show" id="${subPkg.pkg.id}">${subPkg.pkg.name} ${raw(subPkg.getIEandPackageSize())}</g:link>
 
                             <div class="right floated content">
                                 <button class="ui negative button la-modern-button la-selectable-button unlinkPackages" ${!editable ? 'disabled="disabled"' : ''}
@@ -44,16 +41,17 @@
         </div>
     </g:if>
 
+    <h3 class="ui header">${message(code: 'subscriptionsManagement.info.package')}</h3>
+
     <g:form action="${actionName}" params="[tab: params.tab, id: params.id]" data-confirm-id="processLinkPackagesMembers_form"
             method="post"
             class="ui form packagesForm">
         <%--<g:hiddenField id="plpm_id_${params.id}" name="id" value="${params.id}"/>--%>
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
 
+        <div class="ui segments">
         <div class="ui segment">
-
             <div class="field required">
-                <h4 class="ui header">${message(code: 'subscriptionsManagement.info.package')}</h4>
 
                 <g:if test="${controllerName == "subscription"}">
 
@@ -80,7 +78,6 @@
                               noSelection='["": "${message(code: 'subscriptionsManagement.noSelection.package')}"]'/>
                 </g:if>
             </div>
-
 
             <div class="two fields">
                 <div class="eight wide field" style="text-align: left;">
@@ -115,8 +112,9 @@
                     </div>
                 </div>
             </div>
+        </div><!-- .segment -->
 
-            <div class="divider"></div>
+        <div class="ui segment">
 
             <h3 class="ui header">
                 <g:if test="${controllerName == "subscription"}">
@@ -132,7 +130,7 @@
                 <thead>
                 <tr>
                     <g:if test="${editable}">
-                        <th>
+                        <th class="center aligned">
                             <g:checkBox name="membersListToggler" id="membersListToggler" checked="false"/>
                         </th>
                     </g:if>
@@ -237,14 +235,13 @@
                 </g:each>
                 </tbody>
             </table>
-
-        </div>
+        </div><!-- .segment -->
+        </div><!-- .segments -->
     </g:form>
 </g:if>
 <g:else>
     <g:if test="${filterSet}">
-        <br/><strong><g:message code="filter.result.empty.object"
-                                args="${[message(code: "subscription.plural")]}"/></strong>
+        <br/><strong><g:message code="filter.result.empty.object" args="${[message(code: "subscription.plural")]}"/></strong>
     </g:if>
     <g:else>
         <br/><strong><g:message code="result.empty.object" args="${[message(code: "subscription.plural")]}"/></strong>

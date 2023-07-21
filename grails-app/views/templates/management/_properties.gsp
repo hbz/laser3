@@ -5,13 +5,11 @@
            value="${PropertyDefinition.findAllByTenantIsNullAndDescr(PropertyDefinition.SUB_PROP) + PropertyDefinition.findAllByTenantAndDescr(contextOrg, PropertyDefinition.SUB_PROP)}"/>
 
     <g:if test="${controllerName == "subscription"}">
-        <div class="ui segment" >
+        <div class="ui segment">
             <div class="ui two column very relaxed grid">
                 <div class="column">
-                        <g:form action="${actionName}" method="post" class="ui form" id="${params.id}"
-                                params="[tab: params.tab]">
+                        <g:form action="${actionName}" method="post" class="ui form" id="${params.id}" params="[tab: params.tab]">
                             <div class="fields" style="margin-bottom: 0">
-
 
                                 <laser:render template="/templates/properties/genericFilter"
                                           model="[propList: propList, hideFilterProp: true, newfilterPropDefName: 'propertiesFilterPropDef', label:message(code: 'subscriptionsManagement.onlyPropOfParentSubscription', args: [subscription.name])]"/>
@@ -45,8 +43,7 @@
      </g:if>
 
     <g:if test="${controllerName == "myInstitution"}">
-        <div class="ui segment" >
-            <g:form action="${actionName}" method="post" class="ui form" id="${params.id}" style="margin-bottom: 0"
+            <g:form action="${actionName}" method="post" class="ui segment form" id="${params.id}" style="margin-bottom: 0"
                     params="[tab: params.tab]">
                 <div class="two fields" style="margin-bottom: 0">
                     <laser:render template="/templates/properties/genericFilter"
@@ -58,15 +55,12 @@
                     </div>
                 </div>
             </g:form>
-        </div>
     </g:if>
 
 
     <g:if test="${memberProperties}">%{-- check for content --}%
-        <div class="ui one stackable cards">
-            <div class="ui card la-dl-no-table">
-                <div class="content">
-                    <h3 class="ui header">${message(code: 'subscription.properties.consortium')}</h3>
+                <div class="ui segment">
+                    <h3 class="ui small header">${message(code: 'subscription.properties.consortium')}</h3>
 
                     <div id="member_props_div">
                         <laser:render template="/templates/properties/members" model="${[
@@ -75,11 +69,7 @@
                                 custom_props_div: "member_props_div"]}"/>
                     </div>
                 </div>
-            </div>
-        </div>
     </g:if>
-
-
 
 
 <g:if test="${filteredSubscriptions && propertiesFilterPropDef}">
@@ -95,12 +85,9 @@
                     <div class="item">
                         <g:message code="subscriptionsManagement.info2" args="${args.memberTypeSingle}"/>
                     </div>
-
                     <div class="item">
-                        <g:message code="subscriptionsManagement.info3"
-                                   args="${[args.superOrgType[0], args.memberType[0]]}"/>
+                        <g:message code="subscriptionsManagement.info3" args="${[args.superOrgType[0], args.memberType[0]]}"/>
                     </div>
-
                     <div class="item">
                         <g:message code="subscriptionsManagement.info4" args="${args.memberTypeSingle}"/>
                     </div>
@@ -119,11 +106,8 @@
 
         </div>--}%
 
-        <div class="divider"></div>
-
         <div class="ui segment">
-            <h3 class="ui header"><g:message code="subscriptionsManagement.subscription"
-                                             args="${args.superOrgType}"/></h3>
+            <h3 class="ui header"><g:message code="subscriptionsManagement.subscription" args="${args.superOrgType}"/></h3>
             <table class="ui celled la-js-responsive-table la-table table">
                 <thead>
                 <tr>
@@ -137,7 +121,6 @@
                 </thead>
                 <tbody>
                 <tr>
-
                     <td>${subscription.name}</td>
 
                     <td>
@@ -153,7 +136,6 @@
                         <ui:auditButton auditable="[subscription, 'status']"/>
                     </td>
                     <td>
-
                         <div class="ui middle aligned selection list">
 
                             <g:if test="${propertiesFilterPropDef.tenant == null}">
@@ -267,33 +249,26 @@
                                                        scope="request"/>
 
                                                 <g:if test="${privateProperty.type.isIntegerType()}">
-                                                    <ui:xEditable owner="${privateProperty}" type="number"
-                                                                     field="intValue"/>
+                                                    <ui:xEditable owner="${privateProperty}" type="number" field="intValue"/>
                                                 </g:if>
                                                 <g:elseif test="${privateProperty.type.isStringType()}">
-                                                    <ui:xEditable owner="${privateProperty}" type="text"
-                                                                     field="stringValue"/>
+                                                    <ui:xEditable owner="${privateProperty}" type="text" field="stringValue"/>
                                                 </g:elseif>
                                                 <g:elseif test="${privateProperty.type.isBigDecimalType()}">
-                                                    <ui:xEditable owner="${privateProperty}" type="text"
-                                                                     field="decValue"/>
+                                                    <ui:xEditable owner="${privateProperty}" type="text" field="decValue"/>
                                                 </g:elseif>
                                                 <g:elseif test="${privateProperty.type.isDateType()}">
-                                                    <ui:xEditable owner="${privateProperty}" type="date"
-                                                                     field="dateValue"/>
+                                                    <ui:xEditable owner="${privateProperty}" type="date" field="dateValue"/>
                                                 </g:elseif>
                                                 <g:elseif test="${privateProperty.type.isURLType()}">
-                                                    <ui:xEditable owner="${privateProperty}" type="url"
-                                                                     field="urlValue"
-
+                                                    <ui:xEditable owner="${privateProperty}" type="url" field="urlValue"
                                                                      class="la-overflow la-ellipsis"/>
                                                     <g:if test="${privateProperty.value}">
                                                         <ui:linkWithIcon href="${privateProperty.value}"/>
                                                     </g:if>
                                                 </g:elseif>
                                                 <g:elseif test="${privateProperty.type.isRefdataValueType()}">
-                                                    <ui:xEditableRefData owner="${privateProperty}" type="text"
-                                                                            field="refValue"
+                                                    <ui:xEditableRefData owner="${privateProperty}" type="text" field="refValue"
                                                                             config="${privateProperty.type.refdataCategory}"/>
                                                 </g:elseif>
 
@@ -351,15 +326,14 @@
         <laser:render template="/templates/subscription/subscriptionFilter"/>
     </g:if>
 
+    <h3 class="ui header">${message(code: 'subscriptionsManagement.info.property')}</h3>
 
-    <div class="ui segment">
-        <g:form action="${actionName}" method="post" class="ui form propertiesForm"
-                params="[tab: params.tab]">
-            <g:hiddenField id="ppm_id_${params.id}" name="id" value="${params.id}"/>
+    <g:form action="${actionName}" method="post" class="ui form propertiesForm" params="[tab: params.tab]">
+        <g:hiddenField id="ppm_id_${params.id}" name="id" value="${params.id}"/>
 
+        <div class="ui segments">
+        <div class="ui segment">
             <div class="field required">
-                <h4 class="ui header">${message(code: 'subscriptionsManagement.info.property')}</h4>
-
                 <div class="inline field">
                     <label>${message(code: 'subscriptionsManagement.propertySelected')}:</label>
 
@@ -368,10 +342,8 @@
                             <i class="shield alternate icon"></i>
                         </g:if>
                     </strong>
-
                 </div>
                 <g:hiddenField name="propertiesFilterPropDef" value="${propertiesFilterPropDef}"/>
-
 
                 ${message(code: 'default.type.label')}: ${PropertyDefinition.getLocalizedValue(propertiesFilterPropDef.type)}
                 <g:if test="${propertiesFilterPropDef.isRefdataValueType()}">
@@ -385,7 +357,6 @@
 
                     (${refdataValues.join('/')})
                 </g:if>
-
             </div>
 
             <div class="field required">
@@ -423,7 +394,9 @@
                 </div>
             </div>
 
+        </div><!-- .segment -->
 
+        <div class="ui segment">
             <h3 class="ui header">
                 <g:if test="${controllerName == "subscription"}">
                     ${message(code: 'subscriptionsManagement.subscriber')} <ui:totalNumber
@@ -437,7 +410,7 @@
                 <thead>
                 <tr>
                     <g:if test="${editable}">
-                        <th>
+                        <th class="center aligned">
                             <g:checkBox name="membersListToggler" id="membersListToggler" checked="false"/>
                         </th>
                     </g:if>
@@ -704,9 +677,9 @@
                 </g:each>
                 </tbody>
             </table>
-        </g:form>
-
-    </div>
+        </div><!-- .segment -->
+        </div><!-- .segments -->
+    </g:form>
 
     <g:if test="${controllerName == "myInstitution"}">
         <g:if test="${filteredSubscriptions}">
@@ -724,12 +697,10 @@
 
     <g:if test="${!filteredSubscriptions}">
         <g:if test="${filterSet}">
-            <br/><strong><g:message code="filter.result.empty.object"
-                                    args="${[message(code: "subscription.plural")]}"/></strong>
+            <br/><strong><g:message code="filter.result.empty.object" args="${[message(code: "subscription.plural")]}"/></strong>
         </g:if>
         <g:else>
-            <br/><strong><g:message code="result.empty.object"
-                                    args="${[message(code: "subscription.plural")]}"/></strong>
+            <br/><strong><g:message code="result.empty.object" args="${[message(code: "subscription.plural")]}"/></strong>
         </g:else>
     </g:if>
     <g:elseif test="${!propertiesFilterPropDef}">

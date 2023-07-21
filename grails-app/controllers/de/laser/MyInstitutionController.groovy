@@ -1778,7 +1778,7 @@ class MyInstitutionController  {
         result.user = contextService.getUser()
         result.contextOrg = contextService.getOrg()
         result.ddcs = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.DDC)
-        result.languages = RefdataCategory.getAllRefdataValues(RDConstants.LANGUAGE_ISO)
+        result.languages = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.LANGUAGE_ISO)
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         List currentSubIds = []

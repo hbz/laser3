@@ -66,6 +66,21 @@ class RefdataReorderService {
             rdv.save()
         }
 
+        //lang_iso: German and English first
+        order = 10
+        RefdataValue.executeQuery("select rdv from RefdataValue rdv join rdv.owner rdc where rdc.desc = :langIso order by rdv.value asc", [langIso: RDConstants.LANGUAGE_ISO]).eachWithIndex{ RefdataValue rdv, int i ->
+            switch(rdv.value) {
+                case 'ger': rdv.order = 10
+                    break
+                case 'eng': rdv.order = 20
+                    break
+                case 'fre': rdv.order = 30
+                    break
+                default: rdv.order = i*order+40
+                    break
+            }
+        }
+
         //ToDo Order of cost.item.elements
 
         List list = []
