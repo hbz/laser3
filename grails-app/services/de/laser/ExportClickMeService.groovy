@@ -1,6 +1,5 @@
 package de.laser
 
-
 import de.laser.base.AbstractCoverage
 import de.laser.finance.CostItem
 import de.laser.finance.PriceItem
@@ -21,8 +20,11 @@ import de.laser.survey.SurveyResult
 import grails.gorm.transactions.Transactional
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
+import groovy.xml.XmlSlurper
+import groovy.xml.slurpersupport.GPathResult
 import org.springframework.context.MessageSource
 import org.hibernate.Session
+import org.xml.sax.SAXException
 
 import java.math.RoundingMode
 import java.text.DecimalFormat
@@ -41,7 +43,7 @@ class ExportClickMeService {
 
     AccessPointService accessPointService
     ContextService contextService
-    CustomerTypeService customerTypeService
+    DocstoreService docstoreService
     ExportService exportService
     FilterService filterService
     FinanceService financeService
@@ -155,6 +157,8 @@ class ExportClickMeService {
                             'subscription.hasPerpetualAccess'           : [field: 'sub.hasPerpetualAccess', label: 'Perpetual Access', message: 'subscription.hasPerpetualAccess.label'],
                             'subscription.hasPublishComponent'          : [field: 'sub.hasPublishComponent', label: 'Publish Component', message: 'subscription.hasPublishComponent.label'],
                             'subscription.holdingSelection'             : [field: 'sub.holdingSelection', label: 'Holding Selection', message: 'subscription.holdingSelection.export.label'],
+                            'subscription.notes'                        : [field: null, label: 'Notes', message: 'default.notes.label'],
+                            'subscription.notes.shared'                 : [field: null, label: 'Shared notes', message: 'license.notes.shared'],
                             'subscription.uuid'                         : [field: 'sub.globalUID', label: 'Laser-UUID',  message: null],
                     ]
             ],
@@ -269,6 +273,8 @@ class ExportClickMeService {
                             'subscription.hasPerpetualAccess'           : [field: 'hasPerpetualAccess', label: 'Perpetual Access', message: 'subscription.hasPerpetualAccess.label'],
                             'subscription.hasPublishComponent'          : [field: 'hasPublishComponent', label: 'Publish Component', message: 'subscription.hasPublishComponent.label'],
                             'subscription.holdingSelection'             : [field: 'holdingSelection', label: 'Holding Selection', message: 'subscription.holdingSelection.export.label'],
+                            'subscription.notes'                        : [field: null, label: 'Notes', message: 'default.notes.label'],
+                            'subscription.notes.shared'                 : [field: null, label: 'Notes', message: 'license.notes.shared'],
                             'subscription.uuid'                         : [field: 'globalUID', label: 'Laser-UUID',  message: null],
                     ]
             ],
@@ -282,7 +288,8 @@ class ExportClickMeService {
                             'license.licenseCategory' : [field: 'licenses.licenseCategory', label: 'License Category', message: 'license.licenseCategory.label'],
                             'license.startDate'       : [field: 'licenses.startDate', label: 'Start Date', message: 'exportClickMe.license.startDate'],
                             'license.endDate'         : [field: 'licenses.endDate', label: 'End Date', message: 'exportClickMe.license.endDate'],
-                            'license.openEnded'         : [field: 'licenses.openEnded', label: 'Open Ended', message: 'license.openEnded.label'],
+                            'license.openEnded'       : [field: 'licenses.openEnded', label: 'Open Ended', message: 'license.openEnded.label'],
+                            'license.notes'           : [field: null, label: 'Notes', message: 'default.notes.label'],
                             'license.uuid'            : [field: 'licenses.globalUID', label: 'Laser-UUID',  message: null],
                     ]
             ],
@@ -420,6 +427,8 @@ class ExportClickMeService {
                             'license.startDate'       : [field: 'startDate', label: 'Start Date', message: 'exportClickMe.license.startDate', defaultChecked: 'true'],
                             'license.endDate'         : [field: 'endDate', label: 'End Date', message: 'exportClickMe.license.endDate', defaultChecked: 'true'],
                             'license.openEnded'       : [field: 'openEnded', label: 'Open Ended', message: 'license.openEnded.label', defaultChecked: 'true'],
+                            'license.notes'           : [field: null, label: 'Notes', message: 'default.notes.label'],
+                            'license.notes.shared'    : [field: null, label: 'Notes', message: 'license.notes.shared'],
                             'license.uuid'            : [field: 'globalUID', label: 'Laser-UUID',  message: null],
                             'subscription.name'       : [field: 'subscription.name', label: 'Name', message: 'license.details.linked_subs', defaultChecked: 'true']
                     ]
@@ -3335,6 +3344,13 @@ class ExportClickMeService {
                 else if (fieldKey.startsWith('participantIdentifiers.')) {
                     _setOrgFurtherInformation(org, row, fieldKey, format)
                 }
+                else if(fieldKey.contains('subscription.notes')) { //subscription.notes and subscription.notes.shared
+                    Map<String, Object> subNotes = _getNotesForObject(subscription, contextOrg)
+                    if(fieldKey == 'subscription.notes')
+                        row.add(createTableCell(format, subNotes.baseItems.join('\n')))
+                    else if(fieldKey == 'subscription.notes.shared')
+                        row.add(createTableCell(format, subNotes.sharedItems.join('\n')))
+                }
                 else if(fieldKey == 'package.name') {
                     row.add(createTableCell(format, subscription.packages.pkg.name.join('; ')))
                 }
@@ -3499,6 +3515,13 @@ class ExportClickMeService {
                 }
                 else if (fieldKey == 'consortium') {
                     row.add(createTableCell(format, license.getLicensingConsortium()?.name))
+                }
+                else if(fieldKey.contains('license.notes')) { //license.notes and license.notes.shared
+                    Map<String, Object> licNotes = _getNotesForObject(license, contextOrg)
+                    if(fieldKey == 'license.notes')
+                        row.add(createTableCell(format, licNotes.baseItems.join('\n')))
+                    else if(fieldKey == 'license.notes.shared')
+                        row.add(createTableCell(format, licNotes.sharedItems.join('\n')))
                 }
                 else if (fieldKey.startsWith('participantLicProperty.') || fieldKey.startsWith('licProperty.')) {
                     Long id = Long.parseLong(fieldKey.split("\\.")[1])
@@ -4577,5 +4600,60 @@ class ExportClickMeService {
         }
 
         return addr
+    }
+
+    private Map<String, Object> _getNotesForObject(objInstance, Org contextOrg) {
+        List<DocContext> baseItems = [], sharedItems = []
+        docstoreService.getNotes(objInstance, contextOrg).each { DocContext dc ->
+            if(dc.status != RDStore.DOC_CTX_STATUS_DELETED) {
+                String noteContent = dc.owner.title
+                if(dc.owner.content != null) {
+                    XmlSlurper parser = new XmlSlurper()
+                    String inputText = dc.owner.content.replaceAll('&nbsp;', ' ')
+                            .replaceAll('&', '&amp;')
+                            .replaceAll('<(?!p|/|ul|li|strong|b|i|u|em|ol|a|h[1-6])', '&lt;')
+                            .replaceAll('(?<!p|/|ul|li|strong|b|i|u|em|ol|a|h[1-6])>', '&gt;')
+                    try {
+                        GPathResult input = parser.parseText('<mkp>'+inputText+'</mkp>')
+                        List<String> listEntries = []
+                        input.'**'.findAll{ node -> node.childNodes().size() == 0 }.each { node ->
+                            //log.debug("${node.childNodes().size()}")
+                            //if(node.childNodes().size() == 0)
+                            listEntries << node.text().trim()
+                            /*
+                            else {
+                                listEntries.addAll(_getRecursiveNodeText(node.childNodes()))
+                            }
+                            */
+                        }
+                        noteContent += '\n' + listEntries.join('\n')
+                    }
+                    catch (SAXException e) {
+                        log.debug(inputText)
+                    }
+                }
+                if(dc.sharedFrom) {
+                    sharedItems << noteContent
+                }
+                else {
+                    if(dc.owner.owner == contextOrg || dc.owner.owner == null) {
+                        baseItems << noteContent
+                    }
+                }
+            }
+        }
+        [baseItems: baseItems, sharedItems: sharedItems]
+    }
+
+    private List<String> _getRecursiveNodeText(childNodes) {
+        List<String> result = []
+        childNodes.each { node ->
+            if(node.childNodes().size() == 0)
+                result << node.text()
+            else {
+                result.addAll(_getRecursiveNodeText(node.childNodes()))
+            }
+        }
+        result
     }
 }

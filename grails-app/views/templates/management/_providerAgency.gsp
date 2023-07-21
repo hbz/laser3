@@ -58,11 +58,9 @@
 
         <h3 class="ui header">
             <g:if test="${controllerName == "subscription"}">
-                ${message(code: 'subscriptionsManagement.subscriber')} <ui:totalNumber
-                    total="${filteredSubscriptions.size()}"/>
+                ${message(code: 'subscriptionsManagement.subscriber')} <ui:totalNumber total="${filteredSubscriptions.size()}"/>
             </g:if><g:else>
-                ${message(code: 'subscriptionsManagement.subscriptions')} <ui:totalNumber
-                        total="${num_sub_rows}"/>
+                ${message(code: 'subscriptionsManagement.subscriptions')} <ui:totalNumber total="${num_sub_rows}"/>
             </g:else>
         </h3>
         <table class="ui celled la-js-responsive-table la-table table">
@@ -92,8 +90,7 @@
                             ${subscr.sortname}
                         </td>
                         <td>
-                            <g:link controller="organisation" action="show"
-                                    id="${subscr.id}">${subscr}</g:link>
+                            <g:link controller="organisation" action="show" id="${subscr.id}">${subscr}</g:link>
 
                             <g:if test="${sub.isSlaved}">
                                 <span data-position="top right"
@@ -171,8 +168,7 @@
 </g:if>
 <g:else>
     <g:if test="${filterSet}">
-        <br/><strong><g:message code="filter.result.empty.object"
-                                args="${[message(code: "subscription.plural")]}"/></strong>
+        <br/><strong><g:message code="filter.result.empty.object" args="${[message(code: "subscription.plural")]}"/></strong>
     </g:if>
     <g:else>
         <br/><strong><g:message code="result.empty.object" args="${[message(code: "subscription.plural")]}"/></strong>

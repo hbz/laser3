@@ -8,7 +8,7 @@
     <g:if test="${controllerName == "subscription"}">
         <div class="ui segment">
             <h3 class="ui header"><g:message code="consortium.superSubscriptionType"/></h3>
-            <table class="ui compact  monitor stackable la-js-responsive-table la-table table">
+            <table class="ui compact monitor stackable la-js-responsive-table la-table table">
                 <thead>
                 <tr>
                     <th>${message(code: 'subscription')}</th>
@@ -91,19 +91,18 @@
             </table>
         </div>
 
-        <div class="divider"></div>
-
     </g:if>
 
-    <div class="ui segment">
-        <g:form action="${actionName}" controller="${controllerName}" params="[tab: 'generalProperties']" method="post"
-                class="ui form propertiesSubscription">
-            <g:hiddenField id="pspm_id_${params.id}" name="id" value="${params.id}"/>
-            <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
+    <h3 class="ui header">${message(code: 'subscriptionsManagement.info.subscriptionProperty')}</h3>
 
-            <h4 class="ui header">${message(code: 'subscriptionsManagement.info.subscriptionProperty')}</h4>
+    <g:form action="${actionName}" controller="${controllerName}" params="[tab: 'generalProperties']" method="post"
+            class="ui form propertiesSubscription">
+        <g:hiddenField id="pspm_id_${params.id}" name="id" value="${params.id}"/>
+        <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
 
-            <div class="ui divided grid">
+        <div class="ui segments">
+        <div class="ui segment">
+            <div class="ui divided compact grid">
                 <div class="row">
                     <div class="four wide column">
                         <div class="two fields">
@@ -324,13 +323,11 @@
                 </div>
             </div>
 
-
-
-
             <button class="ui button" ${!editable ? 'disabled="disabled"' : ''} type="submit" name="processOption"
                     value="changeProperties">${message(code: 'default.button.save_changes')}</button>
+        </div><!-- .segment -->
 
-
+        <div class="ui segment">
             <h3 class="ui header">
                 <g:if test="${controllerName == "subscription"}">
                     ${message(code: 'subscriptionsManagement.subscriber')} <ui:totalNumber
@@ -340,11 +337,12 @@
                             total="${num_sub_rows}"/>
                 </g:else>
             </h3>
+
             <table class="ui compact  monitor stackable la-js-responsive-table la-table table">
                 <thead>
                 <tr>
                     <g:if test="${editable}">
-                        <th>
+                        <th class="center aligned">
                             <g:checkBox name="membersListToggler" id="membersListToggler" checked="false"/>
                         </th>
                     </g:if>
@@ -509,8 +507,9 @@
                 </g:each>
                 </tbody>
             </table>
-        </g:form>
-    </div>
+        </div><!-- .segment -->
+        </div><!-- .segments -->
+    </g:form>
 </g:if>
 <g:else>
     <g:if test="${filterSet}">

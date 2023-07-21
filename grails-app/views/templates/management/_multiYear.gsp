@@ -3,9 +3,8 @@
 
 <g:if test="${filteredSubscriptions}">
     <g:if test="${controllerName == "subscription"}">
-        <div class="ui segment ">
-            <h3 class="ui header"><g:message code="subscriptionsManagement.subscription"
-                                             args="${args.superOrgType}"/></h3>
+        <div class="ui segment">
+            <h3 class="ui header"><g:message code="subscriptionsManagement.subscription" args="${args.superOrgType}"/></h3>
 
             <table class="ui celled la-js-responsive-table la-table table">
                 <thead>
@@ -20,7 +19,6 @@
                 <tbody>
                 <tr>
                     <td>${subscription.name}</td>
-
                     <td>
                         <g:formatDate formatName="default.date.format.notime" date="${subscription.startDate}"/>
                         <ui:auditButton auditable="[subscription, 'startDate']"/>
@@ -46,13 +44,15 @@
         </div>
     </g:if>
 
-    <div class="ui segment">
+    <h3 class="ui header">${message(code: 'subscriptionsManagement.info.subscriptionProperty')}</h3>
+
     <g:form action="${actionName}" controller="${controllerName}" params="[tab: 'multiYear']" method="post"
             class="ui form propertiesSubscription">
         <g:hiddenField id="pspm_id_${params.id}" name="id" value="${params.id}"/>
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
 
-        <h4 class="ui header">${message(code: 'subscriptionsManagement.info.subscriptionProperty')}</h4>
+        <div class="ui segments">
+        <div class="ui segment">
 
         <div class="two fields">
             <ui:datepicker label="subscription.startDate.label" id="valid_from" name="valid_from"/>
@@ -85,21 +85,21 @@
         <button class="ui button" ${!editable ? 'disabled="disabled"' : ''} type="submit" name="processOption"
                 value="changeProperties">${message(code: 'default.button.save_changes')}</button>
 
+        </div><!-- .segment -->
+        <div class="ui segment">
 
         <h3 class="ui header">
             <g:if test="${controllerName == "subscription"}">
-                ${message(code: 'subscriptionsManagement.subscriber')} <ui:totalNumber
-                    total="${filteredSubscriptions.size()}"/>
+                ${message(code: 'subscriptionsManagement.subscriber')} <ui:totalNumber total="${filteredSubscriptions.size()}"/>
             </g:if><g:else>
-                ${message(code: 'subscriptionsManagement.subscriptions')} <ui:totalNumber
-                        total="${num_sub_rows}"/>
+                ${message(code: 'subscriptionsManagement.subscriptions')} <ui:totalNumber total="${num_sub_rows}"/>
             </g:else>
         </h3>
         <table class="ui celled la-js-responsive-table la-table table">
             <thead>
             <tr>
                 <g:if test="${editable}">
-                    <th>
+                    <th class="center aligned">
                         <g:checkBox name="membersListToggler" id="membersListToggler" checked="false"/>
                     </th>
                 </g:if>
@@ -184,17 +184,18 @@
             </g:each>
             </tbody>
         </table>
+
+        </div><!-- .segment -->
+        </div><!-- .segments -->
     </g:form>
-    </div>
+
 </g:if>
 <g:else>
     <g:if test="${filterSet}">
-        <br/><strong><g:message code="filter.result.empty.object"
-                                args="${[message(code: "subscription.plural")]}"/></strong>
+        <br/><strong><g:message code="filter.result.empty.object" args="${[message(code: "subscription.plural")]}"/></strong>
     </g:if>
     <g:else>
-        <br/><strong><g:message code="result.empty.object"
-                                args="${[message(code: "subscription.plural")]}"/></strong>
+        <br/><strong><g:message code="result.empty.object" args="${[message(code: "subscription.plural")]}"/></strong>
     </g:else>
 </g:else>
 
