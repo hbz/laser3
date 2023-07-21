@@ -987,7 +987,13 @@ class ManagementService {
                     subscriptions = subscriptionService.getMySubscriptions(params,result.user,result.institution).allSubscriptions
                 }
             }
-            else subscriptions = Subscription.findAllByIdInList(params.list("selectedSubscriptionIds"))
+            else {
+                if(params.selectedSubscriptionIds) {
+                    Set<Long> ids = params.selectedSubscriptionIds.split(',').collect { String idKey -> Long.parseLong(idKey) }
+                    subscriptions = Subscription.findAllByIdInList(ids)
+                }
+                else subscriptions = []
+            }
             if (subscriptions) {
                     if(params.processOption == 'newDoc') {
                         subscriptions.eachWithIndex { Subscription subscription, int status ->
