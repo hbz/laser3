@@ -7,7 +7,7 @@
 - Spring Boot 2.7.12
 - Micronaut 3.9.2 / for Spring 4.5.1
 - Hibernate 5.6.15.Final / GORM 8.0.0
-- Logback 1.2.11
+- Logback 1.2.12
 - Gradle 7.6.1
 - Groovy 3.0.11
 - Java 11
