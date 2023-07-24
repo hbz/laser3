@@ -43,6 +43,7 @@ class PackageController {
     GenericOIDService genericOIDService
     GokbService gokbService
     MessageSource messageSource
+    PackageService packageService
     SubscriptionService subscriptionService
     ExportClickMeService exportClickMeService
     //TaskService taskService
@@ -229,10 +230,10 @@ class PackageController {
     @Secured(['ROLE_USER'])
     @Check404()
     def show() {
-        Map<String, Object> result = [:]
+        Map<String, Object> result = packageService.getResultGenerics(params)
 
         result.user = contextService.getUser()
-        Package packageInstance = Package.get(params.id)
+        Package packageInstance = result.packageInstance
 
         result.currentTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_CURRENT])[0]
         result.plannedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_EXPECTED])[0]
@@ -299,8 +300,6 @@ class PackageController {
         }
         result.gascoContacts = gascoContacts
 
-        result.packageInstance = packageInstance
-
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         result.editUrl = apiSource.editUrl.endsWith('/') ? apiSource.editUrl : apiSource.editUrl+'/'
 
@@ -344,14 +343,9 @@ class PackageController {
     @Check404()
     def current() {
         log.debug("current ${params}");
-        Map<String, Object> result = [:]
-        result.user = contextService.getUser()
-        result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
-        result.contextOrg = contextService.getOrg()
-        result.contextCustomerType = result.contextOrg.getCustomerType()
+        Map<String, Object> result = packageService.getResultGenerics(params)
 
-        Package packageInstance = Package.get(params.id)
-        result.packageInstance = packageInstance
+        Package packageInstance = result.packageInstance
 
         if (executorWrapperService.hasRunningProcess(packageInstance)) {
             result.processingpc = true
@@ -513,13 +507,9 @@ class PackageController {
     @Secured(['ROLE_USER'])
     def planned_expired_deleted(params, func) {
         log.debug("planned_expired_deleted ${params}");
-        Map<String, Object> result = [:]
-        result.user = contextService.getUser()
-        result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
-        result.contextOrg = contextService.getOrg()
-        result.contextCustomerType = result.contextOrg.getCustomerType()
+        Map<String, Object> result = packageService.getResultGenerics(params)
 
-        Package packageInstance = Package.get(params.id)
+        Package packageInstance = result.packageInstance
         if (!packageInstance) {
             flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label'), params.id]) as String
             redirect action: 'index'

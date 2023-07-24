@@ -228,9 +228,7 @@ class PlatformController  {
     @Check404()
     def show() {
         Map<String, Object> result = platformControllerService.getResultGenerics(params)
-        Platform platformInstance = Platform.get(params.id)
-
-        result.platformInstance = platformInstance
+        Platform platformInstance = result.platformInstance
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         result.editUrl = apiSource.editUrl.endsWith('/') ? apiSource.editUrl : apiSource.editUrl+'/'
 
