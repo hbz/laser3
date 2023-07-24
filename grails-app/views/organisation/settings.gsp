@@ -6,7 +6,11 @@
         <laser:render template="breadcrumb"
               model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView]}"/>
 
-        <ui:h1HeaderWithIcon text="${orgInstance.name}" />
+        <ui:h1HeaderWithIcon text="${orgInstance.name}">
+            <g:if test="${isMyOrg}">
+                <laser:render template="/templates/iconObjectIsMine"/>
+            </g:if>
+        </ui:h1HeaderWithIcon>
 
         <ui:controlButtons>
             <laser:render template="actions" />

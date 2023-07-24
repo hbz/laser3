@@ -11,7 +11,7 @@
         $('.la-subscriptionIsChild').visibility({
           type   : 'fixed',
           offset : 55,
-          zIndex: 102
+          zIndex: 101
         })
       })
     </laser:script>

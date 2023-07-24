@@ -27429,6 +27429,14 @@ body[class*="myInstitution"] .ui.icon.header .icon.la-object:before {
   content: "\f19c";
 }
 
+body[class*="Organisation"] .la-objectIsMine,
+body[class*="organisation"] .la-objectIsMine,
+body[class*="myPublicContacts"] .la-objectIsMine,
+body[class*="myInstitution"] .la-objectIsMine {
+  box-shadow: 0 0 0 0.1em #00B5AD inset !important;
+  color: #00B5AD;
+}
+
 body[class*="License"] .ui.icon.header .icon.la-object,
 body[class*="license"] .ui.icon.header .icon.la-object {
   display: inline-block;
@@ -27451,6 +27459,12 @@ body[class*="package"] .ui.icon.header .icon.la-object {
 body[class*="Package"] .ui.icon.header .icon.la-object:before,
 body[class*="package"] .ui.icon.header .icon.la-object:before {
   content: "\f06b";
+}
+
+body[class*="Package"] .la-objectIsMine,
+body[class*="package"] .la-objectIsMine {
+  box-shadow: 0 0 0 0.1em #76007A inset !important;
+  color: #76007A;
 }
 
 body[class*="Subscription"] .ui.icon.header .icon.la-object,
@@ -27487,6 +27501,12 @@ body[class*="platform"] .ui.icon.header .icon.la-object {
 body[class*="Platform"] .ui.icon.header .icon.la-object:before,
 body[class*="platform"] .ui.icon.header .icon.la-object:before {
   content: "\f0c2";
+}
+
+body[class*="Platform"] .la-objectIsMine,
+body[class*="platform"] .la-objectIsMine {
+  box-shadow: 0 0 0 0.1em #FBC71C inset !important;
+  color: #FBC71C;
 }
 
 body[class*="Platform"] .ui.icon.header .icon.la-object:before,
@@ -27565,6 +27585,13 @@ body[class*="platform"] .ui.icon.header .icon.la-object:before {
 }
 
 .la-subPlusYear-texts {
+  display: flex;
+  flex-direction: column;
+  font-size: 1.4rem;
+  line-height: 1.2em;
+}
+
+.la-additionalIcon {
   display: flex;
   flex-direction: column;
   font-size: 1.4rem;
@@ -42704,7 +42731,6 @@ i.orange.icon.la-subscriptionIsChild.fixed {
   top: -15px;
   background-color: white;
   font-size: 0.6em !important;
-  box-shadow: 0 0 0 0.1em #fa820a inset !important;
   padding: 0em;
   transition: all 0.5s ease;
 }
@@ -42713,7 +42739,7 @@ i.orange.icon.la-subscriptionIsChild.fixed {
 
 i.icon.la-objectIsMine.fixed {
   position: fixed;
-  margin-left: 150px!important;
+  margin-left: 205px!important;
   background-color: transparent!important;
   color: gray!important;
   box-shadow: none!important;
@@ -42721,7 +42747,7 @@ i.icon.la-objectIsMine.fixed {
 }
 
 @media only screen and (max-width: 992px) {
-  i.icon.la-objectIsMine.fixed {
+  .ui.icon.header i.icon.la-objectIsMine.fixed {
     display: none;
   }
 }

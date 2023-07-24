@@ -54,6 +54,10 @@ body[class*="myInstitution"]{
       content: "\f19c";
     }
   }
+  .la-objectIsMine {
+    box-shadow: 0 0 0 0.1em @organisation inset!important;
+    color: @organisation;
+  }
 }
 
 body[class*="License"]
@@ -77,6 +81,10 @@ body[class*="package"] {
     &:before {
       content: "\f06b";
     }
+  }
+  .la-objectIsMine {
+    box-shadow: 0 0 0 0.1em @package inset!important;
+    color: @package;
   }
 }
 
@@ -116,6 +124,10 @@ body[class*="platform"]
     &:before {
       content: "\f0c2";
     }
+  }
+  .la-objectIsMine {
+    box-shadow: 0 0 0 0.1em @platform inset!important;
+    color: @platform;
   }
 }
 
@@ -184,6 +196,12 @@ body[class*="platform"] .ui.icon.header .icon.la-object:before {
   display: flex;
 }
 .la-subPlusYear-texts {
+  display: flex;
+  flex-direction: column;
+  font-size: 1.4rem;
+  line-height: 1.2em;
+}
+.la-additionalIcon {
   display: flex;
   flex-direction: column;
   font-size: 1.4rem;
