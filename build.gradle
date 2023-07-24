@@ -12,7 +12,7 @@ buildscript {
     }
     dependencies {
         classpath 'org.grails:grails-gradle-plugin:' + grailsGradlePluginVersion
-        classpath 'org.grails.plugins:hibernate5:7.3.1'                                     // 2022
+        classpath 'org.grails.plugins:hibernate5:' + gormVersion                            // 2023
         classpath 'org.grails.plugins:database-migration:4.2.0'                             // 2023
         classpath 'com.bertramlabs.plugins:asset-pipeline-gradle:4.3.0'                     // 2023
         classpath 'com.gorylenko.gradle-git-properties:gradle-git-properties:2.4.1'         // 2022
@@ -91,7 +91,7 @@ dependencies {
     implementation 'org.grails.plugins:async'
     implementation 'org.grails.plugins:scaffolding'
     implementation 'org.grails.plugins:events'
-    implementation 'org.grails.plugins:hibernate5:7.3.1'    // [fixed - tmp]
+    implementation 'org.grails.plugins:hibernate5:' + gormVersion   // [fix]
     implementation 'org.grails.plugins:gsp'
 
     implementation 'io.micronaut:micronaut-http-client'
