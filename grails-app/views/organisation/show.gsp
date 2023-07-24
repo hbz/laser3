@@ -22,7 +22,9 @@
 </ui:controlButtons>
 
 <ui:h1HeaderWithIcon text="${orgInstance.name}" >
-    <laser:render template="/templates/iconObjectIsMine"/>
+    <g:if test="${isMyOrg}">
+        <laser:render template="/templates/iconObjectIsMine"/>
+    </g:if>
 </ui:h1HeaderWithIcon>
 
 
