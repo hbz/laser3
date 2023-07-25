@@ -30,7 +30,6 @@
     <g:if test="${isLinkingRunning}">
         <div class="ui icon warning message">
             <i class="info icon"></i>
-
             <div class="content">
                 <div class="header">Info</div>
 
@@ -90,7 +89,6 @@
                                 value="linkwithIE">${message(code: 'subscriptionsManagement.linkwithIE')}</button>
                     </div>
                 </div>
-
                 <div class="eight wide field" style="text-align: right;">
                     <div class="ui buttons">
                         <button class="ui button negative js-open-confirm-modal"
@@ -220,7 +218,6 @@
                                 </span>
                             </g:if>
                         </td>
-
                         <td class="x">
                             <g:link controller="subscription" action="show" id="${sub.id}"
                                     class="ui icon button blue la-modern-button"

@@ -255,7 +255,7 @@ class CopyElementsService {
      * @param targetObject the target object into which the subscribers should be copied
      * @param flash the message container
      */
-    void copySubscriber(List<Subscription> subscriptionToTake, Object targetObject, def flash) {
+    void copySubscriber(List<Subscription> subscriptionToTake, Object targetObject, def flash, boolean isRenewSub = false) {
         Locale locale = LocaleUtils.getCurrentLocale()
         targetObject.refresh()
         List<Subscription> targetChildSubs = subscriptionService.getValidSubChilds(targetObject), memberHoldingsToTransfer = []
@@ -301,7 +301,9 @@ class CopyElementsService {
                 //ERMS-892: insert preceding relation in new data model
                 if (subMember) {
                     try {
-                        Links.construct([source: newSubscription, destination: subMember, linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.getOrg()])
+                        //iff copy context is renewal process!!!!!
+                        if(isRenewSub)
+                            Links.construct([source: newSubscription, destination: subMember, linkType: RDStore.LINKTYPE_FOLLOWS, owner: contextService.getOrg()])
 
                         if(Links.findAllByDestinationSubscriptionAndLinkType(targetObject, RDStore.LINKTYPE_LICENSE).size() > 0) {
                             Set<Links> precedingLicenses = Links.findAllByDestinationSubscriptionAndLinkType(subMember, RDStore.LINKTYPE_LICENSE)
@@ -748,7 +750,7 @@ class CopyElementsService {
             if(sourceObject instanceof Subscription){
                 if (params.copyObject?.copySubscriber && isBothObjectsSet(sourceObject, targetObject)) {
                         List<Subscription> toCopySubs = params.list('copyObject.copySubscriber').collect { genericOIDService.resolveOID(it) }
-                        copySubscriber(toCopySubs, targetObject, flash)
+                        copySubscriber(toCopySubs, targetObject, flash, Boolean.valueOf(params.isRenewSub))
                 }
             }
             if(sourceObject instanceof SurveyConfig) {
