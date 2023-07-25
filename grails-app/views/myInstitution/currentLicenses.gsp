@@ -210,7 +210,7 @@
                           <th scope="row" class="la-th-column">
                               <g:link action="show" class="la-main-object" controller="license" id="${l.id}">
                                   <g:if test="${l._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION}">
-                                      <i class="icon users la-list-icon la-popup-tooltip la-delay" data-content="${message(code: 'license.member')}"></i>
+                                      <i class="icon users la-list-icon la-popup-tooltip la-delay" data-content="${tooltip}"></i>
                                   </g:if>
                                   ${l.reference ?: message(code:'missingLicenseReference')}
                               </g:link>

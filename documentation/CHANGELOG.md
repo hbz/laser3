@@ -7,6 +7,14 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5205    21.07.2023  rc-3.2  3.2.1       Andreas Bug         Tooltip für Nichtkonsortialstellen angepasst
+
+5204    21.07.2023  rc-3.2  3.2.1       Andreas Bug         falsche Referenzen korrigiert
+
+5203    21.07.2023  rc-3.2  3.2.1       Andreas Bug         Lizenzverknüpfungen und deren Erzeugung überarbeitet
+
+5202    21.07.2023  rc-3.2  3.2.1       Andreas Bug         Dauerhafter Zugriffs-Flag wurde falsch abgefragt
+
 5200    21.07.2023  dev     3.3         Andreas Feature     Backend-Voraussetzungen für Anzeige umgesetzt
 
 5178    21.07.2023  rc-3.2  3.2.1       David   Feature     Lizenzverwaltung: Anmerkungen zentral teilbar machen

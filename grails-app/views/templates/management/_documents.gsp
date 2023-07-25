@@ -39,7 +39,6 @@
 
         <div class="field">
             <label for="doctype">${message(code: 'template.addDocument.type')}:</label>
-
             <%
                 List notAvailable = [RDStore.DOC_TYPE_NOTE, RDStore.DOC_TYPE_ANNOUNCEMENT, RDStore.DOC_TYPE_ONIXPL]
                 List documentTypes = RefdataCategory.getAllRefdataValues(RDConstants.DOCUMENT_TYPE) - notAvailable

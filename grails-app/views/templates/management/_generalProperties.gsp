@@ -31,7 +31,6 @@
                 <tbody>
                 <tr>
                     <td>${subscription.name}</td>
-
                     <td>
                         <g:formatDate formatName="default.date.format.notime" date="${subscription.startDate}"/>
                         <ui:auditButton auditable="[subscription, 'startDate']"/>
@@ -119,7 +118,6 @@
                             </g:if>
                         </div>
                     </div>
-
                     <div class="four wide column">
                         <div class="${tmplAddColumns ? 'two fields' : 'one field'}">
                             <ui:datepicker label="subscription.endDate.label" id="valid_to" name="valid_to"/>
@@ -133,7 +131,6 @@
                             </g:if>
                         </div>
                     </div>
-
                     <div class="four wide column">
                         <div class="${tmplAddColumns ? 'two fields' : 'one field'}">
                             <ui:datepicker label="subscription.referenceYear.label" id="reference_year" name="reference_year" type="year"/>
@@ -147,7 +144,6 @@
                             </g:if>
                         </div>
                     </div>
-
                     <div class="four wide column">
                         <div class="${tmplAddColumns ? 'two fields' : 'one field'}">
                             <div class="field">
@@ -192,7 +188,6 @@
                             </g:if>
                         </div>
                     </div>
-
                     <div class="four wide column">
                         <div class="${tmplAddColumns ? 'two fields' : 'one field'}">
                             <div class="field">
@@ -212,7 +207,6 @@
                             </g:if>
                         </div>
                     </div>
-
                     <div class="four wide column">
                         <div class="${tmplAddColumns ? 'two fields' : 'one field'}">
                             <div class="field">
@@ -232,7 +226,6 @@
                             </g:if>
                         </div>
                     </div>
-
                     <div class="four wide column">
                         <div class="${tmplAddColumns ? 'two fields' : 'one field'}">
                             <div class="field">
@@ -444,9 +437,7 @@
                             <ui:auditButton auditable="[sub, 'form']"/>
                         </td>
                         <td>
-                            <ui:xEditableRefData owner="${sub}" field="resource"
-                                                    config="${RDConstants.SUBSCRIPTION_RESOURCE}"
-                                                    overwriteEditable="${editableOld}"/>
+                            <ui:xEditableRefData owner="${sub}" field="resource" config="${RDConstants.SUBSCRIPTION_RESOURCE}" overwriteEditable="${editableOld}"/>
                             <ui:auditButton auditable="[sub, 'resource']"/>
                         </td>
                         <td>
