@@ -76,7 +76,7 @@
 </div>
 
 <g:if test="${titlesList}">
-    <ui:paginate action="current" controller="package" params="${params}"
+    <ui:paginate action="${actionName}" controller="${controllerName}" params="${params}"
                  max="${max}" total="${num_tipp_rows}"/>
 </g:if>
 <laser:htmlEnd />
