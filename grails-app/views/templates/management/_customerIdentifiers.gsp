@@ -27,9 +27,7 @@
             <g:each in="${keyPairs}" var="pair" status="rowno">
                 <tr>
                     <td>${pair.customer.sortname ?: pair.customer.name}</td>
-                    <td>
-                        ${pair.getProvider()} : ${pair.platform.name}
-                    </td>
+                    <td>${pair.getProvider()} : ${pair.platform.name}</td>
                     <td><ui:xEditable owner="${pair}" field="value"/></td>
                     <td><ui:xEditable owner="${pair}" field="requestorKey"/></td>
                     <td><ui:xEditable owner="${pair}" field="note"/></td>
