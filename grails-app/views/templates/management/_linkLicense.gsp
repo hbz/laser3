@@ -18,7 +18,6 @@
             <g:else>
                 <g:message code="subscriptionsManagement.noValidLicenses"/>
             </g:else>
-
         </div>
     </g:if>
 
@@ -57,7 +56,6 @@
                                 value="linkLicense">${message(code: 'subscriptionsManagement.linkLicenses.button')}</button>
                     </div>
                 </div>
-
                 <div class="eight wide field" style="text-align: right;">
                     <div class="ui buttons">
                         <button class="ui button negative js-open-confirm-modal" ${!editable ? 'disabled="disabled"' : ''}
@@ -67,7 +65,6 @@
                                 data-confirm-id="deleteLicenses"
                                 value="unlinkLicense">${message(code: 'subscriptionsManagement.deleteLicenses.button')}</button>
                     </div>
-
                 </div>
             </div>
         </div><!-- .segment -->
@@ -168,7 +165,6 @@
                                 </span>
                             </g:if>
                         </td>
-
                         <td class="x">
                             <g:link controller="subscription" action="show" id="${sub.id}"
                                     class="ui icon button blue la-modern-button"

@@ -55,21 +55,46 @@ class CustomMigrationCallbacks {
 		}
 	}
 
-	static void _localChangelogMigration_may23() {
+	static void _localChangelogMigration_july24() {
 		groovy.sql.Sql sql = new groovy.sql.Sql(BeanStore.getDataSource())
 
-		int count1 = (sql.rows("select * from databasechangelog where filename like 'legacy/changelog-%'")).size()
-		int count2 = (sql.rows("select * from databasechangelog where filename like 'changelogs/2022-%'")).size()
+		String[] ranges = ['changelogs/2023-01-%', 'changelogs/2023-02-%', 'changelogs/2023-03-%', 'changelogs/2023-04-%', 'changelogs/2023-05-%']
+		int[] count = [0, 0, 0, 0, 0]
 
-		if (count1 || count2) {
+		ranges.eachWithIndex { r, i ->
+			String query = "select * from databasechangelog where filename like '${r}'"
+			count[i] = (sql.rows(query).size())
+		}
+
+		if (count.sum()) {
 			sql.withTransaction {
 				println '--------------------------------------------------------------------------------'
 				println '-     Cleanup database migration table'
-				println '-        legacy/changelog-% -> ' + count1
-				println '-           updating: ' + sql.executeUpdate("update databasechangelog set filename = replace(filename, 'legacy/changelog-', 'legacy/') where filename like 'legacy/changelog-%'")
+				ranges.each { r ->
+					println '-        ' + r
+					String query = "update databasechangelog set filename = replace(filename, 'changelogs/', 'legacy/') where filename like '${r}'"
+					println '-           updating: ' + sql.executeUpdate(query)
+				}
 
-				println '-        changelogs/2022-%-> ' + count2
+				sql.commit()
+				println '--------------------------------------------------------------------------------'
+			}
+		}
+	}
+
+	static void _localChangelogMigration_july24_storage() {
+		groovy.sql.Sql sql = new groovy.sql.Sql(BeanStore.getStorageDataSource())
+
+		int count = (sql.rows("select * from databasechangelog where filename like 'changelogs/2022-%'")).size()
+
+		if (count) {
+			sql.withTransaction {
+				println '--------------------------------------------------------------------------------'
+				println '-     Cleanup database migration table'
+				println '-        changelogs/2022-%'
 				println '-           updating: ' + sql.executeUpdate("update databasechangelog set filename = replace(filename, 'changelogs/', 'legacy/') where filename like 'changelogs/2022-%'")
+				println '-        changelogs/2023-02-%'
+				println '-           updating: ' + sql.executeUpdate("update databasechangelog set filename = replace(filename, 'changelogs/', 'legacy/') where filename like 'changelogs/2023-02-%'")
 
 				sql.commit()
 				println '--------------------------------------------------------------------------------'
@@ -82,8 +107,8 @@ class CustomMigrationCallbacks {
 
 	void onStartMigration(Database database, Liquibase liquibase, String changelogName) {
 
-		// _localChangelogMigration_april22()
-		_localChangelogMigration_may23()
+		_localChangelogMigration_july24()
+		_localChangelogMigration_july24_storage()
 
 		List allIds = liquibase.getDatabaseChangeLog().getChangeSets().collect { ChangeSet it -> it.filePath + '::' + it.id + '::' + it.author }
 		List ranIds = database.getRanChangeSetList().collect { RanChangeSet it -> it.changeLog + '::' + it.id + '::' + it.author }
