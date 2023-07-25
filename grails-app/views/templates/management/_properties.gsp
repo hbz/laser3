@@ -21,7 +21,6 @@
                             </div>
                         </g:form>
                 </div>
-
                 <div class="column">
                         <g:form action="${actionName}" method="post" class="ui form" id="${params.id}"
                                 params="[tab: params.tab]">
@@ -56,7 +55,6 @@
                 </div>
             </g:form>
     </g:if>
-
 
     <g:if test="${memberProperties}">%{-- check for content --}%
                 <div class="ui segment">
@@ -225,8 +223,7 @@
                                             <div class="content">
 
                                                 <g:set var="editable"
-                                                       value="${!(AuditConfig.getConfig(privateProperty))}"
-                                                       scope="request"/>
+                                                       value="${!(AuditConfig.getConfig(privateProperty))}" scope="request"/>
 
                                                 <g:if test="${privateProperty.type.isIntegerType()}">
                                                     <ui:xEditable owner="${privateProperty}" type="number" field="intValue"/>
@@ -241,15 +238,13 @@
                                                     <ui:xEditable owner="${privateProperty}" type="date" field="dateValue"/>
                                                 </g:elseif>
                                                 <g:elseif test="${privateProperty.type.isURLType()}">
-                                                    <ui:xEditable owner="${privateProperty}" type="url" field="urlValue"
-                                                                     class="la-overflow la-ellipsis"/>
+                                                    <ui:xEditable owner="${privateProperty}" type="url" field="urlValue" class="la-overflow la-ellipsis"/>
                                                     <g:if test="${privateProperty.value}">
                                                         <ui:linkWithIcon href="${privateProperty.value}"/>
                                                     </g:if>
                                                 </g:elseif>
                                                 <g:elseif test="${privateProperty.type.isRefdataValueType()}">
-                                                    <ui:xEditableRefData owner="${privateProperty}" type="text" field="refValue"
-                                                                            config="${privateProperty.type.refdataCategory}"/>
+                                                    <ui:xEditableRefData owner="${privateProperty}" type="text" field="refValue" config="${privateProperty.type.refdataCategory}"/>
                                                 </g:elseif>
 
                                                 <%
@@ -339,8 +334,7 @@
                 ${message(code: 'default.type.label')}: ${PropertyDefinition.getLocalizedValue(propertiesFilterPropDef.type)}
                 <g:if test="${propertiesFilterPropDef.isRefdataValueType()}">
                     <g:set var="refdataValues" value="${[]}"/>
-                    <g:each in="${RefdataCategory.getAllRefdataValues(propertiesFilterPropDef.refdataCategory)}"
-                            var="refdataValue">
+                    <g:each in="${RefdataCategory.getAllRefdataValues(propertiesFilterPropDef.refdataCategory)}" var="refdataValue">
                         <g:if test="${refdataValue.getI10n('value')}">
                             <g:set var="refdataValues" value="${refdataValues + refdataValue.getI10n('value')}"/>
                         </g:if>
@@ -390,11 +384,9 @@
         <div class="ui segment">
             <h3 class="ui header">
                 <g:if test="${controllerName == "subscription"}">
-                    ${message(code: 'subscriptionsManagement.subscriber')} <ui:totalNumber
-                        total="${filteredSubscriptions.size()}"/>
+                    ${message(code: 'subscriptionsManagement.subscriber')} <ui:totalNumber total="${filteredSubscriptions.size()}"/>
                 </g:if><g:else>
-                    ${message(code: 'subscriptionsManagement.subscriptions')} <ui:totalNumber
-                            total="${num_sub_rows}"/>
+                    ${message(code: 'subscriptionsManagement.subscriptions')} <ui:totalNumber total="${num_sub_rows}"/>
                 </g:else>
             </h3>
             <table class="ui celled la-js-responsive-table la-table table">
@@ -435,8 +427,7 @@
                                 <%-- This whole construct is necessary for that the form validation works!!! --%>
                                 <div class="field">
                                     <div class="ui checkbox">
-                                        <g:checkBox id="selectedSubs_${sub.id}" name="selectedSubs" value="${sub.id}"
-                                                    checked="false"/>
+                                        <g:checkBox id="selectedSubs_${sub.id}" name="selectedSubs" value="${sub.id}" checked="false"/>
                                     </div>
                                 </div>
                             </td>
@@ -465,12 +456,10 @@
                         </g:if>
 
                         <td>
-                            <ui:xEditable owner="${sub}" field="startDate" type="date"
-                                             overwriteEditable="${editableOld}"/>
+                            <ui:xEditable owner="${sub}" field="startDate" type="date" overwriteEditable="${editableOld}"/>
                             %{--<ui:auditButton auditable="[sub, 'startDate']"/>--}%
                         </td>
-                        <td><ui:xEditable owner="${sub}" field="endDate" type="date"
-                                             overwriteEditable="${editableOld}"/>
+                        <td><ui:xEditable owner="${sub}" field="endDate" type="date" overwriteEditable="${editableOld}"/>
                         %{--<ui:auditButton auditable="[sub, 'endDate']"/>--}%
                         </td>
                         <td>
@@ -509,33 +498,24 @@
 
                                                 <div class="content">
                                                     <g:if test="${customProperty.type.isIntegerType()}">
-                                                        <ui:xEditable owner="${customProperty}" type="number"
-                                                                         field="intValue"/>
+                                                        <ui:xEditable owner="${customProperty}" type="number" field="intValue"/>
                                                     </g:if>
                                                     <g:elseif test="${customProperty.type.isStringType()}">
-                                                        <ui:xEditable owner="${customProperty}" type="text"
-                                                                         field="stringValue"/>
+                                                        <ui:xEditable owner="${customProperty}" type="text" field="stringValue"/>
                                                     </g:elseif>
-                                                    <g:elseif
-                                                            test="${customProperty.type.isBigDecimalType()}">
-                                                        <ui:xEditable owner="${customProperty}" type="text"
-                                                                         field="decValue"/>
+                                                    <g:elseif test="${customProperty.type.isBigDecimalType()}">
+                                                        <ui:xEditable owner="${customProperty}" type="text" field="decValue"/>
                                                     </g:elseif>
                                                     <g:elseif test="${customProperty.type.isDateType()}">
-                                                        <ui:xEditable owner="${customProperty}" type="date"
-                                                                         field="dateValue"/>
+                                                        <ui:xEditable owner="${customProperty}" type="date" field="dateValue"/>
                                                     </g:elseif>
                                                     <g:elseif test="${customProperty.type.isURLType()}">
-                                                        <ui:xEditable owner="${customProperty}" type="url"
-                                                                         field="urlValue"
-
-                                                                         class="la-overflow la-ellipsis"/>
+                                                        <ui:xEditable owner="${customProperty}" type="url" field="urlValue" class="la-overflow la-ellipsis"/>
                                                         <g:if test="${customProperty.value}">
                                                             <ui:linkWithIcon href="${customProperty.value}"/>
                                                         </g:if>
                                                     </g:elseif>
-                                                    <g:elseif
-                                                            test="${customProperty.type.isRefdataValueType()}">
+                                                    <g:elseif test="${customProperty.type.isRefdataValueType()}">
                                                         <ui:xEditableRefData owner="${customProperty}" type="text"
                                                                                 field="refValue"
                                                                                 config="${customProperty.type.refdataCategory}"/>
@@ -573,7 +553,6 @@
                                 <g:if test="${propertiesFilterPropDef.tenant != null}">
 
                                     <div class="item">
-
                                         <div class="right floated content">
                                             <span class="la-popup-tooltip la-delay"
                                                   data-content="Anzahl der priv. Merkmale in der Lizenz"
@@ -592,32 +571,24 @@
 
                                                 <div class="content">
                                                     <g:if test="${privateProperty.type.isIntegerType()}">
-                                                        <ui:xEditable owner="${privateProperty}" type="number"
-                                                                         field="intValue"/>
+                                                        <ui:xEditable owner="${privateProperty}" type="number" field="intValue"/>
                                                     </g:if>
                                                     <g:elseif test="${privateProperty.type.isStringType()}">
-                                                        <ui:xEditable owner="${privateProperty}" type="text"
-                                                                         field="stringValue"/>
+                                                        <ui:xEditable owner="${privateProperty}" type="text" field="stringValue"/>
                                                     </g:elseif>
-                                                    <g:elseif
-                                                            test="${privateProperty.type.isBigDecimalType()}">
-                                                        <ui:xEditable owner="${privateProperty}" type="text"
-                                                                         field="decValue"/>
+                                                    <g:elseif test="${privateProperty.type.isBigDecimalType()}">
+                                                        <ui:xEditable owner="${privateProperty}" type="text" field="decValue"/>
                                                     </g:elseif>
                                                     <g:elseif test="${privateProperty.type.isDateType()}">
-                                                        <ui:xEditable owner="${privateProperty}" type="date"
-                                                                         field="dateValue"/>
+                                                        <ui:xEditable owner="${privateProperty}" type="date" field="dateValue"/>
                                                     </g:elseif>
                                                     <g:elseif test="${privateProperty.type.isURLType()}">
-                                                        <ui:xEditable owner="${privateProperty}" type="url"
-                                                                         field="urlValue"
-                                                                         class="la-overflow la-ellipsis"/>
+                                                        <ui:xEditable owner="${privateProperty}" type="url" field="urlValue" class="la-overflow la-ellipsis"/>
                                                         <g:if test="${privateProperty.value}">
                                                             <ui:linkWithIcon href="${privateProperty.value}"/>
                                                         </g:if>
                                                     </g:elseif>
-                                                    <g:elseif
-                                                            test="${privateProperty.type.isRefdataValueType()}">
+                                                    <g:elseif test="${privateProperty.type.isRefdataValueType()}">
                                                         <ui:xEditableRefData owner="${privateProperty}" type="text"
                                                                                 field="refValue"
                                                                                 config="${privateProperty.type.refdataCategory}"/>
