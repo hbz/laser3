@@ -19,7 +19,6 @@ buildscript {
         classpath 'com.github.ben-manes:gradle-versions-plugin:0.47.0'                      // 2023
 
         // -- dependency resolving issue
-
         classpath 'org.quartz-scheduler:quartz:2.3.2'                                       // 2019
     }
 }
@@ -127,8 +126,8 @@ dependencies {
     implementation 'org.apache.commons:commons-lang3:3.12.0'                // 2021
     implementation 'org.apache.poi:poi-ooxml:3.17'                          // 2017 : [freeze] : 5.x available
     implementation 'org.codehaus.gpars:gpars:1.2.1'                         // 2014
-    implementation 'org.codehaus.janino:janino:3.1.10'                       // 2023 : logback
-    implementation 'org.liquibase:liquibase-core:4.19.0'                    // 2023 : + org.grails.plugins:database-migration
+    implementation 'org.codehaus.janino:janino:3.1.10'                      // 2023 : logback
+    implementation 'org.liquibase:liquibase-core:4.19.0'                    // 2023 : + org.grails.plugins:database-migration // [freeze - not 4.19.1]
     implementation 'org.quartz-scheduler:quartz:2.3.2'                      // 2019
 
     // --------------------------------------------------
