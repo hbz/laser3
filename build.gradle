@@ -73,11 +73,11 @@ dependencies {
     compileOnly 'io.micronaut:micronaut-inject-groovy'
     console 'org.grails:grails-console'
 
+    implementation 'org.springframework.boot:spring-boot-autoconfigure'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-logging'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'org.springframework.boot:spring-boot-autoconfigure'
     implementation 'org.grails:grails-core'
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.grails:grails-web-boot'
     implementation 'org.grails:grails-logging'
     implementation 'org.grails:grails-plugin-rest'
