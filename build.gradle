@@ -195,6 +195,10 @@ war {
     dependsOn compileGroovyPages
 }
 
+//java {
+//    sourceCompatibility = JavaVersion.toVersion("11")
+//}
+
 // ---[ plugin: asset pipeline ]---
 
 assets {
