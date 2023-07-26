@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5208    26.07.2023  rc-3.2  3.2.1       Andreas Feature     Export einer einzelnen Lizenz in PDF
+
 5201    26.07.2023  rc-3.2  3.2.1       Andreas Bug         Umstrukturierungen in der Paketver- und entknüpfung
 
 5207    25.07.2023  rc-3.2  3.2.1       Andreas Bug         diverse Haken bei der Vererbung behoben
@@ -22,6 +24,8 @@
 5202    21.07.2023  rc-3.2  3.2.1       Andreas Bug         Dauerhafter Zugriffs-Flag wurde falsch abgefragt
 
 5178    21.07.2023  rc-3.2  3.2.1       David   Feature     Lizenzverwaltung: Anmerkungen zentral teilbar machen
+
+#### day of release 3.2
 
 5199    20.07.2023  rc-3.2  3.2         Andreas Feature     Auswahloptionen nach vorne gesetzt
 
