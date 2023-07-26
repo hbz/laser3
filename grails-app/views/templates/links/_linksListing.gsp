@@ -118,7 +118,7 @@
                                                     <span class="la-popup-tooltip la-delay"
                                                           data-content="${message(code: 'license.details.unlink')}">
                                                         <g:link class="ui negative icon button la-modern-button  la-selectable-button js-open-confirm-modal"
-                                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.subscription")}"
+                                                                data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.license")}"
                                                                 data-confirm-term-how="unlink"
                                                                 controller="subscription" action="unlinkLicense"
                                                                 params="${[license: link.sourceLicense.id, id: subscription.id]}"
