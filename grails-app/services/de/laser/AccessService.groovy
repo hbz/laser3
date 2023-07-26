@@ -17,7 +17,6 @@ class AccessService {
     static final CHECK_VIEW_AND_EDIT = 'CHECK_VIEW_AND_EDIT'
 
     ContextService contextService
-    UserService userService
 
     // --- checks for other orgs ---
 

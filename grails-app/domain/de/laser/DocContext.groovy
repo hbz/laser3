@@ -5,7 +5,6 @@ import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.survey.SurveyConfig
 import de.laser.traits.ShareableTrait
-import de.laser.workflow.WfWorkflow
 import org.grails.datastore.mapping.engine.event.PostUpdateEvent
 
 /**
@@ -110,9 +109,6 @@ class DocContext implements ShareableTrait, Comparable {
     }
     boolean isDocAFile() {
         owner?.contentType == Doc.CONTENT_TYPE_FILE // 3
-    }
-    boolean isUsedByWorkflow(WfWorkflow wf) {
-        wf.getCurrentDocContexts().collect{ it.id }.contains( this.id )
     }
 
     /**

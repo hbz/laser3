@@ -23,7 +23,6 @@ import java.text.SimpleDateFormat
 @Transactional
 class ControlledListService {
 
-    AccessService accessService
     ContextService contextService
     GenericOIDService genericOIDService
     MessageSource messageSource
