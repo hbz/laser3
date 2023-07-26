@@ -7,7 +7,7 @@
 
     <g:if test="${controllerName == "subscription"}">
         <div class="ui segment">
-            <h3 class="ui header"><g:message code="consortium.superSubscriptionType"/></h3>
+%{--            <h3 class="ui header"><g:message code="consortium.superSubscriptionType"/></h3>--}%
             <table class="ui compact monitor stackable la-js-responsive-table la-table table">
                 <thead>
                 <tr>
@@ -31,7 +31,6 @@
                 <tbody>
                 <tr>
                     <td>${subscription.name}</td>
-
                     <td>
                         <g:formatDate formatName="default.date.format.notime" date="${subscription.startDate}"/>
                         <ui:auditButton auditable="[subscription, 'startDate']"/>
@@ -95,19 +94,20 @@
 
     <h3 class="ui header">${message(code: 'subscriptionsManagement.info.subscriptionProperty')}</h3>
 
-    <g:form action="${actionName}" controller="${controllerName}" params="[tab: 'generalProperties']" method="post"
+    <g:form action="${actionName}" controller="${controllerName}" params="[tab: 'generalProperties', id: params.id]" method="post"
             class="ui form propertiesSubscription">
-        <g:hiddenField id="pspm_id_${params.id}" name="id" value="${params.id}"/>
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
 
         <div class="ui segments">
         <div class="ui segment">
-            <div class="ui divided compact grid">
+            <g:set var="tmplAddColumns" value="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && controllerName == 'myInstitution'}" />
+
+            <div class="ui ${tmplAddColumns ? 'divided compact grid' : 'grid'}">
                 <div class="row">
                     <div class="four wide column">
-                        <div class="two fields">
+                        <div class="${tmplAddColumns ? 'two fields' : 'one field'}">
                             <ui:datepicker label="subscription.startDate.label" id="valid_from" name="valid_from"/>
-                            <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && controllerName == 'myInstitution'}">
+                            <g:if test="${tmplAddColumns}">
                                 <div class="field">
                                     <label><span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.auditable')}"><i class="ui icon thumbtack"></i></span></label>
                                     <ui:select name="audit_valid_from" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
@@ -117,11 +117,10 @@
                             </g:if>
                         </div>
                     </div>
-
                     <div class="four wide column">
-                        <div class="two fields">
+                        <div class="${tmplAddColumns ? 'two fields' : 'one field'}">
                             <ui:datepicker label="subscription.endDate.label" id="valid_to" name="valid_to"/>
-                            <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && controllerName == 'myInstitution'}">
+                            <g:if test="${tmplAddColumns}">
                                 <div class="field">
                                     <label><span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.auditable')}"><i class="ui icon thumbtack"></i></span></label>
                                     <ui:select class="ui dropdown"  name="audit_valid_to" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
@@ -131,11 +130,10 @@
                             </g:if>
                         </div>
                     </div>
-
                     <div class="four wide column">
-                        <div class="two fields">
+                        <div class="${tmplAddColumns ? 'two fields' : 'one field'}">
                             <ui:datepicker label="subscription.referenceYear.label" id="reference_year" name="reference_year" type="year"/>
-                            <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && controllerName == 'myInstitution'}">
+                            <g:if test="${tmplAddColumns}">
                                 <div class="field">
                                     <label><span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.auditable')}"><i class="ui icon thumbtack"></i></span></label>
                                     <ui:select class="ui dropdown" name="audit_reference_year" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
@@ -145,9 +143,8 @@
                             </g:if>
                         </div>
                     </div>
-
                     <div class="four wide column">
-                        <div class="two fields">
+                        <div class="${tmplAddColumns ? 'two fields' : 'one field'}">
                             <div class="field">
                                 <label>${message(code: 'default.status.label')}</label>
                                 <%
@@ -159,7 +156,7 @@
                                            noSelection="${['': '']}"
                                            value="${['': '']}"/>
                             </div>
-                            <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && controllerName == 'myInstitution'}">
+                            <g:if test="${tmplAddColumns}">
                                 <div class="field">
                                     <label><span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.auditable')}"><i class="ui icon thumbtack"></i></span></label>
                                     <ui:select class="ui dropdown" name="audit_process_status" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
@@ -172,7 +169,7 @@
                 </div>
                 <div class="row">
                     <div class="four wide column">
-                        <div class="two fields">
+                        <div class="${tmplAddColumns ? 'two fields' : 'one field'}">
                             <div class="field">
                                 <label>${message(code: 'subscription.kind.label')}</label>
                                 <ui:select class="ui dropdown" name="process_kind"
@@ -180,7 +177,7 @@
                                            optionKey="id" optionValue="value" noSelection="${['': '']}"
                                            value="${['': '']}"/>
                             </div>
-                            <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && controllerName == 'myInstitution'}">
+                            <g:if test="${tmplAddColumns}">
                                 <div class="field">
                                     <label><span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.auditable')}"><i class="ui icon thumbtack"></i></span></label>
                                     <ui:select class="ui dropdown" name="audit_process_kind" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
@@ -190,9 +187,8 @@
                             </g:if>
                         </div>
                     </div>
-
                     <div class="four wide column">
-                        <div class="two fields">
+                        <div class="${tmplAddColumns ? 'two fields' : 'one field'}">
                             <div class="field">
                                 <label>${message(code: 'subscription.form.label')}</label>
                                 <ui:select class="ui dropdown" name="process_form"
@@ -200,7 +196,7 @@
                                            optionKey="id" optionValue="value" noSelection="${['': '']}"
                                            value="${['': '']}"/>
                             </div>
-                            <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && controllerName == 'myInstitution'}">
+                            <g:if test="${tmplAddColumns}">
                                 <div class="field">
                                     <label><span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.auditable')}"><i class="ui icon thumbtack"></i></span></label>
                                     <ui:select class="ui dropdown" name="audit_process_form" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
@@ -210,9 +206,8 @@
                             </g:if>
                         </div>
                     </div>
-
                     <div class="four wide column">
-                        <div class="two fields">
+                        <div class="${tmplAddColumns ? 'two fields' : 'one field'}">
                             <div class="field">
                                 <label>${message(code: 'subscription.resource.label')}</label>
                                 <ui:select class="ui dropdown" name="process_resource"
@@ -220,7 +215,7 @@
                                            optionKey="id" optionValue="value" noSelection="${['': '']}"
                                            value="${['': '']}"/>
                             </div>
-                            <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && controllerName == 'myInstitution'}">
+                            <g:if test="${tmplAddColumns}">
                                 <div class="field">
                                     <label><span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.auditable')}"><i class="ui icon thumbtack"></i></span></label>
                                     <ui:select class="ui dropdown" name="audit_process_resource" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
@@ -230,9 +225,8 @@
                             </g:if>
                         </div>
                     </div>
-
                     <div class="four wide column">
-                        <div class="two fields">
+                        <div class="${tmplAddColumns ? 'two fields' : 'one field'}">
                             <div class="field">
                                 <label>${message(code: 'subscription.isPublicForApi.label')}</label>
                                 <ui:select class="ui dropdown" name="process_isPublicForApi"
@@ -240,7 +234,7 @@
                                            optionKey="id" optionValue="value" noSelection="${['': '']}"
                                            value="${['': '']}"/>
                             </div>
-                            <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && controllerName == 'myInstitution'}">
+                            <g:if test="${tmplAddColumns}">
                                 <div class="field">
                                     <label><span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.auditable')}"><i class="ui icon thumbtack"></i></span></label>
                                     <ui:select class="ui dropdown" name="audit_isPublicForApi" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
@@ -253,7 +247,7 @@
                 </div>
                 <div class="row">
                     <div class="four wide column">
-                        <div class="two fields">
+                        <div class="${tmplAddColumns ? 'two fields' : 'one field'}">
                             <div class="field">
                                 <label>${message(code: 'subscription.hasPerpetualAccess.label')}</label>
                                 <ui:select class="ui dropdown" name="process_hasPerpetualAccess"
@@ -261,7 +255,7 @@
                                            optionKey="id" optionValue="value" noSelection="${['': '']}"
                                            value="${['': '']}"/>
                             </div>
-                            <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && controllerName == 'myInstitution'}">
+                            <g:if test="${tmplAddColumns}">
                                 <div class="field">
                                     <label><span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.auditable')}"><i class="ui icon thumbtack"></i></span></label>
                                     <ui:select class="ui dropdown" name="audit_hasPerpetualAccess" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
@@ -272,7 +266,7 @@
                         </div>
                     </div>
                     <div class="four wide column">
-                        <div class="two fields">
+                        <div class="${tmplAddColumns ? 'two fields' : 'one field'}">
                             <div class="field">
                                 <label>${message(code: 'subscription.hasPublishComponent.label')}</label>
                                 <ui:select class="ui dropdown" name="process_hasPublishComponent"
@@ -280,7 +274,7 @@
                                            optionKey="id" optionValue="value" noSelection="${['': '']}"
                                            value="${['': '']}"/>
                             </div>
-                            <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && controllerName == 'myInstitution'}">
+                            <g:if test="${tmplAddColumns}">
                                 <div class="field">
                                     <label><span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.auditable')}"><i class="ui icon thumbtack"></i></span></label>
                                     <ui:select class="ui dropdown" name="audit_hasPublishComponent" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
@@ -291,7 +285,7 @@
                         </div>
                     </div>
                     <div class="four wide column">
-                        <div class="two fields">
+                        <div class="${tmplAddColumns ? 'two fields' : 'one field'}">
                             <div class="field">
                                 <label>${message(code: 'subscription.holdingSelection.label')}</label>
                                 <ui:select class="ui dropdown" name="process_holding"
@@ -299,7 +293,7 @@
                                            optionKey="id" optionValue="value" noSelection="${['': '']}"
                                            value="${['': '']}"/>
                             </div>
-                            <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && controllerName == 'myInstitution'}">
+                            <g:if test="${tmplAddColumns}">
                                 <div class="field">
                                     <label><span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.auditable')}"><i class="ui icon thumbtack"></i></span></label>
                                     <ui:select class="ui dropdown" name="audit_process_holding" from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
@@ -321,20 +315,21 @@
                         </g:if>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="column">
+                        <button class="ui button" ${!editable ? 'disabled="disabled"' : ''} type="submit" name="processOption"
+                                value="changeProperties">${message(code: 'default.button.save_changes')}</button>
+                    </div>
+                </div>
             </div>
-
-            <button class="ui button" ${!editable ? 'disabled="disabled"' : ''} type="submit" name="processOption"
-                    value="changeProperties">${message(code: 'default.button.save_changes')}</button>
         </div><!-- .segment -->
 
         <div class="ui segment">
             <h3 class="ui header">
                 <g:if test="${controllerName == "subscription"}">
-                    ${message(code: 'subscriptionsManagement.subscriber')} <ui:totalNumber
-                        total="${filteredSubscriptions.size()}"/>
+                    ${message(code: 'subscriptionsManagement.subscriber')} <ui:totalNumber total="${filteredSubscriptions.size()}"/>
                 </g:if><g:else>
-                    ${message(code: 'subscriptionsManagement.subscriptions')} <ui:totalNumber
-                            total="${num_sub_rows}"/>
+                    ${message(code: 'subscriptionsManagement.subscriptions')} <ui:totalNumber total="${num_sub_rows}"/>
                 </g:else>
             </h3>
 
@@ -386,8 +381,7 @@
                                 <%-- This whole construct is necessary for that the form validation works!!! --%>
                                 <div class="field">
                                     <div class="ui checkbox">
-                                        <g:checkBox id="selectedSubs_${sub.id}" name="selectedSubs" value="${sub.id}"
-                                                    checked="false"/>
+                                        <g:checkBox id="selectedSubs_${sub.id}" name="selectedSubs" value="${sub.id}" checked="false"/>
                                     </div>
                                 </div>
                             </td>
@@ -415,17 +409,15 @@
                         </g:if>
 
                         <td>
-                            <ui:xEditable owner="${sub}" field="startDate" type="date"
-                                             overwriteEditable="${editableOld}" validation="datesCheck"/>
+                            <ui:xEditable owner="${sub}" field="startDate" type="date" overwriteEditable="${editableOld}" validation="datesCheck"/>
                             <ui:auditButton auditable="[sub, 'startDate']"/>
                         </td>
-                        <td><ui:xEditable owner="${sub}" field="endDate" type="date"
-                                             overwriteEditable="${editableOld}" validation="datesCheck"/>
-                        <ui:auditButton auditable="[sub, 'endDate']"/>
+                        <td>
+                            <ui:xEditable owner="${sub}" field="endDate" type="date" overwriteEditable="${editableOld}" validation="datesCheck"/>
+                            <ui:auditButton auditable="[sub, 'endDate']"/>
                         </td>
                         <td>
-                            <ui:xEditable owner="${sub}" field="referenceYear" type="year"
-                                          overwriteEditable="${editableOld}"/>
+                            <ui:xEditable owner="${sub}" field="referenceYear" type="year" overwriteEditable="${editableOld}"/>
                             <ui:auditButton auditable="[sub, 'referenceYear']"/>
                         </td>
                         <td>
@@ -436,46 +428,35 @@
                             <ui:auditButton auditable="[sub, 'status']"/>
                         </td>
                         <td>
-                            <ui:xEditableRefData owner="${sub}" field="kind"
-                                                    config="${RDConstants.SUBSCRIPTION_KIND}"
-                                                    overwriteEditable="${editableOld}"/>
+                            <ui:xEditableRefData owner="${sub}" field="kind" config="${RDConstants.SUBSCRIPTION_KIND}" overwriteEditable="${editableOld}"/>
                             <ui:auditButton auditable="[sub, 'kind']"/>
                         </td>
                         <td>
-                            <ui:xEditableRefData owner="${sub}" field="form"
-                                                    config="${RDConstants.SUBSCRIPTION_FORM}"
-                                                    overwriteEditable="${editableOld}"/>
+                            <ui:xEditableRefData owner="${sub}" field="form" config="${RDConstants.SUBSCRIPTION_FORM}" overwriteEditable="${editableOld}"/>
                             <ui:auditButton auditable="[sub, 'form']"/>
                         </td>
                         <td>
-                            <ui:xEditableRefData owner="${sub}" field="resource"
-                                                    config="${RDConstants.SUBSCRIPTION_RESOURCE}"
-                                                    overwriteEditable="${editableOld}"/>
+                            <ui:xEditableRefData owner="${sub}" field="resource" config="${RDConstants.SUBSCRIPTION_RESOURCE}" overwriteEditable="${editableOld}"/>
                             <ui:auditButton auditable="[sub, 'resource']"/>
                         </td>
                         <td>
-                            <ui:xEditableBoolean owner="${sub}" field="isPublicForApi"
-                                                    overwriteEditable="${editableOld}"/>
+                            <ui:xEditableBoolean owner="${sub}" field="isPublicForApi" overwriteEditable="${editableOld}"/>
                             <ui:auditButton auditable="[sub, 'isPublicForApi']"/>
                         </td>
                         <td>
-                            <ui:xEditableBoolean owner="${sub}" field="hasPerpetualAccess"
-                                                    overwriteEditable="${editableOld}"/>
+                            <ui:xEditableBoolean owner="${sub}" field="hasPerpetualAccess" overwriteEditable="${editableOld}"/>
                             <%--<ui:xEditableRefData owner="${sub}" field="hasPerpetualAccess"
                                                     config="${RDConstants.Y_N}"
                                                     overwriteEditable="${editableOld}"/>--%>
                             <ui:auditButton auditable="[sub, 'hasPerpetualAccess']"/>
                         </td>
                         <td>
-                            <ui:xEditableBoolean owner="${sub}" field="hasPublishComponent"
-                                                    overwriteEditable="${editableOld}"/>
+                            <ui:xEditableBoolean owner="${sub}" field="hasPublishComponent" overwriteEditable="${editableOld}"/>
                             <ui:auditButton auditable="[sub, 'hasPublishComponent']"/>
                         </td>
                         <td>
                             <g:if test="${sub.packages}">
-                                <ui:xEditableRefData owner="${sub}" field="holdingSelection"
-                                                     config="${RDConstants.SUBSCRIPTION_HOLDING}"
-                                                     overwriteEditable="${editableOld}"/>
+                                <ui:xEditableRefData owner="${sub}" field="holdingSelection" config="${RDConstants.SUBSCRIPTION_HOLDING}" overwriteEditable="${editableOld}"/>
                                 <ui:auditButton auditable="[sub, 'holdingSelection']"/>
                             </g:if>
                         </td>
@@ -513,8 +494,7 @@
 </g:if>
 <g:else>
     <g:if test="${filterSet}">
-        <br/><strong><g:message code="filter.result.empty.object"
-                                args="${[message(code: "subscription.plural")]}"/></strong>
+        <br/><strong><g:message code="filter.result.empty.object" args="${[message(code: "subscription.plural")]}"/></strong>
     </g:if>
     <g:else>
         <br/><strong><g:message code="result.empty.object" args="${[message(code: "subscription.plural")]}"/></strong>

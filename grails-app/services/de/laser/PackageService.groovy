@@ -130,7 +130,7 @@ class PackageService {
         }
         if(hasPerpetualAccess) {
             Long ownerId = Subscription.get(subId).getSubscriber().id
-            sql.executeInsert("insert into permanent_title (pt_version, pt_ie_fk, pt_date_created, pt_subscription_fk, pt_last_updated, pt_tipp_fk, pt_owner_fk) select 0, (select ie_id from issue_entitlement where ie_tipp_fk = tipp_id and ie_subscription_fk = :subId and ie_status_rv_fk = tipp_status_rv_fk), now(), "+subId+", now(), ie_tipp_fk, "+ownerId+" from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where tipp_pkg_fk = :pkgId and tipp_status_rv_fk != :removed and not exists(select pt_id from permanent_title where pt_subscription_fk = :subId and pt_ie_fk = ie_id and pt_tipp_fk = tipp_id and pt_owner_fk = :ownerId)", [subId: subId, pkgId: pkgId, removed: RDStore.TIPP_STATUS_REMOVED.id, ownerId: ownerId])
+            sql.executeInsert("insert into permanent_title (pt_version, pt_ie_fk, pt_date_created, pt_subscription_fk, pt_last_updated, pt_tipp_fk, pt_owner_fk) select 0, ie_id, now(), "+subId+", now(), ie_tipp_fk, "+ownerId+" from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where tipp_pkg_fk = :pkgId and tipp_status_rv_fk != :removed and ie_status_rv_fk = tipp_status_rv_fk and ie_subscription_fk = :subId and not exists(select pt_id from permanent_title where pt_subscription_fk = :subId and pt_ie_fk = ie_id and pt_tipp_fk = tipp_id and pt_owner_fk = :ownerId)", [subId: subId, pkgId: pkgId, removed: RDStore.TIPP_STATUS_REMOVED.id, ownerId: ownerId])
         }
     }
 

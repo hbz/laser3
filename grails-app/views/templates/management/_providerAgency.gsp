@@ -3,13 +3,9 @@
 
     <g:if test="${controllerName == "subscription"}">
         <div class="ui segment">
-            <h3 class="ui header"><g:message code="consortium.superSubscriptionType"/></h3>
+%{--            <h3 class="ui header"><g:message code="consortium.superSubscriptionType"/></h3>--}%
 
-            <div class="twelve wide column">
 
-                <div class="la-inline-lists">
-                    <div class="ui card sixteen wide">
-                        <div class="content">
                             <laser:render template="/templates/links/orgLinksAsList"
                                       model="${[roleLinks    : visibleOrgRelations,
                                                 roleObject   : subscription,
@@ -17,8 +13,8 @@
                                                 editmode     : editable,
                                                 showPersons  : false
                                       ]}"/>
-                            <div class="ui la-vertical buttons">
 
+                            <div class="ui la-vertical buttons">
                                 <laser:render template="/templates/links/orgLinksSimpleModal"
                                           model="${[linkType      : subscription.class.name,
                                                     parent        : genericOIDService.getOID(subscription),
@@ -45,13 +41,7 @@
                                                     tmplModalID   : 'modal_add_agency',
                                                     editmode      : editable
                                           ]}"/>
-
-                            </div><!-- la-js-hide-this-card -->
-                        </div>
-                    </div>
-
-                </div>
-            </div>
+                            </div>
         </div>
     </g:if>
     <div class="ui segment">
@@ -81,8 +71,7 @@
             <tbody>
             <g:each in="${filteredSubscriptions}" status="i" var="zeile">
                 <g:set var="sub" value="${zeile instanceof Subscription ? zeile : zeile.sub}"/>
-                <g:set var="subscr"
-                       value="${zeile instanceof Subscription ? zeile.getSubscriber() : zeile.orgs}"/>
+                <g:set var="subscr" value="${zeile instanceof Subscription ? zeile.getSubscriber() : zeile.orgs}"/>
                 <tr>
                     <td>${(offset ?: 0) + i + 1}</td>
                     <g:if test="${controllerName == "subscription"}">

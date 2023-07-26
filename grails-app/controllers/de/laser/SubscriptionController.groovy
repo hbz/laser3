@@ -2,11 +2,16 @@ package de.laser
 
 import de.laser.annotations.Check404
 import de.laser.annotations.DebugInfo
+import de.laser.auth.User
 import de.laser.config.ConfigMapper
 import de.laser.ctrl.SubscriptionControllerService
+import de.laser.custom.CustomWkhtmltoxService
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.interfaces.CalculatedType
+import de.laser.properties.PropertyDefinition
+import de.laser.properties.PropertyDefinitionGroup
 import de.laser.remote.ApiSource
+import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
 import de.laser.utils.DateUtils
@@ -29,9 +34,9 @@ import java.time.Year
 class SubscriptionController {
 
     AccessPointService accessPointService
-    AccessService accessService
     ContextService contextService
     CopyElementsService copyElementsService
+    CustomWkhtmltoxService wkhtmltoxService
     DeletionService deletionService
     DocstoreService docstoreService
     EscapeService escapeService
@@ -44,6 +49,7 @@ class SubscriptionController {
     SubscriptionControllerService subscriptionControllerService
     SubscriptionService subscriptionService
     SurveyService surveyService
+    TaskService taskService
 
     //-----
 
@@ -70,7 +76,41 @@ class SubscriptionController {
                 return
             }
         }
-        else ctrlResult.result
+        else {
+            if(params.export) {
+                ctrlResult.result.availablePropDefGroups = PropertyDefinitionGroup.getAvailableGroups(ctrlResult.result.institution, Subscription.class.name)
+                ctrlResult.result.allPropDefGroups = ctrlResult.result.subscription.getCalculatedPropDefGroups(ctrlResult.result.institution)
+                ctrlResult.result.prop_desc = PropertyDefinition.SUB_PROP
+                ctrlResult.result.memberSubscriptions = OrgRole.executeQuery('select sub from OrgRole oo join oo.sub sub join oo.org org where sub.instanceOf = :parent and oo.roleType = :subscriberCons order by org.sortname', [parent: ctrlResult.result.subscription, subscriberCons: RDStore.OR_SUBSCRIBER_CONS])
+                ctrlResult.result.linkedLicenses = Subscription.executeQuery('select lic from Links li join li.sourceLicense lic join lic.orgRelations oo where li.destinationSubscription = :sub and li.linkType = :linkType and lic.status = :current and oo.org = :context', [sub: ctrlResult.result.subscription, linkType: RDStore.LINKTYPE_LICENSE, current: RDStore.LICENSE_CURRENT, context: ctrlResult.result.institution])
+                ctrlResult.result.links = linksGenerationService.getSourcesAndDestinations(ctrlResult.result.subscription, ctrlResult.result.user, RefdataCategory.getAllRefdataValues(RDConstants.LINK_TYPE)-RDStore.LINKTYPE_LICENSE)
+                ctrlResult.result.entry = ctrlResult.result.subscription
+                ctrlResult.result.tasks = taskService.getTasksForExport((User) ctrlResult.result.user, (Org) ctrlResult.result.institution, (Subscription) ctrlResult.result.subscription)
+                ctrlResult.result.documents = docstoreService.getDocumentsForExport((Org) ctrlResult.result.institution, (Subscription) ctrlResult.result.subscription)
+                ctrlResult.result.notes = docstoreService.getNotesForExport((Org) ctrlResult.result.institution, (Subscription) ctrlResult.result.subscription)
+                Map<String, Object> pageStruct = [
+                        width       : 85,
+                        height      : 35,
+                        pageSize    : 'A4',
+                        orientation : 'Portrait'
+                ]
+                ctrlResult.result.struct = [pageStruct.width, pageStruct.height, pageStruct.pageSize + ' ' + pageStruct.orientation]
+                byte[] pdf = wkhtmltoxService.makePdf(
+                        view: '/subscription/subscriptionPdf',
+                        model: ctrlResult.result,
+                        pageSize: pageStruct.pageSize,
+                        orientation: pageStruct.orientation,
+                        marginLeft: 10,
+                        marginRight: 10,
+                        marginTop: 15,
+                        marginBottom: 15
+                )
+                response.setHeader('Content-disposition', 'attachment; filename="'+ escapeService.escapeString(ctrlResult.result.subscription.dropdownNamingConvention()) +'.pdf"')
+                response.setContentType('application/pdf')
+                response.outputStream.withStream { it << pdf }
+            }
+            else ctrlResult.result
+        }
     }
 
     @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = DebugInfo.WITH_TRANSACTION)

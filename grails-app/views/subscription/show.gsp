@@ -210,17 +210,15 @@
                             </g:if>
                         </dl>
 
-                        <g:if test="${subscription.packages}">
-                            <dl>
-                                <dt class="control-label">${message(code: 'subscription.holdingSelection.label')}</dt>
-                                <dd><ui:xEditableRefData owner="${subscription}" field="holdingSelection" config="${RDConstants.SUBSCRIPTION_HOLDING}"/></dd>
-                                <g:if test="${editable}">
-                                    <dd class="la-js-editmode-container"><ui:auditButton
-                                            auditable="[subscription, 'holdingSelection']"
-                                            auditConfigs="${auditConfigs}"/></dd>
-                                </g:if>
-                            </dl>
-                        </g:if>
+                        <dl>
+                            <dt class="control-label">${message(code: 'subscription.holdingSelection.label')}</dt>
+                            <dd><ui:xEditableRefData owner="${subscription}" field="holdingSelection" config="${RDConstants.SUBSCRIPTION_HOLDING}"/></dd>
+                            <g:if test="${editable}">
+                                <dd class="la-js-editmode-container"><ui:auditButton
+                                        auditable="[subscription, 'holdingSelection']"
+                                        auditConfigs="${auditConfigs}"/></dd>
+                            </g:if>
+                        </dl>
 
                     </div>
                 </div>

@@ -5,6 +5,7 @@ import de.laser.auth.User
 import de.laser.utils.DateUtils
 import de.laser.helper.Profiler
 import de.laser.storage.RDStore
+import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
 import de.laser.survey.SurveyInfo
 import de.laser.system.SystemAnnouncement
@@ -12,6 +13,7 @@ import de.laser.workflow.WfChecklist
 import de.laser.workflow.WfCheckpoint
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
+import org.springframework.context.MessageSource
 
 import java.text.SimpleDateFormat
 
@@ -29,6 +31,7 @@ class MyInstitutionControllerService {
     UserService userService
     WekbStatsService wekbStatsService
     WorkflowService workflowService
+    MessageSource messageSource
 
     static final int STATUS_OK = 0
     static final int STATUS_ERROR = 1
@@ -170,6 +173,9 @@ class MyInstitutionControllerService {
         result.institution = org
         result.contextOrg = org
         result.contextCustomerType = org.getCustomerType()
+        result.tooltip = messageSource.getMessage('license.filter.member', null, LocaleUtils.getCurrentLocale())
+        if(org.isCustomerType_Consortium())
+            result.tooltip = messageSource.getMessage('license.member', null, LocaleUtils.getCurrentLocale())
         result.showConsortiaFunctions = org.isCustomerType_Consortium()
         switch (params.action) {
             case [ 'processEmptyLicense', 'currentLicenses', 'currentSurveys', 'dashboard', 'getChanges', 'getSurveys', 'emptyLicense', 'surveyInfoFinish' ]:

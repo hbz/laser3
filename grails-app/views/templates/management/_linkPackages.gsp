@@ -4,8 +4,7 @@
 <g:if test="${filteredSubscriptions}">
     <g:if test="${controllerName == "subscription"}">
         <div class="ui segment">
-            <h3 class="ui header"><g:message code="subscriptionsManagement.package.label" args="${args.superOrgType}"/></h3>
-
+%{--            <h3 class="ui header"><g:message code="subscriptionsManagement.package.label" args="${args.superOrgType}"/></h3>--}%
             <g:if test="${validPackages}">
                 <div class="ui middle aligned selection list">
                     <g:each in="${validPackages}" var="subPkg">
@@ -21,7 +20,6 @@
                         </div>
                     </g:each>
                 </div>
-
             </g:if>
             <g:else>
                 <g:message code="subscriptionsManagement.noValidPackages" args="${args.superOrgType}"/>
@@ -32,7 +30,6 @@
     <g:if test="${isLinkingRunning}">
         <div class="ui icon warning message">
             <i class="info icon"></i>
-
             <div class="content">
                 <div class="header">Info</div>
 
@@ -92,7 +89,6 @@
                                 value="linkwithIE">${message(code: 'subscriptionsManagement.linkwithIE')}</button>
                     </div>
                 </div>
-
                 <div class="eight wide field" style="text-align: right;">
                     <div class="ui buttons">
                         <button class="ui button negative js-open-confirm-modal"
@@ -222,7 +218,6 @@
                                 </span>
                             </g:if>
                         </td>
-
                         <td class="x">
                             <g:link controller="subscription" action="show" id="${sub.id}"
                                     class="ui icon button blue la-modern-button"
