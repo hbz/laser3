@@ -12,14 +12,13 @@ buildscript {
     }
     dependencies {
         classpath 'org.grails:grails-gradle-plugin:' + grailsGradlePluginVersion
-        classpath 'org.grails.plugins:hibernate5:7.3.1'                                     // 2022
+        classpath 'org.grails.plugins:hibernate5:' + gormVersion                            // 2023
         classpath 'org.grails.plugins:database-migration:4.2.0'                             // 2023
         classpath 'com.bertramlabs.plugins:asset-pipeline-gradle:4.3.0'                     // 2023
         classpath 'com.gorylenko.gradle-git-properties:gradle-git-properties:2.4.1'         // 2022
         classpath 'com.github.ben-manes:gradle-versions-plugin:0.47.0'                      // 2023
 
         // -- dependency resolving issue
-
         classpath 'org.quartz-scheduler:quartz:2.3.2'                                       // 2019
     }
 }
@@ -57,7 +56,7 @@ configurations {
     }
 }
 configurations {
-    all {
+    configureEach {
         resolutionStrategy.eachDependency { DependencyResolveDetails details ->
             if (details.requested.name in ['asset-pipeline-core', 'asset-pipeline-grails']) {
                 // override dependency from org.grails.plugins:cache
@@ -74,11 +73,11 @@ dependencies {
     compileOnly 'io.micronaut:micronaut-inject-groovy'
     console 'org.grails:grails-console'
 
+    implementation 'org.springframework.boot:spring-boot-autoconfigure'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-logging'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'org.springframework.boot:spring-boot-autoconfigure'
     implementation 'org.grails:grails-core'
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.grails:grails-web-boot'
     implementation 'org.grails:grails-logging'
     implementation 'org.grails:grails-plugin-rest'
@@ -91,7 +90,7 @@ dependencies {
     implementation 'org.grails.plugins:async'
     implementation 'org.grails.plugins:scaffolding'
     implementation 'org.grails.plugins:events'
-    implementation 'org.grails.plugins:hibernate5:7.3.1'    // [fixed - tmp]
+    implementation 'org.grails.plugins:hibernate5:' + gormVersion   // [fix]
     implementation 'org.grails.plugins:gsp'
 
     implementation 'io.micronaut:micronaut-http-client'
@@ -102,8 +101,8 @@ dependencies {
 
     // --------------------------------------------------
 
-    implementation 'org.elasticsearch:elasticsearch:7.16.3'                                 // 2022
-    implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.16.3'   // 2022
+    implementation 'org.elasticsearch:elasticsearch:7.17.10'                                // 2023
+    implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.17.10'  // 2023
 
     implementation 'org.grails.plugins:spring-security-core:5.2.1'          // 2023
     implementation 'org.grails.plugins:audit-logging:4.0.3'                 // 2021
@@ -123,12 +122,12 @@ dependencies {
 
     implementation 'commons-io:commons-io:2.11.0'                           // 2021
     implementation 'com.github.albfernandez:juniversalchardet:2.4.0'        // 2020
-    implementation "io.github.gpc:asynchronous-mail:3.1.1"                  // 2022
+    implementation 'io.github.gpc:asynchronous-mail:3.1.1'                  // 2022
     implementation 'org.apache.commons:commons-lang3:3.12.0'                // 2021
     implementation 'org.apache.poi:poi-ooxml:3.17'                          // 2017 : [freeze] : 5.x available
     implementation 'org.codehaus.gpars:gpars:1.2.1'                         // 2014
-    implementation 'org.codehaus.janino:janino:3.1.10'                       // 2023 : logback
-    implementation 'org.liquibase:liquibase-core:4.19.0'                    // 2023 : + org.grails.plugins:database-migration
+    implementation 'org.codehaus.janino:janino:3.1.10'                      // 2023 : logback
+    implementation 'org.liquibase:liquibase-core:4.19.0'                    // 2023 : + org.grails.plugins:database-migration // [freeze - not 4.19.1]
     implementation 'org.quartz-scheduler:quartz:2.3.2'                      // 2019
 
     // --------------------------------------------------
@@ -193,7 +192,12 @@ war {
             // '**/h2-*.jar',
             '**/groovy-groovydoc-*.jar'
     )
+    dependsOn compileGroovyPages
 }
+
+//java {
+//    sourceCompatibility = JavaVersion.toVersion("11")
+//}
 
 // ---[ plugin: asset pipeline ]---
 
@@ -228,6 +232,6 @@ assets {
 
 apply from: 'laserTasks.gradle'
 
-tasks.withType(GroovyCompile) {
+tasks.withType(GroovyCompile).configureEach {
     configure(groovyOptions) { forkOptions.jvmArgs = ['-Xmx1024m'] }
 }

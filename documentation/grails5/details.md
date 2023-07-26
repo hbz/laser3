@@ -1,11 +1,14 @@
 
-## Upgrade from Grails 3.3.11 to Grails 5.3.3 (to Grails 6.0.0)
+## Upgrade from Grails 3.3.11 to Grails 5.3.3
 
 ### SpringBootDeveloperTools
 
 Previous versions of Grails used a reloading agent called SpringLoaded.
 Since this library is no longer maintained and does not support Java 11 it has been removed.
 As a replacement, SpringBootDeveloperTools is used.
+
+~~Deploying code changes is configured to watch a [trigger file](../grails-app/conf/spring/restart.trigger).~~
+~~Use the Gradle task **devtools.triggerRestart** to update this file and force a restart with the latest code changes.~~
 
 ### Apache Commons Lang
 
@@ -46,6 +49,11 @@ To avoid confusion, *de.laser.utils.DateUtils* reflects the difference between l
 
 The produktive branch has been renamed from *master* to *main*.
 
+### ~~HTTPBuilder~~
+
+~~*org.codehaus.groovy.modules.http-builder:http-builder* is outdated.
+A migration to *de.laser.http.BasicHttpClient* should take place.~~
+
 ### HTTP Status Codes
 
     401 Unauthorized            - authentication/login is required (only)
@@ -80,6 +88,10 @@ Important: The password encoder still accepts legacy passwords, but encrypts the
 
 *de.laser.base.AbstractJob* offers new **start** and **stop** methods to simplify and unify job implementations. 
 These should be used to wrap the execution logic.
+
+### ~~ReactiveX~~
+
+~~*io.reactivex:rxjava* and *org.grails.plugins:rxjava* are outdated. Refactoring should take place.~~
 
 ### Refdata & Constants
 
