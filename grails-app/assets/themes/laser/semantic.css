@@ -27403,6 +27403,7 @@ h1 ~ h2.ui.header {
   align-items: center;
 }
 
+.la-object-extended,
 .ui.icon.header > i.icon.la-object-extended {
   margin-right: 0.2em;
   font-size: 0.88em !important;
