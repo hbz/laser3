@@ -126,6 +126,9 @@ class DocContext implements ShareableTrait, Comparable {
         if(owner && dc.owner) {
             result = owner.title?.toLowerCase()?.compareTo(dc.owner.title?.toLowerCase())
         }
+        if(result == 0) {
+            result = owner.dateCreated <=> dc.owner.dateCreated
+        }
         result
     }
 }
