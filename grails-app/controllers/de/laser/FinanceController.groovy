@@ -118,10 +118,7 @@ class FinanceController  {
                 }
             }
             result.workflowCount = workflowService.getWorkflowCount(result.subscription, result.contextOrg)
-//            result.workflowCount = WfWorkflow.executeQuery(
-//                    'select count(wf) from WfWorkflow wf where wf.subscription = :sub and wf.owner = :ctxOrg',
-//                    [sub: result.subscription, ctxOrg: result.contextOrg]
-//            )[0]
+
             result.ciTitles = result.financialData.ciTitles
             result.budgetCodes = result.financialData.budgetCodes
             result.filterPresets = result.financialData.filterPresets

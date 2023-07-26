@@ -17,9 +17,6 @@ import de.laser.storage.RDStore
 import de.laser.system.SystemAnnouncement
 import de.laser.system.SystemEvent
 import de.laser.system.SystemMessage
-import de.laser.workflow.WfConditionPrototype
-import de.laser.workflow.WfWorkflowPrototype
-import de.laser.workflow.WfTaskPrototype
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -56,7 +53,6 @@ class AdminController  {
     RefdataService refdataService
     SessionFactory sessionFactory
     StatsSyncService statsSyncService
-    WorkflowOldService workflowOldService
 
     /**
      * Empty call, loads empty admin dashboard
@@ -344,42 +340,6 @@ class AdminController  {
         }
         redirect controller: 'admin', action:'hardDeletePkgs'
 
-    }
-
-    /**
-     * Gets the current workflows and returns a dashboard-like overview of the outstanding tasks
-     */
-    @Secured(['ROLE_ADMIN'])
-    @Deprecated
-    def manageWorkflows() {
-        Map<String, Object> result = [:]
-
-        if (params.cmd) {
-            result = workflowOldService.cmd(params)
-        }
-        if (params.tab) {
-            result.tab = params.tab
-        }
-
-        result.wfpIdTable = [:] as Map<Long, Integer>
-        result.tpIdTable  = [:] as Map<Long, Integer>
-        result.cpIdTable  = [:] as Map<Long, Integer>
-
-        result.wfpList = WfWorkflowPrototype.executeQuery('select wfp from WfWorkflowPrototype wfp order by id')
-        result.tpList  = WfTaskPrototype.executeQuery('select tp from WfTaskPrototype tp order by id')
-        result.cpList  = WfConditionPrototype.executeQuery('select cp from WfConditionPrototype cp order by id')
-
-        result.wfpList.eachWithIndex { wfp, i -> result.wfpIdTable.put( wfp.id, i+1 ) }
-        result.tpList.eachWithIndex { tp, i -> result.tpIdTable.put( tp.id, i+1 ) }
-        result.cpList.eachWithIndex { cp, i -> result.cpIdTable.put( cp.id, i+1 ) }
-
-        EhcacheWrapper cache = cacheService.getTTL1800Cache('admin/manageWorkflows')
-        cache.put( 'wfpIdTable', result.wfpIdTable )
-        cache.put( 'tpIdTable', result.tpIdTable )
-        cache.put( 'cpIdTable', result.cpIdTable )
-
-        log.debug( result.toMapString() )
-        result
     }
 
     /**

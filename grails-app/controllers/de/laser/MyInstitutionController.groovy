@@ -33,7 +33,6 @@ import de.laser.survey.SurveyResult
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
-import de.laser.workflow.WfWorkflow
 import de.laser.workflow.WfChecklist
 import grails.gsp.PageRenderer
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -100,7 +99,6 @@ class MyInstitutionController  {
     UserService userService
     CustomWkhtmltoxService wkhtmltoxService
     WorkflowService workflowService
-    WorkflowOldService workflowOldService
     MailSendService mailSendService
 
     /**
@@ -3009,149 +3007,6 @@ class MyInstitutionController  {
 
         result.total = result.currentWorkflows.size()
         result.currentWorkflows = workflowService.sortByLastUpdated(result.currentWorkflows).drop(result.offset).take(result.max) // pagination
-
-        result
-    }
-
-    /**
-     * Call for the overview of current workflows for the context institution
-     * @return the entry view for the workflows, loading current cache settings
-     */
-    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = DebugInfo.IN_BETWEEN)
-    @Secured(closure = {
-        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)
-    })
-    @Deprecated
-    def currentWorkflowsOld() {
-        Map<String, Object> result = [:]
-
-        SessionCacheWrapper cache = contextService.getSessionCache()
-        String urlKey = 'myInstitution/currentWorkflows'
-        String fmKey  = urlKey + '/_filterMap'
-        String pmKey  = urlKey + '/_paginationMap'
-
-        if (params.size() == 2 && params.containsKey('controller') && params.containsKey('action')) { // first visit
-            cache.remove(fmKey)
-            cache.remove(pmKey)
-        }
-        else if (params.cmd) { // modal,delete, etc. - process and remove form params
-            result.putAll( workflowOldService.usage(params) )
-            params.clear()
-        }
-
-        Map filter = params.findAll{ it.key.startsWith('filter') }
-        params.remove('filter') // remove reset/control flag
-
-        Map pagination = [
-                tab:    params.tab    ?: 'open',
-                offset: params.offset ? params.int('offset') : 0,
-                max:    params.max    ? params.int('max') : contextService.getUser().getPageSizeOrDefault()
-        ]
-        if (! params.tab && cache.get(pmKey)?['tab']) {
-            pagination.put('tab', cache.get(pmKey)['tab'] as String) // remember last tab
-        }
-
-        if (filter.get('filter') == 'reset') {
-            cache.remove(fmKey)
-        }
-        else if (filter.get('filter') == 'true') { // remove control flag + store filter
-            filter.remove('filter')
-            cache.put(fmKey, filter)
-        }
-
-        cache.put(pmKey, pagination) // store pagination
-
-        if (cache.get(fmKey)) { result.putAll(cache.get(fmKey) as Map) }
-        if (cache.get(pmKey)) { result.putAll(cache.get(pmKey) as Map) }
-
-        String idQuery = 'select wf.id from WfWorkflow wf where wf.owner = :ctxOrg'
-        Map<String, Object> queryParams = [ctxOrg: contextService.getOrg()]
-
-//        result.currentSubscriptions = WfWorkflow.executeQuery(
-//                'select distinct sub from WfWorkflow wf join wf.subscription sub where wf.owner = :ctxOrg order by sub.name', queryParams
-//        )
-//        result.currentProviders = result.currentSubscriptions ? Org.executeQuery(
-//                'select distinct ooo.org from OrgRole ooo where ooo.sub in (:subscriptions) and ooo.roleType = :provider',
-//                [subscriptions: result.currentSubscriptions, provider: RDStore.OR_PROVIDER]
-//        ) : []
-
-        result.currentPrototypes = WfWorkflow.executeQuery(
-                'select distinct wf.prototype.id, wf.prototypeTitle, wf.prototypeVariant from WfWorkflow wf where wf.owner = :ctxOrg order by wf.prototypeTitle, wf.prototypeVariant', queryParams
-        ).collect{ it ->
-            String hash = ((it[0]).toString() + it[1] + it[2]).md5()
-
-            return [hash: hash, id: it[0], title: it[1], variant: it[2]]
-        }
-
-        if (result.filterPrototypeMeta) {
-            Map<String, Object> match = result.currentPrototypes.find{ it.hash == result.filterPrototypeMeta } as Map
-            if (match) {
-                idQuery = idQuery + ' and wf.prototype.id = :fpId and wf.prototypeTitle = :fpTitle and wf.prototypeVariant = :fpVariant'
-                queryParams.put('fpId', match.id)
-                queryParams.put('fpTitle', match.title)
-                queryParams.put('fpVariant', match.variant)
-            } else {
-                idQuery = idQuery + ' and wf.prototype is null' // always false
-            }
-        }
-        if (result.filterTargetType) {
-            if (result.filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_INSTITUTION.id) {
-                idQuery = idQuery + ' and wf.org is not null'
-            }
-            else if (result.filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_LICENSE.id) {
-                idQuery = idQuery + ' and wf.license is not null'
-            }
-            else if (result.filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_PROVIDER.id) {
-                idQuery = idQuery + ' and wf.org is not null'
-            }
-            if (result.filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_SUBSCRIPTION.id) {
-                idQuery = idQuery + ' and wf.subscription is not null'
-            }
-            idQuery = idQuery + ' and wf.prototype.targetType = :targetType'
-            queryParams.put('targetType', RefdataValue.get(result.filterTargetType))
-        }
-        if (result.filterStatus) {
-            idQuery = idQuery + ' and wf.status = :status'
-            queryParams.put('status', RefdataValue.get(result.filterStatus))
-        }
-        if (result.filterUser) {
-            if (result.filterUser == 'all') {
-                idQuery = idQuery + ' and wf.user = null'
-            }
-            else {
-                idQuery = idQuery + ' and wf.user = :user'
-                queryParams.put('user', User.get(result.filterUser))
-            }
-        }
-        if (result.filterProvider) {
-            idQuery = idQuery + ' and exists (select ooo from OrgRole ooo join ooo.sub sub where ooo.org = :provider and ooo.roleType = :roleType and sub = wf.subscription)'
-            queryParams.put('roleType', RDStore.OR_PROVIDER)
-            queryParams.put('provider', Org.get(result.filterProvider))
-        }
-        if (result.filterSubscription) {
-            idQuery = idQuery + ' and wf.subscription = :subscription'
-            queryParams.put('subscription', Subscription.get(result.filterSubscription))
-        }
-
-        List<Long> workflowIds = WfWorkflow.executeQuery(idQuery + ' order by wf.id desc', queryParams)
-
-        String statusQuery = 'select wf.id from WfWorkflow wf where wf.id in (:idList) and wf.status = :status'
-        String resultQuery = 'select wf from WfWorkflow wf where wf.id in (:idList)'
-
-        result.currentWorkflowIds_open     = WfWorkflow.executeQuery(statusQuery, [idList: workflowIds, status: RDStore.WF_WORKFLOW_STATUS_OPEN])
-        result.currentWorkflowIds_canceled = WfWorkflow.executeQuery(statusQuery, [idList: workflowIds, status: RDStore.WF_WORKFLOW_STATUS_CANCELED])
-        result.currentWorkflowIds_done     = WfWorkflow.executeQuery(statusQuery, [idList: workflowIds, status: RDStore.WF_WORKFLOW_STATUS_DONE])
-
-        if (result.tab == 'open') {
-            result.currentWorkflows = workflowOldService.sortByLastUpdated( WfWorkflow.executeQuery(resultQuery, [idList: result.currentWorkflowIds_open])).drop(result.offset).take(result.max)
-        }
-        else if (result.tab == 'canceled') {
-            result.currentWorkflows = workflowOldService.sortByLastUpdated( WfWorkflow.executeQuery(resultQuery, [idList: result.currentWorkflowIds_canceled])).drop(result.offset).take(result.max)
-        }
-        else if (result.tab == 'done') {
-            result.currentWorkflows = workflowOldService.sortByLastUpdated( WfWorkflow.executeQuery(resultQuery, [idList: result.currentWorkflowIds_done])).drop(result.offset).take(result.max)
-        }
-        result.total = workflowIds.size()
 
         result
     }

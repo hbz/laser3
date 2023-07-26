@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5198    26.07.2023  dev     3.3         David   Feature     Upgrade auf Grails6
+
 5205    21.07.2023  rc-3.2  3.2.1       Andreas Bug         Tooltip für Nichtkonsortialstellen angepasst
 
 5204    21.07.2023  rc-3.2  3.2.1       Andreas Bug         falsche Referenzen korrigiert

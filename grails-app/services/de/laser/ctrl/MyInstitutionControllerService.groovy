@@ -104,17 +104,6 @@ class MyInstitutionControllerService {
                  status: RDStore.SURVEY_SURVEY_STARTED])
         */
 
-//            List<WfWorkflow> myWfList  = workflows.findAll { it.user != null && it.user.id == result.user.id }
-//            List<WfWorkflow> allWfList = workflows.findAll { it.user == null }
-//
-//            result.myWorkflowsCount  = myWfList.size()
-//            result.allWorkflowsCount = allWfList.size()
-//            result.myWorkflows  = myWfList.take(contextService.getUser().getPageSizeOrDefault())
-//            result.allWorkflows = allWfList.take(contextService.getUser().getPageSizeOrDefault())
-
-//            result.currentWorkflowsCount = result.myCurrentWorkflows.size() + result.allCurrentWorkflows.size()
-//            result.currentWorkflows      = workflows.take(contextService.getUser().getPageSizeOrDefault())
-
         if (workflowService.hasUserPerm_edit()) {
             if (params.cmd) {
                 String[] cmd = params.cmd.split(':')

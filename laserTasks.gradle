@@ -1,33 +1,33 @@
-
-task( 'dbm.createGormDiff', group: 'laser', type: Exec ) {
-    String grailsExe = (System.getProperty('GRAILS_HOME') ?: System.getenv('GRAILS_HOME') ?: '') + '/bin/grails'
-    String date = java.time.LocalDate.now().format('yyyy-MM-dd')
+tasks.register('dbm.createGormDiff', Exec) {
+    group = 'laser'
     executable 'sh'
-    args '-c', grailsExe + ' prod dbm-gorm-diff changelogs/' + date + '.groovy --add'
-    // args '-c', './grailsw prod dbm-gorm-diff changelogs/' + date + '.groovy --add'
+    String date = java.time.LocalDate.now().format('yyyy-MM-dd')
+    args '-c', './grailsw prod dbm-gorm-diff changelogs/' + date + '.groovy --add'
 }
 
-task( 'dbm.createGormDiff-storage', group: 'laser', type: Exec ) {
-    String grailsExe = (System.getProperty('GRAILS_HOME') ?: System.getenv('GRAILS_HOME') ?: '') + '/bin/grails'
-    String date = java.time.LocalDate.now().format('yyyy-MM-dd')
+tasks.register('dbm.createGormDiff-storage', Exec) {
+    group = 'laser'
     executable 'sh'
-    args '-c', grailsExe + ' prod dbm-gorm-diff changelogs/' + date + '-storage.groovy --dataSource=storage --add'
-    // args '-c', './grailsw prod dbm-gorm-diff changelogs/' + date + '-storage.groovy --dataSource=storage --add'
+    String date = java.time.LocalDate.now().format('yyyy-MM-dd')
+    args '-c', './grailsw prod dbm-gorm-diff changelogs/' + date + '-storage.groovy --dataSource=storage --add'
 }
 
-task( 'gradle.helpWarningMode', group: 'laser', type: Exec ) {
+tasks.register('gradle.helpWarningMode', Exec) {
+    group = 'laser'
     executable 'sh'
     args '-c', './gradlew help --warning-mode=all'
 }
 
-task ( 'system.environment', group: 'laser' ) {
+tasks.register('system.environment') {
+    group = 'laser'
     doLast {
-        System.getenv().sort().forEach{ k, v -> println( k + ' -> ' + v ) }
+        System.getenv().sort().forEach { k, v -> println(k + ' -> ' + v) }
     }
 }
 
-task ( 'system.properties', group: 'laser' ) {
+tasks.register('system.properties') {
+    group = 'laser'
     doLast {
-        System.getProperties().sort().forEach{ k, v -> println( k + ' -> ' + v ) }
+        System.getProperties().sort().forEach { k, v -> println(k + ' -> ' + v) }
     }
 }
