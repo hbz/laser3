@@ -94,9 +94,8 @@
 
     <h3 class="ui header">${message(code: 'subscriptionsManagement.info.subscriptionProperty')}</h3>
 
-    <g:form action="${actionName}" controller="${controllerName}" params="[tab: 'generalProperties']" method="post"
+    <g:form action="${actionName}" controller="${controllerName}" params="[tab: 'generalProperties', id: params.id]" method="post"
             class="ui form propertiesSubscription">
-        <g:hiddenField id="pspm_id_${params.id}" name="id" value="${params.id}"/>
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
 
         <div class="ui segments">
