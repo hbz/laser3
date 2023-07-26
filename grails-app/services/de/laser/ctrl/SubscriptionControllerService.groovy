@@ -2178,7 +2178,7 @@ class SubscriptionControllerService {
                         Package pkgToLink = globalSourceSyncService.createOrUpdatePackage(pkgUUID)
                         subscriptionService.addToSubscription(result.subscription, pkgToLink, createEntitlements)
                         if(linkToChildren) {
-                            subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, createEntitlements)
+                            subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, createEntitlementsForChildren)
                         }
                         //subscriptionService.addPendingChangeConfiguration(result.subscription, pkgToLink, params.clone())
                     }
