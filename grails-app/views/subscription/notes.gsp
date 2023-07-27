@@ -7,10 +7,8 @@
                 <laser:render template="actions" />
         </ui:controlButtons>
 
-        <ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}" visibleOrgRelations="${visibleOrgRelations}">
-            <g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
-                <laser:render template="iconSubscriptionIsChild"/>
-            </g:if>
+        <ui:h1HeaderWithIcon referenceYear="${subscription.referenceYear}" visibleOrgRelations="${visibleOrgRelations}">
+            <laser:render template="iconSubscriptionIsChild"/>
             <ui:xEditable owner="${subscription}" field="name" />
         </ui:h1HeaderWithIcon>
         <ui:anualRings object="${subscription}" controller="subscription" action="notes" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>

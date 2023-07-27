@@ -4,10 +4,8 @@
 
 <laser:render template="breadcrumb" model="${[params: params]}"/>
 
-<ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}" type="subscription" visibleOrgRelations="${visibleOrgRelations}">
-    <g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
-        <laser:render template="iconSubscriptionIsChild"/>
-    </g:if>
+<ui:h1HeaderWithIcon referenceYear="${subscription.referenceYear}" type="subscription" visibleOrgRelations="${visibleOrgRelations}">
+    <laser:render template="iconSubscriptionIsChild"/>
     <ui:xEditable owner="${subscription}" field="name"/>
 </ui:h1HeaderWithIcon>
 

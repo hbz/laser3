@@ -12,10 +12,8 @@
     <laser:render template="actions"/>
 </ui:controlButtons>
 
-<ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}" floated="true">
-<g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
+<ui:h1HeaderWithIcon referenceYear="${subscription.referenceYear}" floated="true">
     <laser:render template="iconSubscriptionIsChild"/>
-</g:if>
 <ui:xEditable owner="${subscription}" field="name"/>
 </ui:h1HeaderWithIcon>
 
