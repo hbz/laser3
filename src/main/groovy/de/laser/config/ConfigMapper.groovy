@@ -37,6 +37,8 @@ class ConfigMapper {
 
     static final List LASER_SYSTEM_ID                               = ['laserSystemId', String]
 
+    static final List MULE_JOB_ACTIVE                               = ['muleJobActive', Boolean]
+
     static final List NOTIFICATIONS_EMAIL_FROM                = ['notifications.email.from', String]
     static final List NOTIFICATIONS_EMAIL_GENERIC_TEMPLATE    = ['notifications.email.genericTemplate', Boolean]
     static final List NOTIFICATIONS_EMAIL_REPLY_TO            = ['notifications.email.replyTo', String]
@@ -56,7 +58,6 @@ class ConfigMapper {
     static final List SYSTEM_INSIGHT_INDEX       = ['systemInsightIndex', String]
     static final List SYSTEM_INSIGHT_JOB_ACTIVE  = ['systemInsightJobActive', Boolean]
 
-    static final List TEST_JOB_ACTIVE       = ['testJobActivate', Boolean]
     static final List WEKB_API_USERNAME     = ['wekbApiUsername', String]
     static final List WEKB_API_PASSWORD     = ['wekbApiPassword', String]
 
@@ -68,14 +69,13 @@ class ConfigMapper {
             GLOBAL_DATA_SYNC_JOB_ACTIVE, GRAILS_MAIL_DISABLED, GRAILS_PLUGIN_WKHTMLTOPDF_BINARY, GRAILS_PLUGIN_WKHTMLTOPDF_XVFBRUNNER, GRAILS_SERVER_URL,
             INDEX_UPDATE_JOB_ACTIVE, IS_SEND_EMAILS_FOR_DUE_DATES_OF_ALL_USERS, IS_UPDATE_DASHBOARD_TABLE_IN_DATABASE,
             LASER_SYSTEM_ID,
+            MULE_JOB_ACTIVE,
             NOTIFICATIONS_EMAIL_FROM, NOTIFICATIONS_EMAIL_GENERIC_TEMPLATE, NOTIFICATIONS_EMAIL_REPLY_TO, NOTIFICATIONS_JOB_ACTIVE,
             PGDUMP_PATH,
             QUARTZ_HEARTBEAT,
             REPORTING,
             SHOW_DEBUG_INFO, SHOW_SYSTEM_INFO, SHOW_STATS_INFO, STATS_API_URL, STATS_SYNC_JOB_ACTIVE, SYSTEM_EMAIL, SYSTEM_INSIGHT_INDEX, SYSTEM_INSIGHT_JOB_ACTIVE,
-            TEST_JOB_ACTIVE,
             WEKB_API_USERNAME, WEKB_API_PASSWORD
-
     ]
 
     static File getCurrentConfigFile(Environment environment) {
@@ -175,6 +175,9 @@ class ConfigMapper {
     static String getLaserSystemId(int output = LOGGER) {
         readConfig( LASER_SYSTEM_ID, output )
     }
+    static boolean getMuleJobActive(int output = LOGGER) {
+        readConfig( MULE_JOB_ACTIVE, output )
+    }
     static String getNotificationsEmailFrom(int output = LOGGER) {
         readConfig( NOTIFICATIONS_EMAIL_FROM, output )
     }
@@ -222,9 +225,6 @@ class ConfigMapper {
     }
     static boolean getSystemInsightJobActive(int output = LOGGER) {
         readConfig( SYSTEM_INSIGHT_JOB_ACTIVE, output )
-    }
-    static boolean getTestJobActive(int output = LOGGER) {
-        readConfig( TEST_JOB_ACTIVE, output )
     }
     static String getWekbApiUsername(int output = LOGGER) {
         readConfig( WEKB_API_USERNAME, output )

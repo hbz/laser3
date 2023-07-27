@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5168    27.07.2023  dev     3.3         David   Feature     Wekb-News in Laser anzeigen
+
 --      26.07.2023  rc-3.2  3.2.1       Andreas Bug         Falschanzeige des Menüeintrages "Meine Lizenzübertragungen" behoben
 
 5208    26.07.2023  rc-3.2  3.2.1       Andreas Feature     Export einer einzelnen Lizenz in PDF
