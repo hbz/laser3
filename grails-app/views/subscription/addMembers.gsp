@@ -6,12 +6,9 @@
     String getAllRefDataValuesForCategoryQuery = "select rdv from RefdataValue as rdv where rdv.owner.desc=:category order by rdv.order, rdv.value_" + lang
 %>
 <ui:breadcrumbs>
-    <ui:crumb controller="myInstitution" action="currentSubscriptions"
-                 text="${message(code: 'myinst.currentSubscriptions.label')}"/>
-    <ui:crumb controller="subscription" action="show" id="${subscription.id}"
-                 text="${subscription.name}"/>
-    <ui:crumb class="active"
-                 text="${message(code: 'subscription.details.addMembers.label',args:memberType)}"/>
+    <ui:crumb controller="myInstitution" action="currentSubscriptions" text="${message(code: 'myinst.currentSubscriptions.label')}"/>
+    <ui:crumb controller="subscription" action="show" id="${subscription.id}" text="${subscription.name}"/>
+    <ui:crumb class="active" text="${message(code: 'subscription.details.addMembers.label', args:memberType)}"/>
 </ui:breadcrumbs>
 
 <ui:controlButtons>

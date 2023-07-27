@@ -41,7 +41,7 @@
         PropertyDefinitionGroup pdg            = entry[1]
         PropertyDefinitionGroupBinding binding = entry[2]
         List numberOfConsortiaProperties       = []
-        if(license.getLicensingConsortium() && institution.id != license.getLicensingConsortium().id)
+        if(license?.getLicensingConsortium() && institution.id != license?.getLicensingConsortium().id)
             numberOfConsortiaProperties.addAll(pdg.getCurrentPropertiesOfTenant(license,license.getLicensingConsortium()))
         boolean isVisible = false
         if (cat == 'global') {
