@@ -104,10 +104,8 @@
                         <dl>
                             <dt class="control-label">${message(code: 'subscription.survey.evaluation.label')}</dt>
                             <dd><g:if test="${surveyConfig}">
-                                <g:set var="finish"
-                                       value="${SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig).size()}"/>
-                                <g:set var="total"
-                                       value="${SurveyOrg.findAllBySurveyConfig(surveyConfig).size()}"/>
+                                <g:set var="finish" value="${SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(surveyConfig).size()}"/>
+                                <g:set var="total" value="${SurveyOrg.findAllBySurveyConfig(surveyConfig).size()}"/>
 
                                 <g:set var="finishProcess"
                                        value="${(finish != 0 && total != 0) ? (finish / total) * 100 : 0}"/>
@@ -128,12 +126,10 @@
                             <dd>
                                 <g:set var="countOrgsWithTermination" value="${0}"/>
                                 <g:if test="${surveyConfig}">
-                                    <g:set var="countOrgsWithTermination"
-                                           value="${surveyConfig.countOrgsWithTermination()}"/>
+                                    <g:set var="countOrgsWithTermination" value="${surveyConfig.countOrgsWithTermination()}"/>
                                 </g:if>
                                 <g:if test="${surveyConfig && countOrgsWithTermination >= 0}">
-                                    <g:link controller="survey" action="renewalEvaluation"
-                                            id="${surveyConfig.surveyInfo.id}">
+                                    <g:link controller="survey" action="renewalEvaluation" id="${surveyConfig.surveyInfo.id}">
                                         ${countOrgsWithTermination}
                                     </g:link>
                                 </g:if>

@@ -24,14 +24,12 @@
     <table class="ui celled sortable table la-js-responsive-table la-table">
         <thead>
         <tr>
-
             <th rowspan="2" class="center aligned">
                 ${message(code: 'sidewide.number')}
             </th>
 
             <g:sortableColumn params="${params}" property="surInfo.name"
                               title="${message(code: 'surveyInfo.slash.name')}" rowspan="2" scope="col"/>
-
             <g:sortableColumn params="${params}" property="surInfo.startDate"
                               title="${message(code: 'default.startDate.label')}"/>
             <g:sortableColumn params="${params}" property="surInfo.endDate"
@@ -40,15 +38,11 @@
             <th>${message(code: 'default.status.label')}</th>
             <th>${message(code: 'surveyInfo.finishedDate')}</th>
             <th class="la-action-info">${message(code: 'default.actions.label')}</th>
-
         </tr>
 
         </thead>
         <g:each in="${surveys}" var="surveyConfig" status="i">
-
-            <g:set var="surveyInfo"
-                   value="${surveyConfig.surveyInfo}"/>
-
+            <g:set var="surveyInfo" value="${surveyConfig.surveyInfo}"/>
             <tr>
                 <td class="center aligned">
                     ${(params.int('offset') ?: 0) + i + 1}
@@ -66,14 +60,10 @@
                     </div>
                 </td>
                 <td>
-                    <g:formatDate formatName="default.date.format.notime"
-                                  date="${surveyInfo.startDate}"/>
-
+                    <g:formatDate formatName="default.date.format.notime" date="${surveyInfo.startDate}"/>
                 </td>
                 <td>
-
-                    <g:formatDate formatName="default.date.format.notime"
-                                  date="${surveyInfo.endDate}"/>
+                    <g:formatDate formatName="default.date.format.notime" date="${surveyInfo.endDate}"/>
                 </td>
                 <td>
                     <div class="ui label survey-${surveyInfo.type.value}">

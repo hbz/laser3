@@ -7,14 +7,14 @@
     if(showConsortiaFunctions)
         menuArgs = [message(code:'subscription.details.consortiaMembers.label')]
 %>
-<g:if test="${actionName == 'show'}">
-    <ui:exportDropdown>
-        <ui:exportDropdownItem>
-            <g:link class="item" action="show" target="_blank" params="[id: subscription.id, export: 'pdf']">Export PDF</g:link>
-        </ui:exportDropdownItem>
-    </ui:exportDropdown>
-</g:if>
-    <g:if test="${actionName in ['index','addEntitlements']}">
+    <g:if test="${actionName == 'show'}">
+        <ui:exportDropdown>
+            <ui:exportDropdownItem>
+                <g:link class="item" action="show" target="_blank" params="[id: subscription.id, export: 'pdf']">Export PDF</g:link>
+            </ui:exportDropdownItem>
+        </ui:exportDropdown>
+    </g:if>
+    <g:elseif test="${actionName in ['index','addEntitlements']}">
         <ui:exportDropdown>
             <%--
             <ui:exportDropdownItem>
@@ -89,7 +89,7 @@
                 <g:link class="item" controller="subscription" action="index" id="${subscription.id}" params="${params + [format:'xml']}">XML</g:link>
             </ui:exportDropdownItem>--%>
         </ui:exportDropdown>
-</g:if>
+</g:elseif>
 
 <g:if test="${contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
     <ui:actionsDropdown>
@@ -236,12 +236,3 @@
     <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionModals: true, ownobj: subscription, owntp: 'subscription']]}" />
 </g:if>
 
-%{--<g:if test="${editable || contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)}">--}%
-%{--    <laser:render template="/templates/documents/modal" model="${[ownobj: subscription, owntp: 'subscription']}"/>--}%
-%{--    <laser:render template="/templates/tasks/modal_create" model="${[ownobj: subscription, owntp: 'subscription']}"/>--}%
-%{--    <laser:render template="/templates/notes/modal_create" model="${[ownobj: subscription, owntp: 'subscription']}"/>--}%
-%{--</g:if>--}%
-
-%{--<g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->--}%
-%{--    <laser:render template="/templates/workflow/instantiate" model="${[target: subscription]}"/>--}%
-%{--</g:if>--}%
