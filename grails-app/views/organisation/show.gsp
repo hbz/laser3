@@ -21,7 +21,13 @@
     <laser:render template="actions" model="${[org: orgInstance, user: user]}"/>
 </ui:controlButtons>
 
-<ui:h1HeaderWithIcon text="${orgInstance.name}" />
+<ui:h1HeaderWithIcon text="${orgInstance.name}" >
+    <g:if test="${isMyOrg}">
+        <laser:render template="/templates/iconObjectIsMine"/>
+    </g:if>
+</ui:h1HeaderWithIcon>
+
+
 <ui:anualRings object="${orgInstance}" controller="organisation" action="show" navNext="${navNextOrg}"
                navPrev="${navPrevOrg}"/>
 

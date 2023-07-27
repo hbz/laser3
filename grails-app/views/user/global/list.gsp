@@ -12,7 +12,11 @@
             <laser:render template="/user/breadcrumb" model="${[ inContextOrg: inContextOrg, orgInstance: orgInstance, institutionalView: institutionalView, params:params ]}"/>
         </g:if>
 
-        <ui:h1HeaderWithIcon text="${titleMessage}" total="${total}" type="${controllerName == 'user' ? 'user' : ''}" />
+        <ui:h1HeaderWithIcon text="${titleMessage}" total="${total}" type="${controllerName == 'user' ? 'user' : ''}">
+            <g:if test="${isMyOrg}">
+                <laser:render template="/templates/iconObjectIsMine"/>
+            </g:if>
+        </ui:h1HeaderWithIcon>
 
         <ui:controlButtons>
             <laser:render template="/user/global/actions" />

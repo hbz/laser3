@@ -2019,6 +2019,31 @@ i.orange.icon.la-subscriptionIsChild.fixed {
   }
 }
 
+// My Object
+.la-objectIsMine {
+  position: absolute;
+  left: 24px;
+  top: -15px;
+  background-color: white;
+  font-size: .6em!important;
+  padding: 0em;
+  transition: all 0.5s ease;
+}
+/* change style when page scrolled down*/
+i.icon.la-objectIsMine.fixed {
+  position: fixed;
+  margin-left: 205px!important;
+  background-color:transparent!important;
+  color: gray!important;
+  box-shadow: none!important;
+  transition: all 1s ease;
+}
+@media only screen and (max-width: @computerBreakpoint  ) {
+  .ui.icon.header i.icon.la-objectIsMine.fixed {
+    display: none;
+  }
+}
+
 
 .la-icon-absolute {
   position: absolute;
