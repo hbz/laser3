@@ -1,14 +1,16 @@
 <%@ page import="de.laser.interfaces.CalculatedType;" %>
 <laser:serviceInjection />
-<g:if test="${isMyPlatform}">
-  <ui:objectMineIcon myObject="${message(code: 'license.relationship.platform')}"/>
-</g:if>
-<g:if test="${isMyPkg}">
-  <ui:objectMineIcon myObject="${message(code: 'license.relationship.pkg')}"/>
-</g:if>
-<g:if test="${isMyOrg}">
-  <ui:objectMineIcon myObject="${message(code: 'license.relationship.org')}"/>
-</g:if>
+<div class="la-additionalIcon">
+  <g:if test="${isMyPlatform}">
+    <i class="icon circular star la-objectIsMine la-popup-tooltip la-delay" data-content="${message(code: 'license.relationship.platform')}" data-position="left center" data-variation="tiny" ></i>
+  </g:if>
+  <g:if test="${isMyPkg}">
+    <i class="icon circular star la-objectIsMine la-popup-tooltip la-delay" data-content="${message(code: 'license.relationship.pkg')}" data-position="left center" data-variation="tiny" ></i>
+  </g:if>
+  <g:if test="${isMyOrg}">
+    <i class="icon circular star la-objectIsMine la-popup-tooltip la-delay" data-content="${message(code: 'license.relationship.org')}" data-position="left center" data-variation="tiny" ></i>
+  </g:if>
+</div>
 <laser:script file="${this.getGroovyPageFileName()}">
   $(document).ready(function() {
     $('.la-objectIsMine').visibility({
