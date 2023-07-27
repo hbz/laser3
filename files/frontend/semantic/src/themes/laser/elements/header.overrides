@@ -31,7 +31,7 @@ h1~h2.ui.header {
   align-items: center;
   //background-image: linear-gradient(-45deg, #0000004d 0%, #ffffff00 70%);
 }
-
+.la-object-extended,
 .ui.icon.header>i.icon.la-object-extended {
   margin-right: 0.2em;
   font-size: 0.88em!important;
@@ -53,6 +53,10 @@ body[class*="myInstitution"]{
     &:before {
       content: "\f19c";
     }
+  }
+  .la-objectIsMine {
+    box-shadow: 0 0 0 0.1em @organisation inset!important;
+    color: @organisation;
   }
 }
 
@@ -77,6 +81,10 @@ body[class*="package"] {
     &:before {
       content: "\f06b";
     }
+  }
+  .la-objectIsMine {
+    box-shadow: 0 0 0 0.1em @package inset!important;
+    color: @package;
   }
 }
 
@@ -116,6 +124,10 @@ body[class*="platform"]
     &:before {
       content: "\f0c2";
     }
+  }
+  .la-objectIsMine {
+    box-shadow: 0 0 0 0.1em @platform inset!important;
+    color: @platform;
   }
 }
 
@@ -184,6 +196,12 @@ body[class*="platform"] .ui.icon.header .icon.la-object:before {
   display: flex;
 }
 .la-subPlusYear-texts {
+  display: flex;
+  flex-direction: column;
+  font-size: 1.4rem;
+  line-height: 1.2em;
+}
+.la-additionalIcon {
   display: flex;
   flex-direction: column;
   font-size: 1.4rem;

@@ -7,7 +7,11 @@
             <laser:render template="actions" model="[org:org]"/>
         </ui:controlButtons>
 
-        <ui:h1HeaderWithIcon text="${orgInstance.name}" />
+        <ui:h1HeaderWithIcon text="${orgInstance.name}">
+                <g:if test="${isMyOrg}">
+                        <laser:render template="/templates/iconObjectIsMine"/>
+                </g:if>
+        </ui:h1HeaderWithIcon>
 
         <laser:render template="nav" model="${[orgInstance:orgInstance,inContextOrg:inContextOrg]}"/>
 

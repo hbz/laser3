@@ -75,6 +75,9 @@
                         data-name="name"
                         data-url='<g:createLink controller="ajax" action="editableSetValue"/>'>${packageInstance.name}</span></g:if>
               <g:else>${packageInstance.name}</g:else>
+              <g:if test="${isMyPkg}">
+                  <laser:render template="/templates/iconObjectIsMine"/>
+              </g:if>
           </ui:h1HeaderWithIcon>
 
   <laser:render template="nav"/>

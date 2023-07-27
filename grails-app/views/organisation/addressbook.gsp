@@ -15,7 +15,11 @@
 <laser:render template="/templates/copyFilteredEmailAddresses"
           model="[emailAddresses: emailAddresses]"/>
 
-<ui:h1HeaderWithIcon text="${orgInstance.name} - ${message(code: 'menu.institutions.myAddressbook')}" />
+<ui:h1HeaderWithIcon text="${orgInstance.name} - ${message(code: 'menu.institutions.myAddressbook')}">
+    <g:if test="${isMyOrg}">
+        <laser:render template="/templates/iconObjectIsMine"/>
+    </g:if>
+</ui:h1HeaderWithIcon>
 
 <laser:render template="nav" model="${[orgInstance: orgInstance]}"/>
 
