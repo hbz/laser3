@@ -87,10 +87,6 @@ class IconTagLib {
         out << '<i aria-hidden="true" class="icon ' + icon + '"></i> '
     }
 
-    def childSubscriptionIcon = { attrs, body ->
-        out << '<i class="icon circular orange child la-subscriptionIsChild"></i> '
-    }
-
     def propertyIcon = { attrs, body ->
         def object = attrs.object
         String cssClass = (attrs.class ?: '')

@@ -2,12 +2,9 @@
 <laser:htmlStart message="subscription.details.linkPackage.heading" serviceInjection="true"/>
 
 <ui:breadcrumbs>
-    <ui:crumb controller="myInstitution" action="currentSubscriptions"
-                 text="${message(code: 'myinst.currentSubscriptions.label')}"/>
-    <ui:crumb controller="subscription" action="index" id="${subscription.id}"
-                 text="${subscription.name}"/>
-    <ui:crumb class="active"
-                 text="${message(code: 'subscription.details.linkPackage.heading')}"/>
+    <ui:crumb controller="myInstitution" action="currentSubscriptions" text="${message(code: 'myinst.currentSubscriptions.label')}"/>
+    <ui:crumb controller="subscription" action="index" id="${subscription.id}" text="${subscription.name}"/>
+    <ui:crumb class="active" text="${message(code: 'subscription.details.linkPackage.heading')}"/>
 </ui:breadcrumbs>
 
 <ui:controlButtons>

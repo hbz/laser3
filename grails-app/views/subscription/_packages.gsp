@@ -11,7 +11,7 @@
                 buttonColor = "green"
             }%>
             <div class="ui raised segments la-accordion-segments">
-                <div class="ui fluid segment  title">
+                <div class="ui fluid segment title">
                     <div class="ui stackable equal width grid">
                         <div class="six wide column">
                             <ui:wekbIconLink type="package" gokbId="${sp.pkg.gokbId}"/>
@@ -39,7 +39,7 @@
                                         </g:if>
                                         --%>
                         </div>
-                        <div class="six wide right aligned  column">
+                        <div class="six wide right aligned column">
                             <g:if test="${editmode}">
                                 <div class="ui icon blue button la-modern-button ${buttonColor} la-js-dont-hide-button la-popup-tooltip la-delay"
                                         data-content="${message(code:'subscription.packages.config.header')}">

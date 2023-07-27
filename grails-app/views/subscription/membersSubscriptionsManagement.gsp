@@ -2,12 +2,9 @@
 <laser:htmlStart message="subscriptionsManagement.subscriptions.members" serviceInjection="true"/>
 
 <ui:breadcrumbs>
-    <ui:crumb controller="myInstitution" action="currentSubscriptions"
-                 text="${message(code: 'myinst.currentSubscriptions.label')}"/>
-    <ui:crumb controller="subscription" action="show" id="${subscription.id}"
-                 text="${subscription.name}"/>
-    <ui:crumb class="active"
-                 text="${message(code: 'subscriptionsManagement.subscriptions.members')}"/>
+    <ui:crumb controller="myInstitution" action="currentSubscriptions" text="${message(code: 'myinst.currentSubscriptions.label')}"/>
+    <ui:crumb controller="subscription" action="show" id="${subscription.id}" text="${subscription.name}"/>
+    <ui:crumb class="active" text="${message(code: 'subscriptionsManagement.subscriptions.members')}"/>
 </ui:breadcrumbs>
 
 <ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}" text="${subscription.name}" />

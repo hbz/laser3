@@ -3,22 +3,17 @@
 <laser:htmlStart message="subscription.details.addEntitlements.label" serviceInjection="true" />
 
 <ui:breadcrumbs>
-    <ui:crumb controller="myInstitution" action="currentSubscriptions"
-                 text="${message(code: 'myinst.currentSubscriptions.label')}"/>
-    <ui:crumb controller="subscription" action="index" id="${subscription.id}"
-                 text="${subscription.name}"/>
-    <ui:crumb class="active"
-                 text="${message(code: 'subscription.details.addEntitlements.label')}"/>
+    <ui:crumb controller="myInstitution" action="currentSubscriptions" text="${message(code: 'myinst.currentSubscriptions.label')}"/>
+    <ui:crumb controller="subscription" action="index" id="${subscription.id}" text="${subscription.name}"/>
+    <ui:crumb class="active" text="${message(code: 'subscription.details.addEntitlements.label')}"/>
 </ui:breadcrumbs>
 
 <ui:controlButtons>
     <laser:render template="actions"/>
 </ui:controlButtons>
 
-<ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}" floated="true">
-<g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
+<ui:h1HeaderWithIcon referenceYear="${subscription.referenceYear}" floated="true">
     <laser:render template="iconSubscriptionIsChild"/>
-</g:if>
 <ui:xEditable owner="${subscription}" field="name"/>
 </ui:h1HeaderWithIcon>
 
@@ -241,15 +236,13 @@
                         </div>
 
                         <div class="column">
-                            <laser:render template="/templates/tipps/coverages_accordion"
-                                          model="${[tipp: tipp, overwriteEditable: false]}"/>
+                            <laser:render template="/templates/tipps/coverages_accordion" model="${[tipp: tipp, overwriteEditable: false]}"/>
                         </div>
 
                         <div class="four wide column">
 
                             <!-- START TEMPLATE -->
-                            <laser:render template="/templates/identifier"
-                                          model="${[tipp: tipp]}"/>
+                            <laser:render template="/templates/identifier" model="${[tipp: tipp]}"/>
                             <!-- END TEMPLATE -->
                         </div>
 
@@ -286,11 +279,10 @@
                         <div class="one wide column">
                             <div class="ui right floated buttons">
                                 <div class="right aligned wide column">
-
                                 </div>
 
-                                <div class="ui icon blue button la-modern-button "><i
-                                        class="ui angle double down icon"></i>
+                                <div class="ui icon blue button la-modern-button">
+                                    <i class="ui angle double down icon"></i>
                                 </div>
                                 <g:if test="${editable && !participantPerpetualAccessToTitle}">
                                     <g:if test="${!blockSubmit}">
