@@ -10,8 +10,7 @@
               text="${subscription.name}"/>
     <ui:crumb controller="subscription" action="manageDiscountScale" id="${subscription.id}"
               text="${message(code: 'subscription.details.manageDiscountScale.label')}"/>
-    <ui:crumb class="active"
-              text="${message(code: '')}"/>
+    <ui:crumb class="active" text="${message(code: '')}"/>
 </ui:breadcrumbs>
 
 <ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}">

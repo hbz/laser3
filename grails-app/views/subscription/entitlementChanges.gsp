@@ -6,14 +6,13 @@
 
 <g:set var="visibleOrgRelationsJoin" value="${visibleOrgRelations.findAll{it.roleType != RDStore.OR_SUBSCRIPTION_CONSORTIA}.sort{it.org.sortname}.collect{it.org}.join(' – ')}"/>
 <ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}" type="Subscription" visibleOrgRelationsJoin="${visibleOrgRelationsJoin}">
-<g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
-    <laser:render template="iconSubscriptionIsChild"/>
-</g:if>
-<ui:xEditable owner="${subscription}" field="name"/>
+    <g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
+        <laser:render template="iconSubscriptionIsChild"/>
+    </g:if>
+    <ui:xEditable owner="${subscription}" field="name"/>
 </ui:h1HeaderWithIcon>
 
-<ui:anualRings object="${subscription}" controller="subscription" action="entitlementChanges"
-                  navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
+<ui:anualRings object="${subscription}" controller="subscription" action="entitlementChanges" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
 <ui:controlButtons>
     <laser:render template="actions"/>

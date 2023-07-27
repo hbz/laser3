@@ -27,16 +27,14 @@
 <g:set var="visibleOrgRelationsJoin" value="${visibleOrgRelations.findAll{it.roleType != RDStore.OR_SUBSCRIPTION_CONSORTIA}.sort{it.org.sortname}.collect{it.org}.join(' – ')}"/>
 
 <ui:h1HeaderWithIcon  referenceYear="${subscription?.referenceYear}" visibleOrgRelationsJoin="${visibleOrgRelationsJoin}">
-
-<laser:render template="iconSubscriptionIsChild"/>
-<ui:xEditable owner="${subscription}" field="name"/>
+    <laser:render template="iconSubscriptionIsChild"/>
+    <ui:xEditable owner="${subscription}" field="name"/>
 </ui:h1HeaderWithIcon>
 
 <g:if test="${editable}">
     <ui:auditButton class="la-auditButton-header" auditable="[subscription, 'name']" auditConfigs="${auditConfigs}" withoutOptions="true"/>
 </g:if>
-<ui:anualRings object="${subscription}" controller="subscription" action="show" navNext="${navNextSubscription}"
-                  navPrev="${navPrevSubscription}"/>
+<ui:anualRings object="${subscription}" controller="subscription" action="show" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
 <laser:render template="nav"/>
 
@@ -56,8 +54,7 @@
                     <div class="content">
                         <dl>
                             <dt class="control-label">${message(code: 'subscription.startDate.label')}</dt>
-                            <dd><ui:xEditable owner="${subscription}" field="startDate" type="date"
-                                                 validation="datesCheck"/></dd>
+                            <dd><ui:xEditable owner="${subscription}" field="startDate" type="date" validation="datesCheck"/></dd>
                             <g:if test="${editable}">
                                 <dd class="la-js-editmode-container"><ui:auditButton
                                         auditable="[subscription, 'startDate']" auditConfigs="${auditConfigs}"/></dd>
@@ -75,8 +72,7 @@
 
                         <dl>
                             <dt class="control-label">${message(code: 'subscription.manualCancellationDate.label')}</dt>
-                            <dd><ui:xEditable owner="${subscription}" field="manualCancellationDate"
-                                                 type="date"/></dd>
+                            <dd><ui:xEditable owner="${subscription}" field="manualCancellationDate" type="date"/></dd>
                             <g:if test="${editable}">
                                 <dd class="la-js-editmode-container"><ui:auditButton
                                         auditable="[subscription, 'manualCancellationDate']"
@@ -86,8 +82,7 @@
 
                         <dl>
                             <dt class="control-label">${message(code: 'subscription.referenceYear.label')}</dt>
-                            <dd><ui:xEditable owner="${subscription}" field="referenceYear"
-                                                 type="year"/></dd>
+                            <dd><ui:xEditable owner="${subscription}" field="referenceYear" type="year"/></dd>
                             <g:if test="${editable}">
                                 <dd class="la-js-editmode-container"><ui:auditButton
                                         auditable="[subscription, 'referenceYear']"
@@ -144,8 +139,7 @@
                         </sec:ifAnyGranted>
                         <dl>
                             <dt class="control-label">${message(code: 'subscription.kind.label')}</dt>
-                            <dd><ui:xEditableRefData owner="${subscription}" field="kind"
-                                                        config="${RDConstants.SUBSCRIPTION_KIND}"/></dd>
+                            <dd><ui:xEditableRefData owner="${subscription}" field="kind" config="${RDConstants.SUBSCRIPTION_KIND}"/></dd>
                             <g:if test="${editable}">
                                 <dd class="la-js-editmode-container"><ui:auditButton
                                         auditable="[subscription, 'kind']" auditConfigs="${auditConfigs}"/></dd>
@@ -153,8 +147,7 @@
                         </dl>
                         <dl>
                             <dt class="control-label">${message(code: 'subscription.form.label')}</dt>
-                            <dd><ui:xEditableRefData owner="${subscription}" field="form"
-                                                        config="${RDConstants.SUBSCRIPTION_FORM}"/></dd>
+                            <dd><ui:xEditableRefData owner="${subscription}" field="form" config="${RDConstants.SUBSCRIPTION_FORM}"/></dd>
                             <g:if test="${editable}">
                                 <dd class="la-js-editmode-container"><ui:auditButton
                                         auditable="[subscription, 'form']" auditConfigs="${auditConfigs}"/></dd>
@@ -162,8 +155,7 @@
                         </dl>
                         <dl>
                             <dt class="control-label">${message(code: 'subscription.resource.label')}</dt>
-                            <dd><ui:xEditableRefData owner="${subscription}" field="resource"
-                                                        config="${RDConstants.SUBSCRIPTION_RESOURCE}"/></dd>
+                            <dd><ui:xEditableRefData owner="${subscription}" field="resource" config="${RDConstants.SUBSCRIPTION_RESOURCE}"/></dd>
                             <g:if test="${editable}">
                                 <dd class="la-js-editmode-container"><ui:auditButton
                                         auditable="[subscription, 'resource']" auditConfigs="${auditConfigs}"/></dd>
@@ -173,8 +165,7 @@
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.isInstanceOfSub.label')}</dt>
                                 <dd>
-                                    <g:link controller="subscription" action="show"
-                                            id="${subscription.instanceOf.id}">${subscription.instanceOf}</g:link>
+                                    <g:link controller="subscription" action="show" id="${subscription.instanceOf.id}">${subscription.instanceOf}</g:link>
                                 </dd>
                             </dl>
                         </g:if>
