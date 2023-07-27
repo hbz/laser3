@@ -76,7 +76,11 @@
     </ui:exportDropdown>
 </ui:controlButtons>
 
-<ui:h1HeaderWithIcon text="${packageInstance.name}" />
+<ui:h1HeaderWithIcon text="${packageInstance.name}">
+    <g:if test="${isMyPkg}">
+        <laser:render template="/templates/iconObjectIsMine"/>
+    </g:if>
+</ui:h1HeaderWithIcon>
 
 <laser:render template="nav"/>
 

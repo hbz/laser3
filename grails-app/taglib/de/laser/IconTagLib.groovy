@@ -91,7 +91,8 @@ class IconTagLib {
         out << '<i class="icon circular orange child la-subscriptionIsChild"></i> '
     }
     def objectMineIcon = { attrs, body ->
-        out << '<div class="la-additionalIcon"><i class="icon circular star la-objectIsMine"></i></div> '
+        def myObject = attrs.myObject
+        out << '<div class="la-additionalIcon" ><i class="icon circular star la-objectIsMine la-popup-tooltip la-delay" data-content="' + myObject +'" data-position="left center" data-variation="tiny" ></i></div> '
     }
 
     def propertyIcon = { attrs, body ->

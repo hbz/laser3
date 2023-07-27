@@ -15,7 +15,11 @@
     <ui:crumb class="active" id="${platformInstance.id}" text="${platformInstance.name}"/>
 </ui:breadcrumbs>
 
-<ui:h1HeaderWithIcon text="${platformInstance.name}" />
+<ui:h1HeaderWithIcon text="${platformInstance.name}">
+    <g:if test="${isMyPlatform}">
+        <laser:render template="/templates/iconObjectIsMine" />
+    </g:if>
+</ui:h1HeaderWithIcon>
 
 <laser:render template="/templates/meta/identifier" model="${[object: platformInstance, editable: false]}"/>
 
