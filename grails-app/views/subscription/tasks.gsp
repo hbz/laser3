@@ -6,8 +6,7 @@
         <laser:render template="actions" />
     </ui:controlButtons>
 
-    <g:set var="visibleOrgRelationsJoin" value="${visibleOrgRelations.findAll{it.roleType != RDStore.OR_SUBSCRIPTION_CONSORTIA}.sort{it.org.sortname}.collect{it.org}.join(' – ')}"/>
-    <ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}" visibleOrgRelationsJoin="${visibleOrgRelationsJoin}">
+    <ui:h1HeaderWithIcon referenceYear="${subscription.referenceYear}" visibleOrgRelations="${visibleOrgRelations}">
         <g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
             <laser:render template="iconSubscriptionIsChild"/>
         </g:if>

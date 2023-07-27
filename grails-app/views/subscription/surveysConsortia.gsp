@@ -6,8 +6,8 @@
 <ui:controlButtons>
     <laser:render template="actions"/>
 </ui:controlButtons>
-<g:set var="visibleOrgRelationsJoin" value="${visibleOrgRelations.findAll{it.roleType != RDStore.OR_SUBSCRIPTION_CONSORTIA}.sort{it.org.sortname}.collect{it.org}.join(' – ')}"/>
-<ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}" visibleOrgRelationsJoin="${visibleOrgRelationsJoin}">
+
+<ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}" visibleOrgRelations="${visibleOrgRelations}">
     <ui:xEditable owner="${subscription}" field="name"/>
 </ui:h1HeaderWithIcon>
 <ui:totalNumber class="la-numberHeader" total="${surveys.size()}"/>
@@ -15,9 +15,7 @@
 <ui:anualRings object="${subscription}" controller="subscription" action="surveysConsortia"
                   navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
-
 <laser:render template="nav"/>
-
 
 <ui:messages data="${flash}"/>
 

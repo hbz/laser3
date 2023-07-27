@@ -24,9 +24,7 @@
     <laser:render template="actions"/>
 </ui:controlButtons>
 
-<g:set var="visibleOrgRelationsJoin" value="${visibleOrgRelations.findAll{it.roleType != RDStore.OR_SUBSCRIPTION_CONSORTIA}.sort{it.org.sortname}.collect{it.org}.join(' – ')}"/>
-
-<ui:h1HeaderWithIcon  referenceYear="${subscription?.referenceYear}" visibleOrgRelationsJoin="${visibleOrgRelationsJoin}">
+<ui:h1HeaderWithIcon referenceYear="${subscription?.referenceYear}" visibleOrgRelations="${visibleOrgRelations}">
     <laser:render template="iconSubscriptionIsChild"/>
     <ui:xEditable owner="${subscription}" field="name"/>
 </ui:h1HeaderWithIcon>
@@ -41,7 +39,6 @@
 <ui:objectStatus object="${subscription}" status="${subscription.status}"/>
 <laser:render template="message"/>
 <laser:render template="/templates/meta/identifier" model="${[object: subscription, editable: editable]}"/>
-
 
 <ui:messages data="${flash}"/>
 <laser:render template="/templates/workflow/status" model="${[cmd: cmd, status: status]}" />
