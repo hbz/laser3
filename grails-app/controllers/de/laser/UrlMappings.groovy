@@ -7,6 +7,7 @@ class UrlMappings {
         "/"         (controller: 'public', action: 'index')
         "/gasco"    (controller: 'public', action: 'gasco')
         "/ebooks"   (controller: 'ebookCatalogue', action: 'index')
+
         "/robots.txt" (controller: 'public', action: 'robots')
 
         // ajax
@@ -34,11 +35,15 @@ class UrlMappings {
 
         "/myInstitution/finance"            (controller: 'finance', action: 'index')
 
-        name subfinance:                "/subscription/$sub/finance/"   (controller: 'finance', action: 'subFinancialData')
+        name subfinance:                "/subscription/$sub/finance/"           (controller: 'finance', action: 'subFinancialData')
         name subfinanceEditCI:          "/subscription/$sub/editCostItem/$id"   (controller: 'finance', action: 'editCostItem')
         name subfinanceCopyCI:          "/subscription/$sub/copyCostItem/$id"   (controller: 'finance', action: 'copyCostItem')
 
         "/surveyconfig/show/$id"            (controller: 'survey', action: 'redirectSurveyConfig')
+
+        // default
+
+        "/$controller/$action?/$id?" ()
 
         // serverCodes
 
@@ -48,12 +53,6 @@ class UrlMappings {
         "404"       (controller: 'serverCodes', action: 'notFound')
         "405"       (controller: 'serverCodes', action: 'error')
 
-        // default
-
-        "/$controller/$action?/$id?" {
-            constraints {
-                // apply constraints here
-            }
-        }
+        "/**"       (controller: 'serverCodes', action: 'unkown')
     }
 }

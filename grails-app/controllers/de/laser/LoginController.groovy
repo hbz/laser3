@@ -15,7 +15,7 @@ import grails.web.Action
 import grails.web.mapping.UrlMappingInfo
 import grails.web.mapping.UrlMappingsHolder
 import org.apache.http.HttpStatus
-import org.springframework.security.access.annotation.Secured
+import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.security.authentication.AccountExpiredException
 import org.springframework.security.authentication.CredentialsExpiredException
 import org.springframework.security.authentication.DisabledException
@@ -28,7 +28,7 @@ import org.springframework.security.web.savedrequest.HttpSessionRequestCache
 /**
  * The controller manages authentication handling
  */
-@Secured('permitAll')
+@Secured(['permitAll'])
 class LoginController {
 
   def authenticationTrustResolver

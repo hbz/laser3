@@ -14,9 +14,9 @@ import grails.plugin.springsecurity.annotation.Secured
  * @see CostItem
  * @see CostItemElementConfiguration
  */
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class CostConfigurationController {
 
-    AccessService accessService
     ContextService contextService
     FinanceService financeService
     GenericOIDService genericOIDService

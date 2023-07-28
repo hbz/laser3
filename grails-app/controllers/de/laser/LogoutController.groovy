@@ -2,14 +2,14 @@ package de.laser
 
 import de.laser.system.SystemActivityProfiler
 import grails.plugin.springsecurity.SpringSecurityUtils
-import org.springframework.security.access.annotation.Secured
+import grails.plugin.springsecurity.annotation.Secured
 
 // 2.0
 
 /**
  * This controller is responsible for session destructing upon logout
  */
-@Secured('permitAll')
+@Secured(['permitAll'])
 class LogoutController {
 
 	ContextService contextService

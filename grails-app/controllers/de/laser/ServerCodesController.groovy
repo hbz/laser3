@@ -1,6 +1,7 @@
 package de.laser
 
 import de.laser.annotations.Check404
+import de.laser.storage.Constants
 import de.laser.utils.AppUtils
 import de.laser.config.ConfigMapper
 import de.laser.utils.DateUtils
@@ -24,8 +25,6 @@ class ServerCodesController {
      * Shows the error page with stack trace extracts; acts on codes 405 and 500
      */
     def error() {
-//        println 'ServerCodesController.error: ' + request
-
         Map<String, Object> result = [
                 exception: request.getAttribute('exception') ?: request.getAttribute('javax.servlet.error.exception'),
                 status: request.getAttribute('javax.servlet.error.status_code'),
@@ -63,8 +62,6 @@ class ServerCodesController {
      * Shows the unauthorised access page, mapping for code 401, 403
      */
     def forbidden() {
-//        println 'ServerCodesController.forbidden: ' + request
-
         Map<String, Object> result = [status: request.getAttribute('javax.servlet.error.status_code')]
         render view:'forbidden', model: result
     }
@@ -73,8 +70,6 @@ class ServerCodesController {
      * Shows the resource not found page, mapping for code 404
      */
     def notFound() {
-//        println 'ServerCodesController.notFound: ' + request
-
         Map<String, Object> result = [
                 status: request.getAttribute('javax.servlet.error.status_code'),
                 alternatives: [:]
@@ -114,9 +109,17 @@ class ServerCodesController {
      * Shows the service unavailable page
      */
     def unavailable() {
-//        println 'ServerCodesController.unavailable: ' + request
-
         Map<String, Object> result = [status: request.getAttribute('javax.servlet.error.status_code')]
         render view:'unavailable', model: result
+    }
+
+    def unkown() {
+        log.debug 'ServerCodesController.unkown: ' + request.getRequestURL()
+
+        Map<String, Object> result = [
+                status: '404*',
+                alternatives: [:]
+        ]
+        render view:'notFound', model: result
     }
 }
