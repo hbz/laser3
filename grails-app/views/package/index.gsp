@@ -55,6 +55,9 @@
                             </span>
                         </th>
                     </sec:ifAllGranted>
+                    <th class="center aligned">
+                        <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.packages')}"><i class="icon star"></i></span>
+                    </th>
                 </tr>
                 </thead>
                 <tbody>
@@ -161,6 +164,13 @@
 %{--                                        code="menu.yoda.retriggerPendingChanges"/></g:link>--}%
                             </td>
                         </sec:ifAllGranted>
+                        <td class="center aligned">
+                            <g:if test="${pkg in myCurrentPackages}">
+                                <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.packages')}">
+                                    <i class="icon yellow star"></i>
+                                </span>
+                            </g:if>
+                        </td>
                     </tr>
                 </g:each>
                 </tbody>
