@@ -7,7 +7,6 @@
     <a class="title">
         ${message(code:'menu.institutions.myInst')} <i class="dropdown icon"></i>
     </a>
-
     <div class="menu" role="menu">
         <ui:securedMainNavItem addItemAttributes="true" controller="myInstitution" action="dashboard" message="menu.institutions.dash" />
 %{--        <div class="divider"></div>--}%

@@ -4,7 +4,6 @@
     <a class="title">
         ${message(code:'menu.admin')} <i class="dropdown icon"></i>
     </a>
-
     <div class="menu" role="menu">
         <ui:link addItemAttributes="true" controller="admin" action="index">${message(code:'default.dashboard')}</ui:link>
         <div class="divider"></div>
@@ -13,7 +12,6 @@
             <div class="title">
                 <i class="ui icon keyboard outline"></i> ${message(code:'menu.admin.sysAdmin')} <i class="dropdown icon"></i>
             </div>
-
             <div class="menu" role="menu">
                 <ui:link addItemAttributes="true" controller="admin" action="appInfo">${message(code:'menu.admin.appInfo')}</ui:link>
                 <ui:link addItemAttributes="true" controller="admin" action="systemEvents">${message(code:'menu.admin.systemEvents')}</ui:link>
@@ -32,7 +30,6 @@
             <div class="title">
                 ${message(code:'org.plural.label')} <i class="dropdown icon"></i>
             </div>
-
             <div class="menu" role="menu">
                 <ui:link addItemAttributes="true" controller="organisation" action="index">${message(code:'menu.admin.allOrganisations')}</ui:link>
                 <ui:link addItemAttributes="true" controller="admin" action="manageOrganisations">${message(code:'menu.admin.manageOrganisations')}</ui:link>
@@ -58,7 +55,6 @@
             <div class="title">
                 <i class="ui icon code"></i> <span class="text">Developer</span> <i class="dropdown icon"></i>
             </div>
-
             <div class="menu" role="menu">
                 <ui:link addItemAttributes="true" controller="dev" action="frontend">Frontend</ui:link>
                 <ui:link addItemAttributes="true" controller="dev" action="klodav">klodav</ui:link>
