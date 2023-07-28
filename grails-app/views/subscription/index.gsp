@@ -229,7 +229,7 @@
 
 
             <div class="eight wide column">
-                <div class="field la-field-right-aligned ">
+                <div class="field la-field-right-aligned">
                     <div class="ui right floated button la-js-editButton la-la-clearfix>"><g:message code="default.button.edit.label"/></div>
                 </div>
             </div>

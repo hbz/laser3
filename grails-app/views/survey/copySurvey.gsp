@@ -58,10 +58,10 @@
                     <td><g:checkBox name="copySurvey.copyDates" value="${true}"/></td>
                     <td>${message(code: 'copySurvey.copyDates')}</td>
                     <td>
-                        ${message(code: 'copySurvey.copyDates.startDate')}:&nbsp;< g:if
+                        ${message(code: 'copySurvey.copyDates.startDate')}:&nbsp;<g:if
                                 test="${!surveyInfo.startDate}">-</g:if><g:formatDate date="${surveyInfo.startDate}"
                                                                                       format="${message(code: 'default.date.format.notime')}"/> &nbsp
-                        ${message(code: 'copySurvey.copyDates.endDate')}:&nbsp;< g:if
+                        ${message(code: 'copySurvey.copyDates.endDate')}:&nbsp;<g:if
                                 test="${!surveyInfo.endDate}">-</g:if><g:formatDate date="${surveyInfo.endDate}"
                                                                                     format="${message(code: 'default.date.format.notime')}"/>
                     </td>

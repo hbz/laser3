@@ -154,7 +154,7 @@
                             </dt>
                             <dd>
                                 <ui:xEditable owner="${orgInstance}" field="linkResolverBaseURL" />
-                                <br />&nbsp;< br />&nbsp;< br />
+                                <br />&nbsp;<br />&nbsp;<br />
                             </dd>
                         </dl>
                         <dl>

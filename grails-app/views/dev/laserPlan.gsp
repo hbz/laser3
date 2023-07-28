@@ -121,7 +121,7 @@
             <td class="four wide center aligned">
                 <i class="large green checkmark icon"></i>
             </td>
-            <td class="four wide center aligned ">
+            <td class="four wide center aligned">
                 <i class="large green checkmark icon"></i>
             </td>
         </tr>
@@ -144,7 +144,7 @@
              <td class="four wide center aligned">
 
              </td>
-            <td class="four wide center aligned ">
+            <td class="four wide center aligned">
                 <i class="large green checkmark icon"></i>
             </td>
         </tr>
@@ -159,7 +159,7 @@
             <td class="center aligned">
 
             </td>
-            <td class="center aligned ">
+            <td class="center aligned">
                 <a href="mailto:laser@hbz-nrw.de" class="ui huge first button">
                     Beratungsgespäch vereinbaren<i class="right arrow icon"></i>
                 </a>
@@ -200,7 +200,7 @@
             <td class="four wide center aligned">
                 <i class="large green checkmark icon"></i>
             </td>
-            <td class="four wide center aligned ">
+            <td class="four wide center aligned">
                 <i class="large green checkmark icon"></i>
             </td>
         </tr>
@@ -221,7 +221,7 @@
             <td class="four wide center aligned">
 
             </td>
-            <td class="four wide center aligned ">
+            <td class="four wide center aligned">
                 <i class="large green checkmark icon"></i>
             </td>
         </tr>
@@ -236,7 +236,7 @@
             <td class="center aligned">
 
             </td>
-            <td class="center aligned ">
+            <td class="center aligned">
                 <a href="mailto:laser@hbz-nrw.de" class="ui huge first button">
                     Beratungsgespäch vereinbaren<i class="right arrow icon"></i>
                 </a>
