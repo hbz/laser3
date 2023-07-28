@@ -61,8 +61,9 @@ class OrganisationController  {
     //-----
 
     public static final Map<String, String> CHECK404_ALTERNATIVES = [
-            'list' : 'menu.public.all_orgs',
-            'listInstitution' : 'menu.public.all_insts',
+            'list' : 'menu.public.all_orgs',                // todo: check perms
+            'listConsortia' : 'menu.public.all_cons',       // todo: check perms
+            'listInstitution' : 'menu.public.all_insts',    // todo: check perms
             'listProvider' : 'menu.public.all_providers'
     ]
 

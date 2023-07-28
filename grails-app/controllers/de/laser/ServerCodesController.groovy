@@ -113,8 +113,8 @@ class ServerCodesController {
         render view:'unavailable', model: result
     }
 
-    def unkown() {
-        log.debug 'ServerCodesController.unkown: ' + request.getRequestURL()
+    def fallback() {
+        log.debug 'ServerCodesController.fallback: ' + request.getRequestURL()
 
         Map<String, Object> result = [
                 status: '404*',

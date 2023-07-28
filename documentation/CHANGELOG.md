@@ -7,7 +7,9 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-5200    27.07.2023  dev     3.2.1       Ingrid  Feature     Visualisierung: Einrichtung/Anbieter/Plattform/Paket ist Meins
+4981    28.07.2023  dev     3.3         David   Feature     HttpStatus 40x wird nicht korrekt verarbeitet
+
+5200    27.07.2023  dev     3.3         Ingrid  Feature     Visualisierung: Einrichtung/Anbieter/Plattform/Paket ist Meins
 
 5168    27.07.2023  dev     3.3         David   Feature     Wekb-News in Laser anzeigen
 
