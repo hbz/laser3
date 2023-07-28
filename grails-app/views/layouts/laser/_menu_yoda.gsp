@@ -147,7 +147,6 @@
             <div class="menu" role="menu">
                 <ui:link addItemAttributes="true" controller="package" action="getDuplicatePackages">List Package Duplicates</ui:link>
                 <ui:link addItemAttributes="true" controller="package" action="list">${message(code: 'myinst.packages')} - ${message(code: 'default.onlyDatabase')}</ui:link>
-                <%--<ui:link addItemAttributes="true" controller="admin" action="hardDeletePkgs">${message(code:'menu.admin.hardDeletePkgs')}</ui:link>--%>
                 <div class="divider"></div>
 
                 <ui:link addItemAttributes="true" controller="admin" action="databaseInfo">${message(code: "menu.admin.databaseInfo")}</ui:link>
