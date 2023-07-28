@@ -77,8 +77,7 @@
                         <%--UUID: ${record.uuid} --%>
                         <%--Package: ${Package.findByGokbId(record.uuid)} --%>
                             <g:if test="${pkg}">
-                                <g:link controller="package" action="show"
-                                        id="${pkg.id}">${record.name}</g:link>
+                                <g:link controller="package" action="show" id="${pkg.id}">${record.name}</g:link>
                             </g:if>
                             <g:else>
                                 ${record.name} <a target="_blank"
@@ -152,9 +151,11 @@
                                     </g:link>
                                 </span>
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top center" data-content="${message(code: 'menu.yoda.retriggerPendingChanges')}">
-                                    <g:link controller="yoda" action="matchPackageHoldings" params="${[pkgId: pkg.id]}" class="ui icon button">
-                                        <i class="icon wrench"></i>
-                                    </g:link>
+                                    <g:if test="${pkg}">
+                                        <g:link controller="yoda" action="matchPackageHoldings" params="${[pkgId: pkg.id]}" class="ui icon button">
+                                            <i class="icon wrench"></i>
+                                        </g:link>
+                                    </g:if>
                                 </span>
 %{--                                <g:link class="ui button" controller="yoda" action="reloadPackage"--}%
 %{--                                        params="${[packageUUID: record.uuid]}"><g:message--}%
@@ -165,7 +166,7 @@
                             </td>
                         </sec:ifAllGranted>
                         <td class="center aligned">
-                            <g:if test="${pkg in myCurrentPackages}">
+                            <g:if test="${pkg && pkg.id in currentPackageIdList}">
                                 <span class="la-popup-tooltip la-delay" data-content="${message(code: 'menu.my.packages')}">
                                     <i class="icon yellow star"></i>
                                 </span>
@@ -176,9 +177,7 @@
                 </tbody>
             </table>
 
-
-            <ui:paginate action="index" controller="package" params="${params}"
-                            max="${max}" total="${recordsCount}"/>
+            <ui:paginate action="index" controller="package" params="${params}" max="${max}" total="${recordsCount}"/>
 
         </g:if>
         <g:else>

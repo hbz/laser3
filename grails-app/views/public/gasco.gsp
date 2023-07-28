@@ -51,10 +51,8 @@
                                                     <g:if test="${params.list('subKinds').contains(subKind.id.toString())}"> checked="" </g:if>
                                                     <g:if test="${initQuery}"> checked="" </g:if>
                                                        tabindex="0">
-
                                             </div>
                                         </div>
-
                                 </g:each>
 
                             </div>
@@ -74,7 +72,7 @@
 
                     </div>
 
-                    <div class="field la-field-right-aligned ">
+                    <div class="field la-field-right-aligned">
                         <a href="${request.forwardURI}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</a>
                         <input type="submit" class="ui primary button" value="${message(code:'default.button.search.label')}">
                     </div>

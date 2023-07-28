@@ -2,7 +2,6 @@ package de.laser
 
 
 import de.laser.properties.SubscriptionProperty
-import de.laser.properties.PropertyDefinition
 import de.laser.config.ConfigMapper
 import de.laser.storage.PropertyStore
 import de.laser.storage.RDStore

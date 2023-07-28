@@ -40,7 +40,7 @@ class WekbStatsService {
         Date frame = Date.from(LocalDate.now().minusDays(days).atStartOfDay(ZoneId.systemDefault()).toInstant())
         String cs = DateUtils.getSDF_yyyyMMdd_HHmmss().format(frame)
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
-        log.debug('WekbStatsService.getCurrent() > ' + cs)
+        //log.debug('WekbStatsService.getCurrent() > ' + cs)
 
         Map base = [changedSince: cs, sort: 'sortname', order: 'asc', stubOnly: true, max: 10000]
 

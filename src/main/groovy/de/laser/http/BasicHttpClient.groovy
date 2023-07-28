@@ -63,11 +63,17 @@ class BasicHttpClient {
 
     HttpClient client
     URL url
+    boolean silentMode
 
-    BasicHttpClient(String url) {
+    BasicHttpClient(String url, boolean silentMode = true) {
         try {
             this.url = url.toURL()
+            this.silentMode = silentMode
             client = HttpClient.create(this.url)
+
+            if (silentMode) {
+                log.debug 'Using BasicHttpClient(' + url + ') in silentMode'
+            }
         }
         catch(Exception e) {
             log.error e.getMessage()
@@ -75,10 +81,15 @@ class BasicHttpClient {
         this
     }
 
-    BasicHttpClient(String url, HttpClientConfiguration config) {
+    BasicHttpClient(String url, HttpClientConfiguration config, boolean silentMode = true) {
         try {
             this.url = url.toURL()
+            this.silentMode = silentMode
             client = HttpClient.create(this.url, config)
+
+            if (silentMode) {
+                log.debug 'Using BasicHttpClient(' + url + ', config) in silentMode'
+            }
         }
         catch(Exception e) {
             log.error e.getMessage()
@@ -122,7 +133,9 @@ class BasicHttpClient {
     HttpResponse request(Method method, Map<String, String> customHeaders, ResponseType responseType, PostType postType, def body, Closure onSuccess, Closure onFailure) {
         HttpResponse response = null
 
-        log.debug '[ request ] ' + url + ' (Method: ' + method + ', Accept: ' + responseType + ', Content-Type: ' + postType + ')'
+        if (!silentMode) {
+            log.debug '[ request ] ' + url + ' (Method: ' + method + ', Accept: ' + responseType + ', Content-Type: ' + postType + ')'
+        }
 
         if (method == Method.GET) { 
             response = innerGET(responseType, customHeaders) 
@@ -132,7 +145,9 @@ class BasicHttpClient {
         }
 
         int sc = response ? response.getStatus().getCode() : -1
-        log.debug '[ request ] httpStatusCode: ' + sc
+        if (!silentMode) {
+            log.debug '[ request ] httpStatusCode: ' + sc
+        }
 
         if (sc >= 200 && sc < 300) {
             if (onSuccess) {
@@ -223,7 +238,7 @@ class BasicHttpClient {
                         log.warn '[ innerPOST ] too complex URLENC found! Check payload to avoid possible problems'
                     }
                 }
-                if (AppUtils.getCurrentServer() == AppUtils.LOCAL) {
+                if (!silentMode && AppUtils.getCurrentServer() == AppUtils.LOCAL) {
                     log.debug '[ innerPOST ] payload: ' + body.toString()
                 }
             }
