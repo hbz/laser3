@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5211    31.07.2023  rc-3.2  3.2.2       Andreas Bug         502er durch Umstellung der Query behoben
+
 --      26.07.2023  rc-3.2  3.2.1       Andreas Bug         Falschanzeige des Menüeintrages "Meine Lizenzübertragungen" behoben
 
 5208    26.07.2023  rc-3.2  3.2.1       Andreas Feature     Export einer einzelnen Lizenz in PDF
