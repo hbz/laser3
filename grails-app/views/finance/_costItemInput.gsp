@@ -574,12 +574,12 @@
             //console.log(taxRate.val());
             let taxF = 1.0 + (0.01 * JSPC.app.finance${idSuffix}.taxRate.val().split("§")[1]);
             let parsedBillingCurrency = JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costBillingCurrency.val().trim());
-            let parsedCurrencyRate = JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costCurrencyRate.val().trim());
+            let parsedCurrencyRate = JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costCurrencyRate.val().trim()); //calcualted but NOT set yet!
             let parsedLocalCurrency = parsedBillingCurrency * parsedCurrencyRate; //calcualted but NOT set yet!
             if(localHandInput === true) {
-                //expect votum ex Melanie
+                //manipulate iff localCurrency has been changed by user
                 parsedLocalCurrency = JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costLocalCurrency.val().trim());
-                parsedBillingCurrency = parsedLocalCurrency / parsedCurrencyRate; //manipulate iff localCurrency has been changed by user
+                JSPC.app.finance${idSuffix}.costCurrencyRate.val(JSPC.app.finance${idSuffix}.doubleToString((parsedLocalCurrency / parsedBillingCurrency), true));
             }
             let billingCurrencyAfterRounding = roundB ? Math.round(parsedBillingCurrency) : parsedBillingCurrency
             let localCurrencyAfterRounding = roundB ? Math.round(parsedLocalCurrency) : parsedLocalCurrency
