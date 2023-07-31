@@ -290,7 +290,7 @@
                     <g:sortableColumn scope="col" rowspan="3" params="${params}" property="manualCancellationDate"
                                       title="${message(code: 'subscription.manualCancellationDate.label')}"/>
 
-                    <th colspan="3" class="center aligned">
+                    <th colspan="3" class="la-smaller-table-head center aligned">
                         ${message(code: 'subscription.offer.table.th')}
                     </th>
 
@@ -315,7 +315,7 @@
                         ${message(code: 'subscription.discountScale.label')}
                     </th>
 
-                    <th colspan="2" class="center aligned">
+                    <th colspan="2" class="la-smaller-table-head center aligned">
                         Renewal
                     </th>
 
