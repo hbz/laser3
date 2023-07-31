@@ -1,7 +1,6 @@
 package de.laser
 
 import de.laser.annotations.Check404
-import de.laser.storage.Constants
 import de.laser.utils.AppUtils
 import de.laser.config.ConfigMapper
 import de.laser.utils.DateUtils
@@ -16,7 +15,7 @@ import org.grails.web.mapping.DefaultUrlMappingParser
 /**
  * This controller handles the server code mapping output
  */
-@Secured(['permitAll'])
+@Secured(['IS_AUTHENTICATED_FULLY'])
 class ServerCodesController {
 
     GrailsApplication grailsApplication
