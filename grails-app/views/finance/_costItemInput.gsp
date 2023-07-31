@@ -118,7 +118,7 @@
                                name="newCostInBillingCurrency" id="newCostInBillingCurrency_${idSuffix}" placeholder="${g.message(code:'financials.invoice_total')}"
                                value="<g:formatNumber number="${costItem?.costInBillingCurrency}" minFractionDigits="2" maxFractionDigits="2" />"/>
 
-                        <div id="calculateBillingCurrency_${idSuffix}" class="ui icon blue button la-long-tooltip" data-tooltip="${message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
+                        <div id="calculateBillingCurrency_${idSuffix}" class="ui icon blue button la-long-tooltip calcButton" data-tooltip="${message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
                             <i class="calculator icon"></i>
                         </div>
 
@@ -154,7 +154,7 @@
                                placeholder="${g.message(code:'financials.newCosts.exchangeRate')}"
                                value="${value}" />
 
-                        <div  id="calculateExchangeRate_${idSuffix}" class="ui icon blue button la-long-tooltip" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
+                        <div  id="calculateExchangeRate_${idSuffix}" class="ui icon blue button la-long-tooltip calcButton" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
                             <i class="calculator icon"></i>
                         </div>
                     </div><!-- .field -->
@@ -178,7 +178,7 @@
                                placeholder="${message(code:'financials.newCosts.value')}"
                                value="<g:formatNumber number="${costItem?.costInLocalCurrency}" minFractionDigits="2" maxFractionDigits="2"/>" />
 
-                        <div id="calculateLocalCurrency_${idSuffix}" class="ui icon blue button la-long-tooltip" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
+                        <div id="calculateLocalCurrency_${idSuffix}" class="ui icon blue button la-long-tooltip calcButton" data-tooltip="${g.message(code: 'financials.newCosts.buttonExplanation')}" data-position="top center" data-variation="tiny">
                             <i class="calculator icon"></i>
                         </div>
                     </div><!-- .field -->
@@ -577,6 +577,7 @@
             let parsedCurrencyRate = JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costCurrencyRate.val().trim());
             let parsedLocalCurrency = parsedBillingCurrency * parsedCurrencyRate; //calcualted but NOT set yet!
             if(localHandInput === true) {
+                //expect votum ex Melanie
                 parsedLocalCurrency = JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costLocalCurrency.val().trim());
                 parsedBillingCurrency = parsedLocalCurrency / parsedCurrencyRate; //manipulate iff localCurrency has been changed by user
             }
@@ -605,12 +606,13 @@
             }
             return output;
         },
-        doubleToString: function (input) {
+        doubleToString: function (input, currencyRate = false) {
+            let rndInput = currencyRate ? input : input.toFixed(2)
             if(!isNaN(input)) {
                 let output;
                 if(JSPC.app.finance${idSuffix}.userLang !== 'en')
-                    output = input.toFixed(2).toString().replace(".",",");
-                else output = input.toFixed(2).toString();
+                    output = rndInput.toString().replace(".",",");
+                else output = rndInput.toString();
                 return output;
             }
         },
@@ -660,7 +662,7 @@
                 if (! JSPC.app.finance${idSuffix}.isError(JSPC.app.finance${idSuffix}.costLocalCurrency) && ! JSPC.app.finance${idSuffix}.isError(JSPC.app.finance${idSuffix}.costBillingCurrency)) {
                     let parsedLocalCurrency = JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costLocalCurrency.val().trim());
                     let parsedBillingCurrency = JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costBillingCurrency.val().trim());
-                    JSPC.app.finance${idSuffix}.costCurrencyRate.val((parsedLocalCurrency / parsedBillingCurrency));
+                    JSPC.app.finance${idSuffix}.costCurrencyRate.val(JSPC.app.finance${idSuffix}.doubleToString((parsedLocalCurrency / parsedBillingCurrency), true));
                     $(".la-account-currency").find(".field").removeClass("error");
                     JSPC.app.finance${idSuffix}.calcTaxResults();
                 }
@@ -693,17 +695,20 @@
                 JSPC.app.finance${idSuffix}.elementChangeable = false;
             });
             this.costElems.blur(function(e) {
-                let allSet = JSPC.app.finance${idSuffix}.costBillingCurrency.val().length > 0 && JSPC.app.finance${idSuffix}.costLocalCurrency.val().length > 0 && JSPC.app.finance${idSuffix}.costCurrencyRate.val().length > 0;
+                let parsedCurrencyRate = JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costCurrencyRate.val().trim());
+                let parsedBillingCurrency = JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costBillingCurrency.val().trim());
+                let parsedLocalCurrency = JSPC.app.finance${idSuffix}.stringToDouble(JSPC.app.finance${idSuffix}.costLocalCurrency.val().trim());
+                let allSet = JSPC.app.finance${idSuffix}.costBillingCurrency.val().length > 0 && JSPC.app.finance${idSuffix}.costLocalCurrency.val().length > 0 && JSPC.app.finance${idSuffix}.costCurrencyRate.val().length > 0 && parsedCurrencyRate > 0;
                 if(JSPC.app.finance${idSuffix}.elementChangeable === true){
                     JSPC.app.finance${idSuffix}.costElems.removeClass('focused');
                     if(allSet) {
                         JSPC.app.finance${idSuffix}.calcTaxResults($(this).attr("id") === JSPC.app.finance${idSuffix}.costLocalCurrency.attr("id")); //will set boolean localHandInput
                     }
                     else {
-                        if(JSPC.app.finance${idSuffix}.costLocalCurrency.val().length > 0 && JSPC.app.finance${idSuffix}.costCurrencyRate.val().length > 0) {
+                        if(JSPC.app.finance${idSuffix}.costLocalCurrency.val().length > 0 && JSPC.app.finance${idSuffix}.costCurrencyRate.val().length > 0 && parsedCurrencyRate > 0) {
                             JSPC.app.finance${idSuffix}.calculateBillingCurrency.click();
                         }
-                        if(JSPC.app.finance${idSuffix}.costBillingCurrency.val().length > 0 && JSPC.app.finance${idSuffix}.costLocalCurrency.val().length > 0) {
+                        if(JSPC.app.finance${idSuffix}.costBillingCurrency.val().length > 0 && JSPC.app.finance${idSuffix}.costLocalCurrency.val().length > 0 && parsedBillingCurrency > 0 && parsedLocalCurrency > 0) {
                             JSPC.app.finance${idSuffix}.calculateCurrencyRate.click();
                         }
                         if(JSPC.app.finance${idSuffix}.costBillingCurrency.val().length > 0 && JSPC.app.finance${idSuffix}.costCurrencyRate.val().length > 0) {
@@ -723,6 +728,10 @@
                 window.setTimeout(function() {
                     JSPC.app.finance${idSuffix}.elementChangeable = false;
                 }, 10);
+            });
+            //is to bridge the html-mousedown event listener which fires before the click event
+            $('.calcButton').mousedown(function(e) {
+                $(this).click();
             });
             this.calc.change( function() {
                 if(!$(this).hasClass("focused")) {
