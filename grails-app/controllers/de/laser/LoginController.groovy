@@ -215,21 +215,24 @@ class LoginController {
         if (!savedRequest) {
             return true
         }
-        boolean validRequest = false
+        boolean valid = false
 
         UrlMappingsHolder urlMappingsHolder = BeanStore.getUrlMappingsHolder()
-        List<UrlMappingInfo> mappingInfo = urlMappingsHolder.matchAll(savedRequest.getRequestURI())
+        UrlMappingInfo mappingInfo = urlMappingsHolder.matchAll(savedRequest.getRequestURI()).first()
 
         if (mappingInfo) {
-            GrailsClass controller = CodeUtils.getAllControllerArtefacts().find {
-                it.clazz.simpleName == mappingInfo.first().getControllerName().capitalize() + 'Controller'
-            }
-            if (controller) {
-                if (controller.clazz.declaredMethods.find { it.getAnnotation(Action) && it.name == mappingInfo.first().getActionName() }) {
-                    validRequest = true
+            GrailsClass controller = mappingInfo.hasProperty('controllerClass') ? mappingInfo.controllerClass :
+                    CodeUtils.getAllControllerArtefacts().find {
+                        it.clazz.simpleName == mappingInfo.controllerName.capitalize() + 'Controller'
+                    }
+
+            if (controller && controller.name != 'ServerCodes') {
+                boolean match = mappingInfo.hasProperty('info') ? controller.actionUriToViewName.find { it.key == mappingInfo.info.params.action } : false
+                if (match) {
+                    valid = true
                 }
             }
         }
-        validRequest
+        valid
     }
 }

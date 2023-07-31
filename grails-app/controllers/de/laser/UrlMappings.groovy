@@ -32,6 +32,7 @@ class UrlMappings {
 
         "/lic/$action?/$id?"                (controller: 'license')
         "/org/$action?/$id?"                (controller: 'organisation')
+        "/sub/$action?/$id?"                (controller: 'subscription')
 
         "/myInstitution/finance"            (controller: 'finance', action: 'index')
 
