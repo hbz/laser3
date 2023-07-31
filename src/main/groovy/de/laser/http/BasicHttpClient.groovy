@@ -72,7 +72,7 @@ class BasicHttpClient {
             client = HttpClient.create(this.url)
 
             if (silentMode) {
-                log.debug 'Using BasicHttpClient(' + url + ') in silentMode'
+                // log.debug 'Using BasicHttpClient(' + url + ') in silentMode'
             }
         }
         catch(Exception e) {
@@ -88,7 +88,7 @@ class BasicHttpClient {
             client = HttpClient.create(this.url, config)
 
             if (silentMode) {
-                log.debug 'Using BasicHttpClient(' + url + ', config) in silentMode'
+                // log.debug 'Using BasicHttpClient(' + url + ', config) in silentMode'
             }
         }
         catch(Exception e) {
