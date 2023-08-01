@@ -7,7 +7,11 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5213    01.08.2023  rc-3.2  3.2.2       Andreas Bug         verschiedene Fehler in der Lizenzverwaltung behoben
+
 5211    31.07.2023  rc-3.2  3.2.2       Andreas Bug         502er durch Umstellung der Query behoben
+
+5210    31.07.2023  rc-3.2  3.2.2       Andreas Bug         falscher Verweis des dauerhaften Bestandstitels aufgelöst
 
 5209    31.07.2023  rc-3.2  3.2.2       Andreas Bug         erneute Umstellung der Kosteneingabemodal-Eventlistener
 

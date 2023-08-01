@@ -1277,6 +1277,19 @@ class MyInstitutionController  {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
         params.tab = params.tab ?: 'generalProperties'
+        EhcacheWrapper cache = contextService.getUserCache("/subscriptionsManagement/subscriptionFilter/")
+        Set<String> filterFields = ['q', 'identifier', 'referenceYears', 'status', 'filterPropDef', 'filterProp', 'form', 'resource', 'subKinds', 'isPublicForApi', 'hasPerpetualAccess', 'hasPublishComponent', 'holdingSelection', 'subRunTime', 'subRunTimeMultiYear', 'subType', 'consortia']
+        filterFields.each { String subFilterKey ->
+            if(params.containsKey('processOption')) {
+                if(cache.get(subFilterKey))
+                    params.put(subFilterKey, cache.get(subFilterKey))
+            }
+            else {
+                if(params.get(subFilterKey))
+                    cache.put(subFilterKey, params.get(subFilterKey))
+                else cache.remove(subFilterKey)
+            }
+        }
 
         if(!(params.tab in ['notes', 'documents', 'properties'])){
             //Important
