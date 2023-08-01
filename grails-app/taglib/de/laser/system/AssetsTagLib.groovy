@@ -21,7 +21,7 @@ class AssetsTagLib {
     def javascript = {final attrs ->
         out << asset.javascript(attrs).toString().replace(
                 ' type="text/javascript" ',
-                ' data-type="external" data-timestamp="' + _getCurrentTimestamp() + '"'
+                ' data-type="external" data-timestamp="' + _getCurrentTimestamp() + '" '
         )
     }
 
