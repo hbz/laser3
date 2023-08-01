@@ -933,7 +933,7 @@ class ManagementService {
             }
             else subscriptions = Subscription.findAllByIdInList(params.list("selectedSubs"))
             if (subscriptions) {
-                if(params.noteTitle && params.noteContent) {
+                if(params.noteTitle || params.noteContent) {
                     if(params.processOption == 'newNote') {
                         subscriptions.each { Subscription subscription ->
                             if (subscription.isEditableBy(result.user) || (subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && result.institution.isCustomerType_Inst_Pro())) {
@@ -958,7 +958,8 @@ class ManagementService {
                             }
                         }
                     }
-                }else{
+                }
+                else{
                     flash.error = messageSource.getMessage('subscriptionsManagement.note.noNoteParameter', null, locale)
                 }
 
