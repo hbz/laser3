@@ -212,7 +212,6 @@ class ApiUnsecuredMapReader {
      * @param tipp the {@link TitleInstancePackagePlatform} called for API
      * @return Map<String, Object> reflecting the title details
      */
-    @Deprecated
     static Map<String, Object> getTitleStubMap(TitleInstancePackagePlatform tipp) {
         if (!tipp) {
             return null

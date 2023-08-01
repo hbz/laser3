@@ -1,6 +1,6 @@
 package de.laser.api.v0.special
 
-
+import de.laser.GlobalService
 import de.laser.Org
 import de.laser.OrgRole
 import de.laser.RefdataValue
@@ -16,6 +16,9 @@ import de.laser.storage.RDStore
 import de.laser.titles.TitleInstance
 import de.laser.traces.DeletedObject
 import grails.converters.JSON
+import groovy.json.JsonSlurper
+import groovy.sql.GroovyRowResult
+import groovy.sql.Sql
 import groovy.util.logging.Slf4j
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
@@ -232,7 +235,7 @@ class ApiOAMonitor {
 
             result.organisations = ApiCollectionReader.getOrgLinkCollection(allOrgRoles, ApiReader.IGNORE_SUBSCRIPTION, context) // de.laser.OrgRole
 
-            result.packages = ApiOAMonitor.getPackageCollectionWithTitleStubMaps(sub.packages)
+            result.packages = ApiOAMonitor.getPackageCollectionWithTitleStubMaps(sub.packages, GlobalService.obtainSqlConnection())
 
             Collection<CostItem> filtered = []
 
@@ -292,17 +295,26 @@ class ApiOAMonitor {
      * @param list the list of subscribed packages whose titles should be enumerated
      * @return a {@link Collection} of packages with title stubs
      */
-    static Collection<Object> getPackageCollectionWithTitleStubMaps(Collection<SubscriptionPackage> list) {
+    static Collection<Object> getPackageCollectionWithTitleStubMaps(Collection<SubscriptionPackage> list, Sql sql) {
         Collection<Object> result = []
 
         list.each { subPkg ->
-            Map<String, Object> pkg = ApiUnsecuredMapReader.getPackageStubMap(subPkg.pkg) // de.laser.Package
+            Map<String, Object> pkg = ApiUnsecuredMapReader.getPackageStubMap(subPkg.pkg), qryParams = [sub: subPkg.subscription.id, pkg: subPkg.pkg.id, removed: RDStore.TIPP_STATUS_REMOVED.id] // de.laser.Package
 
             pkg.organisations = ApiCollectionReader.getOrgLinkCollection(subPkg.pkg.orgs, ApiReader.IGNORE_PACKAGE, null) // de.laser.OrgRole
             result << pkg
-
+            JsonSlurper slurper = new JsonSlurper()
             List tmp = []
-            List<TitleInstancePackagePlatform> tiList = TitleInstance.executeQuery(
+            List<GroovyRowResult> tiRows = sql.rows("select tipp_id, tipp_guid as globalUID, tipp_gokb_id as gokbId, tipp_name as name, tipp_norm_name as normName, (select rdv_value from refdata_value where rdv_id = tipp_medium_rv_fk) as medium from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where ie_subscription_fk = :sub and tipp_pkg_fk = :pkg and tipp_status_rv_fk != :removed and ie_status_rv_fk != :removed", qryParams),
+            idRows = sql.rows("select id_tipp_fk, json_agg(json_build_object('namespace', idns_ns, 'value', id_value)) as identifiers from identifier join identifier_namespace on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id join issue_entitlement on ie_tipp_fk = tipp_id where id_value != '' and id_value != 'Unknown' and ie_subscription_fk = :sub and tipp_pkg_fk = :pkg and tipp_status_rv_fk != :removed and ie_status_rv_fk != :removed group by id_tipp_fk", qryParams)
+            Map<String, Map> idMap = idRows.collectEntries { GroovyRowResult row -> [row['id_tipp_fk'], slurper.parseText(row['identifiers'].toString())] }
+            tiRows.each { GroovyRowResult tiRow ->
+                tiRow.put('identifiers', idMap.get(tiRow['tipp_id']))
+                tmp << tiRow
+            }
+            // move to sql
+            /*
+            List<TitleInstancePackagePlatform> tiList = TitleInstancePackagePlatform.executeQuery(
                     'select tipp from IssueEntitlement ie join ie.tipp tipp join ie.subscription sub join tipp.pkg pkg ' +
                             ' where sub = :sub and pkg = :pkg and tipp.status != :statusTipp and ie.status != :statusIe',
                     [sub: subPkg.subscription, pkg: subPkg.pkg, statusTipp: RDStore.TIPP_STATUS_REMOVED, statusIe: RDStore.TIPP_STATUS_REMOVED]
@@ -311,6 +323,7 @@ class ApiOAMonitor {
             tiList.each{ ti ->
                 tmp << ApiUnsecuredMapReader.getTitleStubMap(ti)
             }
+            */
 
             pkg.titles = ApiToolkit.cleanUp(tmp, true, true)
         }
