@@ -26,7 +26,9 @@
         </thead>
         <tbody>
         <tr>
-            <td>${message(code: 'system.config.mail.label')}</td>
+            <td>
+                ${message(code: 'system.config.mail.label')}
+            </td>
             <td>
                 <g:if test="${configMailDisabled}">
                     <i class="icon square full red"></i>${message(code: 'default.deactivated.label')}
@@ -49,7 +51,9 @@
             </td>
         </tr>
         <tr>
-            <td>${message(code: 'system.setting.maintenanceMode.label')}</td>
+            <td>
+                ${message(code: 'system.setting.maintenanceMode.label')}
+            </td>
             <td>
                 <g:if test="${! maintenanceModeEnabled}">
                     <i class="icon square full red"></i> ${message(code: 'default.deactivated.label')}
@@ -72,7 +76,12 @@
             </td>
         </tr>
         <tr>
-            <td>${message(code: 'system.setting.systemInsight.label')}</td>
+            <td>
+                ${message(code: 'system.setting.systemInsight.label')}
+                <g:if test="${systemInsightEnabled && configMailDisabled}">
+                    <span style="color:red;float:right"><em>* erfordert: ${message(code: 'system.config.mail.label')}</em></span>
+                </g:if>
+            </td>
             <td>
                 <g:if test="${! systemInsightEnabled}">
                     <i class="icon square full red"></i> ${message(code: 'default.deactivated.label')}
