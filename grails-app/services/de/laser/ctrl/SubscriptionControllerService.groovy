@@ -250,7 +250,7 @@ class SubscriptionControllerService {
                     Org requestee = result.subscription.getSubscriber()
                     def pw = OrgSetting.get(result.institution, OrgSetting.KEYS.LASERSTAT_SERVER_KEY)
                     if(pw == OrgSetting.SETTING_NOT_FOUND) {
-                        pw = OrgSetting.add(result.institution, OrgSetting.KEYS.LASERSTAT_SERVER_KEY, org.apache.commons.lang.RandomStringUtils.randomAlphanumeric(24))
+                        pw = OrgSetting.add(result.institution, OrgSetting.KEYS.LASERSTAT_SERVER_KEY, org.apache.commons.lang3.RandomStringUtils.randomAlphanumeric(24))
                     }
                     SecretKeySpec secret = new SecretKeySpec(pw.getValue().getBytes(), "HmacSHA256")
                     Mac mac = Mac.getInstance("HmacSHA256")

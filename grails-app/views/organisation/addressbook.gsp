@@ -16,9 +16,7 @@
           model="[emailAddresses: emailAddresses]"/>
 
 <ui:h1HeaderWithIcon text="${orgInstance.name} - ${message(code: 'menu.institutions.myAddressbook')}">
-    <g:if test="${isMyOrg}">
-        <laser:render template="/templates/iconObjectIsMine"/>
-    </g:if>
+    <laser:render template="/templates/iconObjectIsMine" model="${[isMyOrg: isMyOrg]}"/>
 </ui:h1HeaderWithIcon>
 
 <laser:render template="nav" model="${[orgInstance: orgInstance]}"/>

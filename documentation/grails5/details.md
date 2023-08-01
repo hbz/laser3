@@ -1,5 +1,5 @@
 
-## Upgrade from Grails 3.3.11 to Grails 5.3.3
+## Details: Upgrade from [Grails 3.3.11](../grails4/upgrade.md) to Grails 5.3.3
 
 ### SpringBootDeveloperTools
 

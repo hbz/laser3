@@ -1,5 +1,5 @@
 
-## Upgrade from Grails 3.3.11 to 4.0.13
+## Details: Upgrade from [Grails 3.3.11](../grails3/upgrade.md) to 4.0.13
 
 #### Updated core and dependencies
 

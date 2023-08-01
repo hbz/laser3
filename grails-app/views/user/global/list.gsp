@@ -13,9 +13,7 @@
         </g:if>
 
         <ui:h1HeaderWithIcon text="${titleMessage}" total="${total}" type="${controllerName == 'user' ? 'user' : ''}">
-            <g:if test="${isMyOrg}">
-                <laser:render template="/templates/iconObjectIsMine"/>
-            </g:if>
+            <laser:render template="/templates/iconObjectIsMine" model="${[isMyOrg: isMyOrg]}"/>
         </ui:h1HeaderWithIcon>
 
         <ui:controlButtons>

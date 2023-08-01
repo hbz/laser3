@@ -2,6 +2,7 @@ package de.laser
 
 import de.laser.cache.EhcacheWrapper
 import de.laser.remote.ApiSource
+import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
 import grails.gorm.transactions.Transactional
 
@@ -14,16 +15,34 @@ class WekbStatsService {
     CacheService cacheService
     ContextService contextService
     GokbService gokbService
+    OrgTypeService orgTypeService
 
     static final String CACHE_KEY = 'WekbStatsService/wekbChanges'
 
-    def getCurrentChanges() {
+    Map getCurrentChanges() {
         EhcacheWrapper cache = cacheService.getTTL1800Cache(CACHE_KEY)
 
         if (! cache.get('changes')) {
             updateCache()
         }
-        cache.get('changes') as Map
+        Map result = cache.get('changes') as Map
+
+        List<String> currentPackageIdList = SubscriptionPackage.executeQuery(
+                'select distinct sp.pkg.gokbId from SubscriptionPackage sp where sp.subscription in (select oo.sub from OrgRole oo join oo.sub sub where oo.org = :context and (sub.status = :current or (sub.status = :expired and sub.hasPerpetualAccess = true)))',
+                [context: contextService.getOrg(), current: RDStore.SUBSCRIPTION_CURRENT, expired: RDStore.SUBSCRIPTION_EXPIRED]
+        )
+
+        List<String> currentProviderIdList = orgTypeService.getCurrentOrgsOfProvidersAndAgencies(contextService.getOrg()).collect{ it.gokbId }
+
+        result.org.my       = currentProviderIdList.intersect(result.org.all.collect{ it.uuid })
+        result.package.my   = currentPackageIdList.intersect(result.package.all.collect{ it.uuid })
+        result.platform.my  = [] // todo
+
+        // TODO
+        // PlatformController.show() -> isMyPlatform
+        // --- copied from myInstitutionController.currentPlatforms()
+
+        result
     }
 
     void updateCache() {
