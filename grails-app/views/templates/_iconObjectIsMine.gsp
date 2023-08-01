@@ -1,5 +1,7 @@
 <%@ page import="de.laser.interfaces.CalculatedType;" %>
 <laser:serviceInjection />
+<g:if test="${isMyPlatform || isMyPkg || isMyOrg}">
+
 <div class="la-additionalIcon">
   <g:if test="${isMyPlatform}">
     <i class="icon circular star la-objectIsMine la-popup-tooltip la-delay" data-content="${message(code: 'license.relationship.platform')}" data-position="left center" data-variation="tiny" ></i>
@@ -20,3 +22,5 @@
     })
   })
 </laser:script>
+
+</g:if>

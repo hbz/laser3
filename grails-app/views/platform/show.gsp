@@ -16,9 +16,7 @@
 </ui:breadcrumbs>
 
 <ui:h1HeaderWithIcon text="${platformInstance.name}">
-    <g:if test="${isMyPlatform}">
-        <laser:render template="/templates/iconObjectIsMine" />
-    </g:if>
+    <laser:render template="/templates/iconObjectIsMine" model="${[isMyPlatform: isMyPlatform]}"/>
 </ui:h1HeaderWithIcon>
 
 <laser:render template="/templates/meta/identifier" model="${[object: platformInstance, editable: false]}"/>
