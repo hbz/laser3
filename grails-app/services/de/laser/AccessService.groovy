@@ -26,7 +26,19 @@ class AccessService {
      * @return true if access is granted, false otherwise
      */
     boolean otherOrgPerm(Org orgToCheck, String orgPerms) {
-        _hasPerm_forOrg_withFakeRole(orgPerms.split(','), orgToCheck)
+        boolean check = false
+
+        if (orgPerms) {
+            def oss = OrgSetting.get(orgToCheck, OrgSetting.KEYS.CUSTOMER_TYPE)
+            if (oss != OrgSetting.SETTING_NOT_FOUND) {
+                orgPerms.split(',').each { op ->
+                    check = check || PermGrant.findByPermAndRole(Perm.findByCode(op.toLowerCase().trim()), (Role) oss.getValue())
+                }
+            }
+        } else {
+            check = true
+        }
+        check
     }
 
     /**
@@ -59,30 +71,5 @@ class AccessService {
         // boolean check3 = (ctx.id == orgToCheck.id) && contextService.getUser()?.hasCtxAffiliation_or_ROLEADMIN(null) // legacy - no affiliation given
 
         (check1 && check2) || check3
-    }
-
-    // --- should be private; NO direct calls ---
-
-    /**
-     * Checks for the context institution if one of the given customer types are granted
-     * @param orgToCheck the context institution whose customer type needs to be checked
-     * @param orgPerms customer type depending permissions to check against
-     * @return true if access is granted, false otherwise
-     */
-    @ShouldBePrivate_DoNotUse
-    boolean _hasPerm_forOrg_withFakeRole(String[] orgPerms, Org orgToCheck) {
-        boolean check = false
-
-        if (orgPerms) {
-            def oss = OrgSetting.get(orgToCheck, OrgSetting.KEYS.CUSTOMER_TYPE)
-            if (oss != OrgSetting.SETTING_NOT_FOUND) {
-                orgPerms.each{ cd ->
-                    check = check || PermGrant.findByPermAndRole(Perm.findByCode(cd.toLowerCase().trim()), (Role) oss.getValue())
-                }
-            }
-        } else {
-            check = true
-        }
-        check
     }
 }
