@@ -271,12 +271,12 @@
     %{--<div class="ui very long scrolling container">
         <table class="ui stuck unstackable celled sortable table">--}%
         <div class="">
-            <table class="ui celled sortable table la-table la-js-responsive-table">
+            <table class="ui sortable table la-table la-js-responsive-table">
                 <thead>
                 <tr>
-                    <th scope="col" rowspan="3" class="center aligned">
+%{--                    <th scope="col" rowspan="3" class="center aligned">
                         ${message(code: 'sidewide.number')}
-                    </th>
+                    </th>--}%
                     <g:sortableColumn scope="col" rowspan="3" params="${params}" property="providerAgency"
                                       title="${message(code: 'default.provider.label')} / ${message(code: 'default.agency.label')}"/>
 
@@ -300,20 +300,28 @@
                     </th>
 
                     <th scope="col" rowspan="3" class="center aligned">
-                        ${message(code: 'survey.label')}
+                        <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'survey.label')}" data-position="top center">
+                            <i class="chart pie large icon"></i>
+                        </a>
                     </th>
 
                     <th scope="col" rowspan="3" class="center aligned">
-                        ${message(code: 'subscription.survey.evaluation.label')}
+                        <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.survey.evaluation.label')}" data-position="top center">
+                            <i class="comments large icon"></i>
+                        </a>
                     </th>
 
                     <th scope="col" rowspan="3" class="center aligned">
-                        ${message(code: 'subscription.survey.cancellation.label')}
+                        <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.survey.cancellation.label')}" data-position="top center">
+                            <i class="times circle large icon"></i>
+                        </a>
                     </th>
 
                     <th scope="col" rowspan="3" class="center aligned">
-                        ${message(code: 'subscription.discountScale.label')}
-                    </th>
+                        <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.discountScale.label')}" data-position="top center">
+                            <i class="percentage large icon"></i>
+                        </a>
+                    </th> %{--Discount Scale--}%
 
                     <th colspan="2" class="la-smaller-table-head center aligned">
                         Renewal
@@ -322,7 +330,12 @@
 
 
                     <th scope="col" rowspan="3" class="center aligned">
-                        ${message(code: 'subscription.participantTransferWithSurvey.label')}
+                        <a href="#" class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.participantTransferWithSurvey.label')}" data-position="top center">
+                            <i class="large icons">
+                                <i class="chart pie icon"></i>
+                                <i class="top right corner redo icon"></i>
+                            </i>
+                        </a>
                     </th>
 
                 </tr>
@@ -336,11 +349,11 @@
                     </th>
 
                     <g:sortableColumn scope="col" rowspan="2" params="${params}" property="offerAccepted"
-                                      title="${message(code: 'subscription.offerAccepted.table.th')}"/>
+                                      title="${message(code: 'subscription.offerAccepted.table.th')}"/>%{--Accepted--}%
 
-                    <th scope="col" rowspan="2" class="center aligned">
+                   <th scope="col" rowspan="2" class="center aligned">
                         ${message(code: 'subscription.renewalFile.label')}
-                    </th>
+                    </th>%{-- Renewal--}%
 
                     <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}"
                                       property="renewalSent"
@@ -363,9 +376,9 @@
                 <tbody>
                 <g:each in="${subscriptions}" var="s" status="i">
                     <tr>
-                        <td class="center aligned">
+%{--                        <td class="center aligned">
                             ${(params.int('offset') ?: 0) + i + 1}
-                        </td>
+                        </td>--}%
                         <td>
                         <%-- as of ERMS-584, these queries have to be deployed onto server side to make them sortable --%>
                             <g:each in="${s.providers}" var="org">
