@@ -74,22 +74,10 @@ class AccessService {
         boolean check = false
 
         if (orgPerms) {
-
-            Role fakeRole
-            boolean isOrgBasicMemberView = false
-            try {
-                isOrgBasicMemberView = RequestContextHolder.currentRequestAttributes().params.orgBasicMemberView
-            } catch (IllegalStateException e) {}
-
-            if (isOrgBasicMemberView && orgToCheck.isCustomerType_Consortium()) {
-                fakeRole = Role.findByAuthority('ORG_INST_BASIC')
-                // TODO: ERMS-4920 - ORG_INST_BASIC or ORG_INST_PRO
-            }
-
             def oss = OrgSetting.get(orgToCheck, OrgSetting.KEYS.CUSTOMER_TYPE)
             if (oss != OrgSetting.SETTING_NOT_FOUND) {
                 orgPerms.each{ cd ->
-                    check = check || PermGrant.findByPermAndRole(Perm.findByCode(cd.toLowerCase().trim()), (Role) fakeRole ?: oss.getValue())
+                    check = check || PermGrant.findByPermAndRole(Perm.findByCode(cd.toLowerCase().trim()), (Role) oss.getValue())
                 }
             }
         } else {

@@ -5,8 +5,6 @@
 
     <ui:subNavItem controller="subscription" action="show" params="${[id:params.id]}" message="subscription.details.details.label" />
 
-    <g:if test="${! params.orgBasicMemberView}">
-
     <g:if test="${controllerName != 'finance'}">%{-- template is used by subscriptionDetails/* and finance/index --}%
         <ui:subNavItem controller="subscription" counts="${subscription.packages.size()}" action="index" params="${[id:params.id]}" message="subscription.details.current_ent" />
     </g:if>
@@ -31,7 +29,7 @@
         <g:if test="${(contextService.getOrg().isCustomerType_Consortium_Pro() && subscription.instanceOf)}">
             <ui:securedSubNavItem orgPerm="${CustomerTypeService.ORG_CONSORTIUM_PRO}" controller="subscription" action="surveys" counts="${currentSurveysCounts}" params="${[id:params.id]}" message="subscription.details.surveys.label" />
         </g:if>
-        <g:if test="${(contextService.getOrg().isCustomerType_Inst() || params.orgBasicMemberView) && subscription?.type == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL}">
+        <g:if test="${contextService.getOrg().isCustomerType_Inst() && subscription.type == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL}">
             <ui:securedSubNavItem orgPerm="${CustomerTypeService.ORG_INST_BASIC}" controller="subscription" action="surveys" counts="${currentSurveysCounts}" params="${[id:params.id]}" message="subscription.details.surveys.label" />
         </g:if>
 
@@ -73,5 +71,4 @@
             <ui:securedSubNavItem orgPerm="${CustomerTypeService.ORG_CONSORTIUM_PRO}" controller="subscription" action="subTransfer" params="${[id:params.id]}" message="subscription.details.subTransfer.label" />
         </g:if>
 
-    </g:if>%{-- if test="${! params.orgBasicMemberView}" --}%
 </ui:subNav>
