@@ -269,7 +269,7 @@ class QueryService {
         queryParams.validOn = ""
         def base_qry
         def qry_params
-        (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(queryParams, contextOrg)
+        (base_qry, qry_params) = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(queryParams)
         Map<String, Object> result = [:]
         result.query = "select s " + base_qry
         result.queryParams = qry_params
