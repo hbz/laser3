@@ -292,7 +292,7 @@ class TaskService {
 
         result.validResponsibleOrgs         = contextOrg ? [contextOrg] : []
         result.validResponsibleUsers        = getUserDropdown(contextOrg)
-        result.validPackages                = _getPackagesDropdown(contextOrg)
+        result.validPackages                = _getPackagesDropdown()
         result.validOrgsDropdown            = _getOrgsDropdown(contextOrg)
         result.validSubscriptionsDropdown   = _getSubscriptionsDropdown(contextOrg, false)
         result.validLicensesDropdown        = _getLicensesDropdown(contextOrg, false)
@@ -302,10 +302,9 @@ class TaskService {
 
     /**
      * Gets a list of all packages for dropdown output
-     * @param contextOrg unused
      * @return a list of packages
      */
-    private List<Package> _getPackagesDropdown(Org contextOrg) {
+    private List<Package> _getPackagesDropdown() {
         List<Package> validPackages        = Package.findAll("from Package p where p.name != '' and p.name != null order by lower(p.sortname) asc") // TODO
         validPackages
     }
