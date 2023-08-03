@@ -271,7 +271,7 @@
     %{--<div class="ui very long scrolling container">
         <table class="ui stuck unstackable celled sortable table">--}%
         <div class="">
-            <table class="ui sortable table la-table la-js-responsive-table">
+            <table class="ui celled sortable table la-table la-js-responsive-table">
                 <thead>
                 <tr>
 %{--                    <th scope="col" rowspan="3" class="center aligned">
@@ -345,19 +345,19 @@
                                       title="${message(code: 'subscription.offerRequested.table.th')}"/>
 
                     <th scope="col" rowspan="2" class="center aligned">
-                        ${message(code: 'subscription.offerNote.table.th')}
+                        ${message(code: 'subscriptionsManagement.documents')}
                     </th>
 
                     <g:sortableColumn scope="col" rowspan="2" params="${params}" property="offerAccepted"
                                       title="${message(code: 'subscription.offerAccepted.table.th')}"/>%{--Accepted--}%
-
-                   <th scope="col" rowspan="2" class="center aligned">
-                        ${message(code: 'subscription.renewalFile.label')}
-                    </th>%{-- Renewal--}%
-
                     <g:sortableColumn scope="col" class="la-smaller-table-head" params="${params}"
                                       property="renewalSent"
                                       title="${message(code: 'subscription.renewalSent.table.th')}"/>
+                   <th scope="col" rowspan="2" class="center aligned">
+                        ${message(code: 'subscriptionsManagement.documents')}
+                    </th>%{-- Documents--}%
+
+
 
                 </tr>
                 <tr>
@@ -428,7 +428,7 @@
                             <div class="right aligned">
                                 <button type="button" class="ui icon button blue la-modern-button" data-ui="modal"
                                         data-href="${"#modalCreateDocumentOffer" + s.id}"><i aria-hidden="true"
-                                                                                             class="plus icon"></i>
+                                                                                             class="small plus icon"></i>
                                 </button>
                             </div>
                             <laser:render template="/templates/documents/modal"
@@ -443,7 +443,7 @@
                                     <div class="ui small feed content la-js-dont-hide-this-card">
                                         <div class="ui grid summary">
                                             <div class="eight wide column la-column-right-lessPadding">
-
+_____
                                                 <g:set var="supportedMimeType"
                                                        value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}"/>
                                                 <g:if test="${supportedMimeType}">
@@ -467,14 +467,14 @@
                                                 <%-- 1 --%>
                                                     <g:link controller="docstore" id="${docctx.owner.uuid}"
                                                             class="ui icon blue button la-modern-button la-js-dont-hide-button"
-                                                            target="_blank"><i class="download icon"></i></g:link>
+                                                            target="_blank"><i class="small download icon"></i></g:link>
                                                 </g:if>
                                                 <g:else>
                                                     <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                                     <%-- 1 --%>
                                                         <g:link controller="docstore" id="${docctx.owner.uuid}"
                                                                 class="ui icon blue button la-modern-button la-js-dont-hide-button"
-                                                                target="_blank"><i class="download icon"></i></g:link>
+                                                                target="_blank"><i class="small download icon"></i></g:link>
 
                                                     <%-- 2 --%>
                                                         <laser:render template="/templates/documents/modal"
@@ -484,7 +484,7 @@
                                                                 data-ui="modal"
                                                                 data-href="#modalEditDocument_${docctx.id}"
                                                                 aria-label="${message(code: 'ariaLabel.change.universal')}">
-                                                            <i class="pencil icon"></i>
+                                                            <i class="small pencil icon"></i>
                                                         </button>
                                                     </g:if>
 
@@ -498,12 +498,12 @@
                                                                 params='[instanceId: "${s.id}", deleteId: "${docctx.id}", redirectAction: "${ajaxCallAction ?: actionName}"]'
                                                                 role="button"
                                                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                            <i class="trash alternate outline icon"></i>
+                                                            <i class="small trash alternate outline icon"></i>
                                                         </g:link>
                                                     </g:if>
                                                     <g:else>
                                                         <div class="ui icon button la-hidden">
-                                                            <i class="fake icon"></i><%-- Hidden Fake Button --%>
+                                                            <i class="small fake icon"></i><%-- Hidden Fake Button --%>
                                                         </div>
                                                     </g:else>
                                                 </g:else>%{-- (editable || editable2) --}%
@@ -615,6 +615,12 @@
 
                         </td>
 
+
+                        <td class="${s.renewalSent ? 'positive' : 'negative'}">
+                            <ui:xEditableBoolean owner="${s}" field="renewalSent"/>
+                            <br/>
+                            <ui:xEditable owner="${s}" field="renewalSentDate" type="date"/>
+                        </td>
                         <td>
 
                             <div class="right aligned">
@@ -704,12 +710,6 @@
                                     </div>
                                 </g:if>
                             </g:each>
-                        </td>
-
-                        <td class="${s.renewalSent ? 'positive' : 'negative'}">
-                            <ui:xEditableBoolean owner="${s}" field="renewalSent"/>
-                            <br/>
-                            <ui:xEditable owner="${s}" field="renewalSentDate" type="date"/>
                         </td>
 
                         <td class="${s.participantTransferWithSurvey ? 'positive' : 'negative'}">
