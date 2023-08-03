@@ -42,16 +42,13 @@
 
 #### de.laser.ContextService
 
-    // formal; no fake role
     boolean isInstUser_or_ROLEADMIN ()
     boolean isInstEditor_or_ROLEADMIN ()
     boolean isInstAdm_or_ROLEADMIN ()
 
-    // formal; with fake role
     boolean hasPerm (String orgPerms)
     boolean hasPerm_or_ROLEADMIN (String orgPerms)
 
-    // formal; with fake role - in progress
     boolean hasPermAsInstUser_or_ROLEADMIN (String orgPerms)
     boolean hasPermAsInstEditor_or_ROLEADMIN (String orgPerms)
     boolean hasPermAsInstAdm_or_ROLEADMIN (String orgPerms)

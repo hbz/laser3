@@ -3784,7 +3784,7 @@ class SubscriptionControllerService {
 
                 result.providers = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds, [sort: 'name'])
 
-                List tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.getOrg())
+                List tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params)
                 result.filterSet = tmpQ[2]
                 List subscriptions = Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1])
 

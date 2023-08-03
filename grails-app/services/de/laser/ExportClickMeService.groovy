@@ -3682,9 +3682,9 @@ class ExportClickMeService {
                     else subStatus = configMap.subStatus
                     List subscriptionQueryParams
                     if(configMap.filterPvd && configMap.filterPvd != "" && filterService.listReaderWrapper(configMap, 'filterPvd')){
-                        subscriptionQueryParams = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: result, actionName: configMap.action, status: subStatus ?: null, date_restr: configMap.subValidOn ? DateUtils.parseDateGeneric(configMap.subValidOn) : null, providers: filterService.listReaderWrapper(configMap, 'filterPvd')], contextService.getOrg())
+                        subscriptionQueryParams = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: result, actionName: configMap.action, status: subStatus ?: null, date_restr: configMap.subValidOn ? DateUtils.parseDateGeneric(configMap.subValidOn) : null, providers: filterService.listReaderWrapper(configMap, 'filterPvd')])
                     }else {
-                        subscriptionQueryParams = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: result, actionName: configMap.action, status: subStatus ?: null, date_restr: configMap.subValidOn ? DateUtils.parseDateGeneric(configMap.subValidOn) : null], contextService.getOrg())
+                        subscriptionQueryParams = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: result, actionName: configMap.action, status: subStatus ?: null, date_restr: configMap.subValidOn ? DateUtils.parseDateGeneric(configMap.subValidOn) : null])
                     }
                     List nameOfSubscriptions = Subscription.executeQuery("select s.name " + subscriptionQueryParams[0], subscriptionQueryParams[1])
                     row.add(createTableCell(format, nameOfSubscriptions.join('; ')))

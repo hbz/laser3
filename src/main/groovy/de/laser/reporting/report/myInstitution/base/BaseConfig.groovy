@@ -363,7 +363,7 @@ class BaseConfig {
         }
         else if (key == CI_CTX_IE_PACKAGE) {
 
-            List tmp = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([validOn: null], contextService.getOrg())
+            List tmp = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([validOn: null])
             List<Long> subIdList = Subscription.executeQuery( 'select s.id ' + tmp[0], tmp[1])
 
             List<Long> pkgList = Package.executeQuery(
@@ -381,7 +381,7 @@ class BaseConfig {
             ]
         }
         else if (key == CI_CTX_IE_SUBSCRIPTION) {
-            List query = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([validOn: null], contextService.getOrg())
+            List query = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([validOn: null])
             return [
                     label: messageSource.getMessage('subscription.label', null, locale),
                     from: Subscription.executeQuery( 'select s ' + query[0], query[1]).collect{
