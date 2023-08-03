@@ -1,10 +1,9 @@
 package de.laser
 
-import de.laser.annotations.ShouldBePrivate_DoNotUse
+
 import de.laser.auth.*
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
-import org.springframework.web.context.request.RequestContextHolder
 
 /**
  * This service manages access control checks
@@ -12,9 +11,9 @@ import org.springframework.web.context.request.RequestContextHolder
 @Transactional
 class AccessService {
 
-    static final CHECK_VIEW = 'CHECK_VIEW'
-    static final CHECK_EDIT = 'CHECK_EDIT'
-    static final CHECK_VIEW_AND_EDIT = 'CHECK_VIEW_AND_EDIT'
+    static final String CHECK_VIEW = 'CHECK_VIEW'
+    static final String CHECK_EDIT = 'CHECK_EDIT'
+    static final String CHECK_VIEW_AND_EDIT = 'CHECK_VIEW_AND_EDIT'
 
     ContextService contextService
 
@@ -63,7 +62,7 @@ class AccessService {
         Org ctx = contextService.getOrg()
 
         // combo check @ contextUser/contextOrg
-        boolean check1 = contextService._hasPermAndInstRole_withFakeRole(orgPerms, instUserRole)
+        boolean check1 = contextService._hasPermAndInstRole(orgPerms, instUserRole)
         boolean check2 = (orgToCheck.id == ctx.id) || Combo.findByToOrgAndFromOrg(ctx, orgToCheck)
 
         // orgToCheck check @ otherOrg
