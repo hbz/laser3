@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4920    02.08.2023  dev     3.3         David   Feature     Lizenzen: "Zur Teilnehmersicht wechseln" entfernen
+
 --      01.08.2023  rc-3.2  3.2.2       Andreas Bug         Exportreiter "Übertrag" hat keine Defaultbelegung mehr
 
 5213    01.08.2023  rc-3.2  3.2.2       Andreas Bug         verschiedene Fehler in der Lizenzverwaltung behoben
