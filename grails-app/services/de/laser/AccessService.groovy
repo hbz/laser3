@@ -17,14 +17,14 @@ class AccessService {
 
     ContextService contextService
 
-    // --- checks for other orgs ---
+    // --- generic checks for orgs ---
 
     /**
-     * @param orgToCheck the context institution whose customer type needs to be checked
      * @param orgPerms customer type depending permissions to check against
+     * @param orgToCheck the context institution whose customer type needs to be checked
      * @return true if access is granted, false otherwise
      */
-    boolean otherOrgPerm(Org orgToCheck, String orgPerms) {
+    boolean hasPermForOrg(String orgPerms, Org orgToCheck) {
         boolean check = false
 
         if (orgPerms) {

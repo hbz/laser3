@@ -1942,7 +1942,13 @@ class MyInstitutionController  {
         SwissKnife.setPaginationParams(result, params, (User) result.user)
         result.acceptedOffset = 0
         def periodInDays = 600
-        Map<String,Object> pendingChangeConfigMap = [contextOrg: result.institution, consortialView:accessService.otherOrgPerm(result.institution, 'ORG_CONSORTIUM_BASIC'), periodInDays:periodInDays, max:result.max, offset:result.acceptedOffset]
+        Map<String,Object> pendingChangeConfigMap = [
+                contextOrg: result.institution,
+                consortialView:accessService.hasPermForOrg('ORG_CONSORTIUM_BASIC', result.institution as Org),
+                periodInDays:periodInDays,
+                max:result.max,
+                offset:result.acceptedOffset
+        ]
 
         result.putAll(pendingChangeService.getChanges_old(pendingChangeConfigMap))
 

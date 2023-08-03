@@ -116,7 +116,7 @@ class ContextService {
      * Permission check (granted by customer type) for the current context org.
      */
     boolean hasPerm(String orgPerms) {
-        accessService.otherOrgPerm(getOrg(), orgPerms)
+        accessService.hasPermForOrg(orgPerms, getOrg())
     }
     boolean hasPerm_or_ROLEADMIN(String orgPerms) {
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
