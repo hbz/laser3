@@ -85,7 +85,7 @@ class SystemService {
         else {
             log.info '---> Sending system insight mails ..'
 
-            String recipients = ConfigMapper.getSystemInsightMails()
+            String recipients = ConfigMapper.getSystemInsightEmails()
 
             Map<String, Object> seMap = [recipients: recipients, status: 'ok']
             SystemEvent se = SystemEvent.createEvent('SYSTEM_INSIGHT_MAILS_START', seMap)

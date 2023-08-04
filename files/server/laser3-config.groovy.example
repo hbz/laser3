@@ -72,7 +72,7 @@ statsSyncJobActive  = false
 
 systemEmail = 'laser@localhost'
 
-systemInsightMails = receiver1@mail,receiver2@mail,receiver3@mail
+systemInsightEmails = admin1@localhost,admin2@localhost,admin3@localhost
 
 wekbApiUsername = 'user'
 wekbApiPassword = 'password'
