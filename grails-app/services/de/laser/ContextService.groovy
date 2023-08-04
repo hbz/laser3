@@ -21,7 +21,6 @@ import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 @Transactional
 class ContextService {
 
-    AccessService accessService
     CacheService cacheService
     SpringSecurityService springSecurityService
     UserService userService
@@ -113,15 +112,6 @@ class ContextService {
         _hasInstRole_or_ROLEADMIN('INST_ADM')
     }
 
-    // -- Formal checks @ user.formalOrg.perm
-
-    boolean hasPerm_or_ROLEADMIN(String orgPerms) {
-        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
-            return true
-        }
-        _hasPerm(orgPerms)
-    }
-
     // -- Formal checks @ user.formalOrg.perm + user.isFormal(role, formalOrg)
 
     boolean hasPermAsInstUser_or_ROLEADMIN(String orgPerms) {
@@ -142,6 +132,8 @@ class ContextService {
         }
         _hasPermAndInstRole(orgPerms, 'INST_ADM')
     }
+
+    // --
 
     boolean hasPermAsInstRoleAsConsortium_or_ROLEADMIN(String orgPerms, String instUserRole) {
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {

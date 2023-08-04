@@ -1,7 +1,7 @@
 
 ## Roles and Permissions and more ..
 
-2023-06-27
+2023-08-04
 
 ### Customer Types
 
@@ -46,12 +46,11 @@
     boolean isInstEditor_or_ROLEADMIN ()
     boolean isInstAdm_or_ROLEADMIN ()
 
-    boolean hasPerm (String orgPerms)
-    boolean hasPerm_or_ROLEADMIN (String orgPerms)
-
     boolean hasPermAsInstUser_or_ROLEADMIN (String orgPerms)
     boolean hasPermAsInstEditor_or_ROLEADMIN (String orgPerms)
     boolean hasPermAsInstAdm_or_ROLEADMIN (String orgPerms)
+
+
 
 ### Affiliation Checks
 
