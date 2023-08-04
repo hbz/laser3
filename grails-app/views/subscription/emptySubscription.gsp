@@ -44,7 +44,7 @@
                 <g:elseif test="${contextService.getOrg().isCustomerType_Consortium()}">
                     <input type="hidden" id="asOrgType" name="type" value="${RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id}" />
                 </g:elseif>
-                <g:elseif test="${contextService.hasPerm(CustomerTypeService.ORG_INST_PRO)}">
+                <g:elseif test="${contextService.getOrg().isCustomerType_Inst_Pro()}">
                     <input type="hidden" id="asOrgType" name="type" value="${RDStore.SUBSCRIPTION_TYPE_LOCAL.id}" />
                 </g:elseif>
 

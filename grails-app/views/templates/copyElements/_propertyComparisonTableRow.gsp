@@ -68,7 +68,7 @@
     <%
 
         boolean showProp = false
-        if (contextService.hasPerm(CustomerTypeService.ORG_INST_PRO)) {
+        if (contextService.getOrg().isCustomerType_Inst_Pro()) {
             if (((propValuesForSourceSub?.size() > 0) && (propValuesForSourceSub[0].tenant?.id == contextOrg.id || (sourceObject._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_LOCAL && (!propValuesForSourceSub[0].tenant || propValuesForSourceSub[0].isPublic)))) ||
                     ((propValuesForTargetSub?.size() > 0) && (propValuesForTargetSub[0].tenant?.id == contextOrg.id || (targetObject._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_LOCAL && (!propValuesForTargetSub[0].tenant || propValuesForTargetSub[0].isPublic))))) {
                 showProp = true

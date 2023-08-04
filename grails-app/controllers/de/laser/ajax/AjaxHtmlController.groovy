@@ -179,7 +179,7 @@ class AjaxHtmlController {
                 [org: result.institution,
                  status: RDStore.SURVEY_SURVEY_STARTED])
 
-        if (contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)){
+        if (contextService.getOrg().isCustomerType_Consortium_Pro()){
             activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where surConfig.surveyInfo.status = :status  and surConfig.surveyInfo.owner = :org " +
                     " order by surConfig.surveyInfo.endDate",
                     [org: result.institution,

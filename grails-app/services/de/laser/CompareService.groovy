@@ -132,7 +132,7 @@ class CompareService {
         String base_qry
         Map qry_params
 
-        if (contextService.hasPerm(CustomerTypeService.ORG_INST_PRO)) {
+        if (contextService.getOrg().isCustomerType_Inst_Pro()) {
             base_qry = """from License as l where (
                 exists ( select o from l.orgRelations as o where ( ( o.roleType = :roleType1 or o.roleType = :roleType2 ) AND o.org = :lic_org ) ) 
             )"""

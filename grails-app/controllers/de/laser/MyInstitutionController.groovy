@@ -374,7 +374,7 @@ class MyInstitutionController  {
 
         Set<String> licenseFilterTable = []
 
-        if (contextService.hasPerm(CustomerTypeService.ORG_INST_PRO)) {
+        if (contextService.getOrg().isCustomerType_Inst_Pro()) {
             Set<RefdataValue> roleTypes = []
             if(params.licTypes) {
                 Set<String> licTypes = params.list('licTypes')

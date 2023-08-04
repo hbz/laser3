@@ -23,7 +23,7 @@
         <div class="ui card ">
             <div class="content">
 
-                <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_PRO) && surveyOrg}">
+                <g:if test="${contextService.getOrg().isCustomerType_Consortium_Pro() && surveyOrg}">
                     <dl>
                         <dt class="control-label">
                             ${message(code: 'surveyOrg.ownerComment.label', args: [institution.sortname])}

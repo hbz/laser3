@@ -608,7 +608,7 @@ join sub.orgRelations or_sub where
         List result = []
         List tmpQ
 
-        if(contextService.hasPerm(CustomerTypeService.ORG_INST_PRO)) {
+        if(contextService.getOrg().isCustomerType_Inst_Pro()) {
 
             tmpQ = _getSubscriptionsConsortialLicenseQuery(params)
             result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
@@ -629,7 +629,7 @@ join sub.orgRelations or_sub where
         List result = []
         List tmpQ
 
-        if(contextService.hasPerm(CustomerTypeService.ORG_INST_PRO)) {
+        if(contextService.getOrg().isCustomerType_Inst_Pro()) {
 
             tmpQ = _getSubscriptionsConsortialLicenseQuery(params)
             result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))

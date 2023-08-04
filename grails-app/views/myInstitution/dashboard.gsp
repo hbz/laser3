@@ -312,7 +312,7 @@
             <div class="ui bottom attached tab segment ${us_dashboard_tab.value == 'Surveys' ? 'active' : ''}"
                  data-tab="surveys" style="border-top: 1px solid #d4d4d5; ">
                 <div class="la-float-right">
-                    <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
+                    <g:if test="${contextService.getOrg().isCustomerType_Consortium_Pro()}">
                         <g:link controller="survey" action="workflowsSurveysConsortia"
                                 class="ui button">${message(code: 'menu.my.surveys')}</g:link>
                     </g:if>

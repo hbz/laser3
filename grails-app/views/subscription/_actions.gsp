@@ -147,7 +147,7 @@
                     </g:else>
                 </g:if>
             </sec:ifAnyGranted>
-                <g:if test="${subscription._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE] && contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
+                <g:if test="${subscription._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE] && contextService.getOrg().isCustomerType_Consortium_Pro()}">
                     <div class="divider"></div>
                     <ui:actionsDropdownItem controller="subscription" action="manageDiscountScale" params="${[id:params.id]}" message="subscription.details.manageDiscountScale.label" />
                     <g:if test="${subscription.discountScales.size() > 0}">
@@ -175,7 +175,7 @@
                                            params="${[id: params.id]}" message="subscription.details.renewals.label"/>
                 </g:else>
             </g:if>
-            <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_PRO) && showConsortiaFunctions && subscription.instanceOf == null }">
+            <g:if test="${contextService.getOrg().isCustomerType_Consortium_Pro() && showConsortiaFunctions && subscription.instanceOf == null }">
                 <ui:actionsDropdownItem controller="survey" action="addSubtoSubscriptionSurvey"
                                                params="${[sub:params.id]}" text="${message(code:'createSubscriptionSurvey.label')}" />
 

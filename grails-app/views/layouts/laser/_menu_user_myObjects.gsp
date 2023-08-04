@@ -42,7 +42,7 @@
 
         <ui:securedMainNavItem addItemAttributes="true" orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="currentWorkflows" message="menu.my.workflows" />
 
-        %{--                                <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)}">--}%
+        %{--                                <g:if test="${contextService.getOrg().isCustomerType_Consortium_Pro()}">--}%
         %{--                                    <div class="divider"></div>--}%
         %{--                                    <ui:securedMainNavItem addItemAttributes="true" controller="survey" action="workflowsSurveysConsortia" message="menu.my.surveys" />--}%
         %{--                                </g:if>--}%

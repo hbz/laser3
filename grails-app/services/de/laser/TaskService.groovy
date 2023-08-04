@@ -476,7 +476,7 @@ class TaskService {
                 }
 
             }
-            else if (contextService.hasPerm(CustomerTypeService.ORG_INST_PRO)) {
+            else if (contextService.getOrg().isCustomerType_Inst_Pro()) {
                 Map<String, Object> qry_params_for_lic = [
                     lic_org:    contextOrg,
                     org_roles:  [
