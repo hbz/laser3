@@ -115,29 +115,11 @@ class ContextService {
 
     // -- Formal checks @ user.formalOrg.perm
 
-    /**
-     * Permission check (granted by customer type) for the current context org.
-     */
-    boolean hasPerm(String orgPerms) {
-        boolean check = false
-
-        if (orgPerms) {
-            def oss = OrgSetting.get(getOrg(), OrgSetting.KEYS.CUSTOMER_TYPE)
-            if (oss != OrgSetting.SETTING_NOT_FOUND) {
-                orgPerms.split(',').each { op ->
-                    check = check || PermGrant.findByPermAndRole(Perm.findByCode(op.toLowerCase().trim()), (Role) oss.getValue())
-                }
-            }
-        } else {
-            check = true
-        }
-        check
-    }
     boolean hasPerm_or_ROLEADMIN(String orgPerms) {
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
             return true
         }
-        hasPerm(orgPerms)
+        _hasPerm(orgPerms)
     }
 
     // -- Formal checks @ user.formalOrg.perm + user.isFormal(role, formalOrg)
@@ -183,10 +165,27 @@ class ContextService {
     }
 
     @ShouldBePrivate_DoNotUse
+    boolean _hasPerm(String orgPerms) {
+        boolean check = false
+
+        if (orgPerms) {
+            def oss = OrgSetting.get(getOrg(), OrgSetting.KEYS.CUSTOMER_TYPE)
+            if (oss != OrgSetting.SETTING_NOT_FOUND) {
+                orgPerms.split(',').each { op ->
+                    check = check || PermGrant.findByPermAndRole(Perm.findByCode(op.toLowerCase().trim()), (Role) oss.getValue())
+                }
+            }
+        } else {
+            check = true
+        }
+        check
+    }
+
+    @ShouldBePrivate_DoNotUse
     boolean _hasPermAndInstRole(String orgPerms, String instUserRole) {
         if (getUser() && instUserRole) {
             if (_hasInstRole_or_ROLEADMIN(instUserRole)) {
-                return hasPerm(orgPerms)
+                return _hasPerm(orgPerms)
             }
         }
         return false
