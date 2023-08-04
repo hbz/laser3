@@ -326,12 +326,15 @@ class SubscriptionService {
             query += " and roleT.org.id = :member "
             qarams.put('member', params.long('member'))
         }
+        /*
+        this performance improvement is not needed any more! Keep it nonetheless for the case of ...
         else if(!params.filterSet) {
             query += " and roleT.org.id = :member "
             qarams.put('member', result.filterConsortiaMembers[0].id)
             params.member = result.filterConsortiaMembers[0].id
             result.defaultSet = true
         }
+        */
 
         if (params.identifier?.length() > 0) {
             query += " and exists (select ident from Identifier ident join ident.org ioorg " +
