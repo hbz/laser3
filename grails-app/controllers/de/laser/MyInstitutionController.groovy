@@ -374,7 +374,7 @@ class MyInstitutionController  {
 
         Set<String> licenseFilterTable = []
 
-        if (contextService.hasPerm(CustomerTypeService.ORG_INST_PRO)) {
+        if (contextService.getOrg().isCustomerType_Inst_Pro()) {
             Set<RefdataValue> roleTypes = []
             if(params.licTypes) {
                 Set<String> licTypes = params.list('licTypes')
@@ -389,7 +389,7 @@ class MyInstitutionController  {
                 licenseFilterTable << "action"
             licenseFilterTable << "licensingConsortium"
         }
-        else if (contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+        else if (contextService.getOrg().isCustomerType_Consortium()) {
             base_qry = "from License as l where exists ( select o from l.orgRelations as o where ( o.roleType = :roleTypeC AND o.org = :lic_org AND l.instanceOf is null AND NOT exists ( select o2 from l.orgRelations as o2 where o2.roleType = :roleTypeL ) ) )"
             qry_params = [roleTypeC:RDStore.OR_LICENSING_CONSORTIUM, roleTypeL:RDStore.OR_LICENSEE_CONS, lic_org:result.institution]
             licenseFilterTable << "memberLicenses"
@@ -498,7 +498,7 @@ class MyInstitutionController  {
                 qry_params.subKinds = subKinds
             }
 
-            if (contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+            if (contextService.getOrg().isCustomerType_Consortium()) {
                 subscrQueryFilter << "s.instanceOf is null"
             }
 
@@ -772,7 +772,7 @@ class MyInstitutionController  {
             Org org = contextService.getOrg()
 
             Set<RefdataValue> defaultOrgRoleType = []
-            if (contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC))
+            if (contextService.getOrg().isCustomerType_Consortium())
                 defaultOrgRoleType << RDStore.OT_CONSORTIUM.id.toString()
             else defaultOrgRoleType << RDStore.OT_INSTITUTION.id.toString()
 
@@ -1091,7 +1091,7 @@ class MyInstitutionController  {
      */
     private def _exportcurrentSubscription(List<Subscription> subscriptions, String format, Org contextOrg) {
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
-        boolean asCons = contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)
+        boolean asCons = contextService.getOrg().isCustomerType_Consortium()
         List titles = ['Name',
                        g.message(code: 'globalUID.label'),
                        g.message(code: 'license.label'),
@@ -1312,7 +1312,7 @@ class MyInstitutionController  {
 
         if(!(params.tab in ['notes', 'documents', 'properties'])){
             //Important
-            if (!contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+            if (!contextService.getOrg().isCustomerType_Consortium()) {
                 if(params.subTypes == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id.toString()){
                     flash.error = message(code: 'subscriptionsManagement.noPermission.forSubsWithTypeConsortial') as String
                 }
@@ -1469,7 +1469,7 @@ class MyInstitutionController  {
         String instanceFilter = ""
         List<String> queryFilter = []
 
-        if (contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+        if (contextService.getOrg().isCustomerType_Consortium()) {
             orgRoles << RDStore.OR_SUBSCRIPTION_CONSORTIA
             queryFilter << " sub.instanceOf is null "
             instanceFilter += "and sub.instanceOf is null"
@@ -1965,7 +1965,7 @@ class MyInstitutionController  {
         def periodInDays = 600
         Map<String,Object> pendingChangeConfigMap = [
                 contextOrg: result.institution,
-                consortialView:accessService.hasPermForOrg('ORG_CONSORTIUM_BASIC', result.institution as Org),
+                consortialView: (result.institution as Org).isCustomerType_Consortium(),
                 periodInDays:periodInDays,
                 max:result.max,
                 offset:result.acceptedOffset

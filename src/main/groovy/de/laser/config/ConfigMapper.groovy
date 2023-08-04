@@ -55,8 +55,7 @@ class ConfigMapper {
     static final List STATS_REPORT_SAVE_LOCATION = ['statsReportSaveLocation', String]
     static final List STATS_SYNC_JOB_ACTIVE      = ['statsSyncJobActive', Boolean]
     static final List SYSTEM_EMAIL               = ['systemEmail', String]
-    static final List SYSTEM_INSIGHT_INDEX       = ['systemInsightIndex', String]
-    static final List SYSTEM_INSIGHT_JOB_ACTIVE  = ['systemInsightJobActive', Boolean]
+    static final List SYSTEM_INSIGHT_EMAILS      = ['systemInsightEmails', String]
 
     static final List WEKB_API_USERNAME     = ['wekbApiUsername', String]
     static final List WEKB_API_PASSWORD     = ['wekbApiPassword', String]
@@ -74,7 +73,7 @@ class ConfigMapper {
             PGDUMP_PATH,
             QUARTZ_HEARTBEAT,
             REPORTING,
-            SHOW_DEBUG_INFO, SHOW_SYSTEM_INFO, SHOW_STATS_INFO, STATS_API_URL, STATS_SYNC_JOB_ACTIVE, SYSTEM_EMAIL, SYSTEM_INSIGHT_INDEX, SYSTEM_INSIGHT_JOB_ACTIVE,
+            SHOW_DEBUG_INFO, SHOW_SYSTEM_INFO, SHOW_STATS_INFO, STATS_API_URL, STATS_SYNC_JOB_ACTIVE, SYSTEM_EMAIL, SYSTEM_INSIGHT_EMAILS,
             WEKB_API_USERNAME, WEKB_API_PASSWORD
     ]
 
@@ -220,11 +219,8 @@ class ConfigMapper {
     static String getSystemEmail(int output = LOGGER) {
         readConfig( SYSTEM_EMAIL, output )
     }
-    static String getSystemInsightIndex(int output = LOGGER) {
-        readConfig( SYSTEM_INSIGHT_INDEX, output )
-    }
-    static boolean getSystemInsightJobActive(int output = LOGGER) {
-        readConfig( SYSTEM_INSIGHT_JOB_ACTIVE, output )
+    static String getSystemInsightEmails(int output = LOGGER) {
+        readConfig( SYSTEM_INSIGHT_EMAILS, output )
     }
     static String getWekbApiUsername(int output = LOGGER) {
         readConfig( WEKB_API_USERNAME, output )

@@ -209,7 +209,7 @@
             </div>
             <% /* 4-2 */ %>
         <%-- TODO [ticket=2276] provisoric, name check is in order to prevent id mismatch --%>
-            <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_INST_PRO) || institution.globalUID == Org.findByName('LAS:eR Backoffice').globalUID}">
+            <g:if test="${contextService.getOrg().isCustomerType_Inst_Pro() || institution.globalUID == Org.findByName('LAS:eR Backoffice').globalUID}">
                 <div class="field">
                     <fieldset id="subscritionType">
                         <label>${message(code: 'myinst.currentSubscriptions.subscription_type')}</label>
@@ -241,7 +241,7 @@
                 <div class="field"></div>
             </g:else>
 
-            <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_INST_BASIC)}">
+            <g:if test="${contextService.getOrg().isCustomerType_Inst()}">
                 <div class="field">
                     <fieldset>
                         <legend id="la-legend-searchDropdown">${message(code: 'gasco.filter.consortialAuthority')}</legend>

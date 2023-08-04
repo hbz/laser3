@@ -350,7 +350,7 @@ class AjaxController {
               log.debug('ignored value "' + it + '" from result because of constraint: '+ params.constraint)
           }
           //value is correct incorrectly translated!
-          if (it.value.equalsIgnoreCase('local subscription') && contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && params.constraint?.contains('removeValue_localSubscription')) {
+          if (it.value.equalsIgnoreCase('local subscription') && contextService.getOrg().isCustomerType_Consortium() && params.constraint?.contains('removeValue_localSubscription')) {
               log.debug('ignored value "' + it + '" from result because of constraint: '+ params.constraint)
           }
           // default ..
@@ -2141,8 +2141,8 @@ class AjaxController {
         result.pendingOffset = params.pendingOffset ? params.int("pendingOffset") : result.offset
         def periodInDays = result.user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)
         Map<String, Object> pendingChangeConfigMap = [
-                contextOrg:result.institution,
-                consortialView:accessService.hasPermForOrg('ORG_CONSORTIUM_BASIC', result.institution as Org),
+                contextOrg: result.institution,
+                consortialView: (result.institution as Org).isCustomerType_Consortium(),
                 periodInDays:periodInDays,
                 max:result.max,
                 acceptedOffset:result.acceptedOffset,

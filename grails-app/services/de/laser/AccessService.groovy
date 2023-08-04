@@ -1,7 +1,6 @@
 package de.laser
 
 
-import de.laser.auth.*
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 
@@ -18,27 +17,6 @@ class AccessService {
     ContextService contextService
 
     // --- generic checks for orgs ---
-
-    /**
-     * @param orgPerms customer type depending permissions to check against
-     * @param orgToCheck the context institution whose customer type needs to be checked
-     * @return true if access is granted, false otherwise
-     */
-    boolean hasPermForOrg(String orgPerms, Org orgToCheck) {
-        boolean check = false
-
-        if (orgPerms) {
-            def oss = OrgSetting.get(orgToCheck, OrgSetting.KEYS.CUSTOMER_TYPE)
-            if (oss != OrgSetting.SETTING_NOT_FOUND) {
-                orgPerms.split(',').each { op ->
-                    check = check || PermGrant.findByPermAndRole(Perm.findByCode(op.toLowerCase().trim()), (Role) oss.getValue())
-                }
-            }
-        } else {
-            check = true
-        }
-        check
-    }
 
     /**
      * Checks if

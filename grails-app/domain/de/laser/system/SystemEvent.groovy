@@ -85,6 +85,8 @@ class SystemEvent {
             'SYSANN_SENDING_ERROR'          : [category: CATEGORY.OTHER, relevance: RELEVANCE.ERROR],
             'SYSTEM_INFO_JOB_START'         : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
             'SYSTEM_INFO_JOB_STOP'          : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
+            'SYSTEM_INSIGHT_MAILS_START'    : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
+            'SYSTEM_INSIGHT_MAILS_COMPLETE' : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'YODA_ES_RESET_START'           : [category: CATEGORY.OTHER, relevance: RELEVANCE.INFO],
             'YODA_ES_RESET_DELETED'         : [category: CATEGORY.OTHER, relevance: RELEVANCE.INFO],
             'YODA_ES_RESET_CREATED'         : [category: CATEGORY.OTHER, relevance: RELEVANCE.INFO]

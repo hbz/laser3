@@ -37,7 +37,7 @@
                     </g:else>
                 </ui:exportDropdown>
 
-                <g:if test="${contextService.hasPerm_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )}">
+                <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN') || contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Inst_Pro()}">
                     <ui:actionsDropdown>
                         <ui:actionsDropdownItem controller="organisation" action="create" message="org.create_new.label"/>
                     </ui:actionsDropdown>

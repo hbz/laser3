@@ -1,6 +1,9 @@
 package de.laser
 
 import de.laser.annotations.ShouldBePrivate_DoNotUse
+import de.laser.auth.Perm
+import de.laser.auth.PermGrant
+import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.cache.EhcacheWrapper
 import de.laser.cache.SessionCacheWrapper
@@ -18,7 +21,6 @@ import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 @Transactional
 class ContextService {
 
-    AccessService accessService
     CacheService cacheService
     SpringSecurityService springSecurityService
     UserService userService
@@ -110,21 +112,6 @@ class ContextService {
         _hasInstRole_or_ROLEADMIN('INST_ADM')
     }
 
-    // -- Formal checks @ user.formalOrg.perm
-
-    /**
-     * Permission check (granted by customer type) for the current context org.
-     */
-    boolean hasPerm(String orgPerms) {
-        accessService.hasPermForOrg(orgPerms, getOrg())
-    }
-    boolean hasPerm_or_ROLEADMIN(String orgPerms) {
-        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
-            return true
-        }
-        hasPerm(orgPerms)
-    }
-
     // -- Formal checks @ user.formalOrg.perm + user.isFormal(role, formalOrg)
 
     boolean hasPermAsInstUser_or_ROLEADMIN(String orgPerms) {
@@ -145,6 +132,8 @@ class ContextService {
         }
         _hasPermAndInstRole(orgPerms, 'INST_ADM')
     }
+
+    // --
 
     boolean hasPermAsInstRoleAsConsortium_or_ROLEADMIN(String orgPerms, String instUserRole) {
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
@@ -168,10 +157,27 @@ class ContextService {
     }
 
     @ShouldBePrivate_DoNotUse
+    boolean _hasPerm(String orgPerms) {
+        boolean check = false
+
+        if (orgPerms) {
+            def oss = OrgSetting.get(getOrg(), OrgSetting.KEYS.CUSTOMER_TYPE)
+            if (oss != OrgSetting.SETTING_NOT_FOUND) {
+                orgPerms.split(',').each { op ->
+                    check = check || PermGrant.findByPermAndRole(Perm.findByCode(op.toLowerCase().trim()), (Role) oss.getValue())
+                }
+            }
+        } else {
+            check = true
+        }
+        check
+    }
+
+    @ShouldBePrivate_DoNotUse
     boolean _hasPermAndInstRole(String orgPerms, String instUserRole) {
         if (getUser() && instUserRole) {
             if (_hasInstRole_or_ROLEADMIN(instUserRole)) {
-                return hasPerm(orgPerms)
+                return _hasPerm(orgPerms)
             }
         }
         return false

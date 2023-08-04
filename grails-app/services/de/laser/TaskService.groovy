@@ -292,7 +292,7 @@ class TaskService {
 
         result.validResponsibleOrgs         = contextOrg ? [contextOrg] : []
         result.validResponsibleUsers        = getUserDropdown(contextOrg)
-        result.validPackages                = _getPackagesDropdown(contextOrg)
+        result.validPackages                = _getPackagesDropdown()
         result.validOrgsDropdown            = _getOrgsDropdown(contextOrg)
         result.validSubscriptionsDropdown   = _getSubscriptionsDropdown(contextOrg, false)
         result.validLicensesDropdown        = _getLicensesDropdown(contextOrg, false)
@@ -302,10 +302,9 @@ class TaskService {
 
     /**
      * Gets a list of all packages for dropdown output
-     * @param contextOrg unused
      * @return a list of packages
      */
-    private List<Package> _getPackagesDropdown(Org contextOrg) {
+    private List<Package> _getPackagesDropdown() {
         List<Package> validPackages        = Package.findAll("from Package p where p.name != '' and p.name != null order by lower(p.sortname) asc") // TODO
         validPackages
     }
@@ -462,7 +461,7 @@ class TaskService {
             String licensesQueryOhneInstanceOf =
                     'SELECT lic.id, lic.reference, o.roleType, lic.startDate, lic.endDate from License lic left join lic.orgRelations o WHERE  o.org = :lic_org AND o.roleType.id IN (:org_roles) and lic.instanceOf is null order by lic.sortableReference asc'
 
-            if (contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)){
+            if (contextService.getOrg().isCustomerType_Consortium()){
                 Map<String, Object> qry_params_for_lic = [
                     lic_org:    contextOrg,
                     org_roles:  [
@@ -476,7 +475,7 @@ class TaskService {
                 }
 
             }
-            else if (contextService.hasPerm(CustomerTypeService.ORG_INST_PRO)) {
+            else if (contextService.getOrg().isCustomerType_Inst_Pro()) {
                 Map<String, Object> qry_params_for_lic = [
                     lic_org:    contextOrg,
                     org_roles:  [

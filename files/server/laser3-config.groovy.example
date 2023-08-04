@@ -72,8 +72,7 @@ statsSyncJobActive  = false
 
 systemEmail = 'laser@localhost'
 
-systemInsightIndex      = 'laser3_system_insight_index'
-systemInsightJobActive  = false
+systemInsightEmails = admin1@localhost,admin2@localhost,admin3@localhost
 
 wekbApiUsername = 'user'
 wekbApiPassword = 'password'

@@ -22,7 +22,7 @@
     <laser:render template="/templates/notes/card" model="${[ownobj:ownobj, owntp:owntp, css_class:'', parentAtChild: parentAtChild]}" />
 </div>
 
-<g:if test="${contextService.hasPerm(CustomerTypeService.PERMS_PRO)}">
+<g:if test="${contextService.getOrg().isCustomerType_Pro()}">
     <div id="container-tasks">
         <laser:render template="/templates/tasks/card" model="${[ownobj:ownobj, owntp:owntp, css_class:'', parentAtChild: parentAtChild]}"  />
     </div>
@@ -32,7 +32,7 @@
     <laser:render template="/templates/documents/card" model="${[ownobj:ownobj, owntp:owntp, css_class:'', parentAtChild: parentAtChild]}" />
 </div>
 
-<g:if test="${contextService.hasPerm(CustomerTypeService.PERMS_PRO)}"><!-- TODO: workflows-permissions -->
+<g:if test="${contextService.getOrg().isCustomerType_Pro()}"><!-- TODO: workflows-permissions -->
     <div id="container-workflows">
         <laser:render template="/templates/workflow/card" model="${[checklists: checklists, parentAtChild: parentAtChild]}" />
     </div>

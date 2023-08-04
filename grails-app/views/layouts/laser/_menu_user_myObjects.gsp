@@ -11,11 +11,11 @@
         <ui:securedMainNavItem addItemAttributes="true" controller="myInstitution" action="currentSubscriptions" message="menu.my.subscriptions" />
         <ui:securedMainNavItem addItemAttributes="true" controller="myInstitution" action="currentLicenses" message="menu.my.licenses" />
 
-        <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
+        <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
             <ui:securedMainNavItem addItemAttributes="true" specRole="ROLE_ADMIN" controller="myInstitution" action="manageMembers" message="menu.my.insts" />
             <ui:securedMainNavItem addItemAttributes="true" specRole="ROLE_ADMIN" controller="myInstitution" action="manageConsortiaSubscriptions" message="menu.my.consortiaSubscriptions" />
         </g:if>
-        <g:elseif test="${contextService.hasPerm(CustomerTypeService.ORG_INST_BASIC)}">
+        <g:elseif test="${contextService.getOrg().isCustomerType_Inst()}">
             <ui:securedMainNavItem addItemAttributes="true" controller="myInstitution" action="currentConsortia" message="menu.my.consortia" />
         </g:elseif>
 
@@ -29,20 +29,20 @@
         <ui:securedMainNavItem addItemAttributes="true" orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="tasks" message="menu.my.tasks" />
         <ui:securedMainNavItem addItemAttributes="true" orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="myInstitution" action="documents" message="menu.my.documents" />
 
-        <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_INST_BASIC)}">
+        <g:if test="${contextService.getOrg().isCustomerType_Inst()}">
             <ui:securedMainNavItem addItemAttributes="true" controller="myInstitution" action="currentSurveys" message="menu.my.surveys" />
         </g:if>
-        <g:elseif test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
+        <g:elseif test="${contextService.getOrg().isCustomerType_Consortium()}">
             <ui:securedMainNavItem addItemAttributes="true" orgPerm="${CustomerTypeService.ORG_CONSORTIUM_PRO}" controller="survey" action="workflowsSurveysConsortia" message="menu.my.surveys" />
         </g:elseif>
 
-        <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
+        <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
             <ui:securedMainNavItem addItemAttributes="true" orgPerm="${CustomerTypeService.ORG_CONSORTIUM_PRO}" controller="myInstitution" action="currentSubscriptionsTransfer" message="menu.my.currentSubscriptionsTransfer" />
         </g:if>
 
         <ui:securedMainNavItem addItemAttributes="true" orgPerm="${CustomerTypeService.PERMS_PRO}" controller="myInstitution" action="currentWorkflows" message="menu.my.workflows" />
 
-        %{--                                <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)}">--}%
+        %{--                                <g:if test="${contextService.getOrg().isCustomerType_Consortium_Pro()}">--}%
         %{--                                    <div class="divider"></div>--}%
         %{--                                    <ui:securedMainNavItem addItemAttributes="true" controller="survey" action="workflowsSurveysConsortia" message="menu.my.surveys" />--}%
         %{--                                </g:if>--}%
