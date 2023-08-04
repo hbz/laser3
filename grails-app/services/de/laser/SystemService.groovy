@@ -85,18 +85,21 @@ class SystemService {
         else {
             log.info '---> Sending system insight mails ..'
 
-            String mails = ConfigMapper.getSystemInsightMails()
-            if (mails) {
+            String recipients = ConfigMapper.getSystemInsightMails()
 
+            Map<String, Object> seMap = [recipients: recipients, status: 'ok']
+            SystemEvent se = SystemEvent.createEvent('SYSTEM_INSIGHT_MAILS_START', seMap)
+
+            if (recipients) {
                 SimpleDateFormat sdf = DateUtils.getSDF_yyyyMMdd_HHmmss()
                 List<SystemEvent> events = SystemEvent.executeQuery(
                         "select se from SystemEvent se where se.created > (CURRENT_DATE-1) and se.relevance in ('WARNING', 'ERROR') order by se.created desc"
                 )
 
                 Map<String, Object> output = [
-                        system  : "${ConfigMapper.getLaserSystemId()}",
-                        server  : "${AppUtils.getCurrentServer()}",
-                        created : "${sdf.format(new Date())}",
+                        system      : "${ConfigMapper.getLaserSystemId()}",
+                        server      : "${AppUtils.getCurrentServer()}",
+                        created     : "${sdf.format(new Date())}",
                         data_type   : "SystemEvent",
                         data_count  : events.size(),
                         data        : []
@@ -117,9 +120,11 @@ class SystemService {
                 }
 
                 String mailContent = JsonOutput.prettyPrint(JsonOutput.toJson(output))
-                // log.info mailContent
 
-                mails.split(',').each { mailTo ->
+                Map<String, String> mailsVerbose = [:]
+                String mailsStatus = 'ok'
+
+                recipients.split(',').each { mailTo ->
                     log.info 'to .. ' + mailTo
 
                     try {
@@ -130,12 +135,19 @@ class SystemService {
                             subject ConfigMapper.getLaserSystemId() + ' - (Insight)'
                             text    mailContent
                         }
+                        mailsVerbose.put(mailTo, 'ok')
                     }
                     catch (Exception e) {
                         log.error "mailService.sendMail exception: ${e.message}"
+                        mailsVerbose.put(mailTo, e.message)
+                        mailsStatus = 'error'
                     }
                 }
+
+                seMap.put('status', mailsStatus)
+                seMap.put('verbose', mailsVerbose)
             }
+            se.changeTo('SYSTEM_INSIGHT_MAILS_COMPLETE', seMap)
         }
     }
 }
