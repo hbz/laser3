@@ -1,6 +1,9 @@
 package de.laser
 
 import de.laser.annotations.ShouldBePrivate_DoNotUse
+import de.laser.auth.Perm
+import de.laser.auth.PermGrant
+import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.cache.EhcacheWrapper
 import de.laser.cache.SessionCacheWrapper
@@ -116,7 +119,19 @@ class ContextService {
      * Permission check (granted by customer type) for the current context org.
      */
     boolean hasPerm(String orgPerms) {
-        accessService.hasPermForOrg(orgPerms, getOrg())
+        boolean check = false
+
+        if (orgPerms) {
+            def oss = OrgSetting.get(getOrg(), OrgSetting.KEYS.CUSTOMER_TYPE)
+            if (oss != OrgSetting.SETTING_NOT_FOUND) {
+                orgPerms.split(',').each { op ->
+                    check = check || PermGrant.findByPermAndRole(Perm.findByCode(op.toLowerCase().trim()), (Role) oss.getValue())
+                }
+            }
+        } else {
+            check = true
+        }
+        check
     }
     boolean hasPerm_or_ROLEADMIN(String orgPerms) {
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {

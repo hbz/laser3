@@ -190,7 +190,7 @@ class CompareService {
         String base_qry
         Map qry_params = [:]
 
-        if (accessService.hasPermForOrg('ORG_CONSORTIUM_BASIC', result.institution as Org)) {
+        if ((result.institution as Org).isCustomerType_Consortium()) {
             base_qry = " from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
                     " AND s.instanceOf is null "
             qry_params << ['roleType': RDStore.OR_SUBSCRIPTION_CONSORTIA, 'activeInst': result.institution]
