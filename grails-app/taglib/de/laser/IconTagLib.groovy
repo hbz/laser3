@@ -253,18 +253,18 @@ class IconTagLib {
 
                 if (showTooltip) {
                     markup = '<span class="la-popup-tooltip la-delay" data-content="' + message(code: 'template.addDocument.confidentiality') + ': ' + conf + '"'
-                    markup = markup + ' style="padding:3px;">'
+                    markup = markup + '>'
                 }
 
                 switch (doc.confidentiality) {
                     case RDStore.DOC_CONF_PUBLIC:
-                        markup = markup + '<i class="ui icon circle olive"></i> '
+                        markup = markup + '<i class="ui icon lock open olive la-" style="margin-right: 0px"></i> '
                         break;
                     case RDStore.DOC_CONF_INTERNAL:
-                        markup = markup + '<i class="ui icon lock yellow"></i> '
+                        markup = markup + '<i class="ui icon lock yellow"  style="margin-right: 0px"></i> '
                         break;
                     case RDStore.DOC_CONF_STRICTLY:
-                        markup = markup + '<i class="ui icon lock orange"></i> '
+                        markup = markup + '<i class="ui icon lock orange"  style="margin-right: 0px"></i> '
                         break;
                     default:
                         markup = markup + ''
