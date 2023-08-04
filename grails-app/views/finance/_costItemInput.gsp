@@ -380,7 +380,7 @@
                         </select>
 
                     </div>
-                    <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
+                    <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                         <div class="ui checkbox">
                             <g:checkBox name="show.subscriber" value="true" checked="true"
                                         onchange="JSPC.app.adjustDropdown()"/>

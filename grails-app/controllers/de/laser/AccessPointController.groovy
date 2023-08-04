@@ -149,7 +149,7 @@ class AccessPointController  {
     def create() {
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
-        Org organisation = contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) ? Org.get(params.id) : contextService.getOrg()
+        Org organisation = contextService.getOrg().isCustomerType_Consortium() ? Org.get(params.id) : contextService.getOrg()
         result.institution = contextService.getOrg()
         result.contextCustomerType = result.institution.getCustomerType()
         result.orgInstance = organisation
@@ -374,7 +374,7 @@ class AccessPointController  {
         ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_BASIC)
     })
     def deleteAccessPointData() {
-        Org organisation = contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) ? Org.get(params.orgInstance) : contextService.getOrg()
+        Org organisation = contextService.getOrg().isCustomerType_Consortium() ? Org.get(params.orgInstance) : contextService.getOrg()
         boolean inContextOrg = organisation.id == contextService.getOrg().id
 
         if (contextService.is_INST_EDITOR_with_PERMS_BASIC( inContextOrg )){

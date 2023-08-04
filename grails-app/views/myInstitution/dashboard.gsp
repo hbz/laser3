@@ -43,7 +43,7 @@
                         <div class="item">
                             <i class="chart pie icon la-list-icon"></i>
                             <div class="content">
-                                <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_INST_BASIC)}">
+                                <g:if test="${contextService.getOrg().isCustomerType_Inst()}">
                                     <g:link controller="myInstitution" action="currentSurveys">${message(code:'menu.my.surveys')}</g:link>
                                 </g:if>
                                 <g:else>
@@ -86,10 +86,10 @@
                         <div class="item">
                             <i class="university icon la-list-icon"></i>
                             <div class="content">
-                                <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
+                                <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                                     <ui:securedMainNavItem addItemAttributes="true" specRole="ROLE_ADMIN" controller="myInstitution" action="manageMembers" message="menu.my.insts" />
                                 </g:if>
-                                <g:elseif test="${contextService.hasPerm(CustomerTypeService.ORG_INST_BASIC)}">
+                                <g:elseif test="${contextService.getOrg().isCustomerType_Inst()}">
                                     <ui:securedMainNavItem addItemAttributes="true" controller="myInstitution" action="currentConsortia" message="menu.my.consortia" />
                                 </g:elseif>
                             </div>
@@ -157,14 +157,14 @@
             ${systemAnnouncements.size()} ${message(code:'announcement.plural')}
         </a>
 
-        <g:if test="${contextService.hasPerm(CustomerTypeService.PERMS_INST_BASIC_CONSORTIUM_PRO)}">
+        <g:if test="${(contextService.getOrg().isCustomerType_Inst() || contextService.getOrg().isCustomerType_Consortium_Pro())}">
             <a class="${us_dashboard_tab.value == 'Surveys' ? 'active item' : 'item'}" data-tab="surveys">
                 <i class="chart pie icon large"></i>
                 <span id="surveyCount">${message(code: 'myinst.dash.survey.label', args: [message(code: 'myinst.loadPending')])}</span>
             </a>
         </g:if>
 
-        <g:if test="${contextService.hasPerm(CustomerTypeService.PERMS_PRO)}">
+        <g:if test="${contextService.getOrg().isCustomerType_Pro()}">
             <a class="${us_dashboard_tab.value == 'Tasks' ? 'active item':'item'}" data-tab="tasks">
                 <i class="calendar check outline icon large"></i>
                 ${tasksCount} ${message(code:'myinst.dash.task.label')}
@@ -232,7 +232,7 @@
             </g:if>
         </div>
 
-        <g:if test="${contextService.hasPerm(CustomerTypeService.PERMS_PRO)}">
+        <g:if test="${contextService.getOrg().isCustomerType_Pro()}">
         <div class="ui bottom attached tab ${us_dashboard_tab.value == 'Tasks' ? 'active':''}" data-tab="tasks">
 
 %{--            <g:if test="${editable}">--}%
@@ -308,11 +308,11 @@
 
         </g:if>
 
-        <g:if test="${contextService.hasPerm(CustomerTypeService.PERMS_INST_BASIC_CONSORTIUM_PRO)}">
+        <g:if test="${(contextService.getOrg().isCustomerType_Inst() || contextService.getOrg().isCustomerType_Consortium_Pro())}">
             <div class="ui bottom attached tab segment ${us_dashboard_tab.value == 'Surveys' ? 'active' : ''}"
                  data-tab="surveys" style="border-top: 1px solid #d4d4d5; ">
                 <div class="la-float-right">
-                    <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
+                    <g:if test="${contextService.getOrg().isCustomerType_Consortium_Pro()}">
                         <g:link controller="survey" action="workflowsSurveysConsortia"
                                 class="ui button">${message(code: 'menu.my.surveys')}</g:link>
                     </g:if>

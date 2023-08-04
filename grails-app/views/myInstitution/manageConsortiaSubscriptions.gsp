@@ -40,7 +40,19 @@
                 <g:link class="item" controller="myInstitution" action="manageConsortiaSubscriptions" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link>
             </g:else>
         </ui:exportDropdownItem>
-
+        <ui:exportDropdownItem>
+            <g:if test="${filterSet || defaultSet}">
+                <g:link class="item js-open-confirm-modal"
+                        data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
+                        data-confirm-term-how="ok" controller="myInstitution" action="manageConsortiaSubscriptions"
+                        params="${params+[exportPDF:true]}">
+                    ${message(code:'default.button.exports.pdf')}
+                </g:link>
+            </g:if>
+            <g:else>
+                <g:link class="item" controller="myInstitution" action="manageConsortiaSubscriptions" params="${params+[exportPDF:true]}">${message(code:'default.button.exports.pdf')}</g:link>
+            </g:else>
+        </ui:exportDropdownItem>
     </ui:exportDropdown>
     <ui:actionsDropdown>
         <ui:actionsDropdownItem data-ui="modal" href="#copyEmailaddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>

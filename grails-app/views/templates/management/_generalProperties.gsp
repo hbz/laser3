@@ -100,7 +100,7 @@
 
         <div class="ui segments">
         <div class="ui segment">
-            <g:set var="tmplAddColumns" value="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && controllerName == 'myInstitution'}" />
+            <g:set var="tmplAddColumns" value="${contextService.getOrg().isCustomerType_Consortium() && controllerName == 'myInstitution'}" />
 
             <div class="ui ${tmplAddColumns ? 'divided compact grid' : 'grid'}">
                 <div class="row">
@@ -304,7 +304,7 @@
                         </div>
                     </div>
                     <div class="four wide column">
-                        <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_INST_PRO)}">
+                        <g:if test="${contextService.getOrg().isCustomerType_Inst_Pro()}">
                             <div class="field">
                                 <label>${message(code: 'subscription.isAutomaticRenewAnnually.label')}</label>
                                 <ui:select class="ui dropdown" name="process_isAutomaticRenewAnnually"
@@ -359,7 +359,7 @@
                     <th>${message(code: 'subscription.hasPerpetualAccess.label')}</th>
                     <th>${message(code: 'subscription.hasPublishComponent.label')}</th>
                     <th>${message(code: 'subscription.holdingSelection.label')}</th>
-                    <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_INST_PRO)}">
+                    <g:if test="${contextService.getOrg().isCustomerType_Inst_Pro()}">
                         <th>${message(code: 'subscription.isAutomaticRenewAnnually.label')}</th>
                     </g:if>
                     <th class="la-no-uppercase">
@@ -460,7 +460,7 @@
                                 <ui:auditButton auditable="[sub, 'holdingSelection']"/>
                             </g:if>
                         </td>
-                        <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_INST_PRO)}">
+                        <g:if test="${contextService.getOrg().isCustomerType_Inst_Pro()}">
                             <td>
                                 <g:if test="${(sub.type == RDStore.SUBSCRIPTION_TYPE_LOCAL && sub._getCalculatedType() == CalculatedType.TYPE_LOCAL)}">
                                     <ui:xEditableBoolean owner="${sub}" field="isAutomaticRenewAnnually" overwriteEditable="${editable && sub.isAllowToAutomaticRenewAnnually()}"/>

@@ -2498,6 +2498,8 @@ class ExportClickMeService {
             return exportService.generateSeparatorTableString(titles, exportData, '|')
         case FORMAT.TSV:
             return exportService.generateSeparatorTableString(titles, exportData, '\t')
+        case FORMAT.PDF:
+            return [titleRow: titles, columnData: exportData]
         }
     }
 
@@ -2653,6 +2655,8 @@ class ExportClickMeService {
                 return exportService.generateSeparatorTableString(titles, exportData, '|')
             case FORMAT.TSV:
                 return exportService.generateSeparatorTableString(titles, exportData, '\t')
+            case FORMAT.PDF:
+                return [titleRow: titles, columnData: exportData]
         }
     }
 
@@ -4197,9 +4201,9 @@ class ExportClickMeService {
                 Set<Address> addressList = Address.executeQuery("select a from Address a join a.type type where type = :type and a.org = :org"+addressTenantFilter, queryParams)
 
                 if (addressList) {
-                    row.add([field: addressList.collect { Address address -> _getAddress(address, org)}.join(";"), style: null])
+                    row.add(createTableCell(format, addressList.collect { Address address -> _getAddress(address, org)}.join(";")))
                 } else {
-                    row.add([field: ' ', style: null])
+                    row.add(createTableCell(format, ' '))
                 }
             } else {
                 row.add(createTableCell(format, ' '))

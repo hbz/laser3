@@ -461,7 +461,7 @@ class TaskService {
             String licensesQueryOhneInstanceOf =
                     'SELECT lic.id, lic.reference, o.roleType, lic.startDate, lic.endDate from License lic left join lic.orgRelations o WHERE  o.org = :lic_org AND o.roleType.id IN (:org_roles) and lic.instanceOf is null order by lic.sortableReference asc'
 
-            if (contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)){
+            if (contextService.getOrg().isCustomerType_Consortium()){
                 Map<String, Object> qry_params_for_lic = [
                     lic_org:    contextOrg,
                     org_roles:  [
@@ -475,7 +475,7 @@ class TaskService {
                 }
 
             }
-            else if (contextService.hasPerm(CustomerTypeService.ORG_INST_PRO)) {
+            else if (contextService.getOrg().isCustomerType_Inst_Pro()) {
                 Map<String, Object> qry_params_for_lic = [
                     lic_org:    contextOrg,
                     org_roles:  [

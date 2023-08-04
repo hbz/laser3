@@ -147,14 +147,14 @@
                     </g:else>
                 </g:if>
             </sec:ifAnyGranted>
-                <g:if test="${subscription._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE] && contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)}">
+                <g:if test="${subscription._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE] && contextService.getOrg().isCustomerType_Consortium_Pro()}">
                     <div class="divider"></div>
                     <ui:actionsDropdownItem controller="subscription" action="manageDiscountScale" params="${[id:params.id]}" message="subscription.details.manageDiscountScale.label" />
                     <g:if test="${subscription.discountScales.size() > 0}">
                         <ui:actionsDropdownItem controller="subscription" action="copyDiscountScales" params="${[id:params.id]}" message="subscription.details.copyDiscountScales.label" />
                     </g:if>
                 </g:if>
-                    <g:if test="${subscription._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE] && contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
+                    <g:if test="${subscription._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE] && contextService.getOrg().isCustomerType_Consortium()}">
                 <div class="divider"></div>
                 <g:if test="${hasNext}">
                     <ui:actionsDropdownItemDisabled controller="subscription" action="renewSubscription"
@@ -175,14 +175,14 @@
                                            params="${[id: params.id]}" message="subscription.details.renewals.label"/>
                 </g:else>
             </g:if>
-            <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_PRO) && showConsortiaFunctions && subscription.instanceOf == null }">
+            <g:if test="${contextService.getOrg().isCustomerType_Consortium_Pro() && showConsortiaFunctions && subscription.instanceOf == null }">
                 <ui:actionsDropdownItem controller="survey" action="addSubtoSubscriptionSurvey"
                                                params="${[sub:params.id]}" text="${message(code:'createSubscriptionSurvey.label')}" />
 
                 <ui:actionsDropdownItem controller="survey" action="addSubtoIssueEntitlementsSurvey"
                                            params="${[sub:params.id]}" text="${message(code:'createIssueEntitlementsSurvey.label')}" />
             </g:if>
-            <g:elseif test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && showConsortiaFunctions && subscription.instanceOf == null }">
+            <g:elseif test="${contextService.getOrg().isCustomerType_Consortium() && showConsortiaFunctions && subscription.instanceOf == null }">
                 <ui:actionsDropdownItemDisabled controller="survey" action="addSubtoSubscriptionSurvey" params="${[sub:params.id]}" text="${message(code:'createSubscriptionSurvey.label')}"
                                                 tooltip="${message(code: 'tooltip.onlyFullMembership')}" message="createSubscriptionSurvey.label"/>
 

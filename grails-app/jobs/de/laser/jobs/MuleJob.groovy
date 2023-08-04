@@ -1,5 +1,6 @@
 package de.laser.jobs
 
+import de.laser.SystemService
 import de.laser.WekbStatsService
 import de.laser.base.AbstractJob
 import de.laser.config.ConfigMapper
@@ -9,6 +10,7 @@ import groovy.util.logging.Slf4j
 @Slf4j
 class MuleJob extends AbstractJob {
 
+    SystemService systemService
     WekbStatsService wekbStatsService
 
     static triggers = {
@@ -34,6 +36,7 @@ class MuleJob extends AbstractJob {
             long start_time = System.currentTimeMillis()
 
             wekbStatsService.updateCache()
+            //systemService.sendSystemInsightMails()
 
             double elapsed = ((System.currentTimeMillis() - start_time) / 1000).round(2)
             sysEvent.changeTo('MULE_COMPLETE', [s: elapsed])

@@ -886,7 +886,7 @@
                     </g:if>
                 </g:if>
 
-            <g:if test="${contextService.hasPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
+            <g:if test="${(contextService.getOrg().isCustomerType_Consortium() || contextService.getOrg().isCustomerType_Inst_Pro())}">
                 <div id="new-dynamic-properties-block">
                     <laser:render template="properties" model="${[ orgInstance: orgInstance, authOrg: formalOrg, contextOrg: institution ]}"/>
                 </div><!-- #new-dynamic-properties-block -->

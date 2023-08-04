@@ -2,7 +2,6 @@ package de.laser
 
 import de.laser.auth.User
 import de.laser.config.ConfigMapper
-import de.laser.mail.MailReport
 import de.laser.properties.PropertyDefinition
 import de.laser.storage.BeanStore
 import de.laser.storage.RDStore
@@ -15,7 +14,6 @@ import de.laser.utils.AppUtils
 import grails.gorm.transactions.Transactional
 import grails.plugin.asyncmail.AsynchronousMailMessage
 import grails.plugin.asyncmail.AsynchronousMailService
-import grails.plugins.mail.MailService
 import grails.web.mvc.FlashScope
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.grails.web.servlet.mvc.GrailsWebRequest
@@ -28,12 +26,9 @@ import javax.servlet.http.HttpServletRequest
 @Transactional
 class MailSendService {
 
-    MailService mailService
     EscapeService escapeService
     MessageSource messageSource
-    AccessService accessService
     SurveyService surveyService
-    SubscriptionService subscriptionService
     AsynchronousMailService asynchronousMailService
 
     String fromMail
@@ -281,7 +276,7 @@ class MailSendService {
                 } catch (Exception e) {
                     String eMsg = e.message
 
-                    log.error("SurveyService - sendSurveyEmail() :: Unable to perform email due to exception ${eMsg}")
+                    log.error("SurveyService - sendSurveyEmail() :: Unable to perform email due to exception: ${eMsg}")
                     SystemEvent.createEvent('SUS_SEND_MAIL_ERROR', [user: user.getDisplayName(), org: org.name, survey: survey.name])
                 }
             }
@@ -373,7 +368,7 @@ class MailSendService {
                     } catch (Exception e) {
                         String eMsg = e.message
 
-                        log.error("emailToSurveyParticipationByFinish - sendSurveyEmail() :: Unable to perform email due to exception ${eMsg}")
+                        log.error("emailToSurveyParticipationByFinish - sendSurveyEmail() :: Unable to perform email due to exception: ${eMsg}")
                         SystemEvent.createEvent('SUS_SEND_MAIL_ERROR', [user: user.getDisplayName(), org: participationFinish.name, survey: surveyInfo.name])
                     }
                 }
@@ -456,7 +451,7 @@ class MailSendService {
                     } catch (Exception e) {
                         String eMsg = e.message
 
-                        log.error("emailToSurveyOwnerbyParticipationFinish - sendSurveyEmail() :: Unable to perform email due to exception ${eMsg}")
+                        log.error("emailToSurveyOwnerbyParticipationFinish - sendSurveyEmail() :: Unable to perform email due to exception: ${eMsg}")
                         SystemEvent.createEvent('SUS_SEND_MAIL_ERROR', [user: user.getDisplayName(), org: participationFinish.name, survey: surveyInfo.name])
                     }
                 }
@@ -537,7 +532,7 @@ class MailSendService {
             }
         }
         catch (Exception e) {
-            log.error "Unable to perform email due to exception ${e.message}"
+            log.error "Unable to perform email due to exception: ${e.message}"
         }
     }
 
