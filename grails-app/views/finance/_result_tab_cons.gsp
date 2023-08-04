@@ -93,7 +93,7 @@
                 <g:sortableColumn property="costInLocalCurrency" title="${message(code:'financials.newCosts.value')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance" scope="col" rowspan="2"/>
                 <g:sortableColumn property="startDate" title="${message(code:'financials.dateFrom')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance" scope="col" class="la-smaller-table-head" />
                 <g:sortableColumn property="costItemElement" title="${message(code:'financials.costItemElement')}" params="${sorting+[sub: fixedSubscription.id]}" mapping="subfinance" scope="col" rowspan="2"/>
-                <g:if test="${contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC) && !params.orgBasicMemberView}">
+                <g:if test="${contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)}">
                     <th class="la-action-info" scope="col" rowspan="2"><g:message code="default.actions.label"/></th>
                 </g:if>
             </g:else>
@@ -246,7 +246,6 @@
                     <td>
                         ${ci.costItemElement?.getI10n("value")}
                     </td>
-                    <g:if test="${!params.orgBasicMemberView}">
                         <g:if test="${contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
                             <td class="x">
                                 <g:if test="${fixedSubscription}">
@@ -300,7 +299,6 @@
                                 </g:else>
                             </td>
                         </g:elseif>
-                    </g:if>
                 </tr>
             </g:each>
         </g:else>

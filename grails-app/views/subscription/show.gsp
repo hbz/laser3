@@ -158,7 +158,7 @@
                                         auditable="[subscription, 'resource']" auditConfigs="${auditConfigs}"/></dd>
                             </g:if>
                         </dl>
-                        <g:if test="${!params.orgBasicMemberView && subscription.instanceOf && contextOrg.id == subscription.getConsortia().id}">
+                        <g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia().id}">
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.isInstanceOfSub.label')}</dt>
                                 <dd>

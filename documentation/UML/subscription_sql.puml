@@ -1,0 +1,32 @@
+@startuml
+
+object subscription {
+    sub_id : bigint
+    sub_version : bigint
+    sub_guid : character varying
+    sub_status_rv_fk : bigint
+    sub_type_rv_fk : bigint
+    sub_kind_rv_fk : bigint
+    sub_form_fk : bigint
+    sub_resource_fk : bigint
+    sub_holding_selection_rv_fk : bigint
+    sub_name : character varying
+    sub_comment : text
+    sub_start_date : timestamp without time zone
+    sub_end_date : timestamp without time zone
+    sub_manual_renewal_date : timestamp without time zone
+    sub_manual_cancellation_date : timestamp without time zone
+    sub_reference_year : bytea
+    sub_parent_sub_fk : bigint
+    sub_is_administrative : boolean
+    sub_has_perpetual_access : boolean
+    sub_has_publish_component : boolean
+    sub_is_public_for_api : boolean
+    sub_date_created : timestamp without time zone
+    sub_last_updated : timestamp without time zone
+    sub_last_updated_cascading : timestamp without time zone
+    sub_is_multi_year : boolean
+    sub_is_automatic_renew_annually : boolean
+}
+
+@enduml

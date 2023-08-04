@@ -585,50 +585,50 @@ class MyInstitutionController  {
             Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
         }
-
-        if(params.fileformat == 'xlsx') {
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportLicenses(totalLicenses, selectedFields, result.institution, ExportClickMeService.FORMAT.XLS)
-            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
-            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            wb.write(response.outputStream)
-            response.outputStream.flush()
-            response.outputStream.close()
-            wb.dispose()
-            return
+        switch(params.fileformat) {
+            case 'xlsx':
+                SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportLicenses(totalLicenses, selectedFields, result.institution, ExportClickMeService.FORMAT.XLS)
+                response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                wb.write(response.outputStream)
+                response.outputStream.flush()
+                response.outputStream.close()
+                wb.dispose()
+                return
+            case 'csv':
+                response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
+                response.contentType = "text/csv"
+                ServletOutputStream out = response.outputStream
+                out.withWriter { writer ->
+                    //writer.write((String) _exportcurrentSubscription(result.allSubscriptions,"csv", result.institution))
+                    writer.write((String) exportClickMeService.exportLicenses(totalLicenses, selectedFields, result.institution, ExportClickMeService.FORMAT.CSV))
+                }
+                out.close()
+                return
+            case 'pdf':
+                Map<String, Object> pdfOutput = exportClickMeService.exportLicenses(totalLicenses, selectedFields, result.institution, ExportClickMeService.FORMAT.PDF)
+                Map<String, Object> pageStruct = [orientation: 'Landscape', width: pdfOutput.titleRow.size()*15, height: 35]
+                if (pageStruct.width > 85*4)       { pageStruct.pageSize = 'A0' }
+                else if (pageStruct.width > 85*3)  { pageStruct.pageSize = 'A1' }
+                else if (pageStruct.width > 85*2)  { pageStruct.pageSize = 'A2' }
+                else if (pageStruct.width > 85)    { pageStruct.pageSize = 'A3' }
+                pdfOutput.struct = [pageStruct.pageSize + ' ' + pageStruct.orientation]
+                byte[] pdf = wkhtmltoxService.makePdf(
+                        view: '/templates/export/_individuallyExportPdf',
+                        model: pdfOutput,
+                        pageSize: pageStruct.pageSize,
+                        orientation: pageStruct.orientation,
+                        marginLeft: 10,
+                        marginRight: 10,
+                        marginTop: 15,
+                        marginBottom: 15
+                )
+                response.setHeader('Content-disposition', 'attachment; filename="'+ filename +'.pdf"')
+                response.setContentType('application/pdf')
+                response.outputStream.withStream { it << pdf }
+                return
         }
-        else if(params.fileformat == 'csv') {
-            response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
-            response.contentType = "text/csv"
-            ServletOutputStream out = response.outputStream
-            out.withWriter { writer ->
-                //writer.write((String) _exportcurrentSubscription(result.allSubscriptions,"csv", result.institution))
-                writer.write((String) exportClickMeService.exportLicenses(totalLicenses, selectedFields, result.institution, ExportClickMeService.FORMAT.CSV))
-            }
-            out.close()
-        }
-        else if(params.fileformat == 'pdf') {
-            Map<String, Object> pdfOutput = exportClickMeService.exportLicenses(totalLicenses, selectedFields, result.institution, ExportClickMeService.FORMAT.PDF)
-            Map<String, Object> pageStruct = [orientation: 'Landscape', width: pdfOutput.titleRow.size()*15, height: 35]
-            if (pageStruct.width > 85*4)       { pageStruct.pageSize = 'A0' }
-            else if (pageStruct.width > 85*3)  { pageStruct.pageSize = 'A1' }
-            else if (pageStruct.width > 85*2)  { pageStruct.pageSize = 'A2' }
-            else if (pageStruct.width > 85)    { pageStruct.pageSize = 'A3' }
-            pdfOutput.struct = [pageStruct.pageSize + ' ' + pageStruct.orientation]
-            byte[] pdf = wkhtmltoxService.makePdf(
-                    view: '/templates/export/_individuallyExportPdf',
-                    model: pdfOutput,
-                    pageSize: pageStruct.pageSize,
-                    orientation: pageStruct.orientation,
-                    marginLeft: 10,
-                    marginRight: 10,
-                    marginTop: 15,
-                    marginBottom: 15
-            )
-            response.setHeader('Content-disposition', 'attachment; filename="'+ filename +'.pdf"')
-            response.setContentType('application/pdf')
-            response.outputStream.withStream { it << pdf }
-            return
-        }
+        result
         /*
         if(params.exportXLS) {
             response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
@@ -682,7 +682,6 @@ class MyInstitutionController  {
             return
         }
         */
-        result
             /*
         withFormat {
             csv {
@@ -1021,26 +1020,48 @@ class MyInstitutionController  {
             Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
         }
-
-        if(params.fileformat == 'xlsx') {
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportSubscriptions(result.allSubscriptions, selectedFields, result.institution, ExportClickMeService.FORMAT.XLS)
-            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
-            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            wb.write(response.outputStream)
-            response.outputStream.flush()
-            response.outputStream.close()
-            wb.dispose()
-            return
-        }
-        else if(params.fileformat == 'csv') {
-            response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
-            response.contentType = "text/csv"
-            ServletOutputStream out = response.outputStream
-            out.withWriter { writer ->
-                //writer.write((String) _exportcurrentSubscription(result.allSubscriptions,"csv", result.institution))
-                writer.write((String) exportClickMeService.exportSubscriptions(result.allSubscriptions, selectedFields, result.institution, ExportClickMeService.FORMAT.CSV))
-            }
-            out.close()
+        switch(params.fileformat) {
+            case 'xlsx':
+                SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportSubscriptions(result.allSubscriptions, selectedFields, result.institution, ExportClickMeService.FORMAT.XLS)
+                response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                wb.write(response.outputStream)
+                response.outputStream.flush()
+                response.outputStream.close()
+                wb.dispose()
+                return
+            case 'pdf':
+                Map<String, Object> pdfOutput = exportClickMeService.exportSubscriptions(result.allSubscriptions, selectedFields, result.institution, ExportClickMeService.FORMAT.PDF)
+                Map<String, Object> pageStruct = [orientation: 'Landscape', width: pdfOutput.titleRow.size()*15, height: 35]
+                if (pageStruct.width > 85*4)       { pageStruct.pageSize = 'A0' }
+                else if (pageStruct.width > 85*3)  { pageStruct.pageSize = 'A1' }
+                else if (pageStruct.width > 85*2)  { pageStruct.pageSize = 'A2' }
+                else if (pageStruct.width > 85)    { pageStruct.pageSize = 'A3' }
+                pdfOutput.struct = [pageStruct.pageSize + ' ' + pageStruct.orientation]
+                byte[] pdf = wkhtmltoxService.makePdf(
+                        view: '/templates/export/_individuallyExportPdf',
+                        model: pdfOutput,
+                        pageSize: pageStruct.pageSize,
+                        orientation: pageStruct.orientation,
+                        marginLeft: 10,
+                        marginRight: 10,
+                        marginTop: 15,
+                        marginBottom: 15
+                )
+                response.setHeader('Content-disposition', 'attachment; filename="'+ filename +'.pdf"')
+                response.setContentType('application/pdf')
+                response.outputStream.withStream { it << pdf }
+                return
+            case 'csv':
+                response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
+                response.contentType = "text/csv"
+                ServletOutputStream out = response.outputStream
+                out.withWriter { writer ->
+                    //writer.write((String) _exportcurrentSubscription(result.allSubscriptions,"csv", result.institution))
+                    writer.write((String) exportClickMeService.exportSubscriptions(result.allSubscriptions, selectedFields, result.institution, ExportClickMeService.FORMAT.CSV))
+                }
+                out.close()
+                return
         }
         /*
         if ( params.exportXLS ) {
@@ -1806,7 +1827,7 @@ class MyInstitutionController  {
             }
         }
 
-        List tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.getOrg())
+        List tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params)
         result.filterSet = tmpQ[2]
         currentSubIds = Subscription.executeQuery( "select s.id " + tmpQ[0], tmpQ[1] ) //,[max: result.max, offset: result.offset]
 
@@ -1942,7 +1963,13 @@ class MyInstitutionController  {
         SwissKnife.setPaginationParams(result, params, (User) result.user)
         result.acceptedOffset = 0
         def periodInDays = 600
-        Map<String,Object> pendingChangeConfigMap = [contextOrg: result.institution, consortialView:accessService.otherOrgPerm(result.institution, 'ORG_CONSORTIUM_BASIC'), periodInDays:periodInDays, max:result.max, offset:result.acceptedOffset]
+        Map<String,Object> pendingChangeConfigMap = [
+                contextOrg: result.institution,
+                consortialView:accessService.hasPermForOrg('ORG_CONSORTIUM_BASIC', result.institution as Org),
+                periodInDays:periodInDays,
+                max:result.max,
+                offset:result.acceptedOffset
+        ]
 
         result.putAll(pendingChangeService.getChanges_old(pendingChangeConfigMap))
 
@@ -3285,29 +3312,48 @@ join sub.orgRelations or_sub where
             return //IntelliJ cannot know that the return prevents an obsolete redirect
         }
         else */
-        if(params.fileformat == 'xlsx') {
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(totalMembers, selectedFields, 'member', ExportClickMeService.FORMAT.XLS, contactSwitch, configMap)
-
-            response.setHeader "Content-disposition", "attachment; filename=\"${file}.xlsx\""
-            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            wb.write(response.outputStream)
-            response.outputStream.flush()
-            response.outputStream.close()
-            wb.dispose()
-            return //IntelliJ cannot know that the return prevents an obsolete redirect
+        switch(params.fileformat) {
+            case 'xlsx': SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(totalMembers, selectedFields, 'member', ExportClickMeService.FORMAT.XLS, contactSwitch, configMap)
+                response.setHeader "Content-disposition", "attachment; filename=\"${file}.xlsx\""
+                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                wb.write(response.outputStream)
+                response.outputStream.flush()
+                response.outputStream.close()
+                wb.dispose()
+                return //IntelliJ cannot know that the return prevents an obsolete redirect
+            case 'csv':
+                response.setHeader("Content-disposition", "attachment; filename=\"${file}.csv\"")
+                response.contentType = "text/csv"
+                ServletOutputStream out = response.outputStream
+                out.withWriter { writer ->
+                    writer.write((String) exportClickMeService.exportOrgs(totalMembers, selectedFields, 'member', ExportClickMeService.FORMAT.CSV, contactSwitch, configMap))
+                }
+                out.close()
+                return
+            case 'pdf':
+                Map<String, Object> pdfOutput = exportClickMeService.exportOrgs(totalMembers, selectedFields, 'member', ExportClickMeService.FORMAT.PDF, contactSwitch, configMap)
+                Map<String, Object> pageStruct = [orientation: 'Landscape', width: pdfOutput.titleRow.size()*15, height: 35]
+                if (pageStruct.width > 85*4)       { pageStruct.pageSize = 'A0' }
+                else if (pageStruct.width > 85*3)  { pageStruct.pageSize = 'A1' }
+                else if (pageStruct.width > 85*2)  { pageStruct.pageSize = 'A2' }
+                else if (pageStruct.width > 85)    { pageStruct.pageSize = 'A3' }
+                pdfOutput.struct = [pageStruct.pageSize + ' ' + pageStruct.orientation]
+                byte[] pdf = wkhtmltoxService.makePdf(
+                        view: '/templates/export/_individuallyExportPdf',
+                        model: pdfOutput,
+                        pageSize: pageStruct.pageSize,
+                        orientation: pageStruct.orientation,
+                        marginLeft: 10,
+                        marginRight: 10,
+                        marginTop: 15,
+                        marginBottom: 15
+                )
+                response.setHeader('Content-disposition', 'attachment; filename="'+ file +'.pdf"')
+                response.setContentType('application/pdf')
+                response.outputStream.withStream { it << pdf }
+                return
         }
-        else if(params.fileformat == 'csv') {
-            response.setHeader("Content-disposition", "attachment; filename=\"${file}.csv\"")
-            response.contentType = "text/csv"
-            ServletOutputStream out = response.outputStream
-            out.withWriter { writer ->
-                writer.write((String) exportClickMeService.exportOrgs(totalMembers, selectedFields, 'member', ExportClickMeService.FORMAT.CSV, contactSwitch, configMap))
-            }
-            out.close()
-        }
-        else {
-            result
-        }
+        result
     }
 
     /**
@@ -3565,6 +3611,9 @@ join sub.orgRelations or_sub where
             response.outputStream.close()
             workbook.dispose()
             return
+        }
+        else if(params.exportPDF) {
+
         }
         else {
             result.benchMark = prf.stopBenchmark()

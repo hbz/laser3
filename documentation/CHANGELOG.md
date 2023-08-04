@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      03.08.2023  rc-3.2  3.2.2       Andreas Bug         Ausgaben beim PDF-Vertragsexport korrigiert
+
+--      01.08.2023  rc-3.2  3.2.2       Andreas Bug         Exportreiter "Übertrag" hat keine Defaultbelegung mehr
+
 5213    01.08.2023  rc-3.2  3.2.2       Andreas Bug         verschiedene Fehler in der Lizenzverwaltung behoben
 
 5211    31.07.2023  rc-3.2  3.2.2       Andreas Bug         502er durch Umstellung der Query behoben

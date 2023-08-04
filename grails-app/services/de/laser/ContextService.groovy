@@ -98,7 +98,7 @@ class ContextService {
         return new SessionCacheWrapper()
     }
 
-    // -- Formal checks @ user.isFormal(user.formalRole, user.formalOrg) --> no fake role
+    // -- Formal checks @ user.isFormal(user.formalRole, user.formalOrg)
 
     boolean isInstUser_or_ROLEADMIN() {
         _hasInstRole_or_ROLEADMIN('INST_USER')
@@ -110,13 +110,13 @@ class ContextService {
         _hasInstRole_or_ROLEADMIN('INST_ADM')
     }
 
-    // -- Formal checks @ user.formalOrg.perm --> with fake role
+    // -- Formal checks @ user.formalOrg.perm
 
     /**
      * Permission check (granted by customer type) for the current context org.
      */
     boolean hasPerm(String orgPerms) {
-        accessService._hasPerm_forOrg_withFakeRole(orgPerms.split(','), getOrg())
+        accessService.hasPermForOrg(orgPerms, getOrg())
     }
     boolean hasPerm_or_ROLEADMIN(String orgPerms) {
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
@@ -125,25 +125,25 @@ class ContextService {
         hasPerm(orgPerms)
     }
 
-    // -- Formal checks @ user.formalOrg.perm + user.isFormal(role, formalOrg) --> with fake role
+    // -- Formal checks @ user.formalOrg.perm + user.isFormal(role, formalOrg)
 
     boolean hasPermAsInstUser_or_ROLEADMIN(String orgPerms) {
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
             return true
         }
-        _hasPermAndInstRole_withFakeRole(orgPerms, 'INST_USER')
+        _hasPermAndInstRole(orgPerms, 'INST_USER')
     }
     boolean hasPermAsInstEditor_or_ROLEADMIN(String orgPerms) {
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
             return true
         }
-        _hasPermAndInstRole_withFakeRole(orgPerms, 'INST_EDITOR')
+        _hasPermAndInstRole(orgPerms, 'INST_EDITOR')
     }
     boolean hasPermAsInstAdm_or_ROLEADMIN(String orgPerms) {
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
             return true
         }
-        _hasPermAndInstRole_withFakeRole(orgPerms, 'INST_ADM')
+        _hasPermAndInstRole(orgPerms, 'INST_ADM')
     }
 
     boolean hasPermAsInstRoleAsConsortium_or_ROLEADMIN(String orgPerms, String instUserRole) {
@@ -152,7 +152,7 @@ class ContextService {
         }
         if (getUser() && getOrg() && instUserRole) {
             if (getOrg().getAllOrgTypeIds().contains( RDStore.OT_CONSORTIUM.id )) {
-                return _hasPermAndInstRole_withFakeRole(orgPerms, instUserRole)
+                return _hasPermAndInstRole(orgPerms, instUserRole)
             }
         }
         return false
@@ -168,7 +168,7 @@ class ContextService {
     }
 
     @ShouldBePrivate_DoNotUse
-    boolean _hasPermAndInstRole_withFakeRole(String orgPerms, String instUserRole) {
+    boolean _hasPermAndInstRole(String orgPerms, String instUserRole) {
         if (getUser() && instUserRole) {
             if (_hasInstRole_or_ROLEADMIN(instUserRole)) {
                 return hasPerm(orgPerms)
@@ -184,13 +184,13 @@ class ContextService {
      */
     // TODO
     boolean is_ORG_COM_EDITOR() {
-        _hasPermAndInstRole_withFakeRole(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')
+        _hasPermAndInstRole(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')
     }
 
     // TODO
     boolean is_INST_EDITOR_with_PERMS_BASIC(boolean inContextOrg) {
-        boolean a = _hasPermAndInstRole_withFakeRole(CustomerTypeService.ORG_INST_BASIC, 'INST_EDITOR') && inContextOrg
-        boolean b = _hasPermAndInstRole_withFakeRole(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR')
+        boolean a = _hasPermAndInstRole(CustomerTypeService.ORG_INST_BASIC, 'INST_EDITOR') && inContextOrg
+        boolean b = _hasPermAndInstRole(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR')
 
         return (a || b)
     }
