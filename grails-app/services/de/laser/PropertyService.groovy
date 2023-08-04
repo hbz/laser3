@@ -606,13 +606,13 @@ class PropertyService {
              parameterMap.status = RefdataValue.get(params.objStatus)
          String subFilterClause = '', licFilterClause = '', spOwnerFilterClause = '', lpOwnerFilterClause = '', orgFilterClause = ''
 
-         if(contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+         if(contextService.getOrg().isCustomerType_Consortium()) {
              subFilterClause += 'and oo.sub.instanceOf = null'
              spOwnerFilterClause += 'and sp.owner.instanceOf = null'
              licFilterClause += 'and oo.lic.instanceOf = null'
              lpOwnerFilterClause += 'and lp.owner.instanceOf = null'
          }
-         else if(contextService.hasPerm(CustomerTypeService.ORG_INST_BASIC)) {
+         else if(contextService.getOrg().isCustomerType_Inst()) {
              orgFilterClause += 'and ot in (:providerAgency)'
              orgFilterParams.providerAgency = [RDStore.OT_AGENCY, RDStore.OT_PROVIDER, RDStore.OT_BROKER, RDStore.OT_CONTENT_PROVIDER, RDStore.OT_VENDOR]
          }
@@ -656,7 +656,7 @@ class PropertyService {
                      orgFilterMap.myProvidersIds = myProvidersIds
                  }
 
-                 if (contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+                 if (contextService.getOrg().isCustomerType_Consortium()) {
 
                      if (params.myInsts) {
                          List<Long> myInstsIds = Org.executeQuery("select o.id from Org as o, Combo as c where c.fromOrg = o and c.toOrg = :context and c.type.id = :comboType " +

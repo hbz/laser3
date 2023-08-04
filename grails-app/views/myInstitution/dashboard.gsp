@@ -43,7 +43,7 @@
                         <div class="item">
                             <i class="chart pie icon la-list-icon"></i>
                             <div class="content">
-                                <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_INST_BASIC)}">
+                                <g:if test="${contextService.getOrg().isCustomerType_Inst()}">
                                     <g:link controller="myInstitution" action="currentSurveys">${message(code:'menu.my.surveys')}</g:link>
                                 </g:if>
                                 <g:else>
@@ -86,10 +86,10 @@
                         <div class="item">
                             <i class="university icon la-list-icon"></i>
                             <div class="content">
-                                <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
+                                <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                                     <ui:securedMainNavItem addItemAttributes="true" specRole="ROLE_ADMIN" controller="myInstitution" action="manageMembers" message="menu.my.insts" />
                                 </g:if>
-                                <g:elseif test="${contextService.hasPerm(CustomerTypeService.ORG_INST_BASIC)}">
+                                <g:elseif test="${contextService.getOrg().isCustomerType_Inst()}">
                                     <ui:securedMainNavItem addItemAttributes="true" controller="myInstitution" action="currentConsortia" message="menu.my.consortia" />
                                 </g:elseif>
                             </div>

@@ -100,7 +100,7 @@
 
         <div class="ui segments">
         <div class="ui segment">
-            <g:set var="tmplAddColumns" value="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) && controllerName == 'myInstitution'}" />
+            <g:set var="tmplAddColumns" value="${contextService.getOrg().isCustomerType_Consortium() && controllerName == 'myInstitution'}" />
 
             <div class="ui ${tmplAddColumns ? 'divided compact grid' : 'grid'}">
                 <div class="row">

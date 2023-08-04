@@ -238,7 +238,7 @@
                                     params="[next: true, memberOrg: subscr.id, memberSubID: sub.id]"><i class="arrow right icon grey"></i></g:link>
                         </g:elseif>
                     </td>
-                    <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
+                    <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                         <td class="center aligned">
                             <g:set var="license" value="${Links.executeQuery('select li.id from Links li where li.destinationSubscription = :destination and li.linkType = :linktype',[destination:sub,linktype:RDStore.LINKTYPE_LICENSE])}"/>
                             <g:if test="${!license}">
@@ -253,7 +253,7 @@
                             </g:else>
                         </td>
                     </g:if>
-                    <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
+                    <g:if test="${contextService.getOrg().isCustomerType_Consortium()}">
                         <td class="center aligned">
                             <g:if test="${!sub.packages}">
                                 <g:link controller="subscription" action="membersSubscriptionsManagement" params="[tab: 'linkPackages']" id="${subscription.id}" class="ui icon ">

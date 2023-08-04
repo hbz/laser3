@@ -241,7 +241,7 @@
                 <div class="field"></div>
             </g:else>
 
-            <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_INST_BASIC)}">
+            <g:if test="${contextService.getOrg().isCustomerType_Inst()}">
                 <div class="field">
                     <fieldset>
                         <legend id="la-legend-searchDropdown">${message(code: 'gasco.filter.consortialAuthority')}</legend>

@@ -138,7 +138,7 @@ class CompareService {
             )"""
             qry_params = [roleType1: RDStore.OR_LICENSEE, roleType2: RDStore.OR_LICENSEE_CONS, lic_org: result.institution]
 
-        } else if (contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+        } else if (contextService.getOrg().isCustomerType_Consortium()) {
             base_qry = """from License as l where (
                     exists ( select o from l.orgRelations as o where ( 
                     ( o.roleType = :roleTypeC 
