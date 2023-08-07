@@ -100,37 +100,28 @@ class ContextService {
         return new SessionCacheWrapper()
     }
 
-    // -- Formal checks @ user.isFormal(user.formalRole, user.formalOrg)
+    // -- Formal checks @ user.formalOrg
 
-    boolean isInstUser_or_ROLEADMIN() {
-        _hasInstRole_or_ROLEADMIN('INST_USER')
+    boolean isInstUser_or_ROLEADMIN(String orgPerms = null) {
+        _hasInstRoleAndPerm_or_ROLEADMIN('INST_USER', orgPerms)
     }
-    boolean isInstEditor_or_ROLEADMIN() {
-        _hasInstRole_or_ROLEADMIN('INST_EDITOR')
+    boolean isInstEditor_or_ROLEADMIN(String orgPerms = null) {
+        _hasInstRoleAndPerm_or_ROLEADMIN('INST_EDITOR', orgPerms)
     }
-    boolean isInstAdm_or_ROLEADMIN() {
-        _hasInstRole_or_ROLEADMIN('INST_ADM')
+    boolean isInstAdm_or_ROLEADMIN(String orgPerms = null) {
+        _hasInstRoleAndPerm_or_ROLEADMIN('INST_ADM', orgPerms)
     }
 
     // -- Formal checks @ user.formalOrg.perm + user.isFormal(role, formalOrg)
 
     boolean hasPermAsInstUser_or_ROLEADMIN(String orgPerms) {
-        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
-            return true
-        }
-        _hasPermAndInstRole(orgPerms, 'INST_USER')
+        _hasInstRoleAndPerm_or_ROLEADMIN('INST_USER', orgPerms)
     }
     boolean hasPermAsInstEditor_or_ROLEADMIN(String orgPerms) {
-        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
-            return true
-        }
-        _hasPermAndInstRole(orgPerms, 'INST_EDITOR')
+        _hasInstRoleAndPerm_or_ROLEADMIN('INST_EDITOR', orgPerms)
     }
     boolean hasPermAsInstAdm_or_ROLEADMIN(String orgPerms) {
-        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
-            return true
-        }
-        _hasPermAndInstRole(orgPerms, 'INST_ADM')
+        _hasInstRoleAndPerm_or_ROLEADMIN('INST_ADM', orgPerms)
     }
 
     // --
@@ -149,11 +140,16 @@ class ContextService {
 
     // -- private
 
-    private boolean _hasInstRole_or_ROLEADMIN(String instUserRole) {
+    private boolean _hasInstRoleAndPerm_or_ROLEADMIN(String instUserRole, String orgPerms) {
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
             return true
         }
-        userService.hasAffiliation_or_ROLEADMIN(getUser(), getOrg(), instUserRole)
+        boolean check = userService.hasAffiliation_or_ROLEADMIN(getUser(), getOrg(), instUserRole)
+
+        if (check && orgPerms) {
+            check = _hasPerm(orgPerms)
+        }
+        check
     }
 
     @ShouldBePrivate_DoNotUse
@@ -176,7 +172,7 @@ class ContextService {
     @ShouldBePrivate_DoNotUse
     boolean _hasPermAndInstRole(String orgPerms, String instUserRole) {
         if (getUser() && instUserRole) {
-            if (_hasInstRole_or_ROLEADMIN(instUserRole)) {
+            if (userService.hasAffiliation_or_ROLEADMIN(getUser(), getOrg(), instUserRole)) {
                 return _hasPerm(orgPerms)
             }
         }
