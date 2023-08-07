@@ -125,13 +125,7 @@ class FinanceControllerService {
                 if (result.subscription) {
                     //cases two and three: child subscription
                     if (result.subscription.instanceOf) {
-                        //case three: child subscription preview
-                        if (params.orgBasicMemberView) {
-                            dataToDisplay << 'subscr'
-                            result.showView = 'subscr'
-                        }
                         //case two: child subscription, consortial view
-                        else {
                             dataToDisplay << 'consAtSubscr'
                             result.showView = 'cons'
                             result.showVisibilitySettings = true
@@ -141,7 +135,6 @@ class FinanceControllerService {
                             result.subMembers = Subscription.executeQuery('select s, oo.org.sortname as sortname from Subscription s join s.orgRelations oo where s = :parent and oo.roleType in :subscrRoles order by sortname asc',[parent:result.subscription,subscrRoles:[RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]).collect { row -> row[0]}
                             result.showVisibilitySettings = true
                             editable = true
-                        }
                     }
                     //case one: parent subscription
                     else {

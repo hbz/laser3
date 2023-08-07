@@ -238,6 +238,7 @@ class BootStrapService {
         }
 
         SystemSetting.findByName('MaintenanceMode') ?: new SystemSetting(name: 'MaintenanceMode', tp: SystemSetting.CONTENT_TYPE_BOOLEAN, value: 'false').save()
+        SystemSetting.findByName('SystemInsight') ?: new SystemSetting(name: 'SystemInsight', tp: SystemSetting.CONTENT_TYPE_BOOLEAN, value: 'false').save()
         // SystemSetting.findByName('StatusUpdateInterval') ?: new SystemSetting(name: 'StatusUpdateInterval', tp: SystemSetting.CONTENT_TYPE_STRING, value: '300').save()
         // SystemSetting.findByName('AutoApproveMemberships') ?: new SystemSetting(name: 'AutoApproveMemberships', tp: SystemSetting.CONTENT_TYPE_BOOLEAN, value: 'true').save()
     }

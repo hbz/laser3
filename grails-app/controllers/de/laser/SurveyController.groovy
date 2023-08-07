@@ -378,7 +378,7 @@ class SurveyController {
 
         result.providers = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds, [sort: 'name'])
 
-        List tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.getOrg())
+        List tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params)
 
         result.filterSet = tmpQ[2]
         List subscriptions = Subscription.executeQuery( "select s " + tmpQ[0], tmpQ[1] )
@@ -458,7 +458,7 @@ class SurveyController {
 
         result.providers = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds, [sort: 'name'])
 
-        List tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.getOrg())
+        List tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params)
         result.filterSet = tmpQ[2]
         List subscriptions = Subscription.executeQuery( "select s " + tmpQ[0], tmpQ[1] )
         //,[max: result.max, offset: result.offset]
@@ -3003,7 +3003,7 @@ class SurveyController {
 
             result.providers = orgIds.isEmpty() ? [] : Org.findAllByIdInList(orgIds, [sort: 'name'])
 
-            List tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.getOrg())
+            List tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params)
             result.filterSet = tmpQ[2]
             List subscriptions = Subscription.executeQuery( "select s " + tmpQ[0], tmpQ[1] )
             //,[max: result.max, offset: result.offset]
@@ -3153,7 +3153,7 @@ class SurveyController {
 
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         result.institution = contextService.getOrg()
-        if (!(result || contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_PRO))) {
+        if (!(result || contextService.getOrg().isCustomerType_Consortium_Pro())) {
             response.sendError(401); return
         }
 
@@ -3204,7 +3204,7 @@ class SurveyController {
      def processRenewalWithSurvey() {
 
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
-        if (!(result || contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_PRO))) {
+        if (!(result || contextService.getOrg().isCustomerType_Consortium_Pro())) {
             response.sendError(401); return
         }
 
@@ -3605,7 +3605,7 @@ class SurveyController {
         result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
 
         result.superOrgType = []
-        if(contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)) {
+        if(contextService.getOrg().isCustomerType_Consortium_Pro()) {
             result.superOrgType << message(code:'consortium.superOrgType')
         }
 
@@ -4384,7 +4384,7 @@ class SurveyController {
         Org institution = contextService.getOrg()
         Subscription memberSub
 
-        if (contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)) {
+        if (contextService.getOrg().isCustomerType_Consortium_Pro()) {
 
                 License licenseCopy
 
@@ -4438,7 +4438,7 @@ class SurveyController {
                 }
 
                 if (memberSub) {
-                    if(contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)) {
+                    if(contextService.getOrg().isCustomerType_Consortium_Pro()) {
 
                         new OrgRole(org: org, sub: memberSub, roleType: RDStore.OR_SUBSCRIBER_CONS).save()
                         new OrgRole(org: institution, sub: memberSub, roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA).save()

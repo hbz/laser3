@@ -3,7 +3,7 @@
 
 <g:if test="${tmplConfig && tmplConfig.addActionDropdownItems}">
 
-    <g:if test="${contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_BASIC)}">
+    <g:if test="${contextService.isInstEditor_or_ROLEADMIN()}">
         <ui:actionsDropdownItem data-ui="modal" href="#modalCreateNote" message="template.notes.add"/>
     </g:if>
     <g:if test="${contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)}">
@@ -19,7 +19,7 @@
 
 <g:if test="${tmplConfig && tmplConfig.addActionModals}">
 
-    <g:if test="${contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_BASIC)}">
+    <g:if test="${contextService.isInstEditor_or_ROLEADMIN()}">
         <laser:render template="/templates/notes/modal_create" model="${[ownobj: tmplConfig.ownobj, owntp: tmplConfig.owntp]}"/>
     </g:if>
     <g:if test="${contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)}">

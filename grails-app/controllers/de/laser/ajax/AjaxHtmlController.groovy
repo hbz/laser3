@@ -152,7 +152,14 @@ class AjaxHtmlController {
         result.acceptedOffset = params.acceptedOffset ? params.int("acceptedOffset") : result.offset
         result.pendingOffset = params.pendingOffset ? params.int("pendingOffset") : result.offset
         def periodInDays = result.user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)
-        Map<String, Object> pendingChangeConfigMap = [contextOrg:result.institution, consortialView:accessService.otherOrgPerm(result.institution, 'ORG_CONSORTIUM_BASIC'), periodInDays:periodInDays, max:result.max, acceptedOffset:result.acceptedOffset, pendingOffset: result.pendingOffset]
+        Map<String, Object> pendingChangeConfigMap = [
+                contextOrg: result.institution,
+                consortialView: (result.institution as Org).isCustomerType_Consortium(),
+                periodInDays:periodInDays,
+                max:result.max,
+                acceptedOffset:result.acceptedOffset,
+                pendingOffset: result.pendingOffset
+        ]
         Map<String, Object> changes = pendingChangeService.getSubscriptionChanges(pendingChangeConfigMap)
         changes.max = result.max
         changes.editable = result.editable
@@ -172,7 +179,7 @@ class AjaxHtmlController {
                 [org: result.institution,
                  status: RDStore.SURVEY_SURVEY_STARTED])
 
-        if (contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_PRO)){
+        if (contextService.getOrg().isCustomerType_Consortium_Pro()){
             activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where surConfig.surveyInfo.status = :status  and surConfig.surveyInfo.owner = :org " +
                     " order by surConfig.surveyInfo.endDate",
                     [org: result.institution,
@@ -404,6 +411,7 @@ class AjaxHtmlController {
         model.redirect = params.redirect
         model.typeId = params.typeId ? Long.valueOf(params.typeId) : null
         model.hideType = params.hideType
+        model.contextOrg = contextService.getOrg()
 
         switch(params.addressFor) {
             case 'addressForInstitution':
@@ -411,16 +419,16 @@ class AjaxHtmlController {
                     model.orgId = params.orgId
                 else
                     model.orgList = Org.executeQuery("from Org o where exists (select roletype from o.orgType as roletype where roletype.id = :orgType ) and o.sector.id = :orgSector order by LOWER(o.sortname) nulls last", [orgSector: RDStore.O_SECTOR_HIGHER_EDU.id, orgType: RDStore.OT_INSTITUTION.id])
-                model.tenant = contextService.getOrg().id
+                model.tenant = model.contextOrg.id
                 break
             case 'addressForProviderAgency':
                 if(params.orgId)
                     model.orgId = params.orgId
                 else
                     model.orgList = Org.executeQuery("from Org o where exists (select roletype from o.orgType as roletype where roletype.id in (:orgType) ) and o.sector.id = :orgSector order by LOWER(o.sortname) nulls last", [orgSector: RDStore.O_SECTOR_PUBLISHER.id, orgType: [RDStore.OT_PROVIDER.id, RDStore.OT_AGENCY.id]])
-                model.tenant = contextService.getOrg().id
+                model.tenant = model.contextOrg.id
                 break
-            default: model.orgId = params.orgId ?: contextService.getOrg().id
+            default: model.orgId = params.orgId ?: model.contextOrg.id
                 break
         }
 

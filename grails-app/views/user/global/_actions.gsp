@@ -17,7 +17,7 @@
     <g:if test="${controllerName == 'myInstitution'}">%{-- /myInstitution/users --}%
         <ui:actionsDropdown>%{-- todo -- move to template --}%
             <g:set var="createNTDWModals" value="${true}"/>
-            <g:if test="${contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_BASIC)}">
+            <g:if test="${contextService.isInstEditor_or_ROLEADMIN()}">
                 <ui:actionsDropdownItem data-ui="modal" href="#modalCreateNote" message="template.notes.add"/>
             </g:if>
             <g:if test="${contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)}">
@@ -62,7 +62,7 @@
 </g:elseif>
 
 <g:if test="${createNTDWModals}">
-    <g:if test="${contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_BASIC)}">
+    <g:if test="${contextService.isInstEditor_or_ROLEADMIN()}">
         <laser:render template="/templates/notes/modal_create" model="${[ownobj: orgInstance, owntp: 'org']}"/>
     </g:if>
     <g:if test="${contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)}">

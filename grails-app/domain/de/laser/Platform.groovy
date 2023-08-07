@@ -150,12 +150,10 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated implements Comparab
 
   /**
    * Checks whether this platform uses access points defined for the given subscription package
-   * @param contextOrg unused
    * @param subscriptionPackage the subscription (represented by the {@link SubscriptionPackage} link) whose configurations should be verified
    * @return true if there are access point configurations linked to this platform and the given subscription package, false otherwise
    */
-  boolean usesPlatformAccessPoints(Org contextOrg, SubscriptionPackage subscriptionPackage){
-    // TODO do we need the contextOrg?
+  boolean usesPlatformAccessPoints(SubscriptionPackage subscriptionPackage){
     // look for OrgAccessPointLinks for this platform and a given subscriptionPackage, if we can find that "marker",
     // we know the AccessPoints are not derived from the AccessPoints configured for the platform
     String hql = "select oapl from OrgAccessPointLink oapl where oapl.platform=${this.id} and oapl.subPkg = ${subscriptionPackage.id} and oapl.oap is null"

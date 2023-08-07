@@ -146,7 +146,7 @@ class SwissKnife {
             if (!check) {
 
                 boolean instRoleCheck = attrs.instRole ? BeanStore.getUserService().hasAffiliation_or_ROLEADMIN(user, BeanStore.getContextService().getOrg(), attrs.instRole) : true
-                boolean orgPermCheck  = attrs.orgPerm ? contextService.hasPerm(attrs.orgPerm) : true
+                boolean orgPermCheck  = attrs.orgPerm ? contextService._hasPerm(attrs.orgPerm) : true
 
                 check = instRoleCheck && orgPermCheck
 

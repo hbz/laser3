@@ -1,0 +1,62 @@
+@startuml
+
+hide circle
+skinparam linetype ortho
+
+class Subscription {
+    * id <<generated>>
+    * globalUID <<generated>>
+    * name
+    startDate
+    endDate
+    manualRenewalDate
+    manualCancellationDate
+    referenceYear
+    * status
+    comment
+    kind
+    form
+    resource
+    holdingSelection
+    isPublicForApi
+    hasPerpetualAccess
+    hasPublishComponent
+    isMultiYear
+    isAutomaticRenewAnnually
+}
+
+class Links {
+    * linkType
+}
+
+class OrgRole {
+    * roleType
+}
+
+class PersonRole {
+    * roleType
+}
+
+Subscription }o--o{ License : "linkedLicenses"
+(Subscription, License) . Links
+Subscription ||--o{ Identifier : "ids"
+Subscription }o--|| "instanceOf" Subscription : "derivedSubscriptions"
+'Subscription }o--o{ Subscription : "linkedSubscriptions"
+'(Subscription, Subscription) . Links
+Subscription ||--o{ Doc : "documents"
+(Subscription, Doc) . DocContext
+Subscription ||--|{ Person : "prsLinks"
+Subscription ||--|{ Org : "orgRelations"
+(Subscription, Org) . OrgRole
+(Subscription, Person) . PersonRole
+Subscription ||--o{ CostItem : "costItems"
+Subscription ||--o{ "propertySet" SubscriptionProperty : "owner"
+SubscriptionProperty ||--|| PropertyDefinition
+Subscription }o--o{ Package : "packages"
+(Subscription, Package) . SubscriptionPackage
+Subscription }o--o{ IssueEntitlement
+TitleInstancePackagePlatform ||--o{ IssueEntitlement
+TitleInstancePackagePlatform }o--|| Package
+TitleInstancePackagePlatform }o--|| Platform
+
+@enduml

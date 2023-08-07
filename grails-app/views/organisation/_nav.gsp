@@ -33,10 +33,10 @@
     <ui:securedSubNavItem orgPerm="${CustomerTypeService.PERMS_PRO}" controller="organisation" action="tasks" params="${breadcrumbParams}" counts="${tasksCount}" message="menu.institutions.tasks"/>
     <ui:securedSubNavItem orgPerm="${CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC}" controller="organisation" action="documents" params="${breadcrumbParams}" message="default.documents.label" />
 
-    <g:if test="${contextService.hasPerm(CustomerTypeService.PERMS_PRO)}"><!-- TODO: workflows-permissions -->
+    <g:if test="${contextService.getOrg().isCustomerType_Pro()}"><!-- TODO: workflows-permissions -->
         <ui:subNavItem controller="organisation" action="workflows" counts="${checklistCount}" params="${breadcrumbParams}" message="workflow.plural"/>
     </g:if>
-    <g:elseif test="${contextService.hasPerm(CustomerTypeService.PERMS_BASIC)}">
+    <g:elseif test="${contextService.getOrg().isCustomerType_Basic()}">
         <ui:subNavItem controller="organisation" action="workflows" counts="${checklistCount}" params="${breadcrumbParams}" message="workflow.plural" disabled="disabled"/>
     </g:elseif>
 

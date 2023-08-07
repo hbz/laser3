@@ -184,9 +184,9 @@
         func();
     }
 
-    JSPC.app.addresscreate_org = function (orgId) {
-        var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>?orgId=' + orgId;
-        var func = bb8.ajax4SimpleModalFunction("#addressFormModal", url);
+    JSPC.app.addressCreate = function (addressFor) {
+        let url = '<g:createLink controller="ajaxHtml" action="createAddress"/>?addressFor=' + addressFor;
+        let func = bb8.ajax4SimpleModalFunction("#addressFormModal", url);
         func();
     }
 </laser:script>

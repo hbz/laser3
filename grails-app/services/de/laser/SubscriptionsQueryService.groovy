@@ -14,14 +14,13 @@ import java.time.Year
  */
 @Transactional
 class SubscriptionsQueryService {
-    AccessService accessService
+    ContextService contextService
     GenericOIDService genericOIDService
     PropertyService propertyService
 
     /**
      *
      * @param params
-     * @param contextOrg
      * @param joinQuery an eventual join if further tables need to be accessed by an optional filter
      * @return the base query data in structure:
      * <ol start="0">
@@ -30,7 +29,8 @@ class SubscriptionsQueryService {
      *     <li>filterSet the flag for the export whether a filter has been applied</li>
      * </ol>
      */
-    List myInstitutionCurrentSubscriptionsBaseQuery(params, Org contextOrg, String joinQuery = "") {
+    List myInstitutionCurrentSubscriptionsBaseQuery(params, String joinQuery = "") {
+        Org contextOrg = contextService.getOrg()
 
         def date_restriction
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
@@ -53,7 +53,7 @@ class SubscriptionsQueryService {
         Map qry_params = [:]
 
         if (! params.orgRole) {
-            if (accessService.otherOrgPerm(contextOrg, 'ORG_CONSORTIUM_BASIC')) {
+            if (contextOrg.isCustomerType_Consortium()) {
                 params.orgRole = 'Subscription Consortia'
             }
             else {

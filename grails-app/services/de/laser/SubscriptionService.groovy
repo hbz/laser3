@@ -137,7 +137,7 @@ class SubscriptionService {
         }
 
         prf.setBenchmark('get base query')
-        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextOrg)
+        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params)
         result.filterSet = tmpQ[2]
         List<Subscription> subscriptions
         prf.setBenchmark('fetch subscription data')
@@ -156,7 +156,7 @@ class SubscriptionService {
         /* deactivated as statistics key is submitted nowhere, as of July 16th, '20
         if (OrgSetting.get(contextOrg, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID) instanceof OrgSetting){
             result.statsWibid = contextOrg.getIdentifierByType('wibid')?.value
-            result.usageMode = contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) ? 'package' : 'institution'
+            result.usageMode = contextService.getOrg().isCustomerType_Consortium() ? 'package' : 'institution'
         }
          */
         prf.setBenchmark('end properties')
@@ -209,7 +209,7 @@ class SubscriptionService {
         }
 
 
-        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextOrg)
+        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params)
         result.filterSet = tmpQ[2]
         List<Subscription> subscriptions
         subscriptions = Subscription.executeQuery( "select s " + tmpQ[0], tmpQ[1] ) //,[max: result.max, offset: result.offset]
@@ -285,7 +285,7 @@ class SubscriptionService {
         Map<Subscription,Set<License>> linkedLicenses = [:]
 
         if('withCostItems' in tableConf) {
-            query = "select new map((case when ci.owner = :org then ci else null end) as cost, subT as sub, roleT.org as org) " +
+            query = "select new map((case when ci.owner = :org then ci else null end) as cost, subT as sub, roleT.org as orgs) " +
                     " from CostItem ci right outer join ci.sub subT join subT.instanceOf subK " +
                     " join subK.orgRelations roleK join subT.orgRelations roleTK join subT.orgRelations roleT " +
                     " where roleK.org = :org and roleK.roleType = :rdvCons " +
@@ -326,17 +326,26 @@ class SubscriptionService {
             query += " and roleT.org.id = :member "
             qarams.put('member', params.long('member'))
         }
+        /*
+        this performance improvement is not needed any more! Keep it nonetheless for the case of ...
         else if(!params.filterSet) {
             query += " and roleT.org.id = :member "
             qarams.put('member', result.filterConsortiaMembers[0].id)
             params.member = result.filterConsortiaMembers[0].id
             result.defaultSet = true
         }
+        */
 
         if (params.identifier?.length() > 0) {
             query += " and exists (select ident from Identifier ident join ident.org ioorg " +
                     " where ioorg = roleT.org and LOWER(ident.value) like LOWER(:identifier)) "
             qarams.put('identifier', "%${params.identifier}%")
+        }
+
+        Map costFilter = params.findAll{ it -> it.toString().startsWith('iex:participantSubCostItem.') }
+        if(costFilter) {
+            query += " and ci.costItemElement.id in (:elems)"
+            qarams.put('elems', costFilter.collect { selElem -> Long.parseLong(selElem.key.split('participantSubCostItem.')[1]) })
         }
 
         if (params.validOn?.size() > 0) {
@@ -477,9 +486,9 @@ join sub.orgRelations or_sub where
             result.totalCount = costs.size()
             result.totalMembers = []
             costs.each { row ->
-                result.totalMembers << row.org
+                result.totalMembers << row.orgs
             }
-            if(params.exportXLS || params.format)
+            if(params.exportXLS || params.format || params.fileformat)
                 result.entries = costs
             else result.entries = costs.drop((int) result.offset).take((int) result.max)
 
@@ -542,7 +551,7 @@ join sub.orgRelations or_sub where
             params.joinQuery = "join s.orgRelations so"
         }
 
-        if (contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+        if (contextService.getOrg().isCustomerType_Consortium()) {
             tmpQ = _getSubscriptionsConsortiaQuery(params)
             result.addAll(Subscription.executeQuery(queryStart + tmpQ[0], tmpQ[1]))
 
@@ -571,7 +580,7 @@ join sub.orgRelations or_sub where
         List result = []
         List tmpQ
 
-        if (contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+        if (contextService.getOrg().isCustomerType_Consortium()) {
             tmpQ = _getSubscriptionsConsortiaQuery(params)
             result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
             if (params.showSubscriber) {
@@ -605,7 +614,7 @@ join sub.orgRelations or_sub where
         List result = []
         List tmpQ
 
-        if(contextService.hasPerm(CustomerTypeService.ORG_INST_PRO)) {
+        if(contextService.getOrg().isCustomerType_Inst_Pro()) {
 
             tmpQ = _getSubscriptionsConsortialLicenseQuery(params)
             result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
@@ -626,7 +635,7 @@ join sub.orgRelations or_sub where
         List result = []
         List tmpQ
 
-        if(contextService.hasPerm(CustomerTypeService.ORG_INST_PRO)) {
+        if(contextService.getOrg().isCustomerType_Inst_Pro()) {
 
             tmpQ = _getSubscriptionsConsortialLicenseQuery(params)
             result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
@@ -651,7 +660,7 @@ join sub.orgRelations or_sub where
         queryParams.showParentsAndChildsSubs = params.showSubscriber
         queryParams.orgRole = RDStore.OR_SUBSCRIPTION_CONSORTIA.value
         String joinQuery = params.joinQuery ?: ""
-        List result = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(queryParams, contextService.getOrg(), joinQuery)
+        List result = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(queryParams, joinQuery)
         result
     }
 
@@ -668,7 +677,7 @@ join sub.orgRelations or_sub where
         queryParams.orgRole = RDStore.OR_SUBSCRIBER.value
         queryParams.subTypes = RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id
         String joinQuery = params.joinQuery ?: ""
-        subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(queryParams, contextService.getOrg(), joinQuery)
+        subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(queryParams, joinQuery)
     }
 
     /**
@@ -684,7 +693,7 @@ join sub.orgRelations or_sub where
         queryParams.orgRole = RDStore.OR_SUBSCRIBER.value
         queryParams.subTypes = RDStore.SUBSCRIPTION_TYPE_LOCAL.id
         String joinQuery = params.joinQuery ?: ""
-        subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(queryParams, contextService.getOrg(), joinQuery)
+        subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(queryParams, joinQuery)
     }
 
     /**
@@ -1827,7 +1836,7 @@ join sub.orgRelations or_sub where
         Org contextOrg = contextService.getOrg()
         RefdataValue comboType
         String[] parentSubType
-        if (contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+        if (contextService.getOrg().isCustomerType_Consortium()) {
             comboType = RDStore.COMBO_TYPE_CONSORTIUM
             parentSubType = [RDStore.SUBSCRIPTION_KIND_CONSORTIAL.getI10n('value')]
         }
@@ -1857,7 +1866,7 @@ join sub.orgRelations or_sub where
                 case "konsortiallizenz":
                 case "parent subscription":
                 case "consortial subscription":
-                    if(contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC))
+                    if(contextService.getOrg().isCustomerType_Consortium())
                         colMap.instanceOf = c
                     break
                 case "status": colMap.status = c
@@ -2290,7 +2299,7 @@ join sub.orgRelations or_sub where
                     sub.refresh() //needed for dependency processing
                     //create the org role associations
                     RefdataValue parentRoleType, memberRoleType
-                    if (contextService.hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC)) {
+                    if (contextService.getOrg().isCustomerType_Consortium()) {
                         parentRoleType = RDStore.OR_SUBSCRIPTION_CONSORTIA
                         memberRoleType = RDStore.OR_SUBSCRIBER_CONS
                     }

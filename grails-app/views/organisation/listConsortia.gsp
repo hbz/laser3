@@ -9,7 +9,7 @@
 
     <ui:controlButtons>
         <%
-            editable = (editable && contextService.hasPerm(CustomerTypeService.ORG_INST_PRO)) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
+            editable = (editable && contextService.getOrg().isCustomerType_Inst_Pro()) || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
         %>
         <ui:exportDropdown>
             <ui:exportDropdownItem>

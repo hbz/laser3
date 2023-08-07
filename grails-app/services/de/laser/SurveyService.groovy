@@ -1510,7 +1510,7 @@ class SurveyService {
         RefdataValue role_subCons = RDStore.OR_SUBSCRIBER_CONS
         RefdataValue role_sub_consortia = RDStore.OR_SUBSCRIPTION_CONSORTIA
 
-        if (accessService.otherOrgPerm(org, 'ORG_CONSORTIUM_PRO')) {
+        if (org.isCustomerType_Consortium_Pro()) {
             //nur Parents
             base_qry = " from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
                     " AND s.instanceOf is null "

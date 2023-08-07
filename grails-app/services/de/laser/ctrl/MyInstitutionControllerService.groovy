@@ -69,12 +69,6 @@ class MyInstitutionControllerService {
 
         def periodInDays = result.user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)
 
-        // changes -> to AJAX
-
-        //Map<String,Object> pendingChangeConfigMap = [contextOrg:result.institution,consortialView:accessService.otherOrgPerm(result.institution, 'ORG_CONSORTIUM_BASIC'),periodInDays:periodInDays,max:result.max,offset:result.acceptedOffset]
-        //pu.setBenchmark('pending changes')
-        //result.putAll(pendingChangeService.getChanges(pendingChangeConfigMap))
-
         // systemAnnouncements
         prf.setBenchmark('system announcements')
         result.systemAnnouncements = SystemAnnouncement.getPublished(periodInDays)

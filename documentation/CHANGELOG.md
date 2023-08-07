@@ -7,6 +7,14 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5220    07.08.2023  rc-3.2  3.2.2       Andreas Bug         eigene Adressen konnten nicht hinzugefügt werden
+
+3781    04.08.2023  dev     3.3         Andreas Feature     neue PDF-Exporte und ClickMichs implementiert
+
+--      03.08.2023  rc-3.2  3.2.2       Andreas Bug         Ausgaben beim PDF-Vertragsexport korrigiert
+
+4920    02.08.2023  dev     3.3         David   Feature     Lizenzen: "Zur Teilnehmersicht wechseln" entfernen
+
 --      01.08.2023  rc-3.2  3.2.2       Andreas Bug         Exportreiter "Übertrag" hat keine Defaultbelegung mehr
 
 5213    01.08.2023  rc-3.2  3.2.2       Andreas Bug         verschiedene Fehler in der Lizenzverwaltung behoben

@@ -1173,11 +1173,11 @@ class ExportClickMeService {
 
     /**
      * Gets the subscription member export fields for the given subscription and institution for processing
-     * @param subscription the subscription whose members should be exported
      * @param institution the context institution
+     * @param subscription the subscription whose members should be exported
      * @return the configuration map for the subscription member export
      */
-    Map<String, Object> getExportSubscriptionMembersFields(Subscription subscription, Org institution) {
+    Map<String, Object> getExportSubscriptionMembersFields(Org institution, Subscription subscription, List<Subscription> childSubs = []) {
 
         Map<String, Object> exportFields = [:]
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
@@ -1205,7 +1205,8 @@ class ExportClickMeService {
         addressTypes.each { RefdataValue addressType ->
             exportFields.put("participantAddress."+addressType.value, [field: null, label: addressType.getI10n('value')])
         }
-        List<Subscription> childSubs = subscription.getNonDeletedDerivedSubscriptions()
+        if(subscription)
+            childSubs.addAll(subscription.getNonDeletedDerivedSubscriptions())
         if(childSubs) {
             String query = "select sp.type from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :context and sp.instanceOf = null order by sp.type.${localizedName} asc"
             Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery(query, [subscriptionSet: childSubs, context: institution])
@@ -1218,6 +1219,19 @@ class ExportClickMeService {
                 exportFields.put("participantSubCostItem."+it.key, [field: null, label: RefdataValue.get(it.key).getI10n('value')])
             }
         }
+        else {
+            String consortiaQuery = "select s from OrgRole oo join oo.sub s where oo.org = :context and s.instanceOf != null"
+            String query = "select sp.type from SubscriptionProperty sp where sp.owner in (${consortiaQuery}) and sp.tenant = :context and sp.instanceOf = null order by sp.type.${localizedName} asc"
+            Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery(query, [context: institution])
+
+            memberProperties.each {PropertyDefinition propertyDefinition ->
+                exportFields.put("participantSubProperty.${propertyDefinition.id}", [field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant != null)])
+            }
+
+            CostItem.executeQuery('select ci.costItemElement from CostItem ci where ci.sub in ('+consortiaQuery+') and ci.costItemStatus != :deleted and ci.costItemElement != null', [context: institution, deleted: RDStore.COST_ITEM_DELETED]).each { RefdataValue cie ->
+                exportFields.put("participantSubCostItem.${cie.id}", [field: null, label: cie.getI10n('value')])
+            }
+        }
 
         exportFields
     }
@@ -1225,11 +1239,13 @@ class ExportClickMeService {
     /**
      * Generic call from views
      * Gets the subscription member export fields for the given subscription and institution and prepares them for the UI
-     * @param subscription the subscription whose members should be exported
      * @param institution the context institution
+     * @param subscription the subscription whose members should be exported
      * @return the configuration map for the subscription member export for the UI
      */
-    Map<String, Object> getExportSubscriptionMembersFieldsForUI(Subscription subscription, Org institution) {
+    Map<String, Object> getExportSubscriptionMembersFieldsForUI(Org institution, Subscription subscription = null) {
+        //calls: getExportSubscriptionMembersFieldsForUI(institution) ==> /myInstitution/export/_individuallyExportModalConsortiaSubs.gsp
+        //getExportSubscriptionMembersFieldsForUI(institution, subscription) ==> /subscription/export/_individuallyExportModal.gsp
 
         Map<String, Object> fields = EXPORT_SUBSCRIPTION_MEMBERS_CONFIG as Map
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
@@ -1247,17 +1263,32 @@ class ExportClickMeService {
         fields.participantSubProperties.fields.clear()
         fields.participantSubCostItems.fields.costItemsElements.clear()
 
-        List<Subscription> childSubs = subscription.getNonDeletedDerivedSubscriptions()
-        if(childSubs) {
-            String query = "select sp.type from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :context and sp.instanceOf = null order by sp.type.${localizedName} asc"
-            Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery(query, [subscriptionSet: childSubs, context: institution])
+        if(subscription) {
+            List<Subscription> childSubs = subscription.getNonDeletedDerivedSubscriptions()
+            if(childSubs) {
+                String query = "select sp.type from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :context and sp.instanceOf = null order by sp.type.${localizedName} asc"
+                Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery(query, [subscriptionSet: childSubs, context: institution])
+
+                memberProperties.each {PropertyDefinition propertyDefinition ->
+                    fields.participantSubProperties.fields << ["participantSubProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant != null)]]
+                }
+
+                CostItem.findAllBySubInListAndCostItemStatusNotEqualAndCostItemElementIsNotNull(childSubs, RDStore.COST_ITEM_DELETED).groupBy {it.costItemElement.id}.each {
+                    fields.participantSubCostItems.fields.costItemsElements << ["participantSubCostItem.${it.key}":[field: null, label: RefdataValue.get(it.key).getI10n('value')]]
+                }
+            }
+        }
+        else {
+            String consortiaQuery = "select s from OrgRole oo join oo.sub s where oo.org = :context and s.instanceOf != null"
+            String query = "select sp.type from SubscriptionProperty sp where sp.owner in (${consortiaQuery}) and sp.tenant = :context and sp.instanceOf = null order by sp.type.${localizedName} asc"
+            Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery(query, [context: institution])
 
             memberProperties.each {PropertyDefinition propertyDefinition ->
                 fields.participantSubProperties.fields << ["participantSubProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant != null)]]
             }
 
-            CostItem.findAllBySubInListAndCostItemStatusNotEqualAndCostItemElementIsNotNull(childSubs, RDStore.COST_ITEM_DELETED).groupBy {it.costItemElement.id}.each {
-                fields.participantSubCostItems.fields.costItemsElements << ["participantSubCostItem.${it.key}":[field: null, label: RefdataValue.get(it.key).getI10n('value')]]
+            CostItem.executeQuery('select ci.costItemElement from CostItem ci where ci.sub in ('+consortiaQuery+') and ci.costItemStatus != :deleted and ci.costItemElement != null', [context: institution, deleted: RDStore.COST_ITEM_DELETED]).each { RefdataValue cie ->
+                fields.participantSubCostItems.fields.costItemsElements << ["participantSubCostItem.${cie.id}":[field: null, label: cie.getI10n('value')]]
             }
         }
 
@@ -2364,12 +2395,12 @@ class ExportClickMeService {
      * @param institution the institution as reference for the fields
      * @return an Excel worksheet containing the export
      */
-    def exportSubscriptionMembers(List result, Map<String, Object> selectedFields, Subscription subscription, Org institution, Set<String> contactSwitch, FORMAT format) {
+    def exportSubscriptionMembers(Collection result, Map<String, Object> selectedFields, Subscription subscription, Org institution, Set<String> contactSwitch, FORMAT format) {
        Locale locale = LocaleUtils.getCurrentLocale()
 
         Map<String, Object> selectedExportFields = [:]
 
-        Map<String, Object> configFields = getExportSubscriptionMembersFields(subscription, institution)
+        Map<String, Object> configFields = getExportSubscriptionMembersFields(institution, subscription)
 
         configFields.keySet().each { String k ->
             if (k in selectedFields.keySet() ) {
@@ -2399,10 +2430,13 @@ class ExportClickMeService {
 
         Integer maxCostItemsElements = 0
 
-        List<Subscription> childSubs = subscription.getNonDeletedDerivedSubscriptions()
-        if(childSubs) {
-            maxCostItemsElements = CostItem.executeQuery('select count(id) as countCostItems from CostItem where sub in (:subs) group by costItemElement, sub order by countCostItems desc', [subs: childSubs])[0]
+        if(subscription) {
+            List<Subscription> childSubs = subscription.getNonDeletedDerivedSubscriptions()
+            if(childSubs) {
+                maxCostItemsElements = CostItem.executeQuery('select count(id) as countCostItems from CostItem where sub in (:subs) group by costItemElement, sub order by countCostItems desc', [subs: childSubs])[0]
+            }
         }
+        else maxCostItemsElements = 1
 
         List titles = _exportTitles(selectedExportFields, locale, selectedCostItemFields, maxCostItemsElements, contactSwitch)
 
@@ -2426,6 +2460,9 @@ class ExportClickMeService {
                 return exportService.generateSeparatorTableString(titles, exportData, '|')
             case FORMAT.TSV:
                 return exportService.generateSeparatorTableString(titles, exportData, '\t')
+            case FORMAT.PDF:
+                //structure: list of maps (each map is the content of a page)
+                return [mainHeader: titles, pages: sheetData.values()]
         }
 
     }
@@ -2498,6 +2535,9 @@ class ExportClickMeService {
             return exportService.generateSeparatorTableString(titles, exportData, '|')
         case FORMAT.TSV:
             return exportService.generateSeparatorTableString(titles, exportData, '\t')
+        case FORMAT.PDF:
+            //structure: list of maps (each map is the content of a page)
+            return [mainHeader: titles, pages: [[titleRow: titles, columnData: exportData]]]
         }
     }
 
@@ -2529,17 +2569,17 @@ class ExportClickMeService {
         result.each { License license ->
             _setLicRow(license, selectedExportFields, exportData, localizedName, format)
         }
+        Map sheetData = [:]
+        sheetData[messageSource.getMessage('menu.my.licenses', null, locale)] = [titleRow: titles, columnData: exportData]
 
         switch(format) {
             case FORMAT.XLS:
-            Map sheetData = [:]
-            sheetData[messageSource.getMessage('menu.my.licenses', null, locale)] = [titleRow: titles, columnData: exportData]
-
-            return exportService.generateXLSXWorkbook(sheetData)
-        case FORMAT.CSV:
-            return exportService.generateSeparatorTableString(titles, exportData, '|')
-        case FORMAT.PDF:
-            return [titleRow: titles, columnData: exportData]
+                return exportService.generateXLSXWorkbook(sheetData)
+            case FORMAT.CSV:
+                return exportService.generateSeparatorTableString(titles, exportData, '|')
+            case FORMAT.PDF:
+                //structure: list of maps (each map is the content of a page)
+                return [mainHeader: titles, pages: [[titleRow: titles, columnData: exportData]]]
         }
     }
 
@@ -2653,6 +2693,9 @@ class ExportClickMeService {
                 return exportService.generateSeparatorTableString(titles, exportData, '|')
             case FORMAT.TSV:
                 return exportService.generateSeparatorTableString(titles, exportData, '\t')
+            case FORMAT.PDF:
+                //structure: list of maps (each map is the content of a page)
+                return [mainHeader: titles, pages: [[titleRow: titles, columnData: exportData]]]
         }
     }
 
@@ -3258,6 +3301,7 @@ class ExportClickMeService {
         Locale locale = LocaleUtils.getCurrentLocale()
         Org org, contextOrg = contextService.getOrg()
         Subscription subscription
+        boolean rowWithCost = result.containsKey('cost')
         if(result instanceof Subscription) {
             subscription = result
             org = subscription.getSubscriber()
@@ -3271,34 +3315,36 @@ class ExportClickMeService {
         List costItems
         Map<String, Object> costItemSums = [:]
         //in order to distinguish between sums and entire items
-        if(selectedCostItemElements.containsKey('all')){
-           costItems = CostItem.findAllBySubAndCostItemElementInListAndCostItemStatusNotEqual(subscription, selectedCostItemElements.all, RDStore.COST_ITEM_DELETED, [sort: 'costItemElement'])
-        }
-        else if(selectedCostItemElements) {
-            selectedCostItemElements.each { String key, List<RefdataValue> costItemElements ->
-                Map<String, Object> costSumSubMap = [:]
-                costItemElements.each { RefdataValue cie ->
-                    //determine cost items configuration based on customer type
-                    switch(contextOrg.getCustomerType()) {
+        if(!rowWithCost) {
+            if(selectedCostItemElements.containsKey('all')){
+                costItems = CostItem.findAllBySubAndCostItemElementInListAndCostItemStatusNotEqual(subscription, selectedCostItemElements.all, RDStore.COST_ITEM_DELETED, [sort: 'costItemElement'])
+            }
+            else if(selectedCostItemElements) {
+                selectedCostItemElements.each { String key, List<RefdataValue> costItemElements ->
+                    Map<String, Object> costSumSubMap = [:]
+                    costItemElements.each { RefdataValue cie ->
+                        //determine cost items configuration based on customer type
+                        switch(contextOrg.getCustomerType()) {
                         //cases one to three
-                        case CustomerTypeService.ORG_CONSORTIUM_BASIC:
-                        case CustomerTypeService.ORG_CONSORTIUM_PRO:
-                            costItems = CostItem.executeQuery('select ci.id from CostItem ci join ci.sub sub where ci.owner = :contextOrg and (sub = :sub or sub.instanceOf = :sub) and ci.costItemElement = :cie and ci.costItemStatus != :deleted', [contextOrg: contextOrg, sub: subscription, cie: cie, deleted: RDStore.COST_ITEM_DELETED])
-                            break
-                            //cases four and five
-                        case CustomerTypeService.ORG_INST_PRO:
-                            if(key == 'own')
-                                costItems = CostItem.executeQuery('select ci.id from CostItem ci join ci.sub sub where ci.owner = :contextOrg and sub = :sub and ci.costItemElement = :cie and ci.costItemStatus != :deleted', [contextOrg: contextOrg, sub: subscription, cie: cie, deleted: RDStore.COST_ITEM_DELETED])
-                            else if(key == 'subscr')
-                                costItems = CostItem.executeQuery('select ci.id from CostItem ci join ci.sub sub where ci.isVisibleForSubscriber = true and sub = :sub and ci.costItemElement = :cie and ci.costItemStatus != :deleted', [sub: subscription, cie: cie, deleted: RDStore.COST_ITEM_DELETED])
-                            break
-                            //cases six: basic member
-                        case CustomerTypeService.ORG_INST_BASIC: costItems = CostItem.executeQuery('select ci.id from CostItem ci join ci.sub sub where ci.isVisibleForSubscriber = true and sub = :sub and ci.costItemElement = :cie and ci.costItemStatus != :deleted', [sub: subscription, cie: cie, deleted: RDStore.COST_ITEM_DELETED])
-                            break
+                            case CustomerTypeService.ORG_CONSORTIUM_BASIC:
+                            case CustomerTypeService.ORG_CONSORTIUM_PRO:
+                                costItems = CostItem.executeQuery('select ci.id from CostItem ci join ci.sub sub where ci.owner = :contextOrg and (sub = :sub or sub.instanceOf = :sub) and ci.costItemElement = :cie and ci.costItemStatus != :deleted', [contextOrg: contextOrg, sub: subscription, cie: cie, deleted: RDStore.COST_ITEM_DELETED])
+                                break
+                                //cases four and five
+                            case CustomerTypeService.ORG_INST_PRO:
+                                if(key == 'own')
+                                    costItems = CostItem.executeQuery('select ci.id from CostItem ci join ci.sub sub where ci.owner = :contextOrg and sub = :sub and ci.costItemElement = :cie and ci.costItemStatus != :deleted', [contextOrg: contextOrg, sub: subscription, cie: cie, deleted: RDStore.COST_ITEM_DELETED])
+                                else if(key == 'subscr')
+                                    costItems = CostItem.executeQuery('select ci.id from CostItem ci join ci.sub sub where ci.isVisibleForSubscriber = true and sub = :sub and ci.costItemElement = :cie and ci.costItemStatus != :deleted', [sub: subscription, cie: cie, deleted: RDStore.COST_ITEM_DELETED])
+                                break
+                                //cases six: basic member
+                            case CustomerTypeService.ORG_INST_BASIC: costItems = CostItem.executeQuery('select ci.id from CostItem ci join ci.sub sub where ci.isVisibleForSubscriber = true and sub = :sub and ci.costItemElement = :cie and ci.costItemStatus != :deleted', [sub: subscription, cie: cie, deleted: RDStore.COST_ITEM_DELETED])
+                                break
+                        }
+                        costSumSubMap.put(cie, financeService.calculateResults(costItems))
                     }
-                    costSumSubMap.put(cie, financeService.calculateResults(costItems))
+                    costItemSums.put(key, costSumSubMap)
                 }
-                costItemSums.put(key, costSumSubMap)
             }
         }
 
@@ -3445,21 +3491,46 @@ class ExportClickMeService {
                             }
                         }
                     }
-                    else if(costItems && selectedCostItemFields.size() > 0){
-                        costItems.each { CostItem costItem ->
-                            String cieVal = costItem.costItemElement ? costItem.costItemElement.getI10n('value') : ''
-                            row.add(createTableCell(format, cieVal))
-                            selectedCostItemFields.each {
-                                def fieldValue = _getFieldValue(costItem, it.value.field.replace('costItem.', ''), sdf)
+                    else if(rowWithCost) {
+                        //null checks because key cost *may* exist but filled up with null value
+                        String cieVal = result.cost?.costItemElement ? result.cost.costItemElement.getI10n('value') : ' '
+                        row.add(createTableCell(format, cieVal))
+                        selectedCostItemFields.each {
+                            if(result.cost) {
+                                def fieldValue = _getFieldValue(result.cost, it.value.field.replace('costItem.', ''), sdf)
                                 row.add(createTableCell(format, fieldValue))
+                            }
+                            else row.add(createTableCell(format, ' '))
+                        }
+                    }
+                    else if(costItems && selectedCostItemFields.size() > 0){
+                        for(int c = 0; c < selectedCostItemElements.all.size(); c++) {
+                            CostItem costItem
+                            if(c < costItems.size()-1)
+                                costItem = costItems.get(c)
+                            if(costItem) {
+                                String cieVal = costItem.costItemElement ? costItem.costItemElement.getI10n('value') : ''
+                                row.add(createTableCell(format, cieVal))
+                                selectedCostItemFields.each {
+                                    def fieldValue = _getFieldValue(costItem, it.value.field.replace('costItem.', ''), sdf)
+                                    row.add(createTableCell(format, fieldValue))
+                                }
+                            }
+                            else {
+                                row.add(createTableCell(format, ' '))
+                                for(int e = 0; e < selectedCostItemFields.size(); e++) {
+                                    row.add(createTableCell(format, ' '))
+                                }
                             }
                         }
                     }
                     else if(selectedCostItemFields.size() > 0) {
+                        for(int c = 0; c < selectedCostItemElements.all.size(); c++) {
                             row.add(createTableCell(format, ' '))
                             selectedCostItemFields.each {
                                 row.add(createTableCell(format, ' '))
                             }
+                        }
                     }
                 }
                 else {
@@ -3527,14 +3598,27 @@ class ExportClickMeService {
                     String query = "select prop from LicenseProperty prop where (prop.owner = :lic and prop.type.id in (:propertyDefs) and prop.isPublic = true) or (prop.owner = :lic and prop.type.id in (:propertyDefs) and prop.isPublic = false and prop.tenant = :contextOrg) order by prop.type.${localizedName} asc"
                     List<LicenseProperty> licenseProperties = LicenseProperty.executeQuery(query,[lic:license, propertyDefs:[id], contextOrg: contextService.getOrg()])
                     if(licenseProperties){
-                        List<String> values = [], notes = []
+                        List<String> values = [], notes = [], paragraphs = []
                         licenseProperties.each { LicenseProperty lp ->
-                            values << lp.getValueInI10n() ?: ' '
-                            notes << lp.note != null ? lp.note : ' '
+                            //ternary operator / elvis delivers strange results ...
+                            if(lp.getValueInI10n() != null) {
+                                values << lp.getValueInI10n()
+                            }
+                            else values << ' '
+                            if(lp.note != null) {
+                                notes << lp.note
+                            }
+                            else notes << ' '
+                            if(lp.paragraph != null) {
+                                paragraphs << lp.paragraph
+                            }
+                            else paragraphs << ' '
                         }
                         row.add(createTableCell(format, values.join('; ')))
                         row.add(createTableCell(format, notes.join('; ')))
+                        row.add(createTableCell(format, paragraphs.join('; ')))
                     }else{
+                        row.add(createTableCell(format, ' '))
                         row.add(createTableCell(format, ' '))
                         row.add(createTableCell(format, ' '))
                     }
@@ -3669,9 +3753,9 @@ class ExportClickMeService {
                     else subStatus = configMap.subStatus
                     List subscriptionQueryParams
                     if(configMap.filterPvd && configMap.filterPvd != "" && filterService.listReaderWrapper(configMap, 'filterPvd')){
-                        subscriptionQueryParams = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: result, actionName: configMap.action, status: subStatus ?: null, date_restr: configMap.subValidOn ? DateUtils.parseDateGeneric(configMap.subValidOn) : null, providers: filterService.listReaderWrapper(configMap, 'filterPvd')], contextService.getOrg())
+                        subscriptionQueryParams = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: result, actionName: configMap.action, status: subStatus ?: null, date_restr: configMap.subValidOn ? DateUtils.parseDateGeneric(configMap.subValidOn) : null, providers: filterService.listReaderWrapper(configMap, 'filterPvd')])
                     }else {
-                        subscriptionQueryParams = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: result, actionName: configMap.action, status: subStatus ?: null, date_restr: configMap.subValidOn ? DateUtils.parseDateGeneric(configMap.subValidOn) : null], contextService.getOrg())
+                        subscriptionQueryParams = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery([org: result, actionName: configMap.action, status: subStatus ?: null, date_restr: configMap.subValidOn ? DateUtils.parseDateGeneric(configMap.subValidOn) : null])
                     }
                     List nameOfSubscriptions = Subscription.executeQuery("select s.name " + subscriptionQueryParams[0], subscriptionQueryParams[1])
                     row.add(createTableCell(format, nameOfSubscriptions.join('; ')))
@@ -4068,6 +4152,7 @@ class ExportClickMeService {
                 value.replaceAll('\n', ';')
             else if (format == FORMAT.TSV)
                 value.replaceAll('\n', ',')
+            else value
         }
         else value
     }
@@ -4183,9 +4268,9 @@ class ExportClickMeService {
                 Set<Address> addressList = Address.executeQuery("select a from Address a join a.type type where type = :type and a.org = :org"+addressTenantFilter, queryParams)
 
                 if (addressList) {
-                    row.add([field: addressList.collect { Address address -> _getAddress(address, org)}.join(";"), style: null])
+                    row.add(createTableCell(format, addressList.collect { Address address -> _getAddress(address, org)}.join(";")))
                 } else {
-                    row.add([field: ' ', style: null])
+                    row.add(createTableCell(format, ' '))
                 }
             } else {
                 row.add(createTableCell(format, ' '))
@@ -4525,7 +4610,9 @@ class ExportClickMeService {
                     }else if (fieldKey.contains('Property')) {
                         titles << "${label} ${messageSource.getMessage('default.notes.plural', null, locale)}"
                     }
-
+                    if(fieldKey.contains('licProperty')) {
+                        titles << "${label} ${messageSource.getMessage('property.table.paragraph', null, locale)}"
+                    }
                 }
             }
         }
