@@ -45,21 +45,26 @@
             border: 1px solid black;
             border-collapse: collapse;
         }
+        /* this CSS class enables the usage of multiple pages */
+        .new-page {
+            page-break-before: always;
+        }
         </style>
     </head>
     <body>
-        <article>
-            <table>
-                <thead>
+        <g:each in="${pages}" var="page" status="p">
+            <article>
+                <table>
+                    <thead>
                     <tr>
                         <th><g:message code="sidewide.number"/></th>
-                        <g:each in="${titleRow}" var="titleColumn">
+                        <g:each in="${page.titleRow}" var="titleColumn">
                             <th>${titleColumn}</th>
                         </g:each>
                     </tr>
-                </thead>
-                <tbody>
-                    <g:each in="${columnData}" var="cd" status="jj">
+                    </thead>
+                    <tbody>
+                    <g:each in="${page.columnData}" var="cd" status="jj">
                         <tr <% if((jj+1) % 2 == 0) { print 'class="even"' } else { print 'class="odd"' } %>>
                             <td>${ (params.int('offset') ?: 0)  + jj + 1 }</td>
                             <g:each in="${cd}" var="content">
@@ -67,8 +72,12 @@
                             </g:each>
                         </tr>
                     </g:each>
-                </tbody>
-            </table>
-        </article>
+                    </tbody>
+                </table>
+            </article>
+            <g:if test="${p < pages.size()-1}">
+                <div class="new-page"></div>
+            </g:if>
+        </g:each>
     </body>
 </html>

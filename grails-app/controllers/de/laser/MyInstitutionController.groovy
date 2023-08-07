@@ -607,7 +607,7 @@ class MyInstitutionController  {
                 return
             case 'pdf':
                 Map<String, Object> pdfOutput = exportClickMeService.exportLicenses(totalLicenses, selectedFields, result.institution, ExportClickMeService.FORMAT.PDF)
-                Map<String, Object> pageStruct = [orientation: 'Landscape', width: pdfOutput.titleRow.size()*15, height: 35]
+                Map<String, Object> pageStruct = [orientation: 'Landscape', width: pdfOutput.mainHeader.size()*15, height: 35]
                 if (pageStruct.width > 85*4)       { pageStruct.pageSize = 'A0' }
                 else if (pageStruct.width > 85*3)  { pageStruct.pageSize = 'A1' }
                 else if (pageStruct.width > 85*2)  { pageStruct.pageSize = 'A2' }
@@ -1032,7 +1032,7 @@ class MyInstitutionController  {
                 return
             case 'pdf':
                 Map<String, Object> pdfOutput = exportClickMeService.exportSubscriptions(result.allSubscriptions, selectedFields, result.institution, ExportClickMeService.FORMAT.PDF)
-                Map<String, Object> pageStruct = [orientation: 'Landscape', width: pdfOutput.titleRow.size()*15, height: 35]
+                Map<String, Object> pageStruct = [orientation: 'Landscape', width: pdfOutput.mainHeader.size()*15, height: 35]
                 if (pageStruct.width > 85*4)       { pageStruct.pageSize = 'A0' }
                 else if (pageStruct.width > 85*3)  { pageStruct.pageSize = 'A1' }
                 else if (pageStruct.width > 85*2)  { pageStruct.pageSize = 'A2' }
@@ -3332,7 +3332,7 @@ join sub.orgRelations or_sub where
                 return
             case 'pdf':
                 Map<String, Object> pdfOutput = exportClickMeService.exportOrgs(totalMembers, selectedFields, 'member', ExportClickMeService.FORMAT.PDF, contactSwitch, configMap)
-                Map<String, Object> pageStruct = [orientation: 'Landscape', width: pdfOutput.titleRow.size()*15, height: 35]
+                Map<String, Object> pageStruct = [orientation: 'Landscape', width: pdfOutput.mainHeader.size()*15, height: 35]
                 if (pageStruct.width > 85*4)       { pageStruct.pageSize = 'A0' }
                 else if (pageStruct.width > 85*3)  { pageStruct.pageSize = 'A1' }
                 else if (pageStruct.width > 85*2)  { pageStruct.pageSize = 'A2' }
@@ -3373,50 +3373,69 @@ join sub.orgRelations or_sub where
         Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params)
         result.tableConfig = ['withCostItems']
         result.putAll(subscriptionService.getMySubscriptionsForConsortia(params,result.user,result.institution,result.tableConfig))
-        Profiler prf = result.pu
-        prf.setBenchmark("after subscription loading, before providers")
+        //prf.setBenchmark("after subscription loading, before providers")
         //LinkedHashMap<Subscription,List<Org>> providers = [:]
-        Map<Org,Set<String>> mailAddresses = [:]
-        BidiMap subLinks = new DualHashBidiMap()
-        if(params.format || params.exportXLS) {
-            List<Subscription> subscriptions = result.entries.collect { entry -> (Subscription) entry[1] } as List<Subscription>
-            Links.executeQuery("select l from Links l where (l.sourceSubscription in (:targetSubscription) or l.destinationSubscription in (:targetSubscription)) and l.linkType = :linkType",[targetSubscription:subscriptions,linkType:RDStore.LINKTYPE_FOLLOWS]).each { Links link ->
-                if(link.sourceSubscription && link.destinationSubscription) {
-                    Set<Subscription> destinations = subLinks.get(link.sourceSubscription)
-                    if(destinations)
-                        destinations << link.destinationSubscription
-                    subLinks.put(link.sourceSubscription, destinations)
-                }
+        //Map<Org,Set<String>> mailAddresses = [:]
+        //BidiMap subLinks = new DualHashBidiMap()
+        SimpleDateFormat sdf = DateUtils.getSDF_yyyyMMdd()
+        String datetoday = sdf.format(new Date())
+        String filename = message(code:'subscriptionDetails.members.members') + "_" + datetoday
+        Map<String, Object> selectedFields = [:]
+        Set<String> contactSwitch = []
+        if(params.fileformat) {
+            if (params.filename) {
+                filename =params.filename
             }
-            /*OrgRole.findAllByRoleTypeInList([RDStore.OR_PROVIDER,RDStore.OR_AGENCY]).each { it ->
-                List<Org> orgs = providers.get(it.sub)
-                if(orgs == null)
-                    orgs = [it.org]
-                else orgs.add(it.org)
-                providers.put(it.sub,orgs)
-            }*/
-            List persons = Person.executeQuery("select c.content,c.prs from Contact c where c.prs in (select p from Person as p inner join p.roleLinks pr where " +
-                    "( (p.isPublic = false and p.tenant = :ctx) or (p.isPublic = true) ) and pr.functionType = :roleType) and c.contentType = :email",
-                    [ctx: result.institution,
-                     roleType: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS,
-                     email: RDStore.CCT_EMAIL])
-            persons.each {  personRow ->
-                Person person = (Person) personRow[1]
-                PersonRole pr = person.roleLinks.find{ PersonRole p -> p.org != result.institution}
-                if(pr) {
-                    Org org = pr.org
-                    Set<String> addresses = mailAddresses.get(org)
-                    String mailAddress = (String) personRow[0]
-                    if(!addresses) {
-                        addresses = []
+            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+            contactSwitch.addAll(params.list("contactSwitch"))
+            contactSwitch.addAll(params.list("addressSwitch"))
+            switch(params.fileformat) {
+                case 'xlsx':
+                    SXSSFWorkbook workbook =  (SXSSFWorkbook) exportClickMeService.exportSubscriptionMembers(result.entries, selectedFields, null, result.institution, contactSwitch, ExportClickMeService.FORMAT.XLS)
+                    response.setHeader("Content-disposition","attachment; filename=\"${filename}\"")
+                    response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                    workbook.write(response.outputStream)
+                    response.outputStream.flush()
+                    response.outputStream.close()
+                    workbook.dispose()
+                    return
+                case 'pdf':
+                    Map<String, Object> pdfOutput = exportClickMeService.exportSubscriptionMembers(result.entries, selectedFields, null, result.institution, contactSwitch, ExportClickMeService.FORMAT.PDF)
+                    Map<String, Object> pageStruct = [orientation: 'Landscape', width: pdfOutput.mainHeader.size()*15, height: 35]
+                    if (pageStruct.width > 85*4)       { pageStruct.pageSize = 'A0' }
+                    else if (pageStruct.width > 85*3)  { pageStruct.pageSize = 'A1' }
+                    else if (pageStruct.width > 85*2)  { pageStruct.pageSize = 'A2' }
+                    else if (pageStruct.width > 85)    { pageStruct.pageSize = 'A3' }
+                    pdfOutput.struct = [pageStruct.pageSize + ' ' + pageStruct.orientation]
+                    byte[] pdf = wkhtmltoxService.makePdf(
+                            view: '/templates/export/_individuallyExportPdf',
+                            model: pdfOutput,
+                            pageSize: pageStruct.pageSize,
+                            orientation: pageStruct.orientation,
+                            marginLeft: 10,
+                            marginRight: 10,
+                            marginTop: 15,
+                            marginBottom: 15
+                    )
+                    response.setHeader('Content-disposition', 'attachment; filename="'+ filename +'.pdf"')
+                    response.setContentType('application/pdf')
+                    response.outputStream.withStream { it << pdf }
+                    return
+                case 'csv':
+                    response.setHeader("Content-disposition", "attachment; filename=${filename}.csv")
+                    response.contentType = "text/csv"
+                    ServletOutputStream out = response.outputStream
+                    out.withWriter { writer ->
+                        writer.write((String) exportClickMeService.exportSubscriptionMembers(result.entries, selectedFields, null, result.institution, contactSwitch, ExportClickMeService.FORMAT.CSV))
                     }
-                    addresses << mailAddress
-                    mailAddresses.put(org,addresses)
-                }
+                    out.close()
+                    return
             }
         }
-
-        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
+        else
+            result
+        /*
         prf.setBenchmark("before xls")
         if(params.exportXLS) {
             XSSFWorkbook wb = new XSSFWorkbook()
@@ -3604,13 +3623,6 @@ join sub.orgRelations or_sub where
                 }
             }
             String filename = "${DateUtils.getSDF_noTimeNoPoint().format(new Date())}_${g.message(code:'export.my.consortiaSubscriptions')}.xlsx"
-            response.setHeader("Content-disposition","attachment; filename=\"${filename}\"")
-            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            workbook.write(response.outputStream)
-            response.outputStream.flush()
-            response.outputStream.close()
-            workbook.dispose()
-            return
         }
         else if(params.exportPDF) {
 
@@ -3765,7 +3777,7 @@ join sub.orgRelations or_sub where
                     response.outputStream.close()
                 }
             }
-        }
+        }*/
     }
 
     /**

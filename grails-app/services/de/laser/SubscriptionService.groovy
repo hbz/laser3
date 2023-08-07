@@ -285,7 +285,7 @@ class SubscriptionService {
         Map<Subscription,Set<License>> linkedLicenses = [:]
 
         if('withCostItems' in tableConf) {
-            query = "select new map((case when ci.owner = :org then ci else null end) as cost, subT as sub, roleT.org as org) " +
+            query = "select new map((case when ci.owner = :org then ci else null end) as cost, subT as sub, roleT.org as orgs) " +
                     " from CostItem ci right outer join ci.sub subT join subT.instanceOf subK " +
                     " join subK.orgRelations roleK join subT.orgRelations roleTK join subT.orgRelations roleT " +
                     " where roleK.org = :org and roleK.roleType = :rdvCons " +
@@ -340,6 +340,12 @@ class SubscriptionService {
             query += " and exists (select ident from Identifier ident join ident.org ioorg " +
                     " where ioorg = roleT.org and LOWER(ident.value) like LOWER(:identifier)) "
             qarams.put('identifier', "%${params.identifier}%")
+        }
+
+        Map costFilter = params.findAll{ it -> it.toString().startsWith('iex:participantSubCostItem.') }
+        if(costFilter) {
+            query += " and ci.costItemElement.id in (:elems)"
+            qarams.put('elems', costFilter.collect { selElem -> Long.parseLong(selElem.key.split('participantSubCostItem.')[1]) })
         }
 
         if (params.validOn?.size() > 0) {
@@ -480,9 +486,9 @@ join sub.orgRelations or_sub where
             result.totalCount = costs.size()
             result.totalMembers = []
             costs.each { row ->
-                result.totalMembers << row.org
+                result.totalMembers << row.orgs
             }
-            if(params.exportXLS || params.format)
+            if(params.exportXLS || params.format || params.fileformat)
                 result.entries = costs
             else result.entries = costs.drop((int) result.offset).take((int) result.max)
 
