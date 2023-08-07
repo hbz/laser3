@@ -7,7 +7,7 @@
         <g:if test="${addressInstance}">
             <input type="hidden" name="id" value="${addressInstance.id}"/>
         </g:if>
-        <g:if test="${orgId}">
+        <g:if test="${orgId && orgId != contextOrg}">
             <input id="org" name="org" type="hidden" value="${orgId}"/>
             <label for="org">
                 <g:message code="person.belongsTo"/>

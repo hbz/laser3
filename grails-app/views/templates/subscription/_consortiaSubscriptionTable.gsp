@@ -79,7 +79,7 @@
                 if('withCostItems' in tableConfig) {
                     ci = (CostItem) entry.cost
                     subCons = (Subscription) entry.sub
-                    subscr = (Org) entry.org
+                    subscr = (Org) entry.orgs
                 }
                 else if('onlyMemberSubs' in tableConfig) {
                     subCons = (Subscription) entry[0]
