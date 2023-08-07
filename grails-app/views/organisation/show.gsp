@@ -1081,7 +1081,8 @@
                                         </tr>
                                     </g:if>
                                 </g:if>
-                                <g:set var="providerContacts" value="${orgInstance.getContactPersonsByFunctionType(true, null, orgInstanceRecord != null)}"/>
+                                <g:if test="${isProviderOrAgency}">
+                                    <g:set var="providerContacts" value="${orgInstance.getContactPersonsByFunctionType(true, null, orgInstanceRecord != null)}"/>
                                     <%--
                                     <g:if test="${isProviderOrAgency && contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC ) && !orgInstanceRecord}">
                                         <tr>
@@ -1126,9 +1127,9 @@
                                                                             <g:each in="${prs.contacts.toSorted()}" var="contact">
                                                                                 <g:if test="${contact.contentType && contact.contentType.value in ['E-Mail', 'Mail', 'Url', 'Phone', 'Mobil', 'Fax']}">
                                                                                     <laser:render template="/templates/cpa/contact" model="${[
-                                                                                            overwriteEditable   : (isProviderOrAgency && orgInstanceRecord == null && contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )),
+                                                                                            overwriteEditable   : (orgInstanceRecord == null && contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )),
                                                                                             contact             : contact,
-                                                                                            tmplShowDeleteButton: (isProviderOrAgency && orgInstanceRecord == null && contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC ))
+                                                                                            tmplShowDeleteButton: (orgInstanceRecord == null && contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC ))
                                                                                     ]}"/>
                                                                                 </g:if>
                                                                             </g:each>
@@ -1142,6 +1143,7 @@
                                             </g:if>
                                         </td>
                                     </tr>
+                                </g:if>
                             </table>
                         </g:if>
                     </div>
