@@ -28,10 +28,7 @@
     static final String ORG_CONSORTIUM_BASIC     = 'ORG_CONSORTIUM_BASIC'
     static final String ORG_CONSORTIUM_PRO       = 'ORG_CONSORTIUM_PRO'
 
-    static final String PERMS_BASIC              = 'ORG_INST_BASIC,ORG_CONSORTIUM_BASIC'
-    static final String PERMS_PRO                = 'ORG_INST_PRO,ORG_CONSORTIUM_PRO'
-
-    static final String PERMS_INST_BASIC_CONSORTIUM_PRO  = 'ORG_INST_BASIC,ORG_CONSORTIUM_PRO'
+    static final String PERMS_PRO                        = 'ORG_INST_PRO,ORG_CONSORTIUM_PRO'
     static final String PERMS_INST_PRO_CONSORTIUM_BASIC  = 'ORG_INST_PRO,ORG_CONSORTIUM_BASIC'
 
     boolean isConsortium (String customerType)
