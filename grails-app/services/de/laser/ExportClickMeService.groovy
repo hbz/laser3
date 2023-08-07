@@ -2695,7 +2695,7 @@ class ExportClickMeService {
                 return exportService.generateSeparatorTableString(titles, exportData, '\t')
             case FORMAT.PDF:
                 //structure: list of maps (each map is the content of a page)
-                return [mainHeader: titles, pages: [[titleRow: titles, columnData: exportData]]]
+                return [mainHeader: titles, pages: sheetData.values()]
         }
     }
 
