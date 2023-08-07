@@ -285,7 +285,8 @@ class SubscriptionService {
         Map<Subscription,Set<License>> linkedLicenses = [:]
 
         if('withCostItems' in tableConf) {
-            query = "select new map((case when ci.owner = :org then ci else null end) as cost, subT as sub, roleT.org as orgs) " +
+            //database-side filtering; delivers strange duplicates: (case when ci.owner = :org then ci else null end) --> transpose into server filtering (again... beware of performance loss!)
+            query = "select new map(ci as cost, subT as sub, roleT.org as orgs) " +
                     " from CostItem ci right outer join ci.sub subT join subT.instanceOf subK " +
                     " join subK.orgRelations roleK join subT.orgRelations roleTK join subT.orgRelations roleT " +
                     " where roleK.org = :org and roleK.roleType = :rdvCons " +
@@ -344,7 +345,7 @@ class SubscriptionService {
 
         Map costFilter = params.findAll{ it -> it.toString().startsWith('iex:participantSubCostItem.') }
         if(costFilter) {
-            query += " and ci.costItemElement.id in (:elems)"
+            query += " and (ci.costItemElement.id in (:elems) or ci is null)" //otherwise, subscriptions without cost items will be omitted due to not-null join
             qarams.put('elems', costFilter.collect { selElem -> Long.parseLong(selElem.key.split('participantSubCostItem.')[1]) })
         }
 
@@ -462,9 +463,7 @@ class SubscriptionService {
             }
 
 
-                Set costs = CostItem.executeQuery(
-                    query + " " + orderQuery, qarams
-            )
+                Set costs = CostItem.executeQuery(query + " " + orderQuery, qarams).findAll { row -> row.cost == null || row.cost.owner.id == contextOrg.id } //very ugly and subject of performance loss; keep an eye on that!
             prf.setBenchmark('read off costs')
             //post filter; HQL cannot filter that parameter out
             result.costs = costs
