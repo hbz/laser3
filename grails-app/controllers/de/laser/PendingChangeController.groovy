@@ -19,7 +19,7 @@ class PendingChangeController  {
     /**
      * Call to accept the given change and to trigger processing of the changes stored in the record
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = true)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
@@ -33,7 +33,7 @@ class PendingChangeController  {
     /**
      * Call to accept the given title change and to trigger processing of the changes stored in the record
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = true)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
@@ -47,7 +47,7 @@ class PendingChangeController  {
     /**
      * Call to reject the given change
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = true)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
@@ -61,7 +61,7 @@ class PendingChangeController  {
     /**
      * Call to reject the given change
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = true)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
@@ -75,7 +75,7 @@ class PendingChangeController  {
     /**
      * Call to bulk-process a set of changes. Loops through the changes and performs accepting or rejecting
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = true)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })

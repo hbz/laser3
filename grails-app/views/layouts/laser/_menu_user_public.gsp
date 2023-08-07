@@ -12,10 +12,10 @@
             <ui:link addItemAttributes="true" controller="organisation" action="index">${message(code:'menu.public.all_orgs')}</ui:link>
         </sec:ifAnyGranted>
 
-        <g:if test="${contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
+        <g:if test="${contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
             <ui:link addItemAttributes="true" controller="organisation" action="listInstitution">${message(code:'menu.public.all_insts')}</ui:link>
         </g:if>
-        <g:elseif test="${contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.ORG_INST_BASIC)}">
+        <g:elseif test="${contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.ORG_INST_BASIC)}">
             <ui:link addItemAttributes="true" controller="organisation" action="listConsortia">${message(code:'menu.public.all_cons')}</ui:link>
         </g:elseif>
 

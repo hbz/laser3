@@ -245,7 +245,7 @@ class UserService {
             return hasComboInstAdmPivileges(editor, user.formalOrg)
         }
         else {
-            return contextService.hasPermAsInstAdm_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
+            return contextService.isInstAdm_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
         }
     }
 }

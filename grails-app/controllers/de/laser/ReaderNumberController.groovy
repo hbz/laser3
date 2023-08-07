@@ -17,7 +17,7 @@ class ReaderNumberController  {
 	 * Creates a new reader number for the given institution
 	 * @return redirect to the updated reader number table
 	 */
-	@DebugInfo(isInstEditor_or_ROLEADMIN = true, wtc = DebugInfo.WITH_TRANSACTION)
+	@DebugInfo(isInstEditor_or_ROLEADMIN = [], wtc = DebugInfo.WITH_TRANSACTION)
 	@Secured(closure = {
 		ctx.contextService.isInstEditor_or_ROLEADMIN()
 	})
@@ -35,7 +35,7 @@ class ReaderNumberController  {
 	 * Takes the submitted parameters and updates the given reader number with the given parameter map
 	 * @return the updated reader number table
 	 */
-	@DebugInfo(isInstEditor_or_ROLEADMIN = true, wtc = DebugInfo.WITH_TRANSACTION)
+	@DebugInfo(isInstEditor_or_ROLEADMIN = [], wtc = DebugInfo.WITH_TRANSACTION)
 	@Secured(closure = {
 		ctx.contextService.isInstEditor_or_ROLEADMIN()
 	})
@@ -64,7 +64,7 @@ class ReaderNumberController  {
 	 * Deletes the given reader numbers, specified by their grouping unit
 	 * @return the updated reader number table
 	 */
-	@DebugInfo(isInstEditor_or_ROLEADMIN = true, wtc = DebugInfo.WITH_TRANSACTION)
+	@DebugInfo(isInstEditor_or_ROLEADMIN = [], wtc = DebugInfo.WITH_TRANSACTION)
 	@Secured(closure = {
 		ctx.contextService.isInstEditor_or_ROLEADMIN()
 	})

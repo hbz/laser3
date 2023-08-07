@@ -26,7 +26,7 @@
                     propDefGroupBinding: propDefGroupBinding,
                     prop_desc: prop_desc,
                     ownobj: ownobj,
-                    editable: (!(controllerName in ['survey', 'myInstitution'] ) && contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)),
+                    editable: (!(controllerName in ['survey', 'myInstitution'] ) && contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)),
                     custom_props_div: custom_props_div
             ]}"/>
         </div>

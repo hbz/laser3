@@ -8,7 +8,7 @@
 
 
 <%-- OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${userService.hasFormalAffiliation(user, contextService.getOrg(), 'INST_EDITOR')} --%>
-<g:set var="overwriteEditable" value="${editable || contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_INST_PRO )}" />
+<g:set var="overwriteEditable" value="${editable || contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_INST_PRO )}" />
 
 <g:if test="${newProp}">
     <ui:errors bean="${newProp}" />
