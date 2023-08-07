@@ -258,7 +258,7 @@ class IconTagLib {
 
                 switch (doc.confidentiality) {
                     case RDStore.DOC_CONF_PUBLIC:
-                        markup = markup + '<i class="ui icon lock open olive la-" style="margin-right: 0px"></i> '
+                        markup = markup + '<i class="ui icon lock open olive" style="margin-right: 0px"></i> '
                         break;
                     case RDStore.DOC_CONF_INTERNAL:
                         markup = markup + '<i class="ui icon lock yellow"  style="margin-right: 0px"></i> '
