@@ -10,7 +10,7 @@
 </ui:breadcrumbs>
 
 <ui:controlButtons>
-    <g:if test="${contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)}">
+    <g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)}">
         <ui:actionsDropdown>
             <ui:actionsDropdownItem controller="subscription" action="copyDiscountScales" params="${[id: params.id]}"
                                     message="subscription.details.copyDiscountScales.label"/>

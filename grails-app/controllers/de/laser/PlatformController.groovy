@@ -302,7 +302,7 @@ class PlatformController  {
      * @deprecated use {@link #dynamicApLink} instead
      */
     @Deprecated
-    @DebugInfo(isInstEditor_or_ROLEADMIN = true)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
@@ -336,7 +336,7 @@ class PlatformController  {
      * Call to link a platform to another access point
      * @return renders the available options in a modal
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = true)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
@@ -376,7 +376,7 @@ class PlatformController  {
      * Call to add a new derivation to the given platform
      * @return redirect to the referer
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
@@ -392,7 +392,7 @@ class PlatformController  {
      * Call to remove a new derivation to the given platform
      * @return redirect to the referer
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
@@ -405,7 +405,7 @@ class PlatformController  {
     }
 
     @Deprecated
-    @DebugInfo(isInstEditor_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
@@ -430,7 +430,7 @@ class PlatformController  {
     }
 
     @Deprecated
-    @DebugInfo(isInstEditor_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })

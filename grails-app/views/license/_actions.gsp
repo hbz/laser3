@@ -41,7 +41,7 @@
         </g:if>
         <g:if test="${actionName == 'show'}">
             <%-- the second clause is to prevent the menu display for consortia at member subscriptions --%>
-            <g:if test="${contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC) && !(institution.id == license.getLicensingConsortium()?.id && license.instanceOf)}">
+            <g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC) && !(institution.id == license.getLicensingConsortium()?.id && license.instanceOf)}">
                 <div class="divider"></div>
                 <ui:actionsDropdownItem data-ui="modal" href="#propDefGroupBindings" message="menu.institutions.configure_prop_groups" />
             </g:if>

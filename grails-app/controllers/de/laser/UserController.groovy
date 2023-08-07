@@ -44,7 +44,7 @@ class UserController {
      * Call to delete the given user, listing eventual substitutes for personal belongings.
      * If confirmed, the deletion will be executed and objects reassigned to the given substitute
      */
-    @DebugInfo(isInstAdm_or_ROLEADMIN = true)
+    @DebugInfo(isInstAdm_or_ROLEADMIN = [])
     @Secured(closure = {
         ctx.contextService.isInstAdm_or_ROLEADMIN()
     })
@@ -128,7 +128,7 @@ class UserController {
      * Shows the affiliations and global roles given user
      * @return a list of the user's affiliations and roles
      */
-    @DebugInfo(isInstAdm_or_ROLEADMIN = true)
+    @DebugInfo(isInstAdm_or_ROLEADMIN = [])
     @Secured(closure = {
         ctx.contextService.isInstAdm_or_ROLEADMIN()
     })
@@ -142,7 +142,7 @@ class UserController {
      * Creates a new random password to the given user and sends that via mail to the address registered to the account
      * @return a redirect to the referer
      */
-    @DebugInfo(isInstAdm_or_ROLEADMIN = true, wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstAdm_or_ROLEADMIN = [], wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
         ctx.contextService.isInstAdm_or_ROLEADMIN()
     })
@@ -179,7 +179,7 @@ class UserController {
      * get username and sends that via mail to the address registered to the account
      * @return a redirect to the referer
      */
-    @DebugInfo(isInstAdm_or_ROLEADMIN = true, wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstAdm_or_ROLEADMIN = [], wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
         ctx.contextService.isInstAdm_or_ROLEADMIN()
     })

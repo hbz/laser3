@@ -72,7 +72,7 @@ class SurveyService {
      */
     boolean isEditableSurvey(Org org, SurveyInfo surveyInfo) {
 
-        if (contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO ) && surveyInfo.owner?.id == contextService.getOrg().id) {
+        if (contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO ) && surveyInfo.owner?.id == contextService.getOrg().id) {
             return true
         }
 
@@ -80,7 +80,7 @@ class SurveyService {
             return false
         }
 
-        if (contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )) {
+        if (contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )) {
             SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfigInList(org, surveyInfo.surveyConfigs)
 
             if (surveyOrg.finishDate) {
@@ -96,7 +96,7 @@ class SurveyService {
     @Deprecated
     boolean isEditableIssueEntitlementsSurvey(Org org, SurveyConfig surveyConfig) {
 
-        if (contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO ) && surveyConfig.surveyInfo.owner?.id == contextService.getOrg().id) {
+        if (contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO ) && surveyConfig.surveyInfo.owner?.id == contextService.getOrg().id) {
             return true
         }
 
@@ -108,7 +108,7 @@ class SurveyService {
             return false
         }
 
-        if (contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )) {
+        if (contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )) {
 
             if (SurveyOrg.findByOrgAndSurveyConfig(org, surveyConfig)?.finishDate) {
                 return false

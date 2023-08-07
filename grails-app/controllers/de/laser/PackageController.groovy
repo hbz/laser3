@@ -674,7 +674,7 @@ class PackageController {
      * the we:kb data will be fetched and data mirrored prior to linking the package
      * to the subscription
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = true)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })

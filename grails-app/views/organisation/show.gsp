@@ -483,7 +483,7 @@
                             <dd>
                             <laser:render template="publicContacts" model="[isProviderOrAgency: isProviderOrAgency, existsWekbRecord: orgInstanceRecord != null]"/>
 
-                            <g:if test="${isProviderOrAgency && contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC ) && !orgInstanceRecord}">
+                            <g:if test="${isProviderOrAgency && contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC ) && !orgInstanceRecord}">
                                 <div class="ui list">
 
                                     <div class="item">
@@ -1087,7 +1087,7 @@
                                 </g:if>
                                 <g:set var="providerContacts" value="${orgInstance.getContactPersonsByFunctionType(true, null, orgInstanceRecord != null)}"/>
                                     <%--
-                                    <g:if test="${isProviderOrAgency && contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC ) && !orgInstanceRecord}">
+                                    <g:if test="${isProviderOrAgency && contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC ) && !orgInstanceRecord}">
                                         <tr>
                                             <td>
                                                 <a href="#createPersonModal" class="ui button" data-ui="modal"
@@ -1130,9 +1130,9 @@
                                                                             <g:each in="${prs.contacts.toSorted()}" var="contact">
                                                                                 <g:if test="${contact.contentType && contact.contentType.value in ['E-Mail', 'Mail', 'Url', 'Phone', 'Mobil', 'Fax']}">
                                                                                     <laser:render template="/templates/cpa/contact" model="${[
-                                                                                            overwriteEditable   : (isProviderOrAgency && orgInstanceRecord == null && contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )),
+                                                                                            overwriteEditable   : (isProviderOrAgency && orgInstanceRecord == null && contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )),
                                                                                             contact             : contact,
-                                                                                            tmplShowDeleteButton: (isProviderOrAgency && orgInstanceRecord == null && contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC ))
+                                                                                            tmplShowDeleteButton: (isProviderOrAgency && orgInstanceRecord == null && contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC ))
                                                                                     ]}"/>
                                                                                 </g:if>
                                                                             </g:each>

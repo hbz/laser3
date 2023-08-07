@@ -207,7 +207,7 @@
         </g:if>
     </g:form>
 
-    <g:if test="${contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
+    <g:if test="${contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC)}">
         <hr />
 
             <ui:msg class="info" header="${message(code: 'myinst.noMembers.cons.header')}" noClose="true">

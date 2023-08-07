@@ -112,18 +112,6 @@ class ContextService {
         _hasInstRoleAndPerm_or_ROLEADMIN('INST_ADM', orgPerms)
     }
 
-    // -- Formal checks @ user.formalOrg.perm + user.isFormal(role, formalOrg)
-
-    boolean hasPermAsInstUser_or_ROLEADMIN(String orgPerms) {
-        _hasInstRoleAndPerm_or_ROLEADMIN('INST_USER', orgPerms)
-    }
-    boolean hasPermAsInstEditor_or_ROLEADMIN(String orgPerms) {
-        _hasInstRoleAndPerm_or_ROLEADMIN('INST_EDITOR', orgPerms)
-    }
-    boolean hasPermAsInstAdm_or_ROLEADMIN(String orgPerms) {
-        _hasInstRoleAndPerm_or_ROLEADMIN('INST_ADM', orgPerms)
-    }
-
     // --
 
     boolean hasPermAsInstRoleAsConsortium_or_ROLEADMIN(String orgPerms, String instUserRole) {

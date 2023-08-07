@@ -105,7 +105,7 @@ class MyInstitutionController  {
      * The landing page after login; this is also the call when the home button is clicked
      * @return the {@link #dashboard()} view
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = true)
+    @DebugInfo(isInstUser_or_ROLEADMIN = [])
     @Secured(closure = {
         ctx.contextService.isInstUser_or_ROLEADMIN()
     })
@@ -117,9 +117,9 @@ class MyInstitutionController  {
      * Call for the reporting module
      * @return the reporting entry view
      */
-    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
+    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
+        ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
     })
     def reporting() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -328,7 +328,7 @@ class MyInstitutionController  {
      * query; licenses without a subscription may get lost if there is no subscription linked to it!
      * @return the license list view
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = true)
+    @DebugInfo(isInstUser_or_ROLEADMIN = [])
     @Secured(closure = {
         ctx.contextService.isInstUser_or_ROLEADMIN()
     })
@@ -716,9 +716,9 @@ class MyInstitutionController  {
      * Call to create a new license
      * @return the form view to enter the new license parameters
      */
-    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
+        ctx.contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     })
     def emptyLicense() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -762,7 +762,7 @@ class MyInstitutionController  {
      * Creates a new license based on the parameters submitted
      * @return the license details view ({@link LicenseController#show()}) of the new license record
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = true, wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstUser_or_ROLEADMIN = [], wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
         ctx.contextService.isInstUser_or_ROLEADMIN()
     })
@@ -862,7 +862,7 @@ class MyInstitutionController  {
      * The list results may be filtered with filter parameters
      * @return a list of matching {@link Org} records, as html or as export pipe (Excel / CSV)
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = true)
+    @DebugInfo(isInstUser_or_ROLEADMIN = [])
     @Secured(closure = {
         ctx.contextService.isInstUser_or_ROLEADMIN()
     })
@@ -990,7 +990,7 @@ class MyInstitutionController  {
      * Default filter setting is status: current or with perpetual access
      * @return a (filtered) list of subscriptions, either as direct html output or as export stream (CSV, Excel)
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = true)
+    @DebugInfo(isInstUser_or_ROLEADMIN = [])
     @Secured(closure = {
         ctx.contextService.isInstUser_or_ROLEADMIN()
     })
@@ -1288,9 +1288,9 @@ class MyInstitutionController  {
      *     <li>customerIdentifiers</li>
      * </ol>
      */
-    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
+    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
+        ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     })
     def subscriptionsManagement() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -1350,7 +1350,7 @@ class MyInstitutionController  {
      * Connects the context subscription with the given pair
      * @return void, redirects to referer
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = true)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
@@ -1365,7 +1365,7 @@ class MyInstitutionController  {
      * Removes the given link
      * @return void, redirects to referer
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = true)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
@@ -1380,9 +1380,9 @@ class MyInstitutionController  {
      * @see Doc
      * @see DocContext
      */
-    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
+    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
+        ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     })
     Map documents() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -1398,7 +1398,7 @@ class MyInstitutionController  {
      * @return the document table view ({@link #documents()})
      * @see DocstoreService#unifiedDeleteDocuments()
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = true)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
@@ -1423,7 +1423,7 @@ class MyInstitutionController  {
      * @see Platform
      * @see IssueEntitlement
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = true)
+    @DebugInfo(isInstUser_or_ROLEADMIN = [])
     @Secured(closure = {
         ctx.contextService.isInstUser_or_ROLEADMIN()
     })
@@ -1720,7 +1720,7 @@ class MyInstitutionController  {
             result
     }
 
-    @DebugInfo(isInstUser_or_ROLEADMIN = true)
+    @DebugInfo(isInstUser_or_ROLEADMIN = [])
     @Secured(closure = {
         ctx.contextService.isInstUser_or_ROLEADMIN()
     })
@@ -1800,7 +1800,7 @@ class MyInstitutionController  {
      * @see SubscriptionPackage
      * @see Package
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = true)
+    @DebugInfo(isInstUser_or_ROLEADMIN = [])
     @Secured(closure = {
         ctx.contextService.isInstUser_or_ROLEADMIN()
     })
@@ -1908,7 +1908,7 @@ class MyInstitutionController  {
      * The information is grouped in tabs where information is being preloaded (except changes, notifications and surveys)
      * @return the dashboard view with the prefilled tabs
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstUser_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
         ctx.contextService.isInstUser_or_ROLEADMIN()
     })
@@ -1929,7 +1929,7 @@ class MyInstitutionController  {
      * Opens the modal to create a new task
      * @return the task creation modal
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = true)
+    @DebugInfo(isInstUser_or_ROLEADMIN = [])
     @Secured(closure = {
         ctx.contextService.isInstUser_or_ROLEADMIN()
     })
@@ -1953,7 +1953,7 @@ class MyInstitutionController  {
      * @return a list of changes to be accepted or rejected
      * @see PendingChange
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = true)
+    @DebugInfo(isInstUser_or_ROLEADMIN = [])
     @Secured(closure = {
         ctx.contextService.isInstUser_or_ROLEADMIN()
     })
@@ -1980,9 +1980,9 @@ class MyInstitutionController  {
      * Call for the finance import starting page; the mappings are being explained here and an example sheet for submitting data to import
      * @return the finance import entry view
      */
-    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+        ctx.contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def financeImport() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -1997,9 +1997,9 @@ class MyInstitutionController  {
      * @see Subscription
      * @see CostItem
      */
-    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+        ctx.contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def generateFinanceImportWorksheet() {
         Subscription subscription = Subscription.get(params.id)
@@ -2035,9 +2035,9 @@ class MyInstitutionController  {
      * processing whether the imported data is read correctly or not
      * @return the control view with the import preparation result
      */
-    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+        ctx.contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def processFinanceImport() {
         CostItem.withTransaction { TransactionStatus ts ->
@@ -2072,9 +2072,9 @@ class MyInstitutionController  {
      * Call for the subscription import starting page; the mappings are being explained here and an example sheet for submitting data to import
      * @return the subscription import entry view
      */
-    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+        ctx.contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def subscriptionImport() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -2093,9 +2093,9 @@ class MyInstitutionController  {
      * processing whether the imported data is read correctly or not
      * @return the control view with the import preparation result
      */
-    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+        ctx.contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def processSubscriptionImport() {
             Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -2131,9 +2131,9 @@ class MyInstitutionController  {
      * Default filter setting is current year
      * @return a (filtered) list of surveys, either displayed as html or returned as Excel worksheet
      */
-    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.ORG_INST_BASIC])
+    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.ORG_INST_BASIC])
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )
+        ctx.contextService.isInstUser_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )
     })
     def currentSurveys() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -2224,9 +2224,9 @@ class MyInstitutionController  {
      * The view may be rendered as html or as Excel worksheet to download
      * @return the details view of the given survey
      */
-    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.ORG_INST_BASIC])
+    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.ORG_INST_BASIC])
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )
+        ctx.contextService.isInstUser_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )
     })
     def surveyInfos() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -2348,9 +2348,9 @@ class MyInstitutionController  {
      * pass definitively into the holding of the next year's subscription
      * @return void, returns to the survey details page ({@link #surveyInfos()})
      */
-    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_INST_BASIC])
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_INST_BASIC])
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )
+        ctx.contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )
     })
     def surveyInfoFinish() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -2416,9 +2416,9 @@ class MyInstitutionController  {
         redirect(url: request.getHeader('referer'))
     }
 
-    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_INST_BASIC])
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_INST_BASIC])
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )
+        ctx.contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_INST_BASIC )
     })
     def surveyLinkOpenNewSurvey() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -2510,7 +2510,7 @@ class MyInstitutionController  {
      * @return a list of users affiliated to the context institution
      * @see User
      */
-    @DebugInfo(isInstAdm_or_ROLEADMIN = true)
+    @DebugInfo(isInstAdm_or_ROLEADMIN = [])
     @Secured(closure = {
         ctx.contextService.isInstAdm_or_ROLEADMIN()
     })
@@ -2550,7 +2550,7 @@ class MyInstitutionController  {
      * Call to delete a given user
      * @return the user deletion page where the details of the given user are being enumerated
      */
-    @DebugInfo(isInstAdm_or_ROLEADMIN = true)
+    @DebugInfo(isInstAdm_or_ROLEADMIN = [])
     @Secured(closure = {
         ctx.contextService.isInstAdm_or_ROLEADMIN()
     })
@@ -2591,7 +2591,7 @@ class MyInstitutionController  {
      * Call to edit the given user
      * @return the user details view for editing the profile
      */
-    @DebugInfo(isInstAdm_or_ROLEADMIN = true)
+    @DebugInfo(isInstAdm_or_ROLEADMIN = [])
     @Secured(closure = {
         ctx.contextService.isInstAdm_or_ROLEADMIN()
     })
@@ -2615,7 +2615,7 @@ class MyInstitutionController  {
      * Call to create a new user for the context institution
      * @return the form to enter the new user's parameters
      */
-    @DebugInfo(isInstAdm_or_ROLEADMIN = true)
+    @DebugInfo(isInstAdm_or_ROLEADMIN = [])
     @Secured(closure = {
         ctx.contextService.isInstAdm_or_ROLEADMIN()
     })
@@ -2633,7 +2633,7 @@ class MyInstitutionController  {
      * Processes the submitted parameters and creates a new user for the context institution
      * @return a redirect to the profile edit page on success, back to the user creation page otherwise
      */
-    @DebugInfo(isInstAdm_or_ROLEADMIN = true)
+    @DebugInfo(isInstAdm_or_ROLEADMIN = [])
     @Secured(closure = {
         ctx.contextService.isInstAdm_or_ROLEADMIN()
     })
@@ -2656,7 +2656,7 @@ class MyInstitutionController  {
      * Attaches a given user to the given institution
      * @return the user editing view
      */
-    @DebugInfo(isInstAdm_or_ROLEADMIN = true)
+    @DebugInfo(isInstAdm_or_ROLEADMIN = [])
     @Secured(closure = {
         ctx.contextService.isInstAdm_or_ROLEADMIN()
     })
@@ -2676,9 +2676,9 @@ class MyInstitutionController  {
      * Opens the internal address book for the context institution
      * @return a list view of the institution-internal contacts
      */
-    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
+    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
+        ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     })
     def addressbook() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -2799,9 +2799,9 @@ class MyInstitutionController  {
      * @see BudgetCode
      * @see CostItemGroup
      */
-    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+        ctx.contextService.isInstUser_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     Map<String, Object> budgetCodes() {
         BudgetCode.withTransaction {
@@ -2857,9 +2857,9 @@ class MyInstitutionController  {
      * @return a table view of tasks
      * @see Task
      */
-    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO], wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO], wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
+        ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
     })
     def tasks() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -2894,9 +2894,9 @@ class MyInstitutionController  {
      * Call for listing institutions eligible to be attached to or detached from the context consortium
      * @return a list of institutions
      */
-    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC], wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC], wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
+        ctx.contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
     def addMembers() {
         Combo.withTransaction {
@@ -2938,9 +2938,9 @@ class MyInstitutionController  {
         }
     }
 
-    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO], ctrlService = DebugInfo.IN_BETWEEN)
+    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO], ctrlService = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
+        ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
     })
     def currentWorkflows() {
 
@@ -3147,9 +3147,9 @@ class MyInstitutionController  {
      * The result may be filtered by organisational and subscription parameters
      * @return the list of consortial member institutions
      */
-    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC], wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC], wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
+        ctx.contextService.isInstUser_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
     def manageMembers() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params), configMap = params.clone()
@@ -3364,9 +3364,9 @@ join sub.orgRelations or_sub where
      * @see Subscription
      * @see Org
      */
-    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC])
+    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC])
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
+        ctx.contextService.isInstUser_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
     def manageConsortiaSubscriptions() {
 
@@ -3773,9 +3773,9 @@ join sub.orgRelations or_sub where
      * The result may be displayed as HTML or exported as Excel worksheet
      * @return a list of surveys the context consortium set up and the given institution is participating at
      */
-    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO])
+    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO])
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstUser_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     def manageParticipantSurveys() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -3838,9 +3838,9 @@ join sub.orgRelations or_sub where
      * editing may be done on the given property group
      * @return in every case, the list of property groups; the list may be exported as Excel with the usage data as well, then, an Excel worksheet is being returned
      */
-    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
+        ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     })
     def managePropertyGroups() {
         Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -3954,9 +3954,9 @@ join sub.orgRelations or_sub where
      * Call to display the current usage for the given property in the system
      * @return a form view of the given property definition with their usage in the context institution's objects
      */
-    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
+        ctx.contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     })
     def manageProperties() {
         Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -4055,9 +4055,9 @@ join sub.orgRelations or_sub where
      * Call to process a bulk assign of a property definition to a given set of objects
      * @return the updated view with the assigned property definitions
      */
-    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
+        ctx.contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     })
     def processManageProperties() {
         PropertyDefinition.withTransaction {
@@ -4168,9 +4168,9 @@ join sub.orgRelations or_sub where
      * To add a custom property definition (which is usable for every institution), the route is {@link de.laser.ajax.AjaxController#addCustomPropertyType()}
      * (but consider the annotation there!)
      */
-    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
+        ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     })
     def managePrivatePropertyDefinitions() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -4256,9 +4256,9 @@ join sub.orgRelations or_sub where
      * @return a read-only list of public / general property definitions with the usages of objects owned by the context institution
      * @see AdminController#managePropertyDefinitions()
      */
-    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
+        ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     })
     Object managePropertyDefinitions() {
         Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -4381,7 +4381,7 @@ join sub.orgRelations or_sub where
      * Call to open the license copy view
      * @return the entry point view of the license copy process
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = true)
+    @DebugInfo(isInstUser_or_ROLEADMIN = [])
     @Secured(closure = {
         ctx.contextService.isInstUser_or_ROLEADMIN()
     })
@@ -4410,9 +4410,9 @@ join sub.orgRelations or_sub where
         }
     }
 
-    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], wtc = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+        ctx.contextService.isInstUser_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
     })
     def currentSubscriptionsTransfer() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)

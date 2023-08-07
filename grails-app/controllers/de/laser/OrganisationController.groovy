@@ -89,9 +89,9 @@ class OrganisationController  {
      *     <li>oamonitor: permissions to the Open Access harvest access</li>
      * </ul>
      */
-    @DebugInfo(hasPermAsInstAdm_or_ROLEADMIN = ['FAKE,ORG_INST_BASIC,ORG_CONSORTIUM_BASIC'])
+    @DebugInfo(isInstAdm_or_ROLEADMIN = ['FAKE,ORG_INST_BASIC,ORG_CONSORTIUM_BASIC'])
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstAdm_or_ROLEADMIN( 'FAKE,ORG_INST_BASIC,ORG_CONSORTIUM_BASIC' )
+        ctx.contextService.isInstAdm_or_ROLEADMIN( 'FAKE,ORG_INST_BASIC,ORG_CONSORTIUM_BASIC' )
     })
     @Check404(domain=Org)
     def settings() {
@@ -893,9 +893,9 @@ class OrganisationController  {
      * Creates a new provider organisation with the given parameters
      * @return the details view of the provider or the creation view in case of an error
      */
-    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], wtc = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], wtc = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+        ctx.contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def createProvider() {
         Org.withTransaction {
@@ -923,9 +923,9 @@ class OrganisationController  {
      * Call to create a new provider; offers first a query for the new name to insert in order to exclude duplicates
      * @return the empty form (with a submit to proceed with the new organisation) or a list of eventual name matches
      */
-    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+        ctx.contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def findProviderMatches() {
 
@@ -942,9 +942,9 @@ class OrganisationController  {
      * Call to create a new member with the given parameter map
      * @return the details view of the new member in case of success, the creation page otherwise
      */
-    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
+        ctx.contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
     def createMember() {
         Map<String,Object> ctrlResult = organisationControllerService.createMember(this,params)
@@ -962,9 +962,9 @@ class OrganisationController  {
      * Call to create a new consortium member; opens a form to check the new name against existing ones in order to exclude duplicates
      * @return the form with eventual name matches
      */
-    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC])
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC])
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
+        ctx.contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
     Map findOrganisationMatches() {
         Map memberMap = [:]
@@ -1115,7 +1115,7 @@ class OrganisationController  {
         //IF ORG is a Provider and is NOT ex we:kb
         if(!result.orgInstance.gokbId && (result.orgInstance.sector == RDStore.O_SECTOR_PUBLISHER || RDStore.OT_PROVIDER.id in result.allOrgTypeIds)) {
             result.editable_identifier = userService.hasFormalAffiliation(result.user, result.orgInstance, 'INST_EDITOR') ||
-                    contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+                    contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
         }
         else if(!result.orgInstance.gokbId) {
             if (contextService.getOrg().isCustomerType_Consortium()) {
@@ -1201,9 +1201,9 @@ class OrganisationController  {
      * @return the task table view
      * @see Task
      */
-    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
+    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
+        ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
     })
     @Check404(domain=Org)
     def tasks() {
@@ -1218,9 +1218,9 @@ class OrganisationController  {
         result
     }
 
-    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
+    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_PRO])
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
+        ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_PRO)
     })
     @Check404()
     def workflows() {
@@ -1237,9 +1237,9 @@ class OrganisationController  {
      * @see Doc
      * @see DocContext
      */
-    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
+    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
+        ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     })
     @Check404(domain=Org)
     def documents() {
@@ -1260,7 +1260,7 @@ class OrganisationController  {
      * it has been attached to; content editing of an uploaded document is not possible in this app!
      * @return the modal to edit the document parameters
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = true)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
@@ -1285,7 +1285,7 @@ class OrganisationController  {
      * @return the document table view ({@link #documents()})
      * @see DocstoreService#unifiedDeleteDocuments()
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = true)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [])
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
@@ -1305,7 +1305,7 @@ class OrganisationController  {
      * @see Doc
      * @see DocContext
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = true)
+    @DebugInfo(isInstUser_or_ROLEADMIN = [])
     @Secured(closure = {
         ctx.contextService.isInstUser_or_ROLEADMIN()
     })
@@ -1323,9 +1323,9 @@ class OrganisationController  {
      * Call to delete the given customer identifier
      * @return the customer identifier table view
      */
-    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = ['FAKE,ORG_INST_BASIC,ORG_CONSORTIUM_BASIC'], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = ['FAKE,ORG_INST_BASIC,ORG_CONSORTIUM_BASIC'], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( 'FAKE,ORG_INST_BASIC,ORG_CONSORTIUM_BASIC' )
+        ctx.contextService.isInstEditor_or_ROLEADMIN( 'FAKE,ORG_INST_BASIC,ORG_CONSORTIUM_BASIC' )
     })
     def deleteCustomerIdentifier() {
         Map<String,Object> ctrlResult = organisationControllerService.deleteCustomerIdentifier(this,params)
@@ -1350,7 +1350,7 @@ class OrganisationController  {
      * @return renders the user list template with the users affiliated to this institution
      * @see User
      */
-    @DebugInfo(isInstAdm_or_ROLEADMIN = true)
+    @DebugInfo(isInstAdm_or_ROLEADMIN = [])
     @Secured(closure = {
         ctx.contextService.isInstAdm_or_ROLEADMIN()
     })
@@ -1410,9 +1410,9 @@ class OrganisationController  {
      * Data the given user may have authored will be reassigned to another user
      * @return the user deletion view where eventual conflicts are being listed
      */
-    @DebugInfo(hasPermAsInstAdm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC])
+    @DebugInfo(isInstAdm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC])
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstAdm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
+        ctx.contextService.isInstAdm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
     def deleteUser() {
         Map<String, Object> result = userControllerService.getResultGenericsERMS3067(params)
@@ -1452,9 +1452,9 @@ class OrganisationController  {
      * Call to edit the given user profile
      * @return the profile editing template
      */
-    @DebugInfo(hasPermAsInstAdm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC])
+    @DebugInfo(isInstAdm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC])
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstAdm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
+        ctx.contextService.isInstAdm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
     def editUser() {
         Map result = [
@@ -1475,9 +1475,9 @@ class OrganisationController  {
      * Call to create a new user profile
      * @return the profile creation template
      */
-    @DebugInfo(hasPermAsInstAdm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC])
+    @DebugInfo(isInstAdm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC])
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstAdm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
+        ctx.contextService.isInstAdm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
     def createUser() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
@@ -1491,9 +1491,9 @@ class OrganisationController  {
      * Takes the submitted parameters and creates a new user record with the given parameters
      * @return the user editing template in case of success, redirects back to the creation page otherwise
      */
-    @DebugInfo(hasPermAsInstAdm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC])
+    @DebugInfo(isInstAdm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC])
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstAdm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
+        ctx.contextService.isInstAdm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
     def processCreateUser() {
         def success = userService.addNewUser(params, flash)
@@ -1514,9 +1514,9 @@ class OrganisationController  {
      * Attaches the given user to the given institution
      * @return the user editing profile with the updated data
      */
-    @DebugInfo(hasPermAsInstAdm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC])
+    @DebugInfo(isInstAdm_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC])
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstAdm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
+        ctx.contextService.isInstAdm_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
     def setAffiliation() {
         Map<String, Object> result = userControllerService.getResultGenericsERMS3067(params)
@@ -1568,9 +1568,9 @@ class OrganisationController  {
      * Call to list the public contacts of the given organisation
      * @return a table view of public contacts
      */
-    @DebugInfo(hasPermAsInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
+    @DebugInfo(isInstUser_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC])
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
+        ctx.contextService.isInstUser_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     })
     @Check404(domain=Org)
     def addressbook() {
@@ -1629,7 +1629,7 @@ class OrganisationController  {
      * @return a table view of the reader numbers, grouped by semesters on the one hand, due dates on the other
      * @see ReaderNumber
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = true)
+    @DebugInfo(isInstUser_or_ROLEADMIN = [])
     @Secured(closure = {
         ctx.contextService.isInstUser_or_ROLEADMIN()
     })
@@ -1713,7 +1713,7 @@ class OrganisationController  {
      * @return a list view of access points
      * @see de.laser.oap.OrgAccessPoint
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = true)
+    @DebugInfo(isInstUser_or_ROLEADMIN = [])
     @Secured(closure = {
         ctx.contextService.isInstUser_or_ROLEADMIN()
     })
@@ -1909,7 +1909,7 @@ class OrganisationController  {
      * Call to list the contacts the context institution has attached to the given organisation
      * @return a table view of the contacts
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = true)
+    @DebugInfo(isInstUser_or_ROLEADMIN = [])
     @Secured(closure = {
         ctx.contextService.isInstUser_or_ROLEADMIN()
     })

@@ -50,7 +50,7 @@ class FinanceController  {
      * the cost items listed in them depends on the perspective taken and specified in the parameter map.
      * To see the decision tree, view {@link FinanceControllerService#getResultGenerics(grails.web.servlet.mvc.GrailsParameterMap)}
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = true, ctrlService = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstUser_or_ROLEADMIN = [], ctrlService = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
         ctx.contextService.isInstUser_or_ROLEADMIN()
     })
@@ -80,7 +80,7 @@ class FinanceController  {
      * and specified in the parameter map, see {@link FinanceControllerService#getResultGenerics(grails.web.servlet.mvc.GrailsParameterMap)} for
      * the decision tree
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = true, ctrlService = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstUser_or_ROLEADMIN = [], ctrlService = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
         ctx.contextService.isInstUser_or_ROLEADMIN()
     })
@@ -139,7 +139,7 @@ class FinanceController  {
      * can only display the currently visible (= active) tab!
      * @return the financial data tab(s), as Excel worksheet or CSV export file
      */
-    @DebugInfo(isInstUser_or_ROLEADMIN = true, ctrlService = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstUser_or_ROLEADMIN = [], ctrlService = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
         ctx.contextService.isInstUser_or_ROLEADMIN()
     })
@@ -455,7 +455,7 @@ class FinanceController  {
     /**
      * Calls the cost item creation modal and sets the edit parameters
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = true, ctrlService = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
@@ -477,7 +477,7 @@ class FinanceController  {
     /**
      * Calls the cost item creation modal, sets the edit parameters and prefills the form values with the existing cost item data
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = true, ctrlService = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
@@ -498,7 +498,7 @@ class FinanceController  {
      * After submitting the form, a new cost item will be created which has the current one as base, taking those values
      * submitted in the modal
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = true, ctrlService = DebugInfo.NOT_TRANSACTIONAL)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
@@ -520,7 +520,7 @@ class FinanceController  {
     /**
      * Call to delete a given cost item
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
@@ -534,7 +534,7 @@ class FinanceController  {
     /**
      * Call to process the submitted form values in order to create or update a cost item
      */
-    @DebugInfo(isInstEditor_or_ROLEADMIN = true, ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
         ctx.contextService.isInstEditor_or_ROLEADMIN()
     })
@@ -552,9 +552,9 @@ class FinanceController  {
     /**
      * Call to import cost items submitted from the import post processing view
      */
-    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
+        ctx.contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC )
     })
     def importCostItems() {
         Map<String,Object> ctrlResult = financeService.importCostItems(params)
@@ -571,9 +571,9 @@ class FinanceController  {
     /**
      * Marks a change done by the consortium as acknowledged by the single user who copied the given cost item
      */
-    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
+        ctx.contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     })
     def acknowledgeChange() {
         PendingChange changeAccepted = PendingChange.get(params.id)
@@ -585,9 +585,9 @@ class FinanceController  {
     /**
      * Call to process the data in the bulk editing form and to apply the changes to the picked cost items
      */
-    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_BASIC], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
+        ctx.contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_BASIC )
     })
     def processCostItemsBulk() {
         Map<String,Object> ctrlResult = financeService.processCostItemsBulk(params)

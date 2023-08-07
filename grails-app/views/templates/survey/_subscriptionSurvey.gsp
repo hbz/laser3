@@ -643,7 +643,7 @@
             <g:if test="${controllerName == 'survey' && actionName == 'show'}">
                 <div id="container-notes">
                     <laser:render template="/templates/notes/card"
-                                  model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '', editable: contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)]}"/>
+                                  model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '', editable: contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)]}"/>
                 </div>
                 <div id="container-tasks">
                     <laser:render template="/templates/tasks/card"

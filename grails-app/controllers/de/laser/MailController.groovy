@@ -16,9 +16,9 @@ class MailController {
     MailSendService mailSendService
     AccessService accessService
 
-    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)
+        ctx.contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)
     })
     def createOwnMail() {
         log.debug("createOwnMail: " + params)
@@ -47,7 +47,7 @@ class MailController {
             switch (result.objectType) {
                 case SurveyInfo.class.name:
 
-                    result.editable = contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+                    result.editable = contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
 
                     if (!result.editable) {
                         flash.error = g.message(code: "default.notAutorized.message")
@@ -123,9 +123,9 @@ class MailController {
         result
     }
 
-    @DebugInfo(hasPermAsInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(isInstEditor_or_ROLEADMIN = [CustomerTypeService.ORG_CONSORTIUM_PRO], ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = {
-        ctx.contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)
+        ctx.contextService.isInstEditor_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_PRO)
     })
     def processSendMail() {
         log.debug("processSendMail: " + params)
@@ -154,7 +154,7 @@ class MailController {
 
             switch (params.objectType) {
                 case SurveyInfo.class.name:
-                    result.editable = contextService.hasPermAsInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
+                    result.editable = contextService.isInstEditor_or_ROLEADMIN( CustomerTypeService.ORG_CONSORTIUM_PRO )
 
                     if (!result.editable) {
                         flash.error = g.message(code: "default.notAutorized.message")
