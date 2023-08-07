@@ -194,7 +194,7 @@
                             <div class="ui small feed content la-js-dont-hide-this-card">
                                 <div class="ui grid summary">
                                     <div class="eight wide column la-column-right-lessPadding">
-
+                                        <ui:documentIcon doc="${docctx.owner}" showText="false" showTooltip="true"/>
                                         <g:set var="supportedMimeType"
                                                value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}"/>
                                         <g:if test="${supportedMimeType}">
@@ -208,7 +208,7 @@
                                             (${docctx.getDocType().getI10n("value")})
                                         </g:if>
 
-                                        <ui:documentIcon doc="${docctx.owner}" showText="false" showTooltip="true"/>
+
                                     </div>
 
                                     <div class="right aligned eight wide column la-column-left-lessPadding">
@@ -274,7 +274,7 @@
                             <div class="ui small feed content la-js-dont-hide-this-card">
                                 <div class="ui grid summary">
                                     <div class="eight wide column la-column-right-lessPadding">
-
+                                        <ui:documentIcon doc="${docctx.owner}" showText="false" showTooltip="true"/>
                                         <g:set var="supportedMimeType"
                                                value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}"/>
                                         <g:if test="${supportedMimeType}">
@@ -287,8 +287,6 @@
                                         <g:if test="${docctx.getDocType()}">
                                             (${docctx.getDocType().getI10n("value")})
                                         </g:if>
-
-                                        <ui:documentIcon doc="${docctx.owner}" showText="false" showTooltip="true"/>
                                     </div>
 
                                     <div class="right aligned eight wide column la-column-left-lessPadding">

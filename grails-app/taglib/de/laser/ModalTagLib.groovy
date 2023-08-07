@@ -63,7 +63,7 @@ class ModalTagLib {
         out << body()
         out << '</div>'
         out << '<div class="actions">'
-        out << '<button class="ui button ' + attrs.id + '" onclick="$(\'#' + attrs.id + '\').modal(\'hide\')">' + msgClose + '</button>'
+        out << '<button class="ui button deny" >' + msgClose + '</button>'
 
         if (attrs.showDeleteButton) {
 
