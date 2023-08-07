@@ -14,7 +14,6 @@ import java.time.Year
  */
 @Transactional
 class SubscriptionsQueryService {
-    AccessService accessService
     ContextService contextService
     GenericOIDService genericOIDService
     PropertyService propertyService

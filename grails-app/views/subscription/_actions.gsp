@@ -226,13 +226,13 @@
         </g:if>
     </ui:actionsDropdown>
 </g:if>
-<g:elseif test="${contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_BASIC)}">
+<g:elseif test="${contextService.isInstEditor_or_ROLEADMIN()}">
     <ui:actionsDropdown>
         <ui:actionsDropdownItem message="template.addNote" data-ui="modal" href="#modalCreateNote" />
     </ui:actionsDropdown>
 </g:elseif>
 
-<g:if test="${contextService.hasPermAsInstEditor_or_ROLEADMIN(CustomerTypeService.PERMS_BASIC)}">
+<g:if test="${contextService.isInstEditor_or_ROLEADMIN()}">
     <laser:render template="/templates/sidebar/helper" model="${[tmplConfig: [addActionModals: true, ownobj: subscription, owntp: 'subscription']]}" />
 </g:if>
 
