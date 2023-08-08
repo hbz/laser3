@@ -32,51 +32,49 @@
                 <tr>
                     <td>${subscription.name}</td>
                     <td>
-                        <g:formatDate formatName="default.date.format.notime" date="${subscription.startDate}"/>
+                        <ui:xEditable owner="${subscription}" field="startDate" type="date" validation="datesCheck"/>
                         <ui:auditButton auditable="[subscription, 'startDate']"/>
                     </td>
                     <td>
-                        <g:formatDate formatName="default.date.format.notime" date="${subscription.endDate}"/>
+                        <ui:xEditable owner="${subscription}" field="endDate" type="date" validation="datesCheck" overwriteEditable="${editable && !subscription.isAutomaticRenewAnnually}"/>
                         <ui:auditButton auditable="[subscription, 'endDate']"/>
                     </td>
                     <td>
-                        ${subscription.referenceYear}
+                        <ui:xEditable owner="${subscription}" field="referenceYear" type="year"/>
                         <ui:auditButton auditable="[subscription, 'referenceYear']"/>
                     </td>
                     <td>
-                        ${subscription.status.getI10n('value')}
+                        <ui:xEditableRefData owner="${subscription}" field="status" config="${RDConstants.SUBSCRIPTION_STATUS}" constraint="removeValue_deleted"/>
                         <ui:auditButton auditable="[subscription, 'status']"/>
                     </td>
                     <td>
-                        ${subscription.kind?.getI10n('value')}
+                        <ui:xEditableRefData owner="${subscription}" field="kind" config="${RDConstants.SUBSCRIPTION_KIND}"/>
                         <ui:auditButton auditable="[subscription, 'kind']"/>
                     </td>
                     <td>
-                        ${subscription.form?.getI10n('value')}
+                        <ui:xEditableRefData owner="${subscription}" field="form" config="${RDConstants.SUBSCRIPTION_FORM}"/>
                         <ui:auditButton auditable="[subscription, 'form']"/>
                     </td>
                     <td>
-                        ${subscription.resource?.getI10n('value')}
+                        <ui:xEditableRefData owner="${subscription}" field="resource" config="${RDConstants.SUBSCRIPTION_RESOURCE}"/>
                         <ui:auditButton auditable="[subscription, 'resource']"/>
                     </td>
                     <td>
-                        ${subscription.isPublicForApi ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
+                        <ui:xEditableBoolean owner="${subscription}" field="isPublicForApi"/>
                         <ui:auditButton auditable="[subscription, 'isPublicForApi']"/>
                     </td>
                     <td>
-                        ${subscription.hasPerpetualAccess ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
+                        <ui:xEditableBoolean owner="${subscription}" field="hasPerpetualAccess"/>
                         <ui:auditButton auditable="[subscription, 'hasPerpetualAccess']"/>
                     </td>
                     <td>
-                        ${subscription.hasPublishComponent ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
+                        <ui:xEditableBoolean owner="${subscription}" field="hasPublishComponent"/>
                         <ui:auditButton auditable="[subscription, 'hasPublishComponent']"/>
                     </td>
-                    <g:if test="${subscription.packages}">
-                        <td>
-                            ${subscription.holdingSelection?.getI10n('value')}
-                            <ui:auditButton auditable="[subscription, 'holdingSelection']"/>
-                        </td>
-                    </g:if>
+                    <td>
+                        <ui:xEditableRefData owner="${subscription}" field="holdingSelection" config="${RDConstants.SUBSCRIPTION_HOLDING}"/>
+                        <ui:auditButton auditable="[subscription, 'holdingSelection']"/>
+                    </td>
 
                     <td class="x">
                         <g:link controller="subscription" action="show" id="${subscription.id}"
