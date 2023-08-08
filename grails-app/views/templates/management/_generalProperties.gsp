@@ -453,10 +453,8 @@
                             <ui:auditButton auditable="[sub, 'hasPublishComponent']"/>
                         </td>
                         <td>
-                            <g:if test="${sub.packages}">
-                                <ui:xEditableRefData owner="${sub}" field="holdingSelection" config="${RDConstants.SUBSCRIPTION_HOLDING}" overwriteEditable="${editableOld}"/>
-                                <ui:auditButton auditable="[sub, 'holdingSelection']"/>
-                            </g:if>
+                            <ui:xEditableRefData owner="${sub}" field="holdingSelection" config="${RDConstants.SUBSCRIPTION_HOLDING}" overwriteEditable="${editableOld}"/>
+                            <ui:auditButton auditable="[sub, 'holdingSelection']"/>
                         </td>
                         <g:if test="${contextService.hasPerm(CustomerTypeService.ORG_INST_PRO)}">
                             <td>
