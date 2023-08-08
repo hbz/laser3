@@ -22,6 +22,7 @@ class SubscriptionsQueryService {
      *
      * @param params
      * @param joinQuery an eventual join if further tables need to be accessed by an optional filter
+     * @param contextOrg optional
      * @return the base query data in structure:
      * <ol start="0">
      *     <li>base_qry the query string</li>
@@ -29,8 +30,8 @@ class SubscriptionsQueryService {
      *     <li>filterSet the flag for the export whether a filter has been applied</li>
      * </ol>
      */
-    List myInstitutionCurrentSubscriptionsBaseQuery(params, String joinQuery = "") {
-        Org contextOrg = contextService.getOrg()
+    List myInstitutionCurrentSubscriptionsBaseQuery(params, String joinQuery = "", Org contextOrg = null) {
+        contextOrg = contextOrg ?: contextService.getOrg()
 
         def date_restriction
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
