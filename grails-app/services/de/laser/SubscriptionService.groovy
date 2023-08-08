@@ -137,7 +137,7 @@ class SubscriptionService {
         }
 
         prf.setBenchmark('get base query')
-        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params)
+        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, '', contextOrg)
         result.filterSet = tmpQ[2]
         List<Subscription> subscriptions
         prf.setBenchmark('fetch subscription data')
@@ -209,7 +209,7 @@ class SubscriptionService {
         }
 
 
-        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params)
+        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, '', contextOrg)
         result.filterSet = tmpQ[2]
         List<Subscription> subscriptions
         subscriptions = Subscription.executeQuery( "select s " + tmpQ[0], tmpQ[1] ) //,[max: result.max, offset: result.offset]
