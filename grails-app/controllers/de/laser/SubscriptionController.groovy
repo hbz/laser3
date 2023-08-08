@@ -825,15 +825,15 @@ class SubscriptionController {
         }
         else {
             if(params.addUUID) {
-                switch(ctrlResult.result.holdingSelection) {
-                    case RDStore.SUBSCRIPTION_HOLDING_ENTIRE: flash.message = message(code:'subscription.details.link.processingWithEntitlements') as String
-                        redirect action: 'index', params: [id: params.id, gokbId: params.addUUID]
-                        return
-                        break
-                    case RDStore.SUBSCRIPTION_HOLDING_PARTIAL: flash.message = message(code:'subscription.details.link.processingWithoutEntitlements') as String
-                        redirect action: 'addEntitlements', params: [id: params.id, packageLinkPreselect: params.addUUID, preselectedName: ctrlResult.result.packageName]
-                        return
-                        break
+                if(params.createEntitlements == 'on') {
+                    flash.message = message(code: 'subscription.details.link.processingWithEntitlements') as String
+                    redirect action: 'index', params: [id: params.id, gokbId: params.addUUID]
+                    return
+                }
+                else {
+                    flash.message = message(code:'subscription.details.link.processingWithoutEntitlements') as String
+                    redirect action: 'addEntitlements', params: [id: params.id, packageLinkPreselect: params.addUUID, preselectedName: ctrlResult.result.packageName]
+                    return
                 }
             }
         }

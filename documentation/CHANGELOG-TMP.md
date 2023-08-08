@@ -7,6 +7,22 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+5214    08.08.2023  rc-3.2  3.2.2       Ingrid  Feature     Meine Lizenzübertragungen: Tabelle übersichtlicher
+
+5220    07.08.2023  rc-3.2  3.2.2       Andreas Bug         eigene Adressen konnten nicht hinzugefügt werden
+
+--      03.08.2023  rc-3.2  3.2.2       Andreas Bug         Ausgaben beim PDF-Vertragsexport korrigiert
+
+--      01.08.2023  rc-3.2  3.2.2       Andreas Bug         Exportreiter "Übertrag" hat keine Defaultbelegung mehr
+
+5213    01.08.2023  rc-3.2  3.2.2       Andreas Bug         verschiedene Fehler in der Lizenzverwaltung behoben
+
+5211    31.07.2023  rc-3.2  3.2.2       Andreas Bug         502er durch Umstellung der Query behoben
+
+5210    31.07.2023  rc-3.2  3.2.2       Andreas Bug         falscher Verweis des dauerhaften Bestandstitels aufgelöst
+
+5209    31.07.2023  rc-3.2  3.2.2       Andreas Bug         erneute Umstellung der Kosteneingabemodal-Eventlistener
+
 --      26.07.2023  rc-3.2  3.2.1       Andreas Bug         Falschanzeige des Menüeintrages "Meine Lizenzübertragungen" behoben
 
 5208    26.07.2023  rc-3.2  3.2.1       Andreas Feature     Export einer einzelnen Lizenz in PDF

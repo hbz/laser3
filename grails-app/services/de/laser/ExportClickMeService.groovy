@@ -399,19 +399,18 @@ class ExportClickMeService {
                     label: 'Transfer',
                     message: 'subscription.details.subTransfer.label',
                     fields: [
-                            'subscription.offerRequested'                : [field: 'offerRequested', label: 'Offer Requested', message: 'subscription.offerRequested.label', defaultChecked: 'true'],
-                            'subscription.offerRequestedDate'            : [field: 'offerRequestedDate', label: 'Offer Requested Date', message: 'subscription.offerRequestedDate.label', defaultChecked: 'true'],
-                            'subscription.offerAccepted'                 : [field: 'offerAccepted', label: 'Offer Accepted', message: 'subscription.offerAccepted.label', defaultChecked: 'true'],
-                            'subscription.manualCancellationDate'        : [field: 'offerNote', label: 'Offer Note', message: 'subscription.offerNote.label', defaultChecked: 'true'],
-                            'subscription.offerNote'                     : [field: 'priceIncreaseInfo', label: 'Price Increase Info', message: 'subscription.priceIncreaseInfo.label', defaultChecked: 'true'],
-                            'subscription.renewalSent'                   : [field: 'renewalSent', label: 'Renewal Sent', message: 'subscription.renewalSent.label', defaultChecked: 'true'],
-                            'subscription.renewalSentDate'               : [field: 'renewalSentDate', label: 'Renewal Sent Date', message: 'subscription.renewalSentDate.label', defaultChecked: 'true'],
-                            'subscription.participantTransferWithSurvey' : [field: 'participantTransferWithSurvey', label: 'Participant Transfe With Survey', message: 'subscription.participantTransferWithSurvey.label', defaultChecked: 'true'],
-                            'subscription.discountScale'                 : [field: 'discountScale', label: 'Discount Scale', message: 'subscription.discountScale.label', defaultChecked: 'true'],
-                            'subscription.survey'                        : [field: null, label: 'Survey', message: 'survey.label', defaultChecked: 'true'],
-                            'subscription.survey.evaluation'             : [field: null, label: 'Evaluation', message: 'subscription.survey.evaluation.label', defaultChecked: 'true'],
-                            'subscription.survey.cancellation'           : [field: null, label: 'Cancellation', message: 'subscription.survey.cancellation.label', defaultChecked: 'true']
-
+                            'subscription.offerRequested'                : [field: 'offerRequested', label: 'Offer Requested', message: 'subscription.offerRequested.label'],
+                            'subscription.offerRequestedDate'            : [field: 'offerRequestedDate', label: 'Offer Requested Date', message: 'subscription.offerRequestedDate.label'],
+                            'subscription.offerAccepted'                 : [field: 'offerAccepted', label: 'Offer Accepted', message: 'subscription.offerAccepted.label'],
+                            'subscription.manualCancellationDate'        : [field: 'offerNote', label: 'Offer Note', message: 'subscription.offerNote.label'],
+                            'subscription.offerNote'                     : [field: 'priceIncreaseInfo', label: 'Price Increase Info', message: 'subscription.priceIncreaseInfo.label'],
+                            'subscription.renewalSent'                   : [field: 'renewalSent', label: 'Renewal Sent', message: 'subscription.renewalSent.label'],
+                            'subscription.renewalSentDate'               : [field: 'renewalSentDate', label: 'Renewal Sent Date', message: 'subscription.renewalSentDate.label'],
+                            'subscription.participantTransferWithSurvey' : [field: 'participantTransferWithSurvey', label: 'Participant Transfe With Survey', message: 'subscription.participantTransferWithSurvey.label'],
+                            'subscription.discountScale'                 : [field: 'discountScale', label: 'Discount Scale', message: 'subscription.discountScale.label'],
+                            'subscription.survey'                        : [field: null, label: 'Survey', message: 'survey.label'],
+                            'subscription.survey.evaluation'             : [field: null, label: 'Evaluation', message: 'subscription.survey.evaluation.label'],
+                            'subscription.survey.cancellation'           : [field: null, label: 'Cancellation', message: 'subscription.survey.cancellation.label']
                     ]
             ],
     ]
@@ -3528,14 +3527,27 @@ class ExportClickMeService {
                     String query = "select prop from LicenseProperty prop where (prop.owner = :lic and prop.type.id in (:propertyDefs) and prop.isPublic = true) or (prop.owner = :lic and prop.type.id in (:propertyDefs) and prop.isPublic = false and prop.tenant = :contextOrg) order by prop.type.${localizedName} asc"
                     List<LicenseProperty> licenseProperties = LicenseProperty.executeQuery(query,[lic:license, propertyDefs:[id], contextOrg: contextService.getOrg()])
                     if(licenseProperties){
-                        List<String> values = [], notes = []
+                        List<String> values = [], notes = [], paragraphs = []
                         licenseProperties.each { LicenseProperty lp ->
-                            values << lp.getValueInI10n() ?: ' '
-                            notes << lp.note != null ? lp.note : ' '
+                            //ternary operator / elvis delivers strange results ...
+                            if(lp.getValueInI10n() != null) {
+                                values << lp.getValueInI10n()
+                            }
+                            else values << ' '
+                            if(lp.note != null) {
+                                notes << lp.note
+                            }
+                            else notes << ' '
+                            if(lp.paragraph != null) {
+                                paragraphs << lp.paragraph
+                            }
+                            else paragraphs << ' '
                         }
                         row.add(createTableCell(format, values.join('; ')))
                         row.add(createTableCell(format, notes.join('; ')))
+                        row.add(createTableCell(format, paragraphs.join('; ')))
                     }else{
+                        row.add(createTableCell(format, ' '))
                         row.add(createTableCell(format, ' '))
                         row.add(createTableCell(format, ' '))
                     }
@@ -4069,6 +4081,7 @@ class ExportClickMeService {
                 value.replaceAll('\n', ';')
             else if (format == FORMAT.TSV)
                 value.replaceAll('\n', ',')
+            else value
         }
         else value
     }
@@ -4526,7 +4539,9 @@ class ExportClickMeService {
                     }else if (fieldKey.contains('Property')) {
                         titles << "${label} ${messageSource.getMessage('default.notes.plural', null, locale)}"
                     }
-
+                    if(fieldKey.contains('licProperty')) {
+                        titles << "${label} ${messageSource.getMessage('property.table.paragraph', null, locale)}"
+                    }
                 }
             }
         }
