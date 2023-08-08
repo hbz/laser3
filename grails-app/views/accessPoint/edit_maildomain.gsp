@@ -9,9 +9,9 @@
 
 <laser:render template="breadcrumb" model="${[accessPoint: accessPoint, params: params]}"/>
 
-<g:set var="isInstEditorOrRoleAdmin" value="${contextService.is_INST_EDITOR_with_PERMS_BASIC_or_ROLEADMIN(inContextOrg)}"/>
+<g:set var="isInstEditorOrRoleAdminWithPermsBasic" value="${contextService.is_INST_EDITOR_or_ROLEADMIN_with_PERMS_BASIC(inContextOrg)}"/>
 
-<g:if test="${isInstEditorOrRoleAdmin}">
+<g:if test="${isInstEditorOrRoleAdminWithPermsBasic}">
     <ui:controlButtons>
         <ui:exportDropdown>
             <ui:exportDropdownItem>
@@ -75,7 +75,7 @@
                 <tr>
                     <td>${accessPointData.mailDomain}</td>
                     <td class="center aligned">
-                        <g:if test="${isInstEditorOrRoleAdmin}">
+                        <g:if test="${isInstEditorOrRoleAdminWithPermsBasic}">
                             <g:link action="deleteAccessPointData" controller="accessPoint" id="${accessPointData.id}" params="[orgInstance: orgInstance.id]"
                                     class="ui negative icon button js-open-confirm-modal"
                                     data-confirm-tokenMsg="${message(code: 'confirm.dialog.delete.generic', args: [accessPointData.mailDomain])}"
@@ -91,7 +91,7 @@
             </tbody>
         </table>
 
-        <g:if test="${!accessPoint.hasProperty('entityId') && isInstEditorOrRoleAdmin}">
+        <g:if test="${!accessPoint.hasProperty('entityId') && isInstEditorOrRoleAdminWithPermsBasic}">
             <div class="ui divider"></div>
 
             <div class="content">

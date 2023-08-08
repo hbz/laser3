@@ -9,7 +9,7 @@
         </div>
     </div>
     <div class="content">
-        <g:if test="${contextService.is_INST_EDITOR_with_PERMS_BASIC_or_ROLEADMIN(inContextOrg)}">
+        <g:if test="${contextService.is_INST_EDITOR_or_ROLEADMIN_with_PERMS_BASIC(inContextOrg)}">
             <a class="ui icon right floated button" data-ui="modal" href="#linkPlatformModal">
                 <i class="plus icon"></i>
             </a>

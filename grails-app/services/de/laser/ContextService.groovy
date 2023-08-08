@@ -107,22 +107,6 @@ class ContextService {
         _hasInstRoleAndPerm_or_ROLEADMIN('INST_ADM', orgPerms)
     }
 
-    // --
-
-    boolean hasPermAsInstRoleAsConsortium_or_ROLEADMIN(String orgPerms, String instUserRole) {
-        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
-            return true
-        }
-        if (getUser() && getOrg() && instUserRole) {
-            if (getOrg().getAllOrgTypeIds().contains( RDStore.OT_CONSORTIUM.id )) {
-                if (userService.hasAffiliation_or_ROLEADMIN(getUser(), getOrg(), instUserRole)) {
-                    return _hasPerm(orgPerms)
-                }
-            }
-        }
-        return false
-    }
-
     // -- private
 
     private boolean _hasInstRoleAndPerm_or_ROLEADMIN(String instUserRole, String orgPerms) {
@@ -161,14 +145,30 @@ class ContextService {
      */
     // TODO
     boolean is_ORG_COM_EDITOR_or_ROLEADMIN() {
-        _hasInstRoleAndPerm_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')
+        isInstEditor_or_ROLEADMIN() && _hasPerm(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC)
     }
 
     // TODO
-    boolean is_INST_EDITOR_with_PERMS_BASIC_or_ROLEADMIN(boolean inContextOrg) {
-        boolean a = _hasInstRoleAndPerm_or_ROLEADMIN(CustomerTypeService.ORG_INST_BASIC, 'INST_EDITOR') && inContextOrg
-        boolean b = _hasInstRoleAndPerm_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR')
+    boolean is_INST_EDITOR_or_ROLEADMIN_with_PERMS_BASIC(boolean inContextOrg) {
+        boolean check = false
+        if (isInstEditor_or_ROLEADMIN()) {
+            check = _hasPerm(CustomerTypeService.ORG_CONSORTIUM_BASIC) || (_hasPerm(CustomerTypeService.ORG_INST_BASIC) && inContextOrg)
+        }
+        check
+    }
 
-        return (a || b)
+    // TODO
+    boolean hasPermAsInstRoleAsConsortium_or_ROLEADMIN(String orgPerms, String instUserRole) {
+        if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
+            return true
+        }
+        if (getUser() && getOrg() && instUserRole) {
+            if (getOrg().getAllOrgTypeIds().contains( RDStore.OT_CONSORTIUM.id )) {
+                if (userService.hasAffiliation_or_ROLEADMIN(getUser(), getOrg(), instUserRole)) {
+                    return _hasPerm(orgPerms)
+                }
+            }
+        }
+        return false
     }
 }
