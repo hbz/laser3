@@ -597,8 +597,8 @@
         stringToDouble: function (input) {
             let output = 0.0;
             //determine locale from server
-            if(JSPC.app.finance${idSuffix}userLang === 'en') {
-                output = parseFloat(input);
+            if(JSPC.app.finance${idSuffix}.userLang === 'en') {
+                output = parseFloat(input.replaceAll(/,/g,""));
             }
             else {
                 output = parseFloat(input.replaceAll(/[.']/g,"").replaceAll(",","."));

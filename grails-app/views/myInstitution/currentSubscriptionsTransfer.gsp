@@ -438,7 +438,7 @@
                             %>
                             <g:each in="${documentSet}" var="docctx">
                                 <g:if test="${docctx.isDocAFile() && (docctx.status?.value != 'Deleted')}">
-                                    <div class="ui small feed content la-js-dont-hide-this-card">
+                                    <div class="ui small feed content">
                                         <div class="ui grid summary">
                                             <div class="eleven wide column la-column-right-lessPadding">
                                                 <ui:documentIcon doc="${docctx.owner}" showText="false"
@@ -504,8 +504,13 @@
                                     </div>
                                 </g:if>
                             </g:each>
-
-                            <ui:xEditable owner="${s}" field="offerNote"/>
+                            <div class="ui small feed content">
+                                <div class="ui grid summary">
+                                    <div class="sixteen wide column">
+                                        <ui:xEditable owner="${s}" field="offerNote"/>
+                                    </div>
+                                </div>
+                            </div>
                         </td>
                         <td class="${s.offerAccepted ? 'positive' : 'negative'}">
                             <ui:xEditableBoolean owner="${s}" field="offerAccepted"/>
