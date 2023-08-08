@@ -1,7 +1,7 @@
 
 ## Roles and Permissions and more ..
 
-2023-08-04
+2023-08-07
 
 ### Customer Types
 
@@ -34,7 +34,6 @@
     boolean isConsortium (String customerType)
 
 
-
 ### Permission Checks (formal)
 
 #### de.laser.ContextService
@@ -42,7 +41,6 @@
     boolean isInstUser_or_ROLEADMIN (String orgPerms)
     boolean isInstEditor_or_ROLEADMIN (String orgPerms)
     boolean isInstAdm_or_ROLEADMIN (String orgPerms)
-
 
 
 ### Affiliation Checks
@@ -53,7 +51,6 @@
 
     boolean hasFormalAffiliation (User userToCheck, Org orgToCheck, String instUserRole)
     boolean hasFormalAffiliation_or_ROLEADMIN (User userToCheck, Org orgToCheck, String instUserRole)
-
 
 
 ### Various

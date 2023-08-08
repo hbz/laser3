@@ -2,18 +2,15 @@
     <div class="content">
         <div class="header">
             <h3>${message(code: 'accessPoint.link.with.platform')}
-                <span class="la-long-tooltip la-popup-tooltip la-delay"
-                      data-content="${message(code: 'accessPoint.platformHelp')}">
+                <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code: 'accessPoint.platformHelp')}">
                     <i class="question circle icon la-popup"></i>
                 </span>
             </h3>
         </div>
     </div>
     <div class="content">
-        <g:if test="${contextService.is_INST_EDITOR_with_PERMS_BASIC(inContextOrg)}">
-            <a class="ui icon right floated button"
-               data-ui="modal"
-               href="#linkPlatformModal">
+        <g:if test="${contextService.is_INST_EDITOR_or_ROLEADMIN_with_PERMS_BASIC(inContextOrg)}">
+            <a class="ui icon right floated button" data-ui="modal" href="#linkPlatformModal">
                 <i class="plus icon"></i>
             </a>
 
@@ -22,8 +19,7 @@
                       message="accessPoint.link.with.platform">
                 <g:form class="ui form" url="[controller: 'accessPoint', action: 'linkPlatform']" id="linkPlatform"
                         method="POST">
-                    <g:hiddenField id="accessPoint_id_${accessPoint.id}" name="accessPointId"
-                                   value="${accessPoint.id}"/>
+                    <g:hiddenField id="accessPoint_id_${accessPoint.id}" name="accessPointId" value="${accessPoint.id}"/>
                     <g:hiddenField name="accessMethod" value="${accessPoint.accessMethod}"/>
                     <div class="field">
                         <label><g:message code="platform.label"/></label>

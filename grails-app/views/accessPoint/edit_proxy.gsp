@@ -9,9 +9,9 @@
 
 <laser:render template="breadcrumb" model="${[accessPoint: accessPoint, params: params]}"/>
 
-<g:set var="is_INST_EDITOR_with_PERMS_BASIC" value="${contextService.is_INST_EDITOR_with_PERMS_BASIC(inContextOrg)}"/>
+<g:set var="isInstEditorOrRoleAdminWithPermsBasic" value="${contextService.is_INST_EDITOR_or_ROLEADMIN_with_PERMS_BASIC(inContextOrg)}"/>
 
-<g:if test="${is_INST_EDITOR_with_PERMS_BASIC}">
+<g:if test="${isInstEditorOrRoleAdminWithPermsBasic}">
     <ui:controlButtons>
         <ui:exportDropdown>
             <ui:exportDropdownItem>
@@ -85,7 +85,7 @@
                     <td>${accessPointData.ipRange}</td>
                     <td>${accessPointData.ipCidr}</td>
                     <td class="center aligned">
-                        <g:if test="${is_INST_EDITOR_with_PERMS_BASIC}">
+                        <g:if test="${isInstEditorOrRoleAdminWithPermsBasic}">
                             <g:link action="deleteAccessPointData" controller="accessPoint" id="${accessPointData.id}" params="[orgInstance: orgInstance.id]"
                                     class="ui negative icon button"
                                     role="button"
@@ -99,7 +99,7 @@
             </tbody>
         </table>
 
-        <g:if test="${!accessPoint.hasProperty('entityId') && is_INST_EDITOR_with_PERMS_BASIC}">
+        <g:if test="${!accessPoint.hasProperty('entityId') && isInstEditorOrRoleAdminWithPermsBasic}">
             <div class="ui divider"></div>
 
             <div class="content">
@@ -115,7 +115,6 @@
                                     <i class="question circle icon"></i></span>
                             </label>
 
-
                             <g:if test="${autofocus == true}">
                                 <g:field type="text" name="ip" id="ipv4_ip" value="${ip}" autofocus=""/>
                             </g:if>
@@ -123,8 +122,7 @@
                                 <g:field type="text" name="ip" id="ipv4_ip" value="${ip}"/>
                             </g:else>
                         </div>
-                        <input type="submit" class="ui button"
-                               value="${message(code: 'accessPoint.button.add')}"/>
+                        <input type="submit" class="ui button" value="${message(code: 'accessPoint.button.add')}"/>
                     </div>
                 </g:form>
             </div>
@@ -150,7 +148,7 @@
                 <td>${accessPointData.ipRange}</td>
                 <td>${accessPointData.ipCidr}</td>
                 <td class="center aligned">
-                    <g:if test="${is_INST_EDITOR_with_PERMS_BASIC}">
+                    <g:if test="${isInstEditorOrRoleAdminWithPermsBasic}">
                         <g:link action="deleteAccessPointData" controller="accessPoint" id="${accessPointData.id}" params="[orgInstance: orgInstance.id]"
                                 class="ui negative icon button"
                                 role="button"
@@ -164,7 +162,7 @@
         </tbody>
     </table>
 
-    <g:if test="${!accessPoint.hasProperty('entityId') && is_INST_EDITOR_with_PERMS_BASIC}">
+    <g:if test="${!accessPoint.hasProperty('entityId') && isInstEditorOrRoleAdminWithPermsBasic}">
         <div class="ui divider"></div>
 
         <div class="content">
