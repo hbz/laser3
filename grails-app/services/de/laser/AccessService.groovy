@@ -1,6 +1,6 @@
 package de.laser
 
-
+import de.laser.auth.User
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 
@@ -15,6 +15,7 @@ class AccessService {
     static final String CHECK_VIEW_AND_EDIT = 'CHECK_VIEW_AND_EDIT'
 
     ContextService contextService
+    UserService userService
 
     // --- generic checks for orgs ---
 
@@ -37,10 +38,11 @@ class AccessService {
         if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
             return true
         }
-        Org ctx = contextService.getOrg()
+        Org ctx   = contextService.getOrg()
+        User user = contextService.getUser()
 
         // combo check @ contextUser/contextOrg
-        boolean check1 = contextService._hasPermAndInstRole(orgPerms, instUserRole)
+        boolean check1 = userService.hasAffiliation_or_ROLEADMIN(user, ctx, instUserRole) && contextService._hasPerm(orgPerms)
         boolean check2 = (orgToCheck.id == ctx.id) || Combo.findByToOrgAndFromOrg(ctx, orgToCheck)
 
         // orgToCheck check @ otherOrg

@@ -12,6 +12,9 @@ import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.SpringSecurityUtils
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
+import org.springframework.web.context.request.RequestAttributes
+import org.springframework.web.context.request.RequestContextHolder
+
 
 /**
  * This service handles calls related to the current session. Most used is the
@@ -20,6 +23,8 @@ import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
  */
 @Transactional
 class ContextService {
+
+    public final static String RCH_LASER_CONTEXT_ORG = 'laser.context.org'
 
     CacheService cacheService
     SpringSecurityService springSecurityService
@@ -32,38 +37,28 @@ class ContextService {
      * @return the institution used for the session (the context org)
      */
     Org getOrg() {
-        // todo
+        RequestAttributes ra = RequestContextHolder.currentRequestAttributes()
 
-        try {
-            Org context = getUser()?.formalOrg
-            if (context) {
-                return (Org) GrailsHibernateUtil.unwrapIfProxy(context)
+        Org context = ra.getAttribute(RCH_LASER_CONTEXT_ORG, RequestAttributes.SCOPE_REQUEST) as Org
+        if (context) {
+            // log.debug 'using ' + RCH_LASER_CONTEXT_ORG
+        }
+        else {
+            try {
+                context = GrailsHibernateUtil.unwrapIfProxy(getUser()?.formalOrg) as Org
+
+                log.debug 'setting ' + RCH_LASER_CONTEXT_ORG + ' for request .. ' + context
+                ra.setAttribute(RCH_LASER_CONTEXT_ORG, context, RequestAttributes.SCOPE_REQUEST)
+
+//                ra.getAttributeNames(RequestAttributes.SCOPE_REQUEST)
+//                        .findAll {it.startsWith('laser')}
+//                        .each {log.debug '' + it + ' : ' + ra.getAttribute(it, RequestAttributes.SCOPE_REQUEST)}
+            }
+            catch (Exception e) {
+                log.warn('getOrg() - ' + e.getMessage())
             }
         }
-        catch (Exception e) {
-            log.warn('getOrg() - ' + e.getMessage())
-        }
-        return null
-
-//            try {
-//                SessionCacheWrapper scw = getSessionCache()
-//
-//                def context = scw.get('contextOrg')
-//                if (! context) {
-//                    context = getUser()?.formalOrg
-//
-//                    if (context) {
-//                        scw.put('contextOrg', context)
-//                    }
-//                }
-//                if (context) {
-//                    return (Org) GrailsHibernateUtil.unwrapIfProxy(context)
-//                }
-//            }
-//            catch (Exception e) {
-//                log.warn('getOrg() - ' + e.getMessage())
-//            }
-//            return null
+        context
     }
 
     /**
@@ -120,7 +115,9 @@ class ContextService {
         }
         if (getUser() && getOrg() && instUserRole) {
             if (getOrg().getAllOrgTypeIds().contains( RDStore.OT_CONSORTIUM.id )) {
-                return _hasPermAndInstRole(orgPerms, instUserRole)
+                if (userService.hasAffiliation_or_ROLEADMIN(getUser(), getOrg(), instUserRole)) {
+                    return _hasPerm(orgPerms)
+                }
             }
         }
         return false
@@ -157,30 +154,20 @@ class ContextService {
         check
     }
 
-    @ShouldBePrivate_DoNotUse
-    boolean _hasPermAndInstRole(String orgPerms, String instUserRole) {
-        if (getUser() && instUserRole) {
-            if (userService.hasAffiliation_or_ROLEADMIN(getUser(), getOrg(), instUserRole)) {
-                return _hasPerm(orgPerms)
-            }
-        }
-        return false
-    }
-
     // ----- REFACTORING ?? -----
 
     /**
      * Replacement call for the abandoned ROLE_ORG_COM_EDITOR
      */
     // TODO
-    boolean is_ORG_COM_EDITOR() {
-        _hasPermAndInstRole(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')
+    boolean is_ORG_COM_EDITOR_or_ROLEADMIN() {
+        _hasInstRoleAndPerm_or_ROLEADMIN(CustomerTypeService.PERMS_INST_PRO_CONSORTIUM_BASIC, 'INST_EDITOR')
     }
 
     // TODO
-    boolean is_INST_EDITOR_with_PERMS_BASIC(boolean inContextOrg) {
-        boolean a = _hasPermAndInstRole(CustomerTypeService.ORG_INST_BASIC, 'INST_EDITOR') && inContextOrg
-        boolean b = _hasPermAndInstRole(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR')
+    boolean is_INST_EDITOR_with_PERMS_BASIC_or_ROLEADMIN(boolean inContextOrg) {
+        boolean a = _hasInstRoleAndPerm_or_ROLEADMIN(CustomerTypeService.ORG_INST_BASIC, 'INST_EDITOR') && inContextOrg
+        boolean b = _hasInstRoleAndPerm_or_ROLEADMIN(CustomerTypeService.ORG_CONSORTIUM_BASIC, 'INST_EDITOR')
 
         return (a || b)
     }

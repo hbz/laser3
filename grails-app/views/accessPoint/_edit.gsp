@@ -10,7 +10,7 @@
 
 <laser:render template="breadcrumb" model="${[accessPoint: accessPoint, params: params]}"/>
 
-<g:if test="${contextService.is_INST_EDITOR_with_PERMS_BASIC(inContextOrg)}">
+<g:if test="${contextService.is_INST_EDITOR_with_PERMS_BASIC_or_ROLEADMIN(inContextOrg)}">
     <ui:controlButtons>
         <ui:exportDropdown>
             <ui:exportDropdownItem>
